@@ -1,0 +1,138 @@
+.sg-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--sg-font-size);
+  color: var(--sg-color-text);
+}
+
+.sg-timeline-item {
+  position: relative;
+  display: flex;
+  padding-bottom: var(--sg-padding-xl);
+}
+
+.sg-timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+/* Head wrapper (dot + tail) */
+.sg-timeline-item-head-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 20px;
+}
+
+.sg-timeline-item-head {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--sg-color-primary);
+  background: var(--sg-color-bg);
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.sg-timeline-item-head-custom {
+  width: auto;
+  height: auto;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--sg-font-size-lg);
+}
+
+.sg-timeline-item-tail {
+  flex: 1;
+  width: 2px;
+  background: var(--sg-color-border-secondary);
+  margin-top: var(--sg-margin-xs);
+  min-height: 16px;
+}
+
+/* Content */
+.sg-timeline-item-content {
+  flex: 1;
+  min-width: 0;
+  padding: 0 0 0 var(--sg-padding-md);
+  line-height: var(--sg-line-height);
+  position: relative;
+  top: -3px;
+}
+
+/* Label */
+.sg-timeline-item-label {
+  width: 120px;
+  flex-shrink: 0;
+  text-align: right;
+  padding-right: var(--sg-padding-md);
+  color: var(--sg-color-text-secondary);
+  font-size: var(--sg-font-size-sm);
+  position: relative;
+  top: -3px;
+}
+
+/* Mode: left (default) */
+.sg-timeline-left .sg-timeline-item {
+  flex-direction: row;
+}
+
+.sg-timeline-left .sg-timeline-item-label {
+  display: none;
+}
+
+/* Mode: right */
+.sg-timeline-right .sg-timeline-item {
+  flex-direction: row-reverse;
+}
+
+.sg-timeline-right .sg-timeline-item-content {
+  padding: 0 var(--sg-padding-md) 0 0;
+  text-align: right;
+}
+
+.sg-timeline-right .sg-timeline-item-label {
+  display: none;
+}
+
+/* Mode: alternate */
+.sg-timeline-alternate .sg-timeline-item-label {
+  display: block;
+}
+
+.sg-timeline-alternate .sg-timeline-item-left {
+  flex-direction: row;
+}
+
+.sg-timeline-alternate .sg-timeline-item-left .sg-timeline-item-label {
+  text-align: right;
+}
+
+.sg-timeline-alternate .sg-timeline-item-right {
+  flex-direction: row-reverse;
+}
+
+.sg-timeline-alternate .sg-timeline-item-right .sg-timeline-item-content {
+  padding: 0 var(--sg-padding-md) 0 0;
+  text-align: right;
+}
+
+.sg-timeline-alternate .sg-timeline-item-right .sg-timeline-item-label {
+  text-align: left;
+  padding-right: 0;
+  padding-left: var(--sg-padding-md);
+}
+
+/* Pending */
+.sg-timeline-item-pending .sg-timeline-item-head {
+  border-color: var(--sg-color-text-disabled);
+}
+
+.sg-timeline-item-pending .sg-timeline-item-content {
+  color: var(--sg-color-text-tertiary);
+}

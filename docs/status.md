@@ -48,7 +48,7 @@
 | useTable | ✅ | TableEngine |
 | useTree | ✅ | TreeEngine |
 
-### Complex-компоненты
+### Complex-компоненты (11 шт.)
 
 | Компонент | Статус | Файлы | Фичи |
 |---|---|---|---|
@@ -58,8 +58,13 @@
 | SubmitButton | ✅ | SubmitButton.tsx | Кнопка с isSubmitting |
 | Table | ✅ | Table/ (7 файлов) | Сортировка, фильтры (menu/search/custom), column groups, row/col span, tree data, drag columns, resize, editable cells, selection, expandable, sticky, summary, virtual scroll, pagination, locale |
 | Tree | ✅ | Tree/ (4 файла) | Checkable (cascade + strict), selectable (multiple), draggable, async loading, showLine, showIcon, switcherIcon, directory mode, blockNode, virtual scroll, fieldNames, locale |
+| List | ✅ | List/ (3 файла) | Pagination, grid layout, loading, header/footer, split, List.Item, List.Item.Meta |
+| Transfer | ✅ | Transfer/ (4 файла) | Два списка, checkbox selection, move buttons, search/filter, select all, oneWay, pagination |
+| TreeSelect | ✅ | TreeSelect/ (3 файла) | Select + Tree dropdown, checkable, showCheckedStrategy, search, multiple, tags, maxTagCount |
+| Cascader | ✅ | Cascader/ (3 файла) | Multi-column dropdown, hover/click expand, search, changeOnSelect, loadData, multiple |
+| Calendar | ✅ | Calendar/ (3 файла) | Month/year view, navigation, cellRender, disabledDate, fullscreen/mini, headerRender |
 
-### UI-компоненты (28 шт.)
+### UI-компоненты (39 шт.)
 
 | Компонент | Статус | Компонент | Статус |
 |---|---|---|---|
@@ -77,13 +82,19 @@
 | Badge | ✅ | Tag | ✅ |
 | Avatar | ✅ | Breadcrumb | ✅ |
 | Pagination | ✅ | Progress | ✅ |
+| Menu | ✅ | Collapse | ✅ |
+| ColorPicker | ✅ | Empty | ✅ |
+| Result | ✅ | Skeleton | ✅ |
+| Segmented | ✅ | Steps | ✅ |
+| Timeline | ✅ | Carousel | ✅ |
+| Descriptions | ✅ | | |
 
 ### Стили
 
 - `tokens.css` — дизайн-токены ✅
 - Светлая тема ✅
 - Тёмная тема ✅
-- CSS для каждого компонента ✅
+- CSS для каждого компонента (53 файла) ✅
 
 ---
 
@@ -91,42 +102,21 @@
 
 Vite + React. Страница на каждый компонент с интерактивными примерами.
 
-25 демо-страниц (включая Tree и Table).
+41 демо-страница (включая все новые компоненты).
 
 ---
 
-## Что ещё не сделано (потенциальные компоненты)
+## Итого
 
-### Высокий приоритет
-
-| Компонент | Тип | Нужен engine в core? |
-|---|---|---|
-| List | complex | Да (или переиспользовать TableEngine) |
-| Menu | ui | Нет |
-| Collapse / Accordion | ui | Нет |
-
-### Средний приоритет
-
-| Компонент | Тип | Описание |
-|---|---|---|
-| Transfer | complex | Два списка с перемещением |
-| TreeSelect | complex | Select + Tree |
-| Cascader | complex | Каскадный выбор |
-| Steps | ui | Пошаговый визард |
-| Timeline | ui | Временная шкала |
-
-### Низкий приоритет
-
-| Компонент | Тип | Описание |
-|---|---|---|
-| Calendar | complex | Полноценный календарь |
-| Carousel | ui | Карусель |
-| Skeleton | ui | Скелетон-загрузка |
-| Empty | ui | Пустое состояние |
-| Result | ui | Страница результата |
-| Segmented | ui | Сегментированный переключатель |
-| ColorPicker | ui | Выбор цвета |
-| Descriptions | ui | Key-value описание |
+| Категория | Количество |
+|---|---|
+| Core engines | 3 |
+| React hooks | 6 |
+| Complex-компоненты | 11 |
+| UI-компоненты | 39 |
+| **Всего компонентов** | **50** |
+| CSS-файлов стилей | 53 |
+| Демо-страниц | 41 |
 
 ---
 

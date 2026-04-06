@@ -25,6 +25,22 @@ import { PaginationDemo } from './demos/PaginationDemo'
 import { DropdownDemo } from './demos/DropdownDemo'
 import { ProgressDemo } from './demos/ProgressDemo'
 import { TreeDemo } from './demos/TreeDemo'
+import { MenuDemo } from './demos/MenuDemo'
+import { CollapseDemo } from './demos/CollapseDemo'
+import { ColorPickerDemo } from './demos/ColorPickerDemo'
+import { EmptyDemo } from './demos/EmptyDemo'
+import { ResultDemo } from './demos/ResultDemo'
+import { SkeletonDemo } from './demos/SkeletonDemo'
+import { SegmentedDemo } from './demos/SegmentedDemo'
+import { StepsDemo } from './demos/StepsDemo'
+import { TimelineDemo } from './demos/TimelineDemo'
+import { CarouselDemo } from './demos/CarouselDemo'
+import { DescriptionsDemo } from './demos/DescriptionsDemo'
+import { ListDemo } from './demos/ListDemo'
+import { TransferDemo } from './demos/TransferDemo'
+import { TreeSelectDemo } from './demos/TreeSelectDemo'
+import { CascaderDemo } from './demos/CascaderDemo'
+import { CalendarDemo } from './demos/CalendarDemo'
 import { ThemeToggle } from './demos/ThemeToggle'
 
 const menu = [
@@ -53,6 +69,22 @@ const menu = [
   { key: 'form', label: 'Form' },
   { key: 'table', label: 'Table' },
   { key: 'tree', label: 'Tree' },
+  { key: 'treeselect', label: 'TreeSelect' },
+  { key: 'cascader', label: 'Cascader' },
+  { key: 'list', label: 'List' },
+  { key: 'transfer', label: 'Transfer' },
+  { key: 'calendar', label: 'Calendar' },
+  { key: 'menu', label: 'Menu' },
+  { key: 'collapse', label: 'Collapse' },
+  { key: 'colorpicker', label: 'ColorPicker' },
+  { key: 'empty', label: 'Empty' },
+  { key: 'result', label: 'Result' },
+  { key: 'skeleton', label: 'Skeleton' },
+  { key: 'segmented', label: 'Segmented' },
+  { key: 'steps', label: 'Steps' },
+  { key: 'timeline', label: 'Timeline' },
+  { key: 'carousel', label: 'Carousel' },
+  { key: 'descriptions', label: 'Descriptions' },
 ]
 
 const pages: Record<string, () => JSX.Element> = {
@@ -79,6 +111,22 @@ const pages: Record<string, () => JSX.Element> = {
   dropdown: DropdownDemo,
   progress: ProgressDemo,
   tree: TreeDemo,
+  treeselect: TreeSelectDemo,
+  cascader: CascaderDemo,
+  list: ListDemo,
+  transfer: TransferDemo,
+  calendar: CalendarDemo,
+  menu: MenuDemo,
+  collapse: CollapseDemo,
+  colorpicker: ColorPickerDemo,
+  empty: EmptyDemo,
+  result: ResultDemo,
+  skeleton: SkeletonDemo,
+  segmented: SegmentedDemo,
+  steps: StepsDemo,
+  timeline: TimelineDemo,
+  carousel: CarouselDemo,
+  descriptions: DescriptionsDemo,
 }
 
 function Overview() {
