@@ -1,0 +1,7 @@
+/* SkyGraph minimal reset — only for .sg-* scoped elements */
+
+.sg-form *,
+.sg-form *::before,
+.sg-form *::after {
+  box-sizing: border-box;
+}

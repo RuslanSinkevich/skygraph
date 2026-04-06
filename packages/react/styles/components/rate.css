@@ -1,0 +1,21 @@
+.sg-rate {
+  display: inline-flex;
+  gap: var(--sg-padding-xs);
+  font-size: 20px;
+}
+
+.sg-rate-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.sg-rate-star {
+  cursor: pointer;
+  color: var(--sg-color-border);
+  transition: color var(--sg-transition-duration), transform var(--sg-transition-duration);
+  user-select: none;
+}
+
+.sg-rate-star:hover { transform: scale(1.15); }
+.sg-rate-star-full { color: #fadb14; }
+.sg-rate-star-half { color: #fadb14; opacity: 0.5; }

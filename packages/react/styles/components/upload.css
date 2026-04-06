@@ -1,0 +1,40 @@
+.sg-upload {
+  --sg-spin-color: var(--sg-color-text-tertiary);
+}
+
+.sg-upload-list {
+  margin-top: var(--sg-margin-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sg-margin-xs);
+}
+
+.sg-upload-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sg-padding-xs) var(--sg-padding-sm);
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius-sm);
+  font-size: var(--sg-font-size-sm);
+  color: var(--sg-color-text);
+}
+
+.sg-upload-item-error {
+  border-color: var(--sg-color-error);
+  color: var(--sg-color-error);
+}
+
+.sg-upload-item-name {
+  display: flex;
+  align-items: center;
+  gap: var(--sg-padding-xs);
+}
+
+.sg-upload-item-remove {
+  cursor: pointer;
+  color: var(--sg-color-text-tertiary);
+  font-size: var(--sg-font-size);
+}
+
+.sg-upload-item-remove:hover { color: var(--sg-color-error); }

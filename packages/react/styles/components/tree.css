@@ -1,0 +1,220 @@
+/* === Tree === */
+
+.sg-tree {
+  font-size: var(--sg-font-size);
+  color: var(--sg-color-text);
+  line-height: var(--sg-line-height);
+}
+
+.sg-tree-empty {
+  padding: var(--sg-padding-lg);
+  text-align: center;
+  color: var(--sg-color-text-tertiary);
+}
+
+/* Node */
+
+.sg-tree-node {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+  cursor: default;
+  transition: background-color var(--sg-transition-duration) var(--sg-transition-timing);
+  border-radius: var(--sg-border-radius-sm);
+  min-height: 28px;
+}
+
+.sg-tree-node:hover {
+  background: var(--sg-color-bg-hover);
+}
+
+.sg-tree-node-selected {
+  background: var(--sg-color-primary-bg);
+}
+
+.sg-tree-node-selected:hover {
+  background: var(--sg-color-primary-bg);
+}
+
+.sg-tree-node-disabled {
+  color: var(--sg-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.sg-tree-node-disabled:hover {
+  background: transparent;
+}
+
+.sg-tree-disabled .sg-tree-node {
+  color: var(--sg-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.sg-tree-disabled .sg-tree-node:hover {
+  background: transparent;
+}
+
+/* Block node */
+
+.sg-tree-block-node .sg-tree-node {
+  display: flex;
+}
+
+.sg-tree-block-node .sg-tree-title {
+  flex: 1;
+}
+
+/* Switcher */
+
+.sg-tree-switcher {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
+  color: var(--sg-color-text-secondary);
+  font-size: 12px;
+  transition: transform var(--sg-transition-duration) var(--sg-transition-timing);
+}
+
+.sg-tree-switcher-open {
+  transform: rotate(0deg);
+}
+
+.sg-tree-switcher-close {
+  transform: rotate(0deg);
+}
+
+.sg-tree-switcher-noop {
+  cursor: default;
+  width: 24px;
+}
+
+.sg-tree-switcher-leaf {
+  cursor: default;
+  color: var(--sg-color-text-tertiary);
+  font-size: 10px;
+}
+
+.sg-tree-switcher-leaf-icon {
+  cursor: default;
+}
+
+.sg-tree-switcher-loading {
+  cursor: default;
+}
+
+.sg-tree-switcher:hover:not(.sg-tree-switcher-noop):not(.sg-tree-switcher-leaf):not(.sg-tree-switcher-loading) {
+  color: var(--sg-color-primary);
+}
+
+/* Checkbox in tree */
+
+.sg-tree-node .sg-checkbox {
+  margin-right: var(--sg-margin-xs);
+}
+
+/* Icon */
+
+.sg-tree-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: var(--sg-margin-xs);
+  flex-shrink: 0;
+  font-size: var(--sg-font-size);
+}
+
+/* Title */
+
+.sg-tree-title {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--sg-padding-xs);
+  border-radius: var(--sg-border-radius-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sg-tree-title-selectable {
+  cursor: pointer;
+}
+
+.sg-tree-title-selectable:hover {
+  color: var(--sg-color-primary);
+}
+
+.sg-tree-node-selected .sg-tree-title {
+  color: var(--sg-color-primary);
+  font-weight: 500;
+}
+
+/* Show line */
+
+.sg-tree-show-line .sg-tree-node {
+  position: relative;
+}
+
+/* Directory mode */
+
+.sg-tree-directory .sg-tree-node-selected {
+  background: var(--sg-color-primary);
+}
+
+.sg-tree-directory .sg-tree-node-selected .sg-tree-title,
+.sg-tree-directory .sg-tree-node-selected .sg-tree-icon {
+  color: var(--sg-color-white);
+}
+
+.sg-tree-directory .sg-tree-node-selected .sg-tree-switcher {
+  color: var(--sg-color-white);
+}
+
+/* Drag & drop */
+
+.sg-tree-node-draggable {
+  cursor: grab;
+}
+
+.sg-tree-node-draggable:active {
+  cursor: grabbing;
+}
+
+.sg-tree-node-drop-inner {
+  background: var(--sg-color-primary-bg);
+  outline: 1px dashed var(--sg-color-primary);
+  outline-offset: -1px;
+}
+
+.sg-tree-node-drop-before {
+  border-top: 2px solid var(--sg-color-primary);
+}
+
+.sg-tree-node-drop-after {
+  border-bottom: 2px solid var(--sg-color-primary);
+}
+
+/* Virtual scroll */
+
+.sg-tree-virtual-container {
+  will-change: transform;
+}
+
+.sg-tree-virtual-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sg-tree-virtual-container::-webkit-scrollbar-thumb {
+  background: var(--sg-color-border);
+  border-radius: 3px;
+}
+
+.sg-tree-virtual-container::-webkit-scrollbar-track {
+  background: transparent;
+}
