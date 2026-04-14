@@ -1,100 +1,103 @@
-import { Timeline } from '../../../../packages/react/src/components/ui/Timeline'
+import { Timeline } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
+
+const timelineProps: PropDef[] = [
+  { name: 'items', description: 'Timeline items', type: 'TimelineItem[]' },
+  { name: 'mode', description: 'Layout mode of the timeline', type: "'left' | 'right' | 'alternate'", default: "'left'" },
+  { name: 'pending', description: 'Last node as pending or custom pending content', type: 'ReactNode | boolean' },
+  { name: 'pendingDot', description: 'Custom dot for the pending node', type: 'ReactNode' },
+  { name: 'reverse', description: 'Reverse the timeline order', type: 'boolean', default: 'false' },
+]
+
+const timelineItemProps: PropDef[] = [
+  { name: 'children', description: 'Content of the timeline item', type: 'ReactNode' },
+  { name: 'color', description: 'Dot color', type: 'string', default: "'blue'" },
+  { name: 'dot', description: 'Custom dot element', type: 'ReactNode' },
+  { name: 'label', description: 'Label content', type: 'ReactNode' },
+  { name: 'position', description: 'Custom position', type: "'left' | 'right'" },
+]
 
 const basicItems = [
-  { children: <span>Create branch <code>feat/ui</code></span> },
-  { children: <span>Push 3 commits</span> },
-  { children: <span>Open pull request #42</span> },
+  { children: 'Create a services site 2015-09-01' },
+  { children: 'Solve initial network problems 2015-09-01' },
+  { children: 'Technical testing 2015-09-01', color: 'green' },
+  { children: 'Network problems being solved 2015-09-01', color: 'red' },
 ]
 
 export function TimelineDemo() {
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      <h2>Timeline</h2>
+    <ComponentDoc
+      title="Timeline"
+      description="Vertical display timeline."
+      whenToUse={[
+        'When a series of information needs to be ordered by time (ascending or descending).',
+        'When you need a timeline to make a visual connection.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="Basic timeline."
+        code={`import { Timeline } from '@skygraph/react'
 
-      <section>
-        <h3>Basic (mode left)</h3>
+<Timeline items={[
+  { children: 'Create a services site 2015-09-01' },
+  { children: 'Solve initial network problems' },
+  { children: 'Technical testing', color: 'green' },
+  { children: 'Network problems being solved', color: 'red' },
+]} />`}
+      >
         <Timeline items={basicItems} />
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>Colors</h3>
-        <Timeline
-          items={[
-            { color: 'var(--sg-color-success)', children: 'Build passed' },
-            { color: 'var(--sg-color-warning)', children: 'Tests flaky — retry scheduled' },
-            { color: 'var(--sg-color-error)', children: 'Deploy rolled back' },
-            { color: 'var(--sg-color-primary)', children: 'Manual approval granted' },
-          ]}
-        />
-      </section>
+      <DemoBox
+        title="Alternate"
+        description="Alternate timeline content on left and right."
+        code={`<Timeline mode="alternate" items={[
+  { children: 'Create site 2015-09-01' },
+  { children: 'Solve problems 2015-09-01', color: 'green' },
+  { children: 'Testing 2015-09-01' },
+  { children: 'Problems solved 2015-09-01', color: 'red' },
+]} />`}
+      >
+        <Timeline mode="alternate" items={basicItems} />
+      </DemoBox>
 
-      <section>
-        <h3>Custom dots</h3>
-        <Timeline
-          items={[
-            {
-              dot: <span style={{ fontSize: 14 }}>📝</span>,
-              children: 'Draft saved',
-            },
-            {
-              dot: <span style={{ fontSize: 14 }}>👀</span>,
-              children: 'Review requested',
-            },
-            {
-              dot: <span style={{ fontSize: 14 }}>✅</span>,
-              children: 'Merged to main',
-            },
-          ]}
-        />
-      </section>
+      <DemoBox
+        title="With Label"
+        description="Use label to set a summary."
+        code={`<Timeline mode="alternate" items={[
+  { label: '2015-09-01', children: 'Create site' },
+  { label: '2015-09-02', children: 'Solve problems' },
+  { label: '2015-09-03', children: 'Testing' },
+]} />`}
+      >
+        <Timeline mode="alternate" items={[
+          { label: '2015-09-01', children: 'Create a services site' },
+          { label: '2015-09-02', children: 'Solve initial network problems' },
+          { label: '2015-09-03', children: 'Technical testing' },
+          { label: '2015-09-04', children: 'Network problems being solved' },
+        ]} />
+      </DemoBox>
 
-      <section>
-        <h3>Alternate mode</h3>
-        <Timeline
-          mode="alternate"
-          items={[
-            { children: 'Event A', label: '09:00' },
-            { children: 'Event B', label: '11:30' },
-            { children: 'Event C', label: '15:00' },
-          ]}
-        />
-      </section>
+      <DemoBox
+        title="Pending"
+        description="When the timeline is incomplete and ongoing, put a ghost node at last."
+        code={`<Timeline pending="Recording..." items={[
+  { children: 'Create site 2015-09-01' },
+  { children: 'Solve problems 2015-09-01' },
+  { children: 'Technical testing 2015-09-01' },
+]} />`}
+      >
+        <Timeline pending="Recording..." items={[
+          { children: 'Create a services site 2015-09-01' },
+          { children: 'Solve initial network problems 2015-09-01' },
+          { children: 'Technical testing 2015-09-01' },
+        ]} />
+      </DemoBox>
 
-      <section>
-        <h3>Pending</h3>
-        <Timeline
-          pending="CI running…"
-          pendingDot={<span style={{ fontSize: 10, opacity: 0.7 }}>⏳</span>}
-          items={[
-            { children: 'Queued job #9102' },
-            { children: 'Lint & typecheck' },
-          ]}
-        />
-      </section>
-
-      <section>
-        <h3>Reverse order</h3>
-        <Timeline
-          reverse
-          items={[
-            { label: '18:00', children: 'Deployed v2.4.0' },
-            { label: '17:40', children: 'Staging sign-off' },
-            { label: '17:00', children: 'Merge release branch' },
-          ]}
-        />
-      </section>
-
-      <section>
-        <h3>Right-aligned labels (mode right)</h3>
-        <Timeline
-          mode="right"
-          items={[
-            { label: 'Mon', children: 'Kickoff' },
-            { label: 'Wed', children: 'Mid-week sync' },
-            { label: 'Fri', children: 'Demo' },
-          ]}
-        />
-      </section>
-    </section>
+      <PropsTable data={timelineProps} />
+      <PropsTable title="TimelineItem" data={timelineItemProps} />
+    </ComponentDoc>
   )
 }

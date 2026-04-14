@@ -1,95 +1,98 @@
+import { Steps, Button } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 import { useState } from 'react'
-import { Steps } from '../../../../packages/react/src/components/ui/Steps'
 
-const items = [
-  { title: 'Cart', description: 'Review items' },
-  { title: 'Shipping', description: 'Address & method' },
-  { title: 'Payment', description: 'Card details' },
-  { title: 'Confirm', description: 'Place order' },
+const stepsProps: PropDef[] = [
+  { name: 'current', description: 'Current step index (0-based)', type: 'number' },
+  { name: 'items', description: 'Steps configuration', type: 'StepItem[]' },
+  { name: 'direction', description: 'Direction of steps', type: "'horizontal' | 'vertical'", default: "'horizontal'" },
+  { name: 'onChange', description: 'Callback when clicking step', type: '(current: number) => void' },
+  { name: 'type', description: 'Type of steps', type: "'default' | 'navigation'", default: "'default'" },
+  { name: 'size', description: 'Size of steps', type: "'small' | 'middle' | 'large'", default: "'middle'" },
 ]
 
-const navItems = [
-  { title: 'Step 1' },
-  { title: 'Step 2' },
-  { title: 'Step 3' },
+const stepItemProps: PropDef[] = [
+  { name: 'title', description: 'Title of the step', type: 'ReactNode' },
+  { name: 'description', description: 'Description of the step', type: 'ReactNode' },
+  { name: 'icon', description: 'Custom icon', type: 'ReactNode' },
+  { name: 'status', description: 'Forced status', type: "'wait' | 'process' | 'finish' | 'error'" },
+]
+
+const basicSteps = [
+  { title: 'Finished', description: 'This is a description.' },
+  { title: 'In Progress', description: 'This is a description.' },
+  { title: 'Waiting', description: 'This is a description.' },
 ]
 
 export function StepsDemo() {
   const [current, setCurrent] = useState(1)
-  const [clickCurrent, setClickCurrent] = useState(0)
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      <h2>Steps</h2>
+    <ComponentDoc
+      title="Steps"
+      description="A navigation bar that guides users through the steps of a task."
+      whenToUse={[
+        'When a task is complicated or has a certain sequence in the series of subtasks.',
+        'When a large form needs to be broken into multiple steps.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="The most basic step bar."
+        code={`import { Steps } from '@skygraph/react'
 
-      <section>
-        <h3>Horizontal (default)</h3>
-        <Steps current={1} items={items} />
-      </section>
+<Steps current={1} items={[
+  { title: 'Finished', description: 'This is a description.' },
+  { title: 'In Progress', description: 'This is a description.' },
+  { title: 'Waiting', description: 'This is a description.' },
+]} />`}
+      >
+        <Steps current={1} items={basicSteps} />
+      </DemoBox>
 
-      <section>
-        <h3>Vertical</h3>
-        <div style={{ maxWidth: 420 }}>
-          <Steps direction="vertical" current={2} items={items} />
+      <DemoBox
+        title="Clickable"
+        description="Clickable steps with navigation."
+        code={`const [current, setCurrent] = useState(1)
+
+<Steps current={current} onChange={setCurrent} items={steps} />
+<Button onClick={() => setCurrent(c => Math.max(0, c - 1))}>Previous</Button>
+<Button onClick={() => setCurrent(c => Math.min(2, c + 1))}>Next</Button>`}
+      >
+        <Steps current={current} onChange={setCurrent} items={basicSteps} />
+        <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
+          <Button disabled={current <= 0} onClick={() => setCurrent((c) => c - 1)}>Previous</Button>
+          <Button type="primary" disabled={current >= 2} onClick={() => setCurrent((c) => c + 1)}>Next</Button>
         </div>
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>Small size</h3>
-        <Steps size="small" current={0} items={navItems} />
-      </section>
+      <DemoBox
+        title="Vertical"
+        description="Vertical step bar."
+        code={`<Steps direction="vertical" current={1} items={steps} />`}
+      >
+        <Steps direction="vertical" current={1} items={basicSteps} />
+      </DemoBox>
 
-      <section>
-        <h3>Navigation type</h3>
-        <Steps type="navigation" current={1} items={navItems} />
-      </section>
+      <DemoBox
+        title="Error Status"
+        description="Steps with an error status."
+        code={`<Steps current={1} items={[
+  { title: 'Finished' },
+  { title: 'Error', status: 'error' },
+  { title: 'Waiting' },
+]} />`}
+      >
+        <Steps current={1} items={[
+          { title: 'Finished' },
+          { title: 'Error Step', status: 'error' },
+          { title: 'Waiting' },
+        ]} />
+      </DemoBox>
 
-      <section>
-        <h3>Clickable (onChange)</h3>
-        <Steps current={clickCurrent} items={items} onChange={setClickCurrent} />
-        <p style={{ marginTop: 8, fontSize: 12, opacity: 0.75 }}>Active index: {clickCurrent}</p>
-      </section>
-
-      <section>
-        <h3>Error status on a step</h3>
-        <Steps
-          current={2}
-          items={[
-            { title: 'Done', status: 'finish' },
-            { title: 'Validate', status: 'error', description: 'Invalid tax ID' },
-            { title: 'Publish', status: 'wait' },
-          ]}
-        />
-      </section>
-
-      <section>
-        <h3>Controlled horizontal</h3>
-        <Steps current={current} items={items} onChange={setCurrent} />
-        <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
-          <button type="button" onClick={() => setCurrent((c) => Math.max(0, c - 1))}>
-            Prev
-          </button>
-          <button type="button" onClick={() => setCurrent((c) => Math.min(items.length - 1, c + 1))}>
-            Next
-          </button>
-        </div>
-      </section>
-
-      <section>
-        <h3>Descriptions on vertical steps</h3>
-        <div style={{ maxWidth: 440 }}>
-          <Steps
-            direction="vertical"
-            current={2}
-            items={[
-              { title: 'Upload', description: 'Files received' },
-              { title: 'Scan', description: 'No threats found' },
-              { title: 'Sign', description: 'Awaiting signature' },
-              { title: 'Archive', description: 'Pending' },
-            ]}
-          />
-        </div>
-      </section>
-    </section>
+      <PropsTable data={stepsProps} />
+      <PropsTable title="StepItem" data={stepItemProps} />
+    </ComponentDoc>
   )
 }

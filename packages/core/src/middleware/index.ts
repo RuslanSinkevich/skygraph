@@ -7,4 +7,4 @@ export { persistenceMiddleware } from './persistence'
 export type { PersistenceOptions } from './persistence'
 
 export { validationMiddleware } from './validation'
-export type { Validator } from './validation'
+export type { Validator, ValidationMiddlewareOptions } from './validation'

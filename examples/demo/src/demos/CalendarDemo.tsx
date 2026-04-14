@@ -1,102 +1,169 @@
+import { Calendar, DatePicker, RangePicker, TimePicker } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 import { useState } from 'react'
-import { Calendar } from '../../../../packages/react/src/components/complex/Calendar'
 
-function isWeekend(d: Date) {
-  const day = d.getDay()
-  return day === 0 || day === 6
-}
+const calendarProps: PropDef[] = [
+  { name: 'value', description: 'Current date value (controlled)', type: 'Date' },
+  { name: 'defaultValue', description: 'Default date value', type: 'Date' },
+  { name: 'mode', description: 'Display mode', type: "'month' | 'year'", default: "'month'" },
+  { name: 'onChange', description: 'Callback when date changes', type: '(date: Date) => void' },
+  { name: 'onPanelChange', description: 'Callback when panel changes', type: '(date: Date, mode) => void' },
+  { name: 'fullscreen', description: 'Display fullscreen or compact card', type: 'boolean', default: 'true' },
+  { name: 'disabledDate', description: 'Function to disable specific dates', type: '(date: Date) => boolean' },
+  { name: 'cellRender', description: 'Custom cell renderer', type: '(date: Date, info) => ReactNode' },
+  { name: 'headerRender', description: 'Custom header renderer', type: '(info) => ReactNode' },
+]
 
 export function CalendarDemo() {
-  const [picked, setPicked] = useState<Date | null>(null)
-  const [panelLog, setPanelLog] = useState<string>('—')
-  const [lastPick, setLastPick] = useState<string>('—')
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [pickerDate, setPickerDate] = useState<Date | null>(null)
+  const [rangeValue, setRangeValue] = useState<[Date | null, Date | null]>([null, null])
+  const [timeValue, setTimeValue] = useState('')
+
+  const presets = [
+    { label: 'Today', value: new Date() },
+    { label: 'Yesterday', value: new Date(Date.now() - 86400000) },
+    { label: 'Last week', value: new Date(Date.now() - 7 * 86400000) },
+  ]
+
+  const rangePresets = [
+    { label: 'Last 7 days', value: [new Date(Date.now() - 7 * 86400000), new Date()] as [Date, Date] },
+    { label: 'Last 30 days', value: [new Date(Date.now() - 30 * 86400000), new Date()] as [Date, Date] },
+    { label: 'This month', value: [new Date(new Date().getFullYear(), new Date().getMonth(), 1), new Date()] as [Date, Date] },
+  ]
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      <h2>Calendar</h2>
+    <ComponentDoc
+      title="Calendar / DatePicker / TimePicker"
+      description="Date and time selection components with range, time, and preset support."
+      whenToUse={[
+        'When you want to display a full calendar view.',
+        'When you need date selection with a dropdown picker.',
+        'When you need date range or datetime selection.',
+        'When you need time-only selection.',
+      ]}
+    >
+      {/* Calendar demos */}
+      <DemoBox title="Calendar — Basic" description="Full-screen calendar.">
+        <Calendar />
+      </DemoBox>
 
-      <section>
-        <h3>Fullscreen (default)</h3>
-        <div style={{ maxWidth: 560 }}>
+      <DemoBox title="Calendar — Card" description="Compact card calendar.">
+        <div style={{ maxWidth: 320 }}>
+          <Calendar fullscreen={false} />
+        </div>
+      </DemoBox>
+
+      <DemoBox title="Calendar — Controlled" description="Controlled with selected date display.">
+        <div style={{ maxWidth: 320 }}>
+          <p>Selected: {selectedDate.toLocaleDateString()}</p>
+          <Calendar value={selectedDate} onChange={setSelectedDate} fullscreen={false} />
+        </div>
+      </DemoBox>
+
+      <DemoBox title="Calendar — Disabled weekends" description="Weekends are disabled.">
+        <div style={{ maxWidth: 320 }}>
           <Calendar
-            fullscreen
-            onSelect={(d) => setPicked(d)}
-            onPanelChange={(d, mode) => {
-              setPanelLog(`${d.toDateString()} · ${mode}`)
-            }}
-            locale={{ today: 'Today' }}
+            fullscreen={false}
+            disabledDate={(d) => d.getDay() === 0 || d.getDay() === 6}
           />
         </div>
-        <p style={{ marginTop: 8, fontSize: 12, opacity: 0.75 }}>
-          Panel change: {panelLog}
-        </p>
-        {picked && (
-          <p style={{ marginTop: 8, fontSize: 12, opacity: 0.8 }}>
-            Last selected: {picked.toDateString()}
+      </DemoBox>
+
+      {/* DatePicker demos */}
+      <DemoBox title="DatePicker — Basic" description="Standard date picker dropdown.">
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <DatePicker placeholder="Select date" />
+          <DatePicker placeholder="With presets" presets={presets} />
+        </div>
+      </DemoBox>
+
+      <DemoBox title="DatePicker — Controlled" description="Controlled DatePicker.">
+        <div>
+          <p>Selected: {pickerDate?.toLocaleDateString() ?? 'none'}</p>
+          <DatePicker
+            value={pickerDate}
+            onChange={(d) => setPickerDate(d)}
+          />
+        </div>
+      </DemoBox>
+
+      <DemoBox title="DatePicker — Disabled dates" description="Weekends disabled, past dates disabled.">
+        <DatePicker
+          disabledDate={(d) => d.getDay() === 0 || d.getDay() === 6 || d < new Date(new Date().setHours(0, 0, 0, 0))}
+          placeholder="No weekends / past"
+        />
+      </DemoBox>
+
+      <DemoBox title="DatePicker — Month / Year" description="Pick month or year only.">
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <DatePicker picker="month" placeholder="Select month" />
+          <DatePicker picker="year" placeholder="Select year" />
+        </div>
+      </DemoBox>
+
+      <DemoBox title="DatePicker — DateTime" description="Date with time selection (showTime).">
+        <DatePicker showTime placeholder="Select datetime" showNow />
+      </DemoBox>
+
+      <DemoBox title="DatePicker — Sizes" description="Small, middle, large.">
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+          <DatePicker size="small" placeholder="Small" />
+          <DatePicker size="middle" placeholder="Middle" />
+          <DatePicker size="large" placeholder="Large" />
+        </div>
+      </DemoBox>
+
+      {/* RangePicker demos */}
+      <DemoBox title="RangePicker — Basic" description="Dual-panel date range selection.">
+        <RangePicker />
+      </DemoBox>
+
+      <DemoBox title="RangePicker — With presets" description="Quick range presets sidebar.">
+        <RangePicker presets={rangePresets} />
+      </DemoBox>
+
+      <DemoBox title="RangePicker — Controlled" description="Controlled range picker.">
+        <div>
+          <p>
+            Range: {rangeValue[0]?.toLocaleDateString() ?? '?'} → {rangeValue[1]?.toLocaleDateString() ?? '?'}
           </p>
-        )}
-      </section>
-
-      <section>
-        <h3>Mini (compact)</h3>
-        <div style={{ maxWidth: 400 }}>
-          <Calendar fullscreen={false} defaultValue={new Date()} />
-        </div>
-      </section>
-
-      <section>
-        <h3>Custom cell render</h3>
-        <div style={{ maxWidth: 520 }}>
-          <Calendar
-            fullscreen={false}
-            cellRender={(date, info) => {
-              if (info.type === 'date' && date.getDate() % 7 === 0) {
-                return <span style={{ fontSize: 10, color: 'var(--sg-color-primary)' }}>●</span>
-              }
-              if (info.type === 'month' && date.getMonth() === 5) {
-                return <span style={{ fontSize: 10 }}>peak</span>
-              }
-              return null
-            }}
+          <RangePicker
+            value={rangeValue}
+            onChange={(dates) => setRangeValue(dates)}
           />
         </div>
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>Disabled weekends</h3>
-        <div style={{ maxWidth: 520 }}>
-          <Calendar fullscreen={false} disabledDate={isWeekend} defaultValue={new Date()} />
-        </div>
-      </section>
+      <DemoBox title="RangePicker — DateTime" description="Range with time selection.">
+        <RangePicker showTime placeholder={['Start datetime', 'End datetime']} />
+      </DemoBox>
 
-      <section>
-        <h3>Custom weekday labels</h3>
-        <div style={{ maxWidth: 480 }}>
-          <Calendar
-            fullscreen={false}
-            locale={{
-              dayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-              monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-              today: 'Go to today',
-            }}
-          />
+      {/* TimePicker demos */}
+      <DemoBox title="TimePicker — Basic" description="Scroll column time picker.">
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <TimePicker placeholder="Select time" />
+          <TimePicker placeholder="No seconds" showSecond={false} />
         </div>
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>onChange vs onSelect</h3>
-        <p style={{ fontSize: 12, opacity: 0.75, marginBottom: 8 }}>
-          Both fire when a date cell is picked; use <code>onPanelChange</code> when navigating months.
-        </p>
-        <div style={{ maxWidth: 440 }}>
-          <Calendar
-            fullscreen={false}
-            onChange={(d) => setLastPick(`onChange: ${d.toDateString()}`)}
-            onSelect={(d) => setLastPick(`onSelect: ${d.toDateString()}`)}
-          />
+      <DemoBox title="TimePicker — 12-hour" description="12-hour format with AM/PM.">
+        <TimePicker use12Hours placeholder="12h format" />
+      </DemoBox>
+
+      <DemoBox title="TimePicker — Steps" description="Custom hour/minute steps.">
+        <TimePicker hourStep={2} minuteStep={15} placeholder="2h / 15m steps" />
+      </DemoBox>
+
+      <DemoBox title="TimePicker — Controlled" description="Controlled time picker.">
+        <div>
+          <p>Time: {timeValue || 'none'}</p>
+          <TimePicker value={timeValue} onChange={setTimeValue} />
         </div>
-        <p style={{ marginTop: 8, fontSize: 12, opacity: 0.75 }}>Last event: {lastPick}</p>
-      </section>
-    </section>
+      </DemoBox>
+
+      <PropsTable data={calendarProps} />
+    </ComponentDoc>
   )
 }

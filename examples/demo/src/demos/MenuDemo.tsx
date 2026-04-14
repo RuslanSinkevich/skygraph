@@ -1,90 +1,117 @@
-import { useState } from 'react'
-import { Button } from '../../../../packages/react/src/components/ui/Button'
-import { Menu, type MenuItem } from '../../../../packages/react/src/components/ui/Menu'
+import { Menu } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 
-const baseItems: MenuItem[] = [
-  { key: '1', label: 'Dashboard' },
-  { key: '2', label: 'Projects' },
-  { key: '3', label: 'Team' },
+const menuProps: PropDef[] = [
+  { name: 'items', description: 'Menu item configuration', type: 'MenuItem[]' },
+  { name: 'mode', description: 'Type of menu', type: "'vertical' | 'horizontal' | 'inline'", default: "'vertical'" },
+  { name: 'selectedKeys', description: 'Currently selected keys', type: 'string[]' },
+  { name: 'defaultSelectedKeys', description: 'Initially selected keys', type: 'string[]' },
+  { name: 'openKeys', description: 'Currently opened sub-menu keys', type: 'string[]' },
+  { name: 'defaultOpenKeys', description: 'Initially opened sub-menu keys', type: 'string[]' },
+  { name: 'onSelect', description: 'Callback when a menu item is selected', type: '(info: { key, selectedKeys }) => void' },
+  { name: 'onOpenChange', description: 'Callback when sub-menu open state changes', type: '(openKeys: string[]) => void' },
+  { name: 'theme', description: 'Color theme of the menu', type: "'light' | 'dark'", default: "'light'" },
+  { name: 'inlineCollapsed', description: 'Collapse inline menu', type: 'boolean', default: 'false' },
 ]
 
-const nestedItems: MenuItem[] = [
+const verticalItems = [
+  { key: '1', label: 'Navigation One' },
+  { key: '2', label: 'Navigation Two' },
   {
     key: 'sub1',
-    label: 'Products',
+    label: 'Navigation Three',
     children: [
-      { key: 'p1', label: 'Catalog' },
-      { key: 'p2', label: 'Inventory' },
-      {
-        key: 'sub2',
-        label: 'More',
-        children: [
-          { key: 'm1', label: 'Reports' },
-          { key: 'm2', label: 'Exports' },
-        ],
-      },
+      { key: '3', label: 'Option 3' },
+      { key: '4', label: 'Option 4' },
     ],
   },
-  { key: 'settings', label: 'Settings' },
+  {
+    key: 'sub2',
+    label: 'Navigation Four',
+    children: [
+      { key: '5', label: 'Option 5' },
+      { key: '6', label: 'Option 6' },
+    ],
+  },
+]
+
+const horizontalItems = [
+  { key: 'mail', label: 'Mail' },
+  { key: 'app', label: 'App Center' },
+  {
+    key: 'sub',
+    label: 'Settings',
+    children: [
+      { key: 's1', label: 'General' },
+      { key: 's2', label: 'Advanced' },
+    ],
+  },
 ]
 
 export function MenuDemo() {
-  const [inlineOpen, setInlineOpen] = useState<string[]>(['sub1'])
-  const [collapsed, setCollapsed] = useState(false)
-
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <h2>Menu</h2>
+    <ComponentDoc
+      title="Menu"
+      description="A versatile menu for navigation."
+      whenToUse={[
+        'Navigation menus, whether top navigation or sidebar navigation.',
+        'When you need a multi-level navigation menu.',
+      ]}
+    >
+      <DemoBox
+        title="Horizontal"
+        description="Horizontal top navigation menu."
+        code={`import { Menu } from '@skygraph/react'
 
-      <section>
-        <h3>Horizontal</h3>
-        <Menu mode="horizontal" items={baseItems} defaultSelectedKeys={['2']} />
-      </section>
+const items = [
+  { key: 'mail', label: 'Mail' },
+  { key: 'app', label: 'App Center' },
+]
 
-      <section>
-        <h3>Vertical with nested submenus</h3>
-        <div style={{ maxWidth: 260 }}>
-          <Menu mode="vertical" items={nestedItems} defaultOpenKeys={['sub1']} defaultSelectedKeys={['p1']} />
-        </div>
-      </section>
+<Menu mode="horizontal" items={items} defaultSelectedKeys={['mail']} />`}
+      >
+        <Menu mode="horizontal" items={horizontalItems} defaultSelectedKeys={['mail']} />
+      </DemoBox>
 
-      <section>
-        <h3>Inline (accordion-style open keys)</h3>
-        <div style={{ maxWidth: 280, border: '1px solid var(--sg-color-border-secondary)', borderRadius: 8 }}>
+      <DemoBox
+        title="Vertical"
+        description="Vertical sidebar menu with sub-menus."
+        code={`const items = [
+  { key: '1', label: 'Navigation One' },
+  { key: 'sub1', label: 'Navigation Three', children: [
+    { key: '3', label: 'Option 3' },
+    { key: '4', label: 'Option 4' },
+  ]},
+]
+
+<Menu items={items} defaultOpenKeys={['sub1']} defaultSelectedKeys={['3']} />`}
+      >
+        <div style={{ maxWidth: 256 }}>
           <Menu
-            mode="inline"
-            items={nestedItems}
-            openKeys={inlineOpen}
-            onOpenChange={setInlineOpen}
-            defaultSelectedKeys={['p1']}
+            items={verticalItems}
+            defaultOpenKeys={['sub1']}
+            defaultSelectedKeys={['3']}
           />
         </div>
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>Inline collapsed (icon-only root)</h3>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-          <Button size="small" onClick={() => setCollapsed((c) => !c)}>
-            {collapsed ? 'Expand' : 'Collapse'}
-          </Button>
-          <div style={{ width: collapsed ? 72 : 240, border: '1px solid var(--sg-color-border-secondary)', borderRadius: 8 }}>
-            <Menu
-              mode="inline"
-              inlineCollapsed={collapsed}
-              items={nestedItems}
-              defaultOpenKeys={['sub1']}
-              defaultSelectedKeys={['p1']}
-            />
-          </div>
+      <DemoBox
+        title="Inline"
+        description="Inline mode, sub-menu opens inside the menu."
+        code={`<Menu mode="inline" items={items} defaultOpenKeys={['sub1']} />`}
+      >
+        <div style={{ maxWidth: 256 }}>
+          <Menu
+            mode="inline"
+            items={verticalItems}
+            defaultOpenKeys={['sub1']}
+            defaultSelectedKeys={['1']}
+          />
         </div>
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>Dark theme</h3>
-        <div style={{ padding: 12, background: '#141414', borderRadius: 8, maxWidth: 260 }}>
-          <Menu theme="dark" mode="vertical" items={nestedItems} defaultOpenKeys={['sub1']} defaultSelectedKeys={['m1']} />
-        </div>
-      </section>
-    </section>
+      <PropsTable data={menuProps} />
+    </ComponentDoc>
   )
 }

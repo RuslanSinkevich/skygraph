@@ -1,95 +1,82 @@
-import { Descriptions } from '../../../../packages/react/src/components/ui/Descriptions'
+import { Descriptions } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 
-const sampleItems = [
-  { key: 'name', label: 'Product', children: 'Skygraph UI Kit' },
-  { key: 'sku', label: 'SKU', children: 'SG-2048-A' },
-  { key: 'price', label: 'Price', children: '$49.00' },
-  { key: 'owner', label: 'Owner', children: 'Design Systems' },
-  { key: 'tags', label: 'Tags', children: 'react, typescript, a11y' },
+const descriptionsProps: PropDef[] = [
+  { name: 'title', description: 'Title of the description list', type: 'ReactNode' },
+  { name: 'items', description: 'Description items', type: 'DescriptionsItem[]' },
+  { name: 'bordered', description: 'Whether to show border', type: 'boolean', default: 'false' },
+  { name: 'column', description: 'Number of columns per row', type: 'number', default: '3' },
+  { name: 'layout', description: 'Layout direction', type: "'horizontal' | 'vertical'", default: "'horizontal'" },
+  { name: 'colon', description: 'Show colon after label', type: 'boolean', default: 'true' },
+  { name: 'size', description: 'Size of the list', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+]
+
+const itemProps: PropDef[] = [
+  { name: 'label', description: 'Description item label', type: 'ReactNode' },
+  { name: 'children', description: 'Description item content', type: 'ReactNode' },
+  { name: 'span', description: 'Number of columns the item spans', type: 'number', default: '1' },
+]
+
+const userItems = [
+  { key: 'name', label: 'UserName', children: 'John Doe' },
+  { key: 'phone', label: 'Telephone', children: '1810000000' },
+  { key: 'live', label: 'Live', children: 'Hangzhou, Zhejiang' },
+  { key: 'remark', label: 'Remark', children: 'Empty' },
+  { key: 'address', label: 'Address', children: 'No. 18, Wantang Road, Xihu District, Hangzhou', span: 2 },
 ]
 
 export function DescriptionsDemo() {
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      <h2>Descriptions</h2>
+    <ComponentDoc
+      title="Descriptions"
+      description="Display multiple read-only fields in groups."
+      whenToUse={[
+        'When you need to display information in key-value pairs.',
+        'Commonly used on detail pages.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="Simplest usage."
+        code={`import { Descriptions } from '@skygraph/react'
 
-      <section>
-        <h3>Basic</h3>
-        <Descriptions title="Product details" column={3} items={sampleItems} />
-      </section>
+<Descriptions title="User Info" items={[
+  { label: 'UserName', children: 'John Doe' },
+  { label: 'Telephone', children: '1810000000' },
+  { label: 'Live', children: 'Hangzhou, Zhejiang' },
+  { label: 'Address', children: 'No. 18, Wantang Road', span: 2 },
+]} />`}
+      >
+        <Descriptions title="User Info" items={userItems} />
+      </DemoBox>
 
-      <section>
-        <h3>Bordered</h3>
-        <Descriptions bordered title="Bordered table" column={2} items={sampleItems} />
-      </section>
+      <DemoBox
+        title="Bordered"
+        description="Bordered descriptions with background."
+        code={`<Descriptions title="User Info" bordered items={items} />`}
+      >
+        <Descriptions title="User Info" bordered items={userItems} />
+      </DemoBox>
 
-      <section>
-        <h3>Vertical layout</h3>
-        <Descriptions
-          layout="vertical"
-          column={2}
-          items={[
-            { key: 'a', label: 'API', children: 'REST + WebSocket' },
-            { key: 'b', label: 'Auth', children: 'OAuth2 / API keys' },
-            { key: 'c', label: 'SLA', children: '99.9% monthly' },
-            { key: 'd', label: 'Region', children: 'EU (Frankfurt)' },
-          ]}
-        />
-      </section>
+      <DemoBox
+        title="Vertical"
+        description="Vertical layout."
+        code={`<Descriptions layout="vertical" title="User Info" items={items} />`}
+      >
+        <Descriptions layout="vertical" title="User Info" items={userItems} />
+      </DemoBox>
 
-      <section>
-        <h3>Sizes</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <Descriptions size="small" title="Small" column={3} items={sampleItems.slice(0, 3)} />
-          <Descriptions size="middle" title="Middle" column={3} items={sampleItems.slice(0, 3)} />
-          <Descriptions size="default" title="Default" column={3} items={sampleItems.slice(0, 3)} />
-        </div>
-      </section>
+      <DemoBox
+        title="Columns"
+        description="Customize number of columns."
+        code={`<Descriptions title="User Info" column={2} bordered items={items} />`}
+      >
+        <Descriptions title="User Info" column={2} bordered items={userItems} />
+      </DemoBox>
 
-      <section>
-        <h3>Multi-span</h3>
-        <Descriptions
-          bordered
-          column={3}
-          items={[
-            { key: 't', label: 'Title', children: 'Quarterly roadmap', span: 3 },
-            { key: 'o', label: 'Owner', children: 'Platform' },
-            { key: 's', label: 'Status', children: 'In progress' },
-            { key: 'n', label: 'Notes', children: 'Spans two columns.', span: 2 },
-          ]}
-        />
-      </section>
-
-      <section>
-        <h3>Without colon</h3>
-        <Descriptions
-          colon={false}
-          column={2}
-          title="Labels without punctuation"
-          items={[
-            { key: 'c1', label: 'Hostname', children: 'edge-01.local' },
-            { key: 'c2', label: 'Uptime', children: '14d 4h' },
-          ]}
-        />
-      </section>
-
-      <section>
-        <h3>Single column dense</h3>
-        <Descriptions size="small" bordered column={1} items={sampleItems.slice(0, 4)} />
-      </section>
-
-      <section>
-        <h3>Mixed content</h3>
-        <Descriptions
-          column={2}
-          items={[
-            { key: 'x', label: 'Status', children: <span style={{ color: 'var(--sg-color-success)' }}>Healthy</span> },
-            { key: 'y', label: 'Queue depth', children: <code>12 jobs</code> },
-            { key: 'z', label: 'Owner', children: 'Team Omega' },
-            { key: 'w', label: 'Link', children: <a href="#demo">View runbook</a> },
-          ]}
-        />
-      </section>
-    </section>
+      <PropsTable data={descriptionsProps} />
+      <PropsTable title="DescriptionsItem" data={itemProps} />
+    </ComponentDoc>
   )
 }

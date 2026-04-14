@@ -1,84 +1,95 @@
-import { Result } from '../../../../packages/react/src/components/ui/Result'
-import { Button } from '../../../../packages/react/src/components/ui/Button'
+import { Result, Button } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
+
+const resultProps: PropDef[] = [
+  { name: 'status', description: 'Result status, decides icon and color', type: "'success' | 'error' | 'info' | 'warning' | '404' | '403' | '500'" },
+  { name: 'title', description: 'The title', type: 'ReactNode' },
+  { name: 'subTitle', description: 'The subtitle', type: 'ReactNode' },
+  { name: 'icon', description: 'Custom icon', type: 'ReactNode' },
+  { name: 'extra', description: 'Operating area, typically action buttons', type: 'ReactNode' },
+  { name: 'children', description: 'Additional content below', type: 'ReactNode' },
+]
 
 export function ResultDemo() {
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-      <h2>Result</h2>
+    <ComponentDoc
+      title="Result"
+      description="Used to feed back the results of a series of operational tasks."
+      whenToUse={[
+        'When important operations need to inform the user to process the results and the feedback is more complicated.',
+        'To show error pages like 404, 403, 500.',
+      ]}
+    >
+      <DemoBox
+        title="Success"
+        description="Show success result."
+        code={`import { Result, Button } from '@skygraph/react'
 
-      <section>
-        <h3>Success, error, info, warning</h3>
-        <div style={{ display: 'grid', gap: 24 }}>
-          <Result
-            status="success"
-            title="Submitted"
-            subTitle="Your request was processed successfully."
-            extra={<Button type="primary">View details</Button>}
-          />
-          <Result
-            status="error"
-            title="Payment failed"
-            subTitle="The card was declined. Try another method."
-            extra={<Button>Retry</Button>}
-          />
-          <Result status="info" title="Heads up" subTitle="Maintenance window starts at 02:00 UTC." />
-          <Result status="warning" title="Unsaved changes" subTitle="Leave without saving?" />
-        </div>
-      </section>
-
-      <section>
-        <h3>Custom icon override</h3>
+<Result
+  status="success"
+  title="Successfully Purchased!"
+  subTitle="Order number: 2017182818828182881."
+  extra={<Button type="primary">Back Home</Button>}
+/>`}
+      >
         <Result
-          status="info"
-          title="Custom artwork"
-          subTitle="The status palette still applies; icon is fully replaced."
-          icon={
-            <div
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: '50%',
-                background: 'linear-gradient(145deg, #667eea, #764ba2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontSize: 28,
-              }}
-            >
-              ✦
-            </div>
-          }
-          extra={<Button>OK</Button>}
+          status="success"
+          title="Successfully Purchased!"
+          subTitle="Order number: 2017182818828182881."
+          extra={<Button type="primary">Back Home</Button>}
         />
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>HTTP-style: 404, 403, 500</h3>
-        <div style={{ display: 'grid', gap: 24 }}>
-          <Result
-            status="404"
-            title="404"
-            subTitle="The page you visited does not exist."
-            extra={<Button type="primary">Back home</Button>}
-          />
-          <Result
-            status="403"
-            title="403"
-            subTitle="You do not have permission to access this resource."
-          />
-          <Result
-            status="500"
-            title="500"
-            subTitle="Something went wrong on our side. Try again later."
-            extra={
-              <Button type="primary" onClick={() => window.location.reload()}>
-                Reload
-              </Button>
-            }
-          />
+      <DemoBox
+        title="Error"
+        description="Show error result."
+        code={`<Result
+  status="error"
+  title="Submission Failed"
+  subTitle="Please check and modify the following information before resubmitting."
+  extra={<Button type="primary">Try Again</Button>}
+/>`}
+      >
+        <Result
+          status="error"
+          title="Submission Failed"
+          subTitle="Please check and modify the following information before resubmitting."
+          extra={<Button type="primary">Try Again</Button>}
+        />
+      </DemoBox>
+
+      <DemoBox
+        title="Info & Warning"
+        description="Info and warning results."
+        code={`<Result status="info" title="Your operation has been executed" />
+<Result status="warning" title="There are some problems with your operation" />`}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <Result status="info" title="Your operation has been executed" />
+          <Result status="warning" title="There are some problems with your operation" />
         </div>
-      </section>
-    </section>
+      </DemoBox>
+
+      <DemoBox
+        title="404"
+        description="HTTP error pages."
+        code={`<Result
+  status="404"
+  title="404"
+  subTitle="Sorry, the page you visited does not exist."
+  extra={<Button type="primary">Back Home</Button>}
+/>`}
+      >
+        <Result
+          status="404"
+          title="404"
+          subTitle="Sorry, the page you visited does not exist."
+          extra={<Button type="primary">Back Home</Button>}
+        />
+      </DemoBox>
+
+      <PropsTable data={resultProps} />
+    </ComponentDoc>
   )
 }

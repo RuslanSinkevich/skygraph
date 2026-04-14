@@ -266,24 +266,24 @@ describe('ColorPicker', () => {
 describe('DatePicker', () => {
   it('renders with placeholder text', () => {
     render(<DatePicker />)
-    expect(screen.getByText('Select date')).toBeDefined()
+    expect(screen.getByPlaceholderText('Select date')).toBeDefined()
   })
 
   it('controlled value shows date', () => {
-    render(<DatePicker value="2024-01-15" />)
-    expect(screen.getByText('2024-01-15')).toBeDefined()
+    render(<DatePicker value={new Date(2024, 0, 15)} />)
+    expect(screen.getByDisplayValue('2024-01-15')).toBeDefined()
   })
 
   it('opens dropdown on click', () => {
     const { container } = render(<DatePicker />)
     fireEvent.click(container.querySelector('.sg-datepicker-input')!)
-    expect(container.querySelector('.sg-datepicker-dropdown')).toBeTruthy()
+    expect(container.querySelector('.sg-dp-dropdown')).toBeTruthy()
   })
 
   it('disabled blocks open', () => {
     const { container } = render(<DatePicker disabled />)
     fireEvent.click(container.querySelector('.sg-datepicker-input')!)
-    expect(container.querySelector('.sg-datepicker-dropdown')).toBeNull()
+    expect(container.querySelector('.sg-dp-dropdown')).toBeNull()
   })
 })
 
@@ -294,20 +294,20 @@ describe('TimePicker', () => {
   })
 
   it('controlled value shows time', () => {
-    render(<TimePicker value="14:30" />)
-    expect(screen.getByText('14:30')).toBeDefined()
+    render(<TimePicker value="14:30:00" />)
+    expect(screen.getByText('14:30:00')).toBeDefined()
   })
 
   it('opens dropdown on click', () => {
     const { container } = render(<TimePicker />)
     fireEvent.click(container.querySelector('.sg-timepicker-input')!)
-    expect(container.querySelector('.sg-timepicker-dropdown')).toBeTruthy()
+    expect(container.querySelector('.sg-tp-dropdown')).toBeTruthy()
   })
 
   it('disabled blocks open', () => {
     const { container } = render(<TimePicker disabled />)
     fireEvent.click(container.querySelector('.sg-timepicker-input')!)
-    expect(container.querySelector('.sg-timepicker-dropdown')).toBeNull()
+    expect(container.querySelector('.sg-tp-dropdown')).toBeNull()
   })
 })
 

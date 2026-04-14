@@ -321,3 +321,124 @@ body {
   font-size: 28px;
   margin-bottom: 4px;
 }
+
+/* ── Component Doc Page ──────────────────────────────────────────────── */
+
+.doc-component-title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.doc-when-to-use {
+  margin-bottom: 24px;
+}
+
+.doc-when-to-use ul {
+  padding-left: 20px;
+  margin: 8px 0 0;
+}
+
+.doc-when-to-use li {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--sg-color-text-secondary);
+}
+
+.doc-demos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+/* ── DemoBox ─────────────────────────────────────────────────────────── */
+
+.demo-box {
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius, 6px);
+}
+
+.demo-box-preview {
+  padding: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+  border-radius: var(--sg-border-radius, 6px) var(--sg-border-radius, 6px) 0 0;
+}
+
+.demo-box-meta {
+  padding: 12px 24px;
+  border-top: 1px solid var(--sg-color-border-secondary);
+  background: var(--sg-color-bg);
+}
+
+.demo-box-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sg-color-text);
+  margin-bottom: 2px;
+}
+
+.demo-box-description {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--sg-color-text-secondary);
+}
+
+.demo-box-actions {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid var(--sg-color-border-secondary);
+}
+
+.demo-box-toggle {
+  all: unset;
+  cursor: pointer;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+  transition: color 0.15s;
+  user-select: none;
+}
+
+.demo-box-toggle:hover {
+  color: var(--sg-color-primary);
+}
+
+.demo-box-code {
+  border-top: 1px solid var(--sg-color-border-secondary);
+  background: var(--sg-color-bg-secondary);
+  overflow-x: auto;
+}
+
+.demo-box-code pre {
+  margin: 0;
+  padding: 16px 24px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.demo-box-code code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: var(--sg-color-text);
+  white-space: pre;
+  background: none;
+  padding: 0;
+}
+
+/* ── PropsTable ──────────────────────────────────────────────────────── */
+
+.demo-props-section {
+  margin-top: 32px;
+  margin-bottom: 24px;
+}
+
+.demo-props-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--sg-color-border-secondary);
+}

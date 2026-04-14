@@ -1,58 +1,99 @@
-import { useState, useEffect } from 'react'
 import { Progress, Button } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
+import { useState } from 'react'
+
+const progressProps: PropDef[] = [
+  { name: 'percent', description: 'Completion percentage', type: 'number' },
+  { name: 'type', description: 'Type of progress', type: "'line' | 'circle'", default: "'line'" },
+  { name: 'status', description: 'Status of the progress', type: "'normal' | 'success' | 'error' | 'active'", default: "'normal'" },
+  { name: 'showInfo', description: 'Whether to display the percentage text', type: 'boolean', default: 'true' },
+  { name: 'strokeWidth', description: 'Width of the progress bar stroke', type: 'number' },
+  { name: 'strokeColor', description: 'Color of the progress bar', type: 'string' },
+  { name: 'width', description: 'Width of the circular progress', type: 'number', default: '120' },
+  { name: 'size', description: 'Size of the progress', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+]
 
 export function ProgressDemo() {
   const [percent, setPercent] = useState(30)
-  const [auto, setAuto] = useState(0)
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setAuto((p) => (p >= 100 ? 0 : p + 1))
-    }, 100)
-    return () => clearInterval(timer)
-  }, [])
+  const increase = () => setPercent((p) => Math.min(100, p + 10))
+  const decrease = () => setPercent((p) => Math.max(0, p - 10))
 
   return (
-    <section>
-      <h2>Progress</h2>
-      <p style={{ color: 'var(--sg-color-text-secondary)', marginBottom: 16 }}>
-        Line and circle progress bars with status and animation.
-      </p>
+    <ComponentDoc
+      title="Progress"
+      description="Display the current progress of an operation flow."
+      whenToUse={[
+        'When an operation takes a long time to complete.',
+        'When you need to display the completion percentage of an operation.',
+      ]}
+    >
+      <DemoBox
+        title="Line"
+        description="A standard progress bar."
+        code={`import { Progress } from '@skygraph/react'
 
-      <h4 style={{ marginBottom: 8 }}>Line</h4>
-      <div style={{ maxWidth: 400, marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <Progress percent={30} />
-        <Progress percent={70} status="active" />
-        <Progress percent={100} />
-        <Progress percent={50} status="error" />
-      </div>
-
-      <h4 style={{ marginBottom: 8 }}>Interactive</h4>
-      <div style={{ maxWidth: 400, marginBottom: 16 }}>
-        <Progress percent={percent} />
-        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          <Button size="small" onClick={() => setPercent(Math.max(0, percent - 10))}>−10</Button>
-          <Button size="small" onClick={() => setPercent(Math.min(100, percent + 10))}>+10</Button>
+<Progress percent={30} />
+<Progress percent={50} status="active" />
+<Progress percent={70} status="error" />
+<Progress percent={100} />`}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 400 }}>
+          <Progress percent={30} />
+          <Progress percent={50} status="active" />
+          <Progress percent={70} status="error" />
+          <Progress percent={100} />
         </div>
-      </div>
+      </DemoBox>
 
-      <h4 style={{ marginBottom: 8 }}>Auto-running</h4>
-      <div style={{ maxWidth: 400, marginBottom: 24 }}>
-        <Progress percent={auto} status="active" />
-      </div>
+      <DemoBox
+        title="Circle"
+        description="A circular progress bar."
+        code={`<Progress type="circle" percent={75} />
+<Progress type="circle" percent={100} />
+<Progress type="circle" percent={70} status="error" />`}
+      >
+        <div style={{ display: 'flex', gap: 24 }}>
+          <Progress type="circle" percent={75} />
+          <Progress type="circle" percent={100} />
+          <Progress type="circle" percent={70} status="error" />
+        </div>
+      </DemoBox>
 
-      <h4 style={{ marginBottom: 8 }}>Circle</h4>
-      <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap', marginBottom: 16 }}>
-        <Progress type="circle" percent={75} />
-        <Progress type="circle" percent={100} />
-        <Progress type="circle" percent={40} status="error" />
-        <Progress type="circle" percent={auto} width={80} />
-      </div>
+      <DemoBox
+        title="Dynamic"
+        description="A dynamic progress bar."
+        code={`const [percent, setPercent] = useState(30)
 
-      <h4 style={{ marginBottom: 8 }}>Small</h4>
-      <div style={{ maxWidth: 300 }}>
-        <Progress percent={60} size="small" />
-      </div>
-    </section>
+<Progress percent={percent} />
+<Button onClick={() => setPercent(p => Math.min(100, p + 10))}>+</Button>
+<Button onClick={() => setPercent(p => Math.max(0, p - 10))}>-</Button>`}
+      >
+        <div style={{ maxWidth: 400 }}>
+          <Progress percent={percent} />
+          <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+            <Button size="small" onClick={decrease}>−</Button>
+            <Button size="small" onClick={increase}>+</Button>
+          </div>
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Custom Color"
+        description="Custom stroke color."
+        code={`<Progress percent={50} strokeColor="#722ed1" />
+<Progress type="circle" percent={75} strokeColor="#eb2f96" />`}
+      >
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+          <div style={{ flex: 1, maxWidth: 300 }}>
+            <Progress percent={50} strokeColor="#722ed1" />
+          </div>
+          <Progress type="circle" percent={75} strokeColor="#eb2f96" />
+        </div>
+      </DemoBox>
+
+      <PropsTable data={progressProps} />
+    </ComponentDoc>
   )
 }

@@ -16,11 +16,13 @@
 }
 
 .sg-calendar-mini {
-  width: 280px;
+  width: 320px;
 }
 
 .sg-calendar-mini .sg-calendar-header {
   padding: var(--sg-padding-sm);
+  flex-wrap: wrap;
+  gap: var(--sg-padding-xs);
 }
 
 .sg-calendar-mini .sg-calendar-cell {
@@ -67,7 +69,9 @@
 .sg-calendar-header-center {
   display: flex;
   align-items: center;
-  gap: var(--sg-padding-sm);
+  gap: var(--sg-padding-xs);
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .sg-calendar-nav-btn {
@@ -150,6 +154,11 @@
 
 .sg-calendar-mode-btn-active:hover {
   color: var(--sg-color-white);
+}
+
+.sg-calendar-mini .sg-calendar-mode-btn {
+  padding: 2px var(--sg-padding-xs);
+  font-size: 12px;
 }
 
 /* Body */

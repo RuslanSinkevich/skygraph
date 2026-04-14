@@ -1,39 +1,53 @@
+import { Cascader } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 import { useState } from 'react'
-import { Cascader } from '../../../../packages/react/src/components/complex/Cascader'
 
-const regionOptions = [
+const cascaderProps: PropDef[] = [
+  { name: 'options', description: 'Data options of the cascader', type: 'CascaderOption[]' },
+  { name: 'value', description: 'Selected value', type: '(string | number)[]' },
+  { name: 'defaultValue', description: 'Default selected value', type: '(string | number)[]' },
+  { name: 'onChange', description: 'Callback when selection changes', type: '(value, selectedOptions) => void' },
+  { name: 'placeholder', description: 'Placeholder text', type: 'string' },
+  { name: 'allowClear', description: 'Show clear button', type: 'boolean', default: 'true' },
+  { name: 'disabled', description: 'Disable the cascader', type: 'boolean', default: 'false' },
+  { name: 'size', description: 'Size of the input', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+  { name: 'expandTrigger', description: 'Trigger mode to expand child options', type: "'click' | 'hover'", default: "'click'" },
+  { name: 'changeOnSelect', description: 'Allow selecting parent options', type: 'boolean', default: 'false' },
+  { name: 'showSearch', description: 'Show search functionality', type: 'boolean', default: 'false' },
+]
+
+const options = [
   {
-    value: 'eu',
-    label: 'Europe',
+    value: 'zhejiang',
+    label: 'Zhejiang',
     children: [
       {
-        value: 'de',
-        label: 'Germany',
+        value: 'hangzhou',
+        label: 'Hangzhou',
         children: [
-          { value: 'ber', label: 'Berlin' },
-          { value: 'mun', label: 'Munich' },
+          { value: 'xihu', label: 'West Lake' },
+          { value: 'xiasha', label: 'Xiasha' },
         ],
       },
       {
-        value: 'fr',
-        label: 'France',
+        value: 'ningbo',
+        label: 'Ningbo',
         children: [
-          { value: 'par', label: 'Paris' },
-          { value: 'lyo', label: 'Lyon' },
+          { value: 'dongqian', label: 'Dongqian Lake' },
         ],
       },
     ],
   },
   {
-    value: 'us',
-    label: 'United States',
+    value: 'jiangsu',
+    label: 'Jiangsu',
     children: [
       {
-        value: 'ca',
-        label: 'California',
+        value: 'nanjing',
+        label: 'Nanjing',
         children: [
-          { value: 'sf', label: 'San Francisco' },
-          { value: 'la', label: 'Los Angeles' },
+          { value: 'zhonghua', label: 'Zhong Hua Men' },
         ],
       },
     ],
@@ -41,65 +55,79 @@ const regionOptions = [
 ]
 
 export function CascaderDemo() {
-  const [cos, setCos] = useState<(string | number)[]>(['eu', 'de'])
+  const [value, setValue] = useState<(string | number)[]>([])
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      <h2>Cascader</h2>
+    <ComponentDoc
+      title="Cascader"
+      description="Cascade selection box."
+      whenToUse={[
+        'When you need to select from a set of associated data, such as province/city/district.',
+        'When selecting from a large data set with clear hierarchy.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="The most basic cascader usage."
+        code={`import { Cascader } from '@skygraph/react'
 
-      <section>
-        <h3>Basic (click expand)</h3>
-        <Cascader
-          style={{ minWidth: 280 }}
-          options={regionOptions}
-          placeholder="Select region / country / city"
-          allowClear
-        />
-      </section>
+const options = [
+  { value: 'zhejiang', label: 'Zhejiang', children: [
+    { value: 'hangzhou', label: 'Hangzhou', children: [
+      { value: 'xihu', label: 'West Lake' },
+    ]},
+  ]},
+]
 
-      <section>
-        <h3>Hover expand</h3>
-        <Cascader
-          style={{ minWidth: 280 }}
-          options={regionOptions}
-          expandTrigger="hover"
-          placeholder="Hover to open next column"
-        />
-      </section>
+<Cascader options={options} placeholder="Please select" />`}
+      >
+        <div style={{ width: 300 }}>
+          <Cascader
+            options={options}
+            placeholder="Please select"
+            value={value}
+            onChange={(v) => setValue(v)}
+          />
+        </div>
+      </DemoBox>
 
-      <section>
-        <h3>Search</h3>
-        <Cascader
-          style={{ minWidth: 280 }}
-          options={regionOptions}
-          showSearch
-          placeholder="Search cities or countries"
-        />
-      </section>
+      <DemoBox
+        title="Default Value"
+        description="Default selected value."
+        code={`<Cascader
+  options={options}
+  defaultValue={['zhejiang', 'hangzhou', 'xihu']}
+/>`}
+      >
+        <div style={{ width: 300 }}>
+          <Cascader
+            options={options}
+            defaultValue={['zhejiang', 'hangzhou', 'xihu']}
+          />
+        </div>
+      </DemoBox>
 
-      <section>
-        <h3>changeOnSelect (pick parent levels)</h3>
-        <Cascader
-          style={{ minWidth: 280 }}
-          options={regionOptions}
-          changeOnSelect
-          value={cos}
-          onChange={(v) => setCos(v)}
-          placeholder="Selecting Germany is valid"
-        />
-      </section>
+      <DemoBox
+        title="Hover Trigger"
+        description="Expand child options on hover."
+        code={`<Cascader options={options} expandTrigger="hover" placeholder="Hover to expand" />`}
+      >
+        <div style={{ width: 300 }}>
+          <Cascader options={options} expandTrigger="hover" placeholder="Hover to expand" />
+        </div>
+      </DemoBox>
 
-      <section>
-        <h3>Multiple</h3>
-        <Cascader
-          style={{ minWidth: 320 }}
-          options={regionOptions}
-          multiple
-          showSearch
-          allowClear
-          placeholder="Add several paths"
-        />
-      </section>
-    </section>
+      <DemoBox
+        title="Change on Select"
+        description="Allow selecting parent options."
+        code={`<Cascader options={options} changeOnSelect placeholder="Change on select" />`}
+      >
+        <div style={{ width: 300 }}>
+          <Cascader options={options} changeOnSelect placeholder="Change on select" />
+        </div>
+      </DemoBox>
+
+      <PropsTable data={cascaderProps} />
+    </ComponentDoc>
   )
 }

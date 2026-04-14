@@ -1,6 +1,6 @@
 // ── Middleware types ──
 
-export type WriteSource = 'user' | 'computed' | 'transaction' | 'engine'
+export type WriteSource = 'user' | 'computed' | 'transaction' | 'engine' | 'restore'
 
 export interface WriteEvent {
   path: string

@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Table, Tag, Badge, Button, Spin, Input } from '@skygraph/react'
-import type { TableColumn, SummaryCell, CellSpan, FilterDropdownProps } from '@skygraph/react'
-
-// ---- Shared data ----
+import { Table, Tag, Badge, Button, Input } from '@skygraph/react'
+import type { TableColumn, FilterDropdownProps } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 
 const people = Array.from({ length: 12 }, (_, i) => ({
   id: `r${i}`,
@@ -17,17 +17,50 @@ const people = Array.from({ length: 12 }, (_, i) => ({
   },
 }))
 
-function Section({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
-  return (
-    <div style={{ marginBottom: 40 }}>
-      <h3 style={{ margin: '0 0 4px' }}>{title}</h3>
-      <p style={{ color: 'var(--sg-color-text-secondary)', margin: '0 0 12px', fontSize: 13 }}>{description}</p>
-      {children}
-    </div>
-  )
-}
+const tableProps: PropDef[] = [
+  { name: 'columns', description: 'Table columns configuration', type: 'TableColumn[]' },
+  { name: 'data', description: 'Data rows with id and data fields', type: 'Array<{ id, data }>' },
+  { name: 'pageSize', description: 'Rows per page', type: 'number', default: '10' },
+  { name: 'showPagination', description: 'Show pagination', type: 'boolean', default: 'true' },
+  { name: 'bordered', description: 'Show all borders', type: 'boolean', default: 'false' },
+  { name: 'size', description: 'Table density', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+  { name: 'loading', description: 'Show loading overlay', type: 'boolean', default: 'false' },
+  { name: 'searchable', description: 'Show global search box', type: 'boolean', default: 'false' },
+  { name: 'scroll', description: 'Horizontal scroll width', type: '{ x?: number }' },
+  { name: 'rowSelection', description: 'Row selection config', type: '{ selectedKeys, onChange }' },
+  { name: 'expandable', description: 'Expandable row config', type: '{ expandedRowRender }' },
+  { name: 'tree', description: 'Tree data config', type: '{ defaultExpandAllRows?, indentSize? }' },
+  { name: 'summary', description: 'Summary row render function', type: '(rows) => SummaryCell[][]' },
+  { name: 'draggable', description: 'Enable column drag & drop reorder', type: 'boolean', default: 'false' },
+  { name: 'onColumnOrderChange', description: 'Callback on column reorder', type: '(keys: string[]) => void' },
+  { name: 'onCellEdit', description: 'Callback on cell edit', type: '(id, column, value) => void' },
+  { name: 'rowClassName', description: 'Custom class for rows', type: '(row) => string' },
+  { name: 'locale', description: 'Locale overrides', type: '{ emptyText? }' },
+  { name: 'unstyled', description: 'Remove all built-in styles', type: 'boolean', default: 'false' },
+]
 
-// ---- Basic ----
+const columnProps: PropDef[] = [
+  { name: 'key', description: 'Unique column key (matches data field)', type: 'string' },
+  { name: 'title', description: 'Column header text', type: 'ReactNode' },
+  { name: 'width', description: 'Column width in px', type: 'number' },
+  { name: 'align', description: 'Text alignment', type: "'left' | 'center' | 'right'" },
+  { name: 'sortable', description: 'Enable sorting', type: 'boolean' },
+  { name: 'fixed', description: 'Fix column position', type: "'left' | 'right'" },
+  { name: 'resizable', description: 'Enable column resize', type: 'boolean' },
+  { name: 'editable', description: 'Enable inline cell editing', type: 'boolean' },
+  { name: 'ellipsis', description: 'Truncate text with ellipsis', type: 'boolean' },
+  { name: 'render', description: 'Custom cell render function', type: '(value, row) => ReactNode' },
+  { name: 'filters', description: 'Filter menu items', type: 'Array<{ text, value }>' },
+  { name: 'onFilter', description: 'Filter logic function', type: '(filterValue, row) => boolean' },
+  { name: 'filterMultiple', description: 'Allow multiple filter values', type: 'boolean', default: 'true' },
+  { name: 'filterMode', description: 'Use search input instead of checkboxes', type: "'search'" },
+  { name: 'filterSearch', description: 'Show search in filter dropdown', type: 'boolean | Function' },
+  { name: 'filterDropdown', description: 'Custom filter dropdown render', type: '(props: FilterDropdownProps) => ReactNode' },
+  { name: 'filterIcon', description: 'Custom filter icon', type: '(filtered: boolean) => ReactNode' },
+  { name: 'defaultFilteredValue', description: 'Default filter values on mount', type: 'any[]' },
+  { name: 'children', description: 'Nested columns for column groups', type: 'TableColumn[]' },
+  { name: 'onCell', description: 'Custom cell attributes (row/col span)', type: '(row, index) => CellSpan' },
+]
 
 function BasicTable() {
   const columns: TableColumn[] = [
@@ -36,20 +69,32 @@ function BasicTable() {
     { key: 'city', title: 'City', sortable: true, width: 120 },
     {
       key: 'status', title: 'Status', width: 100,
-      render: (val) => (
-        <Tag color={val === 'active' ? 'success' : 'default'}>{String(val)}</Tag>
-      ),
+      render: (val) => <Tag color={val === 'active' ? 'success' : 'default'}>{String(val)}</Tag>,
     },
   ]
 
   return (
-    <Section title="Basic" description="Simple table with sorting and custom render.">
-      <Table columns={columns} data={people} pageSize={5} />
-    </Section>
+    <DemoBox
+      title="Basic"
+      description="Simple table with sorting and custom render."
+      code={`const columns: TableColumn[] = [
+  { key: 'name', title: 'Name', sortable: true, width: 180 },
+  { key: 'age', title: 'Age', sortable: true, width: 80, align: 'center' },
+  { key: 'city', title: 'City', sortable: true, width: 120 },
+  {
+    key: 'status', title: 'Status', width: 100,
+    render: (val) => <Tag color={val === 'active' ? 'success' : 'default'}>{val}</Tag>,
+  },
+]
+
+<Table columns={columns} data={data} pageSize={5} />`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table columns={columns} data={people} pageSize={5} />
+      </div>
+    </DemoBox>
   )
 }
-
-// ---- Row Selection ----
 
 function SelectionTable() {
   const [selected, setSelected] = useState<string[]>([])
@@ -62,29 +107,38 @@ function SelectionTable() {
   ]
 
   return (
-    <Section title="Row Selection" description="Checkbox selection with select all. Controlled state.">
-      <div style={{ marginBottom: 8, fontSize: 13, color: 'var(--sg-color-text-secondary)' }}>
-        Selected: {selected.length}
-        {selected.length > 0 && (
-          <Button size="small" type="text" onClick={() => setSelected([])} style={{ marginLeft: 8 }}>
-            Clear
-          </Button>
-        )}
+    <DemoBox
+      title="Row Selection"
+      description="Checkbox selection with select all. Controlled state."
+      code={`const [selected, setSelected] = useState<string[]>([])
+
+<Table
+  columns={columns}
+  data={data}
+  pageSize={6}
+  rowSelection={{
+    selectedKeys: selected,
+    onChange: (keys) => setSelected(keys),
+  }}
+/>`}
+    >
+      <div style={{ width: '100%' }}>
+        <div style={{ marginBottom: 8, fontSize: 13, color: 'var(--sg-color-text-secondary)' }}>
+          Selected: {selected.length}
+          {selected.length > 0 && (
+            <Button size="small" type="text" onClick={() => setSelected([])} style={{ marginLeft: 8 }}>Clear</Button>
+          )}
+        </div>
+        <Table
+          columns={columns}
+          data={people}
+          pageSize={6}
+          rowSelection={{ selectedKeys: selected, onChange: (keys) => setSelected(keys) }}
+        />
       </div>
-      <Table
-        columns={columns}
-        data={people}
-        pageSize={6}
-        rowSelection={{
-          selectedKeys: selected,
-          onChange: (keys) => setSelected(keys),
-        }}
-      />
-    </Section>
+    </DemoBox>
   )
 }
-
-// ---- Expandable ----
 
 function ExpandableTable() {
   const columns: TableColumn[] = [
@@ -95,25 +149,37 @@ function ExpandableTable() {
   ]
 
   return (
-    <Section title="Expandable Rows" description="Click the arrow to expand a row and see extra content.">
-      <Table
-        columns={columns}
-        data={people}
-        pageSize={6}
-        expandable={{
-          expandedRowRender: (row) => (
-            <div style={{ padding: '4px 0' }}>
-              <strong>{String(row.name)}</strong> works as {String(row.role)} in {String(row.city)}.
-              Email: {String(row.email ?? 'N/A')}. Salary: ${String(row.salary ?? 'N/A')}.
-            </div>
-          ),
-        }}
-      />
-    </Section>
+    <DemoBox
+      title="Expandable Rows"
+      description="Click the arrow to expand a row and see extra content."
+      code={`<Table
+  columns={columns}
+  data={data}
+  expandable={{
+    expandedRowRender: (row) => (
+      <div>{row.name} works as {row.role} in {row.city}.</div>
+    ),
+  }}
+/>`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table
+          columns={columns}
+          data={people}
+          pageSize={6}
+          expandable={{
+            expandedRowRender: (row) => (
+              <div style={{ padding: '4px 0' }}>
+                <strong>{String(row.name)}</strong> works as {String(row.role)} in {String(row.city)}.
+                Email: {String(row.email ?? 'N/A')}. Salary: ${String(row.salary ?? 'N/A')}.
+              </div>
+            ),
+          }}
+        />
+      </div>
+    </DemoBox>
   )
 }
-
-// ---- Fixed Columns ----
 
 function FixedColumnsTable() {
   const columns: TableColumn[] = [
@@ -130,61 +196,23 @@ function FixedColumnsTable() {
   ]
 
   return (
-    <Section title="Fixed Columns" description="Name is fixed left, Action is fixed right. Scroll horizontally.">
-      <Table columns={columns} data={people} pageSize={6} scroll={{ x: 1000 }} showPagination={false} />
-    </Section>
+    <DemoBox
+      title="Fixed Columns"
+      description="Name is fixed left, Action is fixed right. Scroll horizontally."
+      code={`const columns = [
+  { key: 'name', title: 'Name', fixed: 'left', width: 150 },
+  // ... more columns ...
+  { key: 'action', title: 'Action', fixed: 'right', width: 100 },
+]
+
+<Table columns={columns} data={data} scroll={{ x: 1000 }} />`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table columns={columns} data={people} pageSize={6} scroll={{ x: 1000 }} showPagination={false} />
+      </div>
+    </DemoBox>
   )
 }
-
-// ---- Resizable Columns ----
-
-function ResizableTable() {
-  const columns: TableColumn[] = [
-    { key: 'name', title: 'Name', width: 180, resizable: true },
-    { key: 'age', title: 'Age', width: 80, resizable: true, align: 'center' },
-    { key: 'city', title: 'City', width: 150, resizable: true },
-    { key: 'role', title: 'Role', width: 150, resizable: true },
-    { key: 'email', title: 'Email', width: 220, resizable: true },
-  ]
-
-  return (
-    <Section title="Resizable Columns" description="Drag the right edge of column headers to resize.">
-      <Table columns={columns} data={people.slice(0, 5)} showPagination={false} />
-    </Section>
-  )
-}
-
-// ---- Draggable Columns ----
-
-function DraggableTable() {
-  const [order, setOrder] = useState<string[] | null>(null)
-
-  const columns: TableColumn[] = [
-    { key: 'name', title: 'Name', width: 180 },
-    { key: 'age', title: 'Age', width: 80, align: 'center' },
-    { key: 'city', title: 'City', width: 150 },
-    { key: 'role', title: 'Role', width: 150 },
-  ]
-
-  return (
-    <Section title="Draggable Columns" description="Drag column headers to reorder them.">
-      {order && (
-        <div style={{ fontSize: 12, color: 'var(--sg-color-text-tertiary)', marginBottom: 8 }}>
-          Order: {order.join(' → ')}
-        </div>
-      )}
-      <Table
-        columns={columns}
-        data={people.slice(0, 5)}
-        draggable
-        onColumnOrderChange={setOrder}
-        showPagination={false}
-      />
-    </Section>
-  )
-}
-
-// ---- Editable Cells ----
 
 function EditableTable() {
   const [data, setData] = useState(
@@ -199,26 +227,40 @@ function EditableTable() {
   ]
 
   return (
-    <Section title="Editable Cells" description="Double-click a cell to edit. Enter to save, Escape to cancel.">
-      <Table
-        columns={columns}
-        data={data}
-        showPagination={false}
-        onCellEdit={(id, col, val) => {
-          setData((prev) =>
-            prev.map((r) =>
-              r.id === id ? { ...r, data: { ...r.data, [col]: val } } : r
+    <DemoBox
+      title="Editable Cells"
+      description="Double-click a cell to edit. Enter to save, Escape to cancel."
+      code={`const columns = [
+  { key: 'name', title: 'Name', editable: true },
+  { key: 'age', title: 'Age', editable: true },
+  // ...
+]
+
+<Table
+  columns={columns}
+  data={data}
+  onCellEdit={(id, col, val) => { /* update data */ }}
+/>`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table
+          columns={columns}
+          data={data}
+          showPagination={false}
+          onCellEdit={(id, col, val) => {
+            setData((prev) =>
+              prev.map((r) =>
+                r.id === id ? { ...r, data: { ...r.data, [col]: val } } : r
+              )
             )
-          )
-        }}
-      />
-    </Section>
+          }}
+        />
+      </div>
+    </DemoBox>
   )
 }
 
-// ---- Filter: Checkbox (multi-select) ----
-
-function FilterCheckboxTable() {
+function FilterTable() {
   const columns: TableColumn[] = [
     { key: 'name', title: 'Name', width: 180, sortable: true },
     { key: 'age', title: 'Age', width: 80, align: 'center', sortable: true },
@@ -240,51 +282,31 @@ function FilterCheckboxTable() {
         { text: 'Inactive', value: 'inactive' },
       ],
       onFilter: (value, row) => row.status === value,
-      render: (val) => (
-        <Badge status={val === 'active' ? 'success' : 'default'} text={String(val)} />
-      ),
+      render: (val) => <Badge status={val === 'active' ? 'success' : 'default'} text={String(val)} />,
     },
   ]
 
   return (
-    <Section title="Filter: Checkbox (multi)" description="Multiple filters active simultaneously. Role + Status work independently.">
-      <Table columns={columns} data={people} pageSize={6} />
-    </Section>
+    <DemoBox
+      title="Column Filters"
+      description="Multiple filter types: checkbox multi-select on Role and Status columns."
+      code={`{
+  key: 'role', title: 'Role',
+  filters: [
+    { text: 'Developer', value: 'Developer' },
+    { text: 'Designer', value: 'Designer' },
+  ],
+  onFilter: (value, row) => row.role === value,
+}`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table columns={columns} data={people} pageSize={6} />
+      </div>
+    </DemoBox>
   )
 }
 
-// ---- Filter: Radio (single-select) ----
-
-function FilterRadioTable() {
-  const columns: TableColumn[] = [
-    { key: 'name', title: 'Name', width: 180 },
-    { key: 'age', title: 'Age', width: 80, align: 'center' },
-    {
-      key: 'city', title: 'City', width: 150,
-      filterMultiple: false,
-      filters: [
-        { text: 'Moscow', value: 'Moscow' },
-        { text: 'Berlin', value: 'Berlin' },
-        { text: 'Tokyo', value: 'Tokyo' },
-        { text: 'London', value: 'London' },
-        { text: 'Paris', value: 'Paris' },
-        { text: 'New York', value: 'New York' },
-      ],
-      onFilter: (value, row) => row.city === value,
-    },
-    { key: 'role', title: 'Role', width: 120 },
-  ]
-
-  return (
-    <Section title="Filter: Radio (single)" description="City column uses filterMultiple=false — only one value at a time.">
-      <Table columns={columns} data={people} pageSize={6} />
-    </Section>
-  )
-}
-
-// ---- Filter: Search mode (text input by 🔍) ----
-
-function FilterSearchModeTable() {
+function FilterSearchTable() {
   const columns: TableColumn[] = [
     {
       key: 'name', title: 'Name', width: 180,
@@ -301,49 +323,24 @@ function FilterSearchModeTable() {
   ]
 
   return (
-    <Section title="Filter: Search Mode (🔍)" description="Name and Email use filterMode='search' — type text to filter by substring.">
-      <Table columns={columns} data={people} pageSize={6} />
-    </Section>
+    <DemoBox
+      title="Search Filter"
+      description="Name and Email use filterMode='search' — type text to filter by substring."
+      code={`{
+  key: 'name', title: 'Name',
+  filterMode: 'search',
+  onFilter: (value, row) =>
+    String(row.name).toLowerCase().includes(String(value).toLowerCase()),
+}`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table columns={columns} data={people} pageSize={6} />
+      </div>
+    </DemoBox>
   )
 }
 
-// ---- Filter: With search inside dropdown ----
-
-function FilterWithSearchTable() {
-  const allCities = ['Moscow', 'Berlin', 'Tokyo', 'London', 'Paris', 'New York']
-
-  const columns: TableColumn[] = [
-    { key: 'name', title: 'Name', width: 180 },
-    { key: 'age', title: 'Age', width: 80, align: 'center' },
-    {
-      key: 'city', title: 'City', width: 150,
-      filterSearch: true,
-      filters: allCities.map((c) => ({ text: c, value: c })),
-      onFilter: (value, row) => row.city === value,
-    },
-    {
-      key: 'role', title: 'Role', width: 150,
-      filterSearch: (input, record) => record.text.toLowerCase().startsWith(input.toLowerCase()),
-      filters: [
-        { text: 'Developer', value: 'Developer' },
-        { text: 'Designer', value: 'Designer' },
-        { text: 'Manager', value: 'Manager' },
-        { text: 'QA Engineer', value: 'QA' },
-      ],
-      onFilter: (value, row) => row.role === value,
-    },
-  ]
-
-  return (
-    <Section title="Filter: Search in Dropdown" description="City uses filterSearch=true, Role uses custom filterSearch function (startsWith).">
-      <Table columns={columns} data={people} pageSize={6} />
-    </Section>
-  )
-}
-
-// ---- Filter: Custom filterDropdown ----
-
-function FilterCustomDropdownTable() {
+function CustomFilterDropdownTable() {
   const columns: TableColumn[] = [
     {
       key: 'name', title: 'Name', width: 200,
@@ -367,145 +364,143 @@ function FilterCustomDropdownTable() {
       onFilter: (value, row) => String(row.name).toLowerCase().includes(String(value).toLowerCase()),
     },
     { key: 'age', title: 'Age', width: 80, align: 'center' },
-    {
-      key: 'salary', title: 'Salary', width: 130, align: 'right',
-      filterDropdown: ({ selectedKeys, setSelectedKeys, confirm, clearFilters }: FilterDropdownProps) => {
-        const min = (selectedKeys[0] as number) ?? 0
-        const max = (selectedKeys[1] as number) ?? 99999
-        return (
-          <div style={{ padding: 8, display: 'flex', flexDirection: 'column', gap: 8, minWidth: 180 }}>
-            <div style={{ fontSize: 12, fontWeight: 600 }}>Salary range</div>
-            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-              <input
-                type="number" placeholder="Min" value={min || ''}
-                onChange={(e) => setSelectedKeys([Number(e.target.value) || 0, max])}
-                style={{ width: 70, padding: '2px 4px', borderRadius: 4, border: '1px solid var(--sg-color-border)' }}
-              />
-              <span>—</span>
-              <input
-                type="number" placeholder="Max" value={max === 99999 ? '' : max}
-                onChange={(e) => setSelectedKeys([min, Number(e.target.value) || 99999])}
-                style={{ width: 70, padding: '2px 4px', borderRadius: 4, border: '1px solid var(--sg-color-border)' }}
-              />
-            </div>
-            <div style={{ display: 'flex', gap: 4, justifyContent: 'space-between' }}>
-              <Button size="small" onClick={clearFilters}>Reset</Button>
-              <Button size="small" type="primary" onClick={confirm}>Apply</Button>
-            </div>
-          </div>
-        )
-      },
-      filterIcon: (filtered: boolean) => (
-        <span style={{ color: filtered ? 'var(--sg-color-primary)' : undefined }}>💰</span>
-      ),
-      onFilter: (value, row) => {
-        const salary = Number(row.salary)
-        if (Array.isArray(value)) return false
-        return true
-      },
-      render: (v) => `$${Number(v).toLocaleString()}`,
-    },
     { key: 'city', title: 'City', width: 150 },
     { key: 'role', title: 'Role', width: 120 },
   ]
 
   return (
-    <Section title="Filter: Custom Dropdown" description="Name has custom search input. Salary has custom range filter with min/max inputs.">
-      <Table columns={columns} data={people} pageSize={6} />
-    </Section>
+    <DemoBox
+      title="Custom Filter Dropdown"
+      description="Fully custom filter UI using filterDropdown prop."
+      code={`{
+  key: 'name', title: 'Name',
+  filterDropdown: ({ selectedKeys, setSelectedKeys, confirm, clearFilters }) => (
+    <div>
+      <Input value={selectedKeys[0]} onChange={(v) => setSelectedKeys(v ? [v] : [])} />
+      <Button onClick={clearFilters}>Reset</Button>
+      <Button type="primary" onClick={confirm}>Search</Button>
+    </div>
+  ),
+  filterIcon: (filtered) => <span style={{ color: filtered ? 'blue' : undefined }}>🔍</span>,
+  onFilter: (value, row) => row.name.toLowerCase().includes(value.toLowerCase()),
+}`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table columns={columns} data={people} pageSize={6} />
+      </div>
+    </DemoBox>
   )
 }
 
-// ---- Filter: Default values ----
-
-function FilterDefaultValueTable() {
-  const columns: TableColumn[] = [
-    { key: 'name', title: 'Name', width: 180 },
-    { key: 'age', title: 'Age', width: 80, align: 'center' },
-    { key: 'city', title: 'City', width: 150 },
-    {
-      key: 'role', title: 'Role', width: 150,
-      defaultFilteredValue: ['Developer'],
-      filters: [
-        { text: 'Developer', value: 'Developer' },
-        { text: 'Designer', value: 'Designer' },
-        { text: 'Manager', value: 'Manager' },
-        { text: 'QA', value: 'QA' },
+const treeData = [
+  {
+    id: 'org',
+    data: {
+      name: 'Acme Corporation', head: 'CEO — John Doe', budget: 2000000, employees: 340,
+      children: [
+        {
+          id: 'dept-eng',
+          data: {
+            name: 'Engineering', head: 'VP — Alice Johnson', budget: 800000, employees: 120,
+            children: [
+              { id: 'team-frontend', data: { name: 'Frontend', head: 'Lead — Bob Smith', budget: 350000, employees: 50 } },
+              { id: 'team-backend', data: { name: 'Backend', head: 'Lead — Julia Chen', budget: 300000, employees: 45 } },
+              { id: 'team-qa', data: { name: 'QA', head: 'Lead — Nancy Black', budget: 150000, employees: 25 } },
+            ],
+          },
+        },
+        { id: 'dept-design', data: { name: 'Design', head: 'VP — Oscar Gray', budget: 400000, employees: 60 } },
+        { id: 'dept-product', data: { name: 'Product', head: 'VP — Tina Copper', budget: 300000, employees: 40 } },
       ],
-      onFilter: (value, row) => row.role === value,
+    },
+  },
+]
+
+function TreeDataTable() {
+  const columns: TableColumn[] = [
+    { key: 'name', title: 'Organization Unit', width: 280 },
+    { key: 'head', title: 'Head', width: 200 },
+    { key: 'employees', title: 'People', width: 80, align: 'center' },
+    { key: 'budget', title: 'Budget', width: 130, align: 'right', render: (v) => `$${Number(v).toLocaleString()}` },
+  ]
+
+  return (
+    <DemoBox
+      title="Tree Data"
+      description="Hierarchical org chart with nested children. Click arrows to expand/collapse."
+      code={`const treeData = [
+  {
+    id: 'org',
+    data: {
+      name: 'Acme Corporation',
+      children: [
+        { id: 'eng', data: { name: 'Engineering', children: [...] } },
+        { id: 'design', data: { name: 'Design' } },
+      ],
+    },
+  },
+]
+
+<Table
+  columns={columns}
+  data={treeData}
+  tree={{ defaultExpandAllRows: true, indentSize: 22 }}
+/>`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table
+          columns={columns}
+          data={treeData}
+          tree={{ defaultExpandAllRows: true, indentSize: 22 }}
+          showPagination={false}
+        />
+      </div>
+    </DemoBox>
+  )
+}
+
+function ColumnGroupTable() {
+  const columns: TableColumn[] = [
+    { key: 'name', title: 'Name', width: 160 },
+    {
+      key: 'contact-group', title: 'Contact Info',
+      children: [
+        { key: 'email', title: 'Email', width: 200 },
+        { key: 'city', title: 'City', width: 120 },
+      ],
+    },
+    {
+      key: 'work-group', title: 'Work',
+      children: [
+        { key: 'role', title: 'Role', width: 120 },
+        { key: 'salary', title: 'Salary', width: 110, align: 'right', render: (v) => `$${Number(v).toLocaleString()}` },
+      ],
     },
   ]
 
   return (
-    <Section title="Filter: Default Value" description="Role is pre-filtered to 'Developer' on mount via defaultFilteredValue.">
-      <Table columns={columns} data={people} pageSize={6} />
-    </Section>
+    <DemoBox
+      title="Column Groups"
+      description="Multi-level header with grouped columns (Contact Info, Work)."
+      code={`const columns = [
+  { key: 'name', title: 'Name' },
+  {
+    key: 'contact', title: 'Contact Info',
+    children: [
+      { key: 'email', title: 'Email' },
+      { key: 'city', title: 'City' },
+    ],
+  },
+]
+
+<Table columns={columns} data={data} bordered />`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table columns={columns} data={people} pageSize={6} bordered />
+      </div>
+    </DemoBox>
   )
 }
-
-// ---- Global Search ----
-
-function SearchTable() {
-  const columns: TableColumn[] = [
-    { key: 'name', title: 'Name', width: 180 },
-    { key: 'email', title: 'Email', width: 220 },
-    { key: 'city', title: 'City', width: 150 },
-    { key: 'role', title: 'Role', width: 150 },
-  ]
-
-  return (
-    <Section title="Global Search" description="Type in the search box to filter across all columns.">
-      <Table columns={columns} data={people} pageSize={6} searchable />
-    </Section>
-  )
-}
-
-// ---- Combined Filters ----
-
-function CombinedFiltersTable() {
-  const columns: TableColumn[] = [
-    {
-      key: 'name', title: 'Name', width: 180,
-      filterMode: 'search',
-      onFilter: (value, row) => String(row.name).toLowerCase().includes(String(value).toLowerCase()),
-    },
-    { key: 'age', title: 'Age', width: 80, align: 'center', sortable: true },
-    {
-      key: 'city', title: 'City', width: 150,
-      filterMultiple: false,
-      filters: ['Moscow', 'Berlin', 'Tokyo', 'London', 'Paris', 'New York'].map((c) => ({ text: c, value: c })),
-      onFilter: (value, row) => row.city === value,
-    },
-    {
-      key: 'role', title: 'Role', width: 150,
-      filterSearch: true,
-      filters: [
-        { text: 'Developer', value: 'Developer' },
-        { text: 'Designer', value: 'Designer' },
-        { text: 'Manager', value: 'Manager' },
-        { text: 'QA', value: 'QA' },
-      ],
-      onFilter: (value, row) => row.role === value,
-    },
-    {
-      key: 'status', title: 'Status', width: 100,
-      filters: [
-        { text: 'Active', value: 'active' },
-        { text: 'Inactive', value: 'inactive' },
-      ],
-      onFilter: (value, row) => row.status === value,
-      render: (val) => <Tag color={val === 'active' ? 'success' : 'error'}>{String(val)}</Tag>,
-    },
-  ]
-
-  return (
-    <Section title="Combined Filters" description="All filter types at once: Name=search, City=radio, Role=checkbox+search, Status=checkbox. All work simultaneously.">
-      <Table columns={columns} data={people} pageSize={8} searchable />
-    </Section>
-  )
-}
-
-// ---- Summary ----
 
 function SummaryTable() {
   const columns: TableColumn[] = [
@@ -515,265 +510,45 @@ function SummaryTable() {
   ]
 
   return (
-    <Section title="Summary Row" description="Footer row showing totals.">
-      <Table
-        columns={columns}
-        data={people}
-        showPagination={false}
-        summary={(rows) => {
-          const total = rows.reduce((sum, r) => sum + (Number(r.data.salary) || 0), 0)
-          const avg = rows.length ? Math.round(total / rows.length) : 0
-          return [
-            [
-              { content: `Total: ${rows.length} people`, colSpan: 2 },
-              { content: `$${total.toLocaleString()}`, align: 'right' as const },
-            ],
-            [
-              { content: 'Average', colSpan: 2 },
-              { content: `$${avg.toLocaleString()}`, align: 'right' as const },
-            ],
-          ]
-        }}
-      />
-    </Section>
+    <DemoBox
+      title="Summary Row"
+      description="Footer row showing totals and averages."
+      code={`<Table
+  columns={columns}
+  data={data}
+  summary={(rows) => {
+    const total = rows.reduce((s, r) => s + Number(r.data.salary), 0)
+    return [[
+      { content: \`Total: \${rows.length}\`, colSpan: 2 },
+      { content: \`$\${total.toLocaleString()}\`, align: 'right' },
+    ]]
+  }}
+/>`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table
+          columns={columns}
+          data={people}
+          showPagination={false}
+          summary={(rows) => {
+            const total = rows.reduce((sum, r) => sum + (Number(r.data.salary) || 0), 0)
+            const avg = rows.length ? Math.round(total / rows.length) : 0
+            return [
+              [
+                { content: `Total: ${rows.length} people`, colSpan: 2 },
+                { content: `$${total.toLocaleString()}`, align: 'right' as const },
+              ],
+              [
+                { content: 'Average', colSpan: 2 },
+                { content: `$${avg.toLocaleString()}`, align: 'right' as const },
+              ],
+            ]
+          }}
+        />
+      </div>
+    </DemoBox>
   )
 }
-
-// ---- Bordered + Sizes ----
-
-function BorderedTable() {
-  const columns: TableColumn[] = [
-    { key: 'name', title: 'Name', width: 180 },
-    { key: 'age', title: 'Age', width: 80, align: 'center' },
-    { key: 'city', title: 'City', width: 150 },
-  ]
-
-  return (
-    <Section title="Bordered & Sizes" description="Bordered table in small size.">
-      <Table columns={columns} data={people.slice(0, 4)} bordered size="small" showPagination={false} />
-    </Section>
-  )
-}
-
-// ---- Tree Data ----
-
-const treeData = [
-  {
-    id: 'org',
-    data: {
-      name: 'Acme Corporation',
-      head: 'CEO — John Doe',
-      budget: 2000000,
-      employees: 340,
-      children: [
-        {
-          id: 'dept-eng',
-          data: {
-            name: 'Engineering',
-            head: 'VP — Alice Johnson',
-            budget: 800000,
-            employees: 120,
-            children: [
-              {
-                id: 'div-frontend',
-                data: {
-                  name: 'Frontend Division',
-                  head: 'Director — Bob Smith',
-                  budget: 350000,
-                  employees: 50,
-                  children: [
-                    {
-                      id: 'team-react',
-                      data: {
-                        name: 'React Team',
-                        head: 'Lead — Charlie Brown',
-                        budget: 180000,
-                        employees: 25,
-                        children: [
-                          {
-                            id: 'squad-ui',
-                            data: {
-                              name: 'UI Components Squad',
-                              head: 'Senior — Diana Prince',
-                              budget: 90000,
-                              employees: 12,
-                              children: [
-                                { id: 'pair-a', data: { name: 'Pair A (Forms)', head: 'Eve Davis', budget: 45000, employees: 6 } },
-                                { id: 'pair-b', data: { name: 'Pair B (Tables)', head: 'Frank Miller', budget: 45000, employees: 6 } },
-                              ],
-                            },
-                          },
-                          { id: 'squad-perf', data: { name: 'Performance Squad', head: 'Grace Lee', budget: 90000, employees: 13 } },
-                        ],
-                      },
-                    },
-                    { id: 'team-vue', data: { name: 'Vue Team', head: 'Lead — Hannah Wilson', budget: 100000, employees: 15 } },
-                    { id: 'team-mobile', data: { name: 'Mobile (RN)', head: 'Lead — Ivan Petrov', budget: 70000, employees: 10 } },
-                  ],
-                },
-              },
-              {
-                id: 'div-backend',
-                data: {
-                  name: 'Backend Division',
-                  head: 'Director — Julia Chen',
-                  budget: 300000,
-                  employees: 45,
-                  children: [
-                    { id: 'team-api', data: { name: 'API Team', head: 'Lead — Kevin Brown', budget: 150000, employees: 20 } },
-                    { id: 'team-db', data: { name: 'Database Team', head: 'Lead — Laura White', budget: 100000, employees: 15 } },
-                    { id: 'team-infra', data: { name: 'Infrastructure', head: 'Lead — Mike Green', budget: 50000, employees: 10 } },
-                  ],
-                },
-              },
-              { id: 'div-qa', data: { name: 'QA Division', head: 'Director — Nancy Black', budget: 150000, employees: 25 } },
-            ],
-          },
-        },
-        {
-          id: 'dept-design',
-          data: {
-            name: 'Design',
-            head: 'VP — Oscar Gray',
-            budget: 400000,
-            employees: 60,
-            children: [
-              {
-                id: 'team-ux',
-                data: {
-                  name: 'UX Research',
-                  head: 'Lead — Patricia Blue',
-                  budget: 200000,
-                  employees: 30,
-                  children: [
-                    { id: 'sub-quant', data: { name: 'Quantitative Research', head: 'Quinn Red', budget: 100000, employees: 15 } },
-                    { id: 'sub-qual', data: { name: 'Qualitative Research', head: 'Rachel Gold', budget: 100000, employees: 15 } },
-                  ],
-                },
-              },
-              { id: 'team-visual', data: { name: 'Visual Design', head: 'Lead — Sam Silver', budget: 200000, employees: 30 } },
-            ],
-          },
-        },
-        {
-          id: 'dept-product',
-          data: {
-            name: 'Product',
-            head: 'VP — Tina Copper',
-            budget: 300000,
-            employees: 40,
-            children: [
-              { id: 'team-growth', data: { name: 'Growth PM', head: 'Lead — Uma Bronze', budget: 150000, employees: 20 } },
-              { id: 'team-platform', data: { name: 'Platform PM', head: 'Lead — Victor Iron', budget: 150000, employees: 20 } },
-            ],
-          },
-        },
-        { id: 'dept-hr', data: { name: 'HR & Operations', head: 'VP — Wendy Stone', budget: 200000, employees: 40 } },
-        { id: 'dept-marketing', data: { name: 'Marketing', head: 'VP — Xavier Wood', budget: 300000, employees: 80 } },
-      ],
-    },
-  },
-]
-
-function TreeDataTable() {
-  const columns: TableColumn[] = [
-    { key: 'name', title: 'Organization Unit', width: 320 },
-    { key: 'head', title: 'Head', width: 200 },
-    { key: 'employees', title: 'People', width: 80, align: 'center' },
-    { key: 'budget', title: 'Budget', width: 130, align: 'right', render: (v) => `$${Number(v).toLocaleString()}` },
-  ]
-
-  return (
-    <Section title="Tree Data (unlimited nesting)" description="6-level org chart. Depth is unlimited — just nest children as deep as needed.">
-      <Table
-        columns={columns}
-        data={treeData}
-        tree={{ defaultExpandAllRows: true, indentSize: 22 }}
-        showPagination={false}
-      />
-    </Section>
-  )
-}
-
-// ---- Column Groups ----
-
-function ColumnGroupTable() {
-  const columns: TableColumn[] = [
-    { key: 'name', title: 'Name', width: 160 },
-    {
-      key: 'contact-group',
-      title: 'Contact Info',
-      children: [
-        { key: 'email', title: 'Email', width: 200 },
-        { key: 'city', title: 'City', width: 120 },
-      ],
-    },
-    {
-      key: 'work-group',
-      title: 'Work',
-      children: [
-        { key: 'role', title: 'Role', width: 120 },
-        { key: 'salary', title: 'Salary', width: 110, align: 'right', render: (v) => `$${Number(v).toLocaleString()}` },
-      ],
-    },
-    {
-      key: 'status', title: 'Status', width: 100,
-      render: (val) => <Tag color={val === 'active' ? 'success' : 'default'}>{String(val)}</Tag>,
-    },
-  ]
-
-  return (
-    <Section title="Column Groups" description="Multi-level header with grouped columns (Contact Info, Work).">
-      <Table columns={columns} data={people} pageSize={6} bordered />
-    </Section>
-  )
-}
-
-// ---- Row/Col Span ----
-
-function SpanTable() {
-  const spanData = [
-    { id: 's1', data: { name: 'Alice Johnson', phone: '555-0101', email: 'alice@example.com', city: 'Moscow', role: 'Developer' } },
-    { id: 's2', data: { name: 'Alice Johnson', phone: '555-0102', email: 'alice2@example.com', city: 'Moscow', role: 'Developer' } },
-    { id: 's3', data: { name: 'Bob Smith', phone: '555-0201', email: 'bob@example.com', city: 'Berlin', role: 'Designer' } },
-    { id: 's4', data: { name: 'Bob Smith', phone: '555-0202', email: 'bob2@example.com', city: 'Berlin', role: 'Manager' } },
-    { id: 's5', data: { name: 'Charlie Brown', phone: '555-0301', email: 'charlie@example.com', city: 'Tokyo', role: 'QA' } },
-  ]
-
-  const columns: TableColumn[] = [
-    {
-      key: 'name', title: 'Name', width: 160,
-      onCell: (_row, rowIndex) => {
-        if (rowIndex === 0) return { rowSpan: 2 }
-        if (rowIndex === 1) return { rowSpan: 0 }
-        if (rowIndex === 2) return { rowSpan: 2 }
-        if (rowIndex === 3) return { rowSpan: 0 }
-        return {}
-      },
-    },
-    { key: 'phone', title: 'Phone', width: 130 },
-    { key: 'email', title: 'Email', width: 200 },
-    {
-      key: 'city', title: 'City', width: 120,
-      onCell: (_row, rowIndex) => {
-        if (rowIndex === 0) return { rowSpan: 2 }
-        if (rowIndex === 1) return { rowSpan: 0 }
-        if (rowIndex === 2) return { rowSpan: 2 }
-        if (rowIndex === 3) return { rowSpan: 0 }
-        return {}
-      },
-    },
-    { key: 'role', title: 'Role', width: 120 },
-  ]
-
-  return (
-    <Section title="Row / Column Span" description="Merged cells: Name and City span across rows for the same person.">
-      <Table columns={columns} data={spanData} showPagination={false} bordered />
-    </Section>
-  )
-}
-
-// ---- Loading ----
 
 function LoadingTable() {
   const [loading, setLoading] = useState(true)
@@ -786,43 +561,43 @@ function LoadingTable() {
   ]
 
   return (
-    <Section title="Loading State" description="Table with loading overlay. Toggle to see the effect.">
-      <div style={{ marginBottom: 8 }}>
-        <Button size="small" onClick={() => setLoading((v) => !v)}>
-          {loading ? 'Stop loading' : 'Start loading'}
-        </Button>
+    <DemoBox
+      title="Loading State"
+      description="Table with loading overlay. Toggle to see the effect."
+      code={`<Table columns={columns} data={data} loading={true} />`}
+    >
+      <div style={{ width: '100%' }}>
+        <div style={{ marginBottom: 8 }}>
+          <Button size="small" onClick={() => setLoading((v) => !v)}>
+            {loading ? 'Stop loading' : 'Start loading'}
+          </Button>
+        </div>
+        <Table columns={columns} data={people.slice(0, 4)} loading={loading} showPagination={false} />
       </div>
-      <Table columns={columns} data={people.slice(0, 4)} loading={loading} showPagination={false} />
-    </Section>
+    </DemoBox>
   )
 }
 
-// ---- Row ClassName ----
-
-function RowClassNameTable() {
+function SearchTable() {
   const columns: TableColumn[] = [
     { key: 'name', title: 'Name', width: 180 },
-    { key: 'age', title: 'Age', width: 80, align: 'center' },
-    { key: 'salary', title: 'Salary', width: 120, align: 'right' },
-    {
-      key: 'status', title: 'Status', width: 100,
-      render: (val) => <Tag color={val === 'active' ? 'success' : 'error'}>{String(val)}</Tag>,
-    },
+    { key: 'email', title: 'Email', width: 220 },
+    { key: 'city', title: 'City', width: 150 },
+    { key: 'role', title: 'Role', width: 150 },
   ]
 
   return (
-    <Section title="Row ClassName" description="Rows with status='inactive' get a custom highlight class.">
-      <Table
-        columns={columns}
-        data={people.slice(0, 6)}
-        showPagination={false}
-        rowClassName={(row) => row.status === 'inactive' ? 'sg-table-row-warning' : ''}
-      />
-    </Section>
+    <DemoBox
+      title="Global Search"
+      description="Type in the search box to filter across all columns."
+      code={`<Table columns={columns} data={data} searchable />`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table columns={columns} data={people} pageSize={6} searchable />
+      </div>
+    </DemoBox>
   )
 }
-
-// ---- Empty + Locale ----
 
 function EmptyTable() {
   const columns: TableColumn[] = [
@@ -832,18 +607,26 @@ function EmptyTable() {
   ]
 
   return (
-    <Section title="Empty State & Locale" description="Table with no data and custom empty text.">
-      <Table
-        columns={columns}
-        data={[]}
-        showPagination={false}
-        locale={{ emptyText: '🔍 No results found. Try adjusting your filters.' }}
-      />
-    </Section>
+    <DemoBox
+      title="Empty State"
+      description="Table with no data and custom empty text."
+      code={`<Table
+  columns={columns}
+  data={[]}
+  locale={{ emptyText: '🔍 No results found.' }}
+/>`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table
+          columns={columns}
+          data={[]}
+          showPagination={false}
+          locale={{ emptyText: '🔍 No results found. Try adjusting your filters.' }}
+        />
+      </div>
+    </DemoBox>
   )
 }
-
-// ---- Kitchen Sink ----
 
 function KitchenSinkTable() {
   const [selected, setSelected] = useState<string[]>([])
@@ -870,78 +653,83 @@ function KitchenSinkTable() {
     },
     {
       key: 'action', title: 'Action', width: 90, fixed: 'right',
-      render: (_, row) => <Button size="small" type="text">Edit</Button>,
+      render: () => <Button size="small" type="text">Edit</Button>,
     },
   ]
 
   return (
-    <Section title="Kitchen Sink" description="All features combined: selection, expand, sort, filter, search, resize, fixed columns, editable, summary.">
-      <Table
-        columns={columns}
-        data={people}
-        pageSize={6}
-        searchable
-        bordered
-        scroll={{ x: 1100 }}
-        rowSelection={{
-          selectedKeys: selected,
-          onChange: (keys) => setSelected(keys),
-        }}
-        expandable={{
-          expandedRowRender: (row) => (
-            <div>Details for <strong>{String(row.name)}</strong>: {String(row.email)}, ${String(row.salary)}</div>
-          ),
-        }}
-        onCellEdit={(id, col, val) => {
-          console.log('Edit:', id, col, val)
-        }}
-        summary={(rows) => {
-          const total = rows.reduce((s, r) => s + (Number(r.data.salary) || 0), 0)
-          return [[
-            { content: `${rows.length} rows`, colSpan: 6 },
-            { content: `$${total.toLocaleString()}` },
-            { content: '' },
-          ]]
-        }}
-      />
-    </Section>
+    <DemoBox
+      title="Kitchen Sink"
+      description="All features combined: selection, expand, sort, filter, search, resize, fixed columns, editable, summary."
+      code={`<Table
+  columns={columns}
+  data={data}
+  searchable
+  bordered
+  scroll={{ x: 1100 }}
+  rowSelection={{ selectedKeys, onChange }}
+  expandable={{ expandedRowRender: (row) => <div>Details for {row.name}</div> }}
+  summary={(rows) => [[{ content: \`\${rows.length} rows\`, colSpan: 6 }, ...]]}
+/>`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table
+          columns={columns}
+          data={people}
+          pageSize={6}
+          searchable
+          bordered
+          scroll={{ x: 1100 }}
+          rowSelection={{ selectedKeys: selected, onChange: (keys) => setSelected(keys) }}
+          expandable={{
+            expandedRowRender: (row) => (
+              <div>Details for <strong>{String(row.name)}</strong>: {String(row.email)}, ${String(row.salary)}</div>
+            ),
+          }}
+          onCellEdit={(id, col, val) => { console.log('Edit:', id, col, val) }}
+          summary={(rows) => {
+            const total = rows.reduce((s, r) => s + (Number(r.data.salary) || 0), 0)
+            return [[
+              { content: `${rows.length} rows`, colSpan: 6 },
+              { content: `$${total.toLocaleString()}` },
+              { content: '' },
+            ]]
+          }}
+        />
+      </div>
+    </DemoBox>
   )
 }
 
-// ---- Main Demo ----
-
 export function TableDemo() {
   return (
-    <section>
-      <h2>Table</h2>
-      <p style={{ color: 'var(--sg-color-text-secondary)', marginBottom: 24 }}>
-        Data table built on div + CSS Grid. Each section demonstrates a feature.
-      </p>
-
+    <ComponentDoc
+      title="Table"
+      description="A table displays rows of data. Built on div + CSS Grid for maximum flexibility."
+      whenToUse={[
+        'To display a collection of structured data.',
+        'To sort, search, paginate, and filter data.',
+        'For hierarchical data display using tree mode.',
+      ]}
+    >
       <BasicTable />
       <SelectionTable />
       <ExpandableTable />
       <TreeDataTable />
       <ColumnGroupTable />
-      <SpanTable />
       <FixedColumnsTable />
-      <ResizableTable />
-      <DraggableTable />
       <EditableTable />
-      <FilterCheckboxTable />
-      <FilterRadioTable />
-      <FilterSearchModeTable />
-      <FilterWithSearchTable />
-      <FilterCustomDropdownTable />
-      <FilterDefaultValueTable />
+      <FilterTable />
+      <FilterSearchTable />
+      <CustomFilterDropdownTable />
       <SearchTable />
-      <CombinedFiltersTable />
       <SummaryTable />
       <LoadingTable />
-      <RowClassNameTable />
       <EmptyTable />
-      <BorderedTable />
       <KitchenSinkTable />
-    </section>
+
+      <PropsTable title="Table API" data={tableProps} />
+      <PropsTable title="Column API" data={columnProps} />
+    </ComponentDoc>
   )
 }

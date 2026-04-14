@@ -1,37 +1,87 @@
-import { Button, Popconfirm, notification, NotificationContainer } from '@skygraph/react'
+import { Popconfirm, Button } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
+
+const popconfirmProps: PropDef[] = [
+  { name: 'title', description: 'The title of the confirmation box', type: 'ReactNode' },
+  { name: 'description', description: 'Additional description', type: 'ReactNode' },
+  { name: 'onConfirm', description: 'Callback when confirm button is clicked', type: '() => void' },
+  { name: 'onCancel', description: 'Callback when cancel button is clicked', type: '() => void' },
+  { name: 'okText', description: 'Text of the Confirm button', type: 'string', default: "'Yes'" },
+  { name: 'cancelText', description: 'Text of the Cancel button', type: 'string', default: "'No'" },
+  { name: 'placement', description: 'Placement of the popconfirm', type: "'top' | 'bottom' | 'left' | 'right'", default: "'top'" },
+  { name: 'disabled', description: 'Whether the popconfirm is disabled', type: 'boolean', default: 'false' },
+]
 
 export function PopconfirmDemo() {
   return (
-    <section>
-      <h2>Popconfirm</h2>
-      <p style={{ color: 'var(--sg-color-text-secondary)', marginBottom: 16 }}>
-        Confirmation popup before an action. Click outside to dismiss.
-      </p>
-      <NotificationContainer />
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+    <ComponentDoc
+      title="Popconfirm"
+      description="A simple and compact confirmation dialog of an action."
+      whenToUse={[
+        'When a simple confirmation is needed before an action, like deleting an item.',
+        'Compared with Modal.confirm, Popconfirm is lighter and more contextual.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="The basic example."
+        code={`import { Popconfirm, Button } from '@skygraph/react'
+
+<Popconfirm
+  title="Are you sure?"
+  onConfirm={() => console.log('Confirmed')}
+>
+  <Button>Delete</Button>
+</Popconfirm>`}
+      >
         <Popconfirm
-          title="Delete this item?"
+          title="Are you sure you want to delete this?"
+          onConfirm={() => console.log('Confirmed')}
+          onCancel={() => console.log('Cancelled')}
+        >
+          <Button danger>Delete</Button>
+        </Popconfirm>
+      </DemoBox>
+
+      <DemoBox
+        title="With Description"
+        description="Adding a description for more context."
+        code={`<Popconfirm
+  title="Delete the task"
+  description="This action cannot be undone."
+  okText="Delete"
+  cancelText="Cancel"
+>
+  <Button danger>Delete</Button>
+</Popconfirm>`}
+      >
+        <Popconfirm
+          title="Delete the task"
           description="This action cannot be undone."
-          onConfirm={() => notification.success('Deleted')}
-          onCancel={() => notification.info('Cancelled')}
+          okText="Delete"
+          cancelText="Cancel"
         >
-          <Button type="primary">Delete</Button>
+          <Button danger>Delete Task</Button>
         </Popconfirm>
+      </DemoBox>
 
-        <Popconfirm
-          title="Are you sure?"
-          placement="bottom"
-          okText="Confirm"
-          cancelText="Nope"
-          onConfirm={() => notification.success('Confirmed')}
-        >
-          <Button>Bottom placement</Button>
-        </Popconfirm>
+      <DemoBox
+        title="Placement"
+        description="Four placements."
+        code={`<Popconfirm title="Sure?" placement="bottom">
+  <Button>Bottom</Button>
+</Popconfirm>`}
+      >
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Popconfirm title="Sure?" placement="top"><Button>Top</Button></Popconfirm>
+          <Popconfirm title="Sure?" placement="bottom"><Button>Bottom</Button></Popconfirm>
+          <Popconfirm title="Sure?" placement="left"><Button>Left</Button></Popconfirm>
+          <Popconfirm title="Sure?" placement="right"><Button>Right</Button></Popconfirm>
+        </div>
+      </DemoBox>
 
-        <Popconfirm title="Disabled" disabled>
-          <Button disabled>Disabled</Button>
-        </Popconfirm>
-      </div>
-    </section>
+      <PropsTable data={popconfirmProps} />
+    </ComponentDoc>
   )
 }

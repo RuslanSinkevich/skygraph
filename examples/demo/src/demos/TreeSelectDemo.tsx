@@ -1,89 +1,126 @@
+import { TreeSelect } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 import { useState } from 'react'
-import { TreeSelect } from '../../../../packages/react/src/components/complex/TreeSelect'
+
+const treeSelectProps: PropDef[] = [
+  { name: 'treeData', description: 'Tree data', type: 'TreeSelectNode[]' },
+  { name: 'value', description: 'Selected value(s)', type: 'string | string[]' },
+  { name: 'defaultValue', description: 'Default selected value(s)', type: 'string | string[]' },
+  { name: 'onChange', description: 'Callback when selection changes', type: '(value: string | string[]) => void' },
+  { name: 'multiple', description: 'Support multiple selection', type: 'boolean', default: 'false' },
+  { name: 'treeCheckable', description: 'Show checkbox in tree nodes', type: 'boolean', default: 'false' },
+  { name: 'showSearch', description: 'Show search input', type: 'boolean', default: 'false' },
+  { name: 'allowClear', description: 'Show clear button', type: 'boolean', default: 'false' },
+  { name: 'placeholder', description: 'Placeholder text', type: 'string' },
+  { name: 'treeDefaultExpandAll', description: 'Expand all nodes by default', type: 'boolean', default: 'false' },
+  { name: 'disabled', description: 'Disable the selector', type: 'boolean', default: 'false' },
+]
 
 const treeData = [
   {
-    key: 'company',
-    title: 'Company',
+    key: 'parent-1',
+    title: 'Parent 1',
     children: [
-      { key: 'eng', title: 'Engineering', children: [{ key: 'fe', title: 'Frontend' }, { key: 'be', title: 'Backend' }] },
-      { key: 'design', title: 'Design', children: [{ key: 'ux', title: 'UX' }, { key: 'ui', title: 'UI' }] },
+      { key: 'child-1-1', title: 'Child 1-1' },
+      { key: 'child-1-2', title: 'Child 1-2' },
     ],
   },
   {
-    key: 'archive',
-    title: 'Archive',
-    children: [{ key: '2024', title: '2024' }, { key: '2023', title: '2023' }],
+    key: 'parent-2',
+    title: 'Parent 2',
+    children: [
+      { key: 'child-2-1', title: 'Child 2-1' },
+      { key: 'child-2-2', title: 'Child 2-2' },
+    ],
   },
 ]
 
 export function TreeSelectDemo() {
-  const [multi, setMulti] = useState<(string | number)[]>(['fe', 'ux'])
-  const [checked, setChecked] = useState<(string | number)[]>(['fe', 'be'])
+  const [value, setValue] = useState<string | string[]>('')
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      <h2>TreeSelect</h2>
+    <ComponentDoc
+      title="TreeSelect"
+      description="Tree selection control."
+      whenToUse={[
+        'When you need to select from a hierarchical data structure.',
+        'Similar to Select, but uses a tree structure for the dropdown.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="The most basic usage."
+        code={`import { TreeSelect } from '@skygraph/react'
 
-      <section>
-        <h3>Basic</h3>
-        <TreeSelect
-          style={{ minWidth: 260 }}
-          treeData={treeData}
-          placeholder="Pick a node"
-          treeDefaultExpandAll
-          defaultValue="fe"
-        />
-      </section>
+const treeData = [
+  { key: 'parent-1', title: 'Parent 1', children: [
+    { key: 'child-1-1', title: 'Child 1-1' },
+    { key: 'child-1-2', title: 'Child 1-2' },
+  ]},
+]
 
-      <section>
-        <h3>Multiple</h3>
-        <TreeSelect
-          style={{ minWidth: 320 }}
-          treeData={treeData}
-          multiple
-          value={multi}
-          onChange={(v) => setMulti(Array.isArray(v) ? v : [v])}
-          treeDefaultExpandAll
-          placeholder="Select several"
-        />
-      </section>
+<TreeSelect
+  treeData={treeData}
+  placeholder="Please select"
+  treeDefaultExpandAll
+/>`}
+      >
+        <div style={{ width: 300 }}>
+          <TreeSelect
+            treeData={treeData}
+            placeholder="Please select"
+            treeDefaultExpandAll
+            value={value}
+            onChange={setValue}
+            allowClear
+          />
+        </div>
+      </DemoBox>
 
-      <section>
-        <h3>Checkable</h3>
-        <TreeSelect
-          style={{ minWidth: 320 }}
-          treeData={treeData}
-          treeCheckable
-          value={checked}
-          onChange={(v) => setChecked(Array.isArray(v) ? v : [v])}
-          treeDefaultExpandAll
-          placeholder="Check nodes"
-        />
-      </section>
+      <DemoBox
+        title="Multiple"
+        description="Multiple selection mode."
+        code={`<TreeSelect
+  treeData={treeData}
+  multiple
+  treeDefaultExpandAll
+  placeholder="Select multiple"
+/>`}
+      >
+        <div style={{ width: 300 }}>
+          <TreeSelect
+            treeData={treeData}
+            multiple
+            treeDefaultExpandAll
+            placeholder="Select multiple"
+            allowClear
+          />
+        </div>
+      </DemoBox>
 
-      <section>
-        <h3>Search</h3>
-        <TreeSelect
-          style={{ minWidth: 280 }}
-          treeData={treeData}
-          showSearch
-          treeDefaultExpandAll
-          placeholder="Type to filter"
-        />
-      </section>
+      <DemoBox
+        title="Checkable"
+        description="Tree checkable mode."
+        code={`<TreeSelect
+  treeData={treeData}
+  treeCheckable
+  treeDefaultExpandAll
+  placeholder="Check nodes"
+/>`}
+      >
+        <div style={{ width: 300 }}>
+          <TreeSelect
+            treeData={treeData}
+            treeCheckable
+            treeDefaultExpandAll
+            placeholder="Check nodes"
+            allowClear
+          />
+        </div>
+      </DemoBox>
 
-      <section>
-        <h3>Tree line</h3>
-        <TreeSelect
-          style={{ minWidth: 280 }}
-          treeData={treeData}
-          treeLine
-          treeDefaultExpandAll
-          defaultValue="ux"
-          placeholder="Structured tree"
-        />
-      </section>
-    </section>
+      <PropsTable data={treeSelectProps} />
+    </ComponentDoc>
   )
 }

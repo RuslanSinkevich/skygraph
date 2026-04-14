@@ -1,47 +1,89 @@
+import { Drawer, Button } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 import { useState } from 'react'
-import { Button, Drawer } from '@skygraph/react'
+
+const drawerProps: PropDef[] = [
+  { name: 'open', description: 'Whether the Drawer dialog is visible', type: 'boolean' },
+  { name: 'onClose', description: 'Callback when Drawer is closed', type: '() => void' },
+  { name: 'title', description: 'Title of the Drawer', type: 'ReactNode' },
+  { name: 'placement', description: 'Placement of the Drawer', type: "'left' | 'right' | 'top' | 'bottom'", default: "'right'" },
+  { name: 'width', description: 'Width of the Drawer (horizontal placement)', type: 'number | string', default: '378' },
+  { name: 'height', description: 'Height of the Drawer (vertical placement)', type: 'number | string', default: '378' },
+  { name: 'closable', description: 'Whether to show close button', type: 'boolean', default: 'true' },
+  { name: 'mask', description: 'Whether to show mask', type: 'boolean', default: 'true' },
+  { name: 'maskClosable', description: 'Close Drawer by clicking mask', type: 'boolean', default: 'true' },
+  { name: 'footer', description: 'Footer content of the Drawer', type: 'ReactNode' },
+]
+
+function BasicDrawer() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button type="primary" onClick={() => setOpen(true)}>Open Drawer</Button>
+      <Drawer open={open} onClose={() => setOpen(false)} title="Basic Drawer">
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Drawer>
+    </>
+  )
+}
+
+function PlacementDrawer() {
+  const [open, setOpen] = useState(false)
+  const [placement, setPlacement] = useState<'left' | 'right' | 'top' | 'bottom'>('right')
+  return (
+    <>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {(['left', 'right', 'top', 'bottom'] as const).map((p) => (
+          <Button key={p} onClick={() => { setPlacement(p); setOpen(true) }}>
+            {p}
+          </Button>
+        ))}
+      </div>
+      <Drawer open={open} onClose={() => setOpen(false)} title={`${placement} Drawer`} placement={placement}>
+        <p>Drawer from the {placement}.</p>
+      </Drawer>
+    </>
+  )
+}
 
 export function DrawerDemo() {
-  const [right, setRight] = useState(false)
-  const [left, setLeft] = useState(false)
-  const [bottom, setBottom] = useState(false)
-
   return (
-    <section>
-      <h2>Drawer</h2>
-      <p style={{ color: 'var(--sg-color-text-secondary)', marginBottom: 16 }}>
-        Slide-in panel from any edge. Supports title, footer, and mask.
-      </p>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <Button type="primary" onClick={() => setRight(true)}>Open Right</Button>
-        <Button onClick={() => setLeft(true)}>Open Left</Button>
-        <Button onClick={() => setBottom(true)}>Open Bottom</Button>
-      </div>
+    <ComponentDoc
+      title="Drawer"
+      description="A panel which slides in from the edge of the screen."
+      whenToUse={[
+        'When you need a panel attached to the edge that provides supplementary content.',
+        'Use when a Modal is too heavy and you want to keep context.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="Basic drawer from the right."
+        code={`import { Drawer, Button } from '@skygraph/react'
 
-      <Drawer open={right} onClose={() => setRight(false)} title="Right Drawer">
-        <p>Drawer content goes here.</p>
-        <p style={{ color: 'var(--sg-color-text-secondary)' }}>Press Escape or click the mask to close.</p>
-      </Drawer>
+const [open, setOpen] = useState(false)
 
-      <Drawer open={left} onClose={() => setLeft(false)} title="Left Drawer" placement="left">
-        <p>Left side panel content.</p>
-      </Drawer>
-
-      <Drawer
-        open={bottom}
-        onClose={() => setBottom(false)}
-        title="Bottom Drawer"
-        placement="bottom"
-        height={250}
-        footer={
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <Button onClick={() => setBottom(false)}>Cancel</Button>
-            <Button type="primary" onClick={() => setBottom(false)}>OK</Button>
-          </div>
-        }
+<Button type="primary" onClick={() => setOpen(true)}>Open Drawer</Button>
+<Drawer open={open} onClose={() => setOpen(false)} title="Basic Drawer">
+  <p>Some contents...</p>
+</Drawer>`}
       >
-        <p>Bottom panel with footer actions.</p>
-      </Drawer>
-    </section>
+        <BasicDrawer />
+      </DemoBox>
+
+      <DemoBox
+        title="Placement"
+        description="The Drawer can appear from any edge."
+        code={`<Drawer placement="left" open={open} onClose={onClose} title="Left">
+  <p>Content</p>
+</Drawer>`}
+      >
+        <PlacementDrawer />
+      </DemoBox>
+
+      <PropsTable data={drawerProps} />
+    </ComponentDoc>
   )
 }

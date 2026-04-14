@@ -1,54 +1,105 @@
-import { useState } from 'react'
 import { Tag } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
+import { useState } from 'react'
 
-const initialTags = ['React', 'TypeScript', 'Node.js', 'SkyGraph']
+const tagProps: PropDef[] = [
+  { name: 'color', description: 'Color of the Tag', type: "'default' | 'success' | 'error' | 'warning' | 'processing' | string", default: "'default'" },
+  { name: 'closable', description: 'Whether the Tag can be closed', type: 'boolean', default: 'false' },
+  { name: 'onClose', description: 'Callback when the tag is closed', type: '() => void' },
+  { name: 'bordered', description: 'Whether to show border', type: 'boolean', default: 'true' },
+  { name: 'children', description: 'Content of the Tag', type: 'ReactNode' },
+]
 
 export function TagDemo() {
-  const [tags, setTags] = useState(initialTags)
+  const [tags, setTags] = useState(['Tag 1', 'Tag 2', 'Tag 3'])
 
   return (
-    <section>
-      <h2>Tag</h2>
-      <p style={{ color: 'var(--sg-color-text-secondary)', marginBottom: 16 }}>
-        Labels with preset and custom colors. Closable tags.
-      </p>
+    <ComponentDoc
+      title="Tag"
+      description="Tag for categorizing or markup."
+      whenToUse={[
+        'When you want to label or categorize items.',
+        'To display a collection of removable tags.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="Basic usage of Tag with link and closable."
+        code={`import { Tag } from '@skygraph/react'
 
-      <h4 style={{ marginBottom: 8 }}>Preset Colors</h4>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-        <Tag color="default">Default</Tag>
-        <Tag color="success">Success</Tag>
-        <Tag color="error">Error</Tag>
-        <Tag color="warning">Warning</Tag>
-        <Tag color="processing">Processing</Tag>
-      </div>
+<Tag>Tag 1</Tag>
+<Tag>Tag 2</Tag>
+<Tag closable onClose={() => console.log('closed')}>Tag 3</Tag>`}
+      >
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Tag>Tag 1</Tag>
+          <Tag>Tag 2</Tag>
+          <Tag closable>Closable Tag</Tag>
+        </div>
+      </DemoBox>
 
-      <h4 style={{ marginBottom: 8 }}>Custom Colors</h4>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-        <Tag color="#f50">#f50</Tag>
-        <Tag color="#2db7f5">#2db7f5</Tag>
-        <Tag color="#87d068">#87d068</Tag>
-        <Tag color="#108ee9">#108ee9</Tag>
-      </div>
+      <DemoBox
+        title="Colorful"
+        description="Preset and custom colors."
+        code={`<Tag color="success">Success</Tag>
+<Tag color="processing">Processing</Tag>
+<Tag color="error">Error</Tag>
+<Tag color="warning">Warning</Tag>
+<Tag color="#f50">#f50</Tag>
+<Tag color="#2db7f5">#2db7f5</Tag>
+<Tag color="#87d068">#87d068</Tag>`}
+      >
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Tag color="success">Success</Tag>
+          <Tag color="processing">Processing</Tag>
+          <Tag color="error">Error</Tag>
+          <Tag color="warning">Warning</Tag>
+          <Tag color="#f50">#f50</Tag>
+          <Tag color="#2db7f5">#2db7f5</Tag>
+          <Tag color="#87d068">#87d068</Tag>
+        </div>
+      </DemoBox>
 
-      <h4 style={{ marginBottom: 8 }}>Closable</h4>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-        {tags.map((tag) => (
-          <Tag key={tag} closable onClose={() => setTags(tags.filter((t) => t !== tag))}>
-            {tag}
-          </Tag>
-        ))}
-        {tags.length === 0 && (
-          <span style={{ color: 'var(--sg-color-text-tertiary)', fontSize: 12 }}>All tags removed</span>
-        )}
-      </div>
+      <DemoBox
+        title="Closable"
+        description="Dynamically add and remove tags."
+        code={`const [tags, setTags] = useState(['Tag 1', 'Tag 2', 'Tag 3'])
 
-      <h4 style={{ marginBottom: 8 }}>Borderless</h4>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <Tag color="success" bordered={false}>Success</Tag>
-        <Tag color="processing" bordered={false}>Processing</Tag>
-        <Tag color="error" bordered={false}>Error</Tag>
-        <Tag color="warning" bordered={false}>Warning</Tag>
-      </div>
-    </section>
+{tags.map(tag => (
+  <Tag
+    key={tag}
+    closable
+    onClose={() => setTags(t => t.filter(i => i !== tag))}
+  >
+    {tag}
+  </Tag>
+))}`}
+      >
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {tags.map((tag) => (
+            <Tag key={tag} closable onClose={() => setTags((t) => t.filter((i) => i !== tag))}>
+              {tag}
+            </Tag>
+          ))}
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Borderless"
+        description="Tags without border."
+        code={`<Tag bordered={false}>Borderless</Tag>
+<Tag bordered={false} color="processing">Processing</Tag>
+<Tag bordered={false} color="success">Success</Tag>`}
+      >
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Tag bordered={false}>Borderless</Tag>
+          <Tag bordered={false} color="processing">Processing</Tag>
+          <Tag bordered={false} color="success">Success</Tag>
+        </div>
+      </DemoBox>
+
+      <PropsTable data={tagProps} />
+    </ComponentDoc>
   )
 }

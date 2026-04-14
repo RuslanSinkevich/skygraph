@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { createCore, createForm } from '@skygraph/core'
 import type { Core, FormEngine, FormOptions, FormState, ValidationResult } from '@skygraph/core'
 
@@ -21,6 +21,9 @@ export interface UseFormReturn {
 }
 
 export function useForm(options?: UseFormOptions): UseFormReturn {
+  const optionsRef = useRef(options)
+  optionsRef.current = options
+
   const [{ core, form }] = useState(() => {
     const c = createCore()
     const f = createForm(c, options)
@@ -36,17 +39,18 @@ export function useForm(options?: UseFormOptions): UseFormReturn {
   const submit = useCallback(async () => {
     refreshState()
     await form.submit(async (values) => {
-      await options?.onSubmit?.(values)
+      await optionsRef.current?.onSubmit?.(values)
     })
 
     const state = form.getFormState()
     setFormState(state)
 
-    if (!state.isValid && options?.onSubmitInvalid) {
-      const result = await form.validate()
-      options.onSubmitInvalid(result.errors)
+    if (!state.isValid && optionsRef.current?.onSubmitInvalid) {
+      optionsRef.current.onSubmitInvalid(
+        (await form.validate()).errors,
+      )
     }
-  }, [form, options, refreshState])
+  }, [form, refreshState])
 
   const reset = useCallback(
     (values?: Record<string, unknown>) => {

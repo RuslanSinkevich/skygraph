@@ -17,10 +17,13 @@
 │    Batch         — N writes → 1 notify      │
 │    Computed      — граф зависимостей        │
 │    Scheduler     — micro/macro/render queue  │
+│    Middleware    — pluggable pipeline        │
 │                                             │
 │  engines/                                   │
 │    form/         — FormEngine               │
-│    table/        — (потом)                  │
+│    table/        — TableEngine              │
+│    tree/         — TreeEngine               │
+│    virtual/      — VirtualScroll engine     │
 │    validation/   — sync + async             │
 │                                             │
 │  engines/ использует runtime/ internal API  │
@@ -31,18 +34,33 @@
 @skygraph/react (peer: core + react)
 ┌─────────────────────────────────────────────┐
 │  hooks/                                     │
-│    useField      — подписка value + meta    │
-│    useForm       — isDirty/isValid/...      │
-│    useComputed   — подписка на computed     │
+│    useField, useForm, useFieldArray         │
+│    useWatch, useComputed, useHistory        │
+│    useTable, useTree, useVirtualScroll      │
+│                                             │
+│  hooks/a11y/                                │
+│    useFocusTrap, useRovingTabIndex          │
+│    useListNavigation                        │
 │                                             │
 │  components/complex/    (используют core)   │
-│    Form, Field, SubmitButton                │
+│    Form, Field, FormList, FormProvider      │
+│    SchemaForm, AutoField, SubmitButton      │
+│    Table, DataGrid, Tree, List              │
+│    TreeSelect, Cascader, Calendar           │
+│    Transfer, VirtualList                    │
 │                                             │
-│  components/ui/         (чистый React)      │
-│    Spin, Button, Input, Modal               │
+│  components/ui/         (чистый React, 44)  │
+│    Button, Input, Select, Modal, Drawer     │
+│    Tabs, Menu, Notification, Tooltip, ...   │
+│    Transfer, Calendar, Mentions, Transition │
+│                                             │
+│  ConfigProvider — size, disabled, locale     │
+│  adapters/ — zodAdapter, jsonSchemaAdapter  │
 │                                             │
 │  styles/                                    │
-│    tokens.css, components/*.css, themes/    │
+│    tokens.css, transitions.css              │
+│    components/*.css (49 files)              │
+│    themes/ (default, dark)                  │
 └─────────────────────────────────────────────┘
 ```
 
@@ -149,6 +167,17 @@ interface FormEngine {
 
   /** Сбросить форму */
   reset(values?: Record<string, unknown>): void
+
+  /** Установить множество значений за раз */
+  setFieldsValue(values: Record<string, unknown>): void
+
+  /** Получить все значения */
+  getValues(): Record<string, unknown>
+
+  /** Операции с массивами полей */
+  listAdd(name: string, value: unknown, index?: number): void
+  listRemove(name: string, indices: number | number[]): void
+  listReplace(name: string, index: number, value: unknown): void
 }
 
 // === Типы ===
@@ -156,7 +185,9 @@ interface FormEngine {
 interface FieldMeta {
   touched: boolean
   dirty: boolean
-  error: string | null
+  errors: string[]
+  warnings: string[]
+  status: 'idle' | 'validating' | 'success' | 'error' | 'warning'
   validating: boolean
 }
 
@@ -171,7 +202,7 @@ type Rule = (value: unknown) => string | null | Promise<string | null>
 
 interface ValidationResult {
   valid: boolean
-  errors: Record<string, string>
+  errors: Record<string, string[]>
 }
 ```
 
@@ -408,68 +439,69 @@ skygraph/
 │   ├── core/
 │   │   ├── src/
 │   │   │   ├── runtime/
-│   │   │   │   ├── Store.ts
-│   │   │   │   ├── Node.ts
+│   │   │   │   ├── Store.ts, Node.ts
 │   │   │   │   ├── SubscriptionEngine.ts
-│   │   │   │   ├── Transaction.ts
-│   │   │   │   ├── Batch.ts
+│   │   │   │   ├── Transaction.ts, Batch.ts
 │   │   │   │   ├── Scheduler.ts
-│   │   │   │   ├── ComputedEngine.ts
-│   │   │   │   ├── CycleDetector.ts
+│   │   │   │   ├── ComputedEngine.ts, CycleDetector.ts
+│   │   │   │   ├── Middleware.ts
 │   │   │   │   └── index.ts
 │   │   │   ├── engines/
-│   │   │   │   ├── form/
-│   │   │   │   │   ├── FormEngine.ts
-│   │   │   │   │   ├── FieldModel.ts
-│   │   │   │   │   ├── MetaStore.ts
-│   │   │   │   │   ├── ValidationEngine.ts
-│   │   │   │   │   ├── FieldDeps.ts
-│   │   │   │   │   └── index.ts
-│   │   │   │   └── (table/ — потом)
+│   │   │   │   ├── form/       — FormEngine, FieldModel, MetaStore, ValidationEngine
+│   │   │   │   ├── table/      — TableEngine (sort, filter, pagination)
+│   │   │   │   ├── tree/       — TreeEngine (expand, check, drag, async)
+│   │   │   │   └── virtual/    — VirtualScroll engine
+│   │   │   ├── __tests__/      — 146 unit tests
 │   │   │   ├── types.ts
 │   │   │   ├── Core.ts
 │   │   │   └── index.ts
-│   │   ├── package.json
-│   │   └── tsconfig.json
+│   │   └── package.json
 │   │
 │   └── react/
 │       ├── src/
 │       │   ├── hooks/
-│       │   │   ├── useField.ts
-│       │   │   ├── useForm.ts
-│       │   │   └── useComputed.ts
+│       │   │   ├── useField.ts, useForm.ts, useFieldArray.ts
+│       │   │   ├── useWatch.ts, useComputed.ts, useHistory.ts
+│       │   │   ├── useTable.ts, useTree.ts, useVirtualScroll.ts
+│       │   │   └── a11y/
+│       │   │       ├── useFocusTrap.ts
+│       │   │       ├── useRovingTabIndex.ts
+│       │   │       └── useListNavigation.ts
 │       │   ├── components/
-│       │   │   ├── complex/
-│       │   │   │   ├── Form.tsx
-│       │   │   │   ├── Field.tsx
-│       │   │   │   └── SubmitButton.tsx
-│       │   │   └── ui/
-│       │   │       ├── Spin.tsx
-│       │   │       ├── Button.tsx
-│       │   │       ├── Input.tsx
-│       │   │       └── Modal.tsx
+│       │   │   ├── complex/    — Form, Field, FormList, FormProvider,
+│       │   │   │                 SchemaForm, AutoField/, SubmitButton,
+│       │   │   │                 Table/, DataGrid/, Tree/, List/,
+│       │   │   │                 TreeSelect/, Cascader/, Calendar/,
+│       │   │   │                 Transfer/, VirtualList/
+│       │   │   ├── ui/         — 44 standalone components
+│       │   │   │                 (Button, Input, Select, Modal, Drawer,
+│       │   │   │                  Tabs, Menu, Notification, Tooltip,
+│       │   │   │                  Transition, Mentions, Calendar, ...)
+│       │   │   └── ConfigProvider.tsx
+│       │   ├── adapters/
+│       │   │   ├── zodAdapter.ts
+│       │   │   └── jsonSchemaAdapter.ts
+│       │   ├── types/          — shared types (BaseComponentProps, SgLocale, etc.)
+│       │   ├── __tests__/      — 282 component/hook/adapter tests
 │       │   └── index.ts
 │       ├── styles/
-│       │   ├── tokens.css
-│       │   ├── reset.css
-│       │   ├── index.css
-│       │   ├── components/
-│       │   │   ├── button.css
-│       │   │   ├── input.css
-│       │   │   ├── spin.css
-│       │   │   ├── form.css
-│       │   │   ├── field.css
-│       │   │   └── modal.css
-│       │   └── themes/
-│       │       ├── default.css
-│       │       └── dark.css
-│       ├── package.json
-│       └── tsconfig.json
+│       │   ├── tokens.css, reset.css, index.css
+│       │   ├── transitions.css — fade, slide, zoom, collapse
+│       │   ├── components/     — 49 component CSS files
+│       │   └── themes/         — default.css, dark.css
+│       └── package.json
+│
+├── examples/
+│   └── demo/                   — Ant-style interactive documentation
+│       └── src/
+│           ├── components/     — DemoBox, PropsTable, ComponentDoc
+│           └── demos/          — 40+ component demo pages
 │
 ├── package.json
 ├── tsconfig.base.json
-├── PLAN.md
-└── ARCHITECTURE.md
+├── ARCHITECTURE.md
+├── CHANGELOG.md
+└── README.md
 ```
 
 ---

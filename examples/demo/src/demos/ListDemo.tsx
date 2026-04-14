@@ -1,105 +1,101 @@
-import { useState } from 'react'
-import { List } from '../../../../packages/react/src/components/complex/List'
-import { Avatar } from '../../../../packages/react/src/components/ui/Avatar'
-import { Button } from '../../../../packages/react/src/components/ui/Button'
+import { List } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 
-type Row = { id: string; title: string; desc: string; avatar: string }
+const listProps: PropDef[] = [
+  { name: 'dataSource', description: 'Data array for the list', type: 'T[]' },
+  { name: 'renderItem', description: 'Function to render each item', type: '(item: T, index: number) => ReactNode' },
+  { name: 'header', description: 'Header content', type: 'ReactNode' },
+  { name: 'footer', description: 'Footer content', type: 'ReactNode' },
+  { name: 'loading', description: 'Show loading indicator', type: 'boolean', default: 'false' },
+  { name: 'bordered', description: 'Show border around the list', type: 'boolean', default: 'false' },
+  { name: 'split', description: 'Show separator between items', type: 'boolean', default: 'true' },
+  { name: 'size', description: 'Size of the list', type: "'small' | 'default' | 'large'", default: "'default'" },
+  { name: 'pagination', description: 'Pagination config', type: 'false | { current?, pageSize?, total?, onChange? }' },
+  { name: 'grid', description: 'Grid layout config', type: '{ gutter?, column? }' },
+]
 
-const longData: Row[] = Array.from({ length: 28 }, (_, i) => ({
-  id: String(i + 1),
-  title: `User ${i + 1}`,
-  desc: i % 5 === 0 ? 'Pro account · 2FA enabled' : 'Standard account',
-  avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`,
-}))
+const data = [
+  'Racing car sprance forward with a roaring engine.',
+  'A gentle breeze sweeps over the peaceful countryside.',
+  'The morning sun cast golden rays over the horizon.',
+  'Quiet footsteps echo through the empty hallway.',
+]
 
 export function ListDemo() {
-  const [page, setPage] = useState(1)
-  const pageSize = 5
-  const slice = longData.slice((page - 1) * pageSize, page * pageSize)
-
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      <h2>List</h2>
+    <ComponentDoc
+      title="List"
+      description="Simple list component."
+      whenToUse={[
+        'When you need to display a collection of similar items.',
+        'When you need a list with header, footer, and separators.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="Basic list with header and footer."
+        code={`import { List } from '@skygraph/react'
 
-      <section>
-        <h3>Basic</h3>
+const data = ['Item 1', 'Item 2', 'Item 3']
+
+<List
+  header="Header"
+  footer="Footer"
+  bordered
+  dataSource={data}
+  renderItem={(item) => <div style={{ padding: '8px 0' }}>{item}</div>}
+/>`}
+      >
         <List
+          header="Header"
+          footer="Footer"
           bordered
-          dataSource={[
-            { id: '1', text: 'First row' },
-            { id: '2', text: 'Second row' },
-          ]}
-          renderItem={(item) => (
-            <List.Item>
-              {item.text}
-            </List.Item>
-          )}
+          dataSource={data}
+          renderItem={(item) => <div style={{ padding: '8px 0' }}>{item}</div>}
         />
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>With avatar &amp; meta</h3>
+      <DemoBox
+        title="Small Size"
+        description="A small size list."
+        code={`<List
+  size="small"
+  bordered
+  dataSource={data}
+  renderItem={(item) => <div style={{ padding: '4px 0' }}>{item}</div>}
+/>`}
+      >
         <List
-          dataSource={slice}
-          renderItem={(item) => (
-            <List.Item
-              actions={[
-                <Button key="m" type="link" size="small">
-                  Message
-                </Button>,
-              ]}
-            >
-              <List.Item.Meta
-                avatar={<Avatar src={item.avatar} size={40} />}
-                title={item.title}
-                description={item.desc}
-              />
-            </List.Item>
-          )}
-          pagination={{
-            current: page,
-            pageSize,
-            total: longData.length,
-            onChange: (p) => setPage(p),
-          }}
+          size="small"
+          bordered
+          header="Small List"
+          dataSource={data}
+          renderItem={(item) => <div style={{ padding: '4px 0' }}>{item}</div>}
         />
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>Grid</h3>
+      <DemoBox
+        title="Large Size"
+        description="A large size list."
+        code={`<List
+  size="large"
+  bordered
+  header="Large List"
+  dataSource={data}
+  renderItem={(item) => <div style={{ padding: '12px 0' }}>{item}</div>}
+/>`}
+      >
         <List
-          grid={{ gutter: 12, column: 3 }}
-          dataSource={[
-            { id: 'g1', t: 'Card A' },
-            { id: 'g2', t: 'Card B' },
-            { id: 'g3', t: 'Card C' },
-            { id: 'g4', t: 'Card D' },
-          ]}
-          renderItem={(item) => (
-            <List.Item>
-              <div
-                style={{
-                  border: '1px solid var(--sg-color-border-secondary)',
-                  borderRadius: 8,
-                  padding: 12,
-                  background: 'var(--sg-color-fill-quaternary)',
-                }}
-              >
-                {item.t}
-              </div>
-            </List.Item>
-          )}
+          size="large"
+          bordered
+          header="Large List"
+          dataSource={data}
+          renderItem={(item) => <div style={{ padding: '12px 0' }}>{item}</div>}
         />
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>Loading</h3>
-        <List
-          loading
-          dataSource={[]}
-          renderItem={() => null}
-        />
-      </section>
-    </section>
+      <PropsTable data={listProps} />
+    </ComponentDoc>
   )
 }

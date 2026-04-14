@@ -106,9 +106,14 @@ function computeStatus(meta: { errors: string[]; warnings: string[]; validating:
   return undefined
 }
 
+interface CompiledRule {
+  original: Rule
+  fn: RuleFn
+}
+
 interface FieldRecord {
-  rules: RuleFn[]
-  warningRules: RuleFn[]
+  rules: CompiledRule[]
+  warningRules: CompiledRule[]
   options: FieldOptions
   abortController: AbortController | null
 }
@@ -196,7 +201,7 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
     for (const rule of record.rules) {
       if (controller.signal.aborted) return []
 
-      const result = rule(value, getFieldValue)
+      const result = rule.fn(value, getFieldValue)
 
       if (result instanceof Promise) {
         setMeta(name, { validating: true })
@@ -218,11 +223,10 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
       }
     }
 
-    // Run warning rules
     const warnings: string[] = []
     for (const rule of record.warningRules) {
       if (controller.signal.aborted) return []
-      const result = rule(value, getFieldValue)
+      const result = rule.fn(value, getFieldValue)
       if (result instanceof Promise) {
         try {
           const asyncResult = await result
@@ -259,8 +263,12 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
       const label = opts.label
 
       fields.set(name, {
-        rules: opts.rules ? opts.rules.map((r) => compileRule(r, templates, label)) : [],
-        warningRules: opts.warningRules ? opts.warningRules.map((r) => compileRule(r, templates, label)) : [],
+        rules: opts.rules
+          ? opts.rules.map((r) => ({ original: r, fn: compileRule(r, templates, label) }))
+          : [],
+        warningRules: opts.warningRules
+          ? opts.warningRules.map((r) => ({ original: r, fn: compileRule(r, templates, label) }))
+          : [],
         options: opts,
         abortController: null,
       })
@@ -378,14 +386,16 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
     addRule(name: string, rule: Rule): void {
       const record = fields.get(name)
       if (!record) return
-      record.rules.push(compileRule(rule, options?.validateMessages, record.options.label))
+      record.rules.push({
+        original: rule,
+        fn: compileRule(rule, options?.validateMessages, record.options.label),
+      })
     },
 
     removeRule(name: string, rule: Rule): void {
       const record = fields.get(name)
       if (!record) return
-      const compiled = compileRule(rule, options?.validateMessages, record.options.label)
-      const idx = record.rules.indexOf(compiled)
+      const idx = record.rules.findIndex((r) => r.original === rule)
       if (idx !== -1) record.rules.splice(idx, 1)
     },
 

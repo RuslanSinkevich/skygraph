@@ -1,107 +1,87 @@
-import { useState } from 'react'
-import { Collapse } from '../../../../packages/react/src/components/ui/Collapse'
+import { Collapse } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 
-const panelBody = (text: string) => <p style={{ margin: 0 }}>{text}</p>
+const collapseProps: PropDef[] = [
+  { name: 'items', description: 'Collapse panel items', type: 'CollapseItem[]' },
+  { name: 'activeKey', description: 'Keys of active panels (controlled)', type: 'string | string[]' },
+  { name: 'defaultActiveKey', description: 'Keys of initially active panels', type: 'string | string[]' },
+  { name: 'onChange', description: 'Callback when panels change', type: '(activeKey: string[]) => void' },
+  { name: 'accordion', description: 'Accordion mode — only one panel open at a time', type: 'boolean', default: 'false' },
+  { name: 'bordered', description: 'Show border', type: 'boolean', default: 'true' },
+  { name: 'expandIconPosition', description: 'Position of the expand icon', type: "'start' | 'end'", default: "'start'" },
+  { name: 'ghost', description: 'Make background transparent', type: 'boolean', default: 'false' },
+]
+
+const items = [
+  {
+    key: '1',
+    label: 'This is panel header 1',
+    children: 'A dog is a type of domesticated animal. Known for its loyalty and faithfulness.',
+  },
+  {
+    key: '2',
+    label: 'This is panel header 2',
+    children: 'A cat is a small domesticated mammal valued for companionship.',
+  },
+  {
+    key: '3',
+    label: 'This is panel header 3',
+    children: 'A bird is an animal with wings that can usually fly.',
+  },
+]
 
 export function CollapseDemo() {
-  const [accordionKey, setAccordionKey] = useState<string[]>(['a'])
-
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <h2>Collapse</h2>
+    <ComponentDoc
+      title="Collapse"
+      description="A content area which can be collapsed and expanded."
+      whenToUse={[
+        'When you need to organize information into collapsible sections.',
+        'Use accordion mode when only one section should be open at a time.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="Multiple panels can be opened at the same time."
+        code={`import { Collapse } from '@skygraph/react'
 
-      <section>
-        <h3>Basic (multiple panels)</h3>
-        <Collapse
-          defaultActiveKey={['1']}
-          items={[
-            { key: '1', label: 'Panel 1', children: panelBody('First panel content.') },
-            { key: '2', label: 'Panel 2', children: panelBody('Second panel content.') },
-            { key: '3', label: 'Panel 3', children: panelBody('Third panel content.') },
-          ]}
-        />
-      </section>
+const items = [
+  { key: '1', label: 'Header 1', children: 'Content 1' },
+  { key: '2', label: 'Header 2', children: 'Content 2' },
+  { key: '3', label: 'Header 3', children: 'Content 3' },
+]
 
-      <section>
-        <h3>Bordered (default)</h3>
-        <Collapse
-          bordered
-          defaultActiveKey={['b1']}
-          items={[
-            { key: 'b1', label: 'Section A', children: panelBody('Bordered container (default styling).') },
-            { key: 'b2', label: 'Section B', children: panelBody('Contrast with ghost variant below.') },
-          ]}
-        />
-      </section>
+<Collapse items={items} defaultActiveKey={['1']} />`}
+      >
+        <Collapse items={items} defaultActiveKey={['1']} />
+      </DemoBox>
 
-      <section>
-        <h3>Accordion (single open)</h3>
-        <Collapse
-          accordion
-          activeKey={accordionKey}
-          onChange={setAccordionKey}
-          items={[
-            { key: 'a', label: 'Alpha', children: panelBody('Only one section stays open.') },
-            { key: 'b', label: 'Beta', children: panelBody('Switching closes the other.') },
-            { key: 'c', label: 'Gamma', children: panelBody('Controlled via useState.') },
-          ]}
-        />
-      </section>
+      <DemoBox
+        title="Accordion"
+        description="Only one panel can be open at a time."
+        code={`<Collapse items={items} accordion defaultActiveKey="1" />`}
+      >
+        <Collapse items={items} accordion defaultActiveKey="1" />
+      </DemoBox>
 
-      <section>
-        <h3>Ghost &amp; bordered off</h3>
-        <Collapse
-          ghost
-          bordered={false}
-          defaultActiveKey={['x']}
-          items={[
-            { key: 'x', label: 'Ghost panel', children: panelBody('No outer border; lighter chrome.') },
-            { key: 'y', label: 'Another', children: panelBody('Useful on tinted backgrounds.') },
-          ]}
-        />
-      </section>
+      <DemoBox
+        title="Borderless"
+        description="A borderless style."
+        code={`<Collapse items={items} bordered={false} />`}
+      >
+        <Collapse items={items} bordered={false} defaultActiveKey={['1']} />
+      </DemoBox>
 
-      <section>
-        <h3>Expand icon at end</h3>
-        <Collapse
-          expandIconPosition="end"
-          defaultActiveKey={['e1']}
-          items={[
-            {
-              key: 'e1',
-              label: 'FAQ: Billing',
-              children: panelBody('Arrow aligns to the trailing edge.'),
-            },
-            {
-              key: 'e2',
-              label: 'FAQ: Security',
-              extra: <span style={{ fontSize: 12, opacity: 0.65 }}>Updated</span>,
-              children: panelBody('Extra slot stays in the header row.'),
-            },
-          ]}
-        />
-      </section>
+      <DemoBox
+        title="Ghost"
+        description="Transparent background."
+        code={`<Collapse items={items} ghost />`}
+      >
+        <Collapse items={items} ghost defaultActiveKey={['2']} />
+      </DemoBox>
 
-      <section>
-        <h3>Sizes: small / middle / large</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <Collapse
-            size="small"
-            defaultActiveKey={['s']}
-            items={[{ key: 's', label: 'Small', children: panelBody('Compact header height.') }]}
-          />
-          <Collapse
-            size="middle"
-            defaultActiveKey={['m']}
-            items={[{ key: 'm', label: 'Middle (default)', children: panelBody('Default density.') }]}
-          />
-          <Collapse
-            size="large"
-            defaultActiveKey={['l']}
-            items={[{ key: 'l', label: 'Large', children: panelBody('More breathing room.') }]}
-          />
-        </div>
-      </section>
-    </section>
+      <PropsTable data={collapseProps} />
+    </ComponentDoc>
   )
 }

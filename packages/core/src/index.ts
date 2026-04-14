@@ -14,6 +14,11 @@ export {
   validationMiddleware,
 } from './middleware/index'
 
+export type {
+  Validator,
+  ValidationMiddlewareOptions,
+} from './middleware/index'
+
 export { createHistory } from './plugins/history'
 export type {
   HistoryPlugin,

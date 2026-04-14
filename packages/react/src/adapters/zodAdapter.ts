@@ -61,16 +61,21 @@ export function zodRules(
 }
 
 /**
- * Extract default values from a Zod schema with .parse on undefined.
- * Returns field names that have defaults.
+ * Extract default values from a Zod schema.
+ * Uses safeParse(undefined) to trigger Zod's .default() mechanism,
+ * then reads the parsed data for the actual default value.
  */
 export function zodDefaults(schema: ZodObjectLikeSchema): Record<string, unknown> {
   const defaults: Record<string, unknown> = {}
   for (const [key, fieldSchema] of Object.entries(schema.shape)) {
     try {
-      const result = fieldSchema.safeParse(undefined)
-      if (result.success) {
-        defaults[key] = undefined
+      const result = fieldSchema.safeParse(undefined) as {
+        success: boolean
+        data?: unknown
+        error?: { issues: Array<{ message: string }> }
+      }
+      if (result.success && result.data !== undefined) {
+        defaults[key] = result.data
       }
     } catch {
       // skip fields without defaults

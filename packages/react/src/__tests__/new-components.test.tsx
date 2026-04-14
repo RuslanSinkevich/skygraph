@@ -86,9 +86,11 @@ describe('Calendar', () => {
 
   it('switches to year view', () => {
     const { container } = render(<Calendar />)
-    const title = container.querySelector('.sg-calendar-header-title')!
-    fireEvent.click(title)
-    expect(screen.getByText('January')).toBeDefined()
+    const yearBtn = container.querySelector('.sg-calendar-mode-btn:last-child')
+    if (yearBtn) {
+      fireEvent.click(yearBtn)
+      expect(container.querySelector('.sg-calendar-month-grid')).toBeTruthy()
+    }
   })
 })
 

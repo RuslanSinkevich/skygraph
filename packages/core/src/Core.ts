@@ -3,7 +3,6 @@ import { SubscriptionEngine } from './runtime/SubscriptionEngine'
 import { Batch } from './runtime/Batch'
 import { Transaction } from './runtime/Transaction'
 import { ComputedEngine } from './runtime/ComputedEngine'
-import { Scheduler } from './runtime/Scheduler'
 import type { Core, Middleware, WriteEvent, NextFn } from './types'
 
 class CoreImpl implements Core {
@@ -12,7 +11,6 @@ class CoreImpl implements Core {
   private batch_ = new Batch()
   private transaction_ = new Transaction()
   private computed_ = new ComputedEngine()
-  readonly scheduler = new Scheduler()
 
   private middlewares: Middleware[] = []
 
@@ -137,12 +135,17 @@ class CoreImpl implements Core {
     this.computed_.register(target, deps, fn)
     const depValues = deps.map((d) => this.store.get(d))
     const value = fn(...depValues)
+    const oldValue = this.store.get(target)
     this.dispatchWrite({
       path: target,
       value,
-      oldValue: this.store.get(target),
+      oldValue,
       source: 'computed',
     })
+
+    if (!Object.is(oldValue, value)) {
+      this.subscriptions.notify(target, value)
+    }
   }
 
   // ── Snapshot / Restore ──
@@ -161,7 +164,7 @@ class CoreImpl implements Core {
       for (const [path, value] of Object.entries(snap)) {
         const oldValue = this.store.get(path)
         if (!Object.is(oldValue, value)) {
-          this.store.set(path, value)
+          this.dispatchWrite({ path, value, oldValue, source: 'restore' })
           this.batch_.enqueue(path, value)
         }
       }

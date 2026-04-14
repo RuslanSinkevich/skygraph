@@ -49,10 +49,10 @@ export function createHistory(core: Core, options: HistoryOptions = {}): History
     }
 
     entries.push(entry)
+    cursor++
     if (entries.length > maxEntries) {
       entries.shift()
-    } else {
-      cursor++
+      cursor--
     }
 
     groupTimer = null

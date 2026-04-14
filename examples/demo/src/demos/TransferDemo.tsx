@@ -1,99 +1,98 @@
+import { Transfer } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 import { useState } from 'react'
-import { Transfer, type TransferItem } from '../../../../packages/react/src/components/complex/Transfer'
 
-const mkData = (n: number): TransferItem[] =>
-  Array.from({ length: n }, (_, i) => ({
-    key: `k-${i}`,
-    title: `Option ${i + 1}`,
-    description: i % 6 === 0 ? 'Has description' : undefined,
-    disabled: i === 2 || i === 15,
-  }))
+const transferProps: PropDef[] = [
+  { name: 'dataSource', description: 'Data source items', type: 'TransferItem[]' },
+  { name: 'targetKeys', description: 'Keys of items in the right list', type: 'string[]' },
+  { name: 'onChange', description: 'Callback when transfer occurs', type: '(targetKeys, direction, moveKeys) => void' },
+  { name: 'showSearch', description: 'Show search input', type: 'boolean', default: 'false' },
+  { name: 'titles', description: 'Titles for left and right list', type: '[string, string]', default: "['Source', 'Target']" },
+  { name: 'disabled', description: 'Disable the transfer', type: 'boolean', default: 'false' },
+  { name: 'oneWay', description: 'One-way transfer (can only move to right)', type: 'boolean', default: 'false' },
+]
 
-const data20 = mkData(20)
-const data40 = mkData(40)
+const mockData = Array.from({ length: 10 }, (_, i) => ({
+  key: `${i}`,
+  title: `Content ${i + 1}`,
+  description: `Description of content ${i + 1}`,
+}))
 
 export function TransferDemo() {
-  const [targets, setTargets] = useState<string[]>(['k-0', 'k-5'])
-  const [oneWayTargets, setOneWayTargets] = useState<string[]>(['k-1'])
-  const [pageTargets, setPageTargets] = useState<string[]>([])
-  const [frozenTargets, setFrozenTargets] = useState<string[]>(['k-3'])
-  const [renderTargets, setRenderTargets] = useState<string[]>(['k-0', 'k-1'])
+  const [targetKeys, setTargetKeys] = useState<string[]>(['1', '3', '5'])
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      <h2>Transfer</h2>
+    <ComponentDoc
+      title="Transfer"
+      description="Double column transfer choice box."
+      whenToUse={[
+        'When you need to transfer items between two lists.',
+        'Useful for permission assignment or tag selection.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="The most basic transfer usage."
+        code={`import { Transfer } from '@skygraph/react'
 
-      <section>
-        <h3>Basic</h3>
+const mockData = Array.from({ length: 10 }, (_, i) => ({
+  key: String(i),
+  title: \`Content \${i + 1}\`,
+}))
+
+const [targetKeys, setTargetKeys] = useState(['1', '3'])
+
+<Transfer
+  dataSource={mockData}
+  targetKeys={targetKeys}
+  onChange={(keys) => setTargetKeys(keys)}
+/>`}
+      >
         <Transfer
-          dataSource={data20}
-          targetKeys={targets}
-          onChange={(next) => setTargets(next)}
-          titles={['Available', 'Chosen']}
+          dataSource={mockData}
+          targetKeys={targetKeys}
+          onChange={(keys) => setTargetKeys(keys)}
         />
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>With search</h3>
+      <DemoBox
+        title="With Search"
+        description="Transfer with search ability."
+        code={`<Transfer
+  dataSource={mockData}
+  targetKeys={targetKeys}
+  onChange={(keys) => setTargetKeys(keys)}
+  showSearch
+/>`}
+      >
         <Transfer
+          dataSource={mockData}
+          targetKeys={targetKeys}
+          onChange={(keys) => setTargetKeys(keys)}
           showSearch
-          searchPlaceholder="Filter…"
-          dataSource={data20}
-          targetKeys={targets}
-          onChange={(next) => setTargets(next)}
-          filterOption={(input, item) =>
-            item.title.toLowerCase().includes(input.toLowerCase())
-          }
         />
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>One-way</h3>
+      <DemoBox
+        title="One Way"
+        description="One-way transfer, items can only be transferred to the right."
+        code={`<Transfer
+  dataSource={mockData}
+  targetKeys={targetKeys}
+  onChange={(keys) => setTargetKeys(keys)}
+  oneWay
+/>`}
+      >
         <Transfer
+          dataSource={mockData}
+          targetKeys={targetKeys}
+          onChange={(keys) => setTargetKeys(keys)}
           oneWay
-          dataSource={data20}
-          targetKeys={oneWayTargets}
-          onChange={(next) => setOneWayTargets(next)}
-          titles={['Pool', 'Assigned']}
         />
-      </section>
+      </DemoBox>
 
-      <section>
-        <h3>Disabled items (in data) + pagination</h3>
-        <Transfer
-          dataSource={data40}
-          targetKeys={pageTargets}
-          onChange={(next) => setPageTargets(next)}
-          pagination={{ pageSize: 6 }}
-          titles={['Source', 'Target']}
-        />
-      </section>
-
-      <section>
-        <h3>Entire control disabled</h3>
-        <Transfer
-          disabled
-          dataSource={data20}
-          targetKeys={frozenTargets}
-          onChange={(next) => setFrozenTargets(next)}
-          titles={['Locked source', 'Locked target']}
-        />
-      </section>
-
-      <section>
-        <h3>Custom item render</h3>
-        <Transfer
-          dataSource={data20.slice(0, 8)}
-          targetKeys={renderTargets}
-          onChange={(next) => setRenderTargets(next)}
-          render={(item) => (
-            <span>
-              <strong>{item.title}</strong>
-              {item.description ? <span style={{ opacity: 0.65 }}> — {item.description}</span> : null}
-            </span>
-          )}
-        />
-      </section>
-    </section>
+      <PropsTable data={transferProps} />
+    </ComponentDoc>
   )
 }

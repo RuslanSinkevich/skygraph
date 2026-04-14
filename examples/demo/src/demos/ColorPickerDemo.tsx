@@ -1,97 +1,86 @@
+import { ColorPicker } from '@skygraph/react'
+import { ComponentDoc, DemoBox, PropsTable } from '../components'
+import type { PropDef } from '../components'
 import { useState } from 'react'
-import { ColorPicker } from '../../../../packages/react/src/components/ui/ColorPicker'
 
-const presets = [
-  {
-    label: 'Brand',
-    colors: ['#1677ff', '#52c41a', '#faad14', '#ff4d4f', '#722ed1'],
-  },
-  {
-    label: 'Neutrals',
-    colors: ['#ffffff', '#f5f5f5', '#d9d9d9', '#595959', '#141414'],
-  },
+const colorPickerProps: PropDef[] = [
+  { name: 'value', description: 'Current color value', type: 'string' },
+  { name: 'defaultValue', description: 'Default color value', type: 'string', default: "'#1677ff'" },
+  { name: 'onChange', description: 'Callback when color changes', type: '(color: string) => void' },
+  { name: 'presets', description: 'Preset color palettes', type: 'Array<{ label: string; colors: string[] }>' },
+  { name: 'showText', description: 'Show color text value', type: 'boolean | ((color: string) => ReactNode)', default: 'false' },
+  { name: 'format', description: 'Color format', type: "'hex' | 'rgb'", default: "'hex'" },
+  { name: 'trigger', description: 'Trigger mode to open picker', type: "'click' | 'hover'", default: "'click'" },
+  { name: 'disabled', description: 'Whether the picker is disabled', type: 'boolean', default: 'false' },
+  { name: 'size', description: 'Size of the trigger', type: "'small' | 'middle' | 'large'", default: "'middle'" },
 ]
 
 export function ColorPickerDemo() {
-  const [hex, setHex] = useState('#1677ff')
-  const [rgbOpen, setRgbOpen] = useState(false)
+  const [color, setColor] = useState('#1677ff')
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <h2>ColorPicker</h2>
+    <ComponentDoc
+      title="ColorPicker"
+      description="Components providing color selection."
+      whenToUse={[
+        'When you need a user to pick a custom color.',
+        'When you want to provide preset color palettes for quick selection.',
+      ]}
+    >
+      <DemoBox
+        title="Basic"
+        description="Basic usage."
+        code={`import { ColorPicker } from '@skygraph/react'
 
-      <section>
-        <h3>Basic</h3>
-        <ColorPicker defaultValue="#3b82f6" onChange={(c) => setHex(c)} />
-        <p style={{ marginTop: 8, fontSize: 12, opacity: 0.75 }}>Last change: {hex}</p>
-      </section>
+<ColorPicker defaultValue="#1677ff" />`}
+      >
+        <ColorPicker defaultValue="#1677ff" />
+      </DemoBox>
 
-      <section>
-        <h3>With presets</h3>
-        <ColorPicker presets={presets} defaultValue="#faad14" />
-      </section>
+      <DemoBox
+        title="Controlled"
+        description="Controlled color value."
+        code={`const [color, setColor] = useState('#1677ff')
 
-      <section>
-        <h3>showText (boolean and custom render)</h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
-          <ColorPicker showText defaultValue="#52c41a" />
-          <ColorPicker
-            showText={(c) => <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{c}</span>}
-            defaultValue="#eb2f96"
-          />
-        </div>
-      </section>
+<ColorPicker value={color} onChange={setColor} showText />`}
+      >
+        <ColorPicker value={color} onChange={setColor} showText />
+        <span style={{ marginLeft: 12 }}>Selected: {color}</span>
+      </DemoBox>
 
-      <section>
-        <h3>Formats: hex vs rgb</h3>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <ColorPicker format="hex" defaultValue="#1677ff" showText />
-          <ColorPicker format="rgb" defaultValue="#1677ff" showText />
-        </div>
-      </section>
-
-      <section>
-        <h3>Disabled &amp; controlled open (rgb panel)</h3>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-          <ColorPicker disabled defaultValue="#999999" showText />
-          <ColorPicker
-            format="rgb"
-            open={rgbOpen}
-            onOpenChange={setRgbOpen}
-            defaultValue="rgb(22, 119, 255)"
-            showText
-          />
-          <button type="button" onClick={() => setRgbOpen((o) => !o)}>
-            Toggle dropdown
-          </button>
-        </div>
-      </section>
-
-      <section>
-        <h3>Sizes</h3>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-          <ColorPicker size="small" defaultValue="#f5222d" showText />
-          <ColorPicker size="middle" defaultValue="#52c41a" showText />
-          <ColorPicker size="large" defaultValue="#722ed1" showText />
-        </div>
-      </section>
-
-      <section>
-        <h3>Hover trigger</h3>
-        <ColorPicker trigger="hover" defaultValue="#13c2c2" showText />
-      </section>
-
-      <section>
-        <h3>Preset-only workflow</h3>
-        <p style={{ fontSize: 12, opacity: 0.75, marginBottom: 8 }}>
-          Pickers still expose the full panel; presets speed up brand colors.
-        </p>
+      <DemoBox
+        title="Presets"
+        description="With preset color palettes."
+        code={`<ColorPicker
+  presets={[{
+    label: 'Recommended',
+    colors: ['#F5222D', '#FA8C16', '#FADB14', '#52C41A', '#1677FF', '#722ED1'],
+  }]}
+/>`}
+      >
         <ColorPicker
-          presets={[{ label: 'Skygraph', colors: ['#1677ff', '#0958d9', '#69b1ff', '#e6f4ff'] }]}
-          defaultValue="#1677ff"
-          showText
+          presets={[{
+            label: 'Recommended',
+            colors: ['#F5222D', '#FA8C16', '#FADB14', '#52C41A', '#1677FF', '#722ED1'],
+          }]}
         />
-      </section>
-    </section>
+      </DemoBox>
+
+      <DemoBox
+        title="Size"
+        description="Three sizes available."
+        code={`<ColorPicker size="small" defaultValue="#52c41a" />
+<ColorPicker defaultValue="#1677ff" />
+<ColorPicker size="large" defaultValue="#722ed1" />`}
+      >
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <ColorPicker size="small" defaultValue="#52c41a" />
+          <ColorPicker defaultValue="#1677ff" />
+          <ColorPicker size="large" defaultValue="#722ed1" />
+        </div>
+      </DemoBox>
+
+      <PropsTable data={colorPickerProps} />
+    </ComponentDoc>
   )
 }
