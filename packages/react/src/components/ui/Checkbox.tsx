@@ -3,14 +3,21 @@ import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps } from '../../types'
 import { Spin } from './Spin'
 
+/** Props for the Checkbox component. */
 export interface CheckboxProps extends BaseComponentProps, InteractiveProps {
+  /** Controlled checked state. */
   checked?: boolean
+  /** Uncontrolled initial checked state. */
   defaultChecked?: boolean
+  /** Renders the native checkbox in indeterminate state. */
   indeterminate?: boolean
+  /** Called when the checked state changes. */
   onChange?: (checked: boolean) => void
+  /** Label content beside the control. */
   children?: React.ReactNode
 }
 
+/** Labeled checkbox with indeterminate support and optional loading state. */
 export function Checkbox({
   checked,
   defaultChecked,

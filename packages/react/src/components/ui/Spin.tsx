@@ -2,15 +2,25 @@ import React from 'react'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
+/** Props for loading spinner, overlay, and optional content blur. */
 export interface SpinProps extends BaseComponentProps, SizableProps {
+  /** When `true`, shows the loading state (subject to `delay`). @default true */
   spinning?: boolean
+  /** Milliseconds to wait before showing the spinner after `spinning` becomes true. */
   delay?: number
+  /** Optional text below the indicator. */
   tip?: string
+  /** When `true`, covers the viewport instead of inline or wrapping children. */
   fullscreen?: boolean
+  /** Custom spinner node; defaults to a styled status element. */
   indicator?: React.ReactNode
+  /** When set, shows an overlay with blur on this content while loading. */
   children?: React.ReactNode
 }
 
+/**
+ * Loading indicator with optional delay, tip, fullscreen mode, and child overlay.
+ */
 export function Spin({
   spinning = true,
   size: sizeProp,

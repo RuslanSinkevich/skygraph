@@ -4,92 +4,242 @@ import type { RowId, SortConfig, SortDirection } from '@skygraph/core'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../../types'
 import type { ContextMenuItem } from './ContextMenu'
 
+/** Re-exports core row and sort types used by the table. */
 export type { RowId, SortDirection, SortConfig }
 
+/** Cell merge span metadata from `onCell`. */
 export interface CellSpan {
+  /** Vertical span count; `0` hides the cell. */
   rowSpan?: number
+  /** Horizontal span count; `0` hides the cell. */
   colSpan?: number
 }
 
+/** Props passed to a custom column filter dropdown. */
 export interface FilterDropdownProps {
+  /** Filter values currently selected in the dropdown. */
   selectedKeys: unknown[]
+  /** Updates selected filter values before confirm. */
   setSelectedKeys: (keys: unknown[]) => void
+  /** Applies the current selection and closes the dropdown. */
   confirm: () => void
+  /** Clears active filters for the column. */
   clearFilters: () => void
+  /** Closes the dropdown without applying. */
   close: () => void
 }
 
+/** Built-in footer aggregate operation identifiers. */
+export type AggregateType = 'sum' | 'avg' | 'count' | 'min' | 'max'
+
+/** Column definition for `Table` (leaf or group parent). */
 export interface TableColumn {
+  /** Unique column key matching row data fields. */
   key: string
+  /** Header label or node. */
   title: React.ReactNode
+  /** Default column width in pixels. */
   width?: number
+  /** Minimum width when resizing. */
   minWidth?: number
+  /** Enables click-to-sort on this column. */
   sortable?: boolean
+  /** Shows a drag handle to resize the column. */
   resizable?: boolean
+  /** Allows in-cell editing when `onCellEdit` is set on the table. */
   editable?: boolean
+  /** Sticky column position. */
   fixed?: 'left' | 'right'
+  /** Truncates overflowing cell text with ellipsis. */
   ellipsis?: boolean
+  /** Cell text alignment. */
   align?: 'left' | 'center' | 'right'
+  /** Hides the column when true. */
   hidden?: boolean
+  /** Preset filter options for the column filter menu. */
   filters?: Array<{ text: string; value: unknown }>
+  /** Predicate to test if a row matches a filter value. */
   onFilter?: (value: unknown, row: Record<string, unknown>) => boolean
+  /** Custom filter dropdown UI or render function. */
   filterDropdown?: React.ReactNode | ((props: FilterDropdownProps) => React.ReactNode)
+  /** Custom filter icon in the header. */
   filterIcon?: React.ReactNode | ((filtered: boolean) => React.ReactNode)
+  /** When false, filter mode is single-select radio. */
   filterMultiple?: boolean
+  /** Enables or customizes filter option search in the menu. */
   filterSearch?: boolean | ((input: string, record: { text: string; value: unknown }) => boolean)
+  /** Filter UI mode: value list menu or per-column search. */
   filterMode?: 'menu' | 'search'
+  /** Controlled active filter values for the column. */
   filteredValue?: unknown[]
+  /** Initial filter values for uncontrolled usage. */
   defaultFilteredValue?: unknown[]
+  /** Custom cell content renderer. */
   render?: (value: unknown, row: Record<string, unknown>, id: RowId) => React.ReactNode
+  /** Returns rowspan/colspan for the cell at this row index. */
   onCell?: (row: Record<string, unknown>, rowIndex: number) => CellSpan
+  /** Child columns for grouped headers. */
   children?: TableColumn[]
+  /** Small info icon with this content in the header. */
+  tooltip?: string | React.ReactNode
+  /** Extra class for body cells. */
+  cellClassName?: string | ((value: unknown, row: Record<string, unknown>, id: RowId) => string)
+  /** Shows a copy-to-clipboard control on the cell. */
+  copyable?: boolean
+  /** Footer aggregate for this column (built-in name or custom reducer). */
+  aggregate?: AggregateType | ((values: unknown[]) => React.ReactNode)
 }
 
+/** Controlled row selection configuration. */
 export interface RowSelectionConfig {
+  /** Keys of currently selected rows. */
   selectedKeys: RowId[]
+  /** Called when selection changes. */
   onChange: (keys: RowId[], rows: Array<Record<string, unknown>>) => void
+  /** Selection control type. */
   type?: 'checkbox' | 'radio'
 }
 
+/** Expandable row configuration. */
 export interface ExpandableConfig {
+  /** Renders content below the row when expanded. */
   expandedRowRender: (row: Record<string, unknown>, id: RowId) => React.ReactNode
+  /** Controlled expanded row keys. */
   expandedKeys?: RowId[]
+  /** Fires when a row expand state toggles. */
   onExpand?: (expanded: boolean, id: RowId) => void
+  /** Limits which rows show an expand control. */
   rowExpandable?: (row: Record<string, unknown>) => boolean
 }
 
+/** Tree-shaped row data options for the table. */
 export interface TreeConfig {
+  /** Row field holding nested rows (default `children`). */
   childrenColumnName?: string
+  /** Pixels per tree depth level. */
   indentSize?: number
+  /** Starts with all tree nodes expanded. */
   defaultExpandAllRows?: boolean
 }
 
+/** One cell in a custom summary row from `summary`. */
 export interface SummaryCell {
+  /** Cell body. */
   content: React.ReactNode
+  /** Horizontal span in the summary grid. */
   colSpan?: number
+  /** Text alignment. */
   align?: 'left' | 'center' | 'right'
 }
 
+/** Configuration for the optional row number column. */
+export interface RowNumberConfig {
+  /** Header title for the row number column. */
+  title?: React.ReactNode
+  /** Column width in pixels. */
+  width?: number
+  /** Pins the row number column. */
+  fixed?: 'left'
+}
+
+/** Row ids pinned to the top or bottom of the scroll area. */
+export interface PinnedRowsConfig {
+  /** Row ids rendered in a block above the main body. */
+  top?: RowId[]
+  /** Row ids rendered in a block below the main body. */
+  bottom?: RowId[]
+}
+
+/** Internal metadata for a grouped header row in the body. */
+export interface GroupRow {
+  /** Marks this synthetic row as a group header. */
+  __isGroup: true
+  /** Stable key for the group (stringified value). */
+  groupKey: string
+  /** Raw grouping value. */
+  groupValue: unknown
+  /** Number of rows in the group. */
+  count: number
+  /** Whether child rows are visible. */
+  expanded: boolean
+  /** Per-column aggregate display for the group header. */
+  aggregates: Record<string, React.ReactNode>
+}
+
+/** Localizable strings for the table UI. */
 export interface TableLocale {
+  /** Empty state body text. */
   emptyText?: React.ReactNode
+  /** Filter reset button label. */
   filterReset?: string
+  /** Filter confirm button label. */
   filterConfirm?: string
+  /** Placeholder for filter list search. */
   filterSearchPlaceholder?: string
+  /** Message when filter search has no matches. */
   filterEmptyText?: string
+  /** Toolbar global search placeholder. */
   searchPlaceholder?: string
+  /** Ascending sort affordance in header. */
   sortAsc?: React.ReactNode
+  /** Descending sort affordance in header. */
   sortDesc?: React.ReactNode
+  /** Row/tree expander icon. */
   expandIcon?: React.ReactNode
+  /** Default column filter icon. */
   filterIcon?: React.ReactNode
+  /** Column search-mode filter icon. */
   searchIcon?: React.ReactNode
+  /** Formats total row count label. */
   totalRows?: (count: number) => string
+  /** Formats selection count in the summary bar. */
   selectedRows?: (count: number) => string
+  /** CSV export toolbar label. */
   exportCSV?: string
+  /** JSON export toolbar label. */
+  exportJSON?: string
+  /** Copy table toolbar label. */
   copyTable?: string
+  /** Pin column to left context label. */
   pinLeft?: string
+  /** Pin column to right context label. */
   pinRight?: string
+  /** Unpin column context label. */
   unpin?: string
+  /** Column visibility menu trigger label. */
   showColumns?: string
+  /** Print toolbar label. */
+  print?: string
+  /** Enter fullscreen label. */
+  fullscreen?: string
+  /** Exit fullscreen label. */
+  exitFullscreen?: string
+  /** Density menu trigger label. */
+  density?: string
+  /** Compact density option. */
+  densitySmall?: string
+  /** Default density option. */
+  densityMiddle?: string
+  /** Comfortable density option. */
+  densityLarge?: string
+  /** Collapse all groups toolbar label. */
+  groupCollapse?: string
+  /** Expand all groups toolbar label. */
+  groupExpand?: string
+  /** Aggregate label for sum. */
+  sum?: string
+  /** Aggregate label for average. */
+  avg?: string
+  /** Aggregate label for count. */
+  count?: string
+  /** Aggregate label for minimum. */
+  min?: string
+  /** Aggregate label for maximum. */
+  max?: string
+  /** Copy success toast (reserved). */
+  copiedToClipboard?: string
+  /** Row number column header. */
+  rowNumber?: string
 }
 
 export const DEFAULT_LOCALE: Required<TableLocale> = {
@@ -107,96 +257,206 @@ export const DEFAULT_LOCALE: Required<TableLocale> = {
   totalRows: (count) => `${count} rows`,
   selectedRows: (count) => `${count} selected`,
   exportCSV: 'Export CSV',
+  exportJSON: 'Export JSON',
   copyTable: 'Copy',
   pinLeft: 'Pin Left',
   pinRight: 'Pin Right',
   unpin: 'Unpin',
   showColumns: 'Show Columns',
+  print: 'Print',
+  fullscreen: 'Fullscreen',
+  exitFullscreen: 'Exit Fullscreen',
+  density: 'Density',
+  densitySmall: 'Compact',
+  densityMiddle: 'Default',
+  densityLarge: 'Comfortable',
+  groupCollapse: 'Collapse All',
+  groupExpand: 'Expand All',
+  sum: 'Sum',
+  avg: 'Avg',
+  count: 'Count',
+  min: 'Min',
+  max: 'Max',
+  copiedToClipboard: 'Copied!',
+  rowNumber: '#',
 }
 
 export const DEFAULT_COL_WIDTH = 150
 export const MIN_COL_WIDTH = 50
 export const SELECTION_COL_WIDTH = '40px'
 
+/** Action button in the selection summary bar. */
 export interface SelectionSummaryAction {
+  /** Stable action key. */
   key: string
+  /** Button label. */
   label: React.ReactNode
+  /** Invoked with current selection when the action is clicked. */
   onClick: (selectedKeys: RowId[], selectedRows: Array<Record<string, unknown>>) => void
+  /** Destructive styling hint. */
   danger?: boolean
 }
 
+/**
+ * Props for the `Table` component: column model, selection, scrolling, and toolbar features.
+ * Styling and interaction props from `BaseComponentProps`, `InteractiveProps`, and `SizableProps` are inherited without per-prop docs here.
+ */
 export interface TableProps extends Omit<UseTableOptions, 'columns'>, BaseComponentProps, InteractiveProps, SizableProps {
+  /** Column definitions (leaf and/or grouped). */
   columns: TableColumn[]
+  /** Dataset rows bound to the table engine (from `useTable` options). */
+  data?: Array<{ id: RowId; data: Record<string, unknown> }>
+  /** Page size for built-in pagination (from table engine options). */
+  pageSize?: number
+  /** Row selection state and callbacks. */
   rowSelection?: RowSelectionConfig
+  /** Optional expandable row renderer. */
   expandable?: ExpandableConfig
+  /** Renders hierarchical rows from nested data. */
   tree?: TreeConfig
+  /** Sticky header while scrolling vertically. */
   sticky?: boolean
+  /** Enables column reorder by drag-and-drop in the header. */
   draggable?: boolean
+  /** Shows toolbar search across visible columns. */
   searchable?: boolean
+  /** @default true */
   showPagination?: boolean
+  /** Outlined table borders. */
   bordered?: boolean
 
+  /** Horizontal and/or vertical scroll constraints. */
   scroll?: { x?: number | string; y?: number | string }
+  /** Custom summary rows below the body. */
   summary?: (data: Array<{ id: RowId; data: Record<string, unknown> }>) => SummaryCell[][]
+  /** Row click handler. */
   onRowClick?: (id: RowId, data: Record<string, unknown>) => void
+  /** Commits inline cell edit values. */
   onCellEdit?: (id: RowId, column: string, value: unknown) => void
+  /** Called after header columns are reordered by drag-and-drop. */
   onColumnOrderChange?: (order: string[]) => void
+  /** Extra class for each body row. */
   rowClassName?: string | ((row: Record<string, unknown>, id: RowId) => string)
+  /** Overrides default locale strings. */
   locale?: TableLocale
 
-  // Multi-sort
+  /** Enables shift-click multi-column sort. */
   multiSort?: boolean
+  /** Controlled multi-sort model. */
   sorts?: SortConfig[]
+  /** Fires when multi-sort state changes. */
   onSortsChange?: (sorts: SortConfig[]) => void
 
-  // Row drag & drop
+  /** Enables dragging body rows to reorder. */
   rowDraggable?: boolean
+  /** Called after row reorder via drag-and-drop. */
   onRowOrderChange?: (fromIndex: number, toIndex: number) => void
 
-  // Context menu
+  /** Builds context menu items for a header cell. */
   headerContextMenu?: (column: TableColumn) => ContextMenuItem[]
+  /** Builds context menu items for a body cell. */
   cellContextMenu?: (id: RowId, column: string, data: Record<string, unknown>) => ContextMenuItem[]
 
-  // Column visibility
+  /** Shows column visibility controls in the toolbar. */
   columnVisibility?: boolean
+  /** Controlled hidden column keys. */
   hiddenColumns?: string[]
+  /** Fires when visible columns change. */
   onHiddenColumnsChange?: (keys: string[]) => void
 
-  // Column pinning
+  /** Enables pin/unpin via header context menu. */
   columnPinning?: boolean
+  /** Fires when a column pin side changes. */
   onColumnPinChange?: (key: string, fixed: 'left' | 'right' | undefined) => void
 
-  // Virtual scroll
+  /** Virtualizes the body for large row counts. */
   virtual?: boolean | { rowHeight?: number; overscan?: number }
 
-  // Export
+  /** Shows CSV export and copy actions in the toolbar. */
   exportable?: boolean
+  /** Custom export handler; default downloads CSV. */
   onExport?: (data: string[][]) => void
 
-  // Selection summary bar
+  /** Shows a bar when rows are selected. */
   selectionSummary?: boolean
+  /** Buttons rendered in the selection summary bar. */
   selectionActions?: SelectionSummaryAction[]
 
-  // Zebra striping
+  /** Zebra striping on body rows. */
   striped?: boolean
 
-  // Advanced pagination
+  /** Page size selector on the pagination control. */
   showSizeChanger?: boolean
+  /** Options for page size selector. */
   pageSizeOptions?: number[]
+  /** Quick jump to page input on pagination. */
   showQuickJumper?: boolean
+  /** Total / range label on pagination. */
   showTotal?: boolean | ((total: number, range: [number, number]) => React.ReactNode)
+  /** Fires when page size changes. */
   onPageSizeChange?: (size: number) => void
+
+  /** Prepends a row index column. */
+  showRowNumber?: boolean | RowNumberConfig
+
+  /** Shows aggregate values in a footer row. */
+  footer?: boolean
+
+  /** Fullscreen toggle in the toolbar. */
+  fullscreenable?: boolean
+
+  /** Density (row height) selector in the toolbar. */
+  densityToggle?: boolean
+
+  /** Field key to group rows by. */
+  groupBy?: string
+  /** Starts with all groups expanded. */
+  defaultGroupExpanded?: boolean
+  /** Fires when a group expand state changes. */
+  onGroupExpandChange?: (groupKey: string, expanded: boolean) => void
+
+  /** Arrow-key focus navigation between cells. */
+  keyboardNavigation?: boolean
+
+  /** Pins specific row ids to top or bottom. */
+  pinnedRows?: PinnedRowsConfig
+
+  /** Replaces default empty state content. */
+  emptyContent?: React.ReactNode
+
+  /** Print action in the toolbar. */
+  printable?: boolean
+
+  /** JSON export action in the toolbar. */
+  exportJSON?: boolean
+
+  /** Row hover highlight; set false to disable. */
+  highlightOnHover?: boolean
+
+  /** Double-click resize handle fits column to content. */
+  columnAutoResize?: boolean
 }
 
+/** One cell in a multi-row header grid. */
 export interface HeaderCell {
+  /** Column at this header position. */
   col: TableColumn
+  /** Horizontal span in header grid units. */
   colSpan: number
+  /** Vertical span in header grid units. */
   rowSpan: number
 }
 
+/** Flattened row model passed to body renderers. */
 export interface FlatRow {
+  /** Row id. */
   id: RowId
+  /** Row field values. */
   data: Record<string, unknown>
+  /** Tree depth when tree mode is enabled. */
   depth: number
+  /** Whether the row has nested children in tree mode. */
   hasChildren: boolean
+  /** Present when this row is a group header. */
+  __groupRow?: GroupRow
 }

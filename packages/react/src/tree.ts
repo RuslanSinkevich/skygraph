@@ -2,11 +2,14 @@ export { Tree } from './components/complex/Tree'
 export type {
   TreeProps,
   TreeLocale,
+  TreeNodeStatus,
+  TreeNodeAction,
   CheckInfo,
   SelectInfo,
   ExpandInfo,
   DragInfo,
   DropInfo,
+  EditInfo,
 } from './components/complex/Tree'
 export { useTree } from './hooks/useTree'
 export type { UseTreeOptions, UseTreeReturn } from './hooks/useTree'

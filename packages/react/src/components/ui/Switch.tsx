@@ -3,14 +3,21 @@ import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 import { Spin } from './Spin'
 
+/** Props for the Switch component. */
 export interface SwitchProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Controlled on state. */
   checked?: boolean
+  /** Uncontrolled initial on state. */
   defaultChecked?: boolean
+  /** Called when the switch is toggled. */
   onChange?: (checked: boolean) => void
+  /** Content shown while the switch is on. */
   checkedChildren?: React.ReactNode
+  /** Content shown while the switch is off. */
   unCheckedChildren?: React.ReactNode
 }
 
+/** Toggle switch with optional on/off slot content and loading state. */
 export function Switch({
   checked,
   defaultChecked,

@@ -1,9 +1,13 @@
 import React from 'react'
 import type { BaseComponentProps } from '../../types'
 
+/** Props for the Empty state component. */
 export interface EmptyProps extends BaseComponentProps {
+  /** Illustration or icon above the description; uses built-in art when omitted. */
   image?: React.ReactNode
+  /** Message below the image; defaults to "No Data" when undefined, hidden when null. */
   description?: React.ReactNode
+  /** Optional footer actions or supplementary content. */
   children?: React.ReactNode
 }
 
@@ -23,6 +27,9 @@ const DefaultImage = () => (
   </svg>
 )
 
+/**
+ * Presents a no-data state with optional image, description, and footer slot.
+ */
 export function Empty({
   image,
   description,

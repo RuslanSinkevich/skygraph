@@ -3,6 +3,7 @@ import { useFormContext } from '../FormContext'
 import { useConfig } from '../../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps } from '../../../types'
 
+/** Supported input kinds for form field rendering and inference. */
 export type FieldType =
   | 'string'
   | 'number'
@@ -22,24 +23,42 @@ export type FieldType =
   | 'switch'
   | 'radio'
 
+/** Single choice label/value pair for select, multiselect, or radio fields. */
 export interface AutoFieldOption {
+  /** Display text for the option. */
   label: string
+  /** Stored value when the option is selected. */
   value: string | number
 }
 
+/** Props for a form field that picks its control from field name, value shape, and `type`. */
 export interface AutoFieldProps extends BaseComponentProps, InteractiveProps {
+  /** Form field key used with `useFormContext`. */
   name: string
+  /** Caption shown above the control (or inline for checkbox/switch). */
   label?: React.ReactNode
+  /** Forces a control type; otherwise inferred from value and `options`. */
   type?: FieldType
+  /** Options for select, multiselect, or radio types. */
   options?: AutoFieldOption[]
+  /** Placeholder or empty-option label where applicable. */
   placeholder?: string
+  /** Minimum numeric or range value. */
   min?: number
+  /** Maximum numeric, range, or star rating count. */
   max?: number
+  /** Step for number inputs and range sliders. */
   step?: number
+  /** `accept` attribute for file inputs. */
   accept?: string
+  /** Allows multiple files when type is `file`. */
   multiple?: boolean
 }
 
+/**
+ * Renders an appropriate input for a form field based on `type`, options, and current value.
+ * Reads and writes through `FormContext` using `name`.
+ */
 export function AutoField(props: AutoFieldProps) {
   const {
     name,

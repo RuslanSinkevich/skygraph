@@ -24,10 +24,13 @@ export interface UseTreeReturn {
   setExpandedKeys: (keys: TreeKey[]) => void
   expandAll: () => void
   collapseAll: () => void
+  expandToLevel: (level: number) => void
   check: (key: TreeKey) => void
   uncheck: (key: TreeKey) => void
   toggleCheck: (key: TreeKey) => void
   setCheckedKeys: (keys: TreeKey[]) => void
+  checkAll: () => void
+  uncheckAll: () => void
   select: (key: TreeKey, multiple?: boolean) => void
   deselect: (key: TreeKey) => void
   setSelectedKeys: (keys: TreeKey[]) => void
@@ -36,6 +39,7 @@ export interface UseTreeReturn {
   addChildren: (parentKey: TreeKey, children: TreeNodeData[]) => void
   moveNode: (dragKey: TreeKey, dropKey: TreeKey, position: -1 | 0 | 1) => TreeNodeData[] | null
   filterNodes: (predicate: ((node: TreeNodeData) => boolean) | null) => void
+  getNodePath: (key: TreeKey) => TreeKey[]
   refresh: () => void
 }
 
@@ -88,19 +92,60 @@ export function useTree(options?: UseTreeOptions): UseTreeReturn {
     refresh()
   }, [tree, refresh])
 
+  const expandToLevel = useCallback((level: number) => {
+    const flat = tree.getFlatNodes()
+    const keys: TreeKey[] = []
+    for (const item of flat) {
+      if (item.depth < level && !item.isLeaf) {
+        keys.push(item.key)
+      }
+    }
+    tree.expandAll()
+    const allFlat = tree.getFlatNodes()
+    const expandKeys: TreeKey[] = []
+    for (const item of allFlat) {
+      if (item.depth < level && !item.isLeaf) {
+        expandKeys.push(item.key)
+      }
+    }
+    tree.setExpandedKeys(expandKeys)
+    refresh()
+  }, [tree, refresh])
+
+  const checkAll = useCallback(() => {
+    const allKeys = tree.getAllKeys()
+    tree.setCheckedKeys(allKeys)
+    refresh()
+  }, [tree, refresh])
+
+  const uncheckAll = useCallback(() => {
+    tree.setCheckedKeys([])
+    refresh()
+  }, [tree, refresh])
+
+  const getNodePath = useCallback((key: TreeKey): TreeKey[] => {
+    const path: TreeKey[] = []
+    let current: TreeKey | null = key
+    while (current !== null) {
+      path.unshift(current)
+      current = tree.getParentKey(current)
+    }
+    return path
+  }, [tree])
+
   return useMemo(() => ({
     core, tree, treeState, flatNodes,
-    expand, collapse, toggleExpand, setExpandedKeys, expandAll, collapseAll,
-    check, uncheck, toggleCheck, setCheckedKeys,
+    expand, collapse, toggleExpand, setExpandedKeys, expandAll, collapseAll, expandToLevel,
+    check, uncheck, toggleCheck, setCheckedKeys, checkAll, uncheckAll,
     select, deselect, setSelectedKeys,
     markLoading, markLoaded, addChildren,
-    moveNode, filterNodes, refresh,
+    moveNode, filterNodes, getNodePath, refresh,
   }), [
     core, tree, treeState, flatNodes,
-    expand, collapse, toggleExpand, setExpandedKeys, expandAll, collapseAll,
-    check, uncheck, toggleCheck, setCheckedKeys,
+    expand, collapse, toggleExpand, setExpandedKeys, expandAll, collapseAll, expandToLevel,
+    check, uncheck, toggleCheck, setCheckedKeys, checkAll, uncheckAll,
     select, deselect, setSelectedKeys,
     markLoading, markLoaded, addChildren,
-    moveNode, filterNodes, refresh,
+    moveNode, filterNodes, getNodePath, refresh,
   ])
 }

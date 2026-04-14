@@ -2,23 +2,39 @@ import { useState, useRef, useEffect, type ReactNode } from 'react'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
+/** Single collapsible section: header, body, and optional metadata. */
 export interface CollapseItem {
+  /** Unique key used for selection state and toggling. */
   key: string
+  /** Header content shown in the panel trigger. */
   label: ReactNode
+  /** Body content revealed when the panel is expanded. */
   children: ReactNode
+  /** Optional content rendered beside the header (e.g. actions). */
   extra?: ReactNode
+  /** When `false`, hides the expand/collapse arrow. */
   showArrow?: boolean
+  /** When `true`, the panel cannot be toggled. */
   disabled?: boolean
 }
 
+/** Props for the vertical accordion-style collapse list. */
 export interface CollapseProps extends BaseComponentProps, SizableProps {
+  /** Panels to render, each with a stable `key`. */
   items: CollapseItem[]
+  /** Controlled open keys; when set, overrides internal state. */
   activeKey?: string | string[]
+  /** Initial open keys when uncontrolled. */
   defaultActiveKey?: string | string[]
+  /** Called after the open set changes (controlled or uncontrolled). */
   onChange?: (activeKey: string[]) => void
+  /** When `true`, only one panel may be open at a time. @default false */
   accordion?: boolean
+  /** When `true`, draws a border around the collapse container. @default true */
   bordered?: boolean
+  /** Placement of the expand icon relative to the header text. @default 'start' */
   expandIconPosition?: 'start' | 'end'
+  /** Transparent style without panel background borders. @default false */
   ghost?: boolean
 }
 
@@ -27,6 +43,9 @@ function toArray(val?: string | string[]): string[] {
   return Array.isArray(val) ? val : [val]
 }
 
+/**
+ * Renders an expandable list of panels with optional accordion mode and styled or unstyled markup.
+ */
 export function Collapse({
   items,
   activeKey,

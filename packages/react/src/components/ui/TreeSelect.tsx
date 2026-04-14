@@ -2,25 +2,43 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
+/** A single node in the tree select data source. */
 export interface TreeSelectNode {
+  /** Unique key used in selection value arrays. */
   key: string
+  /** Display label for the node. */
   title: React.ReactNode
+  /** Nested child nodes. */
   children?: TreeSelectNode[]
+  /** Gray out the node and block selection. */
   disabled?: boolean
+  /** Per-node selection enable flag. */
   selectable?: boolean
+  /** Per-node checkbox enable flag when the tree is checkable. */
   checkable?: boolean
 }
 
+/** Props for the hierarchical dropdown selector. */
 export interface TreeSelectProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Tree structure to render in the panel. */
   treeData: TreeSelectNode[]
+  /** Selected key(s); string for single mode, array when multi or checkable. */
   value?: string | string[]
+  /** Initial selection when uncontrolled. */
   defaultValue?: string | string[]
+  /** Called when selection changes. */
   onChange?: (value: string | string[]) => void
+  /** Allow selecting more than one leaf (toggle keys). */
   multiple?: boolean
+  /** Show checkboxes and treat selection as multi-value. */
   treeCheckable?: boolean
+  /** Filter visible nodes by a search box in the dropdown. */
   showSearch?: boolean
+  /** Show a control to clear the current selection. */
   allowClear?: boolean
+  /** Text when nothing is selected. @default 'Select...' */
   placeholder?: string
+  /** Expand all parent nodes on first render. @default false */
   treeDefaultExpandAll?: boolean
 }
 
@@ -37,6 +55,9 @@ function flattenTree(nodes: TreeSelectNode[], parentDisabled = false): Array<Tre
   return result
 }
 
+/**
+ * Dropdown that lists a tree with expand/collapse, optional search, and single or multi selection.
+ */
 export function TreeSelect({
   treeData,
   value,

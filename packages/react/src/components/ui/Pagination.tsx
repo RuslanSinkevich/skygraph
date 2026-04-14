@@ -3,20 +3,36 @@ import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps } from '../../types'
 import type React from 'react'
 
+/** Props for page navigation, optional total text, page size, and quick jump. */
 export interface PaginationProps extends BaseComponentProps {
+  /** Current page number (1-based). */
   current: number
+  /** Total number of records across all pages. */
   total: number
+  /** Number of items per page. @default 10 */
   pageSize?: number
+  /** Called when the user selects a different page. */
   onChange?: (page: number) => void
+  /** Called when the user picks a new value from the size changer. */
   onPageSizeChange?: (size: number) => void
+  /** Renders total count text, or a custom node from total and visible range. */
   showTotal?: boolean | ((total: number, range: [number, number]) => React.ReactNode)
+  /** Disables all controls; falls back to ConfigProvider when omitted. */
   disabled?: boolean
+  /** Renders prev/next with current/total only, hiding page numbers. */
   simple?: boolean
+  /** Shows a select to change `pageSize`. */
   showSizeChanger?: boolean
+  /** Options for the page size select. @default [10, 20, 50, 100] */
   pageSizeOptions?: number[]
+  /** Shows an input to jump to a page by number. */
   showQuickJumper?: boolean
 }
 
+/**
+ * Page controls with numbered pages, ellipsis folding, and optional size changer and jumper.
+ * Clamps the current page into valid range for the given total and page size.
+ */
 export function Pagination({
   current,
   total,

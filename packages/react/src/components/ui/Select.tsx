@@ -4,22 +4,40 @@ import { Transition } from './Transition'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 import { Spin } from './Spin'
 
+/** Single selectable entry in a Select dropdown or native option list. */
 export interface SelectOption {
+  /** Display text for the option. */
   label: string
+  /** Value submitted with the form and returned by onChange. */
   value: string | number
+  /** When true, the option cannot be selected. */
   disabled?: boolean
+  /** When true, shows a loading state for the option. */
   loading?: boolean
 }
 
+/** Props for the Select combobox; supports styled or native unstyled rendering. */
 export interface SelectProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Options shown in the dropdown or native select. */
   options: SelectOption[]
+  /** Controlled selected value. */
   value?: string | number
+  /** Initial value when uncontrolled. */
   defaultValue?: string | number
+  /** Text shown when nothing is selected. */
   placeholder?: string
+  /** Called when the selection changes. */
   onChange?: (value: string | number) => void
+  /** Called when the control loses focus. */
   onBlur?: () => void
 }
 
+/**
+ * Dropdown or native select for choosing one option from a list.
+ * Keyboard and click-outside behavior apply in the styled (non-unstyled) mode.
+ *
+ * @default placeholder - `'Select...'`
+ */
 export function Select({
   value,
   defaultValue,

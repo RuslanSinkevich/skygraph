@@ -1,6 +1,8 @@
+import type React from 'react'
 import type { RowId } from '@skygraph/core'
-import type { TableColumn, HeaderCell, FlatRow, CellSpan } from './types'
+import type { TableColumn, HeaderCell, FlatRow, CellSpan, AggregateType, GroupRow } from './types'
 
+/** Returns leaf columns in visual order, flattening grouped definitions. */
 export function flattenLeafColumns(cols: TableColumn[]): TableColumn[] {
   const result: TableColumn[] = []
   for (const col of cols) {
@@ -13,6 +15,7 @@ export function flattenLeafColumns(cols: TableColumn[]): TableColumn[] {
   return result
 }
 
+/** Builds a row-major grid of header cells for grouped columns. */
 export function buildHeaderRows(cols: TableColumn[]): HeaderCell[][] {
   function getDepth(c: TableColumn): number {
     if (!c.children || c.children.length === 0) return 1
@@ -43,6 +46,7 @@ export function buildHeaderRows(cols: TableColumn[]): HeaderCell[][] {
   return rows
 }
 
+/** Flattens nested row data into visible rows respecting `expandedSet`. */
 export function flattenTreeRows(
   rows: Array<{ id: RowId; data: Record<string, unknown> }>,
   childrenKey: string,
@@ -61,6 +65,7 @@ export function flattenTreeRows(
   return result
 }
 
+/** Returns every row id that has nested children (for expand-all). */
 export function collectAllTreeIds(
   rows: Array<{ id: RowId; data: Record<string, unknown> }>,
   childrenKey: string,
@@ -76,6 +81,7 @@ export function collectAllTreeIds(
   return ids
 }
 
+/** Maps `${rowId}:${colKey}` to rowspan/colspan from `column.onCell`. */
 export function computeSpanMap(
   columns: TableColumn[],
   flatRows: FlatRow[],
@@ -96,6 +102,7 @@ export function computeSpanMap(
   return map
 }
 
+/** Keys of cells that should not render because they are covered by spans. */
 export function computeHiddenCells(
   columns: TableColumn[],
   flatRows: FlatRow[],
@@ -130,6 +137,7 @@ export function computeHiddenCells(
   return hidden
 }
 
+/** Computes sticky left/right, alignment, and ellipsis styles for a column. */
 export function getFixedStyle(
   col: TableColumn,
   fixedLeftOffsets: Record<string, number>,
@@ -154,4 +162,136 @@ export function getFixedStyle(
     s.zIndex = isHeader ? 4 : 2
   }
   return s
+}
+
+/** Reduces numeric column values with a built-in aggregate type. */
+export function computeAggregate(
+  values: unknown[],
+  type: AggregateType,
+): number | string {
+  const nums = values.map(Number).filter((n) => !isNaN(n))
+  if (nums.length === 0) return type === 'count' ? values.length : '-'
+
+  switch (type) {
+    case 'sum':
+      return Math.round(nums.reduce((a, b) => a + b, 0) * 100) / 100
+    case 'avg':
+      return Math.round((nums.reduce((a, b) => a + b, 0) / nums.length) * 100) / 100
+    case 'count':
+      return values.length
+    case 'min':
+      return Math.min(...nums)
+    case 'max':
+      return Math.max(...nums)
+  }
+}
+
+/** Inserts group header rows and optional child rows for one group-by field. */
+export function groupByColumn(
+  flatRows: FlatRow[],
+  groupByKey: string,
+  columns: TableColumn[],
+  expandedGroups: Set<string>,
+): FlatRow[] {
+  const groups = new Map<string, FlatRow[]>()
+  const groupOrder: string[] = []
+
+  for (const row of flatRows) {
+    const val = String(row.data[groupByKey] ?? 'Other')
+    if (!groups.has(val)) {
+      groups.set(val, [])
+      groupOrder.push(val)
+    }
+    groups.get(val)!.push(row)
+  }
+
+  const result: FlatRow[] = []
+  for (const gKey of groupOrder) {
+    const rows = groups.get(gKey)!
+    const expanded = expandedGroups.has(gKey)
+
+    const aggregates: Record<string, React.ReactNode> = {}
+    for (const col of columns) {
+      if (col.aggregate) {
+        const values = rows.map((r) => r.data[col.key])
+        if (typeof col.aggregate === 'function') {
+          aggregates[col.key] = col.aggregate(values)
+        } else {
+          aggregates[col.key] = computeAggregate(values, col.aggregate)
+        }
+      }
+    }
+
+    const groupRow: GroupRow = {
+      __isGroup: true,
+      groupKey: gKey,
+      groupValue: gKey,
+      count: rows.length,
+      expanded,
+      aggregates,
+    }
+
+    result.push({
+      id: `__group_${gKey}` as RowId,
+      data: {},
+      depth: 0,
+      hasChildren: false,
+      __groupRow: groupRow,
+    })
+
+    if (expanded) {
+      result.push(...rows)
+    }
+  }
+  return result
+}
+
+/** Splits rows into top-pinned, middle, and bottom-pinned lists. */
+export function separatePinnedRows(
+  flatRows: FlatRow[],
+  topIds?: RowId[],
+  bottomIds?: RowId[],
+): { top: FlatRow[]; middle: FlatRow[]; bottom: FlatRow[] } {
+  const topSet = new Set(topIds ?? [])
+  const bottomSet = new Set(bottomIds ?? [])
+
+  const top: FlatRow[] = []
+  const middle: FlatRow[] = []
+  const bottom: FlatRow[] = []
+
+  for (const row of flatRows) {
+    if (topSet.has(row.id)) top.push(row)
+    else if (bottomSet.has(row.id)) bottom.push(row)
+    else middle.push(row)
+  }
+
+  if (topIds) {
+    top.sort((a, b) => topIds.indexOf(a.id) - topIds.indexOf(b.id))
+  }
+  if (bottomIds) {
+    bottom.sort((a, b) => bottomIds.indexOf(a.id) - bottomIds.indexOf(b.id))
+  }
+
+  return { top, middle, bottom }
+}
+
+/** Footer aggregate values per column, or null when no aggregates configured. */
+export function computeColumnAggregates(
+  columns: TableColumn[],
+  flatRows: FlatRow[],
+): Record<string, React.ReactNode> | null {
+  const hasAny = columns.some((c) => c.aggregate)
+  if (!hasAny) return null
+
+  const result: Record<string, React.ReactNode> = {}
+  for (const col of columns) {
+    if (!col.aggregate) continue
+    const values = flatRows.filter((r) => !r.__groupRow).map((r) => r.data[col.key])
+    if (typeof col.aggregate === 'function') {
+      result[col.key] = col.aggregate(values)
+    } else {
+      result[col.key] = computeAggregate(values, col.aggregate)
+    }
+  }
+  return result
 }

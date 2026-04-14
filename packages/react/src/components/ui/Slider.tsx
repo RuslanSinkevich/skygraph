@@ -2,15 +2,23 @@ import React, { useRef, useCallback } from 'react'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps } from '../../types'
 
+/** Props for the Slider component. */
 export interface SliderProps extends BaseComponentProps, InteractiveProps {
+  /** Controlled value within min and max. */
   value?: number
+  /** Uncontrolled initial value. @default 0 */
   defaultValue?: number
+  /** Minimum selectable value. @default 0 */
   min?: number
+  /** Maximum selectable value. @default 100 */
   max?: number
+  /** Increment between valid values. @default 1 */
   step?: number
+  /** Called when the value changes via pointer or keyboard. */
   onChange?: (value: number) => void
 }
 
+/** Horizontal slider for picking a number between min and max with keyboard support. */
 export function Slider({
   value,
   defaultValue = 0,

@@ -70,6 +70,10 @@ function getMonthGrid(year: number, month: number): DayCell[][] {
   return weeks
 }
 
+/**
+ * Month/year calendar with panel navigation, optional custom header and cells,
+ * and fullscreen or compact layout.
+ */
 export function Calendar(props: CalendarProps) {
   const {
     value: controlledValue,

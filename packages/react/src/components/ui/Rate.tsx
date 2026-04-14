@@ -2,15 +2,23 @@ import React from 'react'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps } from '../../types'
 
+/** Props for the Rate component. */
 export interface RateProps extends BaseComponentProps, InteractiveProps {
+  /** Controlled rating value. */
   value?: number
+  /** Uncontrolled initial rating. @default 0 */
   defaultValue?: number
+  /** Number of rating symbols. @default 5 */
   count?: number
+  /** Allows selecting half steps between stars. */
   allowHalf?: boolean
+  /** Custom node rendered for each rating symbol. @default '★' */
   character?: React.ReactNode
+  /** Called when the rating value changes. */
   onChange?: (value: number) => void
 }
 
+/** Star-style rating with hover preview, half steps, and keyboard adjustment. */
 export function Rate({
   value,
   defaultValue = 0,

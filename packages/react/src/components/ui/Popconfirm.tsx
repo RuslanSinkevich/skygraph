@@ -4,18 +4,32 @@ import { Transition } from './Transition'
 import { useFocusTrap } from '../../hooks/a11y/useFocusTrap'
 import type { BaseComponentProps } from '../../types'
 
+/** Props for the confirmation bubble anchored to a trigger element. */
 export interface PopconfirmProps extends BaseComponentProps {
+  /** Main confirmation question or summary. */
   title: React.ReactNode
+  /** Optional supporting text below the title. */
   description?: React.ReactNode
+  /** Called when the user confirms. */
   onConfirm?: () => void
+  /** Called when the user cancels or dismisses without confirming. */
   onCancel?: () => void
+  /** Label for the confirm action button. @default 'Yes' */
   okText?: string
+  /** Label for the cancel action button. @default 'No' */
   cancelText?: string
+  /** Popover position relative to the trigger. @default 'top' */
   placement?: 'top' | 'bottom' | 'left' | 'right'
+  /** Single React element that opens the popconfirm on click. */
   children: React.ReactElement
+  /** When `true`, the trigger does not open the popconfirm. */
   disabled?: boolean
 }
 
+/**
+ * Lightweight confirm dialog on click: wraps a trigger and shows OK/Cancel.
+ * Closes on outside click or after confirm/cancel.
+ */
 export function Popconfirm({
   title,
   description,

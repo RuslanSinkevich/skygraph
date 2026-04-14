@@ -1,29 +1,52 @@
 import { useState, useRef, useEffect, type ReactNode } from 'react'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
+/** Single menu entry: leaf item, submenu, group heading, or divider. */
 export interface MenuItem {
+  /** Unique key for selection and open-state tracking. */
   key: string
+  /** Visible label or custom node. */
   label: ReactNode
+  /** Optional icon shown before the label. */
   icon?: ReactNode
+  /** When true, the item cannot be activated. */
   disabled?: boolean
+  /** When true, styles the item as a destructive action. */
   danger?: boolean
+  /** Nested items for a submenu; omit for a leaf. */
   children?: MenuItem[]
+  /** Renders as a titled group or a non-interactive divider. */
   type?: 'group' | 'divider'
 }
 
+/** Props for the hierarchical menu with optional inline, horizontal, or vertical layout. */
 export interface MenuProps extends BaseComponentProps, SizableProps {
+  /** Top-level menu items (may include groups and nested submenus). */
   items: MenuItem[]
+  /** Layout and interaction mode for the root menu. @default 'vertical' */
   mode?: 'vertical' | 'horizontal' | 'inline'
+  /** Controlled list of selected item keys. */
   selectedKeys?: string[]
+  /** Initial selected keys when `selectedKeys` is not set. @default [] */
   defaultSelectedKeys?: string[]
+  /** Controlled list of keys for expanded inline submenus. */
   openKeys?: string[]
+  /** Initial open submenu keys when `openKeys` is not set. @default [] */
   defaultOpenKeys?: string[]
+  /** Called after the user selects a leaf item. */
   onSelect?: (info: { key: string; selectedKeys: string[] }) => void
+  /** Called when inline submenu expand/collapse state changes. */
   onOpenChange?: (openKeys: string[]) => void
+  /** Collapses inline mode to icons only at the root level. @default false */
   inlineCollapsed?: boolean
+  /** Built-in color scheme for styled menus. @default 'light' */
   theme?: 'light' | 'dark'
 }
 
+/**
+ * Renders an accessible menu tree with support for groups, dividers, and nested submenus.
+ * Supports controlled or uncontrolled selection and open keys.
+ */
 export function Menu({
   items,
   mode = 'vertical',

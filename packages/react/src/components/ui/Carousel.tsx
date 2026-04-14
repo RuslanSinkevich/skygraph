@@ -1,15 +1,25 @@
 import React, { useState, useEffect, useCallback, Children } from 'react'
 import type { BaseComponentProps } from '../../types'
 
+/** Props for a simple slide carousel with dots and optional autoplay. */
 export interface CarouselProps extends BaseComponentProps {
+  /** Advances to the next slide on an interval when there is more than one slide. @default false */
   autoplay?: boolean
+  /** Interval in ms between autoplay steps. @default 3000 */
   autoplaySpeed?: number
+  /** Shows dot controls to jump between slides (hidden when only one slide in styled mode). @default true */
   dots?: boolean
+  /** Where dot navigation is placed relative to the track. @default 'bottom' */
   dotPosition?: 'top' | 'bottom' | 'left' | 'right'
+  /** Transition between slides: horizontal offset or crossfade. @default 'slide' */
   effect?: 'slide' | 'fade'
+  /** Each direct child is treated as one slide. */
   children: React.ReactNode
 }
 
+/**
+ * Cycles through child slides with optional autoplay, dot navigation, and slide or fade transitions.
+ */
 export function Carousel({
   autoplay = false,
   autoplaySpeed = 3000,

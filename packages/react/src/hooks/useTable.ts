@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { createCore, createTable } from '@skygraph/core'
 import type {
   Core,
@@ -7,6 +7,7 @@ import type {
   TableOptions,
   RowId,
   SortDirection,
+  SortConfig,
   ColumnFilter,
 } from '@skygraph/core'
 
@@ -22,6 +23,7 @@ export interface UseTableReturn {
   visibleRows: Array<{ id: RowId; data: Record<string, unknown> }>
   tableState: TableState
   setSort: (column: string, direction: SortDirection) => void
+  setSorts: (sorts: SortConfig[]) => void
   clearSort: () => void
   addFilter: (filter: ColumnFilter) => void
   removeFilter: (column: string) => void
@@ -46,6 +48,20 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
   const [visibleRows, setVisibleRows] = useState(() => table.getVisibleRows())
   const [tableState, setTableState] = useState(() => table.getTableState())
 
+  const prevDataRef = useRef(options?.data)
+  useEffect(() => {
+    const newData = options?.data
+    if (newData === prevDataRef.current) return
+    prevDataRef.current = newData
+
+    table.reset()
+    if (newData) {
+      table.addRows(newData)
+    }
+    setVisibleRows(table.getVisibleRows())
+    setTableState(table.getTableState())
+  }, [options?.data, table])
+
   const refresh = useCallback(() => {
     setVisibleRows(table.getVisibleRows())
     setTableState(table.getTableState())
@@ -54,6 +70,14 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
   const setSort = useCallback(
     (column: string, direction: SortDirection) => {
       table.setSort(column, direction)
+      refresh()
+    },
+    [table, refresh]
+  )
+
+  const setSorts = useCallback(
+    (sorts: SortConfig[]) => {
+      table.setSorts(sorts)
       refresh()
     },
     [table, refresh]
@@ -118,6 +142,7 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
       visibleRows,
       tableState,
       setSort,
+      setSorts,
       clearSort,
       addFilter,
       removeFilter,
@@ -134,6 +159,7 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
       visibleRows,
       tableState,
       setSort,
+      setSorts,
       clearSort,
       addFilter,
       removeFilter,

@@ -1,7 +1,7 @@
 export { Table } from './Table'
 export { ContextMenu } from './ContextMenu'
 export type { ContextMenuItem, ContextMenuState } from './ContextMenu'
-export { toCSVString, toTSVString, downloadCSV, copyToClipboard } from './export'
+export { toCSVString, toTSVString, toJSONString, downloadCSV, downloadJSON, copyToClipboard, printTable } from './export'
 export type {
   TableProps,
   TableColumn,
@@ -15,4 +15,8 @@ export type {
   SelectionSummaryAction,
   HeaderCell,
   FlatRow,
+  AggregateType,
+  RowNumberConfig,
+  PinnedRowsConfig,
+  GroupRow,
 } from './types'

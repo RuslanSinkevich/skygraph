@@ -37,7 +37,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--sg-margin-sm);
-  z-index: 10;
+  z-index: var(--sg-z-loading);
   background: var(--sg-spin-overlay-bg, rgba(255, 255, 255, 0.65));
   border-radius: var(--sg-border-radius);
 }

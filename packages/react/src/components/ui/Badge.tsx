@@ -1,18 +1,31 @@
 import React from 'react'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
+/** Props for the Badge component (count, dot, or status ribbon). */
 export interface BadgeProps extends BaseComponentProps, SizableProps {
+  /** Numeric value shown in the badge; hidden when zero unless `showZero`. */
   count?: number
+  /** Renders a small dot indicator instead of a numeric count. */
   dot?: boolean
+  /** Maximum count before showing `{overflowCount}+`. @default 99 */
   overflowCount?: number
+  /** When true, shows the badge even when `count` is zero. */
   showZero?: boolean
+  /** Custom background color for the dot or count (CSS color). */
   color?: string
+  /** Preset status style for standalone status badges. */
   status?: 'success' | 'error' | 'warning' | 'processing' | 'default'
+  /** Text shown next to the status dot when `status` is set. */
   text?: React.ReactNode
+  /** Pixel offset `[right, top]` for the dot or count position. */
   offset?: [number, number]
+  /** Wrapped trigger element (e.g. icon or avatar). */
   children?: React.ReactNode
 }
 
+/**
+ * Displays a notification count, dot, or status label on a child element.
+ */
 export function Badge({
   count,
   dot,

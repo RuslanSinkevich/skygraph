@@ -2,7 +2,9 @@ import React, { useState } from 'react'
 import type { UseHistoryReturn } from '../../hooks/useHistory'
 import type { BaseComponentProps } from '../../types'
 
+/** Props for the devtools time-travel history panel (base layout props come from `BaseComponentProps`). */
 export interface HistoryPanelProps extends BaseComponentProps {
+  /** History controller from `useHistory` (entries, cursor, undo/redo, jump, clear). */
   history: UseHistoryReturn
 }
 
@@ -84,6 +86,9 @@ const styles: Record<string, React.CSSProperties> = {
   },
 }
 
+/**
+ * Time-travel UI listing history entries with undo/redo controls and expandable patch details.
+ */
 export function HistoryPanel({ history, className, style }: HistoryPanelProps) {
   const { entries, cursor, canUndo, canRedo, undo, redo, jumpTo, clear } = history
   const [expanded, setExpanded] = useState<number | null>(null)

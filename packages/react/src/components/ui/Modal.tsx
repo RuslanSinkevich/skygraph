@@ -4,15 +4,26 @@ import { Transition } from './Transition'
 import { useFocusTrap } from '../../hooks/a11y/useFocusTrap'
 import type { BaseComponentProps } from '../../types'
 
+/** Props for the modal dialog overlay. */
 export interface ModalProps extends BaseComponentProps {
+  /** When `true`, the modal is visible. */
   open: boolean
+  /** Called when the modal should close (Escape, mask click, or close control). */
   onClose: () => void
+  /** Optional heading text; used for the accessible name when set. */
   title?: string
+  /** Main dialog body content. */
   children?: React.ReactNode
+  /** Optional footer region below the body (e.g. actions). */
   footer?: React.ReactNode
+  /** Dialog width as a CSS length or number (pixels). @default 520 */
   width?: number | string
 }
 
+/**
+ * Modal dialog with mask, optional title/footer, focus trap, and Escape to close.
+ * Renders a bare structure when `unstyled` is set.
+ */
 export function Modal({
   open,
   onClose,

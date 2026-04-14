@@ -1,20 +1,32 @@
 import React, { createContext, useContext, useMemo } from 'react'
 import type { SizeType, SgLocale } from '../types'
 
+/** Global Skygraph component configuration merged through React context. */
 export interface SgConfig {
+  /** Default size token for nested components. */
   size?: SizeType
+  /** Disables interactions for nested components when true. */
   disabled?: boolean
+  /** Enables bordered styling for nested components when true. */
   bordered?: boolean
+  /** Locale messages shallow-merged with the parent provider when set. */
   locale?: SgLocale
+  /** Root CSS class prefix applied to nested Skygraph components. */
   prefixCls?: string
 }
 
 const SgConfigContext = createContext<SgConfig>({})
 
+/** Props for `ConfigProvider`, extending `SgConfig` with React children. */
 export interface ConfigProviderProps extends SgConfig {
+  /** Tree of components that consume merged configuration from this provider. */
   children: React.ReactNode
 }
 
+/**
+ * Merges Skygraph configuration with any parent provider and exposes it via context.
+ * Descendants read values through `useConfig` or `useConfigWithDefaults`.
+ */
 export function ConfigProvider({ children, ...config }: ConfigProviderProps) {
   const parent = useContext(SgConfigContext)
 
@@ -36,10 +48,15 @@ export function ConfigProvider({ children, ...config }: ConfigProviderProps) {
   return <SgConfigContext.Provider value={merged}>{children}</SgConfigContext.Provider>
 }
 
+/** Returns the merged `SgConfig` from the nearest ancestor `ConfigProvider`. */
 export function useConfig(): SgConfig {
   return useContext(SgConfigContext)
 }
 
+/**
+ * Resolves effective `size` and `disabled` from props, context, and explicit defaults.
+ * Returns the original props plus `resolvedSize` and `resolvedDisabled` for consumers.
+ */
 export function useConfigWithDefaults<T extends Record<string, unknown>>(
   props: T,
   defaults: { size?: SizeType; disabled?: boolean; bordered?: boolean },

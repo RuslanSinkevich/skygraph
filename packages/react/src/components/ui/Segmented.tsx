@@ -6,11 +6,17 @@ export type SegmentedOption =
   | string
   | { label: React.ReactNode; value: string; icon?: React.ReactNode; disabled?: boolean }
 
+/** Props for a horizontal group of mutually exclusive segment choices. */
 export interface SegmentedProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Segment definitions as strings or objects with label, value, and optional icon. */
   options: SegmentedOption[]
+  /** Controlled selected segment value. */
   value?: string
+  /** Initial value when uncontrolled; falls back to first option value if unset. */
   defaultValue?: string
+  /** Called when the user selects a segment. */
   onChange?: (value: string) => void
+  /** When true, the control stretches to the full width of its container. */
   block?: boolean
 }
 
@@ -19,6 +25,10 @@ function normalizeOption(opt: SegmentedOption) {
   return opt
 }
 
+/**
+ * Segmented control (radio group) for picking one of several options.
+ * Renders as styled pills or, when unstyled, as native radio inputs.
+ */
 export function Segmented({
   options,
   value,

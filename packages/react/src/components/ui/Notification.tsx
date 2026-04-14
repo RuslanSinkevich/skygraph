@@ -2,15 +2,24 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Transition } from './Transition'
 import type { BaseComponentProps } from '../../types'
 
+/** Visual variant for notification styling and icon. */
 export type NotificationType = 'success' | 'error' | 'warning' | 'info'
 
+/** Options passed to `notification.open` and shorthand helpers. */
 export interface NotificationConfig {
+  /** Notification style variant; defaults to `info` when omitted in the card. */
   type?: NotificationType
+  /** Primary line of text (title). */
   message: React.ReactNode
+  /** Optional secondary detail below the message. */
   description?: React.ReactNode
+  /** Auto-dismiss delay in ms; `0` disables auto-close. */
   duration?: number
+  /** Stable id for deduplication; a generated id is used if omitted. */
   key?: string
+  /** Called after the notification is removed (manual or auto). */
   onClose?: () => void
+  /** Corner stack this toast belongs to; must match a mounted container. */
   placement?: 'topRight' | 'topLeft' | 'bottomRight' | 'bottomLeft'
 }
 
@@ -68,10 +77,16 @@ const typeIcons: Record<NotificationType, string> = {
   info: 'ℹ',
 }
 
+/** Props for the region that renders toasts for one corner placement. */
 export interface NotificationContainerProps extends BaseComponentProps {
+  /** Which corner this container listens to; filters incoming notifications. @default 'topRight' */
   placement?: 'topRight' | 'topLeft' | 'bottomRight' | 'bottomLeft'
 }
 
+/**
+ * Subscribes to the global notification store and renders matching toasts.
+ * Mount one instance per `placement` you use (typically in app root).
+ */
 export function NotificationContainer({
   placement = 'topRight',
   unstyled,

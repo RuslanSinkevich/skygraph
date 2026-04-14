@@ -3,20 +3,31 @@ import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps } from '../../types'
 import { Spin } from './Spin'
 
+/** One selectable option in a radio group. */
 export interface RadioOption {
+  /** Visible label for the option. */
   label: string
+  /** Value emitted when this option is selected. */
   value: string | number
+  /** Disables this option regardless of group-level disabled state. */
   disabled?: boolean
 }
 
+/** Props for the RadioGroup component. */
 export interface RadioGroupProps extends BaseComponentProps, InteractiveProps {
+  /** Controlled selected value. */
   value?: string | number
+  /** Uncontrolled initial selected value. */
   defaultValue?: string | number
+  /** Options rendered as radio controls. */
   options: RadioOption[]
+  /** Stacks options horizontally or vertically. @default 'horizontal' */
   direction?: 'horizontal' | 'vertical'
+  /** Called when the selected value changes. */
   onChange?: (value: string | number) => void
 }
 
+/** Mutually exclusive radio options in a horizontal or vertical group. */
 export function RadioGroup({
   value,
   defaultValue,

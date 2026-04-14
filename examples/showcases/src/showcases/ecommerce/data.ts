@@ -1,11 +1,29 @@
+export type ProductStatus = 'active' | 'draft' | 'archived'
+
 export interface Product {
   id: string
+  sku: string
   name: string
+  description: string
   category: string
+  subcategory: string
+  brand: string
   price: number
+  cost: number
+  margin: number
   stock: number
-  status: 'active' | 'draft' | 'archived'
+  reserved: number
+  available: number
+  status: ProductStatus
   rating: number
+  reviews: number
+  sold: number
+  revenue: number
+  weight: number
+  tags: string[]
+  createdAt: string
+  updatedAt: string
+  featured: boolean
 }
 
 export interface Order {
@@ -96,15 +114,53 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
-export const products: Product[] = productNames.map((name, i) => ({
-  id: `p${i + 1}`,
-  name,
-  category: pick(['Electronics', 'Clothing', 'Home & Garden']),
-  price: Math.round((Math.random() * 500 + 9.99) * 100) / 100,
-  stock: Math.floor(Math.random() * 200),
-  status: pick(['active', 'active', 'active', 'draft', 'archived'] as const),
-  rating: Math.round((3 + Math.random() * 2) * 10) / 10,
-}))
+const brands = ['SkyTech', 'NeoBrand', 'CoreWave', 'PrimeGear', 'AlphaLine', 'ZenCraft', 'VoltEdge', 'ProAxis']
+const subcategories: Record<string, string[]> = {
+  'Electronics': ['Phones', 'Laptops', 'Accessories', 'Audio', 'Cameras'],
+  'Clothing': ["Men's", "Women's", 'Kids', 'Sportswear'],
+  'Home & Garden': ['Furniture', 'Kitchen', 'Decor', 'Tools'],
+}
+const tagPool = ['bestseller', 'new', 'sale', 'eco', 'premium', 'limited', 'clearance', 'trending', 'exclusive', 'seasonal']
+
+export const products: Product[] = productNames.map((name, i) => {
+  const category = pick(['Electronics', 'Clothing', 'Home & Garden'])
+  const price = Math.round((Math.random() * 500 + 9.99) * 100) / 100
+  const cost = Math.round(price * (0.3 + Math.random() * 0.4) * 100) / 100
+  const stock = Math.floor(Math.random() * 200)
+  const reserved = Math.floor(Math.random() * Math.min(stock, 20))
+  const sold = Math.floor(Math.random() * 2000)
+  const numTags = 1 + Math.floor(Math.random() * 3)
+  const tags: string[] = []
+  for (let t = 0; t < numTags; t++) {
+    const tag = pick(tagPool)
+    if (!tags.includes(tag)) tags.push(tag)
+  }
+  return {
+    id: `p${i + 1}`,
+    sku: `SKU-${String(10000 + i)}`,
+    name,
+    description: `High-quality ${name.toLowerCase()} for everyday use. Durable and reliable.`,
+    category,
+    subcategory: pick(subcategories[category]),
+    brand: pick(brands),
+    price,
+    cost,
+    margin: Math.round((1 - cost / price) * 10000) / 100,
+    stock,
+    reserved,
+    available: stock - reserved,
+    status: pick(['active', 'active', 'active', 'draft', 'archived'] as const),
+    rating: Math.round((3 + Math.random() * 2) * 10) / 10,
+    reviews: Math.floor(Math.random() * 500),
+    sold,
+    revenue: Math.round(sold * price * 100) / 100,
+    weight: Math.round((0.1 + Math.random() * 5) * 100) / 100,
+    tags,
+    createdAt: new Date(Date.now() - Math.random() * 365 * 86400000).toISOString().slice(0, 10),
+    updatedAt: new Date(Date.now() - Math.random() * 30 * 86400000).toISOString().slice(0, 10),
+    featured: Math.random() > 0.7,
+  }
+})
 
 export const orders: Order[] = Array.from({ length: 40 }, (_, i) => {
   const orderItems: OrderItem[] = Array.from({ length: 1 + Math.floor(Math.random() * 4) }, () => {
@@ -132,10 +188,42 @@ export const orderStatusStep: Record<Order['status'], number> = {
   cancelled: -1,
 }
 
+export interface Customer {
+  id: string
+  name: string
+  email: string
+  totalOrders: number
+  totalSpent: number
+  avgOrderValue: number
+  lastOrder: string
+  status: 'active' | 'inactive' | 'vip'
+  registeredAt: string
+}
+
+export const customerList: Customer[] = customers.map((name, i) => {
+  const custOrders = orders.filter(o => o.customer === name)
+  const spent = custOrders.reduce((s, o) => s + o.total, 0)
+  return {
+    id: `cust${i + 1}`,
+    name,
+    email: `${name.toLowerCase().replace(' ', '.')}@email.com`,
+    totalOrders: custOrders.length,
+    totalSpent: Math.round(spent * 100) / 100,
+    avgOrderValue: custOrders.length ? Math.round((spent / custOrders.length) * 100) / 100 : 0,
+    lastOrder: custOrders.length ? custOrders.sort((a, b) => b.date.localeCompare(a.date))[0].date : 'N/A',
+    status: spent > 2000 ? 'vip' : custOrders.length > 0 ? 'active' : 'inactive',
+    registeredAt: new Date(Date.now() - Math.random() * 365 * 86400000).toISOString().slice(0, 10),
+  }
+})
+
 export function productToRow(p: Product) {
   return { id: p.id, data: { ...p } as Record<string, unknown> }
 }
 
 export function orderToRow(o: Order) {
   return { id: o.id, data: { ...o, itemCount: o.items.length } as Record<string, unknown> }
+}
+
+export function customerToRow(c: Customer) {
+  return { id: c.id, data: { ...c } as Record<string, unknown> }
 }

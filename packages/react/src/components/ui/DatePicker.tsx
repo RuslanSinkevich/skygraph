@@ -93,55 +93,97 @@ const DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
 export type PickerMode = 'date' | 'month' | 'year' | 'week'
 
+/** Named shortcut that sets the calendar to a single date or a range. */
 export interface DatePreset {
+  /** Preset label shown in the sidebar. */
   label: string
+  /** Date applied for single picker, or [start, end] for range presets. */
   value: Date | [Date, Date]
 }
 
+/** Fine-grained options when time selection is enabled on the date picker. */
 export interface ShowTimeConfig {
+  /** Time portion format string (supports HH, mm, ss tokens). */
   format?: string
+  /** Step between selectable hours in the time scroller. */
   hourStep?: number
+  /** Step between selectable minutes in the time scroller. */
   minuteStep?: number
+  /** Step between selectable seconds in the time scroller. */
   secondStep?: number
+  /** Initial time used when opening the panel without a selected date. */
   defaultValue?: Date
 }
 
 // ── Props ──
 
+/** Props for picking a single calendar date (and optional time) with presets and placement. */
 export interface DatePickerProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Controlled selected date or null when cleared. */
   value?: Date | null
+  /** Initial date when uncontrolled. */
   defaultValue?: Date
+  /** Called when the value is committed or cleared; second arg is formatted string. */
   onChange?: (date: Date | null, dateString: string) => void
+  /** Called when a day is selected in the calendar (including while picking time). */
   onCalendarChange?: (date: Date | null) => void
+  /** Placeholder shown when no date is selected. */
   placeholder?: string
+  /** Display and parse format (YYYY, MM, DD, HH, mm, ss). */
   format?: string
+  /** Granularity: full date, month only, year only, or week (week mode uses date UI). */
   picker?: PickerMode
+  /** When true, show default time UI; when an object, pass ShowTimeConfig. */
   showTime?: boolean | ShowTimeConfig
+  /** When true, show a Today action in the footer (date mode without time). */
   showToday?: boolean
+  /** When true with showTime, show a Now action in the footer. */
   showNow?: boolean
+  /** When true, show a clear control when a value exists. */
   allowClear?: boolean
+  /** Return true to disable specific calendar days. */
   disabledDate?: (date: Date) => boolean
+  /** Sidebar shortcuts for common dates or ranges. */
   presets?: DatePreset[]
+  /** Corner alignment of the dropdown relative to the input. */
   placement?: 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'
+  /** Controlled visibility of the dropdown. */
   open?: boolean
+  /** Called when the dropdown opens or closes. */
   onOpenChange?: (open: boolean) => void
+  /** Called when the panel closes after an outside click (blur semantics). */
   onBlur?: () => void
+  /** When true, the field shows text only; otherwise the input is editable. */
   inputReadOnly?: boolean
 }
 
+/** Props for selecting a start and end date (optional time) in one control. */
 export interface RangePickerProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Controlled range; null entries mean that end is not set yet. */
   value?: [Date | null, Date | null]
+  /** Initial range when uncontrolled. */
   defaultValue?: [Date, Date]
+  /** Called when the range changes; includes formatted strings for both ends. */
   onChange?: (dates: [Date | null, Date | null], dateStrings: [string, string]) => void
+  /** Placeholders for start and end inputs. */
   placeholder?: [string, string]
+  /** Display format for both values. */
   format?: string
+  /** Enable time columns for both ends; object passes ShowTimeConfig. */
   showTime?: boolean | ShowTimeConfig
+  /** When true, show a clear control when either end has a value. */
   allowClear?: boolean
+  /** Return true to disable specific calendar days. */
   disabledDate?: (date: Date) => boolean
+  /** Sidebar shortcuts; tuple values apply as full range, single dates duplicate to range. */
   presets?: DatePreset[]
+  /** Node between start and end display (default arrow). */
   separator?: React.ReactNode
+  /** Corner alignment of the range dropdown. */
   placement?: 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'
+  /** Controlled visibility of the dropdown. */
   open?: boolean
+  /** Called when the dropdown opens or closes. */
   onOpenChange?: (open: boolean) => void
 }
 
@@ -455,6 +497,19 @@ function PresetsSidebar({
 // DatePicker
 // ═══════════════════════════════════════════════════════
 
+/**
+ * Single-date (or month/year) picker with optional time, presets, and typed input.
+ * Dropdown placement, open state, and today/now actions are configurable.
+ *
+ * @default placeholder - `'Select date'`
+ * @default picker - `'date'`
+ * @default showTime - `false`
+ * @default showToday - `true`
+ * @default showNow - `false`
+ * @default allowClear - `true`
+ * @default placement - `'bottomLeft'`
+ * @default inputReadOnly - `false`
+ */
 export function DatePicker({
   value,
   defaultValue,
@@ -507,10 +562,20 @@ export function DatePicker({
   const ref = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const closeDropdown = useCallback(() => {
+    setInternalOpen(false)
+    onOpenChange?.(false)
+    setIsInputting(false)
+    onBlur?.()
+  }, [onOpenChange, onBlur])
+
+  const closeRef = useRef(closeDropdown)
+  closeRef.current = closeDropdown
+
   useEffect(() => {
     const handle = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        closeDropdown()
+        closeRef.current()
       }
     }
     document.addEventListener('mousedown', handle)
@@ -538,13 +603,6 @@ export function DatePicker({
       setViewMonth(currentValue.getMonth())
       setTempTime(currentValue)
     }
-  }
-
-  const closeDropdown = () => {
-    setInternalOpen(false)
-    onOpenChange?.(false)
-    setIsInputting(false)
-    onBlur?.()
   }
 
   const commitValue = (d: Date | null) => {
@@ -780,6 +838,16 @@ export function DatePicker({
 // RangePicker
 // ═══════════════════════════════════════════════════════
 
+/**
+ * Two-month range selector with optional time columns and preset shortcuts.
+ * Commits the range after the second date is chosen (or OK when time is enabled).
+ *
+ * @default placeholder - `['Start date', 'End date']`
+ * @default showTime - `false`
+ * @default allowClear - `true`
+ * @default separator - `'→'`
+ * @default placement - `'bottomLeft'`
+ */
 export function RangePicker({
   value,
   defaultValue,

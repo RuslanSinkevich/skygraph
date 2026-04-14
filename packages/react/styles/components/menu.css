@@ -40,14 +40,14 @@
 /* --- Theme --- */
 
 .sg-menu-dark {
-  background: var(--sg-gray-10);
-  color: rgba(255, 255, 255, 0.65);
+  background: var(--sg-color-bg, var(--sg-gray-10));
+  color: var(--sg-color-text-secondary);
   border-color: transparent;
 }
 
 .sg-menu-dark .sg-menu-item:hover {
-  color: var(--sg-color-white, #fff);
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--sg-color-text);
+  background: var(--sg-color-bg-hover);
 }
 
 .sg-menu-dark .sg-menu-item-selected {

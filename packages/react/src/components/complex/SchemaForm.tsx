@@ -13,17 +13,39 @@ import type { JSONSchema } from '../../adapters/jsonSchemaAdapter'
 import type { UseFormReturn } from '../../hooks/useForm'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
+/** Builds a {@link Form} from JSON Schema or Zod (converted to JSON Schema) with {@link Field} + {@link AutoField} rows. */
 export interface SchemaFormProps extends BaseComponentProps, SizableProps {
+  /** JSON Schema object or a Zod schema (`_def` present) to derive fields and rules. */
   schema: JSONSchema | { _def?: unknown }
+  /** Called with all values on successful submit. */
   onSubmit?: (values: Record<string, unknown>) => void | Promise<void>
+  /** Passed through to the inner {@link Form}. */
   layout?: 'horizontal' | 'vertical' | 'inline'
+  /** Disables generated controls and the inner {@link Form}. */
   disabled?: boolean
+  /** External form instance; otherwise an internal `useForm` is created with schema defaults. */
   form?: UseFormReturn
-  labelCol?: { span?: number; offset?: number }
-  wrapperCol?: { span?: number; offset?: number }
+  /** Passed through to the inner {@link Form}. */
+  labelCol?: {
+    /** Column span (out of 24). */
+    span?: number
+    /** Column offset (out of 24). */
+    offset?: number
+  }
+  /** Passed through to the inner {@link Form}. */
+  wrapperCol?: {
+    /** Column span (out of 24). */
+    span?: number
+    /** Column offset (out of 24). */
+    offset?: number
+  }
   className?: string
   style?: React.CSSProperties
+  /** Label for the default submit button when `children` is omitted.
+   * @default 'Submit'
+   */
   submitText?: string
+  /** Replaces the default submit button; omit to use a primary `<button type="submit">`. */
   children?: React.ReactNode
 }
 
@@ -31,6 +53,10 @@ function isZodSchema(schema: unknown): boolean {
   return typeof schema === 'object' && schema !== null && '_def' in schema
 }
 
+/**
+ * Generates fields from `schema`, wires validation, and wraps them in {@link Form}.
+ * Supports Zod input by converting it to JSON Schema first.
+ */
 export function SchemaForm({
   schema: rawSchema,
   onSubmit,

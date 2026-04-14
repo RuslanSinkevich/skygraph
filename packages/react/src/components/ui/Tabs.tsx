@@ -3,21 +3,36 @@ import { Spin } from './Spin'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
+/** Configuration for one tab: label, panel content, and optional states. */
 export interface TabItem {
+  /** Unique key used for selection and ARIA. */
   key: string
+  /** Tab label in the tab list. */
   label: React.ReactNode
+  /** Panel body shown when this tab is active. */
   children: React.ReactNode
+  /** When true, the tab cannot be activated. */
   disabled?: boolean
+  /** When true, shows a spinner and blocks activation until cleared. */
   loading?: boolean
 }
 
+/** Props for the tab list and associated single visible panel. */
 export interface TabsProps extends BaseComponentProps, SizableProps {
+  /** Tab definitions including labels and panel content. */
   items: TabItem[]
+  /** Controlled active tab key. */
   activeKey?: string
+  /** Initial active tab when `activeKey` is not controlled. */
   defaultActiveKey?: string
+  /** Called when the active tab changes after user interaction. */
   onChange?: (key: string) => void
 }
 
+/**
+ * Tabbed interface with keyboard navigation between tabs and one visible panel.
+ * Resolves initial active key from props, then first item, when uncontrolled.
+ */
 export function Tabs({
   items,
   activeKey,

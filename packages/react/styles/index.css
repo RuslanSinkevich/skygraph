@@ -51,4 +51,10 @@
 @import './components/carousel.css';
 @import './components/descriptions.css';
 @import './components/mentions.css';
+@import './components/input-password.css';
+@import './components/search-input.css';
+@import './components/tag-input.css';
+@import './components/pin-input.css';
+@import './components/inline-edit.css';
+@import './components/input-group.css';
 @import './transitions.css';

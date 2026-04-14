@@ -2,13 +2,21 @@ import React from 'react'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, SizeType } from '../../types'
 
+/** Props for the Avatar component (image, icon, or text fallback). */
 export interface AvatarProps extends BaseComponentProps {
+  /** Image URL when displaying a photo avatar. */
   src?: string
+  /** Alt text for the image when `src` is set. */
   alt?: string
+  /** Accessible name for the avatar when there is no visible text. */
   'aria-label'?: string
+  /** Width/height in px (number) or preset size token. */
   size?: SizeType | number
+  /** Outer shape of the avatar. @default 'circle' */
   shape?: 'circle' | 'square'
+  /** Icon node shown when `src` is omitted. */
   icon?: React.ReactNode
+  /** Text or initials shown when neither `src` nor `icon` is set. */
   children?: React.ReactNode
 }
 
@@ -18,6 +26,9 @@ const sizeMap: Record<string, number> = {
   large: 40,
 }
 
+/**
+ * Renders a user avatar from an image URL, icon, or text content.
+ */
 export function Avatar({
   src,
   alt,

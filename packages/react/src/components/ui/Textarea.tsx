@@ -3,18 +3,31 @@ import { Spin } from './Spin'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
+/** Props for the multiline text field with optional character count and loading overlay. */
 export interface TextareaProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Controlled value; when omitted, uses internal state seeded by `defaultValue`. */
   value?: string
+  /** Initial value when uncontrolled. */
   defaultValue?: string
+  /** Placeholder shown when empty. */
   placeholder?: string
+  /** Visible row count on the native textarea. @default 4 */
   rows?: number
+  /** Hard cap on input length enforced in the change handler. */
   maxLength?: number
+  /** Shows current length (and `maxLength` when set) beside the field in styled mode. */
   showCount?: boolean
+  /** Emits the full string on each change. */
   onChange?: (value: string) => void
+  /** Passed through to the textarea blur event. */
   onBlur?: () => void
+  /** Passed through to the textarea focus event. */
   onFocus?: () => void
 }
 
+/**
+ * Styled textarea with configurable rows, optional character count, and loading state from shared interactive props.
+ */
 export function Textarea({
   value,
   defaultValue,

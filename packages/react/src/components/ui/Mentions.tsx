@@ -2,21 +2,35 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
+/** One mention candidate in the suggestion list. */
 export interface MentionOption {
+  /** Text inserted after the trigger prefix when the row is chosen. */
   value: string
+  /** Optional display string; defaults to value when omitted. */
   label?: string
 }
 
+/** Props for a textarea that shows mention suggestions after a prefix. */
 export interface MentionsProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Controlled textarea value. */
   value?: string
+  /** Initial value when uncontrolled. */
   defaultValue?: string
+  /** Called when the textarea content changes. */
   onChange?: (value: string) => void
+  /** Character(s) that start a mention (e.g. @ or #). */
   prefix?: string | string[]
+  /** Suggestion list filtered by the text after the active prefix. */
   options?: MentionOption[]
+  /** Vertical position of the suggestion dropdown relative to the field. */
   placement?: 'top' | 'bottom'
+  /** Called with the current query and matched prefix while typing a mention. */
   onSearch?: (text: string, prefix: string) => void
+  /** Called when a suggestion is inserted into the text. */
   onSelect?: (option: MentionOption, prefix: string) => void
+  /** Textarea placeholder. */
   placeholder?: string
+  /** Visible height of the textarea in rows. */
   rows?: number
 }
 
@@ -27,6 +41,16 @@ interface MentionState {
   startIndex: number
 }
 
+/**
+ * Textarea with @-style mentions: shows a filtered list after a configured prefix.
+ * Supports keyboard navigation (arrows, Enter, Escape) when the list is open.
+ *
+ * @default defaultValue - `''`
+ * @default prefix - `'@'`
+ * @default options - `[]`
+ * @default placement - `'bottom'`
+ * @default rows - `3`
+ */
 export function Mentions({
   value,
   defaultValue = '',

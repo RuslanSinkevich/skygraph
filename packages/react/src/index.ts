@@ -35,6 +35,13 @@ export type {
   CellSpan,
   TableLocale,
   FilterDropdownProps,
+  AggregateType,
+  RowNumberConfig,
+  PinnedRowsConfig,
+  GroupRow,
+  SelectionSummaryAction,
+  HeaderCell,
+  FlatRow,
 } from './components/complex/Table'
 export { useTable } from './hooks/useTable'
 export type { UseTableOptions, UseTableReturn } from './hooks/useTable'
@@ -43,11 +50,14 @@ export { Tree } from './components/complex/Tree'
 export type {
   TreeProps,
   TreeLocale,
+  TreeNodeStatus,
+  TreeNodeAction,
   CheckInfo,
   SelectInfo,
   ExpandInfo,
   DragInfo,
   DropInfo,
+  EditInfo,
 } from './components/complex/Tree'
 export { useTree } from './hooks/useTree'
 export type { UseTreeOptions, UseTreeReturn } from './hooks/useTree'
@@ -187,3 +197,17 @@ export { Mentions } from './components/ui/Mentions'
 export type { MentionsProps, MentionOption } from './components/ui/Mentions'
 export { Transition } from './components/ui/Transition'
 export type { TransitionProps } from './components/ui/Transition'
+
+// Form-oriented UI components
+export { InputPassword } from './components/ui/InputPassword'
+export type { InputPasswordProps, PasswordStrength } from './components/ui/InputPassword'
+export { SearchInput } from './components/ui/SearchInput'
+export type { SearchInputProps } from './components/ui/SearchInput'
+export { TagInput } from './components/ui/TagInput'
+export type { TagInputProps } from './components/ui/TagInput'
+export { PinInput } from './components/ui/PinInput'
+export type { PinInputProps } from './components/ui/PinInput'
+export { InlineEdit } from './components/ui/InlineEdit'
+export type { InlineEditProps } from './components/ui/InlineEdit'
+export { InputGroup } from './components/ui/InputGroup'
+export type { InputGroupProps } from './components/ui/InputGroup'

@@ -1,15 +1,25 @@
 import React from 'react'
 import type { BaseComponentProps } from '../../types'
 
+/** Props for the Skeleton loading placeholder layout. */
 export interface SkeletonProps extends BaseComponentProps {
+  /** Enables a shimmering animation on placeholders. @default false */
   active?: boolean
+  /** Shows an avatar block; pass an object for `size` and `shape`. */
   avatar?: boolean | { size?: number; shape?: 'circle' | 'square' }
+  /** Shows a title bar; pass an object for custom `width`. @default true */
   title?: boolean | { width?: number | string }
+  /** Shows paragraph lines; pass an object for `rows` and per-line `width`. @default true */
   paragraph?: boolean | { rows?: number; width?: Array<number | string> }
+  /** When false, renders `children` instead of the skeleton. @default true */
   loading?: boolean
+  /** Real content shown when `loading` is false. */
   children?: React.ReactNode
 }
 
+/**
+ * Placeholder UI while content loads; supports avatar, title, and paragraph blocks.
+ */
 export function Skeleton({
   active = false,
   avatar,

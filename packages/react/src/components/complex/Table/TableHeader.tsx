@@ -13,49 +13,96 @@ import type {
 } from './types'
 import type { ContextMenuItem, ContextMenuState } from './ContextMenu'
 
+/** Internal props for the table header row(s). */
 interface HeaderProps {
+  /** Visible leaf columns in flat header mode. */
   columns: TableColumn[]
+  /** Multi-row header grid when columns are grouped. */
   headerRows: HeaderCell[][] | null
+  /** Whether grouped header rows are used. */
   hasColumnGroups: boolean
+  /** Selection column state when enabled. */
   rowSelection?: RowSelectionConfig
+  /** Expand column spacer when enabled. */
   expandable?: ExpandableConfig
+  /** Enables column drag reorder. */
   draggable?: boolean
+  /** All visible rows are selected. */
   allSelected: boolean
+  /** Some but not all visible rows are selected. */
   someSelected: boolean
+  /** Column key currently highlighted as drag target. */
   dragOver: string | null
+  /** Resolved locale strings. */
   t: Required<TableLocale>
+  /** Sticky/fixed styles for header cells. */
   fixedStyle: (col: TableColumn, isHeader?: boolean) => React.CSSProperties
+  /** Sort click handler (supports multi-sort via shift). */
   onSort: (col: TableColumn, shiftKey?: boolean) => void
+  /** Select-all checkbox toggle. */
   onSelectAll: () => void
+  /** Column drag start. */
   onDragStart: (e: React.DragEvent, key: string) => void
+  /** Column drag over. */
   onDragOver: (e: React.DragEvent, key: string) => void
+  /** Clears drag-over highlight. */
   onDragLeave: () => void
+  /** Column drop to reorder. */
   onDrop: (e: React.DragEvent, key: string) => void
+  /** Column drag end cleanup. */
   onDragEnd: () => void
+  /** Begins column resize drag. */
   onResizeStart: (e: React.MouseEvent, colKey: string) => void
+  /** Filter dropdown UI state. */
   filterState: {
+    /** Active filter values per column key. */
     activeFilters: Record<string, unknown[]>
+    /** Per-column filter search box text. */
     filterSearchText: Record<string, string>
+    /** Column key with open filter dropdown, if any. */
     openFilterDropdown: string | null
   }
+  /** Filter dropdown callbacks and helpers. */
   filterActions: {
+    /** Opens or closes a column filter popover. */
     setOpenFilterDropdown: (key: string | null) => void
+    /** Toggles a value in multi-select filters. */
     handleFilterToggle: (colKey: string, value: unknown, multiple: boolean) => void
+    /** Applies filters and closes the dropdown. */
     handleFilterConfirm: (colKey: string) => void
+    /** Clears filters for a column. */
     handleFilterReset: (colKey: string) => void
+    /** Closes the dropdown for a column. */
     handleFilterClose: (colKey: string) => void
+    /** Updates search-mode filter text. */
     handleSearchFilterChange: (colKey: string, text: string) => void
+    /** Updates filter list search text state. */
     setFilterSearchText: React.Dispatch<React.SetStateAction<Record<string, string>>>
+    /** Builds props for custom `filterDropdown` renderers. */
     getFilterDropdownProps: (col: TableColumn) => FilterDropdownProps
   }
+  /** Ref attached to the open filter panel for outside click. */
   filterRef: React.RefObject<HTMLDivElement>
-  // Multi-sort
+  /** Active multi-sort configuration. */
   sorts: SortConfig[]
+  /** 0-based sort priority index for a column, or -1. */
   getSortIndex: (colKey: string) => number
+  /** Current sort direction for a column, if any. */
   getSortDirection: (colKey: string) => SortDirection | null
-  // Context menu
+  /** Extra context menu items for a header cell. */
   headerContextMenu?: (column: TableColumn) => ContextMenuItem[]
+  /** Opens the shared context menu. */
   onContextMenu: (state: ContextMenuState | null) => void
+  /** Renders row number header cell. */
+  showRowNumber?: boolean
+  /** Spacer column for row drag handle. */
+  rowDraggable?: boolean
+  /** Enables pin/unpin items in the header menu. */
+  columnPinning?: boolean
+  /** Pins a column left, right, or unpins. */
+  onPinColumn?: (key: string, fixed: 'left' | 'right' | undefined) => void
+  /** Auto-fits column width to measured content. */
+  onAutoResize?: (colKey: string) => void
 }
 
 function SortIndicator({
@@ -95,6 +142,12 @@ function SortIndicator({
   )
 }
 
+function ColumnTooltip({ content }: { content: string | React.ReactNode }) {
+  if (!content) return null
+  return <span className="sg-table-th-tooltip" title={typeof content === 'string' ? content : undefined}>ⓘ</span>
+}
+
+/** Renders flat or grouped header cells with sort, filter, resize, and drag handles. */
 export function TableHeader(props: HeaderProps) {
   const {
     columns,
@@ -124,6 +177,11 @@ export function TableHeader(props: HeaderProps) {
     getSortDirection,
     headerContextMenu,
     onContextMenu,
+    showRowNumber,
+    rowDraggable,
+    columnPinning,
+    onPinColumn,
+    onAutoResize,
   } = props
 
   const filterProps = (col: TableColumn) => ({
@@ -141,10 +199,41 @@ export function TableHeader(props: HeaderProps) {
     t,
   }
 
-  const handleHeaderContext = (e: React.MouseEvent, col: TableColumn) => {
-    if (!headerContextMenu) return
+  const buildContextMenu = (col: TableColumn, e: React.MouseEvent) => {
     e.preventDefault()
-    const items = headerContextMenu(col)
+    const items: ContextMenuItem[] = []
+
+    if (headerContextMenu) {
+      items.push(...headerContextMenu(col))
+    }
+
+    if (columnPinning && onPinColumn) {
+      if (items.length > 0) {
+        items.push({ key: 'pin-divider', label: '', divider: true })
+      }
+      if (col.fixed !== 'left') {
+        items.push({
+          key: 'pin-left',
+          label: t.pinLeft,
+          onClick: () => onPinColumn(col.key, 'left'),
+        })
+      }
+      if (col.fixed !== 'right') {
+        items.push({
+          key: 'pin-right',
+          label: t.pinRight,
+          onClick: () => onPinColumn(col.key, 'right'),
+        })
+      }
+      if (col.fixed) {
+        items.push({
+          key: 'unpin',
+          label: t.unpin,
+          onClick: () => onPinColumn(col.key, undefined),
+        })
+      }
+    }
+
     if (items.length > 0) {
       onContextMenu({ x: e.clientX, y: e.clientY, items })
     }
@@ -160,6 +249,14 @@ export function TableHeader(props: HeaderProps) {
             role="row"
             style={{ display: 'contents' }}
           >
+            {ri === 0 && rowDraggable && (
+              <div className="sg-table-th" role="columnheader" style={{ gridRow: `span ${headerRows.length}` }} />
+            )}
+            {ri === 0 && showRowNumber && (
+              <div className="sg-table-th sg-table-cell-row-number" role="columnheader" style={{ gridRow: `span ${headerRows.length}` }}>
+                {t.rowNumber}
+              </div>
+            )}
             {ri === 0 && rowSelection && (
               <div
                 className="sg-table-th sg-table-cell-selection"
@@ -203,12 +300,11 @@ export function TableHeader(props: HeaderProps) {
                   }}
                   role="columnheader"
                   onClick={isLeaf ? (e) => onSort(cell.col, e.shiftKey) : undefined}
-                  onContextMenu={
-                    isLeaf ? (e) => handleHeaderContext(e, cell.col) : undefined
-                  }
+                  onContextMenu={isLeaf ? (e) => buildContextMenu(cell.col, e) : undefined}
                 >
                   <span className="sg-table-th-content">
                     {cell.col.title}
+                    {isLeaf && cell.col.tooltip && <ColumnTooltip content={cell.col.tooltip} />}
                     {isLeaf && <SortIndicator col={cell.col} {...sortProps} />}
                   </span>
                   {isLeaf && <FilterTrigger {...filterProps(cell.col)} />}
@@ -217,6 +313,7 @@ export function TableHeader(props: HeaderProps) {
                     <div
                       className="sg-table-resize-handle"
                       onMouseDown={(e) => onResizeStart(e, cell.col.key)}
+                      onDoubleClick={onAutoResize ? (e) => { e.stopPropagation(); onAutoResize(cell.col.key) } : undefined}
                     />
                   )}
                 </div>
@@ -234,6 +331,14 @@ export function TableHeader(props: HeaderProps) {
       role="row"
       style={{ display: 'contents' }}
     >
+      {rowDraggable && (
+        <div className="sg-table-th" role="columnheader" />
+      )}
+      {showRowNumber && (
+        <div className="sg-table-th sg-table-cell-row-number" role="columnheader">
+          {t.rowNumber}
+        </div>
+      )}
       {rowSelection && (
         <div className="sg-table-th sg-table-cell-selection" role="columnheader">
           {rowSelection.type !== 'radio' && (
@@ -262,7 +367,7 @@ export function TableHeader(props: HeaderProps) {
           style={fixedStyle(col, true)}
           role="columnheader"
           onClick={(e) => onSort(col, e.shiftKey)}
-          onContextMenu={(e) => handleHeaderContext(e, col)}
+          onContextMenu={(e) => buildContextMenu(col, e)}
           draggable={draggable && !col.fixed}
           onDragStart={draggable ? (e) => onDragStart(e, col.key) : undefined}
           onDragOver={draggable ? (e) => onDragOver(e, col.key) : undefined}
@@ -272,6 +377,7 @@ export function TableHeader(props: HeaderProps) {
         >
           <span className="sg-table-th-content">
             {col.title}
+            {col.tooltip && <ColumnTooltip content={col.tooltip} />}
             <SortIndicator col={col} {...sortProps} />
           </span>
           <FilterTrigger {...filterProps(col)} />
@@ -280,6 +386,7 @@ export function TableHeader(props: HeaderProps) {
             <div
               className="sg-table-resize-handle"
               onMouseDown={(e) => onResizeStart(e, col.key)}
+              onDoubleClick={onAutoResize ? (e) => { e.stopPropagation(); onAutoResize(col.key) } : undefined}
             />
           )}
         </div>

@@ -88,7 +88,7 @@
 
 .sg-field-has-error .sg-input:focus,
 .sg-field-has-error .sg-textarea:focus {
-  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sg-color-error) 10%, transparent);
 }
 
 /* Field help */

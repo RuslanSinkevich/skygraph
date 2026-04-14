@@ -78,16 +78,16 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
             return false
           break
         case 'gt':
-          if (typeof val !== 'number' || val <= (f.value as number)) return false
+          if (typeof val !== 'number' || typeof f.value !== 'number' || val <= f.value) return false
           break
         case 'lt':
-          if (typeof val !== 'number' || val >= (f.value as number)) return false
+          if (typeof val !== 'number' || typeof f.value !== 'number' || val >= f.value) return false
           break
         case 'gte':
-          if (typeof val !== 'number' || val < (f.value as number)) return false
+          if (typeof val !== 'number' || typeof f.value !== 'number' || val < f.value) return false
           break
         case 'lte':
-          if (typeof val !== 'number' || val > (f.value as number)) return false
+          if (typeof val !== 'number' || typeof f.value !== 'number' || val > f.value) return false
           break
       }
     }

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import type { FormEngine } from '@skygraph/core'
 
 export interface UseFieldArrayReturn {
@@ -9,12 +9,10 @@ export interface UseFieldArrayReturn {
   replace: (values: unknown[]) => void
 }
 
-let uid = 0
-function genKey() {
-  return `fa_${++uid}`
-}
-
 export function useFieldArray(form: FormEngine, name: string): UseFieldArrayReturn {
+  const counterRef = useRef(0)
+  const genKey = useCallback(() => `fa_${name}_${++counterRef.current}`, [name])
+
   const [keys, setKeys] = useState<string[]>(() => {
     const list = form.getListValue(name)
     return list.map(() => genKey())

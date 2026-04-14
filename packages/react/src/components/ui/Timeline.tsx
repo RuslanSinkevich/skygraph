@@ -1,22 +1,37 @@
 import React from 'react'
 import type { BaseComponentProps } from '../../types'
 
+/** One entry on the timeline axis (content, optional label, and marker styling). */
 export interface TimelineItem {
+  /** Main body content for this step. */
   children: React.ReactNode
+  /** Border/text color for the default dot when no custom `dot` is set. */
   color?: string
+  /** Custom marker node; replaces the default dot. */
   dot?: React.ReactNode
+  /** Optional label rendered beside or above the marker. */
   label?: React.ReactNode
+  /** Forces this item to the left or right side (overrides list `mode` for this index). */
   position?: 'left' | 'right'
 }
 
+/** Props for the vertical timeline list with optional pending tail. */
 export interface TimelineProps extends BaseComponentProps {
+  /** Ordered timeline steps. */
   items: TimelineItem[]
+  /** Layout: fixed side, or alternating left/right per item. @default 'left' */
   mode?: 'left' | 'right' | 'alternate'
+  /** When truthy, appends a pending item; if `true`, children of that item are empty. */
   pending?: React.ReactNode | boolean
+  /** Marker for the synthetic pending item when `pending` is set. */
   pendingDot?: React.ReactNode
+  /** When `true`, reverses the visual order of `items` (and pending). */
   reverse?: boolean
 }
 
+/**
+ * Displays a chronological list with axis, dots, and optional pending state.
+ */
 export function Timeline({
   items: rawItems,
   mode = 'left',

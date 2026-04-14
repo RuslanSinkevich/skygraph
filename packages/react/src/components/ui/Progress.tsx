@@ -2,16 +2,27 @@
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
+/** Props for the Progress bar or circular progress indicator. */
 export interface ProgressProps extends BaseComponentProps, SizableProps {
+  /** Completion value from 0 to 100 (clamped). */
   percent: number
+  /** Renders a horizontal bar or circular SVG progress. @default 'line' */
   type?: 'line' | 'circle'
+  /** Visual state; `normal` becomes success at 100%. @default 'normal' */
   status?: 'normal' | 'success' | 'error' | 'active'
+  /** Shows percentage text next to or inside the indicator. @default true */
   showInfo?: boolean
+  /** Bar or circle stroke thickness in pixels. */
   strokeWidth?: number
+  /** Custom color for the filled portion of the progress. */
   strokeColor?: string
+  /** SVG width/height for circle type. @default 120 */
   width?: number
 }
 
+/**
+ * Displays task completion as a line or circle, with optional percentage label.
+ */
 export function Progress({
   percent,
   type = 'line',

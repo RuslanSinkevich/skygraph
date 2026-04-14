@@ -2,32 +2,57 @@ import React, { useRef, useState, useEffect } from 'react'
 import { Checkbox } from '../../ui/Checkbox'
 import type { TableColumn, RowSelectionConfig, ExpandableConfig, FlatRow, CellSpan, RowId, TableLocale } from './types'
 
+/** Internal props for the virtualized table body. */
 interface VirtualBodyProps {
+  /** Visible columns. */
   columns: TableColumn[]
+  /** All rows to virtualize (no group rows). */
   flatRows: FlatRow[]
+  /** Fixed row height in pixels. */
   rowHeight: number
+  /** Extra rows rendered above and below the viewport. */
   overscan: number
+  /** Max height of the scroll container. */
   scrollHeight: number | string
+  /** Row selection when enabled. */
   rowSelection?: RowSelectionConfig
+  /** Expandable rows when enabled. */
   expandable?: ExpandableConfig
+  /** Tree rendering on the first column. */
   isTreeMode: boolean
+  /** Tree indent per depth level. */
   indentSize: number
+  /** Expanded tree node keys. */
   treeExpanded: Set<RowId>
+  /** Expanded detail row keys. */
   expandedKeys: Set<RowId>
+  /** Total columns including utility cells. */
   totalCols: number
+  /** Cell span map. */
   spanMap: Map<string, CellSpan>
+  /** Hidden span-covered cells. */
   hiddenCells: Set<string>
+  /** Resolved locale. */
   t: Required<TableLocale>
+  /** CSS grid-template-columns for each row. */
   gridTemplate: string
+  /** Row class or resolver. */
   rowClassName?: string | ((row: Record<string, unknown>, id: RowId) => string)
+  /** Sticky cell styles. */
   fixedStyle: (col: TableColumn) => React.CSSProperties
+  /** Row click handler. */
   onRowClick?: (id: RowId, data: Record<string, unknown>) => void
+  /** Cell edit commit. */
   onCellEdit?: (id: RowId, column: string, value: unknown) => void
+  /** Selection toggle. */
   onSelectRow: (id: RowId, row: Record<string, unknown>) => void
+  /** Detail expand toggle. */
   onToggleExpand: (id: RowId) => void
+  /** Tree expand toggle. */
   onToggleTreeExpand: (id: RowId) => void
 }
 
+/** Virtualized body: only mounts row DOM for the visible scroll window. */
 export function VirtualTableBody(props: VirtualBodyProps) {
   const {
     columns, flatRows, rowHeight, overscan, scrollHeight,

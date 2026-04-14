@@ -460,6 +460,9 @@ function DataGridInner<R extends Record<string, unknown>>(
   )
 }
 
+/**
+ * Virtualized table grid with sortable headers, resizable columns, inline editing, and clipboard hooks.
+ */
 export const DataGrid = forwardRef(DataGridInner) as <R extends Record<string, unknown>>(
   props: DataGridProps<R> & { ref?: React.Ref<DataGridRef> },
 ) => React.ReactElement

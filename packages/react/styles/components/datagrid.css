@@ -57,14 +57,14 @@
 .sg-datagrid-cell--active {
   outline: 2px solid var(--sg-color-primary);
   outline-offset: -2px;
-  z-index: 1;
+  z-index: var(--sg-z-base);
 }
 
 .sg-datagrid-cell--editing {
   padding: 0;
   outline: 2px solid var(--sg-color-primary);
   outline-offset: -2px;
-  z-index: 2;
+  z-index: calc(var(--sg-z-base) + 1);
 }
 
 .sg-datagrid-cell--selected {
@@ -73,7 +73,7 @@
 
 .sg-datagrid-cell--frozen {
   position: sticky;
-  z-index: 3;
+  z-index: var(--sg-z-sticky);
   background: var(--sg-color-bg);
 }
 

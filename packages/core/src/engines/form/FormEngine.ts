@@ -294,6 +294,12 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
       if (!record) return
       record.abortController?.abort()
 
+      const timer = debounceTimers.get(name)
+      if (timer) {
+        clearTimeout(timer)
+        debounceTimers.delete(name)
+      }
+
       if (record.options.preserve) {
         preservedValues.set(name, core.get(name))
       }
@@ -541,6 +547,7 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
 
     listMove(name: string, from: number, to: number): void {
       const current = [...form.getListValue(name)]
+      if (from < 0 || from >= current.length || to < 0 || to >= current.length) return
       const [item] = current.splice(from, 1)
       current.splice(to, 0, item)
       core.set(name, current)

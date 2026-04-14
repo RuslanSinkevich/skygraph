@@ -1,6 +1,9 @@
 import { useState, useCallback, useRef } from 'react'
 import type { CellPosition, CellRange, CellValue, DataGridColumn } from './types'
 
+/**
+ * Holds active cell, edit session, range selection, and column width state for `DataGrid`.
+ */
 export function useDataGridState<R>(columns: DataGridColumn<R>[], data: R[]) {
   const [activeCell, setActiveCell] = useState<CellPosition | null>(null)
   const [editingCell, setEditingCell] = useState<CellPosition | null>(null)

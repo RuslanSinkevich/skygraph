@@ -9,32 +9,72 @@ import type { UseFieldReturn } from '../../hooks/useField'
 import type { Rule } from '@skygraph/core'
 import type { BaseComponentProps } from '../../types'
 
+/** Props for a single named field with validation, layout, and optional custom control. */
 export interface FieldProps extends BaseComponentProps {
+  /** Registered path in the form store. */
   name: string
+  /** Visible label text; layout comes from {@link FormContext}. */
   label?: string
+  /** When `true`, prepends a required rule in addition to `rules`. */
   required?: boolean
+  /** Validation rules for this field.
+   * @default []
+   */
   rules?: Rule[]
+  /** Rules that produce warnings without failing validation. */
   warningRules?: Rule[]
+  /** Re-validates this field when any listed field changes. */
   dependencies?: string[]
+  /** When `true`, the field renders nothing (values can remain registered). */
   hidden?: boolean
+  /** Disables the control; falls back to form context `disabled`. */
   disabled?: boolean
+  /** Placeholder for the built-in `Input` / `Textarea`. */
   placeholder?: string
+  /** Built-in control type when `children` is not provided.
+   * @default 'text'
+   */
   type?: 'text' | 'email' | 'password' | 'number' | 'textarea'
+  /** Helper text shown below the control when there are no errors/warnings. */
   help?: React.ReactNode
+  /** Supplementary content below the control area. */
   extra?: React.ReactNode
+  /** Tooltip title wrapping the label text. */
   tooltip?: string
+  /** Custom control, render prop, or omit for default input/textarea. */
   children?: React.ReactNode | ((field: UseFieldReturn) => React.ReactNode)
   // New props
+  /** Renders only the control (validation wiring) without layout chrome. */
   noStyle?: boolean
+  /** Maps raw change values before committing to the store. */
   normalize?: (value: unknown, prevValue: unknown) => unknown
+  /** Custom extractor for control events (reserved for controlled wrappers). */
   getValueFromEvent?: (...args: unknown[]) => unknown
+  /** Prop name on the child that holds the value (for custom controls). */
   valuePropName?: string
+  /** Stops after the first failing rule when validating. */
   validateFirst?: boolean
+  /** Manual validation status badge; overrides engine-derived status when set. */
   validateStatus?: 'success' | 'warning' | 'error' | 'validating'
+  /** Shows feedback icons when the field has been touched. */
   hasFeedback?: boolean
+  /** Keeps value on unregister; overrides form-level `preserve` when set. */
   preserve?: boolean
-  labelCol?: { span?: number; offset?: number }
-  wrapperCol?: { span?: number; offset?: number }
+  /** Overrides form `labelCol` for this field in horizontal layout. */
+  labelCol?: {
+    /** Column span (out of 24). */
+    span?: number
+    /** Column offset (out of 24). */
+    offset?: number
+  }
+  /** Overrides form `wrapperCol` for this field in horizontal layout. */
+  wrapperCol?: {
+    /** Column span (out of 24). */
+    span?: number
+    /** Column offset (out of 24). */
+    offset?: number
+  }
+  /** Template variables merged into validation messages for this field. */
   messageVariables?: Record<string, string>
 }
 
@@ -62,6 +102,10 @@ function FeedbackIcon({
   return <span className="sg-field-feedback">{icons?.[status] ?? defaults[status]}</span>
 }
 
+/**
+ * Registers `name` with the form engine, renders label/help/errors, and either
+ * a built-in input or custom `children` / render-prop control.
+ */
 export function Field({
   name,
   label,

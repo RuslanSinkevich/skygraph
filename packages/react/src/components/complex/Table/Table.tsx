@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import { Input } from '../../ui/Input'
 import { Pagination } from '../../ui/Pagination'
 import { Spin } from '../../ui/Spin'
@@ -9,11 +9,16 @@ import { VirtualTableBody } from './VirtualTableBody'
 import { ContextMenu } from './ContextMenu'
 import { useTableState } from './useTableState'
 import { useConfig } from '../../ConfigProvider'
-import { toCSVString, downloadCSV, toTSVString, copyToClipboard } from './export'
+import { toCSVString, downloadCSV, toTSVString, toJSONString, downloadJSON, copyToClipboard, printTable } from './export'
 import type { TableProps } from './types'
 
 const DRAG_HANDLE_WIDTH = '32px'
+const ROW_NUMBER_WIDTH = '48px'
 
+/**
+ * Data table with sorting, filtering, selection, grouping, virtualization, and export tools.
+ * Layout and behavior are driven by `TableProps` and internal `useTableState`.
+ */
 export function Table(props: TableProps) {
   const {
     rowSelection,
@@ -33,7 +38,6 @@ export function Table(props: TableProps) {
     className,
     style,
     unstyled,
-    // New props
     rowDraggable,
     onRowOrderChange,
     headerContextMenu,
@@ -50,59 +54,90 @@ export function Table(props: TableProps) {
     showQuickJumper,
     showTotal,
     onPageSizeChange,
+    showRowNumber,
+    footer,
+    fullscreenable,
+    densityToggle,
+    groupBy,
+    keyboardNavigation,
+    emptyContent,
+    printable,
+    exportJSON,
+    highlightOnHover,
+    columnAutoResize,
+    columnPinning,
   } = props
 
   const config = useConfig()
-  const size = sizeProp ?? config.size ?? 'middle'
+  const sizeFromProp = sizeProp ?? config.size ?? 'middle'
   const bordered = borderedProp ?? config.bordered ?? false
   const loading = loadingProp ?? false
 
   const state = useTableState(props)
+  const tableRef = useRef<HTMLDivElement>(null)
 
-  const handleExport = useCallback(() => {
+  const effectiveSize = densityToggle ? state.density : sizeFromProp
+
+  const rowNumConfig = showRowNumber
+    ? typeof showRowNumber === 'object'
+      ? showRowNumber
+      : {}
+    : null
+
+  const getExportData = useCallback(() => {
     const cols = state.columns.map((c) => c.key)
     const headers = state.columns.map((c) =>
       typeof c.title === 'string' ? c.title : c.key,
     )
-    const rows = state.flatRows.map((row) =>
-      cols.map((k) => {
-        const v = row.data[k]
-        return v == null ? '' : String(v)
-      }),
-    )
+    const rows = state.flatRows
+      .filter((r) => !r.__groupRow)
+      .map((row) =>
+        cols.map((k) => {
+          const v = row.data[k]
+          return v == null ? '' : String(v)
+        }),
+      )
+    return { cols, headers, rows }
+  }, [state.columns, state.flatRows])
+
+  const handleExportCSV = useCallback(() => {
+    const { headers, rows } = getExportData()
     const data = [headers, ...rows]
     if (onExport) {
       onExport(data)
     } else {
       downloadCSV(toCSVString(data))
     }
-  }, [state.columns, state.flatRows, onExport])
+  }, [getExportData, onExport])
+
+  const handleExportJSON = useCallback(() => {
+    const { headers, rows } = getExportData()
+    downloadJSON(toJSONString(headers, rows))
+  }, [getExportData])
 
   const handleCopy = useCallback(async () => {
-    const cols = state.columns.map((c) => c.key)
-    const headers = state.columns.map((c) =>
-      typeof c.title === 'string' ? c.title : c.key,
-    )
-    const rows = state.flatRows.map((row) =>
-      cols.map((k) => {
-        const v = row.data[k]
-        return v == null ? '' : String(v)
-      }),
-    )
+    const { headers, rows } = getExportData()
     await copyToClipboard(toTSVString([headers, ...rows]))
-  }, [state.columns, state.flatRows])
+  }, [getExportData])
 
-  // Grid template (include drag handle column if rowDraggable)
+  const handlePrint = useCallback(() => {
+    printTable(tableRef.current)
+  }, [])
+
+  // Grid template
   const gridTemplate = useMemo(() => {
-    if (rowDraggable) {
-      return `${DRAG_HANDLE_WIDTH} ${state.gridTemplate}`
-    }
-    return state.gridTemplate
-  }, [rowDraggable, state.gridTemplate])
+    const parts: string[] = []
+    if (rowDraggable) parts.push(DRAG_HANDLE_WIDTH)
+    if (rowNumConfig) parts.push(rowNumConfig.width ? `${rowNumConfig.width}px` : ROW_NUMBER_WIDTH)
+    parts.push(state.gridTemplate)
+    return parts.join(' ')
+  }, [rowDraggable, rowNumConfig, state.gridTemplate])
 
-  const totalCols = state.totalCols + (rowDraggable ? 1 : 0)
+  const totalCols =
+    state.totalCols +
+    (rowDraggable ? 1 : 0) +
+    (rowNumConfig ? 1 : 0)
 
-  // Virtual scroll config
   const virtualConfig = virtualProp
     ? {
         rowHeight: typeof virtualProp === 'object' ? virtualProp.rowHeight ?? 40 : 40,
@@ -110,7 +145,7 @@ export function Table(props: TableProps) {
       }
     : null
 
-  // ---- Unstyled ----
+  // Unstyled
   if (unstyled) {
     return (
       <div className={className} style={style} role="table">
@@ -144,15 +179,19 @@ export function Table(props: TableProps) {
     )
   }
 
-  // ---- Styled ----
+  const hasToolbar =
+    searchable || columnVisibility || exportable || exportJSON ||
+    fullscreenable || densityToggle || printable || groupBy
 
   const wrapperCls = [
     'sg-table-wrapper',
-    `sg-table-${size}`,
+    `sg-table-${effectiveSize}`,
     bordered ? 'sg-table-bordered' : '',
     sticky ? 'sg-table-sticky' : '',
     loading ? 'sg-table-loading' : '',
     striped ? 'sg-table-striped' : '',
+    state.isFullscreen ? 'sg-table-fullscreen' : '',
+    highlightOnHover === false ? '' : 'sg-table-hoverable',
     className,
   ]
     .filter(Boolean)
@@ -168,9 +207,18 @@ export function Table(props: TableProps) {
   const selectedCount = rowSelection?.selectedKeys.length ?? 0
 
   return (
-    <div className={wrapperCls} style={style}>
+    <div
+      className={wrapperCls}
+      style={style}
+      ref={(el) => {
+        (tableRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+        (state.wrapperRef as React.MutableRefObject<HTMLDivElement | null>).current = el
+      }}
+      onKeyDown={keyboardNavigation ? state.handleKeyNav : undefined}
+      tabIndex={keyboardNavigation ? 0 : undefined}
+    >
       {/* Toolbar */}
-      {(searchable || columnVisibility || exportable) && (
+      {hasToolbar && (
         <div className="sg-table-toolbar">
           {searchable && (
             <Input
@@ -181,7 +229,24 @@ export function Table(props: TableProps) {
               style={{ maxWidth: 240 }}
             />
           )}
-          <div className="sg-table-toolbar-right" style={{ display: 'flex', gap: 8, marginLeft: 'auto' }}>
+          <div className="sg-table-toolbar-right">
+            {groupBy && (
+              <div className="sg-table-toolbar-group">
+                <button className="sg-table-toolbar-btn" onClick={state.expandAllGroups}>
+                  {state.t.groupExpand}
+                </button>
+                <button className="sg-table-toolbar-btn" onClick={state.collapseAllGroups}>
+                  {state.t.groupCollapse}
+                </button>
+              </div>
+            )}
+            {densityToggle && (
+              <DensityDropdown
+                value={state.density}
+                onChange={state.setDensity}
+                t={state.t}
+              />
+            )}
             {columnVisibility && (
               <ColumnVisibilityDropdown
                 leafColumns={state.leafColumns}
@@ -192,13 +257,28 @@ export function Table(props: TableProps) {
             )}
             {exportable && (
               <>
-                <button className="sg-table-toolbar-btn" onClick={handleExport}>
+                <button className="sg-table-toolbar-btn" onClick={handleExportCSV}>
                   {state.t.exportCSV}
                 </button>
                 <button className="sg-table-toolbar-btn" onClick={handleCopy}>
                   {state.t.copyTable}
                 </button>
               </>
+            )}
+            {exportJSON && (
+              <button className="sg-table-toolbar-btn" onClick={handleExportJSON}>
+                {state.t.exportJSON}
+              </button>
+            )}
+            {printable && (
+              <button className="sg-table-toolbar-btn" onClick={handlePrint}>
+                {state.t.print}
+              </button>
+            )}
+            {fullscreenable && (
+              <button className="sg-table-toolbar-btn" onClick={state.toggleFullscreen}>
+                {state.isFullscreen ? state.t.exitFullscreen : state.t.fullscreen}
+              </button>
             )}
           </div>
         </div>
@@ -239,6 +319,39 @@ export function Table(props: TableProps) {
         className="sg-table-scroll"
         style={Object.keys(scrollStyle).length > 0 ? scrollStyle : undefined}
       >
+        {/* Pinned top rows */}
+        {state.pinnedTop.length > 0 && (
+          <div
+            className="sg-table-pinned-top"
+            style={{ gridTemplateColumns: gridTemplate, minWidth: scroll?.x }}
+          >
+            <TableBody
+              columns={state.columns}
+              flatRows={state.pinnedTop}
+              rowSelection={rowSelection}
+              expandable={expandable}
+              isTreeMode={state.isTreeMode}
+              indentSize={state.indentSize}
+              treeExpanded={state.treeExpanded}
+              expandedKeys={state.expandedKeys}
+              totalCols={totalCols}
+              spanMap={state.spanMap}
+              hiddenCells={state.hiddenCells}
+              t={state.t}
+              rowClassName={rowClassName}
+              fixedStyle={state.fixedStyle}
+              onRowClick={onRowClick}
+              onCellEdit={onCellEdit}
+              onSelectRow={state.handleSelectRow}
+              onToggleExpand={state.handleToggleExpand}
+              onToggleTreeExpand={state.handleToggleTreeExpand}
+              onContextMenu={state.setContextMenu}
+              striped={false}
+              isPinnedSection
+            />
+          </div>
+        )}
+
         <div
           className="sg-table-grid"
           style={{
@@ -275,6 +388,11 @@ export function Table(props: TableProps) {
             getSortDirection={state.getSortDirection}
             headerContextMenu={headerContextMenu}
             onContextMenu={state.setContextMenu}
+            showRowNumber={!!rowNumConfig}
+            rowDraggable={rowDraggable}
+            columnPinning={columnPinning}
+            onPinColumn={state.handlePinColumn}
+            onAutoResize={columnAutoResize ? state.handleAutoResize : undefined}
           />
 
           {virtualConfig ? (
@@ -329,9 +447,45 @@ export function Table(props: TableProps) {
               cellContextMenu={cellContextMenu}
               onContextMenu={state.setContextMenu}
               striped={striped}
+              showRowNumber={!!rowNumConfig}
+              groupBy={groupBy}
+              onToggleGroup={state.toggleGroupExpand}
+              focusedCell={state.focusedCell}
+              onFocusCell={state.setFocusedCell}
+              keyboardNavigation={keyboardNavigation}
+              emptyContent={emptyContent}
             />
           )}
 
+          {/* Aggregation footer */}
+          {footer && state.aggregates && (
+            <div className="sg-table-footer-row" role="row" style={{ display: 'contents' }}>
+              {rowDraggable && <div className="sg-table-td sg-table-footer-cell" role="cell" />}
+              {rowNumConfig && <div className="sg-table-td sg-table-footer-cell" role="cell" />}
+              {rowSelection && <div className="sg-table-td sg-table-footer-cell" role="cell" />}
+              {expandable && <div className="sg-table-td sg-table-footer-cell" role="cell" />}
+              {state.columns.map((col) => (
+                <div
+                  key={col.key}
+                  className="sg-table-td sg-table-footer-cell"
+                  role="cell"
+                  style={state.fixedStyle(col)}
+                >
+                  {state.aggregates![col.key] != null ? (
+                    <span className="sg-table-aggregate-value">
+                      <span className="sg-table-aggregate-label">
+                        {typeof col.aggregate === 'string' ? state.t[col.aggregate] : ''}
+                      </span>
+                      {' '}
+                      {String(state.aggregates![col.key])}
+                    </span>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Summary rows (custom) */}
           {summary &&
             state.visibleRows &&
             summary(state.visibleRows).map((cells, ri) => (
@@ -359,6 +513,39 @@ export function Table(props: TableProps) {
               </div>
             ))}
         </div>
+
+        {/* Pinned bottom rows */}
+        {state.pinnedBottom.length > 0 && (
+          <div
+            className="sg-table-pinned-bottom"
+            style={{ gridTemplateColumns: gridTemplate, minWidth: scroll?.x }}
+          >
+            <TableBody
+              columns={state.columns}
+              flatRows={state.pinnedBottom}
+              rowSelection={rowSelection}
+              expandable={expandable}
+              isTreeMode={state.isTreeMode}
+              indentSize={state.indentSize}
+              treeExpanded={state.treeExpanded}
+              expandedKeys={state.expandedKeys}
+              totalCols={totalCols}
+              spanMap={state.spanMap}
+              hiddenCells={state.hiddenCells}
+              t={state.t}
+              rowClassName={rowClassName}
+              fixedStyle={state.fixedStyle}
+              onRowClick={onRowClick}
+              onCellEdit={onCellEdit}
+              onSelectRow={state.handleSelectRow}
+              onToggleExpand={state.handleToggleExpand}
+              onToggleTreeExpand={state.handleToggleTreeExpand}
+              onContextMenu={state.setContextMenu}
+              striped={false}
+              isPinnedSection
+            />
+          </div>
+        )}
       </div>
 
       {/* Context Menu */}
@@ -395,7 +582,6 @@ export function Table(props: TableProps) {
   )
 }
 
-// Column Visibility dropdown
 function ColumnVisibilityDropdown({
   leafColumns,
   hiddenSet,
@@ -425,38 +611,67 @@ function ColumnVisibilityDropdown({
         {label}
       </button>
       {open && (
-        <div
-          className="sg-table-col-visibility-dropdown"
-          style={{
-            position: 'absolute',
-            top: '100%',
-            right: 0,
-            zIndex: 1040,
-            background: 'var(--sg-bg-elevated, #fff)',
-            border: '1px solid var(--sg-border, #d9d9d9)',
-            borderRadius: 'var(--sg-radius, 6px)',
-            boxShadow: '0 6px 16px rgba(0,0,0,0.08)',
-            padding: '8px 0',
-            minWidth: 160,
-          }}
-        >
+        <div className="sg-table-col-visibility-dropdown">
           {leafColumns.map((col) => (
-            <label
-              key={col.key}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '4px 12px',
-                cursor: 'pointer',
-              }}
-            >
+            <label key={col.key} className="sg-table-col-visibility-item">
               <Checkbox
                 checked={!hiddenSet.has(col.key)}
                 onChange={() => onToggle(col.key)}
               />
               <span>{typeof col.title === 'string' ? col.title : col.key}</span>
             </label>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DensityDropdown({
+  value,
+  onChange,
+  t,
+}: {
+  value: 'small' | 'middle' | 'large'
+  onChange: (v: 'small' | 'middle' | 'large') => void
+  t: { density: string; densitySmall: string; densityMiddle: string; densityLarge: string }
+}) {
+  const [open, setOpen] = React.useState(false)
+  const ref = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (!open) return
+    const h = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', h)
+    return () => document.removeEventListener('mousedown', h)
+  }, [open])
+
+  const options: Array<{ key: 'small' | 'middle' | 'large'; label: string }> = [
+    { key: 'small', label: t.densitySmall },
+    { key: 'middle', label: t.densityMiddle },
+    { key: 'large', label: t.densityLarge },
+  ]
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button className="sg-table-toolbar-btn" onClick={() => setOpen(!open)}>
+        {t.density}
+      </button>
+      {open && (
+        <div className="sg-table-density-dropdown">
+          {options.map((opt) => (
+            <button
+              key={opt.key}
+              className={`sg-table-density-option${value === opt.key ? ' sg-table-density-active' : ''}`}
+              onClick={() => {
+                onChange(opt.key)
+                setOpen(false)
+              }}
+            >
+              {opt.label}
+            </button>
           ))}
         </div>
       )}

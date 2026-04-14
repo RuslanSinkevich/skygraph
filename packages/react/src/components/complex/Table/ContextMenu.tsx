@@ -1,27 +1,47 @@
 import React, { useEffect, useRef, useState } from 'react'
 
+/** One entry in a table context menu. */
 export interface ContextMenuItem {
+  /** Unique key among siblings. */
   key: string
+  /** Primary label. */
   label: React.ReactNode
+  /** Optional leading icon. */
   icon?: React.ReactNode
+  /** Destructive styling. */
   danger?: boolean
+  /** Disables click handling. */
   disabled?: boolean
+  /** Renders a separator instead of a row. */
   divider?: boolean
+  /** Invoked on item activate. */
   onClick?: () => void
+  /** Nested submenu items. */
   children?: ContextMenuItem[]
 }
 
+/** Open context menu position and items. */
 export interface ContextMenuState {
+  /** Viewport X in pixels. */
   x: number
+  /** Viewport Y in pixels. */
   y: number
+  /** Root menu items. */
   items: ContextMenuItem[]
 }
 
+/** Props for the floating context menu overlay. */
 interface ContextMenuProps {
+  /** Current menu state, or null when closed. */
   state: ContextMenuState | null
+  /** Closes the menu on outside interaction. */
   onClose: () => void
 }
 
+/**
+ * Fixed-position menu for header/cell context actions.
+ * Closes on outside click, Escape, or window scroll.
+ */
 export function ContextMenu({ state, onClose }: ContextMenuProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [subMenu, setSubMenu] = useState<{ key: string; x: number; y: number; items: ContextMenuItem[] } | null>(null)

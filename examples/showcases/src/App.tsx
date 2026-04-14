@@ -5,22 +5,33 @@ import { ProjectTrackerApp } from './showcases/project-tracker/ProjectTrackerApp
 import { HrPortalApp } from './showcases/hr-portal/HrPortalApp'
 import { FileManagerApp } from './showcases/file-manager/FileManagerApp'
 import { AnalyticsApp } from './showcases/analytics/AnalyticsApp'
+import { AdminApp } from './showcases/admin/AdminApp'
+import { FormsApp } from './showcases/forms/FormsApp'
+import { TableKitchenSinkApp } from './showcases/table-kitchen-sink/TableKitchenSinkApp'
 
 const showcases = [
+  {
+    key: 'table-kitchen-sink',
+    icon: '🍳',
+    title: 'Table — Kitchen Sink',
+    description: 'Every table feature in one demo: sorting, filtering, grouping, tree data, virtual scroll, drag & drop, inline editing, export, print, keyboard navigation, aggregation, pinned rows, and more.',
+    tags: ['Table', 'Sort', 'Filter', 'Group', 'Tree', 'Virtual', 'DnD', 'Export', 'Print', 'Aggregate'],
+    component: TableKitchenSinkApp,
+  },
   {
     key: 'crm',
     icon: '👥',
     title: 'CRM Dashboard',
-    description: 'Customer management with contacts table, deal pipeline, activity timeline and client cards.',
-    tags: ['Table', 'Drawer', 'Form', 'Tag', 'Badge', 'Timeline', 'Avatar', 'Tabs', 'Progress'],
+    description: 'Customer management with contacts table, deal pipeline, activity timeline, modals and bulk actions.',
+    tags: ['Table', 'Drawer', 'Modal', 'Form', 'Tag', 'Timeline', 'Avatar', 'Tabs', 'Popconfirm', 'Dropdown'],
     component: CrmApp,
   },
   {
     key: 'ecommerce',
     icon: '🛒',
     title: 'E-Commerce Admin',
-    description: 'Product catalog with inline editing, order management, category tree and order status tracking.',
-    tags: ['DataGrid', 'Table', 'Cascader', 'Steps', 'Upload', 'Descriptions', 'InputNumber', 'Modal'],
+    description: 'Product catalog with inline editing, order management, customers, refunds and product modals.',
+    tags: ['Table', 'Modal', 'Drawer', 'Cascader', 'Steps', 'Form', 'Descriptions', 'Popconfirm', 'Dropdown'],
     component: EcommerceApp,
   },
   {
@@ -51,9 +62,25 @@ const showcases = [
     key: 'analytics',
     icon: '📊',
     title: 'Analytics Dashboard',
-    description: 'Business metrics with summary tables, date range filters, KPI cards and report views.',
-    tags: ['Table', 'DatePicker', 'RangePicker', 'Segmented', 'Descriptions', 'Tabs', 'Progress', 'Result'],
+    description: 'Business metrics with summary tables, date range filters, KPI cards, alerts and report views.',
+    tags: ['Table', 'Segmented', 'Descriptions', 'Tabs', 'Progress', 'Result', 'Modal', 'Drawer', 'Form', 'Rate'],
     component: AnalyticsApp,
+  },
+  {
+    key: 'admin',
+    icon: '🔐',
+    title: 'Admin Panel',
+    description: 'User management with roles & permissions, audit log, access control and system settings.',
+    tags: ['Table', 'Modal', 'Drawer', 'Form', 'Transfer', 'Collapse', 'Switch', 'Popconfirm', 'Dropdown'],
+    component: AdminApp,
+  },
+  {
+    key: 'forms',
+    icon: '📝',
+    title: 'Forms Playground',
+    description: 'Complete forms showcase: all controls, validation, multi-step wizard, dynamic fields, layouts and real-world mockups.',
+    tags: ['Form', 'Field', 'InputPassword', 'SearchInput', 'TagInput', 'PinInput', 'InlineEdit', 'InputGroup', 'Validation', 'Wizard'],
+    component: FormsApp,
   },
 ]
 

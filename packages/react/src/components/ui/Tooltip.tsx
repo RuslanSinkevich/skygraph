@@ -2,12 +2,19 @@ import React, { useState, useRef, useId } from 'react'
 import { Transition } from './Transition'
 import type { BaseComponentProps } from '../../types'
 
+/** Props for the Tooltip component. */
 export interface TooltipProps extends BaseComponentProps {
+  /** Content shown in the tooltip on hover. */
   title: React.ReactNode
+  /** Tooltip position relative to the trigger. @default 'top' */
   placement?: 'top' | 'bottom' | 'left' | 'right'
+  /** Single React element that receives hover handlers as the trigger. */
   children: React.ReactElement
 }
 
+/**
+ * Shows floating help text on hover, with optional placement and fade transition.
+ */
 export function Tooltip({
   title,
   placement = 'top',

@@ -1,5 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { Checkbox } from '../../ui/Checkbox'
+import { copyToClipboard } from './export'
 import type {
   TableColumn,
   RowSelectionConfig,
@@ -11,40 +12,79 @@ import type {
 } from './types'
 import type { ContextMenuItem, ContextMenuState } from './ContextMenu'
 
+/** Internal props for the non-virtual table body grid. */
 interface BodyProps {
+  /** Visible columns in render order. */
   columns: TableColumn[]
+  /** Flattened rows including group headers. */
   flatRows: FlatRow[]
+  /** Row selection config when selection column is shown. */
   rowSelection?: RowSelectionConfig
+  /** Expandable row config when expand column is shown. */
   expandable?: ExpandableConfig
+  /** Renders first column with tree indent and toggles. */
   isTreeMode: boolean
+  /** Pixels per tree nesting level. */
   indentSize: number
+  /** Keys of expanded tree nodes. */
   treeExpanded: Set<RowId>
+  /** Keys of expanded detail rows. */
   expandedKeys: Set<RowId>
+  /** Total grid columns including leading utility cells. */
   totalCols: number
+  /** Map of cell key to rowspan/colspan. */
   spanMap: Map<string, CellSpan>
+  /** Keys of cells covered by spans and not rendered. */
   hiddenCells: Set<string>
+  /** Resolved locale strings. */
   t: Required<TableLocale>
+  /** Optional row class or resolver. */
   rowClassName?: string | ((row: Record<string, unknown>, id: RowId) => string)
+  /** Sticky/fixed/ellipsis styles per column. */
   fixedStyle: (col: TableColumn) => React.CSSProperties
+  /** Row click handler. */
   onRowClick?: (id: RowId, data: Record<string, unknown>) => void
+  /** Inline edit commit handler. */
   onCellEdit?: (id: RowId, column: string, value: unknown) => void
+  /** Toggles a row in the selection model. */
   onSelectRow: (id: RowId, row: Record<string, unknown>) => void
+  /** Toggles expanded row content. */
   onToggleExpand: (id: RowId) => void
+  /** Toggles tree node expansion. */
   onToggleTreeExpand: (id: RowId) => void
-  // Row drag
+  /** Enables row drag reorder handle column. */
   rowDraggable?: boolean
+  /** Called after a row drag reorder. */
   onRowOrderChange?: (fromIndex: number, toIndex: number) => void
-  // Cell context menu
+  /** Builds cell context menu items. */
   cellContextMenu?: (
     id: RowId,
     column: string,
     data: Record<string, unknown>,
   ) => ContextMenuItem[]
+  /** Opens or closes the shared context menu. */
   onContextMenu: (state: ContextMenuState | null) => void
-  // Zebra
+  /** Zebra striping for data rows. */
   striped?: boolean
+  /** Renders leading row number cells. */
+  showRowNumber?: boolean
+  /** Group-by field name for header label. */
+  groupBy?: string
+  /** Toggles a grouped section expanded state. */
+  onToggleGroup?: (groupKey: string) => void
+  /** Current keyboard-focused cell coordinates. */
+  focusedCell?: { row: number; col: number } | null
+  /** Updates keyboard-focused cell. */
+  onFocusCell?: (cell: { row: number; col: number } | null) => void
+  /** Enables focus outlines and cell focus moves. */
+  keyboardNavigation?: boolean
+  /** Custom empty state when no rows. */
+  emptyContent?: React.ReactNode
+  /** Renders pinned top/bottom sections without zebra. */
+  isPinnedSection?: boolean
 }
 
+/** Renders the main or pinned table body rows, cells, and expand regions. */
 export function TableBody(props: BodyProps) {
   const {
     columns,
@@ -71,6 +111,14 @@ export function TableBody(props: BodyProps) {
     cellContextMenu,
     onContextMenu,
     striped,
+    showRowNumber,
+    groupBy,
+    onToggleGroup,
+    focusedCell,
+    onFocusCell,
+    keyboardNavigation,
+    emptyContent,
+    isPinnedSection,
   } = props
 
   const [editingCell, setEditingCell] = useState<{
@@ -82,6 +130,8 @@ export function TableBody(props: BodyProps) {
 
   const [dragRowIdx, setDragRowIdx] = useState<number | null>(null)
   const [dragOverRowIdx, setDragOverRowIdx] = useState<number | null>(null)
+
+  const [copiedCell, setCopiedCell] = useState<string | null>(null)
 
   useEffect(() => {
     if (editingCell && editRef.current) editRef.current.focus()
@@ -140,6 +190,15 @@ export function TableBody(props: BodyProps) {
     }
   }
 
+  const handleCellCopy = useCallback(
+    async (rowId: RowId, colKey: string, value: unknown) => {
+      await copyToClipboard(String(value ?? ''))
+      setCopiedCell(`${rowId}:${colKey}`)
+      setTimeout(() => setCopiedCell(null), 1500)
+    },
+    [],
+  )
+
   if (flatRows.length === 0) {
     return (
       <div
@@ -147,14 +206,56 @@ export function TableBody(props: BodyProps) {
         style={{ gridColumn: `1 / ${totalCols + 1}` }}
         role="row"
       >
-        <span role="cell">{t.emptyText}</span>
+        <span role="cell">{emptyContent ?? t.emptyText}</span>
       </div>
     )
   }
 
+  let dataRowIndex = 0
+
   return (
     <>
       {flatRows.map((row, rowIdx) => {
+        // Group row rendering
+        if (row.__groupRow) {
+          const group = row.__groupRow
+          return (
+            <div
+              key={row.id}
+              className="sg-table-group-row"
+              role="row"
+              style={{ display: 'contents' }}
+            >
+              <div
+                className="sg-table-td sg-table-group-cell"
+                role="cell"
+                style={{ gridColumn: `1 / ${totalCols + 1}` }}
+                onClick={() => onToggleGroup?.(group.groupKey)}
+              >
+                <button
+                  className={`sg-table-expand-btn${group.expanded ? ' sg-table-expand-open' : ''}`}
+                >
+                  {t.expandIcon}
+                </button>
+                <span className="sg-table-group-title">
+                  {groupBy}: <strong>{String(group.groupValue)}</strong>
+                </span>
+                <span className="sg-table-group-count">({group.count})</span>
+                {Object.keys(group.aggregates).length > 0 && (
+                  <span className="sg-table-group-aggregates">
+                    {Object.entries(group.aggregates).map(([key, val]) => (
+                      <span key={key} className="sg-table-group-agg-item">
+                        {key}: {String(val)}
+                      </span>
+                    ))}
+                  </span>
+                )}
+              </div>
+            </div>
+          )
+        }
+
+        const currentDataIdx = dataRowIndex++
         const isExpanded = expandedKeys.has(row.id)
         const isSelected = rowSelection?.selectedKeys.includes(row.id)
         const canExpand = expandable?.rowExpandable
@@ -166,8 +267,9 @@ export function TableBody(props: BodyProps) {
             ? rowClassName(row.data, row.id)
             : (rowClassName ?? '')
 
-        const isZebra = striped && rowIdx % 2 === 1
+        const isZebra = striped && currentDataIdx % 2 === 1
         const isDragOver = dragOverRowIdx === rowIdx && dragRowIdx !== rowIdx
+        const isPinned = isPinnedSection
 
         return (
           <React.Fragment key={row.id}>
@@ -178,6 +280,7 @@ export function TableBody(props: BodyProps) {
                 onRowClick ? 'sg-table-row-clickable' : '',
                 isZebra ? 'sg-table-row-striped' : '',
                 isDragOver ? 'sg-table-row-drag-over' : '',
+                isPinned ? 'sg-table-row-pinned' : '',
                 rowCls,
               ]
                 .filter(Boolean)
@@ -201,6 +304,12 @@ export function TableBody(props: BodyProps) {
                   style={{ cursor: 'grab', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   ⠿
+                </div>
+              )}
+
+              {showRowNumber && (
+                <div className="sg-table-td sg-table-cell-row-number" role="cell">
+                  {currentDataIdx + 1}
                 </div>
               )}
 
@@ -245,6 +354,11 @@ export function TableBody(props: BodyProps) {
                 const val = row.data[col.key]
                 const isEditing =
                   editingCell?.rowId === row.id && editingCell?.col === col.key
+                const isFocused =
+                  keyboardNavigation &&
+                  focusedCell?.row === rowIdx &&
+                  focusedCell?.col === colIndex
+                const isCopied = copiedCell === cellKey
 
                 const cellStyle: React.CSSProperties = { ...fixedStyle(col) }
                 if (span?.colSpan && span.colSpan > 1)
@@ -256,6 +370,11 @@ export function TableBody(props: BodyProps) {
                 const treeIndent =
                   isTreeMode && isFirstCol ? row.depth * indentSize : 0
 
+                const cellClsExtra =
+                  typeof col.cellClassName === 'function'
+                    ? col.cellClassName(val, row.data, row.id)
+                    : col.cellClassName ?? ''
+
                 return (
                   <div
                     key={col.key}
@@ -263,12 +382,22 @@ export function TableBody(props: BodyProps) {
                       'sg-table-td',
                       col.fixed ? 'sg-table-cell-fixed' : '',
                       col.editable ? 'sg-table-td-editable' : '',
+                      isFocused ? 'sg-table-cell-focused' : '',
+                      isCopied ? 'sg-table-cell-copied' : '',
+                      col.copyable ? 'sg-table-cell-copyable' : '',
+                      cellClsExtra,
                     ]
                       .filter(Boolean)
                       .join(' ')}
                     style={cellStyle}
                     role="cell"
-                    onClick={() => onRowClick?.(row.id, row.data)}
+                    tabIndex={keyboardNavigation ? -1 : undefined}
+                    onClick={() => {
+                      onRowClick?.(row.id, row.data)
+                      if (keyboardNavigation) {
+                        onFocusCell?.({ row: rowIdx, col: colIndex })
+                      }
+                    }}
                     onContextMenu={(e) =>
                       handleCellContext(e, row.id, col.key, row.data)
                     }
@@ -306,22 +435,36 @@ export function TableBody(props: BodyProps) {
                         )}
                       </span>
                     )}
-                    {isEditing ? (
-                      <input
-                        ref={editRef}
-                        className="sg-table-edit-input"
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onBlur={handleEditSave}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleEditSave()
-                          if (e.key === 'Escape') handleEditCancel()
+                    <span className="sg-table-cell-content">
+                      {isEditing ? (
+                        <input
+                          ref={editRef}
+                          className="sg-table-edit-input"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onBlur={handleEditSave}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleEditSave()
+                            if (e.key === 'Escape') handleEditCancel()
+                          }}
+                        />
+                      ) : col.render ? (
+                        col.render(val, row.data, row.id)
+                      ) : (
+                        String(val ?? '')
+                      )}
+                    </span>
+                    {col.copyable && !isEditing && (
+                      <button
+                        className="sg-table-copy-btn"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleCellCopy(row.id, col.key, val)
                         }}
-                      />
-                    ) : col.render ? (
-                      col.render(val, row.data, row.id)
-                    ) : (
-                      String(val ?? '')
+                        title="Copy"
+                      >
+                        {isCopied ? '✓' : '⎘'}
+                      </button>
                     )}
                   </div>
                 )

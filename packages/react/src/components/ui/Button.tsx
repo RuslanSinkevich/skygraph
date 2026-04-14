@@ -3,13 +3,19 @@ import { Spin } from './Spin'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
+/** Props for the Button component. */
 export interface ButtonProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Visual style variant. @default 'default' */
   type?: 'default' | 'primary' | 'dashed' | 'text' | 'link'
+  /** Native HTML button type attribute. @default 'button' */
   htmlType?: 'button' | 'submit' | 'reset'
+  /** Click event handler. */
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  /** Button content. */
   children?: React.ReactNode
 }
 
+/** General-purpose button with multiple visual variants, sizes, and loading state. */
 export function Button({
   type = 'default',
   size: sizeProp,

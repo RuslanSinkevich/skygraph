@@ -3,22 +3,38 @@ import { Spin } from './Spin'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
+/** Suggestion row shown in the AutoComplete dropdown. */
 export interface AutoCompleteOption {
+  /** Text shown in the list; also used for client-side filtering. */
   label: string
+  /** Value written to the input when the row is chosen. */
   value: string
 }
 
+/** Props for text input with filtered suggestions and optional callbacks. */
 export interface AutoCompleteProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Controlled input value. */
   value?: string
+  /** Initial value when uncontrolled. */
   defaultValue?: string
+  /** Suggestion list; filtered by label against current input. */
   options: AutoCompleteOption[]
+  /** Input placeholder text. */
   placeholder?: string
+  /** Called when the typed value changes. */
   onChange?: (value: string) => void
+  /** Called on each change with the current query string. */
   onSearch?: (query: string) => void
+  /** Called when a suggestion is picked from the list. */
   onSelect?: (value: string, option: AutoCompleteOption) => void
+  /** Called when the input loses focus. */
   onBlur?: () => void
 }
 
+/**
+ * Text field with a dropdown of options filtered as the user types.
+ * Opens the list on focus and filters by option label (case-insensitive).
+ */
 export function AutoComplete({
   value,
   defaultValue,

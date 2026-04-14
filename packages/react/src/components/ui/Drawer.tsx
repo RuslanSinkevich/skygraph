@@ -4,17 +4,29 @@ import { Transition } from './Transition'
 import { useFocusTrap } from '../../hooks/a11y/useFocusTrap'
 import type { BaseComponentProps } from '../../types'
 
+/** Props for the slide-in drawer panel. */
 export interface DrawerProps extends BaseComponentProps {
+  /** When `true`, the drawer is visible. */
   open: boolean
+  /** Called when the drawer should close (Escape, mask, or close button). */
   onClose: () => void
+  /** Optional header content next to the close control. */
   title?: React.ReactNode
+  /** Main drawer body content. */
   children?: React.ReactNode
+  /** Optional footer region (e.g. actions). */
   footer?: React.ReactNode
+  /** Edge from which the panel enters. @default 'right' */
   placement?: 'left' | 'right' | 'top' | 'bottom'
+  /** Width for left/right placement (CSS length or pixels). @default 378 */
   width?: number | string
+  /** Height for top/bottom placement (CSS length or pixels). @default 378 */
   height?: number | string
+  /** When `true`, shows a header close button. @default true */
   closable?: boolean
+  /** When `true`, renders a dimmed mask behind the panel. @default true */
   mask?: boolean
+  /** When `true`, clicking the mask calls `onClose`. @default true */
   maskClosable?: boolean
 }
 
@@ -25,6 +37,10 @@ const PLACEMENT_TRANSITION: Record<string, string> = {
   bottom: 'sg-slide-up',
 }
 
+/**
+ * Side panel drawer with optional mask, placement transitions, and focus trap.
+ * Horizontal placement uses `width`; vertical uses `height`.
+ */
 export function Drawer({
   open,
   onClose,

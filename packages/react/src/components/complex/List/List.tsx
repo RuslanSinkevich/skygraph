@@ -180,5 +180,9 @@ function ListInner<T = any>({
 
 type ListType = typeof ListInner & { Item: ListItemType }
 
+/**
+ * Renders a vertical or grid list with optional header, footer, pagination, and loading.
+ * Use `List.Item` and `List.Item.Meta` for structured rows.
+ */
 export const List = ListInner as ListType
 ;(List as any).Item = Item

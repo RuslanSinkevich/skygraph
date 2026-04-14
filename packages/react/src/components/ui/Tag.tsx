@@ -1,16 +1,25 @@
 import React from 'react'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
+/** Props for the Tag component (label with optional close control). */
 export interface TagProps extends BaseComponentProps, SizableProps {
+  /** Preset semantic color or any CSS color string for custom tags. @default 'default' */
   color?: 'default' | 'success' | 'error' | 'warning' | 'processing' | string
+  /** Shows a close control when true. */
   closable?: boolean
+  /** Called when the close control is activated. */
   onClose?: () => void
+  /** Whether to show a border around the tag. @default true */
   bordered?: boolean
+  /** Tag label content. */
   children: React.ReactNode
 }
 
 const presetColors = new Set(['default', 'success', 'error', 'warning', 'processing'])
 
+/**
+ * Inline label tag with optional preset colors and closable behavior.
+ */
 export function Tag({
   color = 'default',
   closable,

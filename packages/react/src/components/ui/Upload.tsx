@@ -4,23 +4,39 @@ import { Spin } from './Spin'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps } from '../../types'
 
+/** File entry shown in the upload list after selection or simulated progress. */
 export interface UploadFile {
+  /** Stable unique id for list keys and remove callbacks. */
   uid: string
+  /** Display file name. */
   name: string
+  /** File size in bytes. */
   size: number
+  /** Visual state in the file list row. */
   status: 'uploading' | 'done' | 'error'
 }
 
+/** Props for the file picker trigger, optional custom trigger, and file list UI. */
 export interface UploadProps extends BaseComponentProps, InteractiveProps {
+  /** Passed to the hidden `<input type="file">` accept attribute. */
   accept?: string
+  /** Allows selecting more than one file per dialog when supported. */
   multiple?: boolean
+  /** Files to render in the list below the trigger. @default [] */
   fileList?: UploadFile[]
+  /** Caps how many new files are passed to `onUpload` relative to current list length. */
   maxCount?: number
+  /** Called with chosen files after the user confirms the native picker. */
   onUpload?: (files: File[]) => void
+  /** Called when the user removes a completed or errored list item. */
   onRemove?: (file: UploadFile) => void
+  /** Custom trigger; defaults to a primary Upload button. */
   children?: React.ReactNode
 }
 
+/**
+ * Hidden file input with a clickable trigger and optional controlled file list with remove actions.
+ */
 export function Upload({
   accept,
   multiple,

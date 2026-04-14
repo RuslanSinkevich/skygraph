@@ -4,31 +4,51 @@ import { Input } from '../../ui/Input'
 import { Button } from '../../ui/Button'
 import type { TableColumn, FilterDropdownProps, TableLocale } from './types'
 
+/** Column filter UI state from table state hook. */
 interface FilterState {
+  /** Selected filter values keyed by column. */
   activeFilters: Record<string, unknown[]>
+  /** Filter-list search strings keyed by column. */
   filterSearchText: Record<string, string>
+  /** Column key with an open filter popover. */
   openFilterDropdown: string | null
 }
 
+/** Callbacks that mutate filter UI state. */
 interface FilterActions {
+  /** Opens or closes a column filter popover. */
   setOpenFilterDropdown: (key: string | null) => void
+  /** Toggles a preset filter value. */
   handleFilterToggle: (colKey: string, value: unknown, multiple: boolean) => void
+  /** Confirms the current filter selection. */
   handleFilterConfirm: (colKey: string) => void
+  /** Clears active filters for a column. */
   handleFilterReset: (colKey: string) => void
+  /** Closes the filter popover. */
   handleFilterClose: (colKey: string) => void
+  /** Updates search-mode filter text. */
   handleSearchFilterChange: (colKey: string, text: string) => void
+  /** Updates filter list search text. */
   setFilterSearchText: React.Dispatch<React.SetStateAction<Record<string, string>>>
+  /** Builds props for custom filter dropdown renderers. */
   getFilterDropdownProps: (col: TableColumn) => FilterDropdownProps
 }
 
+/** Shared props for filter trigger and dropdown content. */
 interface FilterTriggerProps {
+  /** Target column. */
   col: TableColumn
+  /** Resolved table locale. */
   t: Required<TableLocale>
+  /** Filter popover state. */
   state: FilterState
+  /** Filter state mutators. */
   actions: FilterActions
+  /** Ref on the dropdown for outside-click detection. */
   filterRef: React.RefObject<HTMLDivElement>
 }
 
+/** Filter icon in the header; toggles the column filter popover. */
 export function FilterTrigger({ col, t, state, actions }: FilterTriggerProps) {
   const hasFilter = col.filterDropdown || col.filterMode === 'search' || (col.filters && col.filters.length > 0)
   if (!hasFilter) return null
@@ -51,6 +71,7 @@ export function FilterTrigger({ col, t, state, actions }: FilterTriggerProps) {
   )
 }
 
+/** Filter popover body: custom dropdown, search field, or preset checklist. */
 export function FilterDropdownContent({ col, t, state, actions, filterRef }: FilterTriggerProps) {
   if (state.openFilterDropdown !== col.key) return null
 

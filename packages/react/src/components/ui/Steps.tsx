@@ -2,18 +2,29 @@ import React from 'react'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
+/** One step in a wizard or progress sequence. */
 export interface StepItem {
+  /** Primary step title. */
   title: React.ReactNode
+  /** Optional secondary text below the title. */
   description?: React.ReactNode
+  /** Custom icon; defaults to checkmark, error mark, or index when omitted. */
   icon?: React.ReactNode
+  /** Overrides auto-derived status from `current` index. */
   status?: 'wait' | 'process' | 'finish' | 'error'
 }
 
+/** Props for the step indicator sequence. */
 export interface StepsProps extends BaseComponentProps, SizableProps {
+  /** Zero-based index of the active (in-progress) step. */
   current: number
+  /** Steps in display order. */
   items: StepItem[]
+  /** Stack direction for the step list. @default 'horizontal' */
   direction?: 'horizontal' | 'vertical'
+  /** When set, each step becomes clickable and reports its index. */
   onChange?: (current: number) => void
+  /** Visual variant: standard steps or navigation-style. @default 'default' */
   type?: 'default' | 'navigation'
 }
 
@@ -36,6 +47,10 @@ function resolveStatus(index: number, current: number, itemStatus?: StepItem['st
   return 'wait'
 }
 
+/**
+ * Displays a linear sequence of steps with icons, titles, and optional descriptions.
+ * Derives each step status from `current` unless overridden per item.
+ */
 export function Steps({
   current,
   items,

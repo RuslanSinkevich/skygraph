@@ -8,15 +8,23 @@ function genKey(): string {
   return `fl_${++listUid}`
 }
 
+/** Stable identity and position of one row in a {@link FormList}. */
 export interface FormListField {
+  /** Stable React key for list reconciliation. */
   key: string
+  /** Zero-based index in the list value array. */
   index: number
 }
 
+/** Props for a dynamic array field bound to form state. */
 export interface FormListProps {
+  /** Field path in the form store holding the array value. */
   name: string
+  /** Seeds the store when the path is unset on first mount. */
   initialValue?: unknown[]
+  /** When `true`, each row receives `dragProps` for HTML5 drag-and-drop reordering. */
   draggable?: boolean
+  /** Render function receiving fields, list operations, and validation meta. */
   children: (
     fields: FormListField[],
     operation: FormListOperation,
@@ -24,6 +32,10 @@ export interface FormListProps {
   ) => React.ReactNode
 }
 
+/**
+ * Manages an array at `name` with stable keys, add/remove/move/replace helpers,
+ * and optional drag reordering when `draggable` is enabled.
+ */
 export function FormList({ name, initialValue, draggable, children }: FormListProps) {
   const { core, form } = useFormContext()
 

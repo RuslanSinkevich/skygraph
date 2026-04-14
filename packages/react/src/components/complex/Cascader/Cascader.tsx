@@ -54,6 +54,9 @@ function arraysEqual(a: (string | number)[], b: (string | number)[]): boolean {
   return a.every((v, i) => v === b[i])
 }
 
+/**
+ * Hierarchical picker with columns, optional multi-select, search, and lazy-loaded branches.
+ */
 export function Cascader(props: CascaderProps) {
   const {
     options,

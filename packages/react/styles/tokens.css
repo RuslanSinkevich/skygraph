@@ -67,9 +67,13 @@
   --sg-transition-timing: cubic-bezier(0.645, 0.045, 0.355, 1);
 
   /* === Z-index scale === */
-  --sg-z-dropdown: 1050;
+  --sg-z-base: 1;
+  --sg-z-sticky: 3;
+  --sg-z-sticky-fixed: 5;
+  --sg-z-loading: 10;
   --sg-z-modal: 1000;
   --sg-z-tooltip: 1000;
+  --sg-z-dropdown: 1050;
   --sg-z-notification: 1060;
 
   /* === Component tokens === */

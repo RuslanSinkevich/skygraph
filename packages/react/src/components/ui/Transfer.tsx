@@ -5,26 +5,45 @@ import { Button } from './Button'
 import { Input } from './Input'
 import type { BaseComponentProps, InteractiveProps } from '../../types'
 
+/** One row in a transfer list (source or target side). */
 export interface TransferItem {
+  /** Stable identifier; presence in target keys means the item is on the right. */
   key: string
+  /** Primary label and default search text. */
   title: string
+  /** Optional secondary line (not used by built-in search). */
   description?: string
+  /** Exclude from selection when moving. */
   disabled?: boolean
 }
 
+/** Props for the two-list shuttle / pick-and-move UI. */
 export interface TransferProps extends BaseComponentProps, InteractiveProps {
+  /** All items; split between lists by targetKeys. */
   dataSource: TransferItem[]
+  /** Keys currently on the target (right) list. */
   targetKeys?: string[]
+  /** Initial target keys when uncontrolled. */
   defaultTargetKeys?: string[]
+  /** Fired after items move; includes direction and keys that moved. */
   onChange?: (targetKeys: string[], direction: 'left' | 'right', moveKeys: string[]) => void
+  /** Fired when checkbox selection changes on either list. */
   onSelectChange?: (sourceSelectedKeys: string[], targetSelectedKeys: string[]) => void
+  /** Show a filter field above each list body. */
   showSearch?: boolean
+  /** Column headers for [source, target]. @default ['Source', 'Target'] */
   titles?: [string, string]
+  /** Custom render for a row’s label area (inside the checkbox). */
   render?: (item: TransferItem) => React.ReactNode
+  /** Inline style applied to each list column wrapper. */
   listStyle?: React.CSSProperties
+  /** Hide the move-left button so items only go to the target. */
   oneWay?: boolean
 }
 
+/**
+ * Dual-list control to move items between source and target with optional search and custom rendering.
+ */
 export function Transfer({
   dataSource,
   targetKeys: controlledTargetKeys,

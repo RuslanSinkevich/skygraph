@@ -1,12 +1,19 @@
 import React from 'react'
 import type { BaseComponentProps } from '../../types'
 
+/** Props for the Result feedback page (status, title, and optional actions). */
 export interface ResultProps extends BaseComponentProps {
+  /** Outcome type controlling default icon and styling. */
   status: 'success' | 'error' | 'info' | 'warning' | '404' | '403' | '500'
+  /** Primary heading for the result. */
   title: React.ReactNode
+  /** Secondary explanatory text below the title. */
   subTitle?: React.ReactNode
+  /** Replaces the default icon for the given `status`. */
   icon?: React.ReactNode
+  /** Actions or buttons shown below the titles (e.g. primary CTA). */
   extra?: React.ReactNode
+  /** Additional body content below `extra`. */
   children?: React.ReactNode
 }
 
@@ -58,6 +65,9 @@ const statusColorMap: Record<string, string> = {
   '500': 'var(--sg-color-text-tertiary)',
 }
 
+/**
+ * Full-page or section result layout with preset icons for common HTTP and feedback states.
+ */
 export function Result({
   status,
   title,

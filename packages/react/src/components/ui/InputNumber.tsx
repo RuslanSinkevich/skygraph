@@ -3,18 +3,29 @@ import { Spin } from './Spin'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
+/** Props for the InputNumber component. */
 export interface InputNumberProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Controlled numeric value. */
   value?: number
+  /** Uncontrolled initial value. */
   defaultValue?: number
+  /** Lower bound applied on change and via stepper. */
   min?: number
+  /** Upper bound applied on change and via stepper. */
   max?: number
+  /** Amount added or subtracted by the stepper buttons. @default 1 */
   step?: number
+  /** Decimal places enforced after clamping. */
   precision?: number
+  /** Placeholder when the field has no value. */
   placeholder?: string
+  /** Called with the clamped number or null when the field is cleared. */
   onChange?: (value: number | null) => void
+  /** Called when the input loses focus. */
   onBlur?: () => void
 }
 
+/** Numeric field with +/- controls, optional bounds, precision, and loading state. */
 export function InputNumber({
   value,
   defaultValue,

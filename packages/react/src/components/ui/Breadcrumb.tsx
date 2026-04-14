@@ -1,17 +1,25 @@
 import React from 'react'
 import type { BaseComponentProps } from '../../types'
 
+/** One segment in the breadcrumb trail. */
 export interface BreadcrumbItem {
+  /** Segment label or custom content. */
   title: React.ReactNode
+  /** When set, the segment renders as a link with this URL. */
   href?: string
+  /** Invoked on click; prevents navigation when `href` is also set. */
   onClick?: () => void
 }
 
+/** Props for the breadcrumb navigation list. */
 export interface BreadcrumbProps extends BaseComponentProps {
+  /** Ordered trail from root to current location. */
   items: BreadcrumbItem[]
+  /** Node rendered between segments. @default '/' */
   separator?: React.ReactNode
 }
 
+/** Renders a breadcrumb trail with optional links, custom separators, and current-page styling. */
 export function Breadcrumb({
   items,
   separator = '/',

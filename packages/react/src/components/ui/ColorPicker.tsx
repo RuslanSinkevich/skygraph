@@ -8,15 +8,25 @@ import React, {
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
+/** Props for a color swatch trigger with saturation/hue panel and optional presets. */
 export interface ColorPickerProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Controlled color as hex (#rrggbb) or rgb(...) string matching parse rules. */
   value?: string
+  /** Initial color when uncontrolled. */
   defaultValue?: string
+  /** Called when the color changes; receives string in the active format prop. */
   onChange?: (color: string) => void
+  /** Optional grouped preset swatches (label + color strings). */
   presets?: Array<{ label: string; colors: string[] }>
+  /** When true, show formatted text; when a function, render custom node beside swatch. */
   showText?: boolean | ((color: string) => ReactNode)
+  /** String format used for display and onChange payload. */
   format?: 'hex' | 'rgb'
+  /** Whether the panel opens on click or on hover (with a short leave delay). */
   trigger?: 'click' | 'hover'
+  /** Controlled open state of the picker panel. */
   open?: boolean
+  /** Called when the panel opens or closes. */
   onOpenChange?: (open: boolean) => void
 }
 
@@ -143,6 +153,13 @@ const DEFAULT_COLOR = '#1677ff'
 
 /* ---- Component ---- */
 
+/**
+ * Color picker with saturation/value square, hue strip, text input, and optional presets.
+ * Supports click or hover trigger and controlled or internal open state.
+ *
+ * @default format - `'hex'`
+ * @default trigger - `'click'`
+ */
 export function ColorPicker({
   value,
   defaultValue,

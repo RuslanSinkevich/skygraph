@@ -21,7 +21,7 @@
   background: var(--sg-color-error);
   border-radius: 10px;
   box-shadow: 0 0 0 1px var(--sg-color-bg);
-  z-index: 1;
+  z-index: var(--sg-z-base);
 }
 
 .sg-badge-dot {
@@ -34,7 +34,7 @@
   background: var(--sg-color-error);
   border-radius: 50%;
   box-shadow: 0 0 0 1px var(--sg-color-bg);
-  z-index: 1;
+  z-index: var(--sg-z-base);
 }
 
 /* Status badge (standalone) */

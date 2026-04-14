@@ -2,19 +2,31 @@ import React from 'react'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
+/** Single label/value pair in a descriptions list. */
 export interface DescriptionsItem {
+  /** Optional stable key for list reconciliation. */
   key?: string
+  /** Field label shown in the first cell or header row. */
   label: React.ReactNode
+  /** Value content paired with `label`. */
   children: React.ReactNode
+  /** Column span for this item within the grid (max `column`). */
   span?: number
 }
 
+/** Props for the Descriptions key-value table. */
 export interface DescriptionsProps extends BaseComponentProps, SizableProps {
+  /** Optional heading above the descriptions table. */
   title?: React.ReactNode
+  /** Rows built from these items according to `column` and each item's `span`. */
   items: DescriptionsItem[]
+  /** Renders a bordered table style. @default false */
   bordered?: boolean
+  /** Number of description columns per row. @default 3 */
   column?: number
+  /** Stacks labels and values in separate rows when vertical. @default 'horizontal' */
   layout?: 'horizontal' | 'vertical'
+  /** Appends ":" after labels when true. @default true */
   colon?: boolean
 }
 
@@ -42,6 +54,9 @@ function buildRows(items: DescriptionsItem[], column: number): DescriptionsItem[
   return rows
 }
 
+/**
+ * Renders a responsive key-value table from `items`, with horizontal or vertical layout.
+ */
 export function Descriptions({
   title,
   items,

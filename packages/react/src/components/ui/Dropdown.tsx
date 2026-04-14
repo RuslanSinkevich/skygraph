@@ -3,23 +3,40 @@ import { Transition } from './Transition'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps } from '../../types'
 
+/** One entry in the dropdown menu: action row or non-interactive divider. */
 export interface DropdownItem {
+  /** Unique key passed to `onSelect` when the row is activated. */
   key: string
+  /** Visible menu row content. */
   label: React.ReactNode
+  /** When true, the row cannot be selected. */
   disabled?: boolean
+  /** When true, styles the row as a destructive action. */
   danger?: boolean
+  /** When true, renders a separator instead of a selectable row. */
   divider?: boolean
 }
 
+/** Props for the trigger + anchored menu dropdown. */
 export interface DropdownProps extends BaseComponentProps {
+  /** Menu rows and optional dividers. */
   items: DropdownItem[]
+  /** Called with the item `key` after a successful selection. */
   onSelect?: (key: string) => void
+  /** Opens the menu on click or hover. @default 'hover' */
   trigger?: 'click' | 'hover'
+  /** Menu position relative to the trigger. @default 'bottomLeft' */
   placement?: 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'
+  /** When true, ignores open/close and selection; uses ConfigProvider when omitted. */
   disabled?: boolean
+  /** Element rendered as the menu trigger. */
   children: React.ReactElement
 }
 
+/**
+ * Anchored menu opened by hover or click, with keyboard support and outside-click close.
+ * Styled variant uses a slide transition; unstyled variant renders a minimal structure.
+ */
 export function Dropdown({
   items,
   onSelect,

@@ -8,6 +8,9 @@ import {
   computeSpanMap,
   computeHiddenCells,
   getFixedStyle,
+  groupByColumn,
+  separatePinnedRows,
+  computeColumnAggregates,
 } from './helpers'
 import type {
   TableColumn,
@@ -27,6 +30,10 @@ import {
 } from './types'
 import type { ContextMenuState } from './ContextMenu'
 
+/**
+ * Derives table UI state: columns, sorting, filters, selection, grouping, and layout helpers.
+ * Bridges `useTable` engine data with header/body presentation props.
+ */
 export function useTableState(props: TableProps) {
   const {
     columns: columnsProp,
@@ -44,10 +51,24 @@ export function useTableState(props: TableProps) {
     hiddenColumns: hiddenColumnsProp,
     onHiddenColumnsChange,
     onColumnPinChange,
+    groupBy,
+    defaultGroupExpanded,
+    onGroupExpandChange,
+    pinnedRows: pinnedRowsConfig,
+    keyboardNavigation,
+    footer: _footer,
+    showRowNumber: _showRowNumber,
+    fullscreenable: _fullscreenable,
+    densityToggle: _densityToggle,
+    emptyContent: _emptyContent,
+    printable: _printable,
+    exportJSON: _exportJSON,
+    highlightOnHover: _highlightOnHover,
+    columnAutoResize: _columnAutoResize,
     ...tableOptions
   } = props
 
-  const { visibleRows, tableState, setSort, clearSort, setPage, setFilterFn } =
+  const { visibleRows, tableState, setSort, setSorts, clearSort, setPage, setFilterFn } =
     useTable(tableOptions)
 
   const t = useMemo(() => ({ ...DEFAULT_LOCALE, ...locale }), [locale])
@@ -77,7 +98,10 @@ export function useTableState(props: TableProps) {
   const [internalHidden, setInternalHidden] = useState<Set<string>>(
     () => new Set(hiddenColumnsProp ?? []),
   )
-  const hiddenSet = hiddenColumnsProp ? new Set(hiddenColumnsProp) : internalHidden
+  const hiddenSet = useMemo(
+    () => hiddenColumnsProp ? new Set(hiddenColumnsProp) : internalHidden,
+    [hiddenColumnsProp, internalHidden],
+  )
 
   const toggleColumnVisibility = useCallback(
     (key: string) => {
@@ -238,7 +262,7 @@ export function useTableState(props: TableProps) {
         if (next.length === 0) {
           clearSort()
         } else {
-          setSort(next[0].column, next[0].direction)
+          setSorts(next)
         }
       } else {
         const current = sorts.length === 1 ? sorts[0] : null
@@ -447,13 +471,131 @@ export function useTableState(props: TableProps) {
     [onColumnPinChange],
   )
 
+  // ---- Fullscreen ----
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+
+  const toggleFullscreen = useCallback(() => {
+    setIsFullscreen((prev) => !prev)
+  }, [])
+
+  // ---- Density ----
+  const [density, setDensity] = useState<'small' | 'middle' | 'large'>('middle')
+
+  // ---- Group By ----
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => {
+    return defaultGroupExpanded ? new Set(['__all__']) : new Set()
+  })
+
+  const toggleGroupExpand = useCallback(
+    (groupKey: string) => {
+      setExpandedGroups((prev) => {
+        const next = new Set(prev)
+        const wasExpanded = next.has(groupKey)
+        if (wasExpanded) {
+          next.delete(groupKey)
+        } else {
+          next.add(groupKey)
+        }
+        onGroupExpandChange?.(groupKey, !wasExpanded)
+        return next
+      })
+    },
+    [onGroupExpandChange],
+  )
+
+  const expandAllGroups = useCallback(() => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev)
+      next.add('__all__')
+      return next
+    })
+  }, [])
+
+  const collapseAllGroups = useCallback(() => {
+    setExpandedGroups(new Set())
+  }, [])
+
+  // ---- Keyboard navigation ----
+  const [focusedCell, setFocusedCell] = useState<{ row: number; col: number } | null>(null)
+
+  const handleKeyNav = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!keyboardNavigation || !focusedCell) return
+      const maxRow = visibleRows.length - 1
+      const maxCol = columns.length - 1
+      let { row, col } = focusedCell
+
+      switch (e.key) {
+        case 'ArrowUp':
+          e.preventDefault()
+          row = Math.max(0, row - 1)
+          break
+        case 'ArrowDown':
+          e.preventDefault()
+          row = Math.min(maxRow, row + 1)
+          break
+        case 'ArrowLeft':
+          e.preventDefault()
+          col = Math.max(0, col - 1)
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          col = Math.min(maxCol, col + 1)
+          break
+        case 'Tab':
+          e.preventDefault()
+          if (e.shiftKey) {
+            col -= 1
+            if (col < 0) { col = maxCol; row = Math.max(0, row - 1) }
+          } else {
+            col += 1
+            if (col > maxCol) { col = 0; row = Math.min(maxRow, row + 1) }
+          }
+          break
+        case 'Home':
+          e.preventDefault()
+          col = 0
+          if (e.ctrlKey) row = 0
+          break
+        case 'End':
+          e.preventDefault()
+          col = maxCol
+          if (e.ctrlKey) row = maxRow
+          break
+        default:
+          return
+      }
+      setFocusedCell({ row, col })
+    },
+    [keyboardNavigation, focusedCell, visibleRows.length, columns.length],
+  )
+
+  // Column auto-resize: measure content and set optimal width
+  const handleAutoResize = useCallback(
+    (colKey: string) => {
+      const maxLen = visibleRows.reduce((max, row) => {
+        const val = String(row.data[colKey] ?? '')
+        return Math.max(max, val.length)
+      }, 0)
+      const headerCol = leafColumns.find((c) => c.key === colKey)
+      const headerLen = typeof headerCol?.title === 'string' ? headerCol.title.length : 6
+      const charWidth = 8
+      const padding = 32
+      const min = headerCol?.minWidth ?? MIN_COL_WIDTH
+      const optimal = Math.max(min, Math.max(maxLen, headerLen) * charWidth + padding)
+      setColWidths((prev) => ({ ...prev, [colKey]: optimal }))
+    },
+    [visibleRows, leafColumns],
+  )
+
   // ---- Tree data ----
 
   const isTreeMode = !!tree
   const childrenKey = tree?.childrenColumnName ?? 'children'
   const indentSize = tree?.indentSize ?? 20
 
-  const flatRows: FlatRow[] = useMemo(() => {
+  const baseFlatRows: FlatRow[] = useMemo(() => {
     if (!isTreeMode) {
       return visibleRows.map((r) => ({
         id: r.id,
@@ -464,6 +606,30 @@ export function useTableState(props: TableProps) {
     }
     return flattenTreeRows(visibleRows, childrenKey, treeExpanded)
   }, [visibleRows, isTreeMode, childrenKey, treeExpanded])
+
+  // Apply group-by if configured
+  const groupedRows: FlatRow[] = useMemo(() => {
+    if (!groupBy) return baseFlatRows
+    const allExpanded = expandedGroups.has('__all__')
+    const effectiveExpanded = allExpanded
+      ? new Set([...expandedGroups, ...baseFlatRows.map((r) => String(r.data[groupBy] ?? 'Other'))])
+      : expandedGroups
+    return groupByColumn(baseFlatRows, groupBy, columns, effectiveExpanded)
+  }, [baseFlatRows, groupBy, columns, expandedGroups])
+
+  // Separate pinned rows
+  const { top: pinnedTop, middle: middleRows, bottom: pinnedBottom } = useMemo(
+    () => separatePinnedRows(groupedRows, pinnedRowsConfig?.top, pinnedRowsConfig?.bottom),
+    [groupedRows, pinnedRowsConfig],
+  )
+
+  const flatRows = groupedRows
+
+  // Aggregation footer data
+  const aggregates = useMemo(
+    () => computeColumnAggregates(columns, baseFlatRows),
+    [columns, baseFlatRows],
+  )
 
   // ---- Grid ----
 
@@ -592,5 +758,29 @@ export function useTableState(props: TableProps) {
     // Context menu
     contextMenu,
     setContextMenu,
+    // Fullscreen
+    isFullscreen,
+    toggleFullscreen,
+    wrapperRef,
+    // Density
+    density,
+    setDensity,
+    // Group by
+    expandedGroups,
+    toggleGroupExpand,
+    expandAllGroups,
+    collapseAllGroups,
+    // Keyboard
+    focusedCell,
+    setFocusedCell,
+    handleKeyNav,
+    // Auto-resize
+    handleAutoResize,
+    // Aggregation
+    aggregates,
+    // Pinned
+    pinnedTop,
+    pinnedBottom,
+    middleRows,
   }
 }

@@ -94,18 +94,37 @@ class CoreImpl implements Core {
     try {
       fn()
       const staged = this.transaction_.getStaged()
-      const changes = new Map<string, unknown>()
 
-      for (const write of staged) {
-        if (Object.is(write.value, write.prevValue)) continue
-        this.dispatchWrite({
-          path: write.path,
-          value: write.value,
-          oldValue: write.prevValue,
-          source: 'transaction',
-        })
-        changes.set(write.path, write.value)
+      // Pass all writes through middleware first, collecting approved ones.
+      // dispatchWrite normally commits to store, so we temporarily redirect
+      // commits to a pending list and only apply them atomically if all succeed.
+      const approved: Array<{ path: string; value: unknown }> = []
+      const origCommit = this.commitWrite.bind(this)
+      this.commitWrite = (ev: WriteEvent) => {
+        approved.push({ path: ev.path, value: ev.value })
       }
+
+      try {
+        for (const write of staged) {
+          if (Object.is(write.value, write.prevValue)) continue
+          this.dispatchWrite({
+            path: write.path,
+            value: write.value,
+            oldValue: write.prevValue,
+            source: 'transaction',
+          })
+        }
+      } finally {
+        this.commitWrite = origCommit
+      }
+
+      // All middleware passed — atomically apply to store
+      const changes = new Map<string, unknown>()
+      for (const { path, value } of approved) {
+        this.store.set(path, value)
+        changes.set(path, value)
+      }
+
       this.transaction_.complete()
 
       const computedChanges = this.propagateComputed(new Set(changes.keys()))

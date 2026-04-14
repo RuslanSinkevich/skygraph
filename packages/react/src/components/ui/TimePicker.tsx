@@ -96,41 +96,75 @@ function ScrollColumn({
 
 // ── Types ──
 
+/** Props for a single time value picked via scroll columns and optional Now/Clear. */
 export interface TimePickerProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Controlled time string matching the active format. */
   value?: string
+  /** Initial time when uncontrolled. */
   defaultValue?: string
+  /** Placeholder when the value is empty. */
   placeholder?: string
+  /** Display format (HH/hh, mm, ss, A for 12h). */
   format?: string
+  /** When true, use 12-hour clock with AM/PM column. */
   use12Hours?: boolean
+  /** Step between hour values in the scroller. */
   hourStep?: number
+  /** Step between minute values in the scroller. */
   minuteStep?: number
+  /** Step between second values in the scroller. */
   secondStep?: number
+  /** When true, show the seconds column. */
   showSecond?: boolean
+  /** When true, show a Now button that sets current time and closes. */
   showNow?: boolean
+  /** When true, show a clear control when a value exists. */
   allowClear?: boolean
+  /** Hour values to disable in the hour column. */
   disabledHours?: () => number[]
+  /** Minute values to disable for the given hour. */
   disabledMinutes?: (hour: number) => number[]
+  /** Second values to disable for the given hour and minute. */
   disabledSeconds?: (hour: number, minute: number) => number[]
+  /** Called when the time string changes. */
   onChange?: (timeString: string) => void
+  /** Called when the dropdown opens or closes. */
   onOpenChange?: (open: boolean) => void
+  /** Controlled visibility of the dropdown. */
   open?: boolean
+  /** Reserved for read-only input behavior (currently unused in markup). */
   inputReadOnly?: boolean
 }
 
+/** Props for two side-by-side TimePicker panels as a start/end range. */
 export interface TimeRangePickerProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  /** Controlled start and end time strings. */
   value?: [string, string]
+  /** Initial range when uncontrolled. */
   defaultValue?: [string, string]
+  /** Placeholders for start and end fields. */
   placeholder?: [string, string]
+  /** Shared display format for both pickers. */
   format?: string
+  /** When true, both panels use 12-hour mode. */
   use12Hours?: boolean
+  /** Shared hour step for both panels. */
   hourStep?: number
+  /** Shared minute step for both panels. */
   minuteStep?: number
+  /** Shared second step for both panels. */
   secondStep?: number
+  /** When true, show seconds on both panels. */
   showSecond?: boolean
+  /** When true, show a clear control when either side has a value. */
   allowClear?: boolean
+  /** Node between start and end labels. */
   separator?: React.ReactNode
+  /** Called when either start or end time changes. */
   onChange?: (timeStrings: [string, string]) => void
+  /** Called when the combined dropdown opens or closes. */
   onOpenChange?: (open: boolean) => void
+  /** Controlled visibility of the range dropdown. */
   open?: boolean
 }
 
@@ -138,6 +172,20 @@ export interface TimeRangePickerProps extends BaseComponentProps, InteractivePro
 // TimePicker
 // ═══════════════════════════════════════════════════════
 
+/**
+ * Scroll-column time picker with optional 12h mode, disabled slots, and Now/Clear.
+ * Value is a formatted string; format defaults from use12Hours and showSecond.
+ *
+ * @default placeholder - `'Select time'`
+ * @default use12Hours - `false`
+ * @default hourStep - `1`
+ * @default minuteStep - `1`
+ * @default secondStep - `1`
+ * @default showSecond - `true`
+ * @default showNow - `true`
+ * @default allowClear - `true`
+ * @default inputReadOnly - `false`
+ */
 export function TimePicker({
   value,
   defaultValue,
@@ -367,6 +415,19 @@ export function TimePicker({
 }
 
 // Attach TimeRangePicker for Ant-like API: TimePicker.RangePicker
+/**
+ * Range control hosting two TimePicker instances for independent start and end times.
+ * Shares format, steps, and 12h setting; inner panels stay open while the range is open.
+ *
+ * @default placeholder - `['Start', 'End']`
+ * @default use12Hours - `false`
+ * @default hourStep - `1`
+ * @default minuteStep - `1`
+ * @default secondStep - `1`
+ * @default showSecond - `true`
+ * @default allowClear - `true`
+ * @default separator - `'→'`
+ */
 export function TimeRangePicker({
   value,
   defaultValue,

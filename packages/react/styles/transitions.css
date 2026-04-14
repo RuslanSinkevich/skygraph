@@ -146,4 +146,13 @@
   .sg-collapse-leave-active {
     transition-duration: 0.01ms !important;
   }
+
+  .sg-spin,
+  .sg-skeleton-active .sg-skeleton-avatar,
+  .sg-skeleton-active .sg-skeleton-title,
+  .sg-skeleton-active .sg-skeleton-paragraph li,
+  .sg-badge-status-processing {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

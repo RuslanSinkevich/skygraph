@@ -5,9 +5,12 @@ export type {
   TreeNodeData,
   TreeFieldNames,
   TreeLocale,
+  TreeNodeStatus,
+  TreeNodeAction,
   CheckInfo,
   SelectInfo,
   ExpandInfo,
   DragInfo,
   DropInfo,
+  EditInfo,
 } from './types'
