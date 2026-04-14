@@ -71,6 +71,24 @@ export interface CellRange {
   end: CellPosition
 }
 
+/** Summary row definition for the DataGrid footer. */
+export interface DataGridSummaryRow<R = Record<string, unknown>> {
+  /** Returns content for each column key. */
+  render: (columnKey: string, data: R[]) => React.ReactNode
+  /** Optional class for the summary row. */
+  className?: string
+}
+
+/** Context menu item for cells. */
+export interface DataGridContextMenuItem {
+  key: string
+  label: React.ReactNode
+  onClick: () => void
+  danger?: boolean
+  disabled?: boolean
+  divider?: boolean
+}
+
 /** Props for the virtualized keyboard-driven data grid. */
 export interface DataGridProps<R = Record<string, unknown>> {
   /** Column definitions in base order (frozen columns are reordered internally). */
@@ -103,9 +121,9 @@ export interface DataGridProps<R = Record<string, unknown>> {
   className?: string
   /** Root element inline styles. */
   style?: React.CSSProperties
-  /** Controlled set of selected row keys (reserved for row selection UI). */
+  /** Controlled set of selected row keys. */
   selectedRows?: Set<React.Key>
-  /** Row selection change handler (reserved). */
+  /** Row selection change handler. */
   onSelectedRowsChange?: (keys: Set<React.Key>) => void
   /** Persists a cell value after inline edit commit. */
   onCellEdit?: (rowIndex: number, columnKey: string, value: CellValue) => void
@@ -128,6 +146,37 @@ export interface DataGridProps<R = Record<string, unknown>> {
   overscan?: number
   /** Localized strings for empty and selection UI. */
   locale?: DataGridLocale
+
+  /** Shows a checkbox column for row selection. */
+  rowSelection?: boolean
+  /** Zebra-striped rows. */
+  striped?: boolean
+  /** Highlight row on hover. @default true */
+  highlightOnHover?: boolean
+  /** Prepend a row number column. */
+  showRowNumber?: boolean
+  /** Summary/footer rows at the bottom of the grid. */
+  summaryRows?: DataGridSummaryRow<R>[]
+  /** Conditional class name per cell for styling. */
+  cellClassName?: (value: CellValue, row: R, rowIndex: number, column: DataGridColumn<R>) => string | undefined
+  /** Conditional inline style per cell. */
+  cellStyle?: (value: CellValue, row: R, rowIndex: number, column: DataGridColumn<R>) => React.CSSProperties | undefined
+  /** Enables column drag reorder. */
+  columnReorder?: boolean
+  /** Fires after column order changes via drag. */
+  onColumnOrderChange?: (columnKeys: string[]) => void
+  /** Builds context menu items for right-click on a cell. */
+  onContextMenu?: (rowIndex: number, columnKey: string, row: R) => DataGridContextMenuItem[]
+  /** Called when a row is clicked. */
+  onRowClick?: (row: R, rowIndex: number) => void
+  /** Called when a row is double-clicked. */
+  onRowDoubleClick?: (row: R, rowIndex: number) => void
+  /** Row class name or function for conditional row styling. */
+  rowClassName?: string | ((row: R, rowIndex: number) => string)
+  /** Loading overlay. */
+  loading?: boolean
+  /** Custom empty state content. */
+  emptyContent?: React.ReactNode
 }
 
 /** Strings for empty state and future selection UI. */

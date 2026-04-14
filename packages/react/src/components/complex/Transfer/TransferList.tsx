@@ -10,6 +10,10 @@ function cls(...parts: (string | false | undefined | null)[]): string {
 
 const DEFAULT_PAGE_SIZE = 10
 
+/**
+ * Single-column checklist with optional search, select-all, pagination, drag-reorder, and footer.
+ * Used as the source and target panes of `Transfer`.
+ */
 export function TransferList({
   items,
   selectedKeys,
@@ -25,9 +29,17 @@ export function TransferList({
   locale,
   direction,
   unstyled,
+  footer,
+  sortable,
+  onSort,
+  onSearch,
+  listHeight,
+  listClassName,
 }: TransferListProps) {
   const [searchValue, setSearchValue] = React.useState('')
   const [currentPage, setCurrentPage] = React.useState(1)
+  const [dragKey, setDragKey] = React.useState<string | null>(null)
+  const [dropKey, setDropKey] = React.useState<string | null>(null)
 
   const filteredItems = React.useMemo(() => {
     if (!searchValue) return items
@@ -40,6 +52,11 @@ export function TransferList({
   React.useEffect(() => {
     setCurrentPage(1)
   }, [searchValue])
+
+  const handleSearchChange = React.useCallback((value: string) => {
+    setSearchValue(value)
+    onSearch?.(direction, value)
+  }, [onSearch, direction])
 
   const pageSize = pagination
     ? (typeof pagination === 'object' ? pagination.pageSize ?? DEFAULT_PAGE_SIZE : DEFAULT_PAGE_SIZE)
@@ -80,11 +97,49 @@ export function TransferList({
     }
   }
 
+  const handleDragStart = React.useCallback((e: React.DragEvent, key: string) => {
+    if (!sortable || disabled) return
+    setDragKey(key)
+    e.dataTransfer.effectAllowed = 'move'
+  }, [sortable, disabled])
+
+  const handleDragOver = React.useCallback((e: React.DragEvent, key: string) => {
+    if (!sortable || !dragKey) return
+    e.preventDefault()
+    setDropKey(key)
+  }, [sortable, dragKey])
+
+  const handleDrop = React.useCallback((e: React.DragEvent, key: string) => {
+    e.preventDefault()
+    if (!sortable || !dragKey || dragKey === key) {
+      setDragKey(null)
+      setDropKey(null)
+      return
+    }
+    const keys = items.map(i => i.key)
+    const fromIdx = keys.indexOf(dragKey)
+    const toIdx = keys.indexOf(key)
+    if (fromIdx === -1 || toIdx === -1) return
+    const next = [...keys]
+    const [moved] = next.splice(fromIdx, 1)
+    next.splice(toIdx, 0, moved)
+    onSort?.(direction, next)
+    setDragKey(null)
+    setDropKey(null)
+  }, [sortable, dragKey, items, direction, onSort])
+
+  const handleDragEnd = React.useCallback(() => {
+    setDragKey(null)
+    setDropKey(null)
+  }, [])
+
   const selectedCount = items.filter(i => selectedKeys.includes(i.key)).length
   const unitLabel = items.length === 1 ? locale.itemUnit : locale.itemsUnit
   const countText = selectedCount > 0
     ? `${selectedCount}/${items.length} ${unitLabel}`
     : `${items.length} ${unitLabel}`
+
+  const resolvedListClassName = typeof listClassName === 'function' ? listClassName(direction) : (listClassName ?? '')
 
   if (unstyled) {
     return (
@@ -107,7 +162,7 @@ export function TransferList({
             unstyled
             value={searchValue}
             placeholder={searchPlaceholder ?? locale.searchPlaceholder}
-            onChange={setSearchValue}
+            onChange={handleSearchChange}
           />
         )}
         {visibleItems.length === 0 ? (
@@ -115,7 +170,14 @@ export function TransferList({
         ) : (
           <ul>
             {visibleItems.map(item => (
-              <li key={item.key}>
+              <li
+                key={item.key}
+                draggable={sortable && !disabled && !item.disabled}
+                onDragStart={(e) => handleDragStart(e, item.key)}
+                onDragOver={(e) => handleDragOver(e, item.key)}
+                onDrop={(e) => handleDrop(e, item.key)}
+                onDragEnd={handleDragEnd}
+              >
                 <Checkbox
                   unstyled
                   checked={selectedKeys.includes(item.key)}
@@ -138,12 +200,13 @@ export function TransferList({
             simple
           />
         )}
+        {footer}
       </div>
     )
   }
 
   return (
-    <div className={cls('sg-transfer-list', disabled && 'sg-transfer-list-disabled')}>
+    <div className={cls('sg-transfer-list', disabled && 'sg-transfer-list-disabled', resolvedListClassName)}>
       <div className="sg-transfer-list-header">
         {showSelectAll && (
           <Checkbox
@@ -163,36 +226,55 @@ export function TransferList({
             size="small"
             value={searchValue}
             placeholder={searchPlaceholder ?? locale.searchPlaceholder}
-            onChange={setSearchValue}
+            onChange={handleSearchChange}
           />
         </div>
       )}
 
-      <div className="sg-transfer-list-body">
+      <div
+        className="sg-transfer-list-body"
+        style={listHeight ? { height: listHeight, overflow: 'auto' } : undefined}
+      >
         {visibleItems.length === 0 ? (
           <div className="sg-transfer-list-empty">{locale.notFoundContent}</div>
         ) : (
           <ul className="sg-transfer-list-content">
-            {visibleItems.map(item => (
-              <li
-                key={item.key}
-                className={cls(
-                  'sg-transfer-list-item',
-                  selectedKeys.includes(item.key) && 'sg-transfer-list-item-selected',
-                  (disabled || item.disabled) && 'sg-transfer-list-item-disabled',
-                )}
-              >
-                <Checkbox
-                  checked={selectedKeys.includes(item.key)}
-                  disabled={disabled || item.disabled}
-                  onChange={checked => handleItemCheck(item.key, checked)}
+            {visibleItems.map(item => {
+              const isDragging = dragKey === item.key
+              const isDropTarget = dropKey === item.key && dragKey !== item.key
+
+              return (
+                <li
+                  key={item.key}
+                  className={cls(
+                    'sg-transfer-list-item',
+                    selectedKeys.includes(item.key) && 'sg-transfer-list-item-selected',
+                    (disabled || item.disabled) && 'sg-transfer-list-item-disabled',
+                    isDragging && 'sg-transfer-list-item-dragging',
+                    isDropTarget && 'sg-transfer-list-item-drop-target',
+                  )}
+                  draggable={sortable && !disabled && !item.disabled}
+                  onDragStart={(e) => handleDragStart(e, item.key)}
+                  onDragOver={(e) => handleDragOver(e, item.key)}
+                  onDrop={(e) => handleDrop(e, item.key)}
+                  onDragEnd={handleDragEnd}
+                  onDragLeave={() => setDropKey(null)}
                 >
-                  <span className="sg-transfer-list-item-text">
-                    {render ? render(item) : item.title}
-                  </span>
-                </Checkbox>
-              </li>
-            ))}
+                  {sortable && !disabled && !item.disabled && (
+                    <span className="sg-transfer-list-item-drag-handle">⠿</span>
+                  )}
+                  <Checkbox
+                    checked={selectedKeys.includes(item.key)}
+                    disabled={disabled || item.disabled}
+                    onChange={checked => handleItemCheck(item.key, checked)}
+                  >
+                    <span className="sg-transfer-list-item-text">
+                      {render ? render(item) : item.title}
+                    </span>
+                  </Checkbox>
+                </li>
+              )
+            })}
           </ul>
         )}
       </div>
@@ -207,6 +289,10 @@ export function TransferList({
             simple
           />
         </div>
+      )}
+
+      {footer && (
+        <div className="sg-transfer-list-footer">{footer}</div>
       )}
     </div>
   )

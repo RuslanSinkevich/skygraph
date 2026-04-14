@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react'
 import type { CellPosition, CellRange, CellValue, DataGridColumn } from './types'
 
 /**
- * Holds active cell, edit session, range selection, and column width state for `DataGrid`.
+ * Holds active cell, edit session, range selection, column width, and column order state for `DataGrid`.
  */
 export function useDataGridState<R>(columns: DataGridColumn<R>[], data: R[]) {
   const [activeCell, setActiveCell] = useState<CellPosition | null>(null)
@@ -15,8 +15,10 @@ export function useDataGridState<R>(columns: DataGridColumn<R>[], data: R[]) {
     }
     return map
   })
+  const [columnOrder, setColumnOrder] = useState<string[] | null>(null)
 
   const editValueRef = useRef<CellValue>(undefined)
+  const dragColumnRef = useRef<string | null>(null)
 
   const startEditing = useCallback(
     (pos: CellPosition) => {
@@ -97,6 +99,21 @@ export function useDataGridState<R>(columns: DataGridColumn<R>[], data: R[]) {
     [columnWidths, columns],
   )
 
+  const reorderColumns = useCallback(
+    (fromKey: string, toKey: string) => {
+      const order = columnOrder ?? columns.map((c) => c.key)
+      const fromIdx = order.indexOf(fromKey)
+      const toIdx = order.indexOf(toKey)
+      if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return order
+      const next = [...order]
+      const [moved] = next.splice(fromIdx, 1)
+      next.splice(toIdx, 0, moved)
+      setColumnOrder(next)
+      return next
+    },
+    [columnOrder, columns],
+  )
+
   return {
     activeCell,
     setActiveCell,
@@ -109,5 +126,9 @@ export function useDataGridState<R>(columns: DataGridColumn<R>[], data: R[]) {
     navigate,
     resizeColumn,
     getColumnWidth,
+    columnOrder,
+    setColumnOrder,
+    reorderColumns,
+    dragColumnRef,
   }
 }

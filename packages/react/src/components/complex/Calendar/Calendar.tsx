@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import type { CalendarProps } from './types'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import type { CalendarProps, CalendarEvent } from './types'
 import { DEFAULT_MONTH_NAMES, DEFAULT_DAY_NAMES } from './types'
 
 function isSameDay(a: Date, b: Date): boolean {
@@ -20,8 +20,32 @@ function getDaysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate()
 }
 
-function getFirstDayOfMonth(year: number, month: number): number {
-  return new Date(year, month, 1).getDay()
+function getISOWeekNumber(date: Date): number {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+  const dayNum = d.getUTCDay() || 7
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum)
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
+  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+}
+
+function isBetween(date: Date, start: Date, end: Date): boolean {
+  const t = date.getTime()
+  const s = Math.min(start.getTime(), end.getTime())
+  const e = Math.max(start.getTime(), end.getTime())
+  return t >= s && t <= e
+}
+
+function isRangeStart(date: Date, start: Date | null, end: Date | null): boolean {
+  if (!start) return false
+  if (!end) return isSameDay(date, start)
+  const s = start.getTime() <= end.getTime() ? start : end
+  return isSameDay(date, s)
+}
+
+function isRangeEnd(date: Date, start: Date | null, end: Date | null): boolean {
+  if (!start || !end) return false
+  const e = start.getTime() <= end.getTime() ? end : start
+  return isSameDay(date, e)
 }
 
 interface DayCell {
@@ -30,9 +54,10 @@ interface DayCell {
   inMonth: boolean
 }
 
-function getMonthGrid(year: number, month: number): DayCell[][] {
+function getMonthGrid(year: number, month: number, weekStartDay: number): DayCell[][] {
   const daysInMonth = getDaysInMonth(year, month)
-  const firstDay = getFirstDayOfMonth(year, month)
+  const firstDayRaw = new Date(year, month, 1).getDay()
+  const firstDay = (firstDayRaw - weekStartDay + 7) % 7
   const prevMonthDays = getDaysInMonth(year, month - 1)
 
   const cells: DayCell[] = []
@@ -70,9 +95,14 @@ function getMonthGrid(year: number, month: number): DayCell[][] {
   return weeks
 }
 
+function getEventsForDate(events: CalendarEvent[] | undefined, date: Date): CalendarEvent[] {
+  if (!events) return []
+  return events.filter((ev) => isSameDay(ev.date, date))
+}
+
 /**
- * Month/year calendar with panel navigation, optional custom header and cells,
- * and fullscreen or compact layout.
+ * Month/year calendar with panel navigation, week numbers, range/multi selection,
+ * event markers, keyboard navigation, and fullscreen or compact layout.
  */
 export function Calendar(props: CalendarProps) {
   const {
@@ -90,11 +120,30 @@ export function Calendar(props: CalendarProps) {
     className,
     style,
     unstyled,
+    showWeekNumber,
+    weekStartDay = 0,
+    rangeSelection,
+    rangeValue: controlledRangeValue,
+    defaultRangeValue,
+    onRangeChange,
+    multipleSelection,
+    multipleValue: controlledMultipleValue,
+    defaultMultipleValue,
+    onMultipleChange,
+    events,
+    maxEvents = 3,
+    keyboard = true,
   } = props
 
   const monthNames = locale?.monthNames ?? DEFAULT_MONTH_NAMES
-  const dayNames = locale?.dayNames ?? DEFAULT_DAY_NAMES
+  const baseDayNames = locale?.dayNames ?? DEFAULT_DAY_NAMES
   const todayLabel = locale?.today ?? 'Today'
+  const weekLabel = locale?.week ?? 'W'
+
+  const dayNames = useMemo(() => {
+    if (weekStartDay === 0) return baseDayNames
+    return [...baseDayNames.slice(weekStartDay), ...baseDayNames.slice(0, weekStartDay)]
+  }, [baseDayNames, weekStartDay])
 
   const [internalValue, setInternalValue] = useState<Date>(
     () => controlledValue ?? defaultValue ?? new Date(),
@@ -104,6 +153,25 @@ export function Calendar(props: CalendarProps) {
   const [panelDate, setPanelDate] = useState<Date>(
     () => controlledValue ?? defaultValue ?? new Date(),
   )
+
+  // Range selection state
+  const [internalRange, setInternalRange] = useState<[Date | null, Date | null]>(
+    () => controlledRangeValue ?? defaultRangeValue ?? [null, null],
+  )
+  const [rangeHover, setRangeHover] = useState<Date | null>(null)
+  const rangeClickCount = useRef(0)
+
+  const currentRange = controlledRangeValue ?? internalRange
+
+  // Multiple selection state
+  const [internalMultiple, setInternalMultiple] = useState<Date[]>(
+    () => controlledMultipleValue ?? defaultMultipleValue ?? [],
+  )
+  const currentMultiple = controlledMultipleValue ?? internalMultiple
+
+  // Keyboard focused date
+  const [focusedDate, setFocusedDate] = useState<Date | null>(null)
+  const calendarRef = useRef<HTMLDivElement>(null)
 
   const currentValue = controlledValue ?? internalValue
   const currentMode = controlledMode ?? internalMode
@@ -125,17 +193,52 @@ export function Calendar(props: CalendarProps) {
   const panelMonth = panelDate.getMonth()
 
   const weeks = useMemo(
-    () => getMonthGrid(panelYear, panelMonth),
-    [panelYear, panelMonth],
+    () => getMonthGrid(panelYear, panelMonth, weekStartDay),
+    [panelYear, panelMonth, weekStartDay],
   )
 
   const handleDateSelect = useCallback((date: Date) => {
     if (disabledDate?.(date)) return
+
+    if (rangeSelection) {
+      const clickNum = rangeClickCount.current
+      if (clickNum === 0) {
+        const newRange: [Date | null, Date | null] = [date, null]
+        setInternalRange(newRange)
+        onRangeChange?.(newRange)
+        rangeClickCount.current = 1
+      } else {
+        const start = currentRange[0]!
+        const newRange: [Date | null, Date | null] = start.getTime() <= date.getTime()
+          ? [start, date]
+          : [date, start]
+        setInternalRange(newRange)
+        onRangeChange?.(newRange)
+        rangeClickCount.current = 0
+        setRangeHover(null)
+      }
+      return
+    }
+
+    if (multipleSelection) {
+      const exists = currentMultiple.findIndex((d) => isSameDay(d, date))
+      let next: Date[]
+      if (exists >= 0) {
+        next = currentMultiple.filter((_, i) => i !== exists)
+      } else {
+        next = [...currentMultiple, date]
+      }
+      setInternalMultiple(next)
+      onMultipleChange?.(next)
+      return
+    }
+
     setInternalValue(date)
     setPanelDate(date)
     onSelect?.(date)
     onChange?.(date)
-  }, [disabledDate, onSelect, onChange])
+  }, [disabledDate, onSelect, onChange, rangeSelection, currentRange, onRangeChange,
+      multipleSelection, currentMultiple, onMultipleChange])
 
   const handleMonthSelect = useCallback((month: number) => {
     const newDate = new Date(panelYear, month, 1)
@@ -186,7 +289,69 @@ export function Calendar(props: CalendarProps) {
     handleDateSelect(today)
   }, [handleDateSelect])
 
-  // Year selector options: 10 years around current
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!keyboard || currentMode !== 'month') return
+
+    const focused = focusedDate ?? currentValue
+    let next: Date | null = null
+
+    switch (e.key) {
+      case 'ArrowLeft':
+        e.preventDefault()
+        next = new Date(focused.getFullYear(), focused.getMonth(), focused.getDate() - 1)
+        break
+      case 'ArrowRight':
+        e.preventDefault()
+        next = new Date(focused.getFullYear(), focused.getMonth(), focused.getDate() + 1)
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        next = new Date(focused.getFullYear(), focused.getMonth(), focused.getDate() - 7)
+        break
+      case 'ArrowDown':
+        e.preventDefault()
+        next = new Date(focused.getFullYear(), focused.getMonth(), focused.getDate() + 7)
+        break
+      case 'Home':
+        e.preventDefault()
+        next = new Date(focused.getFullYear(), focused.getMonth(), 1)
+        break
+      case 'End':
+        e.preventDefault()
+        next = new Date(focused.getFullYear(), focused.getMonth() + 1, 0)
+        break
+      case 'PageUp':
+        e.preventDefault()
+        if (e.shiftKey) {
+          next = new Date(focused.getFullYear() - 1, focused.getMonth(), focused.getDate())
+        } else {
+          next = new Date(focused.getFullYear(), focused.getMonth() - 1, focused.getDate())
+        }
+        break
+      case 'PageDown':
+        e.preventDefault()
+        if (e.shiftKey) {
+          next = new Date(focused.getFullYear() + 1, focused.getMonth(), focused.getDate())
+        } else {
+          next = new Date(focused.getFullYear(), focused.getMonth() + 1, focused.getDate())
+        }
+        break
+      case 'Enter':
+      case ' ':
+        e.preventDefault()
+        handleDateSelect(focused)
+        return
+    }
+
+    if (next) {
+      setFocusedDate(next)
+      if (next.getMonth() !== panelMonth || next.getFullYear() !== panelYear) {
+        setPanelDate(next)
+        onPanelChange?.(next, currentMode)
+      }
+    }
+  }, [keyboard, currentMode, focusedDate, currentValue, panelMonth, panelYear, handleDateSelect, onPanelChange])
+
   const yearOptions = useMemo(() => {
     const years: number[] = []
     for (let y = panelYear - 10; y <= panelYear + 10; y++) {
@@ -195,10 +360,23 @@ export function Calendar(props: CalendarProps) {
     return years
   }, [panelYear])
 
+  const isDateInRange = useCallback((date: Date): boolean => {
+    if (!rangeSelection) return false
+    const [start, end] = currentRange
+    if (start && end) return isBetween(date, start, end)
+    if (start && rangeHover) return isBetween(date, start, rangeHover)
+    return false
+  }, [rangeSelection, currentRange, rangeHover])
+
+  const isDateMultiSelected = useCallback((date: Date): boolean => {
+    if (!multipleSelection) return false
+    return currentMultiple.some((d) => isSameDay(d, date))
+  }, [multipleSelection, currentMultiple])
+
   // Unstyled render
   if (unstyled) {
     return (
-      <div className={className} style={style}>
+      <div className={className} style={style} ref={calendarRef} tabIndex={keyboard ? 0 : undefined} onKeyDown={handleKeyDown}>
         {headerRender ? (
           headerRender({
             value: panelDate,
@@ -222,11 +400,15 @@ export function Calendar(props: CalendarProps) {
         {currentMode === 'month' ? (
           <table>
             <thead>
-              <tr>{dayNames.map((d) => <th key={d}>{d}</th>)}</tr>
+              <tr>
+                {showWeekNumber && <th>{weekLabel}</th>}
+                {dayNames.map((d) => <th key={d}>{d}</th>)}
+              </tr>
             </thead>
             <tbody>
               {weeks.map((week, wi) => (
                 <tr key={wi}>
+                  {showWeekNumber && <td>{getISOWeekNumber(week[0].date)}</td>}
                   {week.map((cell) => (
                     <td
                       key={cell.date.toISOString()}
@@ -258,6 +440,8 @@ export function Calendar(props: CalendarProps) {
   const wrapperCls = [
     'sg-calendar',
     fullscreen ? 'sg-calendar-fullscreen' : 'sg-calendar-mini',
+    rangeSelection ? 'sg-calendar-range' : '',
+    multipleSelection ? 'sg-calendar-multiple' : '',
     className,
   ].filter(Boolean).join(' ')
 
@@ -363,6 +547,9 @@ export function Calendar(props: CalendarProps) {
     <table className="sg-calendar-table">
       <thead>
         <tr>
+          {showWeekNumber && (
+            <th className="sg-calendar-week-header">{weekLabel}</th>
+          )}
           {dayNames.map((d) => (
             <th key={d} className="sg-calendar-day-header">{d}</th>
           ))}
@@ -371,10 +558,21 @@ export function Calendar(props: CalendarProps) {
       <tbody>
         {weeks.map((week, wi) => (
           <tr key={wi} className="sg-calendar-week-row">
+            {showWeekNumber && (
+              <td className="sg-calendar-week-number">
+                {getISOWeekNumber(week[0].date)}
+              </td>
+            )}
             {week.map((cell) => {
               const isDisabled = disabledDate?.(cell.date)
-              const isSelected = isSameDay(cell.date, currentValue)
+              const isSelected = !rangeSelection && !multipleSelection && isSameDay(cell.date, currentValue)
               const isTodayCell = isToday(cell.date)
+              const isFocused = focusedDate ? isSameDay(cell.date, focusedDate) : false
+              const inRange = isDateInRange(cell.date)
+              const isMultiSel = isDateMultiSelected(cell.date)
+              const isStart = rangeSelection && isRangeStart(cell.date, currentRange[0], currentRange[1])
+              const isEnd = rangeSelection && isRangeEnd(cell.date, currentRange[0], currentRange[1])
+              const dateEvents = getEventsForDate(events, cell.date)
 
               const cellCls = [
                 'sg-calendar-cell',
@@ -382,6 +580,11 @@ export function Calendar(props: CalendarProps) {
                 isSelected ? 'sg-calendar-cell-selected' : '',
                 isTodayCell ? 'sg-calendar-cell-today' : '',
                 isDisabled ? 'sg-calendar-cell-disabled' : '',
+                isFocused ? 'sg-calendar-cell-focused' : '',
+                inRange ? 'sg-calendar-cell-in-range' : '',
+                isStart ? 'sg-calendar-cell-range-start' : '',
+                isEnd ? 'sg-calendar-cell-range-end' : '',
+                isMultiSel ? 'sg-calendar-cell-multi-selected' : '',
               ].filter(Boolean).join(' ')
 
               return (
@@ -389,9 +592,31 @@ export function Calendar(props: CalendarProps) {
                   key={cell.date.toISOString()}
                   className={cellCls}
                   onClick={() => !isDisabled && handleDateSelect(cell.date)}
+                  onMouseEnter={() => {
+                    if (rangeSelection && rangeClickCount.current === 1) {
+                      setRangeHover(cell.date)
+                    }
+                  }}
                 >
                   <div className="sg-calendar-cell-inner">
                     <span className="sg-calendar-cell-date">{cell.day}</span>
+                    {dateEvents.length > 0 && (
+                      <div className="sg-calendar-cell-events">
+                        {dateEvents.slice(0, maxEvents).map((ev, ei) => (
+                          <span
+                            key={ev.key ?? ei}
+                            className="sg-calendar-event-dot"
+                            style={{ backgroundColor: ev.color ?? 'var(--sg-primary, #1677ff)' }}
+                            title={ev.title}
+                          />
+                        ))}
+                        {dateEvents.length > maxEvents && (
+                          <span className="sg-calendar-event-more">
+                            +{dateEvents.length - maxEvents}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     {cellRender && (
                       <div className="sg-calendar-cell-content">
                         {cellRender(cell.date, { type: 'date' })}
@@ -441,7 +666,13 @@ export function Calendar(props: CalendarProps) {
   )
 
   return (
-    <div className={wrapperCls} style={style}>
+    <div
+      ref={calendarRef}
+      className={wrapperCls}
+      style={style}
+      tabIndex={keyboard ? 0 : undefined}
+      onKeyDown={handleKeyDown}
+    >
       {renderHeader()}
       <div className="sg-calendar-body">
         {currentMode === 'month' ? renderMonthView() : renderYearView()}
@@ -451,6 +682,23 @@ export function Calendar(props: CalendarProps) {
           <button className="sg-calendar-today-btn" onClick={handleToday}>
             {todayLabel}
           </button>
+          {rangeSelection && currentRange[0] && currentRange[1] && (
+            <button
+              className="sg-calendar-clear-btn"
+              onClick={() => {
+                setInternalRange([null, null])
+                onRangeChange?.([null, null])
+                rangeClickCount.current = 0
+              }}
+            >
+              Clear Range
+            </button>
+          )}
+          {multipleSelection && currentMultiple.length > 0 && (
+            <span className="sg-calendar-selection-count">
+              {currentMultiple.length} selected
+            </span>
+          )}
         </div>
       )}
     </div>

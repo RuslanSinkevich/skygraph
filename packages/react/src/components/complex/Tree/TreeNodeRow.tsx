@@ -3,89 +3,132 @@ import { Checkbox } from '../../ui/Checkbox'
 import { Spin } from '../../ui/Spin'
 import type { TreeKey, TreeNodeData, TreeLocale, TreeNodeAction, TreeNodeStatus } from './types'
 
+/** Internal props for a single rendered tree node row. */
 interface TreeNodeRowProps {
+  /** Node data. */
   node: TreeNodeData
+  /** Node key. */
   nodeKey: TreeKey
+  /** Nesting depth for layout. */
   depth: number
+  /** Whether this node is a leaf in the flattened list. */
   isLeaf: boolean
+  /** Indentation step in pixels. */
   indentSize: number
 
-  // State
+  /** Expanded state. */
   expanded: boolean
+  /** Checked state. */
   checked: boolean
+  /** Indeterminate checkbox state. */
   halfChecked: boolean
+  /** Selected state. */
   selected: boolean
+  /** Async children loading flag. */
   loading: boolean
+  /** Row interaction disabled. */
   disabled: boolean
+  /** Whether this row has keyboard focus. */
   focused: boolean
 
-  // Features
+  /** Checkbox column visible. */
   checkable: boolean
+  /** Title click selects the node. */
   selectable: boolean
+  /** Vertical guide lines enabled. */
   showLine: boolean
+  /** Custom leaf connector when `showLine` is on. */
   showLeafIcon: boolean | React.ReactNode
+  /** Leading custom or folder icon. */
   showIcon: boolean
+  /** Full row hit target for selection. */
   blockNode: boolean
+  /** Directory-style expand-on-select for folders. */
   directory: boolean
+  /** Animate expand/collapse affordance. */
   animated: boolean
 
-  // Icons
+  /** Tree-level default icon. */
   globalIcon?: React.ReactNode | ((props: { expanded: boolean; selected: boolean }) => React.ReactNode)
+  /** Per-node icon override. */
   nodeIcon?: React.ReactNode | ((props: { expanded: boolean; selected: boolean }) => React.ReactNode)
+  /** Custom expander icon. */
   switcherIcon?: React.ReactNode | ((props: { expanded: boolean; loading: boolean; isLeaf: boolean }) => React.ReactNode)
 
-  // Drag
+  /** Row is draggable. */
   draggable: boolean
+  /** Active drop indicator band on this row. */
   dropPosition: -1 | 0 | 1 | null
+  /** Key of the row currently being dragged, if any. */
   dragKey: TreeKey | null
 
-  // Locale
+  /** Resolved locale strings. */
   t: Required<TreeLocale>
 
-  // Handlers
+  /** Toggle expand. */
   onExpand: (key: TreeKey) => void
+  /** Toggle check. */
   onCheck: (key: TreeKey) => void
+  /** Toggle select. */
   onSelect: (key: TreeKey) => void
+  /** Native drag start. */
   onDragStart: (e: React.DragEvent, key: TreeKey) => void
+  /** Native drag over. */
   onDragOver: (e: React.DragEvent, key: TreeKey) => void
+  /** Native drag leave. */
   onDragLeave: (e: React.DragEvent, key: TreeKey) => void
+  /** Native drag end. */
   onDragEnd: (e: React.DragEvent, key: TreeKey) => void
+  /** Native drop. */
   onDrop: (e: React.DragEvent, key: TreeKey) => void
+  /** Context menu handler. */
   onRightClick?: (e: React.MouseEvent, node: TreeNodeData) => void
+  /** Lazy-load children on expand. */
   onLoadData?: (node: TreeNodeData) => void
+  /** Moves roving tabindex / focus highlight. */
   onFocusNode: (key: TreeKey | null) => void
 
-  // Title render
+  /** Custom title render replacing default text. */
   titleRender?: (node: TreeNodeData, info: { expanded: boolean; selected: boolean; checked: boolean; halfChecked: boolean }) => React.ReactNode
+  /** Current filter string for search highlighting. */
   searchValue?: string
 
-  // Inline edit
+  /** Inline edit allowed for this row. */
   editable: boolean
+  /** Row is currently in edit mode. */
   editing: boolean
+  /** Enter edit mode. */
   onEditStart: (key: TreeKey) => void
+  /** Commit edited title. */
   onEditConfirm: (key: TreeKey, value: string) => void
+  /** Cancel edit mode. */
   onEditCancel: (key: TreeKey) => void
 
-  // Actions
+  /** Hover action buttons. */
   actions?: TreeNodeAction[]
 
-  // Status
+  /** Semantic status styling for the row. */
   status: TreeNodeStatus
 
-  // Connecting lines
+  /** Whether this node is the last child of its parent (line drawing). */
   lineIsLast: boolean
+  /** Ancestor “last child” flags for line drawing. */
   lineParentIsLast: boolean[]
 
+  /** Unstyled row. */
   unstyled?: boolean
+  /** Extra class from node. */
   nodeClassName?: string
+  /** Inline style from node. */
   nodeStyle?: React.CSSProperties
 }
 
+/** Renders one tree row: lines, switcher, checkbox, icon, title, edit field, and actions. */
 export function TreeNodeRow(props: TreeNodeRowProps) {
   const {
     node, nodeKey, depth, isLeaf, indentSize,
     expanded, checked, halfChecked, selected, loading, disabled, focused,
-    checkable, selectable, showLine, showLeafIcon, showIcon, blockNode, directory, animated,
+    checkable, selectable, showLine, showLeafIcon, showIcon, blockNode, directory,
     globalIcon, nodeIcon, switcherIcon,
     draggable, dropPosition, dragKey,
     onExpand, onCheck, onSelect,

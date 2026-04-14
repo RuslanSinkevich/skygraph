@@ -15,7 +15,7 @@ export interface ListProps<T = any> {
    * @default false
    */
   loading?: boolean
-  /** “Load more” action area below items. */
+  /** "Load more" action area below items. */
   loadMore?: React.ReactNode
   /** Client pagination config, or `false` to disable. */
   pagination?: false | {
@@ -69,6 +69,41 @@ export interface ListProps<T = any> {
   style?: React.CSSProperties
   /** Renders without Skygraph list styles. */
   unstyled?: boolean
+
+  /** Virtualizes rendering for large lists. Fixed item height required. */
+  virtual?: {
+    /** Fixed item height in pixels. */
+    itemHeight: number
+    /** Fixed container height in pixels. */
+    height: number
+    /** Extra items above/below viewport. @default 5 */
+    overscan?: number
+  }
+
+  /** Enables click-to-select items. */
+  selectable?: boolean
+  /** Controlled selected item indices. */
+  selectedKeys?: number[]
+  /** Default selected indices. */
+  defaultSelectedKeys?: number[]
+  /** Fires when selection changes. */
+  onSelectionChange?: (keys: number[], items: T[]) => void
+  /** Multi-select (hold Ctrl/Cmd). @default false */
+  multiSelect?: boolean
+
+  /** Enables drag-and-drop reorder. */
+  draggable?: boolean
+  /** Fires after items are reordered via drag. */
+  onReorder?: (fromIndex: number, toIndex: number) => void
+
+  /** Row hover highlight. @default true */
+  hoverable?: boolean
+
+  /** Row click handler. */
+  onItemClick?: (item: T, index: number) => void
+
+  /** Row class name (static or per-item). */
+  rowClassName?: string | ((item: T, index: number) => string)
 }
 
 /** Props for `List.Item` row layout. */

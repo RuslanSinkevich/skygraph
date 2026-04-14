@@ -59,8 +59,28 @@ function ListInner<T = any>({
   className,
   style,
   unstyled,
+  virtual,
+  selectable,
+  selectedKeys: controlledSelectedKeys,
+  defaultSelectedKeys,
+  onSelectionChange,
+  multiSelect = false,
+  draggable,
+  onReorder,
+  hoverable = true,
+  onItemClick,
+  rowClassName,
 }: ListProps<T>) {
   const [internalPage, setInternalPage] = React.useState(1)
+  const [internalSelectedKeys, setInternalSelectedKeys] = React.useState<number[]>(
+    () => defaultSelectedKeys ?? [],
+  )
+  const [dragIndex, setDragIndex] = React.useState<number | null>(null)
+  const [dropIndex, setDropIndex] = React.useState<number | null>(null)
+  const [scrollTop, setScrollTop] = React.useState(0)
+  const virtualRef = React.useRef<HTMLDivElement>(null)
+
+  const selectedKeys = controlledSelectedKeys ?? internalSelectedKeys
 
   const pageSize = pagination ? (pagination.pageSize ?? 10) : dataSource.length
   const currentPage = pagination ? (pagination.current ?? internalPage) : 1
@@ -78,6 +98,61 @@ function ListInner<T = any>({
       pagination.onChange?.(page, pageSize)
     }
   }
+
+  const handleItemClick = React.useCallback((item: T, index: number, e: React.MouseEvent) => {
+    onItemClick?.(item, index)
+
+    if (!selectable) return
+
+    let next: number[]
+    if (multiSelect && (e.ctrlKey || e.metaKey)) {
+      if (selectedKeys.includes(index)) {
+        next = selectedKeys.filter((k) => k !== index)
+      } else {
+        next = [...selectedKeys, index]
+      }
+    } else {
+      next = selectedKeys.includes(index) ? [] : [index]
+    }
+
+    setInternalSelectedKeys(next)
+    onSelectionChange?.(next, next.map((k) => dataSource[k]))
+  }, [selectable, multiSelect, selectedKeys, dataSource, onItemClick, onSelectionChange])
+
+  const handleDragStart = React.useCallback((e: React.DragEvent, index: number) => {
+    if (!draggable) return
+    setDragIndex(index)
+    e.dataTransfer.effectAllowed = 'move'
+  }, [draggable])
+
+  const handleDragOver = React.useCallback((e: React.DragEvent, index: number) => {
+    if (!draggable || dragIndex === null) return
+    e.preventDefault()
+    setDropIndex(index)
+  }, [draggable, dragIndex])
+
+  const handleDrop = React.useCallback((e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    if (dragIndex === null || dragIndex === index) {
+      setDragIndex(null)
+      setDropIndex(null)
+      return
+    }
+    onReorder?.(dragIndex, index)
+    setDragIndex(null)
+    setDropIndex(null)
+  }, [dragIndex, onReorder])
+
+  const handleDragEnd = React.useCallback(() => {
+    setDragIndex(null)
+    setDropIndex(null)
+  }, [])
+
+  const handleVirtualScroll = React.useCallback(() => {
+    if (virtualRef.current) {
+      setScrollTop(virtualRef.current.scrollTop)
+    }
+  }, [])
 
   const emptyText = locale?.emptyText ?? 'No Data'
 
@@ -101,6 +176,68 @@ function ListInner<T = any>({
     return parts.join(' ')
   }, [grid])
 
+  const renderItemWrapper = React.useCallback((item: T, index: number) => {
+    const isSelected = selectable && selectedKeys.includes(index)
+    const isDragging = dragIndex === index
+    const isDropTarget = dropIndex === index && dragIndex !== index
+    const extraCls = typeof rowClassName === 'function' ? rowClassName(item, index) : (rowClassName ?? '')
+
+    const itemCls = cls(
+      selectable && 'sg-list-item-selectable',
+      isSelected && 'sg-list-item-selected',
+      hoverable && 'sg-list-item-hoverable',
+      isDragging && 'sg-list-item-dragging',
+      isDropTarget && 'sg-list-item-drop-target',
+      extraCls,
+    )
+
+    return (
+      <div
+        key={index}
+        className={itemCls || undefined}
+        onClick={(e) => handleItemClick(item, index, e)}
+        draggable={draggable}
+        onDragStart={(e) => handleDragStart(e, index)}
+        onDragOver={(e) => handleDragOver(e, index)}
+        onDrop={(e) => handleDrop(e, index)}
+        onDragEnd={handleDragEnd}
+        onDragLeave={() => setDropIndex(null)}
+      >
+        {draggable && <span className="sg-list-drag-handle">⠿</span>}
+        {renderItem(item, index)}
+      </div>
+    )
+  }, [selectable, selectedKeys, hoverable, dragIndex, dropIndex, draggable,
+      rowClassName, handleItemClick, handleDragStart, handleDragOver, handleDrop, handleDragEnd, renderItem])
+
+  // Virtual scroll rendering
+  const renderVirtualList = React.useCallback(() => {
+    if (!virtual) return null
+    const { itemHeight, height, overscan = 5 } = virtual
+    const totalHeight = paginatedData.length * itemHeight
+    const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan)
+    const visibleCount = Math.ceil(height / itemHeight) + overscan * 2
+    const endIndex = Math.min(paginatedData.length, startIndex + visibleCount)
+    const offsetTop = startIndex * itemHeight
+
+    return (
+      <div
+        ref={virtualRef}
+        className="sg-list-virtual-container"
+        style={{ height, overflow: 'auto' }}
+        onScroll={handleVirtualScroll}
+      >
+        <div style={{ height: totalHeight, position: 'relative' }}>
+          <div style={{ position: 'absolute', top: offsetTop, left: 0, right: 0 }}>
+            {paginatedData.slice(startIndex, endIndex).map((item, i) =>
+              renderItemWrapper(item, startIndex + i),
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }, [virtual, paginatedData, scrollTop, handleVirtualScroll, renderItemWrapper])
+
   if (unstyled) {
     return (
       <div className={className} style={style}>
@@ -109,11 +246,11 @@ function ListInner<T = any>({
           <Spin unstyled />
         ) : paginatedData.length === 0 ? (
           <div>{emptyText}</div>
+        ) : virtual ? (
+          renderVirtualList()
         ) : (
           <div style={gridStyle}>
-            {paginatedData.map((item, i) => (
-              <React.Fragment key={i}>{renderItem(item, i)}</React.Fragment>
-            ))}
+            {paginatedData.map((item, i) => renderItemWrapper(item, i))}
           </div>
         )}
         {loadMore}
@@ -138,6 +275,8 @@ function ListInner<T = any>({
     bordered && 'sg-list-bordered',
     loading && 'sg-list-loading',
     grid && 'sg-list-grid',
+    selectable && 'sg-list-selectable',
+    draggable && 'sg-list-draggable',
     gridResponsiveClass,
     className,
   )
@@ -151,11 +290,11 @@ function ListInner<T = any>({
           <div className="sg-list-empty">
             <Empty description={emptyText} />
           </div>
+        ) : virtual ? (
+          renderVirtualList()
         ) : (
           <div className="sg-list-items" style={gridStyle}>
-            {paginatedData.map((item, i) => (
-              <React.Fragment key={i}>{renderItem(item, i)}</React.Fragment>
-            ))}
+            {paginatedData.map((item, i) => renderItemWrapper(item, i))}
           </div>
         )}
       </Spin>
@@ -181,7 +320,8 @@ function ListInner<T = any>({
 type ListType = typeof ListInner & { Item: ListItemType }
 
 /**
- * Renders a vertical or grid list with optional header, footer, pagination, and loading.
+ * Renders a vertical or grid list with optional header, footer, pagination, loading,
+ * virtual scroll, selection, and drag-and-drop reorder.
  * Use `List.Item` and `List.Item.Meta` for structured rows.
  */
 export const List = ListInner as ListType

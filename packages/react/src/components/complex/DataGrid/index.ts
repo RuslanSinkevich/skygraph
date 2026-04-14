@@ -8,4 +8,6 @@ export type {
   CellPosition,
   CellRange,
   CellValue,
+  DataGridSummaryRow,
+  DataGridContextMenuItem,
 } from './types'

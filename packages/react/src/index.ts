@@ -67,7 +67,7 @@ export type { TreeSelectProps, TreeSelectNode } from './components/ui/TreeSelect
 export { Cascader } from './components/complex/Cascader'
 export type { CascaderProps, CascaderOption } from './components/complex/Cascader'
 export { Calendar } from './components/ui/Calendar'
-export type { CalendarProps, CalendarLocale, CalendarHeaderInfo, CalendarCellInfo } from './components/ui/Calendar'
+export type { CalendarProps, CalendarLocale, CalendarHeaderInfo, CalendarCellInfo, CalendarEvent } from './components/ui/Calendar'
 
 // UI components (pure React, no core)
 export { Spin } from './components/ui/Spin'
@@ -186,6 +186,8 @@ export type {
   CellPosition,
   CellRange,
   CellValue,
+  DataGridSummaryRow,
+  DataGridContextMenuItem,
 } from './components/complex/DataGrid'
 
 // Complex components (additional)

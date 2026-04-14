@@ -21,7 +21,8 @@ export function toTSVString(data: string[][]): string {
 
 /**
  * Builds a JSON array of row objects using string headers as keys.
- * @default pretty `true`
+ * @param pretty - Pretty-print with indentation when true.
+ * @default true
  */
 export function toJSONString(
   headers: string[],
@@ -52,6 +53,10 @@ export function downloadCSV(content: string, filename = 'export.csv'): void {
   URL.revokeObjectURL(url)
 }
 
+/**
+ * Triggers a JSON file download in the browser.
+ * @default filename `'export.json'`
+ */
 export function downloadJSON(content: string, filename = 'export.json'): void {
   const blob = new Blob([content], { type: 'application/json;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
@@ -62,12 +67,14 @@ export function downloadJSON(content: string, filename = 'export.json'): void {
   URL.revokeObjectURL(url)
 }
 
+/** Copies text using the Clipboard API when available. */
 export async function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard) {
     await navigator.clipboard.writeText(text)
   }
 }
 
+/** Opens a print dialog with the table DOM and current document styles. */
 export function printTable(tableEl: HTMLElement | null): void {
   if (!tableEl) return
   const printWindow = window.open('', '_blank')

@@ -94,6 +94,10 @@ function applyStrategy(
   return checkedKeys
 }
 
+/**
+ * Dropdown that embeds `Tree` for single or multiple selection, optional checkboxes, and search.
+ * Manages open state, filtering, and tag display for multi-value modes.
+ */
 export function TreeSelect(props: TreeSelectProps) {
   const {
     treeData,

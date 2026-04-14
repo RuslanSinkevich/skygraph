@@ -1,5 +1,7 @@
-import React, { forwardRef, useImperativeHandle, useCallback, useRef, useMemo } from 'react'
+import React, { forwardRef, useImperativeHandle, useCallback, useRef, useMemo, useState } from 'react'
 import { useVirtualScroll } from '../../../hooks/useVirtualScroll'
+import { Spin } from '../../ui/Spin'
+import { Checkbox } from '../../ui/Checkbox'
 import { useDataGridState } from './useDataGridState'
 import type {
   DataGridProps,
@@ -8,6 +10,7 @@ import type {
   CellValue,
   DataGridColumn,
   CellEditorProps,
+  DataGridContextMenuItem,
 } from './types'
 
 const cls = {
@@ -16,6 +19,10 @@ const cls = {
   headerCell: 'sg-datagrid-header-cell',
   body: 'sg-datagrid-body',
   row: 'sg-datagrid-row',
+  rowEven: 'sg-datagrid-row--even',
+  rowOdd: 'sg-datagrid-row--odd',
+  rowHoverable: 'sg-datagrid-row--hoverable',
+  rowSelected: 'sg-datagrid-row--selected',
   cell: 'sg-datagrid-cell',
   cellActive: 'sg-datagrid-cell--active',
   cellEditing: 'sg-datagrid-cell--editing',
@@ -26,7 +33,22 @@ const cls = {
   sortDesc: 'sg-datagrid-header-cell--desc',
   resizer: 'sg-datagrid-resizer',
   empty: 'sg-datagrid-empty',
+  summary: 'sg-datagrid-summary',
+  summaryRow: 'sg-datagrid-summary-row',
+  summaryCell: 'sg-datagrid-summary-cell',
+  contextMenu: 'sg-datagrid-context-menu',
+  contextMenuItem: 'sg-datagrid-context-menu-item',
+  contextMenuDanger: 'sg-datagrid-context-menu-item--danger',
+  contextMenuDisabled: 'sg-datagrid-context-menu-item--disabled',
+  contextMenuDivider: 'sg-datagrid-context-menu-divider',
+  loading: 'sg-datagrid-loading',
+  selectionCell: 'sg-datagrid-selection-cell',
+  rowNumberCell: 'sg-datagrid-row-number-cell',
+  headerDragOver: 'sg-datagrid-header-cell--drag-over',
 }
+
+const SELECTION_COL_WIDTH = 40
+const ROW_NUMBER_COL_WIDTH = 48
 
 function DefaultEditor({ value, onChange, onCommit, onCancel }: CellEditorProps) {
   return (
@@ -61,6 +83,57 @@ function isCellInRange(row: number, col: number, range: { start: CellPosition; e
   return row >= minRow && row <= maxRow && col >= minCol && col <= maxCol
 }
 
+function ContextMenuPopup({
+  items,
+  position,
+  onClose,
+}: {
+  items: DataGridContextMenuItem[]
+  position: { x: number; y: number }
+  onClose: () => void
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose()
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [onClose])
+
+  return (
+    <div
+      ref={ref}
+      className={cls.contextMenu}
+      style={{ position: 'fixed', top: position.y, left: position.x, zIndex: 1000 }}
+    >
+      {items.map((item) =>
+        item.divider ? (
+          <div key={item.key} className={cls.contextMenuDivider} />
+        ) : (
+          <div
+            key={item.key}
+            className={[
+              cls.contextMenuItem,
+              item.danger ? cls.contextMenuDanger : '',
+              item.disabled ? cls.contextMenuDisabled : '',
+            ].filter(Boolean).join(' ')}
+            onClick={() => {
+              if (!item.disabled) {
+                item.onClick()
+                onClose()
+              }
+            }}
+          >
+            {item.label}
+          </div>
+        ),
+      )}
+    </div>
+  )
+}
+
 function DataGridInner<R extends Record<string, unknown>>(
   props: DataGridProps<R>,
   ref: React.ForwardedRef<DataGridRef>,
@@ -83,6 +156,23 @@ function DataGridInner<R extends Record<string, unknown>>(
     onPaste,
     overscan = 5,
     locale,
+    rowSelection,
+    selectedRows,
+    onSelectedRowsChange,
+    striped,
+    highlightOnHover = true,
+    showRowNumber,
+    summaryRows,
+    cellClassName,
+    cellStyle: cellStyleFn,
+    columnReorder,
+    onColumnOrderChange,
+    onContextMenu,
+    onRowClick,
+    onRowDoubleClick,
+    rowClassName,
+    loading,
+    emptyContent,
   } = props
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -99,7 +189,17 @@ function DataGridInner<R extends Record<string, unknown>>(
     navigate,
     resizeColumn,
     getColumnWidth,
+    columnOrder,
+    reorderColumns,
+    dragColumnRef,
   } = state
+
+  const [ctxMenu, setCtxMenu] = useState<{
+    items: DataGridContextMenuItem[]
+    position: { x: number; y: number }
+  } | null>(null)
+
+  const [dragOverCol, setDragOverCol] = useState<string | null>(null)
 
   const { range, containerRef: scrollRef, scrollToIndex } = useVirtualScroll({
     itemCount: data.length,
@@ -115,11 +215,6 @@ function DataGridInner<R extends Record<string, unknown>>(
     [rowKey],
   )
 
-  const totalWidth = useMemo(
-    () => columns.reduce((sum, col) => sum + getColumnWidth(col.key), 0),
-    [columns, getColumnWidth],
-  )
-
   const frozenLeft = useMemo(
     () => columns.filter((c) => c.frozen === 'left'),
     [columns],
@@ -133,22 +228,72 @@ function DataGridInner<R extends Record<string, unknown>>(
     [columns],
   )
 
-  const orderedColumns = useMemo(
-    () => [...frozenLeft, ...scrollable, ...frozenRight],
-    [frozenLeft, scrollable, frozenRight],
+  const orderedColumns = useMemo(() => {
+    const base = [...frozenLeft, ...scrollable, ...frozenRight]
+    if (!columnOrder) return base
+    const map = new Map(base.map((c) => [c.key, c]))
+    const ordered: DataGridColumn<R>[] = []
+    for (const key of columnOrder) {
+      const col = map.get(key)
+      if (col) ordered.push(col)
+    }
+    for (const col of base) {
+      if (!columnOrder.includes(col.key)) ordered.push(col)
+    }
+    return ordered
+  }, [frozenLeft, scrollable, frozenRight, columnOrder])
+
+  const extraColsWidth = (rowSelection ? SELECTION_COL_WIDTH : 0) + (showRowNumber ? ROW_NUMBER_COL_WIDTH : 0)
+
+  const totalWidth = useMemo(
+    () => orderedColumns.reduce((sum, col) => sum + getColumnWidth(col.key), 0) + extraColsWidth,
+    [orderedColumns, getColumnWidth, extraColsWidth],
+  )
+
+  const allSelected = useMemo(() => {
+    if (!selectedRows || data.length === 0) return false
+    return data.every((row, i) => selectedRows.has(getRowKey(row, i)))
+  }, [selectedRows, data, getRowKey])
+
+  const someSelected = useMemo(() => {
+    if (!selectedRows || data.length === 0) return false
+    const count = data.filter((row, i) => selectedRows.has(getRowKey(row, i))).length
+    return count > 0 && count < data.length
+  }, [selectedRows, data, getRowKey])
+
+  const handleSelectAll = useCallback(() => {
+    if (!onSelectedRowsChange) return
+    if (allSelected) {
+      onSelectedRowsChange(new Set())
+    } else {
+      const all = new Set<React.Key>(data.map((row, i) => getRowKey(row, i)))
+      onSelectedRowsChange(all)
+    }
+  }, [allSelected, data, getRowKey, onSelectedRowsChange])
+
+  const handleSelectRow = useCallback(
+    (row: R, index: number) => {
+      if (!onSelectedRowsChange || !selectedRows) return
+      const key = getRowKey(row, index)
+      const next = new Set(selectedRows)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      onSelectedRowsChange(next)
+    },
+    [getRowKey, onSelectedRowsChange, selectedRows],
   )
 
   const handleCellClick = useCallback(
     (rowIndex: number, colIndex: number) => {
       if (editingCell) {
         if (onCellEdit && editValueRef.current !== undefined) {
-          onCellEdit(editingCell.row, columns[editingCell.col].key, editValueRef.current)
+          onCellEdit(editingCell.row, orderedColumns[editingCell.col].key, editValueRef.current)
         }
         stopEditing()
       }
       setActiveCell({ row: rowIndex, col: colIndex })
     },
-    [editingCell, onCellEdit, editValueRef, columns, stopEditing, setActiveCell],
+    [editingCell, onCellEdit, editValueRef, orderedColumns, stopEditing, setActiveCell],
   )
 
   const handleCellDoubleClick = useCallback(
@@ -203,6 +348,19 @@ function DataGridInner<R extends Record<string, unknown>>(
         case 'Escape':
           setActiveCell(null)
           break
+        case ' ':
+          if (rowSelection && selectedRows) {
+            e.preventDefault()
+            const row = data[activeCell.row]
+            if (row) handleSelectRow(row, activeCell.row)
+          }
+          break
+        case 'a':
+          if ((e.ctrlKey || e.metaKey) && rowSelection) {
+            e.preventDefault()
+            handleSelectAll()
+          }
+          break
         case 'c':
           if ((e.ctrlKey || e.metaKey) && onCopy) {
             e.preventDefault()
@@ -221,7 +379,8 @@ function DataGridInner<R extends Record<string, unknown>>(
           break
       }
     },
-    [activeCell, editingCell, navigate, startEditing, setActiveCell, onCopy, onPaste, orderedColumns, data],
+    [activeCell, editingCell, navigate, startEditing, setActiveCell, onCopy, onPaste,
+     orderedColumns, data, rowSelection, selectedRows, handleSelectRow, handleSelectAll],
   )
 
   const handleSort = useCallback(
@@ -232,6 +391,54 @@ function DataGridInner<R extends Record<string, unknown>>(
     },
     [sortColumn, sortDirection, onSort],
   )
+
+  const handleCellContextMenu = useCallback(
+    (e: React.MouseEvent, rowIndex: number, col: DataGridColumn<R>) => {
+      if (!onContextMenu) return
+      e.preventDefault()
+      const row = data[rowIndex]
+      if (!row) return
+      const items = onContextMenu(rowIndex, col.key, row)
+      if (items.length === 0) return
+      setCtxMenu({ items, position: { x: e.clientX, y: e.clientY } })
+    },
+    [onContextMenu, data],
+  )
+
+  const handleHeaderDragStart = useCallback(
+    (e: React.DragEvent, colKey: string) => {
+      if (!columnReorder) return
+      dragColumnRef.current = colKey
+      e.dataTransfer.effectAllowed = 'move'
+    },
+    [columnReorder, dragColumnRef],
+  )
+
+  const handleHeaderDragOver = useCallback(
+    (e: React.DragEvent, colKey: string) => {
+      if (!columnReorder || !dragColumnRef.current) return
+      e.preventDefault()
+      setDragOverCol(colKey)
+    },
+    [columnReorder, dragColumnRef],
+  )
+
+  const handleHeaderDrop = useCallback(
+    (e: React.DragEvent, colKey: string) => {
+      e.preventDefault()
+      if (!columnReorder || !dragColumnRef.current) return
+      const newOrder = reorderColumns(dragColumnRef.current, colKey)
+      dragColumnRef.current = null
+      setDragOverCol(null)
+      onColumnOrderChange?.(newOrder)
+    },
+    [columnReorder, dragColumnRef, reorderColumns, onColumnOrderChange],
+  )
+
+  const handleHeaderDragEnd = useCallback(() => {
+    dragColumnRef.current = null
+    setDragOverCol(null)
+  }, [dragColumnRef])
 
   useImperativeHandle(
     ref,
@@ -268,9 +475,12 @@ function DataGridInner<R extends Record<string, unknown>>(
       const isEditing = editingCell?.row === rowIndex && editingCell?.col === colIndex
       const isSelected = isCellInRange(rowIndex, colIndex, selection)
 
-      let rawValue = col.formula
+      const rawValue = col.formula
         ? col.formula(row)
         : (row[col.key] as CellValue)
+
+      const extraClass = cellClassName?.(rawValue, row, rowIndex, col) ?? ''
+      const extraStyle = cellStyleFn?.(rawValue, row, rowIndex, col)
 
       const cellClassNames = [
         cls.cell,
@@ -279,25 +489,28 @@ function DataGridInner<R extends Record<string, unknown>>(
         isSelected ? cls.cellSelected : '',
         col.frozen ? cls.frozen : '',
         col.className ?? '',
+        extraClass,
       ]
         .filter(Boolean)
         .join(' ')
 
-      const cellStyle: React.CSSProperties = {
+      const baseCellStyle: React.CSSProperties = {
         width: getColumnWidth(col.key),
         minWidth: getColumnWidth(col.key),
         textAlign: col.align ?? 'left',
+        ...extraStyle,
       }
 
       return (
         <div
           key={col.key}
           className={cellClassNames}
-          style={cellStyle}
+          style={baseCellStyle}
           onClick={() => handleCellClick(rowIndex, colIndex)}
           onDoubleClick={() => handleCellDoubleClick(rowIndex, colIndex)}
+          onContextMenu={(e) => handleCellContextMenu(e, rowIndex, col)}
           role="gridcell"
-          aria-colindex={colIndex + 1}
+          aria-colindex={colIndex + 1 + (rowSelection ? 1 : 0) + (showRowNumber ? 1 : 0)}
           aria-selected={isActive || isSelected}
         >
           {isEditing ? (
@@ -321,31 +534,33 @@ function DataGridInner<R extends Record<string, unknown>>(
       )
     },
     [
-      activeCell,
-      editingCell,
-      selection,
-      getColumnWidth,
-      handleCellClick,
-      handleCellDoubleClick,
-      handleCommitEdit,
-      handleCancelEdit,
-      editValueRef,
+      activeCell, editingCell, selection, getColumnWidth,
+      handleCellClick, handleCellDoubleClick, handleCommitEdit,
+      handleCancelEdit, editValueRef, cellClassName, cellStyleFn,
+      handleCellContextMenu, rowSelection, showRowNumber,
     ],
   )
 
   const heightValue = typeof height === 'number' ? height : undefined
   const bodyHeight = heightValue ? heightValue - headerHeight : undefined
 
+  const rootCls = [
+    cls.root,
+    striped ? 'sg-datagrid--striped' : '',
+    loading ? 'sg-datagrid--loading' : '',
+    className ?? '',
+  ].filter(Boolean).join(' ')
+
   return (
     <div
       ref={containerRef}
-      className={`${cls.root} ${className ?? ''}`}
-      style={{ width, height, display: 'flex', flexDirection: 'column', ...style }}
+      className={rootCls}
+      style={{ width, height, display: 'flex', flexDirection: 'column', position: 'relative', ...style }}
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="grid"
       aria-rowcount={data.length}
-      aria-colcount={columns.length}
+      aria-colcount={orderedColumns.length}
     >
       {/* Header */}
       <div
@@ -358,6 +573,28 @@ function DataGridInner<R extends Record<string, unknown>>(
         }}
         role="row"
       >
+        {rowSelection && (
+          <div
+            className={`${cls.headerCell} ${cls.selectionCell}`}
+            style={{ width: SELECTION_COL_WIDTH, minWidth: SELECTION_COL_WIDTH, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            role="columnheader"
+          >
+            <Checkbox
+              checked={allSelected}
+              indeterminate={someSelected}
+              onChange={handleSelectAll}
+            />
+          </div>
+        )}
+        {showRowNumber && (
+          <div
+            className={`${cls.headerCell} ${cls.rowNumberCell}`}
+            style={{ width: ROW_NUMBER_COL_WIDTH, minWidth: ROW_NUMBER_COL_WIDTH, display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none' }}
+            role="columnheader"
+          >
+            #
+          </div>
+        )}
         {orderedColumns.map((col) => {
           const isSorted = sortColumn === col.key
           const headerCls = [
@@ -366,6 +603,7 @@ function DataGridInner<R extends Record<string, unknown>>(
             isSorted && sortDirection === 'asc' ? cls.sortAsc : '',
             isSorted && sortDirection === 'desc' ? cls.sortDesc : '',
             col.headerClassName ?? '',
+            dragOverCol === col.key ? cls.headerDragOver : '',
           ]
             .filter(Boolean)
             .join(' ')
@@ -385,6 +623,12 @@ function DataGridInner<R extends Record<string, unknown>>(
                 userSelect: 'none',
               }}
               onClick={() => handleSort(col)}
+              draggable={!!columnReorder}
+              onDragStart={(e) => handleHeaderDragStart(e, col.key)}
+              onDragOver={(e) => handleHeaderDragOver(e, col.key)}
+              onDrop={(e) => handleHeaderDrop(e, col.key)}
+              onDragEnd={handleHeaderDragEnd}
+              onDragLeave={() => setDragOverCol(null)}
               role="columnheader"
             >
               {col.title}
@@ -428,17 +672,29 @@ function DataGridInner<R extends Record<string, unknown>>(
       >
         {data.length === 0 ? (
           <div className={cls.empty} style={{ padding: 24, textAlign: 'center' }}>
-            {locale?.noData ?? 'No data'}
+            {emptyContent ?? locale?.noData ?? 'No data'}
           </div>
         ) : (
           <div style={{ height: range.totalHeight, position: 'relative', minWidth: totalWidth }}>
             {range.visibleItems.map((vi) => {
               const row = data[vi.index]
               if (!row) return null
+              const rKey = getRowKey(row, vi.index)
+              const isRowSelected = selectedRows?.has(rKey) ?? false
+              const rowExtraClass = typeof rowClassName === 'function' ? rowClassName(row, vi.index) : (rowClassName ?? '')
+
+              const rowCls = [
+                cls.row,
+                striped ? (vi.index % 2 === 0 ? cls.rowEven : cls.rowOdd) : '',
+                highlightOnHover ? cls.rowHoverable : '',
+                isRowSelected ? cls.rowSelected : '',
+                rowExtraClass,
+              ].filter(Boolean).join(' ')
+
               return (
                 <div
-                  key={getRowKey(row, vi.index)}
-                  className={cls.row}
+                  key={rKey}
+                  className={rowCls}
                   style={{
                     display: 'flex',
                     position: 'absolute',
@@ -448,7 +704,30 @@ function DataGridInner<R extends Record<string, unknown>>(
                   }}
                   role="row"
                   aria-rowindex={vi.index + 1}
+                  aria-selected={isRowSelected}
+                  onClick={() => onRowClick?.(row, vi.index)}
+                  onDoubleClick={() => onRowDoubleClick?.(row, vi.index)}
                 >
+                  {rowSelection && (
+                    <div
+                      className={`${cls.cell} ${cls.selectionCell}`}
+                      style={{ width: SELECTION_COL_WIDTH, minWidth: SELECTION_COL_WIDTH, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Checkbox
+                        checked={isRowSelected}
+                        onChange={() => handleSelectRow(row, vi.index)}
+                      />
+                    </div>
+                  )}
+                  {showRowNumber && (
+                    <div
+                      className={`${cls.cell} ${cls.rowNumberCell}`}
+                      style={{ width: ROW_NUMBER_COL_WIDTH, minWidth: ROW_NUMBER_COL_WIDTH, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--sg-text-tertiary, #999)' }}
+                    >
+                      {vi.index + 1}
+                    </div>
+                  )}
                   {orderedColumns.map((col, ci) => renderCell(row, vi.index, col, ci))}
                 </div>
               )
@@ -456,12 +735,62 @@ function DataGridInner<R extends Record<string, unknown>>(
           </div>
         )}
       </div>
+
+      {/* Summary Footer */}
+      {summaryRows && summaryRows.length > 0 && data.length > 0 && (
+        <div className={cls.summary} style={{ minWidth: totalWidth }}>
+          {summaryRows.map((sr, sri) => (
+            <div
+              key={sri}
+              className={`${cls.summaryRow} ${sr.className ?? ''}`}
+              style={{ display: 'flex', height: rowHeight }}
+            >
+              {rowSelection && (
+                <div className={`${cls.summaryCell}`} style={{ width: SELECTION_COL_WIDTH, minWidth: SELECTION_COL_WIDTH }} />
+              )}
+              {showRowNumber && (
+                <div className={`${cls.summaryCell}`} style={{ width: ROW_NUMBER_COL_WIDTH, minWidth: ROW_NUMBER_COL_WIDTH }} />
+              )}
+              {orderedColumns.map((col) => (
+                <div
+                  key={col.key}
+                  className={cls.summaryCell}
+                  style={{
+                    width: getColumnWidth(col.key),
+                    minWidth: getColumnWidth(col.key),
+                    textAlign: col.align ?? 'left',
+                  }}
+                >
+                  {sr.render(col.key, data)}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Context Menu */}
+      {ctxMenu && (
+        <ContextMenuPopup
+          items={ctxMenu.items}
+          position={ctxMenu.position}
+          onClose={() => setCtxMenu(null)}
+        />
+      )}
+
+      {/* Loading */}
+      {loading && (
+        <div className={cls.loading} style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.6)', zIndex: 10 }}>
+          <Spin size="large" />
+        </div>
+      )}
     </div>
   )
 }
 
 /**
- * Virtualized table grid with sortable headers, resizable columns, inline editing, and clipboard hooks.
+ * Virtualized table grid with sortable headers, resizable columns, inline editing,
+ * row selection, striped rows, summary footer, context menu, column reorder, and clipboard hooks.
  */
 export const DataGrid = forwardRef(DataGridInner) as <R extends Record<string, unknown>>(
   props: DataGridProps<R> & { ref?: React.Ref<DataGridRef> },

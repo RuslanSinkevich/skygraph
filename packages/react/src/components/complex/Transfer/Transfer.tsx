@@ -8,6 +8,10 @@ function cls(...parts: (string | false | undefined | null)[]): string {
   return parts.filter(Boolean).join(' ')
 }
 
+/**
+ * Two-column shuttle to move items between source and target key sets.
+ * Supports search, pagination, one-way mode, and unstyled rendering.
+ */
 export function Transfer({
   dataSource,
   targetKeys,
@@ -27,6 +31,14 @@ export function Transfer({
   className,
   style,
   unstyled,
+  footer,
+  operations,
+  operationsStyle,
+  sortable,
+  onSort,
+  onSearch,
+  listHeight,
+  listClassName,
 }: TransferProps) {
   const mergedLocale = React.useMemo(() => ({
     ...DEFAULT_TRANSFER_LOCALE,
@@ -100,6 +112,28 @@ export function Transfer({
     return item && !item.disabled
   })
 
+  const resolveFooter = (dir: 'left' | 'right'): React.ReactNode => {
+    if (!footer) return undefined
+    if (typeof footer === 'function') return footer({ direction: dir })
+    return dir === 'left' ? footer[0] : footer[1]
+  }
+
+  const listCommonProps = {
+    render,
+    showSearch,
+    filterOption,
+    searchPlaceholder,
+    showSelectAll,
+    disabled,
+    pagination,
+    locale: mergedLocale,
+    sortable,
+    onSort,
+    onSearch,
+    listHeight,
+    listClassName,
+  }
+
   if (unstyled) {
     return (
       <div className={className} style={style}>
@@ -109,21 +143,17 @@ export function Transfer({
           selectedKeys={sourceSelected}
           onSelect={setSourceSelected}
           title={titles?.[0]}
-          render={render}
-          showSearch={showSearch}
-          filterOption={filterOption}
-          searchPlaceholder={searchPlaceholder}
-          showSelectAll={showSelectAll}
-          disabled={disabled}
-          pagination={pagination}
-          locale={mergedLocale}
           direction="left"
+          footer={resolveFooter('left')}
+          {...listCommonProps}
         />
         <div>
-          <button disabled={disabled || !canMoveRight} onClick={moveToRight}>→</button>
-          {!oneWay && (
-            <button disabled={disabled || !canMoveLeft} onClick={moveToLeft}>←</button>
+          {operations ? operations[0] : (
+            <button disabled={disabled || !canMoveRight} onClick={moveToRight}>→</button>
           )}
+          {!oneWay && (operations ? operations[1] : (
+            <button disabled={disabled || !canMoveLeft} onClick={moveToLeft}>←</button>
+          ))}
         </div>
         <TransferList
           unstyled
@@ -131,15 +161,9 @@ export function Transfer({
           selectedKeys={targetSelected}
           onSelect={setTargetSelected}
           title={titles?.[1]}
-          render={render}
-          showSearch={showSearch}
-          filterOption={filterOption}
-          searchPlaceholder={searchPlaceholder}
-          showSelectAll={showSelectAll}
-          disabled={disabled}
-          pagination={pagination}
-          locale={mergedLocale}
           direction="right"
+          footer={resolveFooter('right')}
+          {...listCommonProps}
         />
       </div>
     )
@@ -152,27 +176,23 @@ export function Transfer({
         selectedKeys={sourceSelected}
         onSelect={setSourceSelected}
         title={titles?.[0] ?? 'Source'}
-        render={render}
-        showSearch={showSearch}
-        filterOption={filterOption}
-        searchPlaceholder={searchPlaceholder}
-        showSelectAll={showSelectAll}
-        disabled={disabled}
-        pagination={pagination}
-        locale={mergedLocale}
         direction="left"
+        footer={resolveFooter('left')}
+        {...listCommonProps}
       />
 
-      <div className="sg-transfer-operations">
-        <Button
-          type="primary"
-          size="small"
-          disabled={disabled || !canMoveRight}
-          onClick={moveToRight}
-        >
-          →
-        </Button>
-        {!oneWay && (
+      <div className="sg-transfer-operations" style={operationsStyle}>
+        {operations ? operations[0] : (
+          <Button
+            type="primary"
+            size="small"
+            disabled={disabled || !canMoveRight}
+            onClick={moveToRight}
+          >
+            →
+          </Button>
+        )}
+        {!oneWay && (operations ? operations[1] : (
           <Button
             type="primary"
             size="small"
@@ -181,7 +201,7 @@ export function Transfer({
           >
             ←
           </Button>
-        )}
+        ))}
       </div>
 
       <TransferList
@@ -189,15 +209,9 @@ export function Transfer({
         selectedKeys={targetSelected}
         onSelect={setTargetSelected}
         title={titles?.[1] ?? 'Target'}
-        render={render}
-        showSearch={showSearch}
-        filterOption={filterOption}
-        searchPlaceholder={searchPlaceholder}
-        showSelectAll={showSelectAll}
-        disabled={disabled}
-        pagination={pagination}
-        locale={mergedLocale}
         direction="right"
+        footer={resolveFooter('right')}
+        {...listCommonProps}
       />
     </div>
   )

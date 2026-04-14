@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTree } from '../../../hooks/useTree'
 import { TreeNodeRow } from './TreeNodeRow'
-import type { TreeProps, TreeKey, TreeNodeData, TreeNodeAction } from './types'
+import type { TreeProps, TreeKey, TreeNodeData } from './types'
 import { DEFAULT_TREE_LOCALE, DEFAULT_INDENT, NODE_HEIGHT } from './types'
 
+/**
+ * Hierarchical list with expand/collapse, checkboxes, selection, search, keyboard focus, and optional drag-and-drop.
+ * State is managed by `useTree`; rows are rendered through `TreeNodeRow`.
+ */
 export function Tree(props: TreeProps) {
   const {
     treeData, fieldNames,
