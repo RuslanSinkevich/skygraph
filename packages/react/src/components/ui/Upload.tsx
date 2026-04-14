@@ -1,6 +1,8 @@
 import React, { useRef } from 'react'
 import { Button } from './Button'
 import { Spin } from './Spin'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps } from '../../types'
 
 export interface UploadFile {
   uid: string
@@ -9,25 +11,20 @@ export interface UploadFile {
   status: 'uploading' | 'done' | 'error'
 }
 
-export interface UploadProps {
+export interface UploadProps extends BaseComponentProps, InteractiveProps {
   accept?: string
   multiple?: boolean
-  disabled?: boolean
-  loading?: boolean
   fileList?: UploadFile[]
   maxCount?: number
   onUpload?: (files: File[]) => void
   onRemove?: (file: UploadFile) => void
   children?: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Upload({
   accept,
   multiple,
-  disabled,
+  disabled: disabledProp,
   loading,
   fileList = [],
   maxCount,
@@ -38,6 +35,8 @@ export function Upload({
   style,
   unstyled,
 }: UploadProps) {
+  const config = useConfig()
+  const disabled = disabledProp ?? config.disabled
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleClick = () => {
@@ -70,6 +69,7 @@ export function Upload({
         accept={accept}
         multiple={multiple}
         style={{ display: 'none' }}
+        aria-label="Upload file"
         onChange={handleChange}
       />
       <div onClick={handleClick}>
@@ -87,10 +87,7 @@ export function Upload({
               className={
                 unstyled
                   ? ''
-                  : [
-                      'sg-upload-item',
-                      `sg-upload-item-${file.status}`,
-                    ]
+                  : ['sg-upload-item', `sg-upload-item-${file.status}`]
                       .filter(Boolean)
                       .join(' ')
               }

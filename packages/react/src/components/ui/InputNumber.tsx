@@ -100,6 +100,10 @@ export function InputNumber({
       <input
         type="text"
         inputMode="numeric"
+        role="spinbutton"
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={currentValue ?? undefined}
         className={unstyled ? '' : 'sg-input-number-input'}
         value={currentValue ?? ''}
         placeholder={placeholder}

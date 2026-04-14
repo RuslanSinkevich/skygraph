@@ -1,15 +1,13 @@
 import React from 'react'
+import type { BaseComponentProps } from '../../types'
 
-export interface SkeletonProps {
+export interface SkeletonProps extends BaseComponentProps {
   active?: boolean
   avatar?: boolean | { size?: number; shape?: 'circle' | 'square' }
   title?: boolean | { width?: number | string }
   paragraph?: boolean | { rows?: number; width?: Array<number | string> }
   loading?: boolean
   children?: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Skeleton({
@@ -39,7 +37,7 @@ export function Skeleton({
 
   if (unstyled) {
     return (
-      <div className={className} style={style}>
+      <div className={className} style={style} aria-busy="true" aria-label="Loading">
         {avatar && <div style={{ width: avatarSize, height: avatarSize }} />}
         <div>
           {title && <div style={{ width: titleWidth, height: 16 }} />}
@@ -61,6 +59,8 @@ export function Skeleton({
         className,
       ].filter(Boolean).join(' ')}
       style={style}
+      aria-busy="true"
+      aria-label="Loading"
     >
       {avatar && (
         <div className="sg-skeleton-header">

@@ -52,12 +52,12 @@ export type {
 export { useTree } from './hooks/useTree'
 export type { UseTreeOptions, UseTreeReturn } from './hooks/useTree'
 
-export { TreeSelect } from './components/complex/TreeSelect'
-export type { TreeSelectProps } from './components/complex/TreeSelect'
+export { TreeSelect } from './components/ui/TreeSelect'
+export type { TreeSelectProps, TreeSelectNode } from './components/ui/TreeSelect'
 export { Cascader } from './components/complex/Cascader'
 export type { CascaderProps, CascaderOption } from './components/complex/Cascader'
-export { Calendar } from './components/complex/Calendar'
-export type { CalendarProps, CalendarLocale, CalendarHeaderInfo, CalendarCellInfo } from './components/complex/Calendar'
+export { Calendar } from './components/ui/Calendar'
+export type { CalendarProps } from './components/ui/Calendar'
 
 // UI components (pure React, no core)
 export { Spin } from './components/ui/Spin'
@@ -181,5 +181,9 @@ export type {
 // Complex components (additional)
 export { List } from './components/complex/List'
 export type { ListProps, ListItemProps, ListItemMetaProps } from './components/complex/List'
-export { Transfer } from './components/complex/Transfer'
-export type { TransferProps, TransferItem } from './components/complex/Transfer'
+export { Transfer } from './components/ui/Transfer'
+export type { TransferProps, TransferItem } from './components/ui/Transfer'
+export { Mentions } from './components/ui/Mentions'
+export type { MentionsProps, MentionOption } from './components/ui/Mentions'
+export { Transition } from './components/ui/Transition'
+export type { TransitionProps } from './components/ui/Transition'

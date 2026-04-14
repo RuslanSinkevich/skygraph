@@ -384,6 +384,8 @@ export function ColorPicker({
         className="sg-colorpicker-trigger"
         onClick={handleTriggerClick}
         tabIndex={disabled ? -1 : 0}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()

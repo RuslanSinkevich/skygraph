@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, type ReactNode } from 'react'
+import { useState, useRef, useEffect, type ReactNode } from 'react'
+import type { BaseComponentProps, SizableProps } from '../../types'
 
 export interface MenuItem {
   key: string
@@ -10,7 +11,7 @@ export interface MenuItem {
   type?: 'group' | 'divider'
 }
 
-export interface MenuProps {
+export interface MenuProps extends BaseComponentProps, SizableProps {
   items: MenuItem[]
   mode?: 'vertical' | 'horizontal' | 'inline'
   selectedKeys?: string[]
@@ -21,9 +22,6 @@ export interface MenuProps {
   onOpenChange?: (openKeys: string[]) => void
   inlineCollapsed?: boolean
   theme?: 'light' | 'dark'
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Menu({

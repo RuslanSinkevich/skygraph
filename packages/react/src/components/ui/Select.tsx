@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useId } from 'react'
 import { useConfig } from '../ConfigProvider'
+import { Transition } from './Transition'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 import { Spin } from './Spin'
 
@@ -163,7 +164,7 @@ export function Select({
           <span className="sg-select-arrow">{open ? '\u25B2' : '\u25BC'}</span>
         )}
       </div>
-      {open && (
+      <Transition visible={open} name="sg-slide-up" unmountOnExit>
         <div className="sg-select-dropdown" role="listbox" id={listboxId}>
           {options.map((opt, idx) => (
             <div
@@ -186,7 +187,7 @@ export function Select({
             </div>
           ))}
         </div>
-      )}
+      </Transition>
     </div>
   )
 }

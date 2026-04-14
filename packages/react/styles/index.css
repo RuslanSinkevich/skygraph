@@ -1,4 +1,4 @@
-/* SkyGraph ? all styles */
+/* SkyGraph — all styles */
 @import './tokens.css';
 @import './reset.css';
 @import './components/button.css';
@@ -49,3 +49,5 @@
 @import './components/timeline.css';
 @import './components/carousel.css';
 @import './components/descriptions.css';
+@import './components/mentions.css';
+@import './transitions.css';

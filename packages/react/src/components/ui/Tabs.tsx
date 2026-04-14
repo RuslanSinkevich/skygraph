@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Spin } from './Spin'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, SizableProps } from '../../types'
 
 export interface TabItem {
   key: string
@@ -9,13 +11,11 @@ export interface TabItem {
   loading?: boolean
 }
 
-export interface TabsProps {
+export interface TabsProps extends BaseComponentProps, SizableProps {
   items: TabItem[]
   activeKey?: string
   defaultActiveKey?: string
   onChange?: (key: string) => void
-  className?: string
-  unstyled?: boolean
 }
 
 export function Tabs({
@@ -23,9 +23,13 @@ export function Tabs({
   activeKey,
   defaultActiveKey,
   onChange,
+  size: sizeProp,
   className,
+  style,
   unstyled,
 }: TabsProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
   const [internalKey, setInternalKey] = useState(
     activeKey ?? defaultActiveKey ?? items[0]?.key ?? ''
   )
@@ -40,7 +44,7 @@ export function Tabs({
 
   if (unstyled) {
     return (
-      <div className={className}>
+      <div className={className} style={style}>
         <div role="tablist">
           {items.map((item) => (
             <button
@@ -61,7 +65,7 @@ export function Tabs({
   }
 
   return (
-    <div className={['sg-tabs', className].filter(Boolean).join(' ')}>
+    <div className={['sg-tabs', `sg-tabs-${size}`, className].filter(Boolean).join(' ')} style={style}>
       <div className="sg-tabs-nav" role="tablist">
         {items.map((item) => (
           <div
@@ -76,7 +80,21 @@ export function Tabs({
             ]
               .filter(Boolean)
               .join(' ')}
+            tabIndex={item.key === currentKey ? 0 : -1}
             onClick={() => handleClick(item.key, item.disabled, item.loading)}
+            onKeyDown={(e) => {
+              const enabledItems = items.filter((i) => !i.disabled && !i.loading)
+              const curIdx = enabledItems.findIndex((i) => i.key === item.key)
+              if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault()
+                const next = enabledItems[(curIdx + 1) % enabledItems.length]
+                if (next) handleClick(next.key)
+              } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault()
+                const prev = enabledItems[(curIdx - 1 + enabledItems.length) % enabledItems.length]
+                if (prev) handleClick(prev.key)
+              }
+            }}
           >
             {item.label}
             {item.loading && <Spin size="small" unstyled={unstyled} />}

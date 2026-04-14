@@ -1,12 +1,10 @@
 import React from 'react'
+import type { BaseComponentProps } from '../../types'
 
-export interface EmptyProps {
+export interface EmptyProps extends BaseComponentProps {
   image?: React.ReactNode
   description?: React.ReactNode
   children?: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 const DefaultImage = () => (
@@ -37,7 +35,7 @@ export function Empty({
 
   if (unstyled) {
     return (
-      <div className={className} style={style}>
+      <div className={className} style={style} role="status">
         <div>{image ?? <DefaultImage />}</div>
         {desc !== null && <p>{desc}</p>}
         {children}
@@ -46,7 +44,7 @@ export function Empty({
   }
 
   return (
-    <div className={['sg-empty', className].filter(Boolean).join(' ')} style={style}>
+    <div className={['sg-empty', className].filter(Boolean).join(' ')} style={style} role="status">
       <div className="sg-empty-image">{image ?? <DefaultImage />}</div>
       {desc !== null && <p className="sg-empty-description">{desc}</p>}
       {children && <div className="sg-empty-footer">{children}</div>}

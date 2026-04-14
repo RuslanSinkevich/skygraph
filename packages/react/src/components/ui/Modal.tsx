@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useId } from 'react'
 import { Button } from './Button'
+import { Transition } from './Transition'
 import { useFocusTrap } from '../../hooks/a11y/useFocusTrap'
 import type { BaseComponentProps } from '../../types'
 
@@ -41,9 +42,8 @@ export function Modal({
     }
   }, [open, handleKeyDown])
 
-  if (!open) return null
-
   if (unstyled) {
+    if (!open) return null
     return (
       <div
         ref={trapRef}
@@ -62,31 +62,35 @@ export function Modal({
   }
 
   return (
-    <div className="sg-modal-mask" onClick={onClose}>
-      <div
-        ref={trapRef}
-        className={['sg-modal', className].filter(Boolean).join(' ')}
-        style={{ width }}
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? titleId : undefined}
-        aria-describedby={children ? bodyId : undefined}
-      >
-        <div className="sg-modal-header">
-          {title && <div className="sg-modal-title" id={titleId}>{title}</div>}
-          <Button
-            type="text"
-            className="sg-modal-close"
-            onClick={onClose}
-            aria-label="Close"
+    <Transition visible={open} name="sg-fade" unmountOnExit>
+      <div className="sg-modal-mask" onClick={onClose}>
+        <Transition visible={open} name="sg-zoom" unmountOnExit>
+          <div
+            ref={trapRef}
+            className={['sg-modal', className].filter(Boolean).join(' ')}
+            style={{ width }}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? titleId : undefined}
+            aria-describedby={children ? bodyId : undefined}
           >
-            &times;
-          </Button>
-        </div>
-        <div className="sg-modal-body" id={bodyId}>{children}</div>
-        {footer && <div className="sg-modal-footer">{footer}</div>}
+            <div className="sg-modal-header">
+              {title && <div className="sg-modal-title" id={titleId}>{title}</div>}
+              <Button
+                type="text"
+                className="sg-modal-close"
+                onClick={onClose}
+                aria-label="Close"
+              >
+                &times;
+              </Button>
+            </div>
+            <div className="sg-modal-body" id={bodyId}>{children}</div>
+            {footer && <div className="sg-modal-footer">{footer}</div>}
+          </div>
+        </Transition>
       </div>
-    </div>
+    </Transition>
   )
 }

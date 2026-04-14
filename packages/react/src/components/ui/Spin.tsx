@@ -51,7 +51,13 @@ export function Spin({
     : ['sg-spin', `sg-spin-${spinSizeClass}`, className].filter(Boolean).join(' ')
 
   const spinElement = indicator ?? (
-    <span className={spinClasses} style={style} />
+    <span
+      className={spinClasses}
+      style={style}
+      role="status"
+      aria-live="polite"
+      aria-label="Loading"
+    />
   )
 
   if (fullscreen) {

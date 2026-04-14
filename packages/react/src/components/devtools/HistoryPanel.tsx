@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import type { UseHistoryReturn } from '../../hooks/useHistory'
+import type { BaseComponentProps } from '../../types'
 
-export interface HistoryPanelProps {
+export interface HistoryPanelProps extends BaseComponentProps {
   history: UseHistoryReturn
-  className?: string
-  style?: React.CSSProperties
 }
 
 const styles: Record<string, React.CSSProperties> = {

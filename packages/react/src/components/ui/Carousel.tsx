@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useCallback, Children } from 'react'
+import type { BaseComponentProps } from '../../types'
 
-export interface CarouselProps {
+export interface CarouselProps extends BaseComponentProps {
   autoplay?: boolean
   autoplaySpeed?: number
   dots?: boolean
   dotPosition?: 'top' | 'bottom' | 'left' | 'right'
   effect?: 'slide' | 'fade'
   children: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Carousel({

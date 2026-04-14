@@ -50,6 +50,7 @@ export function Checkbox({
       <input
         ref={inputRef}
         type="checkbox"
+        aria-checked={checked}
         className={unstyled ? '' : 'sg-checkbox-input'}
         checked={checked}
         defaultChecked={defaultChecked}

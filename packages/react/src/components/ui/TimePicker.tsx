@@ -67,6 +67,10 @@ export function TimePicker({
       <div
         className={unstyled ? '' : 'sg-timepicker-input'}
         onClick={() => !disabled && !loading && setOpen(!open)}
+        role="combobox"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-disabled={disabled}
       >
         <span className={currentValue ? '' : (unstyled ? '' : 'sg-select-placeholder')}>
           {currentValue || placeholder}

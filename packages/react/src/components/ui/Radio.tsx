@@ -67,6 +67,8 @@ export function RadioGroup({
         >
           <input
             type="radio"
+            role="radio"
+            aria-checked={currentValue === opt.value}
             className={unstyled ? '' : 'sg-radio-input'}
             checked={currentValue === opt.value}
             disabled={opt.disabled || disabled || loading}

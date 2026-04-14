@@ -1,7 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useId } from 'react'
 import { Button } from './Button'
+import { Transition } from './Transition'
+import { useFocusTrap } from '../../hooks/a11y/useFocusTrap'
+import type { BaseComponentProps } from '../../types'
 
-export interface PopconfirmProps {
+export interface PopconfirmProps extends BaseComponentProps {
   title: React.ReactNode
   description?: React.ReactNode
   onConfirm?: () => void
@@ -11,8 +14,6 @@ export interface PopconfirmProps {
   placement?: 'top' | 'bottom' | 'left' | 'right'
   children: React.ReactElement
   disabled?: boolean
-  className?: string
-  unstyled?: boolean
 }
 
 export function Popconfirm({
@@ -30,6 +31,8 @@ export function Popconfirm({
 }: PopconfirmProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const trapRef = useFocusTrap(open)
+  const popconfirmId = useId()
 
   useEffect(() => {
     if (!open) return
@@ -59,9 +62,9 @@ export function Popconfirm({
   if (unstyled) {
     return (
       <div ref={ref} className={className} style={{ position: 'relative', display: 'inline-block' }}>
-        <div onClick={handleTrigger}>{children}</div>
+        <div onClick={handleTrigger} aria-describedby={open ? popconfirmId : undefined}>{children}</div>
         {open && (
-          <div>
+          <div id={popconfirmId} role="alertdialog">
             <div>{title}</div>
             {description && <div>{description}</div>}
             <button onClick={handleCancel}>{cancelText}</button>
@@ -77,9 +80,9 @@ export function Popconfirm({
       ref={ref}
       className={['sg-popconfirm-wrapper', className].filter(Boolean).join(' ')}
     >
-      <div onClick={handleTrigger}>{children}</div>
-      {open && (
-        <div className={`sg-popconfirm sg-popconfirm-${placement}`}>
+      <div onClick={handleTrigger} aria-describedby={open ? popconfirmId : undefined}>{children}</div>
+        <Transition visible={open} name="sg-fade" unmountOnExit>
+          <div id={popconfirmId} role="alertdialog" ref={trapRef} className={`sg-popconfirm sg-popconfirm-${placement}`}>
           <div className="sg-popconfirm-arrow" />
           <div className="sg-popconfirm-inner">
             <div className="sg-popconfirm-title">
@@ -95,7 +98,7 @@ export function Popconfirm({
             </div>
           </div>
         </div>
-      )}
+      </Transition>
     </div>
   )
 }

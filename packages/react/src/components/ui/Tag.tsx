@@ -1,14 +1,12 @@
 import React from 'react'
+import type { BaseComponentProps, SizableProps } from '../../types'
 
-export interface TagProps {
+export interface TagProps extends BaseComponentProps, SizableProps {
   color?: 'default' | 'success' | 'error' | 'warning' | 'processing' | string
   closable?: boolean
   onClose?: () => void
   bordered?: boolean
   children: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 const presetColors = new Set(['default', 'success', 'error', 'warning', 'processing'])

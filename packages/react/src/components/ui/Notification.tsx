@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { Transition } from './Transition'
+import type { BaseComponentProps } from '../../types'
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info'
 
@@ -66,9 +68,8 @@ const typeIcons: Record<NotificationType, string> = {
   info: 'ℹ',
 }
 
-export interface NotificationContainerProps {
+export interface NotificationContainerProps extends BaseComponentProps {
   placement?: 'topRight' | 'topLeft' | 'bottomRight' | 'bottomLeft'
-  unstyled?: boolean
 }
 
 export function NotificationContainer({
@@ -98,15 +99,23 @@ export function NotificationContainer({
   return (
     <div className={containerClass}>
       {filtered.map((item) => (
-        <NotificationCard
+        <Transition
           key={item.id}
-          item={item}
-          onClose={() => {
-            removeNotification(item.id)
-            item.onClose?.()
-          }}
-          unstyled={unstyled}
-        />
+          visible={true}
+          name={placement.includes('Right') ? 'sg-slide-right' : 'sg-slide-left'}
+          unmountOnExit={false}
+        >
+          <div>
+            <NotificationCard
+              item={item}
+              onClose={() => {
+                removeNotification(item.id)
+                item.onClose?.()
+              }}
+              unstyled={unstyled}
+            />
+          </div>
+        </Transition>
       ))}
     </div>
   )

@@ -7,6 +7,8 @@ export interface InputProps extends BaseComponentProps, InteractiveProps, Sizabl
   defaultValue?: string
   placeholder?: string
   type?: 'text' | 'email' | 'password' | 'number'
+  'aria-invalid'?: boolean | 'false' | 'true' | 'grammar' | 'spelling'
+  'aria-required'?: boolean | 'false' | 'true'
   onChange?: (value: string) => void
   onBlur?: () => void
   onFocus?: () => void
@@ -23,6 +25,8 @@ export function Input({
   onChange,
   onBlur,
   onFocus,
+  'aria-invalid': ariaInvalid,
+  'aria-required': ariaRequired,
   className,
   style,
   unstyled,
@@ -55,6 +59,8 @@ export function Input({
         defaultValue={defaultValue}
         placeholder={placeholder}
         disabled={disabled || loading}
+        aria-invalid={ariaInvalid}
+        aria-required={ariaRequired}
         onChange={(e) => onChange?.(e.target.value)}
         onBlur={onBlur}
         onFocus={onFocus}

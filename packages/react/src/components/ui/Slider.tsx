@@ -1,16 +1,14 @@
 import React, { useRef, useCallback } from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps } from '../../types'
 
-export interface SliderProps {
+export interface SliderProps extends BaseComponentProps, InteractiveProps {
   value?: number
   defaultValue?: number
   min?: number
   max?: number
   step?: number
-  disabled?: boolean
   onChange?: (value: number) => void
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Slider({
@@ -19,12 +17,15 @@ export function Slider({
   min = 0,
   max = 100,
   step = 1,
-  disabled,
+  disabled: disabledProp,
   onChange,
   className,
   style,
   unstyled,
 }: SliderProps) {
+  const config = useConfig()
+  const disabled = disabledProp ?? config.disabled
+
   const [internalValue, setInternalValue] = React.useState(value ?? defaultValue)
   const currentValue = value ?? internalValue
   const trackRef = useRef<HTMLDivElement>(null)
@@ -42,7 +43,7 @@ export function Slider({
       setInternalValue(clamped)
       onChange?.(clamped)
     },
-    [min, max, step, disabled, onChange]
+    [min, max, step, disabled, onChange],
   )
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -78,6 +79,26 @@ export function Slider({
         <div
           className={unstyled ? '' : 'sg-slider-handle'}
           style={{ left: `${percent}%` }}
+          role="slider"
+          aria-valuemin={min}
+          aria-valuemax={max}
+          aria-valuenow={currentValue}
+          aria-disabled={disabled}
+          tabIndex={disabled ? -1 : 0}
+          onKeyDown={(e) => {
+            if (disabled) return
+            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+              e.preventDefault()
+              const next = Math.min(max, currentValue + step)
+              setInternalValue(next)
+              onChange?.(next)
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+              e.preventDefault()
+              const next = Math.max(min, currentValue - step)
+              setInternalValue(next)
+              onChange?.(next)
+            }
+          }}
         />
       </div>
     </div>

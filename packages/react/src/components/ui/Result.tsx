@@ -1,15 +1,13 @@
 import React from 'react'
+import type { BaseComponentProps } from '../../types'
 
-export interface ResultProps {
+export interface ResultProps extends BaseComponentProps {
   status: 'success' | 'error' | 'info' | 'warning' | '404' | '403' | '500'
   title: React.ReactNode
   subTitle?: React.ReactNode
   icon?: React.ReactNode
   extra?: React.ReactNode
   children?: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 const icons: Record<string, React.ReactNode> = {
@@ -75,7 +73,7 @@ export function Result({
 
   if (unstyled) {
     return (
-      <div className={className} style={style}>
+      <div className={className} style={style} role="status" aria-live="polite">
         <div>{resolvedIcon}</div>
         <div>{title}</div>
         {subTitle && <div>{subTitle}</div>}
@@ -89,6 +87,8 @@ export function Result({
     <div
       className={['sg-result', `sg-result-${status}`, className].filter(Boolean).join(' ')}
       style={style}
+      role="status"
+      aria-live="polite"
     >
       <div className="sg-result-icon" style={{ color: statusColorMap[status] }}>
         {resolvedIcon}

@@ -82,6 +82,9 @@ export function AutoComplete({
       <span className={unstyled ? '' : 'sg-input-wrapper'}>
         <input
           type="text"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={open && filtered.length > 0}
           className={unstyled ? '' : `sg-input sg-input-${size}`}
           value={currentValue}
           placeholder={placeholder}

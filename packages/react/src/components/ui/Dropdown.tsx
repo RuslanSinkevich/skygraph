@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useId } from 'react'
+import { Transition } from './Transition'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps } from '../../types'
 
@@ -150,7 +151,7 @@ export function Dropdown({
       >
         {children}
       </div>
-      {open && (
+      <Transition visible={open} name="sg-slide-up" unmountOnExit>
         <div
           className={`sg-dropdown sg-dropdown-${placement}`}
           role="menu"
@@ -178,7 +179,7 @@ export function Dropdown({
             )
           )}
         </div>
-      )}
+      </Transition>
     </div>
   )
 }

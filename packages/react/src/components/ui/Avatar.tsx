@@ -5,6 +5,7 @@ import type { BaseComponentProps, SizeType } from '../../types'
 export interface AvatarProps extends BaseComponentProps {
   src?: string
   alt?: string
+  'aria-label'?: string
   size?: SizeType | number
   shape?: 'circle' | 'square'
   icon?: React.ReactNode
@@ -20,6 +21,7 @@ const sizeMap: Record<string, number> = {
 export function Avatar({
   src,
   alt,
+  'aria-label': ariaLabel,
   size: sizeProp,
   shape = 'circle',
   icon,
@@ -36,7 +38,7 @@ export function Avatar({
 
   if (unstyled) {
     return (
-      <span className={className} style={style}>
+      <span className={className} style={style} role="img" aria-label={ariaLabel}>
         {src ? <img src={src} alt={alt} /> : icon ?? children}
       </span>
     )
@@ -58,7 +60,7 @@ export function Avatar({
   }
 
   return (
-    <span className={classes} style={sizeStyle}>
+    <span className={classes} style={sizeStyle} role="img" aria-label={ariaLabel}>
       {src ? (
         <img className="sg-avatar-image" src={src} alt={alt} />
       ) : icon ? (

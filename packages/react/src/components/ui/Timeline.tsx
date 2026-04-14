@@ -1,4 +1,5 @@
 import React from 'react'
+import type { BaseComponentProps } from '../../types'
 
 export interface TimelineItem {
   children: React.ReactNode
@@ -8,15 +9,12 @@ export interface TimelineItem {
   position?: 'left' | 'right'
 }
 
-export interface TimelineProps {
+export interface TimelineProps extends BaseComponentProps {
   items: TimelineItem[]
   mode?: 'left' | 'right' | 'alternate'
   pending?: React.ReactNode | boolean
   pendingDot?: React.ReactNode
   reverse?: boolean
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Timeline({
@@ -70,6 +68,7 @@ export function Timeline({
         className,
       ].filter(Boolean).join(' ')}
       style={style}
+      role="list"
     >
       {items.map((item, i) => {
         const pos = getPosition(item, i)
@@ -84,6 +83,7 @@ export function Timeline({
               `sg-timeline-item-${pos}`,
               isPendingItem ? 'sg-timeline-item-pending' : '',
             ].filter(Boolean).join(' ')}
+            role="listitem"
           >
             {item.label !== undefined && (
               <div className="sg-timeline-item-label">{item.label}</div>

@@ -11,12 +11,12 @@ import {
 import { zodToJsonSchema } from '../../adapters/zodAdapter'
 import type { JSONSchema } from '../../adapters/jsonSchemaAdapter'
 import type { UseFormReturn } from '../../hooks/useForm'
+import type { BaseComponentProps, SizableProps } from '../../types'
 
-export interface SchemaFormProps {
+export interface SchemaFormProps extends BaseComponentProps, SizableProps {
   schema: JSONSchema | { _def?: unknown }
   onSubmit?: (values: Record<string, unknown>) => void | Promise<void>
   layout?: 'horizontal' | 'vertical' | 'inline'
-  size?: 'small' | 'middle' | 'large'
   disabled?: boolean
   form?: UseFormReturn
   labelCol?: { span?: number; offset?: number }

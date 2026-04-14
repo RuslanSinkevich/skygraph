@@ -1,6 +1,7 @@
 import React from 'react'
+import type { BaseComponentProps, SizableProps } from '../../types'
 
-export interface BadgeProps {
+export interface BadgeProps extends BaseComponentProps, SizableProps {
   count?: number
   dot?: boolean
   overflowCount?: number
@@ -10,8 +11,6 @@ export interface BadgeProps {
   text?: React.ReactNode
   offset?: [number, number]
   children?: React.ReactNode
-  className?: string
-  unstyled?: boolean
 }
 
 export function Badge({
@@ -25,6 +24,7 @@ export function Badge({
   offset,
   children,
   className,
+  style,
   unstyled,
 }: BadgeProps) {
   const hasCount = count !== undefined && (count > 0 || showZero)
@@ -34,7 +34,7 @@ export function Badge({
 
   if (unstyled) {
     return (
-      <span className={className} style={{ position: 'relative', display: 'inline-block' }}>
+      <span className={className} style={{ position: 'relative', display: 'inline-block', ...style }}>
         {children}
         {(dot || hasCount) && <sup>{displayCount}</sup>}
         {status && <span>{text}</span>}
@@ -68,6 +68,7 @@ export function Badge({
         <sup
           className="sg-badge-count"
           style={{ ...offsetStyle, ...(color ? { background: color } : {}) }}
+          aria-label={displayCount ?? undefined}
         >
           {displayCount}
         </sup>

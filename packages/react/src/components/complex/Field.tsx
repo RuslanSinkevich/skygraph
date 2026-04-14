@@ -7,8 +7,9 @@ import { Tooltip } from '../ui/Tooltip'
 import { Spin } from '../ui/Spin'
 import type { UseFieldReturn } from '../../hooks/useField'
 import type { Rule } from '@skygraph/core'
+import type { BaseComponentProps } from '../../types'
 
-export interface FieldProps {
+export interface FieldProps extends BaseComponentProps {
   name: string
   label?: string
   required?: boolean
@@ -17,7 +18,6 @@ export interface FieldProps {
   dependencies?: string[]
   hidden?: boolean
   disabled?: boolean
-  unstyled?: boolean
   placeholder?: string
   type?: 'text' | 'email' | 'password' | 'number' | 'textarea'
   help?: React.ReactNode

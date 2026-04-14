@@ -48,6 +48,36 @@ export interface EmptyLocale {
   description?: string
 }
 
+export interface FormLocale {
+  required?: string
+  optional?: string
+  submitText?: string
+  resetText?: string
+}
+
+export interface UploadLocale {
+  uploadText?: string
+  removeFile?: string
+  uploadError?: string
+  previewFile?: string
+}
+
+export interface TransferLocale {
+  titles?: [string, string]
+  searchPlaceholder?: string
+  itemUnit?: string
+  itemsUnit?: string
+  notFoundContent?: string
+  selectAll?: string
+  deselectAll?: string
+}
+
+export interface CalendarLocale {
+  monthNames?: string[]
+  dayNames?: string[]
+  today?: string
+}
+
 export interface SgLocale {
   table?: TableLocale
   pagination?: PaginationLocale
@@ -55,4 +85,8 @@ export interface SgLocale {
   modal?: ModalLocale
   popconfirm?: PopconfirmLocale
   empty?: EmptyLocale
+  form?: FormLocale
+  upload?: UploadLocale
+  transfer?: TransferLocale
+  calendar?: CalendarLocale
 }

@@ -78,6 +78,7 @@ export function Steps({
         className,
       ].filter(Boolean).join(' ')}
       style={style}
+      role="list"
     >
       {items.map((item, i) => {
         const status = resolveStatus(i, current, item.status)
@@ -92,6 +93,7 @@ export function Steps({
               clickable ? 'sg-steps-item-clickable' : '',
             ].filter(Boolean).join(' ')}
             onClick={clickable ? () => onChange!(i) : undefined}
+            aria-current={status === 'process' ? 'step' : undefined}
           >
             <div className="sg-steps-item-container">
               <div className="sg-steps-item-icon">

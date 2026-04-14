@@ -1,23 +1,21 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps } from '../../types'
 
-export interface RateProps {
+export interface RateProps extends BaseComponentProps, InteractiveProps {
   value?: number
   defaultValue?: number
   count?: number
-  disabled?: boolean
   allowHalf?: boolean
   character?: React.ReactNode
   onChange?: (value: number) => void
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Rate({
   value,
   defaultValue = 0,
   count = 5,
-  disabled,
+  disabled: disabledProp,
   allowHalf,
   character = '★',
   onChange,
@@ -25,6 +23,9 @@ export function Rate({
   style,
   unstyled,
 }: RateProps) {
+  const config = useConfig()
+  const disabled = disabledProp ?? config.disabled
+
   const [internalValue, setInternalValue] = React.useState(value ?? defaultValue)
   const [hoverValue, setHoverValue] = React.useState<number | null>(null)
   const currentValue = value ?? internalValue
@@ -36,6 +37,19 @@ export function Rate({
     onChange?.(starValue)
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent, _starIndex: number) => {
+    if (disabled) return
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      e.preventDefault()
+      const next = Math.min(count, allowHalf ? currentValue + 0.5 : currentValue + 1)
+      handleClick(next)
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      e.preventDefault()
+      const next = Math.max(0, allowHalf ? currentValue - 0.5 : currentValue - 1)
+      handleClick(next)
+    }
+  }
+
   const wrapperClass = unstyled
     ? className ?? ''
     : ['sg-rate', disabled ? 'sg-rate-disabled' : '', className]
@@ -43,7 +57,7 @@ export function Rate({
         .join(' ')
 
   return (
-    <div className={wrapperClass} style={style}>
+    <div className={wrapperClass} style={style} role="radiogroup" aria-label="Rating">
       {Array.from({ length: count }, (_, i) => {
         const starIndex = i + 1
         const isFull = displayValue >= starIndex
@@ -63,7 +77,12 @@ export function Rate({
                     .filter(Boolean)
                     .join(' ')
             }
+            role="radio"
+            aria-checked={isFull}
+            aria-label={`${starIndex} star${starIndex > 1 ? 's' : ''}`}
+            tabIndex={disabled ? -1 : 0}
             onClick={() => handleClick(allowHalf ? starIndex - 0.5 : starIndex)}
+            onKeyDown={(e) => handleKeyDown(e, starIndex)}
             onMouseEnter={() => !disabled && setHoverValue(starIndex)}
             onMouseLeave={() => !disabled && setHoverValue(null)}
           >

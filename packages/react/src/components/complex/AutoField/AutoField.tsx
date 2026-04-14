@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react'
 import { useFormContext } from '../FormContext'
+import { useConfig } from '../../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps } from '../../../types'
 
 export type FieldType =
   | 'string'
@@ -25,15 +27,12 @@ export interface AutoFieldOption {
   value: string | number
 }
 
-export interface AutoFieldProps {
+export interface AutoFieldProps extends BaseComponentProps, InteractiveProps {
   name: string
   label?: React.ReactNode
   type?: FieldType
   options?: AutoFieldOption[]
   placeholder?: string
-  disabled?: boolean
-  className?: string
-  style?: React.CSSProperties
   min?: number
   max?: number
   step?: number
@@ -48,7 +47,7 @@ export function AutoField(props: AutoFieldProps) {
     type: forcedType,
     options,
     placeholder,
-    disabled,
+    disabled: disabledProp,
     className,
     style,
     min,
@@ -57,6 +56,8 @@ export function AutoField(props: AutoFieldProps) {
     accept,
     multiple,
   } = props
+  const config = useConfig()
+  const disabled = disabledProp ?? config.disabled
   const { form } = useFormContext()
 
   const value = form.getValue(name)

@@ -62,7 +62,7 @@ export function Descriptions({
 
   if (unstyled) {
     return (
-      <div className={className} style={style}>
+      <div className={className} style={style} role="list">
         {title && <div>{title}</div>}
         <table>
           <tbody>
@@ -91,6 +91,7 @@ export function Descriptions({
         className,
       ].filter(Boolean).join(' ')}
       style={style}
+      role="list"
     >
       {title && <div className="sg-descriptions-title">{title}</div>}
       <table className="sg-descriptions-table">

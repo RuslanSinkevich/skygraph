@@ -44,6 +44,8 @@ export function Button({
       className={classes}
       style={style}
       disabled={disabled || loading}
+      aria-disabled={disabled || loading}
+      aria-busy={loading}
       onClick={onClick}
     >
       {loading && <Spin size="small" unstyled={unstyled} />}

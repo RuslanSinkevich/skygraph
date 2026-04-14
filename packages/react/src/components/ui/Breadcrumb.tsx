@@ -1,4 +1,5 @@
 import React from 'react'
+import type { BaseComponentProps } from '../../types'
 
 export interface BreadcrumbItem {
   title: React.ReactNode
@@ -6,12 +7,9 @@ export interface BreadcrumbItem {
   onClick?: () => void
 }
 
-export interface BreadcrumbProps {
+export interface BreadcrumbProps extends BaseComponentProps {
   items: BreadcrumbItem[]
   separator?: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Breadcrumb({
