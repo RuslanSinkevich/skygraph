@@ -1,28 +1,24 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Spin } from './Spin'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
-export interface TimePickerProps {
+export interface TimePickerProps extends BaseComponentProps, InteractiveProps, SizableProps {
   value?: string
   defaultValue?: string
   placeholder?: string
-  disabled?: boolean
-  loading?: boolean
-  size?: 'small' | 'middle' | 'large'
   format?: '12h' | '24h'
   onChange?: (value: string) => void
   onBlur?: () => void
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function TimePicker({
   value,
   defaultValue,
   placeholder = 'Select time',
-  disabled,
+  disabled: disabledProp,
   loading,
-  size = 'middle',
+  size: sizeProp,
   format = '24h',
   onChange,
   onBlur: _onBlur,
@@ -30,6 +26,10 @@ export function TimePicker({
   style,
   unstyled,
 }: TimePickerProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const [internalValue, setInternalValue] = useState(value ?? defaultValue ?? '')
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)

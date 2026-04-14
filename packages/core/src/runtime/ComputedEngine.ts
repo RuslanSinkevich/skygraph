@@ -77,6 +77,47 @@ export class ComputedEngine {
   }
 
   /**
+   * Like propagate, but returns both new and old values for middleware support.
+   * Does NOT write to the store — the caller handles that via dispatchWrite.
+   */
+  propagateRaw(
+    changedPaths: Set<string>,
+    store: Store,
+  ): Map<string, { value: unknown; oldValue: unknown }> {
+    const result = new Map<string, { value: unknown; oldValue: unknown }>()
+    const visited = new Set<string>()
+    const queue = [...changedPaths]
+
+    while (queue.length > 0) {
+      const path = queue.shift()!
+      if (visited.has(path)) continue
+      visited.add(path)
+
+      const dependents = this.cycleDetector.getDependents(path)
+
+      for (const depTarget of dependents) {
+        const computed = this.computedNodes.get(depTarget)
+        if (!computed) continue
+
+        const depValues = computed.deps.map((d) => {
+          const pending = result.get(d)
+          return pending ? pending.value : store.get(d)
+        })
+        const newValue = computed.fn(...depValues)
+        const oldValue = store.get(depTarget)
+
+        if (!Object.is(newValue, oldValue)) {
+          store.set(depTarget, newValue)
+          result.set(depTarget, { value: newValue, oldValue })
+          queue.push(depTarget)
+        }
+      }
+    }
+
+    return result
+  }
+
+  /**
    * Initialize all computed values based on current store state.
    */
   initializeAll(store: Store): void {

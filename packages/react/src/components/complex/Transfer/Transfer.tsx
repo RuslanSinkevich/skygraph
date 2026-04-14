@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from '../../ui/Button'
 import { TransferList } from './TransferList'
-import type { TransferProps, TransferItem } from './types'
+import type { TransferProps } from './types'
 import { DEFAULT_TRANSFER_LOCALE } from './types'
 
 function cls(...parts: (string | false | undefined | null)[]): string {

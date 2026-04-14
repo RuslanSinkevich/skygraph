@@ -4,7 +4,7 @@ import { Batch } from './runtime/Batch'
 import { Transaction } from './runtime/Transaction'
 import { ComputedEngine } from './runtime/ComputedEngine'
 import { Scheduler } from './runtime/Scheduler'
-import type { Core } from './types'
+import type { Core, Middleware, WriteEvent, NextFn } from './types'
 
 class CoreImpl implements Core {
   private store = new Store()
@@ -13,6 +13,37 @@ class CoreImpl implements Core {
   private transaction_ = new Transaction()
   private computed_ = new ComputedEngine()
   readonly scheduler = new Scheduler()
+
+  private middlewares: Middleware[] = []
+
+  // ── Middleware ──
+
+  use(middleware: Middleware): () => void {
+    this.middlewares.push(middleware)
+    return () => {
+      const idx = this.middlewares.indexOf(middleware)
+      if (idx !== -1) this.middlewares.splice(idx, 1)
+    }
+  }
+
+  private dispatchWrite(event: WriteEvent): void {
+    let idx = 0
+    const chain: NextFn = (ev: WriteEvent) => {
+      if (idx < this.middlewares.length) {
+        const mw = this.middlewares[idx++]
+        mw(ev, chain)
+      } else {
+        this.commitWrite(ev)
+      }
+    }
+    chain(event)
+  }
+
+  private commitWrite(event: WriteEvent): void {
+    this.store.set(event.path, event.value)
+  }
+
+  // ── Public API ──
 
   get(path: string): unknown {
     return this.store.get(path)
@@ -27,12 +58,9 @@ class CoreImpl implements Core {
     const oldValue = this.store.get(path)
     if (Object.is(oldValue, value)) return
 
-    this.store.set(path, value)
+    this.dispatchWrite({ path, value, oldValue, source: 'user' })
 
-    const computedChanges = this.computed_.propagate(
-      new Set([path]),
-      this.store
-    )
+    const computedChanges = this.propagateComputed(new Set([path]))
 
     if (this.batch_.isActive) {
       this.batch_.enqueue(path, value)
@@ -67,12 +95,22 @@ class CoreImpl implements Core {
     this.transaction_.start()
     try {
       fn()
-      const changes = this.transaction_.commit(this.store)
+      const staged = this.transaction_.getStaged()
+      const changes = new Map<string, unknown>()
 
-      const computedChanges = this.computed_.propagate(
-        new Set(changes.keys()),
-        this.store
-      )
+      for (const write of staged) {
+        if (Object.is(write.value, write.prevValue)) continue
+        this.dispatchWrite({
+          path: write.path,
+          value: write.value,
+          oldValue: write.prevValue,
+          source: 'transaction',
+        })
+        changes.set(write.path, write.value)
+      }
+      this.transaction_.complete()
+
+      const computedChanges = this.propagateComputed(new Set(changes.keys()))
 
       for (const [path, value] of changes) {
         this.batch_.enqueue(path, value)
@@ -94,12 +132,59 @@ class CoreImpl implements Core {
   computed(
     target: string,
     deps: string[],
-    fn: (...values: unknown[]) => unknown
+    fn: (...values: unknown[]) => unknown,
   ): void {
     this.computed_.register(target, deps, fn)
     const depValues = deps.map((d) => this.store.get(d))
     const value = fn(...depValues)
-    this.store.set(target, value)
+    this.dispatchWrite({
+      path: target,
+      value,
+      oldValue: this.store.get(target),
+      source: 'computed',
+    })
+  }
+
+  // ── Snapshot / Restore ──
+
+  snapshot(): Record<string, unknown> {
+    const result: Record<string, unknown> = {}
+    for (const path of this.store.paths()) {
+      result[path] = this.store.get(path)
+    }
+    return result
+  }
+
+  restore(snap: Record<string, unknown>): void {
+    this.batch_.start()
+    try {
+      for (const [path, value] of Object.entries(snap)) {
+        const oldValue = this.store.get(path)
+        if (!Object.is(oldValue, value)) {
+          this.store.set(path, value)
+          this.batch_.enqueue(path, value)
+        }
+      }
+    } finally {
+      const changes = this.batch_.end()
+      if (changes) {
+        this.subscriptions.notifyMany(changes)
+      }
+    }
+  }
+
+  // ── Internal helpers ──
+
+  private propagateComputed(changedPaths: Set<string>): Map<string, unknown> {
+    const rawChanges = this.computed_.propagateRaw(changedPaths, this.store)
+    const dispatched = new Map<string, unknown>()
+
+    for (const [path, { value, oldValue }] of rawChanges) {
+      this.dispatchWrite({ path, value, oldValue, source: 'computed' })
+      dispatched.set(path, value)
+    }
+
+    return dispatched
   }
 }
 

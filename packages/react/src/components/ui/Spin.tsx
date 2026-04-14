@@ -1,21 +1,19 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, SizableProps } from '../../types'
 
-export interface SpinProps {
+export interface SpinProps extends BaseComponentProps, SizableProps {
   spinning?: boolean
-  size?: 'small' | 'default' | 'large'
   delay?: number
   tip?: string
   fullscreen?: boolean
   indicator?: React.ReactNode
   children?: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Spin({
   spinning = true,
-  size = 'default',
+  size: sizeProp,
   delay,
   tip,
   fullscreen,
@@ -25,6 +23,9 @@ export function Spin({
   style,
   unstyled,
 }: SpinProps) {
+  const config = useConfig()
+  const resolvedSize = sizeProp ?? config.size ?? 'middle'
+
   const [visible, setVisible] = React.useState(delay ? false : spinning)
 
   React.useEffect(() => {
@@ -44,9 +45,10 @@ export function Spin({
   if (!visible && !children) return null
   if (!visible && children) return <>{children}</>
 
+  const spinSizeClass = resolvedSize === 'middle' ? 'default' : resolvedSize
   const spinClasses = unstyled
     ? className ?? ''
-    : ['sg-spin', `sg-spin-${size}`, className].filter(Boolean).join(' ')
+    : ['sg-spin', `sg-spin-${spinSizeClass}`, className].filter(Boolean).join(' ')
 
   const spinElement = indicator ?? (
     <span className={spinClasses} style={style} />

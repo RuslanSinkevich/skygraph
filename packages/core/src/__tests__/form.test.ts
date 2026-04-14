@@ -11,6 +11,7 @@ describe('FormEngine: register/unregister', () => {
     expect(form.getValue('username')).toBe('')
     expect(form.getFieldState('username').touched).toBe(false)
     expect(form.getFieldState('username').dirty).toBe(false)
+    expect(form.getFieldState('username').errors).toEqual([])
     expect(form.getFieldState('username').error).toBeNull()
   })
 
@@ -69,6 +70,7 @@ describe('FormEngine: validation', () => {
     form.setValue('email', '')
     await new Promise((r) => setTimeout(r, 10))
 
+    expect(form.getFieldState('email').errors).toEqual(['Required'])
     expect(form.getFieldState('email').error).toBe('Required')
   })
 
@@ -81,10 +83,11 @@ describe('FormEngine: validation', () => {
 
     form.setValue('email', '')
     await new Promise((r) => setTimeout(r, 10))
-    expect(form.getFieldState('email').error).toBe('Required')
+    expect(form.getFieldState('email').errors).toEqual(['Required'])
 
     form.setValue('email', 'test@mail.com')
     await new Promise((r) => setTimeout(r, 10))
+    expect(form.getFieldState('email').errors).toEqual([])
     expect(form.getFieldState('email').error).toBeNull()
   })
 
@@ -101,16 +104,14 @@ describe('FormEngine: validation', () => {
     form.setValue('username', 'taken')
     await new Promise((r) => setTimeout(r, 20))
 
-    expect(form.getFieldState('username').error).toBe('Already taken')
+    expect(form.getFieldState('username').errors).toEqual(['Already taken'])
   })
 
   it('cancels stale async validation (AbortController)', async () => {
     const core = createCore()
     const form = createForm(core)
 
-    let callCount = 0
     const slowRule = async (v: unknown) => {
-      callCount++
       await new Promise((r) => setTimeout(r, 50))
       return v === 'bad' ? 'Error' : null
     }
@@ -121,7 +122,7 @@ describe('FormEngine: validation', () => {
 
     await new Promise((r) => setTimeout(r, 100))
 
-    expect(form.getFieldState('field').error).toBeNull()
+    expect(form.getFieldState('field').errors).toEqual([])
   })
 
   it('validates all fields on form.validate()', async () => {
@@ -134,8 +135,8 @@ describe('FormEngine: validation', () => {
 
     const result = await form.validate()
     expect(result.valid).toBe(false)
-    expect(result.errors['a']).toBe('Required')
-    expect(result.errors['b']).toBe('Required')
+    expect(result.errors['a']).toEqual(['Required'])
+    expect(result.errors['b']).toEqual(['Required'])
   })
 
   it('validates single field', async () => {
@@ -148,7 +149,7 @@ describe('FormEngine: validation', () => {
 
     const result = await form.validate('a')
     expect(result.valid).toBe(false)
-    expect(result.errors['a']).toBe('Required')
+    expect(result.errors['a']).toEqual(['Required'])
     expect(result.errors['b']).toBeUndefined()
   })
 })
@@ -171,11 +172,11 @@ describe('FormEngine: depends', () => {
     form.setValue('password', 'abc')
     form.setValue('confirm', 'abc')
     await new Promise((r) => setTimeout(r, 20))
-    expect(form.getFieldState('confirm').error).toBeNull()
+    expect(form.getFieldState('confirm').errors).toEqual([])
 
     form.setValue('password', 'changed')
     await new Promise((r) => setTimeout(r, 20))
-    expect(form.getFieldState('confirm').error).toBe('Passwords must match')
+    expect(form.getFieldState('confirm').errors).toEqual(['Passwords must match'])
   })
 })
 
@@ -229,7 +230,7 @@ describe('FormEngine: reset', () => {
     expect(form.getValue('name')).toBe('Default')
     expect(form.getFieldState('name').dirty).toBe(false)
     expect(form.getFieldState('name').touched).toBe(false)
-    expect(form.getFieldState('name').error).toBeNull()
+    expect(form.getFieldState('name').errors).toEqual([])
   })
 
   it('resets to provided values', () => {

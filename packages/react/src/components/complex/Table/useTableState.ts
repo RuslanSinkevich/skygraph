@@ -1,29 +1,67 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useTable } from '../../../hooks/useTable'
-import { flattenLeafColumns, buildHeaderRows, flattenTreeRows, collectAllTreeIds, computeSpanMap, computeHiddenCells, getFixedStyle } from './helpers'
-import type { TableColumn, TableProps, FlatRow, HeaderCell, FilterDropdownProps, SortDirection, RowId } from './types'
-import { DEFAULT_COL_WIDTH, MIN_COL_WIDTH, SELECTION_COL_WIDTH, DEFAULT_LOCALE } from './types'
+import {
+  flattenLeafColumns,
+  buildHeaderRows,
+  flattenTreeRows,
+  collectAllTreeIds,
+  computeSpanMap,
+  computeHiddenCells,
+  getFixedStyle,
+} from './helpers'
+import type {
+  TableColumn,
+  TableProps,
+  FlatRow,
+  HeaderCell,
+  FilterDropdownProps,
+  SortDirection,
+  SortConfig,
+  RowId,
+} from './types'
+import {
+  DEFAULT_COL_WIDTH,
+  MIN_COL_WIDTH,
+  SELECTION_COL_WIDTH,
+  DEFAULT_LOCALE,
+} from './types'
+import type { ContextMenuState } from './ContextMenu'
 
 export function useTableState(props: TableProps) {
   const {
-    columns: columnsProp, rowSelection, expandable, tree, draggable,
-    searchable, locale, onColumnOrderChange, onCellEdit,
+    columns: columnsProp,
+    rowSelection,
+    expandable,
+    tree,
+    draggable: _draggable,
+    searchable,
+    locale,
+    onColumnOrderChange,
+    onCellEdit: _onCellEdit,
+    multiSort,
+    sorts: controlledSorts,
+    onSortsChange,
+    hiddenColumns: hiddenColumnsProp,
+    onHiddenColumnsChange,
+    onColumnPinChange,
     ...tableOptions
   } = props
 
-  const { visibleRows, tableState, setSort, clearSort, setPage, setFilterFn } = useTable(tableOptions)
+  const { visibleRows, tableState, setSort, clearSort, setPage, setFilterFn } =
+    useTable(tableOptions)
 
   const t = useMemo(() => ({ ...DEFAULT_LOCALE, ...locale }), [locale])
 
   const hasColumnGroups = columnsProp.some((c) => c.children && c.children.length > 0)
   const leafColumns = useMemo(() => flattenLeafColumns(columnsProp), [columnsProp])
   const headerRows = useMemo<HeaderCell[][] | null>(
-    () => hasColumnGroups ? buildHeaderRows(columnsProp) : null,
+    () => (hasColumnGroups ? buildHeaderRows(columnsProp) : null),
     [columnsProp, hasColumnGroups],
   )
 
-  const [sortCol, setSortCol] = useState<string | null>(null)
-  const [sortDir, setSortDir] = useState<SortDirection>('asc')
+  // Multi-sort state
+  const [internalSorts, setInternalSorts] = useState<SortConfig[]>([])
+  const sorts = controlledSorts ?? internalSorts
 
   const [colWidths, setColWidths] = useState<Record<string, number>>(() => {
     const w: Record<string, number> = {}
@@ -34,6 +72,35 @@ export function useTableState(props: TableProps) {
   const [colOrder, setColOrder] = useState<string[]>(() => leafColumns.map((c) => c.key))
   const [dragCol, setDragCol] = useState<string | null>(null)
   const [dragOver, setDragOver] = useState<string | null>(null)
+
+  // Hidden columns
+  const [internalHidden, setInternalHidden] = useState<Set<string>>(
+    () => new Set(hiddenColumnsProp ?? []),
+  )
+  const hiddenSet = hiddenColumnsProp ? new Set(hiddenColumnsProp) : internalHidden
+
+  const toggleColumnVisibility = useCallback(
+    (key: string) => {
+      if (onHiddenColumnsChange) {
+        const current = hiddenColumnsProp ?? []
+        const next = current.includes(key)
+          ? current.filter((k) => k !== key)
+          : [...current, key]
+        onHiddenColumnsChange(next)
+      } else {
+        setInternalHidden((prev) => {
+          const next = new Set(prev)
+          if (next.has(key)) {
+            next.delete(key)
+          } else {
+            next.add(key)
+          }
+          return next
+        })
+      }
+    },
+    [hiddenColumnsProp, onHiddenColumnsChange],
+  )
 
   const [internalExpanded, setInternalExpanded] = useState<Set<RowId>>(() => {
     if (tree?.defaultExpandAllRows) {
@@ -73,13 +140,17 @@ export function useTableState(props: TableProps) {
 
   const resizeRef = useRef<{ col: string; startX: number; startW: number } | null>(null)
 
-  const columns = useMemo(() => {
-    if (hasColumnGroups) return leafColumns
-    const map = new Map(leafColumns.map((c) => [c.key, c]))
-    return colOrder.filter((k) => map.has(k)).map((k) => map.get(k)!)
-  }, [leafColumns, colOrder, hasColumnGroups])
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
 
-  // Sync column order
+  const columns = useMemo(() => {
+    const base = hasColumnGroups ? leafColumns : (() => {
+      const map = new Map(leafColumns.map((c) => [c.key, c]))
+      return colOrder.filter((k) => map.has(k)).map((k) => map.get(k)!)
+    })()
+    return base.filter((c) => !hiddenSet.has(c.key) && !c.hidden)
+  }, [leafColumns, colOrder, hasColumnGroups, hiddenSet])
+
   useEffect(() => {
     const keys = leafColumns.map((c) => c.key)
     setColOrder((prev) => {
@@ -90,7 +161,6 @@ export function useTableState(props: TableProps) {
     })
   }, [leafColumns])
 
-  // Sync controlled filteredValue
   useEffect(() => {
     for (const col of leafColumns) {
       if (col.filteredValue !== undefined) {
@@ -102,7 +172,6 @@ export function useTableState(props: TableProps) {
     }
   }, [leafColumns])
 
-  // Combined filter function
   useEffect(() => {
     const colFilters = columns.filter((c) => c.onFilter && activeFilters[c.key]?.length)
     const hasSearch = searchable && searchText.length > 0
@@ -130,7 +199,6 @@ export function useTableState(props: TableProps) {
     })
   }, [activeFilters, searchText, searchable, setFilterFn, columns])
 
-  // Close filter dropdown on outside click
   useEffect(() => {
     if (!openFilterDropdown) return
     const handle = (e: MouseEvent) => {
@@ -142,23 +210,81 @@ export function useTableState(props: TableProps) {
     return () => document.removeEventListener('mousedown', handle)
   }, [openFilterDropdown])
 
-  // ---- Handlers ----
+  // ---- Sort handler (multi-sort aware) ----
 
-  const handleSort = (col: TableColumn) => {
-    if (!col.sortable) return
-    if (sortCol !== col.key) {
-      setSortCol(col.key)
-      setSortDir('asc')
-      setSort(col.key, 'asc')
-    } else if (sortDir === 'asc') {
-      setSortDir('desc')
-      setSort(col.key, 'desc')
-    } else {
-      setSortCol(null)
-      setSortDir('asc')
-      clearSort()
-    }
-  }
+  const handleSort = useCallback(
+    (col: TableColumn, shiftKey?: boolean) => {
+      if (!col.sortable) return
+
+      if (multiSort && shiftKey) {
+        const existing = sorts.find((s) => s.column === col.key)
+        let next: SortConfig[]
+        if (!existing) {
+          next = [...sorts, { column: col.key, direction: 'asc' as SortDirection }]
+        } else if (existing.direction === 'asc') {
+          next = sorts.map((s) =>
+            s.column === col.key ? { ...s, direction: 'desc' as SortDirection } : s,
+          )
+        } else {
+          next = sorts.filter((s) => s.column !== col.key)
+        }
+
+        if (onSortsChange) {
+          onSortsChange(next)
+        } else {
+          setInternalSorts(next)
+        }
+
+        if (next.length === 0) {
+          clearSort()
+        } else {
+          setSort(next[0].column, next[0].direction)
+        }
+      } else {
+        const current = sorts.length === 1 ? sorts[0] : null
+        let next: SortConfig[]
+
+        if (!current || current.column !== col.key) {
+          next = [{ column: col.key, direction: 'asc' }]
+        } else if (current.direction === 'asc') {
+          next = [{ column: col.key, direction: 'desc' }]
+        } else {
+          next = []
+        }
+
+        if (onSortsChange) {
+          onSortsChange(next)
+        } else {
+          setInternalSorts(next)
+        }
+
+        if (next.length === 0) {
+          clearSort()
+        } else {
+          setSort(next[0].column, next[0].direction)
+        }
+      }
+    },
+    [multiSort, sorts, onSortsChange, setSort, clearSort],
+  )
+
+  const getSortIndex = useCallback(
+    (colKey: string): number => {
+      if (!multiSort || sorts.length <= 1) return -1
+      return sorts.findIndex((s) => s.column === colKey)
+    },
+    [multiSort, sorts],
+  )
+
+  const getSortDirection = useCallback(
+    (colKey: string): SortDirection | null => {
+      const found = sorts.find((s) => s.column === colKey)
+      return found?.direction ?? null
+    },
+    [sorts],
+  )
+
+  // ---- Other handlers ----
 
   const handleToggleExpand = (id: RowId) => {
     const open = expandedKeys.has(id)
@@ -167,7 +293,11 @@ export function useTableState(props: TableProps) {
     } else {
       setInternalExpanded((prev) => {
         const next = new Set(prev)
-        open ? next.delete(id) : next.add(id)
+        if (open) {
+          next.delete(id)
+        } else {
+          next.add(id)
+        }
         return next
       })
     }
@@ -176,7 +306,11 @@ export function useTableState(props: TableProps) {
   const handleToggleTreeExpand = (id: RowId) => {
     setTreeExpanded((prev) => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
       return next
     })
   }
@@ -191,17 +325,17 @@ export function useTableState(props: TableProps) {
     const next = selectedKeys.includes(id)
       ? selectedKeys.filter((k) => k !== id)
       : [...selectedKeys, id]
-    onChange(next, visibleRows.filter((r) => next.includes(r.id)).map((r) => r.data))
+    onChange(
+      next,
+      visibleRows.filter((r) => next.includes(r.id)).map((r) => r.data),
+    )
   }
 
   const handleSelectAll = () => {
     if (!rowSelection) return
     const ids = visibleRows.map((r) => r.id)
     const all = ids.every((id) => rowSelection.selectedKeys.includes(id))
-    rowSelection.onChange(
-      all ? [] : ids,
-      all ? [] : visibleRows.map((r) => r.data),
-    )
+    rowSelection.onChange(all ? [] : ids, all ? [] : visibleRows.map((r) => r.data))
   }
 
   const handleFilterToggle = (colKey: string, value: unknown, multiple: boolean) => {
@@ -209,7 +343,8 @@ export function useTableState(props: TableProps) {
       const current = prev[colKey] ?? []
       if (!multiple) return { ...prev, [colKey]: [value] }
       const idx = current.indexOf(value)
-      const next = idx >= 0 ? current.filter((_, i) => i !== idx) : [...current, value]
+      const next =
+        idx >= 0 ? current.filter((_, i) => i !== idx) : [...current, value]
       return { ...prev, [colKey]: next }
     })
   }
@@ -244,12 +379,17 @@ export function useTableState(props: TableProps) {
   const handleResizeStart = (e: React.MouseEvent, colKey: string) => {
     e.preventDefault()
     e.stopPropagation()
-    resizeRef.current = { col: colKey, startX: e.clientX, startW: colWidths[colKey] ?? DEFAULT_COL_WIDTH }
+    resizeRef.current = {
+      col: colKey,
+      startX: e.clientX,
+      startW: colWidths[colKey] ?? DEFAULT_COL_WIDTH,
+    }
 
     const onMove = (ev: MouseEvent) => {
       if (!resizeRef.current) return
       const diff = ev.clientX - resizeRef.current.startX
-      const min = leafColumns.find((c) => c.key === resizeRef.current!.col)?.minWidth ?? MIN_COL_WIDTH
+      const min =
+        leafColumns.find((c) => c.key === resizeRef.current!.col)?.minWidth ?? MIN_COL_WIDTH
       setColWidths((prev) => ({
         ...prev,
         [resizeRef.current!.col]: Math.max(min, resizeRef.current!.startW + diff),
@@ -299,6 +439,14 @@ export function useTableState(props: TableProps) {
     setDragOver(null)
   }
 
+  // Column pin
+  const handlePinColumn = useCallback(
+    (key: string, fixed: 'left' | 'right' | undefined) => {
+      onColumnPinChange?.(key, fixed)
+    },
+    [onColumnPinChange],
+  )
+
   // ---- Tree data ----
 
   const isTreeMode = !!tree
@@ -307,7 +455,12 @@ export function useTableState(props: TableProps) {
 
   const flatRows: FlatRow[] = useMemo(() => {
     if (!isTreeMode) {
-      return visibleRows.map((r) => ({ id: r.id, data: r.data, depth: 0, hasChildren: false }))
+      return visibleRows.map((r) => ({
+        id: r.id,
+        data: r.data,
+        depth: 0,
+        hasChildren: false,
+      }))
     }
     return flattenTreeRows(visibleRows, childrenKey, treeExpanded)
   }, [visibleRows, isTreeMode, childrenKey, treeExpanded])
@@ -318,7 +471,9 @@ export function useTableState(props: TableProps) {
   if (rowSelection) extraBefore.push(SELECTION_COL_WIDTH)
   if (expandable) extraBefore.push(SELECTION_COL_WIDTH)
 
-  const colTemplates = columns.map((c) => `${colWidths[c.key] ?? c.width ?? DEFAULT_COL_WIDTH}px`)
+  const colTemplates = columns.map(
+    (c) => `${colWidths[c.key] ?? c.width ?? DEFAULT_COL_WIDTH}px`,
+  )
   const gridTemplate = [...extraBefore, ...colTemplates].join(' ')
   const totalCols = extraBefore.length + columns.length
 
@@ -352,53 +507,90 @@ export function useTableState(props: TableProps) {
   const fixedStyle = (col: TableColumn, isHeader?: boolean): React.CSSProperties =>
     getFixedStyle(col, fixedLeftOffsets, fixedRightOffsets, isHeader)
 
-  // Selection helpers
   const allSelected = rowSelection
-    ? visibleRows.length > 0 && visibleRows.every((r) => rowSelection.selectedKeys.includes(r.id))
+    ? visibleRows.length > 0 &&
+      visibleRows.every((r) => rowSelection.selectedKeys.includes(r.id))
     : false
   const someSelected = rowSelection
     ? visibleRows.some((r) => rowSelection.selectedKeys.includes(r.id)) && !allSelected
     : false
 
-  // ---- Span maps ----
-
   const spanMap = useMemo(() => computeSpanMap(columns, flatRows), [columns, flatRows])
-  const hiddenCells = useMemo(() => computeHiddenCells(columns, flatRows, spanMap), [columns, flatRows, spanMap])
+  const hiddenCells = useMemo(
+    () => computeHiddenCells(columns, flatRows, spanMap),
+    [columns, flatRows, spanMap],
+  )
 
   return {
-    // Data
-    visibleRows, tableState, columns, leafColumns, flatRows,
-    headerRows, hasColumnGroups, t,
-    // Sort
-    sortCol, sortDir, handleSort,
+    visibleRows,
+    tableState,
+    columns,
+    leafColumns,
+    flatRows,
+    headerRows,
+    hasColumnGroups,
+    t,
+    // Multi-sort
+    sorts,
+    getSortIndex,
+    getSortDirection,
+    handleSort,
     // Selection
-    allSelected, someSelected, handleSelectAll, handleSelectRow,
+    allSelected,
+    someSelected,
+    handleSelectAll,
+    handleSelectRow,
     // Expand
-    expandedKeys, handleToggleExpand,
+    expandedKeys,
+    handleToggleExpand,
     // Tree
-    isTreeMode, indentSize, treeExpanded, handleToggleTreeExpand,
+    isTreeMode,
+    indentSize,
+    treeExpanded,
+    handleToggleTreeExpand,
     // Filters
     filterState: { activeFilters, filterSearchText, openFilterDropdown },
     filterActions: {
-      setOpenFilterDropdown, handleFilterToggle, handleFilterConfirm,
-      handleFilterReset, handleFilterClose, handleSearchFilterChange,
-      setFilterSearchText, getFilterDropdownProps,
+      setOpenFilterDropdown,
+      handleFilterToggle,
+      handleFilterConfirm,
+      handleFilterReset,
+      handleFilterClose,
+      handleSearchFilterChange,
+      setFilterSearchText,
+      getFilterDropdownProps,
     },
     filterRef,
-    // Drag
-    dragOver, handleDragStart, handleDragOver, handleDragEnd, handleDrop,
+    // Drag columns
+    dragOver,
+    handleDragStart,
+    handleDragOver,
+    handleDragEnd,
+    handleDrop,
     setDragOver: () => setDragOver(null),
     // Resize
-    colWidths, handleResizeStart,
+    colWidths,
+    handleResizeStart,
     // Grid
-    gridTemplate, totalCols,
+    gridTemplate,
+    totalCols,
     // Fixed
     fixedStyle,
     // Span
-    spanMap, hiddenCells,
+    spanMap,
+    hiddenCells,
     // Search
-    searchText, setSearchText,
+    searchText,
+    setSearchText,
     // Pagination
     setPage,
+    // Column visibility
+    hiddenSet,
+    toggleColumnVisibility,
+    // Column pin
+    handlePinColumn,
+    // Context menu
+    contextMenu,
+    setContextMenu,
   }
 }

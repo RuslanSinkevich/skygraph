@@ -15,14 +15,22 @@ export interface ColumnFilter {
   operator?: 'eq' | 'contains' | 'gt' | 'lt' | 'gte' | 'lte'
 }
 
+export interface ExportOptions {
+  allRows?: boolean
+  columns?: string[]
+  headers?: boolean
+}
+
 export interface TableState {
   totalRows: number
   filteredRows: number
   page: number
   pageSize: number
   totalPages: number
-  sort: SortConfig | null
+  sorts: SortConfig[]
   filters: ColumnFilter[]
+  /** @deprecated Use sorts[0] instead */
+  sort: SortConfig | null
 }
 
 export interface TableOptions {
@@ -40,8 +48,10 @@ export interface TableEngine {
 
   getVisibleRows(): Array<{ id: RowId; data: Record<string, unknown> }>
   getAllRowIds(): RowId[]
+  getAllRows(): Array<{ id: RowId; data: Record<string, unknown> }>
 
-  setSort(column: string, direction: SortDirection): void
+  setSort(column: string, direction: SortDirection, append?: boolean): void
+  setSorts(sorts: SortConfig[]): void
   clearSort(): void
 
   addFilter(filter: ColumnFilter): void
@@ -53,6 +63,11 @@ export interface TableEngine {
   setPageSize(size: number): void
   nextPage(): void
   prevPage(): void
+
+  moveRow(fromIndex: number, toIndex: number): void
+  moveRows(ids: RowId[], toIndex: number): void
+
+  getExportData(options?: ExportOptions): string[][]
 
   getTableState(): TableState
 

@@ -1,31 +1,34 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 import { Spin } from './Spin'
 
-export interface SwitchProps {
+export interface SwitchProps extends BaseComponentProps, InteractiveProps, SizableProps {
   checked?: boolean
   defaultChecked?: boolean
-  disabled?: boolean
-  loading?: boolean
-  size?: 'small' | 'default'
   onChange?: (checked: boolean) => void
   checkedChildren?: React.ReactNode
   unCheckedChildren?: React.ReactNode
-  className?: string
-  unstyled?: boolean
 }
 
 export function Switch({
   checked,
   defaultChecked,
-  disabled,
+  disabled: disabledProp,
   loading,
-  size = 'default',
+  size: sizeProp,
   onChange,
   checkedChildren,
   unCheckedChildren,
   className,
+  style,
   unstyled,
 }: SwitchProps) {
+  const config = useConfig()
+  const disabled = disabledProp ?? config.disabled ?? false
+  const resolvedSize = sizeProp ?? config.size ?? 'middle'
+  const switchSizeClass = resolvedSize === 'small' ? 'small' : 'default'
+
   const [internalChecked, setInternalChecked] = React.useState(
     checked ?? defaultChecked ?? false
   )
@@ -46,6 +49,7 @@ export function Switch({
         disabled={disabled || loading}
         onClick={handleClick}
         className={className}
+        style={style}
       >
         {loading && <Spin size="small" unstyled />}
         {isChecked ? checkedChildren : unCheckedChildren}
@@ -55,7 +59,7 @@ export function Switch({
 
   const classes = [
     'sg-switch',
-    `sg-switch-${size}`,
+    `sg-switch-${switchSizeClass}`,
     isChecked ? 'sg-switch-checked' : '',
     disabled || loading ? 'sg-switch-disabled' : '',
     loading ? 'sg-switch-loading' : '',
@@ -71,6 +75,7 @@ export function Switch({
       disabled={disabled || loading}
       onClick={handleClick}
       className={classes}
+      style={style}
     >
       <span className="sg-switch-inner">
         {loading ? (

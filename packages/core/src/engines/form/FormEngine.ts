@@ -2,6 +2,7 @@ import type { Core } from '../../types'
 import type {
   FieldMeta,
   FieldOptions,
+  FieldStatus,
   FormEngine,
   FormOptions,
   FormState,
@@ -14,18 +15,27 @@ import type {
 
 const META_PREFIX = '$meta.'
 
-function metaPath(name: string, field: keyof FieldMeta): string {
+function metaPath(name: string, field: string): string {
   return `${META_PREFIX}${name}.${field}`
 }
 
-function compileRule(rule: Rule): RuleFn {
+function interpolateMessage(template: string, vars: Record<string, unknown>): string {
+  return template.replace(/\$\{(\w+)\}/g, (_, key) => {
+    return vars[key] != null ? String(vars[key]) : ''
+  })
+}
+
+function compileRule(rule: Rule, templates?: Record<string, string>, fieldLabel?: string): RuleFn {
   if (typeof rule === 'function') return rule
 
   const obj = rule as RuleObject
+  const vars: Record<string, unknown> = { label: fieldLabel ?? 'Field' }
+
   return (value: unknown, getFieldValue: GetFieldValue): string | null | Promise<string | null> => {
     if (obj.required) {
       if (value === undefined || value === null || value === '') {
-        return obj.message ?? 'This field is required'
+        const tpl = templates?.required ?? obj.message
+        return tpl ? interpolateMessage(tpl, vars) : (obj.message ?? 'This field is required')
       }
     }
 
@@ -44,7 +54,11 @@ function compileRule(rule: Rule): RuleFn {
             return obj.message ?? 'Invalid email'
           break
         case 'url':
-          try { new URL(value as string) } catch { return obj.message ?? 'Invalid URL' }
+          try {
+            new URL(value as string)
+          } catch {
+            return obj.message ?? 'Invalid URL'
+          }
           break
         case 'boolean':
           if (typeof value !== 'boolean') return obj.message ?? 'Must be a boolean'
@@ -53,15 +67,21 @@ function compileRule(rule: Rule): RuleFn {
     }
 
     if (obj.min !== undefined) {
-      if (typeof value === 'string' && value.length < obj.min)
-        return obj.message ?? `Minimum ${obj.min} characters`
+      vars.min = obj.min
+      if (typeof value === 'string' && value.length < obj.min) {
+        const tpl = templates?.min ?? obj.message
+        return tpl ? interpolateMessage(tpl, vars) : (obj.message ?? `Minimum ${obj.min} characters`)
+      }
       if (typeof value === 'number' && value < obj.min)
         return obj.message ?? `Minimum value is ${obj.min}`
     }
 
     if (obj.max !== undefined) {
-      if (typeof value === 'string' && value.length > obj.max)
-        return obj.message ?? `Maximum ${obj.max} characters`
+      vars.max = obj.max
+      if (typeof value === 'string' && value.length > obj.max) {
+        const tpl = templates?.max ?? obj.message
+        return tpl ? interpolateMessage(tpl, vars) : (obj.message ?? `Maximum ${obj.max} characters`)
+      }
       if (typeof value === 'number' && value > obj.max)
         return obj.message ?? `Maximum value is ${obj.max}`
     }
@@ -79,8 +99,16 @@ function compileRule(rule: Rule): RuleFn {
   }
 }
 
+function computeStatus(meta: { errors: string[]; warnings: string[]; validating: boolean }): FieldStatus {
+  if (meta.validating) return 'validating'
+  if (meta.errors.length > 0) return 'error'
+  if (meta.warnings.length > 0) return 'warning'
+  return undefined
+}
+
 interface FieldRecord {
   rules: RuleFn[]
+  warningRules: RuleFn[]
   options: FieldOptions
   abortController: AbortController | null
 }
@@ -89,6 +117,7 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
   const fields = new Map<string, FieldRecord>()
   const depMap = new Map<string, string[]>()
   const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>()
+  const preservedValues = new Map<string, unknown>()
   let isSubmitting = false
 
   if (options?.defaultValues) {
@@ -97,44 +126,75 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
     }
   }
 
-  const defaultMeta: FieldMeta = {
-    touched: false,
-    dirty: false,
-    error: null,
-    validating: false,
-  }
-
-  function setMeta(name: string, meta: Partial<FieldMeta>): void {
+  function setMeta(name: string, meta: Partial<Record<string, unknown>>): void {
     for (const [key, value] of Object.entries(meta)) {
-      core.set(metaPath(name, key as keyof FieldMeta), value)
+      core.set(metaPath(name, key), value)
     }
   }
 
   function getMeta(name: string): FieldMeta {
+    const errors = (core.get(metaPath(name, 'errors')) as string[]) ?? []
+    const warnings = (core.get(metaPath(name, 'warnings')) as string[]) ?? []
+    const validating = (core.get(metaPath(name, 'validating')) as boolean) ?? false
+    const touched = (core.get(metaPath(name, 'touched')) as boolean) ?? false
+    const dirty = (core.get(metaPath(name, 'dirty')) as boolean) ?? false
+
     return {
-      touched: (core.get(metaPath(name, 'touched')) as boolean) ?? false,
-      dirty: (core.get(metaPath(name, 'dirty')) as boolean) ?? false,
-      error: (core.get(metaPath(name, 'error')) as string | null) ?? null,
-      validating: (core.get(metaPath(name, 'validating')) as boolean) ?? false,
+      touched,
+      dirty,
+      errors,
+      warnings,
+      validating,
+      status: computeStatus({ errors, warnings, validating }),
+      error: errors[0] ?? null,
     }
+  }
+
+  function initMeta(name: string): void {
+    setMeta(name, {
+      touched: false,
+      dirty: false,
+      errors: [],
+      warnings: [],
+      validating: false,
+    })
   }
 
   const getFieldValue: GetFieldValue = (fieldName: string) => core.get(fieldName)
 
-  async function runValidation(name: string): Promise<string | null> {
+  function fireValuesChange(changedName: string): void {
+    if (!options?.onValuesChange) return
+    const changed: Record<string, unknown> = { [changedName]: core.get(changedName) }
+    const all: Record<string, unknown> = {}
+    for (const n of fields.keys()) all[n] = core.get(n)
+    options.onValuesChange(changed, all)
+  }
+
+  function fireFieldsChange(changedName: string): void {
+    if (!options?.onFieldsChange) return
+    const meta = getMeta(changedName)
+    options.onFieldsChange([{
+      name: changedName,
+      value: core.get(changedName),
+      errors: meta.errors,
+    }])
+  }
+
+  async function runValidation(name: string): Promise<string[]> {
     const record = fields.get(name)
-    if (!record) return null
+    if (!record) return []
 
     const value = core.get(name)
+    const validateFirst = record.options.validateFirst ?? options?.validateFirst ?? false
 
     record.abortController?.abort()
     const controller = new AbortController()
     record.abortController = controller
 
-    let firstError: string | null = null
+    const errors: string[] = []
 
     for (const rule of record.rules) {
-      if (controller.signal.aborted) return null
+      if (controller.signal.aborted) return []
 
       const result = rule(value, getFieldValue)
 
@@ -142,27 +202,46 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
         setMeta(name, { validating: true })
         try {
           const asyncResult = await result
-          if (controller.signal.aborted) return null
+          if (controller.signal.aborted) return []
           if (asyncResult) {
-            firstError = asyncResult
-            break
+            errors.push(asyncResult)
+            if (validateFirst) break
           }
         } catch {
-          if (controller.signal.aborted) return null
-          firstError = 'Validation failed'
-          break
+          if (controller.signal.aborted) return []
+          errors.push('Validation failed')
+          if (validateFirst) break
         }
       } else if (result) {
-        firstError = result
-        break
+        errors.push(result)
+        if (validateFirst) break
+      }
+    }
+
+    // Run warning rules
+    const warnings: string[] = []
+    for (const rule of record.warningRules) {
+      if (controller.signal.aborted) return []
+      const result = rule(value, getFieldValue)
+      if (result instanceof Promise) {
+        try {
+          const asyncResult = await result
+          if (controller.signal.aborted) return []
+          if (asyncResult) warnings.push(asyncResult)
+        } catch {
+          // skip
+        }
+      } else if (result) {
+        warnings.push(result)
       }
     }
 
     if (!controller.signal.aborted) {
-      setMeta(name, { error: firstError, validating: false })
+      setMeta(name, { errors, warnings, validating: false })
+      fireFieldsChange(name)
     }
 
-    return firstError
+    return errors
   }
 
   async function validateDependents(name: string): Promise<void> {
@@ -176,13 +255,20 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
   const form: FormEngine = {
     register(name: string, fieldOptions?: FieldOptions): void {
       const opts = fieldOptions ?? {}
+      const templates = options?.validateMessages
+      const label = opts.label
+
       fields.set(name, {
-        rules: opts.rules ? opts.rules.map(compileRule) : [],
+        rules: opts.rules ? opts.rules.map((r) => compileRule(r, templates, label)) : [],
+        warningRules: opts.warningRules ? opts.warningRules.map((r) => compileRule(r, templates, label)) : [],
         options: opts,
         abortController: null,
       })
 
-      if (opts.defaultValue !== undefined && core.get(name) === undefined) {
+      if (preservedValues.has(name)) {
+        core.set(name, preservedValues.get(name))
+        preservedValues.delete(name)
+      } else if (opts.defaultValue !== undefined && core.get(name) === undefined) {
         core.set(name, opts.defaultValue)
       }
 
@@ -191,13 +277,19 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
       }
 
       core.batch(() => {
-        setMeta(name, defaultMeta)
+        initMeta(name)
       })
     },
 
     unregister(name: string): void {
       const record = fields.get(name)
-      record?.abortController?.abort()
+      if (!record) return
+      record.abortController?.abort()
+
+      if (record.options.preserve) {
+        preservedValues.set(name, core.get(name))
+      }
+
       fields.delete(name)
       depMap.delete(name)
     },
@@ -208,16 +300,21 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
         setMeta(name, { dirty: true, touched: true })
       })
 
+      fireValuesChange(name)
+
       const mode = fields.get(name)?.options.validateOn ?? options?.validateOn ?? 'change'
       if (mode === 'change') {
         const debounceMs = options?.asyncDebounceMs
         if (debounceMs && debounceMs > 0) {
           const existing = debounceTimers.get(name)
           if (existing) clearTimeout(existing)
-          debounceTimers.set(name, setTimeout(() => {
-            debounceTimers.delete(name)
-            runValidation(name).then(() => validateDependents(name))
-          }, debounceMs))
+          debounceTimers.set(
+            name,
+            setTimeout(() => {
+              debounceTimers.delete(name)
+              runValidation(name).then(() => validateDependents(name))
+            }, debounceMs),
+          )
         } else {
           runValidation(name).then(() => validateDependents(name))
         }
@@ -245,6 +342,10 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
           }
         }
       })
+
+      for (const name of Object.keys(values)) {
+        fireValuesChange(name)
+      }
     },
 
     getFieldsValue(): Record<string, unknown> {
@@ -267,7 +368,7 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
       for (const name of fields.keys()) {
         const meta = getMeta(name)
         if (meta.dirty) isDirty = true
-        if (meta.error) isValid = false
+        if (meta.errors.length > 0) isValid = false
         if (meta.validating) isValidating = true
       }
 
@@ -277,13 +378,13 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
     addRule(name: string, rule: Rule): void {
       const record = fields.get(name)
       if (!record) return
-      record.rules.push(compileRule(rule))
+      record.rules.push(compileRule(rule, options?.validateMessages, record.options.label))
     },
 
     removeRule(name: string, rule: Rule): void {
       const record = fields.get(name)
       if (!record) return
-      const compiled = compileRule(rule)
+      const compiled = compileRule(rule, options?.validateMessages, record.options.label)
       const idx = record.rules.indexOf(compiled)
       if (idx !== -1) record.rules.splice(idx, 1)
     },
@@ -293,29 +394,32 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
     },
 
     async validate(name?: string): Promise<ValidationResult> {
-      const errors: Record<string, string> = {}
+      const errors: Record<string, string[]> = {}
+      const warnings: Record<string, string[]> = {}
 
       if (name) {
-        const err = await runValidation(name)
-        if (err) errors[name] = err
+        const errs = await runValidation(name)
+        if (errs.length > 0) errors[name] = errs
+        const meta = getMeta(name)
+        if (meta.warnings.length > 0) warnings[name] = meta.warnings
       } else {
         const promises: Promise<void>[] = []
         for (const fieldName of fields.keys()) {
           promises.push(
-            runValidation(fieldName).then((err) => {
-              if (err) errors[fieldName] = err
-            })
+            runValidation(fieldName).then((errs) => {
+              if (errs.length > 0) errors[fieldName] = errs
+              const meta = getMeta(fieldName)
+              if (meta.warnings.length > 0) warnings[fieldName] = meta.warnings
+            }),
           )
         }
         await Promise.all(promises)
       }
 
-      return { valid: Object.keys(errors).length === 0, errors }
+      return { valid: Object.keys(errors).length === 0, errors, warnings }
     },
 
-    async submit(
-      handler: (values: Record<string, unknown>) => Promise<void>
-    ): Promise<void> {
+    async submit(handler: (values: Record<string, unknown>) => Promise<void>): Promise<void> {
       isSubmitting = true
 
       core.batch(() => {
@@ -349,33 +453,80 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
           record.abortController?.abort()
           record.abortController = null
 
-          const resetValue = values?.[name]
-            ?? options?.defaultValues?.[name]
-            ?? record.options.defaultValue
-            ?? undefined
+          const resetValue =
+            values?.[name] ??
+            options?.defaultValues?.[name] ??
+            record.options.defaultValue ??
+            undefined
           core.set(name, resetValue)
-          setMeta(name, defaultMeta)
+          initMeta(name)
         }
       })
+      preservedValues.clear()
     },
 
     getFieldNames(): string[] {
       return [...fields.keys()]
     },
 
+    // Manual error/warning control
+    setFieldError(name: string, errs: string | string[]): void {
+      const arr = typeof errs === 'string' ? [errs] : errs
+      setMeta(name, { errors: arr })
+      fireFieldsChange(name)
+    },
+
+    setFieldWarning(name: string, warns: string | string[]): void {
+      const arr = typeof warns === 'string' ? [warns] : warns
+      setMeta(name, { warnings: arr })
+    },
+
+    clearFieldErrors(name: string): void {
+      setMeta(name, { errors: [], warnings: [] })
+      fireFieldsChange(name)
+    },
+
+    getFieldErrors(name: string): string[] {
+      return getMeta(name).errors
+    },
+
+    getFieldWarnings(name: string): string[] {
+      return getMeta(name).warnings
+    },
+
+    isFieldTouched(name: string): boolean {
+      return getMeta(name).touched
+    },
+
+    isFieldValidating(name: string): boolean {
+      return getMeta(name).validating
+    },
+
+    // List operations
     getListValue(name: string): unknown[] {
       const val = core.get(name)
       return Array.isArray(val) ? val : []
     },
 
-    listAdd(name: string, defaultValue?: unknown): void {
+    listAdd(name: string, defaultValue?: unknown, insertIndex?: number): void {
       const current = form.getListValue(name)
-      core.set(name, [...current, defaultValue ?? null])
+      if (insertIndex !== undefined && insertIndex >= 0 && insertIndex <= current.length) {
+        const next = [...current]
+        next.splice(insertIndex, 0, defaultValue ?? null)
+        core.set(name, next)
+      } else {
+        core.set(name, [...current, defaultValue ?? null])
+      }
     },
 
-    listRemove(name: string, index: number): void {
+    listRemove(name: string, index: number | number[]): void {
       const current = form.getListValue(name)
-      core.set(name, current.filter((_, i) => i !== index))
+      if (Array.isArray(index)) {
+        const indices = new Set(index)
+        core.set(name, current.filter((_, i) => !indices.has(i)))
+      } else {
+        core.set(name, current.filter((_, i) => i !== index))
+      }
     },
 
     listMove(name: string, from: number, to: number): void {
@@ -383,6 +534,10 @@ export function createForm(core: Core, options?: FormOptions): FormEngine {
       const [item] = current.splice(from, 1)
       current.splice(to, 0, item)
       core.set(name, current)
+    },
+
+    listReplace(name: string, values: unknown[]): void {
+      core.set(name, [...values])
     },
   }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import type { CalendarProps } from './types'
 import { DEFAULT_MONTH_NAMES, DEFAULT_DAY_NAMES } from './types'
 
@@ -68,10 +68,6 @@ function getMonthGrid(year: number, month: number): DayCell[][] {
     weeks.push(cells.slice(i, i + 7))
   }
   return weeks
-}
-
-function cloneDate(d: Date): Date {
-  return new Date(d.getTime())
 }
 
 export function Calendar(props: CalendarProps) {

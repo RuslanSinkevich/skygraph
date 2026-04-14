@@ -3,6 +3,7 @@ export type {
   TableEngine,
   TableState,
   TableOptions,
+  ExportOptions,
   RowId,
   SortConfig,
   SortDirection,

@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect, type ReactNode } from 'react'
+import { useState, useRef, useEffect, type ReactNode } from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, SizableProps } from '../../types'
 
 export interface CollapseItem {
   key: string
@@ -9,7 +11,7 @@ export interface CollapseItem {
   disabled?: boolean
 }
 
-export interface CollapseProps {
+export interface CollapseProps extends BaseComponentProps, SizableProps {
   items: CollapseItem[]
   activeKey?: string | string[]
   defaultActiveKey?: string | string[]
@@ -18,10 +20,6 @@ export interface CollapseProps {
   bordered?: boolean
   expandIconPosition?: 'start' | 'end'
   ghost?: boolean
-  size?: 'small' | 'middle' | 'large'
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 function toArray(val?: string | string[]): string[] {
@@ -38,11 +36,14 @@ export function Collapse({
   bordered = true,
   expandIconPosition = 'start',
   ghost = false,
-  size = 'middle',
+  size: sizeProp,
   className,
   style,
   unstyled,
 }: CollapseProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+
   const [internalActive, setInternalActive] = useState<string[]>(
     toArray(activeKey ?? defaultActiveKey)
   )

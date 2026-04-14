@@ -1,20 +1,15 @@
-import React from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 import { Spin } from './Spin'
 
-export interface InputProps {
+export interface InputProps extends BaseComponentProps, InteractiveProps, SizableProps {
   value?: string
   defaultValue?: string
   placeholder?: string
   type?: 'text' | 'email' | 'password' | 'number'
-  size?: 'small' | 'middle' | 'large'
-  disabled?: boolean
-  loading?: boolean
   onChange?: (value: string) => void
   onBlur?: () => void
   onFocus?: () => void
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Input({
@@ -22,8 +17,8 @@ export function Input({
   defaultValue,
   placeholder,
   type = 'text',
-  size = 'middle',
-  disabled,
+  size: sizeProp,
+  disabled: disabledProp,
   loading,
   onChange,
   onBlur,
@@ -32,6 +27,10 @@ export function Input({
   style,
   unstyled,
 }: InputProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const wrapperClasses = unstyled
     ? className ?? ''
     : [

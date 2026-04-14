@@ -1,29 +1,31 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps } from '../../types'
 import { Spin } from './Spin'
 
-export interface CheckboxProps {
+export interface CheckboxProps extends BaseComponentProps, InteractiveProps {
   checked?: boolean
   defaultChecked?: boolean
-  disabled?: boolean
-  loading?: boolean
   indeterminate?: boolean
   onChange?: (checked: boolean) => void
   children?: React.ReactNode
-  className?: string
-  unstyled?: boolean
 }
 
 export function Checkbox({
   checked,
   defaultChecked,
-  disabled,
+  disabled: disabledProp,
   loading,
   indeterminate,
   onChange,
   children,
   className,
+  style,
   unstyled,
 }: CheckboxProps) {
+  const config = useConfig()
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
@@ -44,7 +46,7 @@ export function Checkbox({
         .join(' ')
 
   return (
-    <label className={wrapperClass}>
+    <label className={wrapperClass} style={style}>
       <input
         ref={inputRef}
         type="checkbox"

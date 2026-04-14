@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { createCore } from '../Core'
 import { createTypedCore } from '../typed'
-import type { TypedCore } from '../typed'
+import type { TypedCore as _TypedCore } from '../typed'
 
 interface AppSchema {
   user: {

@@ -1,3 +1,11 @@
+// Common types
+export type { SizeType, BaseComponentProps, InteractiveProps, SizableProps } from './types'
+export type { SgLocale, PaginationLocale, ModalLocale } from './types'
+
+// ConfigProvider
+export { ConfigProvider, useConfig } from './components/ConfigProvider'
+export type { SgConfig, ConfigProviderProps } from './components/ConfigProvider'
+
 // Hooks
 export { useField } from './hooks/useField'
 export type { UseFieldReturn } from './hooks/useField'
@@ -130,6 +138,45 @@ export { Carousel } from './components/ui/Carousel'
 export type { CarouselProps } from './components/ui/Carousel'
 export { Descriptions } from './components/ui/Descriptions'
 export type { DescriptionsProps } from './components/ui/Descriptions'
+
+// Schema Forms
+export { useFieldArray } from './hooks/useFieldArray'
+export type { UseFieldArrayReturn } from './hooks/useFieldArray'
+export { AutoField } from './components/complex/AutoField'
+export type { AutoFieldProps, FieldType, AutoFieldOption } from './components/complex/AutoField'
+export { zodRule, zodRules, zodDefaults, zodToJsonSchema } from './adapters/zodAdapter'
+export type { ZodLikeSchema, ZodObjectLikeSchema, ZodAdapterOptions } from './adapters/zodAdapter'
+export { jsonSchemaToFields, jsonSchemaToRules, jsonSchemaToDefaults } from './adapters/jsonSchemaAdapter'
+export type { JSONSchema, JSONSchemaProperty, AutoFieldConfig } from './adapters/jsonSchemaAdapter'
+export { FormProvider, useFormProvider } from './components/complex/FormProvider'
+export type { FormProviderProps } from './components/complex/FormProvider'
+export { SchemaForm } from './components/complex/SchemaForm'
+export type { SchemaFormProps } from './components/complex/SchemaForm'
+
+// Virtual Scroll
+export { useVirtualScroll } from './hooks/useVirtualScroll'
+export type { UseVirtualScrollOptions, UseVirtualScrollReturn } from './hooks/useVirtualScroll'
+export { VirtualList } from './components/complex/VirtualList/VirtualList'
+export type { VirtualListProps, VirtualListRef } from './components/complex/VirtualList/VirtualList'
+
+// History / DevTools
+export { useHistory } from './hooks/useHistory'
+export type { UseHistoryReturn } from './hooks/useHistory'
+export { HistoryPanel } from './components/devtools/HistoryPanel'
+export type { HistoryPanelProps } from './components/devtools/HistoryPanel'
+
+// DataGrid
+export { DataGrid } from './components/complex/DataGrid'
+export type {
+  DataGridProps,
+  DataGridRef,
+  DataGridColumn,
+  DataGridLocale,
+  CellEditorProps,
+  CellPosition,
+  CellRange,
+  CellValue,
+} from './components/complex/DataGrid'
 
 // Complex components (additional)
 export { List } from './components/complex/List'

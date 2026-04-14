@@ -1,22 +1,18 @@
 import React from 'react'
 import { Spin } from './Spin'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
-export interface InputNumberProps {
+export interface InputNumberProps extends BaseComponentProps, InteractiveProps, SizableProps {
   value?: number
   defaultValue?: number
   min?: number
   max?: number
   step?: number
   precision?: number
-  disabled?: boolean
-  loading?: boolean
   placeholder?: string
-  size?: 'small' | 'middle' | 'large'
   onChange?: (value: number | null) => void
   onBlur?: () => void
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function InputNumber({
@@ -26,16 +22,20 @@ export function InputNumber({
   max,
   step = 1,
   precision,
-  disabled,
+  disabled: disabledProp,
   loading,
   placeholder,
-  size = 'middle',
+  size: sizeProp,
   onChange,
   onBlur,
   className,
   style,
   unstyled,
 }: InputNumberProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const [internalValue, setInternalValue] = React.useState<number | null>(
     value ?? defaultValue ?? null
   )

@@ -1,33 +1,33 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Spin } from './Spin'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
-export interface DatePickerProps {
+export interface DatePickerProps extends BaseComponentProps, InteractiveProps, SizableProps {
   value?: string
   defaultValue?: string
   placeholder?: string
-  disabled?: boolean
-  loading?: boolean
-  size?: 'small' | 'middle' | 'large'
   onChange?: (value: string) => void
   onBlur?: () => void
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function DatePicker({
   value,
   defaultValue,
   placeholder = 'Select date',
-  disabled,
+  disabled: disabledProp,
   loading,
-  size = 'middle',
+  size: sizeProp,
   onChange,
   onBlur: _onBlur,
   className,
   style,
   unstyled,
 }: DatePickerProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const [internalValue, setInternalValue] = useState(value ?? defaultValue ?? '')
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)

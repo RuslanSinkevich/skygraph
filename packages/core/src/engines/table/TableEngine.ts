@@ -1,6 +1,7 @@
 import type { Core } from '../../types'
 import type {
   ColumnFilter,
+  ExportOptions,
   FilterFn,
   RowId,
   SortConfig,
@@ -24,11 +25,11 @@ let tableCounter = 0
 
 export function createTable(core: Core, options?: TableOptions): TableEngine {
   const tableId = `t${tableCounter++}`
-  const pageSize = options?.pageSize ?? 50
+  let currentPageSize = options?.pageSize ?? 50
 
   let order: RowId[] = []
   let filteredOrder: RowId[] = []
-  let sort: SortConfig | null = null
+  let sorts: SortConfig[] = []
   let filters: ColumnFilter[] = []
   let customFilterFn: FilterFn | null = null
   let page = 1
@@ -77,24 +78,38 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
             return false
           break
         case 'gt':
-          if (typeof val !== 'number' || val <= (f.value as number))
-            return false
+          if (typeof val !== 'number' || val <= (f.value as number)) return false
           break
         case 'lt':
-          if (typeof val !== 'number' || val >= (f.value as number))
-            return false
+          if (typeof val !== 'number' || val >= (f.value as number)) return false
           break
         case 'gte':
-          if (typeof val !== 'number' || val < (f.value as number))
-            return false
+          if (typeof val !== 'number' || val < (f.value as number)) return false
           break
         case 'lte':
-          if (typeof val !== 'number' || val > (f.value as number))
-            return false
+          if (typeof val !== 'number' || val > (f.value as number)) return false
           break
       }
     }
     return true
+  }
+
+  function compareBySort(a: RowId, b: RowId): number {
+    const aData = getRowData(a)
+    const bData = getRowData(b)
+
+    for (const s of sorts) {
+      const aVal = aData?.[s.column]
+      const bVal = bData?.[s.column]
+
+      if (aVal === bVal) continue
+      if (aVal === undefined || aVal === null) return 1
+      if (bVal === undefined || bVal === null) return -1
+
+      const cmp = aVal < bVal ? -1 : 1
+      return s.direction === 'asc' ? cmp : -cmp
+    }
+    return 0
   }
 
   function recomputeFiltered(): void {
@@ -107,49 +122,37 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       })
     }
 
-    if (sort) {
-      const { column, direction } = sort
-      filteredOrder.sort((a, b) => {
-        const aData = getRowData(a)
-        const bData = getRowData(b)
-        const aVal = aData?.[column]
-        const bVal = bData?.[column]
-
-        if (aVal === bVal) return 0
-        if (aVal === undefined || aVal === null) return 1
-        if (bVal === undefined || bVal === null) return -1
-
-        const cmp = aVal < bVal ? -1 : 1
-        return direction === 'asc' ? cmp : -cmp
-      })
+    if (sorts.length > 0) {
+      filteredOrder.sort(compareBySort)
     }
 
-    const totalPages = Math.max(1, Math.ceil(filteredOrder.length / pageSize))
+    const totalPages = Math.max(1, Math.ceil(filteredOrder.length / currentPageSize))
     if (page > totalPages) page = totalPages
 
     publishState()
   }
 
   function publishState(): void {
-    const totalPages = Math.max(
-      1,
-      Math.ceil(filteredOrder.length / pageSize)
-    )
+    const totalPages = Math.max(1, Math.ceil(filteredOrder.length / currentPageSize))
     core.set(statePath(tableId, 'totalRows'), order.length)
     core.set(statePath(tableId, 'filteredRows'), filteredOrder.length)
     core.set(statePath(tableId, 'page'), page)
-    core.set(statePath(tableId, 'pageSize'), pageSize)
+    core.set(statePath(tableId, 'pageSize'), currentPageSize)
     core.set(statePath(tableId, 'totalPages'), totalPages)
+  }
+
+  function getColumnKeys(): string[] {
+    if (options?.columns) return options.columns
+    if (order.length === 0) return []
+    const first = getRowData(order[0])
+    return first ? Object.keys(first) : []
   }
 
   const table: TableEngine = {
     addRow(id: RowId, data: Record<string, unknown>): void {
       const keys = Object.keys(data)
       core.batch(() => {
-        core.set(
-          `${TABLE_PREFIX}${tableId}.byId.${id}.__keys`,
-          keys
-        )
+        core.set(`${TABLE_PREFIX}${tableId}.byId.${id}.__keys`, keys)
         for (const [col, val] of Object.entries(data)) {
           core.set(rowPath(tableId, id, col), val)
         }
@@ -158,16 +161,11 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       recomputeFiltered()
     },
 
-    addRows(
-      rows: Array<{ id: RowId; data: Record<string, unknown> }>
-    ): void {
+    addRows(rows: Array<{ id: RowId; data: Record<string, unknown> }>): void {
       core.batch(() => {
         for (const row of rows) {
           const keys = Object.keys(row.data)
-          core.set(
-            `${TABLE_PREFIX}${tableId}.byId.${row.id}.__keys`,
-            keys
-          )
+          core.set(`${TABLE_PREFIX}${tableId}.byId.${row.id}.__keys`, keys)
           for (const [col, val] of Object.entries(row.data)) {
             core.set(rowPath(tableId, row.id, col), val)
           }
@@ -198,27 +196,37 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
     },
 
     getVisibleRows(): Array<{ id: RowId; data: Record<string, unknown> }> {
-      const start = (page - 1) * pageSize
-      const end = start + pageSize
+      const start = (page - 1) * currentPageSize
+      const end = start + currentPageSize
       const slice = filteredOrder.slice(start, end)
-
-      return slice.map((id) => ({
-        id,
-        data: getRowData(id) ?? {},
-      }))
+      return slice.map((id) => ({ id, data: getRowData(id) ?? {} }))
     },
 
     getAllRowIds(): RowId[] {
       return [...order]
     },
 
-    setSort(column: string, direction: SortDirection): void {
-      sort = { column, direction }
+    getAllRows(): Array<{ id: RowId; data: Record<string, unknown> }> {
+      return filteredOrder.map((id) => ({ id, data: getRowData(id) ?? {} }))
+    },
+
+    setSort(column: string, direction: SortDirection, append?: boolean): void {
+      if (append) {
+        sorts = sorts.filter((s) => s.column !== column)
+        sorts.push({ column, direction })
+      } else {
+        sorts = [{ column, direction }]
+      }
+      recomputeFiltered()
+    },
+
+    setSorts(newSorts: SortConfig[]): void {
+      sorts = [...newSorts]
       recomputeFiltered()
     },
 
     clearSort(): void {
-      sort = null
+      sorts = []
       recomputeFiltered()
     },
 
@@ -246,15 +254,13 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
     },
 
     setPage(p: number): void {
-      const totalPages = Math.max(
-        1,
-        Math.ceil(filteredOrder.length / pageSize)
-      )
+      const totalPages = Math.max(1, Math.ceil(filteredOrder.length / currentPageSize))
       page = Math.max(1, Math.min(p, totalPages))
       publishState()
     },
 
-    setPageSize(_size: number): void {
+    setPageSize(size: number): void {
+      currentPageSize = size
       page = 1
       recomputeFiltered()
     },
@@ -267,18 +273,67 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       table.setPage(page - 1)
     },
 
-    getTableState(): TableState {
-      const totalPages = Math.max(
-        1,
-        Math.ceil(filteredOrder.length / pageSize)
+    moveRow(fromIndex: number, toIndex: number): void {
+      if (fromIndex < 0 || fromIndex >= order.length) return
+      if (toIndex < 0 || toIndex >= order.length) return
+      if (fromIndex === toIndex) return
+
+      const [item] = order.splice(fromIndex, 1)
+      order.splice(toIndex, 0, item)
+      recomputeFiltered()
+    },
+
+    moveRows(ids: RowId[], toIndex: number): void {
+      const items = ids.map((id) => {
+        const idx = order.indexOf(id)
+        return { id, idx }
+      }).filter((x) => x.idx !== -1)
+
+      if (items.length === 0) return
+
+      const idsSet = new Set(ids)
+      const remaining = order.filter((id) => !idsSet.has(id))
+      const clamped = Math.max(0, Math.min(toIndex, remaining.length))
+      remaining.splice(clamped, 0, ...items.map((x) => x.id))
+      order = remaining
+      recomputeFiltered()
+    },
+
+    getExportData(exportOptions?: ExportOptions): string[][] {
+      const cols = exportOptions?.columns ?? getColumnKeys()
+      const result: string[][] = []
+
+      if (exportOptions?.headers !== false) {
+        result.push(cols)
+      }
+
+      const sourceIds = exportOptions?.allRows ? filteredOrder : filteredOrder.slice(
+        (page - 1) * currentPageSize,
+        (page - 1) * currentPageSize + currentPageSize,
       )
+
+      for (const id of sourceIds) {
+        const data = getRowData(id)
+        if (!data) continue
+        result.push(cols.map((col) => {
+          const v = data[col]
+          return v == null ? '' : String(v)
+        }))
+      }
+
+      return result
+    },
+
+    getTableState(): TableState {
+      const totalPages = Math.max(1, Math.ceil(filteredOrder.length / currentPageSize))
       return {
         totalRows: order.length,
         filteredRows: filteredOrder.length,
         page,
-        pageSize,
+        pageSize: currentPageSize,
         totalPages,
-        sort,
+        sorts: [...sorts],
+        sort: sorts.length > 0 ? sorts[0] : null,
         filters: [...filters],
       }
     },
@@ -286,7 +341,7 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
     reset(): void {
       order = []
       filteredOrder = []
-      sort = null
+      sorts = []
       filters = []
       customFilterFn = null
       page = 1

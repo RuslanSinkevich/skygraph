@@ -1,8 +1,14 @@
+export type FieldStatus = 'success' | 'warning' | 'error' | 'validating' | undefined
+
 export interface FieldMeta {
   touched: boolean
   dirty: boolean
-  error: string | null
+  errors: string[]
+  warnings: string[]
   validating: boolean
+  status: FieldStatus
+  /** @deprecated Use errors[0] ?? null */
+  error: string | null
 }
 
 export interface FormState {
@@ -24,20 +30,27 @@ export interface RuleObject {
   pattern?: RegExp
   validator?: (value: unknown, getFieldValue: GetFieldValue) => string | null | Promise<string | null>
   message?: string
+  /** If true, this is a warning rule (non-blocking) */
+  warningOnly?: boolean
 }
 
 export type Rule = RuleFn | RuleObject
 
 export interface ValidationResult {
   valid: boolean
-  errors: Record<string, string>
+  errors: Record<string, string[]>
+  warnings: Record<string, string[]>
 }
 
 export interface FieldOptions {
   defaultValue?: unknown
   rules?: Rule[]
+  warningRules?: Rule[]
   validateOn?: ValidationMode
+  validateFirst?: boolean
   dependencies?: string[]
+  label?: string
+  preserve?: boolean
 }
 
 export type ValidationMode = 'change' | 'blur' | 'submit'
@@ -46,12 +59,17 @@ export interface FormOptions {
   defaultValues?: Record<string, unknown>
   validateOn?: ValidationMode
   asyncDebounceMs?: number
+  validateFirst?: boolean
+  validateMessages?: Record<string, string>
+  onValuesChange?: (changedValues: Record<string, unknown>, allValues: Record<string, unknown>) => void
+  onFieldsChange?: (changedFields: Array<{ name: string; value: unknown; errors: string[] }>) => void
 }
 
 export interface FormListOperation {
-  add(defaultValue?: unknown): void
-  remove(index: number): void
+  add(defaultValue?: unknown, insertIndex?: number): void
+  remove(index: number | number[]): void
   move(from: number, to: number): void
+  replace(values: unknown[]): void
 }
 
 export interface FormEngine {
@@ -73,16 +91,24 @@ export interface FormEngine {
   depends(target: string, deps: string[]): void
 
   validate(name?: string): Promise<ValidationResult>
-  submit(
-    handler: (values: Record<string, unknown>) => Promise<void>
-  ): Promise<void>
+  submit(handler: (values: Record<string, unknown>) => Promise<void>): Promise<void>
   reset(values?: Record<string, unknown>): void
 
   getFieldNames(): string[]
 
-  /** List operations for dynamic field arrays */
+  // Manual error/warning control
+  setFieldError(name: string, errors: string | string[]): void
+  setFieldWarning(name: string, warnings: string | string[]): void
+  clearFieldErrors(name: string): void
+  getFieldErrors(name: string): string[]
+  getFieldWarnings(name: string): string[]
+  isFieldTouched(name: string): boolean
+  isFieldValidating(name: string): boolean
+
+  // List operations
   getListValue(name: string): unknown[]
-  listAdd(name: string, defaultValue?: unknown): void
-  listRemove(name: string, index: number): void
+  listAdd(name: string, defaultValue?: unknown, insertIndex?: number): void
+  listRemove(name: string, index: number | number[]): void
   listMove(name: string, from: number, to: number): void
+  listReplace(name: string, values: unknown[]): void
 }

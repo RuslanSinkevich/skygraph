@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { createCore } from '../Core'
 import { createTable } from '../engines/table/TableEngine'
 

@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useId } from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps } from '../../types'
 
 export interface DropdownItem {
   key: string
@@ -8,15 +10,13 @@ export interface DropdownItem {
   divider?: boolean
 }
 
-export interface DropdownProps {
+export interface DropdownProps extends BaseComponentProps {
   items: DropdownItem[]
   onSelect?: (key: string) => void
   trigger?: 'click' | 'hover'
   placement?: 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'
   disabled?: boolean
   children: React.ReactElement
-  className?: string
-  unstyled?: boolean
 }
 
 export function Dropdown({
@@ -24,14 +24,19 @@ export function Dropdown({
   onSelect,
   trigger = 'hover',
   placement = 'bottomLeft',
-  disabled,
+  disabled: disabledProp,
   children,
   className,
   unstyled,
 }: DropdownProps) {
+  const config = useConfig()
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const [open, setOpen] = useState(false)
+  const [focusedIndex, setFocusedIndex] = useState(-1)
   const ref = useRef<HTMLDivElement>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const menuId = useId()
 
   useEffect(() => {
     if (!open) return
@@ -43,6 +48,19 @@ export function Dropdown({
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [open])
+
+  useEffect(() => {
+    if (!open) setFocusedIndex(-1)
+  }, [open])
+
+  const getNextMenuIndex = (current: number, direction: 1 | -1) => {
+    let next = current
+    for (let i = 0; i < items.length; i++) {
+      next = (next + direction + items.length) % items.length
+      if (!items[next].divider && !items[next].disabled) return next
+    }
+    return current
+  }
 
   const handleMouseEnter = () => {
     if (trigger !== 'hover' || disabled) return
@@ -64,6 +82,35 @@ export function Dropdown({
     if (item.disabled) return
     setOpen(false)
     onSelect?.(item.key)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (disabled) return
+    switch (e.key) {
+      case 'Enter':
+      case ' ':
+        e.preventDefault()
+        if (open && focusedIndex >= 0 && !items[focusedIndex].divider) {
+          handleSelect(items[focusedIndex])
+        } else {
+          setOpen(!open)
+        }
+        break
+      case 'Escape':
+        e.preventDefault()
+        setOpen(false)
+        break
+      case 'ArrowDown':
+        e.preventDefault()
+        if (!open) setOpen(true)
+        else setFocusedIndex((i) => getNextMenuIndex(i, 1))
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        if (!open) setOpen(true)
+        else setFocusedIndex((i) => getNextMenuIndex(i, -1))
+        break
+    }
   }
 
   if (unstyled) {
@@ -92,25 +139,37 @@ export function Dropdown({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="sg-dropdown-trigger" onClick={handleClick}>
+      <div
+        className="sg-dropdown-trigger"
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-controls={menuId}
+        tabIndex={disabled ? -1 : 0}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+      >
         {children}
       </div>
       {open && (
         <div
           className={`sg-dropdown sg-dropdown-${placement}`}
+          role="menu"
+          id={menuId}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {items.map((item) =>
+          {items.map((item, idx) =>
             item.divider ? (
-              <div key={item.key} className="sg-dropdown-divider" />
+              <div key={item.key} className="sg-dropdown-divider" role="separator" />
             ) : (
               <div
                 key={item.key}
+                role="menuitem"
                 className={[
                   'sg-dropdown-item',
                   item.disabled ? 'sg-dropdown-item-disabled' : '',
                   item.danger ? 'sg-dropdown-item-danger' : '',
+                  idx === focusedIndex ? 'sg-dropdown-item-focused' : '',
                 ].filter(Boolean).join(' ')}
                 onClick={() => handleSelect(item)}
               >

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { useTree } from '../../../hooks/useTree'
 import { Tree } from '../Tree'
 import type { TreeSelectProps, TreeKey, TreeNodeData } from './types'
 
@@ -36,20 +35,6 @@ function getNodeLabel(node: TreeNodeData | undefined): React.ReactNode {
   return node.title ?? String(node.key)
 }
 
-function filterTree(
-  nodes: TreeNodeData[],
-  predicate: (node: TreeNodeData) => boolean,
-): TreeNodeData[] {
-  const result: TreeNodeData[] = []
-  for (const node of nodes) {
-    const childResult = node.children ? filterTree(node.children, predicate) : []
-    if (predicate(node) || childResult.length > 0) {
-      result.push({ ...node, children: childResult.length > 0 ? childResult : node.children && childResult.length === 0 && !predicate(node) ? undefined : childResult.length > 0 ? childResult : undefined })
-    }
-  }
-  return result
-}
-
 function filterTreeKeepMatches(
   nodes: TreeNodeData[],
   predicate: (node: TreeNodeData) => boolean,
@@ -81,15 +66,6 @@ function getParentKeys(nodes: TreeNodeData[], targetKey: TreeKey): TreeKey[] {
   }
   walk(nodes, [])
   return parents
-}
-
-function getChildLeafKeys(node: TreeNodeData): TreeKey[] {
-  if (!node.children || node.children.length === 0) return [node.key]
-  const keys: TreeKey[] = []
-  for (const child of node.children) {
-    keys.push(...getChildLeafKeys(child))
-  }
-  return keys
 }
 
 function applyStrategy(

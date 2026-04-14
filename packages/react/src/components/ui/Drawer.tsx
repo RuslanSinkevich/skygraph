@@ -1,7 +1,9 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback, useId } from 'react'
 import { Button } from './Button'
+import { useFocusTrap } from '../../hooks/a11y/useFocusTrap'
+import type { BaseComponentProps } from '../../types'
 
-export interface DrawerProps {
+export interface DrawerProps extends BaseComponentProps {
   open: boolean
   onClose: () => void
   title?: React.ReactNode
@@ -13,9 +15,6 @@ export interface DrawerProps {
   closable?: boolean
   mask?: boolean
   maskClosable?: boolean
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Drawer({
@@ -34,6 +33,11 @@ export function Drawer({
   style,
   unstyled,
 }: DrawerProps) {
+  const uid = useId()
+  const titleId = `${uid}-title`
+  const bodyId = `${uid}-body`
+  const trapRef = useFocusTrap(open)
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -57,9 +61,16 @@ export function Drawer({
 
   if (unstyled) {
     return (
-      <div className={className} role="dialog" aria-modal="true">
-        {title && <div>{title}</div>}
-        <div>{children}</div>
+      <div
+        ref={trapRef}
+        className={className}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? titleId : undefined}
+        aria-describedby={children ? bodyId : undefined}
+      >
+        {title && <div id={titleId}>{title}</div>}
+        <div id={bodyId}>{children}</div>
         {footer && <div>{footer}</div>}
         {closable && <button onClick={onClose} aria-label="Close">×</button>}
       </div>
@@ -75,6 +86,7 @@ export function Drawer({
         />
       )}
       <div
+        ref={trapRef}
         className={[
           'sg-drawer',
           `sg-drawer-${placement}`,
@@ -83,10 +95,12 @@ export function Drawer({
         style={{ ...sizeStyle, ...style }}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={title ? titleId : undefined}
+        aria-describedby={children ? bodyId : undefined}
       >
         {(title || closable) && (
           <div className="sg-drawer-header">
-            {title && <div className="sg-drawer-title">{title}</div>}
+            {title && <div className="sg-drawer-title" id={titleId}>{title}</div>}
             {closable && (
               <Button
                 type="text"
@@ -99,7 +113,7 @@ export function Drawer({
             )}
           </div>
         )}
-        <div className="sg-drawer-body">{children}</div>
+        <div className="sg-drawer-body" id={bodyId}>{children}</div>
         {footer && <div className="sg-drawer-footer">{footer}</div>}
       </div>
     </div>

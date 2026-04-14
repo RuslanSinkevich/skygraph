@@ -1,17 +1,15 @@
-import React from 'react'
+// react is used for JSX
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, SizableProps } from '../../types'
 
-export interface ProgressProps {
+export interface ProgressProps extends BaseComponentProps, SizableProps {
   percent: number
   type?: 'line' | 'circle'
   status?: 'normal' | 'success' | 'error' | 'active'
   showInfo?: boolean
   strokeWidth?: number
   strokeColor?: string
-  size?: 'small' | 'default'
   width?: number
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Progress({
@@ -21,12 +19,16 @@ export function Progress({
   showInfo = true,
   strokeWidth,
   strokeColor,
-  size = 'default',
+  size: sizeProp,
   width = 120,
   className,
   style,
   unstyled,
 }: ProgressProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const progressSize = size === 'small' ? 'small' : 'default'
+
   const clampedPercent = Math.min(100, Math.max(0, percent))
   const resolvedStatus = clampedPercent >= 100 && status === 'normal' ? 'success' : status
 
@@ -91,14 +93,14 @@ export function Progress({
     )
   }
 
-  const barHeight = strokeWidth ?? (size === 'small' ? 6 : 8)
+  const barHeight = strokeWidth ?? (progressSize === 'small' ? 6 : 8)
 
   return (
     <div
       className={[
         'sg-progress sg-progress-line',
         `sg-progress-${resolvedStatus}`,
-        `sg-progress-${size}`,
+        `sg-progress-${progressSize}`,
         className,
       ].filter(Boolean).join(' ')}
       style={style}

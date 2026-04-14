@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useId } from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 import { Spin } from './Spin'
 
 export interface SelectOption {
@@ -8,17 +10,13 @@ export interface SelectOption {
   loading?: boolean
 }
 
-export interface SelectProps {
+export interface SelectProps extends BaseComponentProps, InteractiveProps, SizableProps {
+  options: SelectOption[]
   value?: string | number
   defaultValue?: string | number
-  options: SelectOption[]
   placeholder?: string
-  disabled?: boolean
-  loading?: boolean
-  size?: 'small' | 'middle' | 'large'
   onChange?: (value: string | number) => void
-  className?: string
-  unstyled?: boolean
+  onBlur?: () => void
 }
 
 export function Select({
@@ -26,16 +24,24 @@ export function Select({
   defaultValue,
   options,
   placeholder = 'Select...',
-  disabled,
+  disabled: disabledProp,
   loading,
-  size = 'middle',
+  size: sizeProp,
   onChange,
+  onBlur,
   className,
+  style,
   unstyled,
 }: SelectProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const [internalValue, setInternalValue] = useState(value ?? defaultValue)
   const [open, setOpen] = useState(false)
+  const [focusedIndex, setFocusedIndex] = useState(-1)
   const ref = useRef<HTMLDivElement>(null)
+  const listboxId = useId()
   const currentValue = value ?? internalValue
 
   const selectedOption = options.find((o) => o.value === currentValue)
@@ -50,6 +56,10 @@ export function Select({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    if (!open) setFocusedIndex(-1)
+  }, [open])
+
   const handleSelect = (opt: SelectOption) => {
     if (opt.disabled || opt.loading) return
     setInternalValue(opt.value)
@@ -61,6 +71,7 @@ export function Select({
     return (
       <select
         className={className}
+        style={style}
         value={currentValue as string}
         disabled={disabled || loading}
         onChange={(e) => {
@@ -72,6 +83,7 @@ export function Select({
           setInternalValue(finalVal)
           onChange?.(finalVal)
         }}
+        onBlur={onBlur}
       >
         {!selectedOption && <option value="">{placeholder}</option>}
         {options.map((opt) => (
@@ -95,10 +107,46 @@ export function Select({
     .join(' ')
 
   return (
-    <div className={wrapperClass} ref={ref}>
+    <div className={wrapperClass} ref={ref} style={style} onBlur={onBlur}>
       <div
         className="sg-select-selector"
+        role="combobox"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-controls={listboxId}
+        tabIndex={disabled || loading ? -1 : 0}
         onClick={() => !disabled && !loading && setOpen(!open)}
+        onKeyDown={(e) => {
+          if (disabled || loading) return
+          switch (e.key) {
+            case 'Enter':
+            case ' ':
+              e.preventDefault()
+              if (open && focusedIndex >= 0) {
+                handleSelect(options[focusedIndex])
+              } else {
+                setOpen(!open)
+              }
+              break
+            case 'Escape':
+              e.preventDefault()
+              setOpen(false)
+              break
+            case 'ArrowDown':
+              e.preventDefault()
+              if (!open) setOpen(true)
+              else setFocusedIndex((i) => (i + 1) % options.length)
+              break
+            case 'ArrowUp':
+              e.preventDefault()
+              if (!open) setOpen(true)
+              else
+                setFocusedIndex(
+                  (i) => (i - 1 + options.length) % options.length,
+                )
+              break
+          }
+        }}
       >
         <span
           className={
@@ -116,13 +164,16 @@ export function Select({
         )}
       </div>
       {open && (
-        <div className="sg-select-dropdown">
-          {options.map((opt) => (
+        <div className="sg-select-dropdown" role="listbox" id={listboxId}>
+          {options.map((opt, idx) => (
             <div
               key={opt.value}
+              role="option"
+              aria-selected={opt.value === currentValue}
               className={[
                 'sg-select-option',
                 opt.value === currentValue ? 'sg-select-option-selected' : '',
+                idx === focusedIndex ? 'sg-select-option-focused' : '',
                 opt.disabled || opt.loading ? 'sg-select-option-disabled' : '',
                 opt.loading ? 'sg-select-option-loading' : '',
               ]

@@ -1,5 +1,33 @@
 export { createCore } from './Core'
-export type { Core } from './types'
+export type {
+  Core,
+  WriteEvent,
+  WriteSource,
+  NextFn,
+  Middleware,
+} from './types'
+
+export {
+  loggerMiddleware,
+  freezeMiddleware,
+  persistenceMiddleware,
+  validationMiddleware,
+} from './middleware/index'
+
+export { createHistory } from './plugins/history'
+export type {
+  HistoryPlugin,
+  HistoryEntry,
+  HistoryOptions,
+} from './plugins/history'
+
+export { createVirtual } from './engines/virtual/index'
+export type {
+  VirtualEngine,
+  VirtualEngineOptions,
+  VirtualRange,
+  VirtualItem,
+} from './engines/virtual/index'
 
 export { createTypedCore } from './typed'
 export type { TypedCore, Path, PathValue } from './typed'

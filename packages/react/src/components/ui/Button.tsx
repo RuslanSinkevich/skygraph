@@ -1,23 +1,19 @@
 import React from 'react'
 import { Spin } from './Spin'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
-export interface ButtonProps {
+export interface ButtonProps extends BaseComponentProps, InteractiveProps, SizableProps {
   type?: 'default' | 'primary' | 'dashed' | 'text' | 'link'
-  size?: 'small' | 'middle' | 'large'
-  disabled?: boolean
-  loading?: boolean
   htmlType?: 'button' | 'submit' | 'reset'
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
   children?: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function Button({
   type = 'default',
-  size = 'middle',
-  disabled,
+  size: sizeProp,
+  disabled: disabledProp,
   loading,
   htmlType = 'button',
   onClick,
@@ -26,6 +22,10 @@ export function Button({
   style,
   unstyled,
 }: ButtonProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const classes = unstyled
     ? className ?? ''
     : [

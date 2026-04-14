@@ -62,9 +62,9 @@ function ListInner<T = any>({
 }: ListProps<T>) {
   const [internalPage, setInternalPage] = React.useState(1)
 
-  const pageSize = pagination && pagination !== false ? (pagination.pageSize ?? 10) : dataSource.length
-  const currentPage = pagination && pagination !== false ? (pagination.current ?? internalPage) : 1
-  const total = pagination && pagination !== false ? (pagination.total ?? dataSource.length) : dataSource.length
+  const pageSize = pagination ? (pagination.pageSize ?? 10) : dataSource.length
+  const currentPage = pagination ? (pagination.current ?? internalPage) : 1
+  const total = pagination ? (pagination.total ?? dataSource.length) : dataSource.length
 
   const paginatedData = React.useMemo(() => {
     if (!pagination) return dataSource
@@ -74,7 +74,7 @@ function ListInner<T = any>({
 
   const handlePageChange = (page: number) => {
     setInternalPage(page)
-    if (pagination && pagination !== false) {
+    if (pagination) {
       pagination.onChange?.(page, pageSize)
     }
   }
@@ -117,7 +117,7 @@ function ListInner<T = any>({
           </div>
         )}
         {loadMore}
-        {pagination && pagination !== false && (
+        {pagination && (
           <Pagination
             unstyled
             current={currentPage}
@@ -162,7 +162,7 @@ function ListInner<T = any>({
 
       {loadMore && <div className="sg-list-load-more">{loadMore}</div>}
 
-      {pagination && pagination !== false && (
+      {pagination && (
         <div className="sg-list-pagination">
           <Pagination
             current={currentPage}

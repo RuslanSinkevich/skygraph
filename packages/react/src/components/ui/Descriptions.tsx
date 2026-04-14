@@ -1,4 +1,6 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, SizableProps } from '../../types'
 
 export interface DescriptionsItem {
   key?: string
@@ -7,17 +9,13 @@ export interface DescriptionsItem {
   span?: number
 }
 
-export interface DescriptionsProps {
+export interface DescriptionsProps extends BaseComponentProps, SizableProps {
   title?: React.ReactNode
   items: DescriptionsItem[]
   bordered?: boolean
   column?: number
-  size?: 'small' | 'middle' | 'default'
   layout?: 'horizontal' | 'vertical'
   colon?: boolean
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 function buildRows(items: DescriptionsItem[], column: number): DescriptionsItem[][] {
@@ -49,13 +47,17 @@ export function Descriptions({
   items,
   bordered = false,
   column = 3,
-  size = 'default',
+  size: sizeProp,
   layout = 'horizontal',
   colon = true,
   className,
   style,
   unstyled,
 }: DescriptionsProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const descSize = size === 'small' ? 'small' : 'default'
+
   const rows = buildRows(items, column)
 
   if (unstyled) {
@@ -84,7 +86,7 @@ export function Descriptions({
     <div
       className={[
         'sg-descriptions',
-        `sg-descriptions-${size}`,
+        `sg-descriptions-${descSize}`,
         bordered ? 'sg-descriptions-bordered' : '',
         className,
       ].filter(Boolean).join(' ')}

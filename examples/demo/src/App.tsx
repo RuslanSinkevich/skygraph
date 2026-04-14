@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import '../../../packages/react/styles/index.css'
 import './app.css'
 
@@ -42,133 +42,253 @@ import { TreeSelectDemo } from './demos/TreeSelectDemo'
 import { CascaderDemo } from './demos/CascaderDemo'
 import { CalendarDemo } from './demos/CalendarDemo'
 import { ThemeToggle } from './demos/ThemeToggle'
+import { GettingStartedPage } from './demos/GettingStartedPage'
+import { ThemingPage } from './demos/ThemingPage'
+import { CoreApiPage } from './demos/CoreApiPage'
 
-const menu = [
-  { key: 'overview', label: 'Overview' },
-  { key: 'button', label: 'Button' },
-  { key: 'input', label: 'Input' },
-  { key: 'select', label: 'Select' },
-  { key: 'checkbox', label: 'Checkbox' },
-  { key: 'radio', label: 'Radio' },
-  { key: 'switch', label: 'Switch' },
-  { key: 'slider', label: 'Slider', disabled: true },
-  { key: 'tabs', label: 'Tabs' },
-  { key: 'tooltip', label: 'Tooltip' },
-  { key: 'dropdown', label: 'Dropdown' },
-  { key: 'modal', label: 'Modal' },
-  { key: 'drawer', label: 'Drawer' },
-  { key: 'popconfirm', label: 'Popconfirm' },
-  { key: 'notification', label: 'Notification' },
-  { key: 'progress', label: 'Progress' },
-  { key: 'spin', label: 'Spin' },
-  { key: 'badge', label: 'Badge' },
-  { key: 'tag', label: 'Tag' },
-  { key: 'avatar', label: 'Avatar' },
-  { key: 'breadcrumb', label: 'Breadcrumb' },
-  { key: 'pagination', label: 'Pagination' },
-  { key: 'form', label: 'Form' },
-  { key: 'table', label: 'Table' },
-  { key: 'tree', label: 'Tree' },
-  { key: 'treeselect', label: 'TreeSelect' },
-  { key: 'cascader', label: 'Cascader' },
-  { key: 'list', label: 'List' },
-  { key: 'transfer', label: 'Transfer' },
-  { key: 'calendar', label: 'Calendar' },
-  { key: 'menu', label: 'Menu' },
-  { key: 'collapse', label: 'Collapse' },
-  { key: 'colorpicker', label: 'ColorPicker' },
-  { key: 'empty', label: 'Empty' },
-  { key: 'result', label: 'Result' },
-  { key: 'skeleton', label: 'Skeleton' },
-  { key: 'segmented', label: 'Segmented' },
-  { key: 'steps', label: 'Steps' },
-  { key: 'timeline', label: 'Timeline' },
-  { key: 'carousel', label: 'Carousel' },
-  { key: 'descriptions', label: 'Descriptions' },
+// ---------------------------------------------------------------------------
+
+type MenuItem = { key: string; label: string; disabled?: boolean }
+type MenuSection = { title: string; items: MenuItem[] }
+
+const menu: MenuSection[] = [
+  {
+    title: 'Guide',
+    items: [
+      { key: 'overview', label: 'Overview' },
+      { key: 'getting-started', label: 'Getting Started' },
+      { key: 'theming', label: 'Theming' },
+      { key: 'core-api', label: 'Core API' },
+    ],
+  },
+  {
+    title: 'General',
+    items: [
+      { key: 'components/button', label: 'Button' },
+      { key: 'components/spin', label: 'Spin' },
+    ],
+  },
+  {
+    title: 'Data Entry',
+    items: [
+      { key: 'components/input', label: 'Input' },
+      { key: 'components/select', label: 'Select' },
+      { key: 'components/checkbox', label: 'Checkbox' },
+      { key: 'components/radio', label: 'Radio' },
+      { key: 'components/switch', label: 'Switch' },
+      { key: 'components/slider', label: 'Slider', disabled: true },
+      { key: 'components/colorpicker', label: 'ColorPicker' },
+      { key: 'components/cascader', label: 'Cascader' },
+      { key: 'components/treeselect', label: 'TreeSelect' },
+      { key: 'components/transfer', label: 'Transfer' },
+      { key: 'components/calendar', label: 'Calendar' },
+      { key: 'components/form', label: 'Form' },
+    ],
+  },
+  {
+    title: 'Data Display',
+    items: [
+      { key: 'components/table', label: 'Table' },
+      { key: 'components/tree', label: 'Tree' },
+      { key: 'components/list', label: 'List' },
+      { key: 'components/descriptions', label: 'Descriptions' },
+      { key: 'components/collapse', label: 'Collapse' },
+      { key: 'components/carousel', label: 'Carousel' },
+      { key: 'components/badge', label: 'Badge' },
+      { key: 'components/tag', label: 'Tag' },
+      { key: 'components/avatar', label: 'Avatar' },
+      { key: 'components/tooltip', label: 'Tooltip' },
+      { key: 'components/timeline', label: 'Timeline' },
+    ],
+  },
+  {
+    title: 'Feedback',
+    items: [
+      { key: 'components/modal', label: 'Modal' },
+      { key: 'components/drawer', label: 'Drawer' },
+      { key: 'components/notification', label: 'Notification' },
+      { key: 'components/popconfirm', label: 'Popconfirm' },
+      { key: 'components/progress', label: 'Progress' },
+      { key: 'components/result', label: 'Result' },
+      { key: 'components/skeleton', label: 'Skeleton' },
+      { key: 'components/empty', label: 'Empty' },
+    ],
+  },
+  {
+    title: 'Navigation',
+    items: [
+      { key: 'components/tabs', label: 'Tabs' },
+      { key: 'components/menu', label: 'Menu' },
+      { key: 'components/breadcrumb', label: 'Breadcrumb' },
+      { key: 'components/dropdown', label: 'Dropdown' },
+      { key: 'components/pagination', label: 'Pagination' },
+      { key: 'components/steps', label: 'Steps' },
+      { key: 'components/segmented', label: 'Segmented' },
+    ],
+  },
 ]
 
 const pages: Record<string, () => JSX.Element> = {
-  spin: SpinDemo,
-  button: ButtonDemo,
-  input: InputDemo,
-  checkbox: CheckboxDemo,
-  radio: RadioDemo,
-  switch: SwitchDemo,
-  select: SelectDemo,
-  tabs: TabsDemo,
-  tooltip: TooltipDemo,
-  modal: ModalDemo,
-  form: FormDemo,
-  table: TableDemo,
-  notification: NotificationDemo,
-  drawer: DrawerDemo,
-  popconfirm: PopconfirmDemo,
-  badge: BadgeDemo,
-  tag: TagDemo,
-  avatar: AvatarDemo,
-  breadcrumb: BreadcrumbDemo,
-  pagination: PaginationDemo,
-  dropdown: DropdownDemo,
-  progress: ProgressDemo,
-  tree: TreeDemo,
-  treeselect: TreeSelectDemo,
-  cascader: CascaderDemo,
-  list: ListDemo,
-  transfer: TransferDemo,
-  calendar: CalendarDemo,
-  menu: MenuDemo,
-  collapse: CollapseDemo,
-  colorpicker: ColorPickerDemo,
-  empty: EmptyDemo,
-  result: ResultDemo,
-  skeleton: SkeletonDemo,
-  segmented: SegmentedDemo,
-  steps: StepsDemo,
-  timeline: TimelineDemo,
-  carousel: CarouselDemo,
-  descriptions: DescriptionsDemo,
+  'components/spin': SpinDemo,
+  'components/button': ButtonDemo,
+  'components/input': InputDemo,
+  'components/checkbox': CheckboxDemo,
+  'components/radio': RadioDemo,
+  'components/switch': SwitchDemo,
+  'components/select': SelectDemo,
+  'components/tabs': TabsDemo,
+  'components/tooltip': TooltipDemo,
+  'components/modal': ModalDemo,
+  'components/form': FormDemo,
+  'components/table': TableDemo,
+  'components/notification': NotificationDemo,
+  'components/drawer': DrawerDemo,
+  'components/popconfirm': PopconfirmDemo,
+  'components/badge': BadgeDemo,
+  'components/tag': TagDemo,
+  'components/avatar': AvatarDemo,
+  'components/breadcrumb': BreadcrumbDemo,
+  'components/pagination': PaginationDemo,
+  'components/dropdown': DropdownDemo,
+  'components/progress': ProgressDemo,
+  'components/tree': TreeDemo,
+  'components/treeselect': TreeSelectDemo,
+  'components/cascader': CascaderDemo,
+  'components/list': ListDemo,
+  'components/transfer': TransferDemo,
+  'components/calendar': CalendarDemo,
+  'components/menu': MenuDemo,
+  'components/collapse': CollapseDemo,
+  'components/colorpicker': ColorPickerDemo,
+  'components/empty': EmptyDemo,
+  'components/result': ResultDemo,
+  'components/skeleton': SkeletonDemo,
+  'components/segmented': SegmentedDemo,
+  'components/steps': StepsDemo,
+  'components/timeline': TimelineDemo,
+  'components/carousel': CarouselDemo,
+  'components/descriptions': DescriptionsDemo,
+  'getting-started': GettingStartedPage,
+  'theming': ThemingPage,
+  'core-api': CoreApiPage,
 }
+
+// ---------------------------------------------------------------------------
+
+function getHashRoute(): string {
+  const h = window.location.hash.replace(/^#\/?/, '')
+  return h || 'overview'
+}
+
+function navigate(key: string) {
+  window.location.hash = '#/' + key
+}
+
+// ---------------------------------------------------------------------------
+
+const COMPONENT_COUNT = Object.keys(pages).filter(k => k.startsWith('components/')).length
 
 function Overview() {
   return (
-    <section>
-      <h2>SkyGraph Components</h2>
-      <p style={{ color: 'var(--sg-color-text-secondary)', marginBottom: 16 }}>
-        Reactive UI component library built on SkyGraph core engine.
-      </p>
+    <section className="doc-page">
+      <div className="doc-hero">
+        <h1>SkyGraph</h1>
+        <p className="doc-hero-tagline">Reactive UI Library</p>
+        <p className="doc-hero-sub">
+          Headless reactive core + 50+ styled components.
+          TypeScript-first. Zero runtime CSS-in-JS.
+        </p>
+        <pre className="doc-code doc-hero-install"><code>npm install @skygraph/core @skygraph/react</code></pre>
+      </div>
+
+      <div className="doc-features">
+        <div className="doc-feature-card">
+          <div className="doc-feature-icon">⚡</div>
+          <strong>Reactive Core</strong>
+          <span>
+            Fine-grained subscriptions. Batch updates. No re-render waterfalls.
+          </span>
+        </div>
+        <div className="doc-feature-card">
+          <div className="doc-feature-icon">🧩</div>
+          <strong>{COMPONENT_COUNT}+ Components</strong>
+          <span>
+            Forms, tables, trees, modals, pickers — production-ready out of the box.
+          </span>
+        </div>
+        <div className="doc-feature-card">
+          <div className="doc-feature-icon">🎨</div>
+          <strong>Zero Runtime CSS</strong>
+          <span>
+            Pure CSS variables. Dark mode in one attribute. No styled-components.
+          </span>
+        </div>
+      </div>
+
+      <h2>Browse Components</h2>
       <div className="demo-overview-grid">
-        {menu.filter(m => m.key !== 'overview' && !('disabled' in m)).map(m => (
-          <div key={m.key} className="demo-overview-card">
-            <strong>{m.label}</strong>
-          </div>
-        ))}
+        {menu
+          .filter(s => s.title !== 'Guide')
+          .map(section => (
+            section.items
+              .filter(m => !m.disabled)
+              .map(m => (
+                <div
+                  key={m.key}
+                  className="demo-overview-card"
+                  onClick={() => navigate(m.key)}
+                >
+                  <strong>{m.label}</strong>
+                  <span className="demo-overview-card-section">{section.title}</span>
+                </div>
+              ))
+          ))}
       </div>
     </section>
   )
 }
 
+// ---------------------------------------------------------------------------
+
 export default function App() {
-  const [active, setActive] = useState('overview')
-  const Page = active === 'overview' ? Overview : pages[active]
+  const [route, setRoute] = useState(getHashRoute)
+
+  useEffect(() => {
+    const onHash = () => setRoute(getHashRoute())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  const Page = useMemo(() => {
+    if (route === 'overview') return Overview
+    return pages[route] ?? Overview
+  }, [route])
 
   return (
     <div className="demo-layout">
       <aside className="demo-sidebar">
-        <div className="demo-logo">SkyGraph</div>
+        <div className="demo-logo" onClick={() => navigate('overview')} style={{ cursor: 'pointer' }}>
+          SkyGraph
+        </div>
         <nav className="demo-nav">
-          {menu.map(item => (
-            <div
-              key={item.key}
-              className={[
-                'demo-nav-item',
-                active === item.key ? 'demo-nav-item-active' : '',
-                'disabled' in item && item.disabled ? 'demo-nav-item-disabled' : '',
-              ].filter(Boolean).join(' ')}
-              onClick={() => {
-                if (!('disabled' in item && item.disabled)) setActive(item.key)
-              }}
-            >
-              {item.label}
+          {menu.map(section => (
+            <div key={section.title} className="demo-nav-section">
+              <div className="demo-nav-section-title">{section.title}</div>
+              {section.items.map(item => (
+                <div
+                  key={item.key}
+                  className={[
+                    'demo-nav-item',
+                    route === item.key ? 'demo-nav-item-active' : '',
+                    item.disabled ? 'demo-nav-item-disabled' : '',
+                  ].filter(Boolean).join(' ')}
+                  onClick={() => {
+                    if (!item.disabled) navigate(item.key)
+                  }}
+                >
+                  {item.label}
+                </div>
+              ))}
             </div>
           ))}
         </nav>
@@ -177,7 +297,7 @@ export default function App() {
         </div>
       </aside>
       <main className="demo-main">
-        {Page && <Page />}
+        <Page />
       </main>
     </div>
   )

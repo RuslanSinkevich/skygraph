@@ -1,20 +1,17 @@
 import React, { useState } from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
 export type SegmentedOption =
   | string
   | { label: React.ReactNode; value: string; icon?: React.ReactNode; disabled?: boolean }
 
-export interface SegmentedProps {
+export interface SegmentedProps extends BaseComponentProps, InteractiveProps, SizableProps {
   options: SegmentedOption[]
   value?: string
   defaultValue?: string
   onChange?: (value: string) => void
   block?: boolean
-  size?: 'small' | 'middle' | 'large'
-  disabled?: boolean
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 function normalizeOption(opt: SegmentedOption) {
@@ -28,12 +25,16 @@ export function Segmented({
   defaultValue,
   onChange,
   block,
-  size = 'middle',
-  disabled,
+  size: sizeProp,
+  disabled: disabledProp,
   className,
   style,
   unstyled,
 }: SegmentedProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const normalized = options.map(normalizeOption)
   const [internalValue, setInternalValue] = useState(
     value ?? defaultValue ?? normalized[0]?.value ?? ''

@@ -1,26 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Spin } from './Spin'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
 export interface AutoCompleteOption {
   label: string
   value: string
 }
 
-export interface AutoCompleteProps {
+export interface AutoCompleteProps extends BaseComponentProps, InteractiveProps, SizableProps {
   value?: string
   defaultValue?: string
   options: AutoCompleteOption[]
   placeholder?: string
-  disabled?: boolean
-  loading?: boolean
-  size?: 'small' | 'middle' | 'large'
   onChange?: (value: string) => void
   onSearch?: (query: string) => void
   onSelect?: (value: string, option: AutoCompleteOption) => void
   onBlur?: () => void
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 export function AutoComplete({
@@ -28,9 +24,9 @@ export function AutoComplete({
   defaultValue,
   options,
   placeholder,
-  disabled,
+  disabled: disabledProp,
   loading,
-  size = 'middle',
+  size: sizeProp,
   onChange,
   onSearch,
   onSelect,
@@ -39,6 +35,10 @@ export function AutoComplete({
   style,
   unstyled,
 }: AutoCompleteProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const [internalValue, setInternalValue] = useState(value ?? defaultValue ?? '')
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)

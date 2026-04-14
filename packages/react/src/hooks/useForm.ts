@@ -1,10 +1,10 @@
 import { useState, useCallback, useMemo } from 'react'
 import { createCore, createForm } from '@skygraph/core'
-import type { Core, FormEngine, FormOptions, FormState } from '@skygraph/core'
+import type { Core, FormEngine, FormOptions, FormState, ValidationResult } from '@skygraph/core'
 
 export interface UseFormOptions extends FormOptions {
   onSubmit?: (values: Record<string, unknown>) => void | Promise<void>
-  onSubmitInvalid?: (errors: Record<string, string>) => void
+  onSubmitInvalid?: (errors: Record<string, string[]>) => void
 }
 
 export interface UseFormReturn {
@@ -17,7 +17,7 @@ export interface UseFormReturn {
   setFieldsValue: (values: Record<string, unknown>) => void
   getFieldValue: (name: string) => unknown
   getFieldsValue: () => Record<string, unknown>
-  validateFields: (name?: string) => Promise<{ valid: boolean; errors: Record<string, string> }>
+  validateFields: (name?: string) => Promise<ValidationResult>
 }
 
 export function useForm(options?: UseFormOptions): UseFormReturn {
@@ -27,9 +27,7 @@ export function useForm(options?: UseFormOptions): UseFormReturn {
     return { core: c, form: f }
   })
 
-  const [formState, setFormState] = useState<FormState>(() =>
-    form.getFormState()
-  )
+  const [formState, setFormState] = useState<FormState>(() => form.getFormState())
 
   const refreshState = useCallback(() => {
     setFormState(form.getFormState())
@@ -55,37 +53,28 @@ export function useForm(options?: UseFormOptions): UseFormReturn {
       form.reset(values)
       setFormState(form.getFormState())
     },
-    [form]
+    [form],
   )
 
   const setFieldValue = useCallback(
     (name: string, value: unknown) => {
       form.setValue(name, value)
     },
-    [form]
+    [form],
   )
 
   const setFieldsValue = useCallback(
     (values: Record<string, unknown>) => {
       form.setFieldsValue(values)
     },
-    [form]
+    [form],
   )
 
-  const getFieldValue = useCallback(
-    (name: string) => form.getValue(name),
-    [form]
-  )
+  const getFieldValue = useCallback((name: string) => form.getValue(name), [form])
 
-  const getFieldsValue = useCallback(
-    () => form.getFieldsValue(),
-    [form]
-  )
+  const getFieldsValue = useCallback(() => form.getFieldsValue(), [form])
 
-  const validateFields = useCallback(
-    (name?: string) => form.validate(name),
-    [form]
-  )
+  const validateFields = useCallback((name?: string) => form.validate(name), [form])
 
   return useMemo(
     () => ({
@@ -100,6 +89,17 @@ export function useForm(options?: UseFormOptions): UseFormReturn {
       getFieldsValue,
       validateFields,
     }),
-    [core, form, formState, submit, reset, setFieldValue, setFieldsValue, getFieldValue, getFieldsValue, validateFields]
+    [
+      core,
+      form,
+      formState,
+      submit,
+      reset,
+      setFieldValue,
+      setFieldsValue,
+      getFieldValue,
+      getFieldsValue,
+      validateFields,
+    ],
   )
 }

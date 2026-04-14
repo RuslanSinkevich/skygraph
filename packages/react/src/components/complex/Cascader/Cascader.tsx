@@ -120,6 +120,7 @@ export function Cascader(props: CascaderProps) {
         searchRef.current.focus()
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   const rebuildColumns = useCallback((vals: (string | number)[]) => {

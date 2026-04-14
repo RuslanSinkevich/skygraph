@@ -9,9 +9,39 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
+    },
+    "./form": {
+      "types": "./dist/form.d.ts",
+      "import": "./dist/form.js",
+      "require": "./dist/form.cjs"
+    },
+    "./table": {
+      "types": "./dist/table.d.ts",
+      "import": "./dist/table.js",
+      "require": "./dist/table.cjs"
+    },
+    "./tree": {
+      "types": "./dist/tree.d.ts",
+      "import": "./dist/tree.js",
+      "require": "./dist/tree.cjs"
+    },
+    "./datagrid": {
+      "types": "./dist/datagrid.d.ts",
+      "import": "./dist/datagrid.js",
+      "require": "./dist/datagrid.cjs"
+    },
+    "./virtual": {
+      "types": "./dist/virtual.d.ts",
+      "import": "./dist/virtual.js",
+      "require": "./dist/virtual.cjs"
+    },
+    "./devtools": {
+      "types": "./dist/devtools.d.ts",
+      "import": "./dist/devtools.js",
+      "require": "./dist/devtools.cjs"
     },
     "./styles": "./styles/index.css",
     "./styles/tokens.css": "./styles/tokens.css",
@@ -19,9 +49,18 @@
     "./styles/components/*": "./styles/components/*"
   },
   "files": ["dist", "styles"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skygraph/skygraph.git",
+    "directory": "packages/react"
+  },
+  "keywords": ["react", "ui", "components", "form", "table", "tree", "design-system", "skygraph"],
   "scripts": {
     "build": "tsup",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "clean": "rimraf dist"
   },

@@ -1,4 +1,6 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps } from '../../types'
 import { Spin } from './Spin'
 
 export interface RadioOption {
@@ -7,16 +9,12 @@ export interface RadioOption {
   disabled?: boolean
 }
 
-export interface RadioGroupProps {
+export interface RadioGroupProps extends BaseComponentProps, InteractiveProps {
   value?: string | number
   defaultValue?: string | number
   options: RadioOption[]
   direction?: 'horizontal' | 'vertical'
-  disabled?: boolean
-  loading?: boolean
   onChange?: (value: string | number) => void
-  className?: string
-  unstyled?: boolean
 }
 
 export function RadioGroup({
@@ -24,12 +22,16 @@ export function RadioGroup({
   defaultValue,
   options,
   direction = 'horizontal',
-  disabled,
+  disabled: disabledProp,
   loading,
   onChange,
   className,
+  style,
   unstyled,
 }: RadioGroupProps) {
+  const config = useConfig()
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const [internalValue, setInternalValue] = React.useState(
     value ?? defaultValue
   )
@@ -47,7 +49,7 @@ export function RadioGroup({
         .join(' ')
 
   return (
-    <div className={groupClass} role="radiogroup">
+    <div className={groupClass} role="radiogroup" style={style}>
       {options.map((opt) => (
         <label
           key={opt.value}

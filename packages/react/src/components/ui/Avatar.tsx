@@ -1,15 +1,14 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, SizeType } from '../../types'
 
-export interface AvatarProps {
+export interface AvatarProps extends BaseComponentProps {
   src?: string
   alt?: string
-  size?: 'small' | 'default' | 'large' | number
+  size?: SizeType | number
   shape?: 'circle' | 'square'
   icon?: React.ReactNode
   children?: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 const sizeMap: Record<string, number> = {
@@ -21,7 +20,7 @@ const sizeMap: Record<string, number> = {
 export function Avatar({
   src,
   alt,
-  size = 'default',
+  size: sizeProp,
   shape = 'circle',
   icon,
   children,
@@ -29,7 +28,10 @@ export function Avatar({
   style,
   unstyled,
 }: AvatarProps) {
-  const px = typeof size === 'number' ? size : sizeMap[size]
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const avatarSize = typeof size === 'number' ? size : (size === 'middle' ? 'default' : size)
+  const px = typeof size === 'number' ? size : sizeMap[avatarSize]
   const fontSize = Math.round(px * 0.45)
 
   if (unstyled) {
@@ -43,7 +45,7 @@ export function Avatar({
   const classes = [
     'sg-avatar',
     `sg-avatar-${shape}`,
-    typeof size === 'string' ? `sg-avatar-${size}` : '',
+    typeof size === 'string' ? `sg-avatar-${avatarSize}` : '',
     className,
   ].filter(Boolean).join(' ')
 

@@ -5,22 +5,19 @@ import React, {
   useCallback,
   type ReactNode,
 } from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
-export interface ColorPickerProps {
+export interface ColorPickerProps extends BaseComponentProps, InteractiveProps, SizableProps {
   value?: string
   defaultValue?: string
   onChange?: (color: string) => void
   presets?: Array<{ label: string; colors: string[] }>
   showText?: boolean | ((color: string) => ReactNode)
-  size?: 'small' | 'middle' | 'large'
-  disabled?: boolean
   format?: 'hex' | 'rgb'
   trigger?: 'click' | 'hover'
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 /* ---- Color math helpers ---- */
@@ -152,8 +149,8 @@ export function ColorPicker({
   onChange,
   presets,
   showText,
-  size = 'middle',
-  disabled = false,
+  size: sizeProp,
+  disabled: disabledProp,
   format = 'hex',
   trigger = 'click',
   open: controlledOpen,
@@ -162,6 +159,10 @@ export function ColorPicker({
   style,
   unstyled,
 }: ColorPickerProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const disabled = disabledProp ?? config.disabled ?? false
+
   const [internalColor, setInternalColor] = useState(
     value ?? defaultValue ?? DEFAULT_COLOR
   )
@@ -214,6 +215,7 @@ export function ColorPicker({
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen])
 
   /* Trigger handlers */

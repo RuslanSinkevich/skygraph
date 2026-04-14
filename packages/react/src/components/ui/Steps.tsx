@@ -1,4 +1,6 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
+import type { BaseComponentProps, SizableProps } from '../../types'
 
 export interface StepItem {
   title: React.ReactNode
@@ -7,16 +9,12 @@ export interface StepItem {
   status?: 'wait' | 'process' | 'finish' | 'error'
 }
 
-export interface StepsProps {
+export interface StepsProps extends BaseComponentProps, SizableProps {
   current: number
   items: StepItem[]
   direction?: 'horizontal' | 'vertical'
-  size?: 'small' | 'default'
   onChange?: (current: number) => void
   type?: 'default' | 'navigation'
-  className?: string
-  style?: React.CSSProperties
-  unstyled?: boolean
 }
 
 const CheckIcon = () => (
@@ -42,13 +40,17 @@ export function Steps({
   current,
   items,
   direction = 'horizontal',
-  size = 'default',
+  size: sizeProp,
   onChange,
   type = 'default',
   className,
   style,
   unstyled,
 }: StepsProps) {
+  const config = useConfig()
+  const size = sizeProp ?? config.size ?? 'middle'
+  const stepsSize = size === 'small' ? 'small' : 'default'
+
   if (unstyled) {
     return (
       <div className={className} style={style}>
@@ -71,7 +73,7 @@ export function Steps({
       className={[
         'sg-steps',
         `sg-steps-${direction}`,
-        `sg-steps-${size}`,
+        `sg-steps-${stepsSize}`,
         type === 'navigation' ? 'sg-steps-navigation' : '',
         className,
       ].filter(Boolean).join(' ')}

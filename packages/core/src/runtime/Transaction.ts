@@ -52,6 +52,15 @@ export class Transaction {
     return changes
   }
 
+  getStaged(): readonly StagedWrite[] {
+    return this.staged
+  }
+
+  complete(): void {
+    this.active = false
+    this.staged = []
+  }
+
   rollback(): void {
     this.active = false
     this.staged = []
