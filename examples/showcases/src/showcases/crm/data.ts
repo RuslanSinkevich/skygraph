@@ -1,7 +1,7 @@
 export type ContactStatus = 'lead' | 'customer' | 'churned' | 'prospect'
 
 export interface Contact {
-  id: number
+  id: string
   name: string
   email: string
   company: string
@@ -13,9 +13,9 @@ export interface Contact {
 }
 
 export interface Deal {
-  id: number
+  id: string
   title: string
-  contactId: number
+  contactId: string
   value: number
   stage: 'qualification' | 'proposal' | 'negotiation' | 'closed-won' | 'closed-lost'
   probability: number
@@ -23,16 +23,16 @@ export interface Deal {
 }
 
 export interface Activity {
-  id: number
-  contactId: number
+  id: string
+  contactId: string
   type: 'call' | 'email' | 'meeting' | 'note'
   description: string
   date: string
 }
 
-const firstNames = ['Alex', 'Maria', 'James', 'Sophie', 'Liam', 'Emma', 'Noah', 'Olivia', 'Ivan', 'Anna', 'Daniel', 'Lisa']
-const lastNames = ['Johnson', 'Smith', 'Williams', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Anderson']
-const companies = ['TechCorp', 'DataFlow Inc', 'CloudNine', 'Nexus Labs', 'Pixel Studio', 'ByteForge', 'Quantum AI', 'GreenTech', 'SkyNet Ltd', 'CoreStack']
+const firstNames = ['Alex', 'Maria', 'James', 'Sophie', 'Liam', 'Emma', 'Noah', 'Olivia', 'Ivan', 'Anna', 'Daniel', 'Lisa', 'Tom', 'Kate', 'Ben', 'Sarah', 'Max', 'Julia', 'Chris', 'Elena', 'Raj', 'Priya', 'Yuki', 'Carlos', 'Lin', 'Omar']
+const lastNames = ['Johnson', 'Smith', 'Williams', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Clark', 'Lewis']
+const companies = ['TechCorp', 'DataFlow Inc', 'CloudNine', 'Nexus Labs', 'Pixel Studio', 'ByteForge', 'Quantum AI', 'GreenTech', 'SkyNet Ltd', 'CoreStack', 'Acme Corp', 'Nova Systems', 'ZenWorks', 'BluePeak']
 
 function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -44,7 +44,7 @@ function genContacts(count: number): Contact[] {
     const first = pick(firstNames)
     const last = pick(lastNames)
     return {
-      id: i + 1,
+      id: `c${i + 1}`,
       name: `${first} ${last}`,
       email: `${first.toLowerCase()}.${last.toLowerCase()}@${pick(companies).toLowerCase().replace(/\s/g, '')}.com`,
       company: pick(companies),
@@ -59,9 +59,9 @@ function genContacts(count: number): Contact[] {
 
 function genDeals(contacts: Contact[]): Deal[] {
   const stages: Deal['stage'][] = ['qualification', 'proposal', 'negotiation', 'closed-won', 'closed-lost']
-  return contacts.slice(0, 15).map((c, i) => ({
-    id: i + 1,
-    title: `${c.company} — ${pick(['Enterprise License', 'Annual Plan', 'Custom Integration', 'Support Package', 'Consulting'])}`,
+  return contacts.slice(0, 30).map((c, i) => ({
+    id: `d${i + 1}`,
+    title: `${c.company} — ${pick(['Enterprise License', 'Annual Plan', 'Custom Integration', 'Support Package', 'Consulting', 'Premium Tier', 'Training'])}`,
     contactId: c.id,
     value: Math.floor(Math.random() * 200000) + 5000,
     stage: pick(stages),
@@ -73,15 +73,15 @@ function genDeals(contacts: Contact[]): Deal[] {
 function genActivities(contacts: Contact[]): Activity[] {
   const types: Activity['type'][] = ['call', 'email', 'meeting', 'note']
   const descs: Record<Activity['type'], string[]> = {
-    call: ['Discussed pricing options', 'Follow-up on proposal', 'Cold call — interested', 'Quarterly check-in'],
-    email: ['Sent proposal PDF', 'Shared case study', 'Renewal reminder', 'Welcome onboarding email'],
-    meeting: ['Demo presentation', 'Contract review', 'Kickoff meeting', 'Quarterly business review'],
-    note: ['Decision maker identified', 'Budget approved Q3', 'Competitor evaluation in progress', 'Needs custom API integration'],
+    call: ['Discussed pricing options', 'Follow-up on proposal', 'Cold call — interested', 'Quarterly check-in', 'Demo scheduled', 'Budget discussion'],
+    email: ['Sent proposal PDF', 'Shared case study', 'Renewal reminder', 'Welcome onboarding email', 'Follow-up after demo', 'Invoice sent'],
+    meeting: ['Demo presentation', 'Contract review', 'Kickoff meeting', 'Quarterly business review', 'Product roadmap sync', 'Executive alignment'],
+    note: ['Decision maker identified', 'Budget approved Q3', 'Competitor evaluation in progress', 'Needs custom API integration', 'Expanding to new team', 'Upsell opportunity'],
   }
-  return Array.from({ length: 30 }, (_, i) => {
+  return Array.from({ length: 60 }, (_, i) => {
     const type = pick(types)
     return {
-      id: i + 1,
+      id: `a${i + 1}`,
       contactId: pick(contacts).id,
       type,
       description: pick(descs[type]),
@@ -90,7 +90,7 @@ function genActivities(contacts: Contact[]): Activity[] {
   }).sort((a, b) => b.date.localeCompare(a.date))
 }
 
-export const contacts = genContacts(25)
+export const contacts = genContacts(50)
 export const deals = genDeals(contacts)
 export const activities = genActivities(contacts)
 
@@ -100,4 +100,8 @@ export const pipelineStats = {
   negotiation: deals.filter(d => d.stage === 'negotiation'),
   'closed-won': deals.filter(d => d.stage === 'closed-won'),
   'closed-lost': deals.filter(d => d.stage === 'closed-lost'),
+}
+
+export function toTableRow(c: Contact) {
+  return { id: c.id, data: { ...c } as Record<string, unknown> }
 }

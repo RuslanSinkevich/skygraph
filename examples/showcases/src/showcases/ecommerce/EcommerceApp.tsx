@@ -1,108 +1,54 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
-  Table, Tabs, Tag, Button, Input, InputNumber, Badge, Steps,
+  Table, Tabs, Tag, Button, Input, Badge, Steps,
   Modal, Descriptions, Cascader, notification, NotificationContainer,
 } from '@skygraph/react'
 import type { TableColumn, TabItem } from '@skygraph/react'
-import { products, orders, categories, orderStatusStep } from './data'
+import { products, orders, categories, orderStatusStep, productToRow, orderToRow } from './data'
 import type { Product, Order } from './data'
 
 const statusColors: Record<string, string> = {
-  active: 'green',
-  draft: 'orange',
-  archived: 'gray',
-  pending: 'orange',
-  paid: 'blue',
-  shipped: 'cyan',
-  delivered: 'green',
-  cancelled: 'red',
+  active: 'success', draft: 'warning', archived: 'default',
+  pending: 'warning', paid: 'processing', shipped: 'processing', delivered: 'success', cancelled: 'error',
 }
 
 function ProductsTab() {
   const [data, setData] = useState(products)
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [editPrice, setEditPrice] = useState(0)
-  const [editStock, setEditStock] = useState(0)
 
-  const startEdit = (record: Product) => {
-    setEditingId(record.id)
-    setEditPrice(record.price)
-    setEditStock(record.stock)
-  }
+  const tableData = useMemo(() => data.map(productToRow), [data])
 
-  const saveEdit = () => {
-    setData(prev => prev.map(p =>
-      p.id === editingId ? { ...p, price: editPrice, stock: editStock } : p
-    ))
-    setEditingId(null)
-    notification.success({ message: 'Product updated' })
-  }
-
-  const columns: TableColumn<Product>[] = [
+  const columns: TableColumn[] = [
     {
-      key: 'name',
-      title: 'Product',
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (_, r) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 20 }}>{r.image}</span>
-          <span style={{ fontWeight: 500 }}>{r.name}</span>
-        </div>
-      ),
+      key: 'name', title: 'Product', width: 240, sortable: true,
+      render: (val) => <span style={{ fontWeight: 500 }}>📦 {String(val)}</span>,
+    },
+    { key: 'category', title: 'Category', width: 140, sortable: true },
+    {
+      key: 'price', title: 'Price', width: 100, sortable: true, align: 'right',
+      editable: true,
+      render: (val) => `$${Number(val).toFixed(2)}`,
     },
     {
-      key: 'price',
-      title: 'Price',
-      sorter: (a, b) => a.price - b.price,
-      render: (_, r) =>
-        editingId === r.id ? (
-          <InputNumber value={editPrice} onChange={v => setEditPrice(v ?? 0)} size="small" min={0} step={0.01} style={{ width: 100 }} />
-        ) : (
-          `$${r.price.toFixed(2)}`
-        ),
+      key: 'stock', title: 'Stock', width: 80, sortable: true, align: 'center',
+      editable: true,
+      render: (val) => {
+        const n = Number(val)
+        return <span style={{ color: n < 10 ? 'var(--sg-color-error)' : undefined }}>{n} {n < 10 ? '⚠️' : ''}</span>
+      },
     },
     {
-      key: 'stock',
-      title: 'Stock',
-      sorter: (a, b) => a.stock - b.stock,
-      render: (_, r) =>
-        editingId === r.id ? (
-          <InputNumber value={editStock} onChange={v => setEditStock(v ?? 0)} size="small" min={0} style={{ width: 80 }} />
-        ) : (
-          <span style={{ color: r.stock < 10 ? 'var(--sg-color-error)' : undefined }}>
-            {r.stock} {r.stock < 10 && '⚠️'}
-          </span>
-        ),
-    },
-    {
-      key: 'status',
-      title: 'Status',
+      key: 'status', title: 'Status', width: 100,
       filters: [
-        { label: 'Active', value: 'active' },
-        { label: 'Draft', value: 'draft' },
-        { label: 'Archived', value: 'archived' },
+        { text: 'Active', value: 'active' },
+        { text: 'Draft', value: 'draft' },
+        { text: 'Archived', value: 'archived' },
       ],
-      onFilter: (value, record) => record.status === value,
-      render: (_, r) => <Tag color={statusColors[r.status]}>{r.status}</Tag>,
+      onFilter: (value, row) => row.status === value,
+      render: (val) => <Tag color={statusColors[String(val)]}>{String(val)}</Tag>,
     },
     {
-      key: 'rating',
-      title: 'Rating',
-      sorter: (a, b) => a.rating - b.rating,
-      render: (_, r) => `⭐ ${r.rating}`,
-    },
-    {
-      key: 'actions',
-      title: '',
-      render: (_, r) =>
-        editingId === r.id ? (
-          <div style={{ display: 'flex', gap: 4 }}>
-            <Button size="small" type="primary" onClick={saveEdit}>Save</Button>
-            <Button size="small" onClick={() => setEditingId(null)}>Cancel</Button>
-          </div>
-        ) : (
-          <Button size="small" onClick={() => startEdit(r)}>Edit</Button>
-        ),
+      key: 'rating', title: 'Rating', width: 80, sortable: true,
+      render: (val) => `⭐ ${val}`,
     },
   ]
 
@@ -112,11 +58,22 @@ function ProductsTab() {
         <Input placeholder="Search products..." style={{ width: 240 }} />
         <Cascader options={categories} placeholder="Category" style={{ width: 220 }} />
         <div className="sc-toolbar-spacer" />
-        <Button type="primary" onClick={() => notification.info({ message: 'Add product dialog (mock)' })}>
+        <Button type="primary" onClick={() => notification.info('Add product dialog (mock)')}>
           + Add Product
         </Button>
       </div>
-      <Table<Product> columns={columns} dataSource={data} rowKey="id" size="small" pagination={{ pageSize: 8 }} />
+      <Table
+        columns={columns}
+        data={tableData}
+        pageSize={10}
+        size="small"
+        onCellEdit={(id, col, val) => {
+          setData(prev => prev.map(p =>
+            p.id === id ? { ...p, [col]: col === 'price' ? Number(val) : Number(val) } : p
+          ))
+          notification.success('Product updated')
+        }}
+      />
     </>
   )
 }
@@ -124,81 +81,74 @@ function ProductsTab() {
 function OrdersTab() {
   const [orderDetail, setOrderDetail] = useState<Order | null>(null)
 
-  const columns: TableColumn<Order>[] = [
-    {
-      key: 'id',
-      title: 'Order',
-      render: (_, r) => <span style={{ fontWeight: 500, fontFamily: 'monospace' }}>{r.id}</span>,
-    },
-    {
-      key: 'customer',
-      title: 'Customer',
-      sorter: (a, b) => a.customer.localeCompare(b.customer),
-    },
-    {
-      key: 'total',
-      title: 'Total',
-      sorter: (a, b) => a.total - b.total,
-      render: (_, r) => `$${r.total.toFixed(2)}`,
-    },
-    {
-      key: 'status',
-      title: 'Status',
-      filters: [
-        { label: 'Pending', value: 'pending' },
-        { label: 'Paid', value: 'paid' },
-        { label: 'Shipped', value: 'shipped' },
-        { label: 'Delivered', value: 'delivered' },
-        { label: 'Cancelled', value: 'cancelled' },
-      ],
-      onFilter: (value, record) => record.status === value,
-      render: (_, r) => <Tag color={statusColors[r.status]}>{r.status}</Tag>,
-    },
-    { key: 'date', title: 'Date', sorter: (a, b) => a.date.localeCompare(b.date) },
-    {
-      key: 'items_count',
-      title: 'Items',
-      render: (_, r) => <Badge count={r.items.length} />,
-    },
-    {
-      key: 'actions',
-      title: '',
-      render: (_, r) => <Button size="small" onClick={() => setOrderDetail(r)}>Details</Button>,
-    },
-  ]
+  const tableData = useMemo(() => orders.map(orderToRow), [])
 
-  const stepItems = [
-    { title: 'Pending' },
-    { title: 'Paid' },
-    { title: 'Shipped' },
-    { title: 'Delivered' },
+  const columns: TableColumn[] = [
+    {
+      key: 'id', title: 'Order', width: 120,
+      render: (val) => <span style={{ fontWeight: 500, fontFamily: 'monospace' }}>{String(val)}</span>,
+    },
+    { key: 'customer', title: 'Customer', width: 140, sortable: true },
+    {
+      key: 'total', title: 'Total', width: 100, sortable: true, align: 'right',
+      render: (val) => `$${Number(val).toFixed(2)}`,
+    },
+    {
+      key: 'status', title: 'Status', width: 110,
+      filters: [
+        { text: 'Pending', value: 'pending' },
+        { text: 'Paid', value: 'paid' },
+        { text: 'Shipped', value: 'shipped' },
+        { text: 'Delivered', value: 'delivered' },
+        { text: 'Cancelled', value: 'cancelled' },
+      ],
+      onFilter: (value, row) => row.status === value,
+      render: (val) => <Tag color={statusColors[String(val)]}>{String(val)}</Tag>,
+    },
+    { key: 'date', title: 'Date', width: 110, sortable: true },
+    {
+      key: 'itemCount', title: 'Items', width: 70, align: 'center',
+      render: (val) => <Badge count={Number(val)} />,
+    },
+    {
+      key: 'actions', title: '', width: 80,
+      render: (_, row) => (
+        <Button size="small" onClick={() => {
+          const o = orders.find(x => x.id === String(row.id))
+          if (o) setOrderDetail(o)
+        }}>Details</Button>
+      ),
+    },
   ]
 
   return (
     <>
-      <Table<Order>
+      <Table
         columns={columns}
-        dataSource={orders}
-        rowKey="id"
+        data={tableData}
+        pageSize={10}
         size="small"
-        pagination={{ pageSize: 8 }}
         expandable={{
-          expandedRowRender: (record) => (
-            <div style={{ padding: '8px 0' }}>
-              {record.items.map((it, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', fontSize: 13 }}>
-                  <span>{it.name} × {it.qty}</span>
-                  <span>${(it.price * it.qty).toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
-          ),
+          expandedRowRender: (row) => {
+            const o = orders.find(x => x.id === String(row.id))
+            if (!o) return null
+            return (
+              <div style={{ padding: '8px 0' }}>
+                {o.items.map((it, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', fontSize: 13 }}>
+                    <span>{it.name} × {it.qty}</span>
+                    <span>${(it.price * it.qty).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            )
+          },
         }}
       />
 
       <Modal
         open={!!orderDetail}
-        onCancel={() => setOrderDetail(null)}
+        onClose={() => setOrderDetail(null)}
         title={`Order ${orderDetail?.id}`}
         footer={<Button onClick={() => setOrderDetail(null)}>Close</Button>}
         width={560}
@@ -208,11 +158,16 @@ function OrdersTab() {
             {orderDetail.status !== 'cancelled' ? (
               <Steps
                 current={orderStatusStep[orderDetail.status]}
-                items={stepItems}
+                items={[
+                  { title: 'Pending' },
+                  { title: 'Paid' },
+                  { title: 'Shipped' },
+                  { title: 'Delivered' },
+                ]}
                 size="small"
               />
             ) : (
-              <Tag color="red" style={{ alignSelf: 'flex-start' }}>Cancelled</Tag>
+              <Tag color="error">Cancelled</Tag>
             )}
             <Descriptions
               items={[
@@ -271,21 +226,18 @@ function StatsRow() {
 }
 
 export function EcommerceApp() {
-  const tabs: TabItem[] = [
-    { key: 'products', label: 'Products' },
-    { key: 'orders', label: 'Orders' },
-  ]
   const [activeTab, setActiveTab] = useState('products')
+
+  const tabs: TabItem[] = [
+    { key: 'products', label: 'Products', children: <ProductsTab /> },
+    { key: 'orders', label: 'Orders', children: <OrdersTab /> },
+  ]
 
   return (
     <div className="sc-content" style={{ flex: 1 }}>
       <NotificationContainer />
       <StatsRow />
       <Tabs items={tabs} activeKey={activeTab} onChange={setActiveTab} />
-      <div style={{ marginTop: 16 }}>
-        {activeTab === 'products' && <ProductsTab />}
-        {activeTab === 'orders' && <OrdersTab />}
-      </div>
     </div>
   )
 }

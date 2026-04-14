@@ -4,17 +4,17 @@ import {
   Progress, Form, Field, Select, Descriptions, notification, NotificationContainer,
 } from '@skygraph/react'
 import type { TableColumn, TabItem } from '@skygraph/react'
-import { contacts, deals, activities, pipelineStats } from './data'
-import type { Contact, Deal, ContactStatus } from './data'
+import { contacts, deals, activities, pipelineStats, toTableRow } from './data'
+import type { Contact, ContactStatus } from './data'
 
 const statusColors: Record<ContactStatus, string> = {
-  lead: 'blue',
-  customer: 'green',
-  churned: 'red',
-  prospect: 'orange',
+  lead: 'processing',
+  customer: 'success',
+  churned: 'error',
+  prospect: 'warning',
 }
 
-const stageLabels: Record<Deal['stage'], string> = {
+const stageLabels: Record<string, string> = {
   qualification: 'Qualification',
   proposal: 'Proposal',
   negotiation: 'Negotiation',
@@ -56,54 +56,64 @@ function StatsRow() {
 function ContactsTab() {
   const [search, setSearch] = useState('')
   const [drawerContact, setDrawerContact] = useState<Contact | null>(null)
-  const [statusFilter, setStatusFilter] = useState<string>('')
 
   const filtered = useMemo(() => {
-    let list = contacts
-    if (search) list = list.filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || c.company.toLowerCase().includes(search.toLowerCase()))
-    if (statusFilter) list = list.filter(c => c.status === statusFilter)
-    return list
-  }, [search, statusFilter])
+    if (!search) return contacts
+    const q = search.toLowerCase()
+    return contacts.filter(c => c.name.toLowerCase().includes(q) || c.company.toLowerCase().includes(q))
+  }, [search])
 
-  const columns: TableColumn<Contact>[] = [
+  const tableData = useMemo(() => filtered.map(toTableRow), [filtered])
+
+  const columns: TableColumn[] = [
     {
       key: 'name',
       title: 'Contact',
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (_, r) => (
+      width: 240,
+      sortable: true,
+      render: (_, row) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Avatar size="small">{r.avatar}</Avatar>
+          <Avatar size="small">{String(row.avatar)}</Avatar>
           <div>
-            <div style={{ fontWeight: 500 }}>{r.name}</div>
-            <div style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>{r.email}</div>
+            <div style={{ fontWeight: 500 }}>{String(row.name)}</div>
+            <div style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>{String(row.email)}</div>
           </div>
         </div>
       ),
     },
-    { key: 'company', title: 'Company', sorter: (a, b) => a.company.localeCompare(b.company) },
+    { key: 'company', title: 'Company', width: 140, sortable: true },
     {
       key: 'status',
       title: 'Status',
+      width: 110,
       filters: [
-        { label: 'Lead', value: 'lead' },
-        { label: 'Customer', value: 'customer' },
-        { label: 'Churned', value: 'churned' },
-        { label: 'Prospect', value: 'prospect' },
+        { text: 'Lead', value: 'lead' },
+        { text: 'Customer', value: 'customer' },
+        { text: 'Churned', value: 'churned' },
+        { text: 'Prospect', value: 'prospect' },
       ],
-      onFilter: (value, record) => record.status === value,
-      render: (_, r) => <Tag color={statusColors[r.status]}>{r.status}</Tag>,
+      onFilter: (value, row) => row.status === value,
+      render: (val) => <Tag color={statusColors[val as ContactStatus]}>{String(val)}</Tag>,
     },
     {
       key: 'revenue',
       title: 'Revenue',
-      sorter: (a, b) => a.revenue - b.revenue,
-      render: (_, r) => `$${r.revenue.toLocaleString()}`,
+      width: 120,
+      sortable: true,
+      align: 'right',
+      render: (val) => `$${Number(val).toLocaleString()}`,
     },
-    { key: 'lastContact', title: 'Last Contact', sorter: (a, b) => a.lastContact.localeCompare(b.lastContact) },
+    { key: 'lastContact', title: 'Last Contact', width: 120, sortable: true },
     {
       key: 'actions',
       title: '',
-      render: (_, r) => <Button size="small" onClick={() => setDrawerContact(r)}>View</Button>,
+      width: 80,
+      render: (_, row) => (
+        <Button size="small" onClick={() => {
+          const c = contacts.find(x => x.id === String(row.id))
+          if (c) setDrawerContact(c)
+        }}>View</Button>
+      ),
     },
   ]
 
@@ -118,27 +128,13 @@ function ContactsTab() {
   return (
     <>
       <div className="sc-toolbar">
-        <Input placeholder="Search contacts..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: 240 }} />
-        <Select
-          placeholder="All statuses"
-          value={statusFilter || undefined}
-          onChange={v => setStatusFilter(v ?? '')}
-          options={[
-            { label: 'All statuses', value: '' },
-            { label: 'Lead', value: 'lead' },
-            { label: 'Customer', value: 'customer' },
-            { label: 'Prospect', value: 'prospect' },
-            { label: 'Churned', value: 'churned' },
-          ]}
-          style={{ width: 160 }}
-          allowClear
-        />
+        <Input placeholder="Search contacts..." value={search} onChange={setSearch} style={{ width: 240 }} />
         <div className="sc-toolbar-spacer" />
-        <Button type="primary" onClick={() => notification.success({ message: 'Contact created (mock)' })}>
+        <Button type="primary" onClick={() => notification.success('Contact created (mock)')}>
           + Add Contact
         </Button>
       </div>
-      <Table<Contact> columns={columns} dataSource={filtered} rowKey="id" size="small" pagination={{ pageSize: 8 }} />
+      <Table columns={columns} data={tableData} pageSize={10} size="small" />
 
       <Drawer
         open={!!drawerContact}
@@ -216,8 +212,7 @@ function DealsTab() {
             </div>
             <Progress
               percent={Math.round((stageDeals.length / Math.max(deals.length, 1)) * 100)}
-              size="small"
-              status={stage === 'closed-won' ? 'success' : stage === 'closed-lost' ? 'exception' : 'active'}
+              status={stage === 'closed-won' ? 'success' : stage === 'closed-lost' ? 'error' : 'active'}
             />
             {stageDeals.map(d => {
               const contact = contacts.find(c => c.id === d.contactId)
@@ -241,7 +236,7 @@ function ActivityTab() {
   const typeIcons: Record<string, string> = { call: '📞', email: '📧', meeting: '🤝', note: '📝' }
   return (
     <Timeline
-      items={activities.slice(0, 20).map(a => {
+      items={activities.slice(0, 30).map(a => {
         const contact = contacts.find(c => c.id === a.contactId)
         return {
           children: (
@@ -266,7 +261,7 @@ function NewContactTab() {
     <div style={{ maxWidth: 480 }}>
       <Form
         onFinish={(values) => {
-          notification.success({ message: 'Contact created (mock)', description: JSON.stringify(values, null, 2) })
+          notification.success('Contact created (mock)', JSON.stringify(values, null, 2))
         }}
       >
         <Field name="name" label="Full Name" rules={[{ required: true }]}>
@@ -300,26 +295,20 @@ function NewContactTab() {
 }
 
 export function CrmApp() {
-  const tabs: TabItem[] = [
-    { key: 'contacts', label: 'Contacts' },
-    { key: 'deals', label: 'Pipeline' },
-    { key: 'activity', label: 'Activity' },
-    { key: 'new', label: '+ New Contact' },
-  ]
-
   const [activeTab, setActiveTab] = useState('contacts')
+
+  const tabs: TabItem[] = [
+    { key: 'contacts', label: 'Contacts', children: <ContactsTab /> },
+    { key: 'deals', label: 'Pipeline', children: <DealsTab /> },
+    { key: 'activity', label: 'Activity', children: <ActivityTab /> },
+    { key: 'new', label: '+ New Contact', children: <NewContactTab /> },
+  ]
 
   return (
     <div className="sc-content" style={{ flex: 1 }}>
       <NotificationContainer />
       <StatsRow />
       <Tabs items={tabs} activeKey={activeTab} onChange={setActiveTab} />
-      <div style={{ marginTop: 16 }}>
-        {activeTab === 'contacts' && <ContactsTab />}
-        {activeTab === 'deals' && <DealsTab />}
-        {activeTab === 'activity' && <ActivityTab />}
-        {activeTab === 'new' && <NewContactTab />}
-      </div>
     </div>
   )
 }

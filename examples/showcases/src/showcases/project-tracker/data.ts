@@ -2,7 +2,7 @@ export type Priority = 'critical' | 'high' | 'medium' | 'low'
 export type TaskStatus = 'todo' | 'in-progress' | 'review' | 'done'
 
 export interface Task {
-  id: number
+  id: string
   title: string
   project: string
   assignee: string
@@ -22,12 +22,17 @@ export interface ProjectNode {
 const taskTitles = [
   'Set up CI/CD pipeline', 'Design landing page', 'Implement auth flow', 'Write unit tests',
   'Fix memory leak', 'Add dark mode', 'Optimize bundle size', 'Create API docs',
-  'Database migration', 'Add error tracking', 'Build notification system', 'Refactor state management',
+  'Database migration v2', 'Add error tracking', 'Build notification system', 'Refactor state management',
   'Mobile responsive layout', 'Add i18n support', 'Performance audit', 'Setup monitoring',
   'Code review automation', 'Add search feature', 'Implement caching layer', 'SSL certificate renewal',
   'User onboarding flow', 'Add export to PDF', 'Fix timezone bugs', 'Upgrade dependencies',
   'Add rate limiting', 'Write E2E tests', 'Design system tokens', 'Build admin panel',
-  'API versioning', 'Add webhooks support',
+  'API versioning', 'Add webhooks support', 'OAuth2 integration', 'GraphQL migration',
+  'Docker containerization', 'Load testing setup', 'CDN configuration', 'Backup strategy',
+  'Multi-tenant support', 'Role-based access control', 'Audit logging', 'Data encryption',
+  'API gateway setup', 'Service mesh config', 'Blue-green deployment', 'Feature flags system',
+  'Analytics dashboard', 'Customer feedback widget', 'Payment integration', 'Email template builder',
+  'Chat system MVP', 'Video call integration',
 ]
 
 const assignees = ['Alex K.', 'Maria S.', 'James L.', 'Sophie W.', 'Liam N.', 'Emma T.', 'Noah D.', 'Olivia M.']
@@ -39,7 +44,7 @@ function pick<T>(arr: T[]): T {
 }
 
 export const tasks: Task[] = taskTitles.map((title, i) => ({
-  id: i + 1,
+  id: `t${i + 1}`,
   title,
   project: pick(projects),
   assignee: pick(assignees),
@@ -76,4 +81,8 @@ export const sprintProgress = {
   inProgress: tasks.filter(t => t.status === 'in-progress').length,
   review: tasks.filter(t => t.status === 'review').length,
   todo: tasks.filter(t => t.status === 'todo').length,
+}
+
+export function taskToRow(t: Task) {
+  return { id: t.id, data: { ...t, tagsStr: t.tags.join(', ') } as Record<string, unknown> }
 }
