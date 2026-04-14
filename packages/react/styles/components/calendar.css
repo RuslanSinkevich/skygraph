@@ -20,9 +20,28 @@
 }
 
 .sg-calendar-mini .sg-calendar-header {
+  align-items: flex-start;
   padding: var(--sg-padding-sm);
-  flex-wrap: wrap;
   gap: var(--sg-padding-xs);
+}
+
+.sg-calendar-mini .sg-calendar-header-center {
+  flex: 1;
+  min-width: 0;
+  row-gap: var(--sg-padding-sm);
+}
+
+.sg-calendar-mini .sg-calendar-nav-btn {
+  width: 24px;
+  height: 24px;
+  font-size: var(--sg-font-size-sm);
+}
+
+.sg-calendar-mini .sg-calendar-month-select,
+.sg-calendar-mini .sg-calendar-year-select {
+  height: 24px;
+  padding: 0 var(--sg-padding-xs);
+  font-size: var(--sg-font-size-sm);
 }
 
 .sg-calendar-mini .sg-calendar-cell {
@@ -86,7 +105,10 @@
   color: var(--sg-color-text-secondary);
   cursor: pointer;
   font-size: var(--sg-font-size-lg);
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration),
+    box-shadow var(--sg-transition-duration);
   padding: 0;
   line-height: 1;
 }
@@ -139,7 +161,10 @@
   color: var(--sg-color-text-secondary);
   font-size: var(--sg-font-size-sm);
   cursor: pointer;
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration),
+    box-shadow var(--sg-transition-duration);
   line-height: 1.4;
 }
 
@@ -158,7 +183,7 @@
 
 .sg-calendar-mini .sg-calendar-mode-btn {
   padding: 2px var(--sg-padding-xs);
-  font-size: 12px;
+  font-size: var(--sg-font-size-sm);
 }
 
 /* Body */
@@ -274,7 +299,10 @@
   text-align: center;
   cursor: pointer;
   border-radius: var(--sg-border-radius);
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration),
+    box-shadow var(--sg-transition-duration);
 }
 
 .sg-calendar-month-cell:hover {
@@ -331,7 +359,10 @@
   color: var(--sg-color-primary);
   font-size: var(--sg-font-size-sm);
   cursor: pointer;
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration),
+    box-shadow var(--sg-transition-duration);
 }
 
 .sg-calendar-today-btn:hover {

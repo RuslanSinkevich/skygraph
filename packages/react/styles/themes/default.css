@@ -1,2 +1,5 @@
-/* Default theme — Light is already set in tokens.css :root */
-/* This file exists for explicit import when needed */
+/* SkyGraph -- Light theme (default) */
+/* Re-exports the light semantic tokens for explicit usage: */
+/* import '@skygraph/react/styles/themes/default.css' */
+
+@import '../tokens.css';

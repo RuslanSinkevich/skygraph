@@ -16,7 +16,10 @@
   background: var(--sg-input-bg, var(--sg-color-bg-container));
   border: 1px solid var(--sg-input-border, var(--sg-color-border));
   border-radius: var(--sg-input-radius, var(--sg-border-radius));
-  transition: all var(--sg-transition-duration) var(--sg-transition-timing);
+  transition: color var(--sg-transition-duration) var(--sg-transition-timing),
+    background var(--sg-transition-duration) var(--sg-transition-timing),
+    border-color var(--sg-transition-duration) var(--sg-transition-timing),
+    box-shadow var(--sg-transition-duration) var(--sg-transition-timing);
   font-family: inherit;
 }
 
@@ -29,6 +32,12 @@
 }
 
 .sg-input:focus {
+  --sg-input-border: var(--sg-color-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--sg-color-primary-bg);
+}
+
+.sg-input:focus-visible {
   --sg-input-border: var(--sg-color-primary);
   outline: none;
   box-shadow: 0 0 0 2px var(--sg-color-primary-bg);

@@ -1,7 +1,7 @@
 .sg-rate {
   display: inline-flex;
   gap: var(--sg-padding-xs);
-  font-size: 20px;
+  font-size: var(--sg-font-size-xl);
 }
 
 .sg-rate-disabled {
@@ -17,5 +17,5 @@
 }
 
 .sg-rate-star:hover { transform: scale(1.15); }
-.sg-rate-star-full { color: #fadb14; }
-.sg-rate-star-half { color: #fadb14; opacity: 0.5; }
+.sg-rate-star-full { color: var(--sg-color-star); }
+.sg-rate-star-half { color: var(--sg-color-star); opacity: 0.5; }

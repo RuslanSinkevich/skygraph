@@ -39,6 +39,12 @@
   box-shadow: 0 0 0 2px var(--sg-color-primary-bg);
 }
 
+.sg-timepicker-input:focus-visible {
+  outline: none;
+  border-color: var(--sg-color-primary);
+  box-shadow: 0 0 0 2px var(--sg-color-primary-bg);
+}
+
 .sg-timepicker-placeholder {
   color: var(--sg-color-text-quaternary);
 }
@@ -46,7 +52,7 @@
 .sg-timepicker-suffix {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--sg-padding-xs);
   margin-left: auto;
   color: var(--sg-color-text-tertiary);
   flex-shrink: 0;
@@ -58,7 +64,7 @@
 
 .sg-timepicker-clear {
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--sg-font-size);
   line-height: 1;
   color: var(--sg-color-text-quaternary);
   transition: color var(--sg-transition-duration);
@@ -101,8 +107,8 @@
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1050;
-  margin-top: 4px;
+  z-index: var(--sg-z-dropdown);
+  margin-top: var(--sg-padding-xs);
   background: var(--sg-color-bg-elevated);
   border-radius: var(--sg-border-radius-lg);
   box-shadow: var(--sg-shadow-lg);
@@ -195,7 +201,10 @@
   color: var(--sg-color-primary);
   font-size: var(--sg-font-size-sm);
   cursor: pointer;
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration),
+    box-shadow var(--sg-transition-duration);
 }
 
 .sg-tp-now-btn:hover {

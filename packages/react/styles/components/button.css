@@ -20,7 +20,10 @@
   border: 1px solid var(--sg-btn-border);
   border-radius: var(--sg-btn-radius);
   cursor: pointer;
-  transition: all var(--sg-transition-duration) var(--sg-transition-timing);
+  transition: color var(--sg-transition-duration) var(--sg-transition-timing),
+    background var(--sg-transition-duration) var(--sg-transition-timing),
+    border-color var(--sg-transition-duration) var(--sg-transition-timing),
+    box-shadow var(--sg-transition-duration) var(--sg-transition-timing);
   user-select: none;
   white-space: nowrap;
   font-family: inherit;
@@ -34,6 +37,12 @@
 .sg-button:active {
   --sg-btn-color: var(--sg-color-primary-active);
   --sg-btn-border: var(--sg-color-primary-active);
+}
+
+.sg-button:focus-visible {
+  outline: none;
+  --sg-btn-border: var(--sg-color-primary);
+  box-shadow: 0 0 0 2px var(--sg-color-primary-bg);
 }
 
 .sg-button:disabled {

@@ -127,3 +127,23 @@
 .sg-collapse-leave-active {
   transition: max-height 0.3s ease, opacity 0.3s ease;
 }
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .sg-fade-enter-active,
+  .sg-fade-leave-active,
+  .sg-slide-up-enter-active,
+  .sg-slide-up-leave-active,
+  .sg-slide-down-enter-active,
+  .sg-slide-down-leave-active,
+  .sg-slide-left-enter-active,
+  .sg-slide-left-leave-active,
+  .sg-slide-right-enter-active,
+  .sg-slide-right-leave-active,
+  .sg-zoom-enter-active,
+  .sg-zoom-leave-active,
+  .sg-collapse-enter-active,
+  .sg-collapse-leave-active {
+    transition-duration: 0.01ms !important;
+  }
+}

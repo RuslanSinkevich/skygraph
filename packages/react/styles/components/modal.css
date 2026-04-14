@@ -1,7 +1,7 @@
 .sg-modal-mask {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: var(--sg-z-modal);
   background: var(--sg-color-overlay);
   display: flex;
   align-items: center;
@@ -46,7 +46,8 @@
   color: var(--sg-color-text-tertiary);
   cursor: pointer;
   border-radius: var(--sg-border-radius-sm);
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration);
 }
 
 .sg-modal-close:hover {

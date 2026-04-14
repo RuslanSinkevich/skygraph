@@ -39,6 +39,12 @@
   box-shadow: 0 0 0 2px var(--sg-color-primary-bg);
 }
 
+.sg-datepicker-input:focus-visible {
+  outline: none;
+  border-color: var(--sg-color-primary);
+  box-shadow: 0 0 0 2px var(--sg-color-primary-bg);
+}
+
 .sg-datepicker-input-text {
   flex: 1;
   border: none;
@@ -58,7 +64,7 @@
 .sg-datepicker-suffix {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--sg-padding-xs);
   margin-left: auto;
   color: var(--sg-color-text-tertiary);
   flex-shrink: 0;
@@ -70,7 +76,7 @@
 
 .sg-datepicker-clear {
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--sg-font-size);
   line-height: 1;
   color: var(--sg-color-text-quaternary);
   transition: color var(--sg-transition-duration);
@@ -124,8 +130,8 @@
 
 .sg-dp-dropdown {
   position: absolute;
-  z-index: 1050;
-  margin-top: 4px;
+  z-index: var(--sg-z-dropdown);
+  margin-top: var(--sg-padding-xs);
   background: var(--sg-color-bg-elevated);
   border-radius: var(--sg-border-radius-lg);
   box-shadow: var(--sg-shadow-lg);
@@ -134,8 +140,8 @@
 
 .sg-dp-dropdown-bottomLeft { top: 100%; left: 0; }
 .sg-dp-dropdown-bottomRight { top: 100%; right: 0; }
-.sg-dp-dropdown-topLeft { bottom: 100%; left: 0; margin-top: 0; margin-bottom: 4px; }
-.sg-dp-dropdown-topRight { bottom: 100%; right: 0; margin-top: 0; margin-bottom: 4px; }
+.sg-dp-dropdown-topLeft { bottom: 100%; left: 0; margin-top: 0; margin-bottom: var(--sg-padding-xs); }
+.sg-dp-dropdown-topRight { bottom: 100%; right: 0; margin-top: 0; margin-bottom: var(--sg-padding-xs); }
 
 .sg-dp-dropdown-inner {
   display: flex;
@@ -198,16 +204,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: var(--sg-height-sm);
+  height: var(--sg-height-sm);
   border: none;
   border-radius: var(--sg-border-radius-sm);
   background: transparent;
   color: var(--sg-color-text-tertiary);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--sg-font-size);
   line-height: 1;
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration),
+    box-shadow var(--sg-transition-duration);
   padding: 0;
 }
 
@@ -247,7 +256,10 @@
   height: 28px;
   border-radius: 50%;
   font-size: var(--sg-font-size-sm);
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration),
+    box-shadow var(--sg-transition-duration);
   line-height: 1;
 }
 
@@ -322,7 +334,10 @@
   cursor: pointer;
   font-size: var(--sg-font-size-sm);
   color: var(--sg-color-text);
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration),
+    box-shadow var(--sg-transition-duration);
 }
 
 .sg-dp-month-cell:hover {
@@ -357,7 +372,10 @@
   cursor: pointer;
   font-size: var(--sg-font-size-sm);
   color: var(--sg-color-text);
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration),
+    box-shadow var(--sg-transition-duration);
 }
 
 .sg-dp-year-cell:hover {
@@ -442,7 +460,10 @@
   color: var(--sg-color-text);
   font-size: var(--sg-font-size-sm);
   cursor: pointer;
-  transition: all var(--sg-transition-duration);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration),
+    box-shadow var(--sg-transition-duration);
 }
 
 .sg-dp-footer-btn:hover {

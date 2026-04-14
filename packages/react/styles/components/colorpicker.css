@@ -88,7 +88,7 @@
 
 .sg-colorpicker-dropdown {
   position: absolute;
-  z-index: 1050;
+  z-index: var(--sg-z-dropdown);
   top: calc(100% + 4px);
   left: 0;
   width: 240px;

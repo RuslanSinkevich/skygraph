@@ -9,7 +9,7 @@
 
 .sg-dropdown {
   position: absolute;
-  z-index: 1050;
+  z-index: var(--sg-z-dropdown);
   min-width: 120px;
   padding: var(--sg-padding-xs) 0;
   background: var(--sg-color-bg-elevated);

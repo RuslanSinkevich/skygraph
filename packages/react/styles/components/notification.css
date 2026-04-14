@@ -1,6 +1,6 @@
 .sg-notification-container {
   position: fixed;
-  z-index: 1010;
+  z-index: var(--sg-z-notification);
   display: flex;
   flex-direction: column;
   gap: var(--sg-margin-sm);

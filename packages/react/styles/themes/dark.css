@@ -1,3 +1,6 @@
-/* Dark theme — apply via data-sg-theme="dark" on any element */
-/* Semantic tokens are already defined in tokens.css under [data-sg-theme="dark"] */
-/* Import this file to ensure dark theme styles are available */
+/* SkyGraph -- Dark theme */
+/* Apply via data-sg-theme="dark" on <html> or any container. */
+/* Import this file when you only need tokens (no components): */
+/* import '@skygraph/react/styles/themes/dark.css' */
+
+@import '../tokens.css';

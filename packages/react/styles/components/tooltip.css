@@ -5,7 +5,7 @@
 
 .sg-tooltip {
   position: absolute;
-  z-index: 1000;
+  z-index: var(--sg-z-tooltip);
   pointer-events: none;
 }
 

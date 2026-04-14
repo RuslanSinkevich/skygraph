@@ -46,12 +46,12 @@
 }
 
 .sg-menu-dark .sg-menu-item:hover {
-  color: #fff;
+  color: var(--sg-color-white, #fff);
   background: rgba(255, 255, 255, 0.08);
 }
 
 .sg-menu-dark .sg-menu-item-selected {
-  color: #fff;
+  color: var(--sg-color-white, #fff);
   background: var(--sg-color-primary);
 }
 
@@ -204,7 +204,7 @@
 
 .sg-menu-popup {
   position: absolute;
-  z-index: 1050;
+  z-index: var(--sg-z-dropdown);
   min-width: 160px;
   padding: var(--sg-padding-xs) 0;
   background: var(--sg-color-bg-elevated);

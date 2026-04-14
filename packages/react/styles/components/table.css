@@ -204,7 +204,7 @@
   color: var(--sg-color-text);
   background: var(--sg-color-bg);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.15);
+  box-shadow: 0 0 0 2px var(--sg-color-primary-bg);
 }
 
 /* ---- Resize handle ---- */
@@ -227,7 +227,7 @@
 /* ---- Filter ---- */
 .sg-table-filter-trigger {
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--sg-font-size-sm);
   color: var(--sg-color-text-tertiary);
   padding: 0 2px;
   transition: color var(--sg-transition-duration);
@@ -243,7 +243,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1050;
+  z-index: var(--sg-z-dropdown);
   min-width: 140px;
   background: var(--sg-color-bg-elevated);
   border-radius: var(--sg-border-radius-lg);

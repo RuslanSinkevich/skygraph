@@ -1,7 +1,17 @@
-/* SkyGraph minimal reset — only for .sg-* scoped elements */
+/* SkyGraph reset — all sg-* scoped elements */
 
-.sg-form *,
-.sg-form *::before,
-.sg-form *::after {
+[class^="sg-"],
+[class*=" sg-"],
+[class^="sg-"] *,
+[class*=" sg-"] *,
+[class^="sg-"] *::before,
+[class*=" sg-"] *::before,
+[class^="sg-"] *::after,
+[class*=" sg-"] *::after {
   box-sizing: border-box;
+}
+
+[class^="sg-"] button,
+[class*=" sg-"] button {
+  font-family: inherit;
 }
