@@ -82,6 +82,45 @@ export function SkeletonDemo() {
         <Skeleton paragraph={{ rows: 5 }} active />
       </DemoBox>
 
+      <DemoBox
+        title="Square avatar"
+        description="Skeleton.avatar accepts shape and size options."
+        code={`<Skeleton active avatar={{ shape: 'square', size: 64 }} />`}
+      >
+        <Skeleton active avatar={{ shape: 'square', size: 64 }} />
+      </DemoBox>
+
+      <DemoBox
+        title="Custom paragraph widths"
+        description="Pass an array of widths to shape long/short lines."
+        code={`<Skeleton active paragraph={{ rows: 4, width: ['100%', '90%', '80%', '40%'] }} />`}
+      >
+        <Skeleton
+          active
+          paragraph={{ rows: 4, width: ['100%', '90%', '80%', '40%'] }}
+        />
+      </DemoBox>
+
+      <DemoBox
+        title="Card composition"
+        description="Compose skeletons inside a card shape for loading-state layouts."
+        code={`<div style={{ padding: 16, border: '1px solid var(--sg-color-border)', borderRadius: 'var(--sg-border-radius)' }}>
+  <Skeleton active avatar title paragraph={{ rows: 3 }} />
+</div>`}
+      >
+        <div
+          style={{
+            padding: 16,
+            border: '1px solid var(--sg-color-border)',
+            borderRadius: 'var(--sg-border-radius)',
+            background: 'var(--sg-color-bg-container)',
+            maxWidth: 480,
+          }}
+        >
+          <Skeleton active avatar title paragraph={{ rows: 3 }} />
+        </div>
+      </DemoBox>
+
       <PropsTable data={skeletonProps} />
     </ComponentDoc>
   )

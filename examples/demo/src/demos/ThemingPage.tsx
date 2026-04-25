@@ -99,6 +99,27 @@ function ThemeSwitch() {
   --sg-input-border-radius: 8px;
 }`}</code></pre>
 
+      <h2 id="slots">Slot-based styling (classNames / styles)</h2>
+      <p>
+        For complex components you can target specific DOM nodes via named slots —
+        without relying on deep selectors. Use <code>classNames</code> for CSS
+        classes and <code>styles</code> for inline styles. Slot keys and the
+        corresponding stable DOM classes are part of the public styling contract.
+      </p>
+      <pre className="doc-code"><code>{`<Table
+  classNames={{
+    root: 'orders-table',
+    toolbar: 'orders-table__toolbar',
+    headerCell: 'orders-table__th',
+    bodyCell: 'orders-table__td',
+    row: 'orders-table__row',
+  }}
+  styles={{
+    headerCell: { fontSize: 16 },
+  }}
+  ...
+/>`}</code></pre>
+
       <h2 id="headless">Headless Mode</h2>
       <p>
         Need full control over styling? Pass <code>unstyled</code> to any

@@ -81,6 +81,26 @@ const items = [
         <Collapse items={items} ghost defaultActiveKey={['2']} />
       </DemoBox>
 
+      <DemoBox
+        title="Expand icon position"
+        description="Flip the chevron to the end of the header."
+        code={`<Collapse items={items} expandIconPosition="end" defaultActiveKey={['1']} />`}
+      >
+        <Collapse items={items} expandIconPosition="end" defaultActiveKey={['1']} />
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Active header and focus ring follow --sg-color-primary."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#7c3aed' }}>
+  <Collapse items={items} defaultActiveKey={['1']} />
+</div>`}
+      >
+        <div style={{ ['--sg-color-primary' as never]: '#7c3aed' }}>
+          <Collapse items={items} defaultActiveKey={['1']} />
+        </div>
+      </DemoBox>
+
       <PropsTable data={collapseProps} />
     </ComponentDoc>
   )

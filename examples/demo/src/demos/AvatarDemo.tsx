@@ -67,6 +67,53 @@ export function AvatarDemo() {
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Colored initials"
+        description="Use inline style or className to tint the background."
+        code={`<Avatar style={{ background: '#f97316', color: '#fff' }}>A</Avatar>
+<Avatar style={{ background: '#22c55e', color: '#fff' }}>B</Avatar>
+<Avatar style={{ background: '#3b82f6', color: '#fff' }}>C</Avatar>`}
+      >
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Avatar style={{ background: '#f97316', color: '#fff' }}>A</Avatar>
+          <Avatar style={{ background: '#22c55e', color: '#fff' }}>B</Avatar>
+          <Avatar style={{ background: '#3b82f6', color: '#fff' }}>C</Avatar>
+          <Avatar style={{ background: '#a855f7', color: '#fff' }}>D</Avatar>
+          <Avatar style={{ background: '#ef4444', color: '#fff' }}>E</Avatar>
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Avatar group"
+        description="Stack avatars with negative margin for a compact group."
+        code={`<div style={{ display: 'flex' }}>
+  {users.map((u, i) => (
+    <Avatar
+      key={u}
+      style={{ marginLeft: i === 0 ? 0 : -8, border: '2px solid var(--sg-color-bg-container)' }}
+    >
+      {u}
+    </Avatar>
+  ))}
+</div>`}
+      >
+        <div style={{ display: 'flex' }}>
+          {['A', 'B', 'C', 'D', '+3'].map((u, i) => (
+            <Avatar
+              key={u}
+              style={{
+                marginLeft: i === 0 ? 0 : -8,
+                border: '2px solid var(--sg-color-bg-container)',
+                background: i === 4 ? '#e5e7eb' : undefined,
+                color: i === 4 ? '#111' : undefined,
+              }}
+            >
+              {u}
+            </Avatar>
+          ))}
+        </div>
+      </DemoBox>
+
       <PropsTable data={avatarProps} />
     </ComponentDoc>
   )

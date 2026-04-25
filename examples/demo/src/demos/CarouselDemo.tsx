@@ -83,6 +83,30 @@ export function CarouselDemo() {
         </Carousel>
       </DemoBox>
 
+      <DemoBox
+        title="Dot position"
+        description="Move indicators to the top, left, or right."
+        code={`<Carousel dotPosition="right">...</Carousel>`}
+      >
+        <Carousel dotPosition="right">
+          {colors.map((bg, i) => (
+            <div key={i} style={{ ...slideStyle, background: bg }}>Side {i + 1}</div>
+          ))}
+        </Carousel>
+      </DemoBox>
+
+      <DemoBox
+        title="Hidden dots"
+        description="Disable indicator dots when the control is decorative."
+        code={`<Carousel dots={false}>...</Carousel>`}
+      >
+        <Carousel dots={false} autoplay>
+          {colors.map((bg, i) => (
+            <div key={i} style={{ ...slideStyle, background: bg }}>Clean {i + 1}</div>
+          ))}
+        </Carousel>
+      </DemoBox>
+
       <PropsTable data={carouselProps} />
     </ComponentDoc>
   )

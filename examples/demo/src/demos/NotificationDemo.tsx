@@ -84,6 +84,30 @@ notification.info('Info', 'Here is some info.')`}
         </Button>
       </DemoBox>
 
+      <DemoBox
+        title="Placement"
+        description="Place notifications in any of the four corners."
+        code={`notification.open({ message: 'Top right', placement: 'topRight' })
+notification.open({ message: 'Bottom left', placement: 'bottomLeft' })`}
+      >
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {(['topLeft', 'topRight', 'bottomLeft', 'bottomRight'] as const).map((p) => (
+            <Button
+              key={p}
+              onClick={() =>
+                notification.open({
+                  message: p,
+                  description: `Notification pinned at ${p}`,
+                  placement: p,
+                })
+              }
+            >
+              {p}
+            </Button>
+          ))}
+        </div>
+      </DemoBox>
+
       <PropsTable title="notification.open(config)" data={notificationProps} />
     </ComponentDoc>
   )

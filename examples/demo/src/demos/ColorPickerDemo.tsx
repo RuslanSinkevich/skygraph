@@ -80,6 +80,25 @@ export function ColorPickerDemo() {
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Format"
+        description="Switch between hex and rgb formats."
+        code={`<ColorPicker defaultValue="#1677ff" format="rgb" showText />`}
+      >
+        <div style={{ display: 'flex', gap: 12 }}>
+          <ColorPicker defaultValue="#1677ff" format="hex" showText />
+          <ColorPicker defaultValue="#1677ff" format="rgb" showText />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Disabled"
+        description="Disable the trigger entirely."
+        code={`<ColorPicker defaultValue="#1677ff" disabled />`}
+      >
+        <ColorPicker defaultValue="#1677ff" disabled />
+      </DemoBox>
+
       <PropsTable data={colorPickerProps} />
     </ComponentDoc>
   )

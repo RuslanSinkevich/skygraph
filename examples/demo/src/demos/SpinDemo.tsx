@@ -84,6 +84,35 @@ export function SpinDemo() {
         </Spin>
       </DemoBox>
 
+      <DemoBox
+        title="Custom colour via token"
+        description="Override --sg-spin-color on a scope. One token, no classes."
+        code={`<div style={{ ['--sg-spin-color' as any]: '#e11d48' }}>
+  <Spin size="large" />
+</div>`}
+      >
+        <div
+          style={{
+            display: 'flex',
+            gap: 20,
+            ['--sg-spin-color' as never]: '#e11d48',
+          }}
+        >
+          <Spin size="small" />
+          <Spin />
+          <Spin size="large" />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Custom indicator"
+        description="Any ReactNode as the spinner — bring your own SVG or emoji."
+        code={`<Spin indicator={<span style={{ fontSize: 22 }}>⏳</span>} />`}
+      >
+        <Spin indicator={<span style={{ fontSize: 22 }} aria-hidden>⏳</span>} />
+        <Spin indicator={<span style={{ fontSize: 22 }} aria-hidden>🌀</span>} />
+      </DemoBox>
+
       <PropsTable data={spinProps} />
     </ComponentDoc>
   )

@@ -107,6 +107,51 @@ const [val, setVal] = useState('')
         />
       </DemoBox>
 
+      <DemoBox
+        title="Component tokens"
+        description="Override --sg-input-* — Select shares the input tokens."
+        code={`<div style={{
+  ['--sg-input-height' as any]: '44px',
+  ['--sg-input-radius' as any]: '14px',
+}}>
+  <Select options={options} placeholder="Large soft" />
+</div>`}
+      >
+        <div
+          style={{
+            ['--sg-input-height' as never]: '44px',
+            ['--sg-input-radius' as never]: '14px',
+          }}
+        >
+          <Select
+            placeholder="Large soft"
+            options={[
+              { label: 'One', value: 1 },
+              { label: 'Two', value: 2 },
+            ]}
+          />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Highlighted option follows --sg-color-primary."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#059669' }}>
+  <Select options={...} />
+</div>`}
+      >
+        <div style={{ ['--sg-color-primary' as never]: '#059669' }}>
+          <Select
+            placeholder="Green select"
+            options={[
+              { label: 'Apple', value: 'a' },
+              { label: 'Pear', value: 'p' },
+              { label: 'Mango', value: 'm' },
+            ]}
+          />
+        </div>
+      </DemoBox>
+
       <PropsTable data={selectProps} />
     </ComponentDoc>
   )

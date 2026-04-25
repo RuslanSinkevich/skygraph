@@ -75,6 +75,20 @@ export function DescriptionsDemo() {
         <Descriptions title="User Info" column={2} bordered items={userItems} />
       </DemoBox>
 
+      <DemoBox
+        title="Size"
+        description="Three sizes are supported for bordered mode."
+        code={`<Descriptions size="small" bordered items={items} />
+<Descriptions size="middle" bordered items={items} />
+<Descriptions size="large" bordered items={items} />`}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Descriptions size="small" bordered items={userItems} />
+          <Descriptions size="middle" bordered items={userItems} />
+          <Descriptions size="large" bordered items={userItems} />
+        </div>
+      </DemoBox>
+
       <PropsTable data={descriptionsProps} />
       <PropsTable title="DescriptionsItem" data={itemProps} />
     </ComponentDoc>

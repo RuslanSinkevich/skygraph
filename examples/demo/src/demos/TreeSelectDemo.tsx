@@ -120,6 +120,45 @@ const treeData = [
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Search"
+        description="Filter nodes as you type."
+        code={`<TreeSelect
+  showSearch
+  treeData={treeData}
+  treeDefaultExpandAll
+  placeholder="Start typing..."
+/>`}
+      >
+        <div style={{ width: 300 }}>
+          <TreeSelect
+            showSearch
+            treeData={treeData}
+            treeDefaultExpandAll
+            placeholder="Start typing..."
+            allowClear
+          />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Selected tag / highlight uses --sg-color-primary."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#16a34a' }}>
+  <TreeSelect multiple treeData={treeData} />
+</div>`}
+      >
+        <div style={{ ['--sg-color-primary' as never]: '#16a34a', width: 300 }}>
+          <TreeSelect
+            treeData={treeData}
+            multiple
+            treeDefaultExpandAll
+            placeholder="Scoped brand"
+            allowClear
+          />
+        </div>
+      </DemoBox>
+
       <PropsTable data={treeSelectProps} />
     </ComponentDoc>
   )

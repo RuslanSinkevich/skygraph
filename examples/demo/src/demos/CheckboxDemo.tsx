@@ -54,7 +54,68 @@ export function CheckboxDemo() {
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Scoped brand"
+        description="Checked state uses --sg-color-primary. Override on a scope to rebrand."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#db2777' }}>
+  <Checkbox defaultChecked>Pink</Checkbox>
+</div>`}
+      >
+        <div
+          style={{
+            display: 'flex',
+            gap: 16,
+            ['--sg-color-primary' as never]: '#db2777',
+          }}
+        >
+          <Checkbox defaultChecked>Pink</Checkbox>
+          <Checkbox>Unchecked</Checkbox>
+          <Checkbox indeterminate>Indeterminate</Checkbox>
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Group (manual)"
+        description="Compose checkboxes into a group with shared state."
+        code={`const all = ['Apple', 'Pear', 'Orange']
+const [sel, setSel] = useState(['Apple'])
+<div>
+  {all.map(opt => (
+    <Checkbox
+      key={opt}
+      checked={sel.includes(opt)}
+      onChange={(c) => setSel(p => c ? [...p, opt] : p.filter(x => x !== opt))}
+    >
+      {opt}
+    </Checkbox>
+  ))}
+</div>`}
+      >
+        <ManualGroup />
+      </DemoBox>
+
       <PropsTable data={checkboxProps} />
     </ComponentDoc>
+  )
+}
+
+function ManualGroup() {
+  const all = ['Apple', 'Pear', 'Orange']
+  const [sel, setSel] = useState<string[]>(['Apple'])
+  return (
+    <div style={{ display: 'flex', gap: 16 }}>
+      {all.map((opt) => (
+        <Checkbox
+          key={opt}
+          checked={sel.includes(opt)}
+          onChange={(c) =>
+            setSel((p) => (c ? [...p, opt] : p.filter((x) => x !== opt)))
+          }
+        >
+          {opt}
+        </Checkbox>
+      ))}
+      <code style={{ marginLeft: 8 }}>{JSON.stringify(sel)}</code>
+    </div>
   )
 }

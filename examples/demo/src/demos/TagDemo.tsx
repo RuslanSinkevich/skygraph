@@ -99,6 +99,23 @@ export function TagDemo() {
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Full palette"
+        description="All palette tokens are accepted as color values for Tag."
+        code={`<Tag color="blue">blue</Tag>
+<Tag color="green">green</Tag>
+<Tag color="red">red</Tag>
+<Tag color="orange">orange</Tag>`}
+      >
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {['blue', 'green', 'red', 'orange', 'gray'].map((c) => (
+            <Tag key={c} color={c}>
+              {c}
+            </Tag>
+          ))}
+        </div>
+      </DemoBox>
+
       <PropsTable data={tagProps} />
     </ComponentDoc>
   )

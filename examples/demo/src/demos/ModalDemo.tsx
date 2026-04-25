@@ -21,11 +21,16 @@ const modalProps: PropDef[] = [
 export function ModalDemo() {
   const [open, setOpen] = useState(false)
   const [open2, setOpen2] = useState(false)
+  const [openWide, setOpenWide] = useState(false)
+  const [openBrand, setOpenBrand] = useState(false)
+  const [openUnstyled, setOpenUnstyled] = useState(false)
 
   return (
     <ComponentDoc
       title="Modal"
-      description="Modal dialogs for user interactions that require attention."
+      badge="Feedback"
+      crumbs={['Feedback', 'Modal']}
+      description="Modal dialogs for user interactions that require attention. Fully unstyled-capable and brand-scoped."
       whenToUse={[
         'When requiring users to interact with the application without jumping to a new page.',
         'When you need to show additional information or confirmation.',
@@ -95,6 +100,84 @@ export function ModalDemo() {
           }
         >
           <p>Please wait while saving...</p>
+        </Modal>
+      </DemoBox>
+
+      <DemoBox
+        title="Custom width"
+        description="Control the dialog width."
+        code={`<Modal open={open} width={720} title="Wide modal" />`}
+      >
+        <Button onClick={() => setOpenWide(true)}>Open 720px modal</Button>
+        <Modal
+          open={openWide}
+          onClose={() => setOpenWide(false)}
+          title="Wide 720px"
+          width={720}
+          footer={<Button onClick={() => setOpenWide(false)}>Close</Button>}
+        >
+          <p>Use width to fit dense layouts — tables, forms, previews.</p>
+        </Modal>
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Wrap Modal in a themed container to re-skin it without touching CSS."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#7c3aed', ['--sg-border-radius' as any]: '14px' }}>
+  <Modal ... />
+</div>`}
+      >
+        <Button type="primary" onClick={() => setOpenBrand(true)}>
+          Open themed modal
+        </Button>
+        <div
+          style={{
+            ['--sg-color-primary' as never]: '#7c3aed',
+            ['--sg-color-primary-hover' as never]: '#6d28d9',
+            ['--sg-color-primary-bg' as never]: '#f3e8ff',
+            ['--sg-border-radius' as never]: '14px',
+          }}
+        >
+          <Modal
+            open={openBrand}
+            onClose={() => setOpenBrand(false)}
+            title="Themed brand"
+            footer={
+              <>
+                <Button onClick={() => setOpenBrand(false)}>Cancel</Button>
+                <Button type="primary" onClick={() => setOpenBrand(false)}>
+                  Confirm
+                </Button>
+              </>
+            }
+          >
+            <p>Every button inside the modal picks up the scoped tokens. No component change.</p>
+          </Modal>
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Unstyled modal"
+        description="Drop SkyGraph CSS — keep semantics (role=dialog, aria-modal, focus trap)."
+        code={`<Modal unstyled open={open} className="my-dialog" />`}
+      >
+        <Button onClick={() => setOpenUnstyled(true)}>Open unstyled</Button>
+        <Modal
+          unstyled
+          open={openUnstyled}
+          onClose={() => setOpenUnstyled(false)}
+          title="Custom dialog"
+          className="demo-unstyled-card"
+        >
+          <div style={{ padding: 14, fontSize: 13 }}>
+            SkyGraph ships no CSS for this dialog. The backdrop and centering
+            are from your own styles.
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
+            <Button unstyled className="demo-unstyled-btn" onClick={() => setOpenUnstyled(false)}>
+              Close
+            </Button>
+          </div>
         </Modal>
       </DemoBox>
 

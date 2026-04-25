@@ -1,7 +1,9 @@
 /* === Spin circle — the core element === */
 .sg-spin {
+  --sg-spin-color: var(--sg-color-primary);
+  --sg-spin-overlay-bg: rgba(255, 255, 255, 0.65);
   display: inline-block;
-  border: 3px solid var(--sg-spin-color, var(--sg-color-primary));
+  border: 3px solid var(--sg-spin-color);
   border-top-color: transparent;
   border-radius: 50%;
   animation: sg-spin-rotate 0.8s linear infinite;
@@ -27,6 +29,7 @@
 }
 
 .sg-spin-overlay {
+  --sg-spin-overlay-bg: rgba(255, 255, 255, 0.65);
   position: absolute;
   top: 0;
   left: 0;
@@ -38,11 +41,12 @@
   justify-content: center;
   gap: var(--sg-margin-sm);
   z-index: var(--sg-z-loading);
-  background: var(--sg-spin-overlay-bg, rgba(255, 255, 255, 0.65));
+  background: var(--sg-spin-overlay-bg);
   border-radius: var(--sg-border-radius);
 }
 
-[data-sg-theme="dark"] .sg-spin-overlay {
+[data-sg-theme="dark"] .sg-spin-overlay,
+[data-sg-theme="dark"] .sg-spin-fullscreen {
   --sg-spin-overlay-bg: rgba(20, 20, 20, 0.65);
 }
 
@@ -54,13 +58,14 @@
 
 /* === Fullscreen === */
 .sg-spin-fullscreen {
+  --sg-spin-overlay-bg: rgba(255, 255, 255, 0.65);
   position: fixed;
   inset: 0;
   z-index: var(--sg-z-modal);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--sg-spin-overlay-bg, rgba(255, 255, 255, 0.65));
+  background: var(--sg-spin-overlay-bg);
 }
 
 .sg-spin-fullscreen-inner {
@@ -72,7 +77,7 @@
 
 /* === Tip text === */
 .sg-spin-tip {
-  color: var(--sg-spin-color, var(--sg-color-primary));
+  color: var(--sg-color-primary);
   font-size: var(--sg-font-size-sm);
 }
 

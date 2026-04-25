@@ -89,6 +89,40 @@ export function ResultDemo() {
         />
       </DemoBox>
 
+      <DemoBox
+        title="Custom icon"
+        description="Override the status icon with any node (emoji, SVG, library icon)."
+        code={`<Result
+  icon={<span style={{ fontSize: 64 }}>🚀</span>}
+  title="Deploy started"
+  subTitle="Build #1242 is running, ETA 2 min"
+/>`}
+      >
+        <Result
+          status="info"
+          icon={<span style={{ fontSize: 64 }}>🚀</span>}
+          title="Deploy started"
+          subTitle="Build #1242 is running, ETA 2 min"
+        />
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Action buttons pick up --sg-color-primary. Override on a wrapper."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#16a34a' }}>
+  <Result status="success" title="Done" extra={<Button type="primary">Continue</Button>} />
+</div>`}
+      >
+        <div style={{ ['--sg-color-primary' as never]: '#16a34a' }}>
+          <Result
+            status="success"
+            title="All good"
+            subTitle="Brand scoped to green via --sg-color-primary"
+            extra={<Button type="primary">Continue</Button>}
+          />
+        </div>
+      </DemoBox>
+
       <PropsTable data={resultProps} />
     </ComponentDoc>
   )

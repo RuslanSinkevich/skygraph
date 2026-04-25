@@ -48,6 +48,28 @@ export function TooltipDemo() {
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Rich content"
+        description="title accepts any ReactNode — use it for headings, links, or icons."
+        code={`<Tooltip title={<div style={{ maxWidth: 200 }}>
+  <strong>Commit</strong>
+  <div>Saves current state to history</div>
+</div>}>
+  <Button>Hover for details</Button>
+</Tooltip>`}
+      >
+        <Tooltip
+          title={
+            <div style={{ maxWidth: 200 }}>
+              <strong style={{ display: 'block' }}>Commit</strong>
+              <span>Saves current state to history</span>
+            </div>
+          }
+        >
+          <Button>Hover for details</Button>
+        </Tooltip>
+      </DemoBox>
+
       <PropsTable data={tooltipProps} />
     </ComponentDoc>
   )

@@ -1,4 +1,11 @@
 .sg-table-wrapper {
+  --sg-table-row-height: auto;
+  --sg-table-row-bg: transparent;
+  --sg-table-row-hover-bg: var(--sg-color-bg-hover);
+  --sg-table-header-bg: var(--sg-color-bg-secondary);
+  --sg-table-border-color: var(--sg-color-border);
+  --sg-table-border-color-secondary: var(--sg-color-border-secondary);
+  --sg-table-cell-padding: var(--sg-padding-sm) var(--sg-padding-md);
   width: 100%;
   font-size: var(--sg-font-size);
   color: var(--sg-color-text);
@@ -62,11 +69,11 @@
 /* ---- Header ---- */
 .sg-table-th {
   position: relative;
-  padding: var(--sg-padding-sm) var(--sg-padding-md);
+  padding: var(--sg-table-cell-padding);
   font-weight: 600;
   color: var(--sg-color-text);
-  background: var(--sg-color-bg-secondary);
-  border-bottom: 1px solid var(--sg-color-border);
+  background: var(--sg-table-header-bg);
+  border-bottom: 1px solid var(--sg-table-border-color);
   user-select: none;
   display: flex;
   align-items: center;
@@ -104,7 +111,7 @@
 .sg-table-sort-desc {
   font-size: 8px;
   line-height: 8px;
-  color: var(--sg-color-text-quaternary, #ccc);
+  color: var(--sg-color-text-quaternary, var(--sg-color-text-tertiary));
   transition: color var(--sg-transition-duration);
 }
 
@@ -152,8 +159,10 @@
 
 /* ---- Body cells ---- */
 .sg-table-td {
-  padding: var(--sg-padding-sm) var(--sg-padding-md);
-  border-bottom: 1px solid var(--sg-color-border-secondary);
+  padding: var(--sg-table-cell-padding);
+  min-height: var(--sg-table-row-height);
+  background: var(--sg-table-row-bg);
+  border-bottom: 1px solid var(--sg-table-border-color-secondary);
   display: flex;
   align-items: center;
   min-width: 0;
@@ -161,7 +170,7 @@
 }
 
 .sg-table-hoverable .sg-table-row:hover .sg-table-td {
-  background: var(--sg-color-bg-hover);
+  background: var(--sg-table-row-hover-bg);
 }
 
 .sg-table-row-selected .sg-table-td {
@@ -177,7 +186,7 @@
 }
 
 .sg-table-hoverable .sg-table-row:hover .sg-table-cell-fixed {
-  background: var(--sg-color-bg-hover);
+  background: var(--sg-table-row-hover-bg);
 }
 
 .sg-table-row-selected .sg-table-cell-fixed {
@@ -472,7 +481,7 @@
 
 /* ---- Row warning (custom rowClassName example) ---- */
 .sg-table-row-warning .sg-table-td {
-  background: color-mix(in srgb, var(--sg-color-warning, #faad14) 8%, transparent);
+  background: color-mix(in srgb, var(--sg-color-warning) 8%, transparent);
 }
 
 /* ---- Row drag over ---- */
@@ -482,7 +491,7 @@
 
 /* ---- Drag handle ---- */
 .sg-table-cell-drag-handle {
-  color: var(--sg-color-text-quaternary, #ccc);
+  color: var(--sg-color-text-tertiary);
   font-size: 16px;
 }
 
@@ -524,8 +533,8 @@
 }
 
 .sg-table-selection-action-danger {
-  color: var(--sg-color-error, #ff4d4f);
-  border-color: var(--sg-color-error, #ff4d4f);
+  color: var(--sg-color-error);
+  border-color: var(--sg-color-error);
 }
 
 .sg-table-selection-clear {
@@ -544,10 +553,10 @@
 
 /* ---- Fullscreen ---- */
 .sg-table-fullscreen {
-  position: fixed !important;
+  position: fixed;
   inset: 0;
   z-index: 1100;
-  background: var(--sg-color-bg, #fff);
+  background: var(--sg-color-bg);
   padding: var(--sg-padding-lg);
   overflow: auto;
 }
@@ -558,12 +567,12 @@
   top: 100%;
   right: 0;
   z-index: 1040;
-  background: var(--sg-color-bg-elevated, #fff);
+  background: var(--sg-color-bg-elevated, var(--sg-color-bg-container));
   border: 1px solid var(--sg-color-border);
   border-radius: var(--sg-border-radius);
   box-shadow: var(--sg-shadow-lg, 0 6px 16px rgba(0,0,0,0.08));
   padding: 8px 0;
-  min-width: 160;
+  min-width: 160px;
   max-height: 300px;
   overflow-y: auto;
 }
@@ -588,7 +597,7 @@
   top: 100%;
   right: 0;
   z-index: 1040;
-  background: var(--sg-color-bg-elevated, #fff);
+  background: var(--sg-color-bg-elevated, var(--sg-color-bg-container));
   border: 1px solid var(--sg-color-border);
   border-radius: var(--sg-border-radius);
   box-shadow: var(--sg-shadow-lg, 0 6px 16px rgba(0,0,0,0.08));
@@ -620,7 +629,7 @@
 
 /* ---- Group rows ---- */
 .sg-table-group-cell {
-  display: flex !important;
+  display: flex;
   align-items: center;
   gap: var(--sg-padding-sm);
   padding: var(--sg-padding-sm) var(--sg-padding-md);
@@ -696,7 +705,7 @@
   right: 4px;
   transform: translateY(-50%);
   border: none;
-  background: var(--sg-color-bg-elevated, #fff);
+  background: var(--sg-color-bg-elevated, var(--sg-color-bg-container));
   box-shadow: 0 1px 4px rgba(0,0,0,0.12);
   border-radius: var(--sg-border-radius-sm);
   cursor: pointer;
@@ -720,13 +729,13 @@
 
 .sg-table-cell-copied .sg-table-copy-btn {
   opacity: 1;
-  color: var(--sg-color-success, #52c41a);
+  color: var(--sg-color-success);
 }
 
 /* ---- Column header tooltip ---- */
 .sg-table-th-tooltip {
   font-size: 12px;
-  color: var(--sg-color-text-quaternary, #ccc);
+  color: var(--sg-color-text-tertiary);
   cursor: help;
   flex-shrink: 0;
   margin-left: 2px;
@@ -751,7 +760,7 @@
 }
 
 .sg-table-row-pinned .sg-table-td {
-  background: color-mix(in srgb, var(--sg-color-primary) 4%, var(--sg-color-bg, #fff));
+  background: color-mix(in srgb, var(--sg-color-primary) 4%, var(--sg-color-bg-container));
 }
 
 /* ---- Print ---- */

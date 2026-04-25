@@ -10,7 +10,8 @@ import { ContextMenu } from './ContextMenu'
 import { useTableState } from './useTableState'
 import { useConfig } from '../../ConfigProvider'
 import { toCSVString, downloadCSV, toTSVString, toJSONString, downloadJSON, copyToClipboard, printTable } from './export'
-import type { TableProps } from './types'
+import { slotClass, slotStyle } from '../../../types'
+import type { TableProps, TableClassNames, TableStyles } from './types'
 
 const DRAG_HANDLE_WIDTH = '32px'
 const ROW_NUMBER_WIDTH = '48px'
@@ -66,7 +67,12 @@ export function Table(props: TableProps) {
     highlightOnHover,
     columnAutoResize,
     columnPinning,
+    classNames: slotCls,
+    styles: slotSty,
   } = props
+
+  const sCls: TableClassNames = slotCls ?? {}
+  const sSty: TableStyles = slotSty ?? {}
 
   const config = useConfig()
   const sizeFromProp = sizeProp ?? config.size ?? 'middle'
@@ -192,6 +198,7 @@ export function Table(props: TableProps) {
     striped ? 'sg-table-striped' : '',
     state.isFullscreen ? 'sg-table-fullscreen' : '',
     highlightOnHover === false ? '' : 'sg-table-hoverable',
+    sCls.root,
     className,
   ]
     .filter(Boolean)
@@ -209,7 +216,7 @@ export function Table(props: TableProps) {
   return (
     <div
       className={wrapperCls}
-      style={style}
+      style={slotStyle(sSty.root, style)}
       ref={(el) => {
         (tableRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
         (state.wrapperRef as React.MutableRefObject<HTMLDivElement | null>).current = el
@@ -219,7 +226,7 @@ export function Table(props: TableProps) {
     >
       {/* Toolbar */}
       {hasToolbar && (
-        <div className="sg-table-toolbar">
+        <div className={slotClass('sg-table-toolbar', sCls.toolbar)} style={sSty.toolbar}>
           {searchable && (
             <Input
               placeholder={state.t.searchPlaceholder}
@@ -316,8 +323,11 @@ export function Table(props: TableProps) {
       )}
 
       <div
-        className="sg-table-scroll"
-        style={Object.keys(scrollStyle).length > 0 ? scrollStyle : undefined}
+        className={slotClass('sg-table-scroll', sCls.scroll)}
+        style={slotStyle(
+          Object.keys(scrollStyle).length > 0 ? scrollStyle : undefined,
+          sSty.scroll,
+        )}
       >
         {/* Pinned top rows */}
         {state.pinnedTop.length > 0 && (
@@ -348,16 +358,21 @@ export function Table(props: TableProps) {
               onContextMenu={state.setContextMenu}
               striped={false}
               isPinnedSection
+              slotClassNames={sCls}
+              slotStyles={sSty}
             />
           </div>
         )}
 
         <div
-          className="sg-table-grid"
-          style={{
-            gridTemplateColumns: gridTemplate,
-            minWidth: scroll?.x,
-          }}
+          className={slotClass('sg-table-grid', sCls.grid)}
+          style={slotStyle(
+            {
+              gridTemplateColumns: gridTemplate,
+              minWidth: scroll?.x,
+            },
+            sSty.grid,
+          )}
           role="table"
         >
           <TableHeader
@@ -393,6 +408,8 @@ export function Table(props: TableProps) {
             columnPinning={columnPinning}
             onPinColumn={state.handlePinColumn}
             onAutoResize={columnAutoResize ? state.handleAutoResize : undefined}
+            slotClassNames={sCls}
+            slotStyles={sSty}
           />
 
           {virtualConfig ? (
@@ -454,12 +471,18 @@ export function Table(props: TableProps) {
               onFocusCell={state.setFocusedCell}
               keyboardNavigation={keyboardNavigation}
               emptyContent={emptyContent}
+              slotClassNames={sCls}
+              slotStyles={sSty}
             />
           )}
 
           {/* Aggregation footer */}
           {footer && state.aggregates && (
-            <div className="sg-table-footer-row" role="row" style={{ display: 'contents' }}>
+            <div
+              className={['sg-table-footer-row', sCls.footer].filter(Boolean).join(' ')}
+              role="row"
+              style={{ display: 'contents', ...sSty.footer }}
+            >
               {rowDraggable && <div className="sg-table-td sg-table-footer-cell" role="cell" />}
               {rowNumConfig && <div className="sg-table-td sg-table-footer-cell" role="cell" />}
               {rowSelection && <div className="sg-table-td sg-table-footer-cell" role="cell" />}
@@ -543,6 +566,8 @@ export function Table(props: TableProps) {
               onContextMenu={state.setContextMenu}
               striped={false}
               isPinnedSection
+              slotClassNames={sCls}
+              slotStyles={sSty}
             />
           </div>
         )}
@@ -561,7 +586,10 @@ export function Table(props: TableProps) {
       )}
 
       {showPagination && state.tableState.totalPages > 1 && (
-        <div className="sg-table-pagination">
+        <div
+          className={slotClass('sg-table-pagination', sCls.pagination)}
+          style={sSty.pagination}
+        >
           <span className="sg-table-pagination-total">
             {state.t.totalRows(state.tableState.filteredRows)}
           </span>

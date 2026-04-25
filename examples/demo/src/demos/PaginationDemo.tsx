@@ -72,6 +72,26 @@ const [page, setPage] = useState(1)
         <Pagination current={page} total={500} showQuickJumper showSizeChanger onChange={setPage} />
       </DemoBox>
 
+      <DemoBox
+        title="Disabled"
+        description="Disable the whole pager."
+        code={`<Pagination current={1} total={50} disabled />`}
+      >
+        <Pagination current={1} total={50} disabled />
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Active page chip uses --sg-color-primary."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#16a34a' }}>
+  <Pagination current={page} total={50} onChange={setPage} />
+</div>`}
+      >
+        <div style={{ ['--sg-color-primary' as never]: '#16a34a' }}>
+          <Pagination current={page} total={50} onChange={setPage} />
+        </div>
+      </DemoBox>
+
       <PropsTable data={paginationProps} />
     </ComponentDoc>
   )

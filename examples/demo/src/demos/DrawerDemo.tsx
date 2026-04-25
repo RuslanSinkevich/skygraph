@@ -48,6 +48,54 @@ function PlacementDrawer() {
   )
 }
 
+function FooterDrawer() {
+  const [open, setOpen] = useState(false)
+  const close = () => setOpen(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open with footer</Button>
+      <Drawer
+        open={open}
+        onClose={close}
+        title="Edit record"
+        footer={
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+            <Button onClick={close}>Cancel</Button>
+            <Button type="primary" onClick={close}>Save</Button>
+          </div>
+        }
+      >
+        <p>Form goes here…</p>
+      </Drawer>
+    </>
+  )
+}
+
+function WideDrawer() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open wide (640)</Button>
+      <Drawer open={open} onClose={() => setOpen(false)} title="Wide drawer" width={640}>
+        <p>width = 640</p>
+      </Drawer>
+    </>
+  )
+}
+
+function ThemedDrawer() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ ['--sg-color-primary' as never]: '#0ea5e9' }}>
+      <Button type="primary" onClick={() => setOpen(true)}>Open scoped</Button>
+      <Drawer open={open} onClose={() => setOpen(false)} title="Scoped brand">
+        <p>Primary button inside drawer uses scoped token.</p>
+        <Button type="primary">Save</Button>
+      </Drawer>
+    </div>
+  )
+}
+
 export function DrawerDemo() {
   return (
     <ComponentDoc
@@ -81,6 +129,44 @@ const [open, setOpen] = useState(false)
 </Drawer>`}
       >
         <PlacementDrawer />
+      </DemoBox>
+
+      <DemoBox
+        title="With footer"
+        description="Attach actions in a sticky footer."
+        code={`<Drawer
+  open={open}
+  onClose={close}
+  title="Edit record"
+  footer={
+    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+      <Button onClick={close}>Cancel</Button>
+      <Button type="primary" onClick={close}>Save</Button>
+    </div>
+  }
+>
+  <p>Form goes here</p>
+</Drawer>`}
+      >
+        <FooterDrawer />
+      </DemoBox>
+
+      <DemoBox
+        title="Custom size"
+        description="Override width for horizontal drawers or height for vertical."
+        code={`<Drawer width={640} ... />`}
+      >
+        <WideDrawer />
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Actions inside Drawer follow --sg-color-primary."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#0ea5e9' }}>
+  <Drawer ... />
+</div>`}
+      >
+        <ThemedDrawer />
       </DemoBox>
 
       <PropsTable data={drawerProps} />

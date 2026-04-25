@@ -1,4 +1,20 @@
 import type React from 'react'
+import type { SlotClassNames, SlotStyles } from '../../../types'
+
+/**
+ * Имена слотов `List`. Полный список и описания — `docs/styling-contract.md` §4.2.
+ */
+export type ListSlot =
+  | 'root'
+  | 'header'
+  | 'footer'
+  | 'items'
+  | 'item'
+  | 'empty'
+  | 'pagination'
+
+export type ListClassNames = SlotClassNames<ListSlot>
+export type ListStyles = SlotStyles<ListSlot>
 
 /** Props for a generic list with optional pagination, grid layout, and loading state. */
 export interface ListProps<T = any> {
@@ -104,6 +120,11 @@ export interface ListProps<T = any> {
 
   /** Row class name (static or per-item). */
   rowClassName?: string | ((item: T, index: number) => string)
+
+  /** Публичные классы по слотам. См. `docs/styling-contract.md` §4.2. */
+  classNames?: ListClassNames
+  /** Публичные стили по слотам. См. `docs/styling-contract.md` §4.2. */
+  styles?: ListStyles
 }
 
 /** Props for `List.Item` row layout. */

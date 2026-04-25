@@ -35,6 +35,8 @@ const tableProps: PropDef[] = [
   { name: 'onColumnOrderChange', description: 'Callback on column reorder', type: '(keys: string[]) => void' },
   { name: 'onCellEdit', description: 'Callback on cell edit', type: '(id, column, value) => void' },
   { name: 'rowClassName', description: 'Custom class for rows', type: '(row) => string' },
+  { name: 'classNames', description: 'Slot classes (root/toolbar/headerCell/bodyCell/row/...)', type: 'TableClassNames' },
+  { name: 'styles', description: 'Slot inline styles (root/toolbar/headerCell/bodyCell/row/...)', type: 'TableStyles' },
   { name: 'locale', description: 'Locale overrides', type: '{ emptyText? }' },
   { name: 'unstyled', description: 'Remove all built-in styles', type: 'boolean', default: 'false' },
 ]
@@ -50,6 +52,7 @@ const columnProps: PropDef[] = [
   { name: 'editable', description: 'Enable inline cell editing', type: 'boolean' },
   { name: 'ellipsis', description: 'Truncate text with ellipsis', type: 'boolean' },
   { name: 'render', description: 'Custom cell render function', type: '(value, row) => ReactNode' },
+  { name: 'headerClassName', description: 'Class for header cell of this column', type: 'string' },
   { name: 'filters', description: 'Filter menu items', type: 'Array<{ text, value }>' },
   { name: 'onFilter', description: 'Filter logic function', type: '(filterValue, row) => boolean' },
   { name: 'filterMultiple', description: 'Allow multiple filter values', type: 'boolean', default: 'true' },
@@ -701,6 +704,141 @@ function KitchenSinkTable() {
   )
 }
 
+function StylingWithSlotsTable() {
+  const columns: TableColumn[] = [
+    { key: 'name', title: 'Name', width: 180, headerClassName: 'demo-th-name' },
+    { key: 'city', title: 'City', width: 120 },
+    {
+      key: 'status',
+      title: 'Status',
+      width: 120,
+      headerClassName: 'demo-th-status',
+      render: (val) => <Badge status={val === 'active' ? 'success' : 'default'} text={String(val)} />,
+    },
+  ]
+
+  return (
+    <DemoBox
+      title="Styling: classNames / styles (slots)"
+      description="Style stable DOM slots without deep selectors. Also shows column.headerClassName."
+      code={`<Table
+  columns={[
+    { key: 'name', title: 'Name', headerClassName: 'demo-th-name' },
+    { key: 'city', title: 'City' },
+    { key: 'status', title: 'Status', headerClassName: 'demo-th-status' },
+  ]}
+  data={people}
+  pageSize={5}
+  searchable
+  classNames={{
+    root: 'demo-table-root',
+    toolbar: 'demo-table-toolbar',
+    headerCell: 'demo-table-th',
+    bodyCell: 'demo-table-td',
+    row: 'demo-table-row',
+  }}
+  styles={{
+    headerCell: { fontSize: 13, letterSpacing: '0.04em' },
+    bodyCell: { fontFamily: 'SFMono-Regular, Consolas, Menlo, monospace' },
+  }}
+/>`}
+    >
+      <div style={{ width: '100%' }}>
+        <Table
+          columns={columns}
+          data={people}
+          pageSize={5}
+          searchable
+          classNames={{
+            root: 'demo-table-root',
+            toolbar: 'demo-table-toolbar',
+            headerCell: 'demo-table-th',
+            bodyCell: 'demo-table-td',
+            row: 'demo-table-row',
+          }}
+          styles={{
+            headerCell: { fontSize: 13, letterSpacing: '0.04em' },
+            bodyCell: { fontFamily: 'SFMono-Regular, Consolas, Menlo, monospace' },
+          }}
+        />
+      </div>
+    </DemoBox>
+  )
+}
+
+function StylingWithTokensTable() {
+  const columns: TableColumn[] = [
+    { key: 'name', title: 'Name', width: 180 },
+    { key: 'age', title: 'Age', width: 80, align: 'center' },
+    {
+      key: 'salary',
+      title: 'Salary',
+      width: 120,
+      align: 'right',
+      render: (v) => `$${Number(v).toLocaleString()}`,
+    },
+  ]
+
+  return (
+    <DemoBox
+      title="Styling: component tokens (per instance)"
+      description="Override `--sg-table-*` tokens on a wrapper to restyle a single table."
+      code={`<div style={{
+  ['--sg-table-header-bg' as any]: 'color-mix(in srgb, var(--sg-color-primary-bg) 55%, var(--sg-color-bg) 45%)',
+  ['--sg-table-row-hover-bg' as any]: 'var(--sg-color-primary-bg)',
+  ['--sg-table-border-color' as any]: 'color-mix(in srgb, var(--sg-color-primary) 25%, var(--sg-color-border-secondary) 75%)',
+  ['--sg-table-cell-padding' as any]: '10px 12px',
+}}>
+  <Table ... />
+</div>`}
+    >
+      <div
+        style={{
+          width: '100%',
+          ['--sg-table-header-bg' as never]:
+            'color-mix(in srgb, var(--sg-color-primary-bg) 55%, var(--sg-color-bg) 45%)',
+          ['--sg-table-row-hover-bg' as never]: 'var(--sg-color-primary-bg)',
+          ['--sg-table-border-color' as never]:
+            'color-mix(in srgb, var(--sg-color-primary) 25%, var(--sg-color-border-secondary) 75%)',
+          ['--sg-table-cell-padding' as never]: '10px 12px',
+        }}
+      >
+        <Table columns={columns} data={people} pageSize={5} />
+      </div>
+    </DemoBox>
+  )
+}
+
+function UnstyledTable() {
+  const columns: TableColumn[] = [
+    { key: 'name', title: 'Name', width: 180 },
+    { key: 'city', title: 'City', width: 120 },
+    { key: 'role', title: 'Role', width: 120 },
+  ]
+
+  return (
+    <DemoBox
+      title="Styling: unstyled (headless visual)"
+      description="Strip SkyGraph styles and bring your own CSS/layout. Semantics and behavior stay."
+      code={`<div className="demo-unstyled-card">
+  <div className="demo-unstyled-card-title">Unstyled table wrapper</div>
+  <Table unstyled columns={columns} data={people} pageSize={5} />
+</div>`}
+    >
+      <div className="demo-unstyled-card" style={{ width: '100%' }}>
+        <div className="demo-unstyled-card-title">Unstyled table wrapper</div>
+        <div className="demo-unstyled-card-row">
+          <button className="demo-unstyled-btn" type="button">Custom action</button>
+          <span style={{ color: 'var(--sg-color-text-secondary)' }}>No SkyGraph table CSS used.</span>
+        </div>
+        <div style={{ width: '100%' }}>
+          <Table unstyled columns={columns} data={people} pageSize={5} />
+        </div>
+      </div>
+    </DemoBox>
+  )
+}
+
 export function TableDemo() {
   return (
     <ComponentDoc
@@ -727,6 +865,9 @@ export function TableDemo() {
       <LoadingTable />
       <EmptyTable />
       <KitchenSinkTable />
+      <StylingWithSlotsTable />
+      <StylingWithTokensTable />
+      <UnstyledTable />
 
       <PropsTable title="Table API" data={tableProps} />
       <PropsTable title="Column API" data={columnProps} />

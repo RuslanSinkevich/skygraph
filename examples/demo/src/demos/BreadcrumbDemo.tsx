@@ -79,6 +79,38 @@ export function BreadcrumbDemo() {
         ]} />
       </DemoBox>
 
+      <DemoBox
+        title="Emoji separator"
+        description="Any ReactNode works as a separator."
+        code={`<Breadcrumb
+  separator={<span>›</span>}
+  items={[{ title: 'Root' }, { title: 'Branch' }, { title: 'Leaf' }]}
+/>`}
+      >
+        <Breadcrumb
+          separator={<span>›</span>}
+          items={[{ title: 'Root' }, { title: 'Branch' }, { title: 'Leaf' }]}
+        />
+      </DemoBox>
+
+      <DemoBox
+        title="With icons"
+        description="Use ReactNode in title to render icons or flags."
+        code={`<Breadcrumb items={[
+  { title: <span>🏠 Home</span>, href: '#' },
+  { title: <span>📦 Projects</span> },
+  { title: 'Current' },
+]} />`}
+      >
+        <Breadcrumb
+          items={[
+            { title: <span>🏠 Home</span>, href: '#' },
+            { title: <span>📦 Projects</span> },
+            { title: 'Current' },
+          ]}
+        />
+      </DemoBox>
+
       <PropsTable data={breadcrumbProps} />
       <PropsTable title="BreadcrumbItem" data={itemProps} />
     </ComponentDoc>

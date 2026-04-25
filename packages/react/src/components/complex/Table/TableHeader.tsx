@@ -10,6 +10,8 @@ import type {
   SortDirection,
   SortConfig,
   FilterDropdownProps,
+  TableClassNames,
+  TableStyles,
 } from './types'
 import type { ContextMenuItem, ContextMenuState } from './ContextMenu'
 
@@ -103,6 +105,10 @@ interface HeaderProps {
   onPinColumn?: (key: string, fixed: 'left' | 'right' | undefined) => void
   /** Auto-fits column width to measured content. */
   onAutoResize?: (colKey: string) => void
+  /** Публичные классы по слотам Table (передаются из Table.tsx). */
+  slotClassNames?: TableClassNames
+  /** Публичные стили по слотам Table. */
+  slotStyles?: TableStyles
 }
 
 function SortIndicator({
@@ -182,7 +188,12 @@ export function TableHeader(props: HeaderProps) {
     columnPinning,
     onPinColumn,
     onAutoResize,
+    slotClassNames,
+    slotStyles,
   } = props
+
+  const sCls = slotClassNames ?? {}
+  const sSty = slotStyles ?? {}
 
   const filterProps = (col: TableColumn) => ({
     col,
@@ -245,9 +256,9 @@ export function TableHeader(props: HeaderProps) {
         {headerRows.map((row, ri) => (
           <div
             key={`hdr-${ri}`}
-            className="sg-table-header-row"
+            className={['sg-table-header-row', sCls.headerRow].filter(Boolean).join(' ')}
             role="row"
-            style={{ display: 'contents' }}
+            style={{ display: 'contents', ...sSty.headerRow }}
           >
             {ri === 0 && rowDraggable && (
               <div className="sg-table-th" role="columnheader" style={{ gridRow: `span ${headerRows.length}` }} />
@@ -289,6 +300,8 @@ export function TableHeader(props: HeaderProps) {
                     isLeaf && cell.col.sortable ? 'sg-table-th-sortable' : '',
                     cell.col.fixed ? 'sg-table-cell-fixed' : '',
                     cell.colSpan > 1 ? 'sg-table-th-group' : '',
+                    sCls.headerCell,
+                    cell.col.headerClassName,
                   ]
                     .filter(Boolean)
                     .join(' ')}
@@ -297,12 +310,16 @@ export function TableHeader(props: HeaderProps) {
                     gridColumn: cell.colSpan > 1 ? `span ${cell.colSpan}` : undefined,
                     gridRow: cell.rowSpan > 1 ? `span ${cell.rowSpan}` : undefined,
                     justifyContent: cell.colSpan > 1 ? 'center' : undefined,
+                    ...sSty.headerCell,
                   }}
                   role="columnheader"
                   onClick={isLeaf ? (e) => onSort(cell.col, e.shiftKey) : undefined}
                   onContextMenu={isLeaf ? (e) => buildContextMenu(cell.col, e) : undefined}
                 >
-                  <span className="sg-table-th-content">
+                  <span
+                    className={['sg-table-th-content', sCls.headerCellContent].filter(Boolean).join(' ')}
+                    style={sSty.headerCellContent}
+                  >
                     {cell.col.title}
                     {isLeaf && cell.col.tooltip && <ColumnTooltip content={cell.col.tooltip} />}
                     {isLeaf && <SortIndicator col={cell.col} {...sortProps} />}
@@ -327,9 +344,9 @@ export function TableHeader(props: HeaderProps) {
 
   return (
     <div
-      className="sg-table-header-row"
+      className={['sg-table-header-row', sCls.headerRow].filter(Boolean).join(' ')}
       role="row"
-      style={{ display: 'contents' }}
+      style={{ display: 'contents', ...sSty.headerRow }}
     >
       {rowDraggable && (
         <div className="sg-table-th" role="columnheader" />
@@ -361,10 +378,12 @@ export function TableHeader(props: HeaderProps) {
             col.sortable ? 'sg-table-th-sortable' : '',
             dragOver === col.key ? 'sg-table-th-drag-over' : '',
             col.fixed ? 'sg-table-cell-fixed' : '',
+            sCls.headerCell,
+            col.headerClassName,
           ]
             .filter(Boolean)
             .join(' ')}
-          style={fixedStyle(col, true)}
+          style={{ ...fixedStyle(col, true), ...sSty.headerCell }}
           role="columnheader"
           onClick={(e) => onSort(col, e.shiftKey)}
           onContextMenu={(e) => buildContextMenu(col, e)}
@@ -375,7 +394,10 @@ export function TableHeader(props: HeaderProps) {
           onDrop={draggable ? (e) => onDrop(e, col.key) : undefined}
           onDragEnd={draggable ? () => onDragEnd() : undefined}
         >
-          <span className="sg-table-th-content">
+          <span
+            className={['sg-table-th-content', sCls.headerCellContent].filter(Boolean).join(' ')}
+            style={sSty.headerCellContent}
+          >
             {col.title}
             {col.tooltip && <ColumnTooltip content={col.tooltip} />}
             <SortIndicator col={col} {...sortProps} />

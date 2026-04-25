@@ -111,6 +111,42 @@ const items = [
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Dark theme"
+        description="Flip the theme prop, ideal for side navigations on dark surfaces."
+        code={`<Menu theme="dark" items={items} defaultSelectedKeys={['1']} />`}
+      >
+        <div style={{ maxWidth: 256, background: '#111827', padding: 8, borderRadius: 8 }}>
+          <Menu
+            theme="dark"
+            items={verticalItems}
+            defaultOpenKeys={['sub1']}
+            defaultSelectedKeys={['3']}
+          />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Selected state uses --sg-color-primary — override on a wrapper to rebrand."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#f97316' }}>
+  <Menu items={items} defaultSelectedKeys={['1']} />
+</div>`}
+      >
+        <div
+          style={{
+            ['--sg-color-primary' as never]: '#f97316',
+            maxWidth: 256,
+          }}
+        >
+          <Menu
+            items={verticalItems}
+            defaultOpenKeys={['sub1']}
+            defaultSelectedKeys={['1']}
+          />
+        </div>
+      </DemoBox>
+
       <PropsTable data={menuProps} />
     </ComponentDoc>
   )

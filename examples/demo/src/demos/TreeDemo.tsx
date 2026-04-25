@@ -112,6 +112,87 @@ const treeData = [
         <Tree treeData={treeData} showLine defaultExpandAll />
       </DemoBox>
 
+      <DemoBox
+        title="Component tokens"
+        description="Override --sg-tree-* tokens on a scope to restyle only this tree."
+        code={`<div style={{
+  ['--sg-tree-indent' as any]: '28px',
+  ['--sg-tree-node-hover-bg' as any]: 'var(--sg-color-primary-bg)',
+}}>
+  <Tree treeData={treeData} defaultExpandAll />
+</div>`}
+      >
+        <div
+          style={{
+            ['--sg-tree-indent' as never]: '28px',
+            ['--sg-tree-node-hover-bg' as never]: 'var(--sg-color-primary-bg)',
+          }}
+        >
+          <Tree treeData={treeData} defaultExpandAll showLine />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Override --sg-color-primary on a scope — selection and focus follow automatically."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#e11d48' }}>
+  <Tree treeData={treeData} defaultExpandAll />
+</div>`}
+      >
+        <div style={{ ['--sg-color-primary' as never]: '#e11d48' }}>
+          <Tree
+            treeData={treeData}
+            defaultExpandAll
+            checkable
+            checkedKeys={checkedKeys}
+            onCheck={(keys) => setCheckedKeys(keys)}
+          />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Dark theme scope"
+        description="Wrap in a node with data-sg-theme='dark' to render the tree in the dark palette without affecting the rest of the page."
+        code={`<div data-sg-theme="dark" style={{ padding: 12, background: 'var(--sg-color-bg-container)' }}>
+  <Tree treeData={treeData} defaultExpandAll showLine />
+</div>`}
+      >
+        <div
+          data-sg-theme="dark"
+          style={{
+            padding: 12,
+            background: 'var(--sg-color-bg-container)',
+            borderRadius: 'var(--sg-border-radius)',
+          }}
+        >
+          <Tree treeData={treeData} defaultExpandAll showLine />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Selectable vs checkable"
+        description="Selection highlights a single active node; checkable toggles checkboxes instead."
+        code={`<Tree treeData={treeData} selectable defaultExpandAll />
+<Tree treeData={treeData} checkable defaultExpandAll />`}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gap: 24,
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          }}
+        >
+          <div>
+            <strong style={{ display: 'block', marginBottom: 8 }}>Selectable</strong>
+            <Tree treeData={treeData} defaultExpandAll />
+          </div>
+          <div>
+            <strong style={{ display: 'block', marginBottom: 8 }}>Checkable</strong>
+            <Tree treeData={treeData} checkable defaultExpandAll />
+          </div>
+        </div>
+      </DemoBox>
+
       <PropsTable data={treeProps} />
     </ComponentDoc>
   )

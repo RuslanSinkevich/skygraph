@@ -70,7 +70,11 @@ function ListInner<T = any>({
   hoverable = true,
   onItemClick,
   rowClassName,
+  classNames: slotCls,
+  styles: slotSty,
 }: ListProps<T>) {
+  const sCls = slotCls ?? {}
+  const sSty = slotSty ?? {}
   const [internalPage, setInternalPage] = React.useState(1)
   const [internalSelectedKeys, setInternalSelectedKeys] = React.useState<number[]>(
     () => defaultSelectedKeys ?? [],
@@ -159,11 +163,13 @@ function ListInner<T = any>({
   const gridStyle = React.useMemo((): React.CSSProperties | undefined => {
     if (!grid) return undefined
     const cols = grid.column ?? 1
+    // Базовое значение кладём в отдельную переменную, чтобы media-override на
+    // корне (`--sg-list-grid-columns`) мог перебить её через наследование CSS-переменных
+    // и не пришлось использовать `!important`.
     return {
-      display: 'grid',
-      gridTemplateColumns: `repeat(${cols}, 1fr)`,
+      ['--sg-list-grid-base-columns' as string]: `repeat(${cols}, 1fr)`,
       gap: grid.gutter ? `${grid.gutter}px` : undefined,
-    }
+    } as React.CSSProperties
   }, [grid])
 
   const gridResponsiveClass = React.useMemo(() => {
@@ -188,6 +194,7 @@ function ListInner<T = any>({
       hoverable && 'sg-list-item-hoverable',
       isDragging && 'sg-list-item-dragging',
       isDropTarget && 'sg-list-item-drop-target',
+      sCls.item,
       extraCls,
     )
 
@@ -195,6 +202,7 @@ function ListInner<T = any>({
       <div
         key={index}
         className={itemCls || undefined}
+        style={sSty.item}
         onClick={(e) => handleItemClick(item, index, e)}
         draggable={draggable}
         onDragStart={(e) => handleDragStart(e, index)}
@@ -208,7 +216,8 @@ function ListInner<T = any>({
       </div>
     )
   }, [selectable, selectedKeys, hoverable, dragIndex, dropIndex, draggable,
-      rowClassName, handleItemClick, handleDragStart, handleDragOver, handleDrop, handleDragEnd, renderItem])
+      rowClassName, handleItemClick, handleDragStart, handleDragOver, handleDrop, handleDragEnd, renderItem,
+      sCls.item, sSty.item])
 
   // Virtual scroll rendering
   const renderVirtualList = React.useCallback(() => {
@@ -249,7 +258,7 @@ function ListInner<T = any>({
         ) : virtual ? (
           renderVirtualList()
         ) : (
-          <div style={gridStyle}>
+          <div className={grid ? 'sg-list-items' : undefined} style={gridStyle}>
             {paginatedData.map((item, i) => renderItemWrapper(item, i))}
           </div>
         )}
@@ -278,22 +287,36 @@ function ListInner<T = any>({
     selectable && 'sg-list-selectable',
     draggable && 'sg-list-draggable',
     gridResponsiveClass,
+    sCls.root,
     className,
   )
 
   return (
-    <div className={wrapperClass} style={style}>
-      {header && <div className="sg-list-header">{header}</div>}
+    <div className={wrapperClass} style={{ ...sSty.root, ...style }}>
+      {header && (
+        <div
+          className={cls('sg-list-header', sCls.header)}
+          style={sSty.header}
+        >
+          {header}
+        </div>
+      )}
 
       <Spin spinning={loading}>
         {paginatedData.length === 0 ? (
-          <div className="sg-list-empty">
+          <div
+            className={cls('sg-list-empty', sCls.empty)}
+            style={sSty.empty}
+          >
             <Empty description={emptyText} />
           </div>
         ) : virtual ? (
           renderVirtualList()
         ) : (
-          <div className="sg-list-items" style={gridStyle}>
+          <div
+            className={cls('sg-list-items', sCls.items)}
+            style={{ ...gridStyle, ...sSty.items }}
+          >
             {paginatedData.map((item, i) => renderItemWrapper(item, i))}
           </div>
         )}
@@ -302,7 +325,10 @@ function ListInner<T = any>({
       {loadMore && <div className="sg-list-load-more">{loadMore}</div>}
 
       {pagination && (
-        <div className="sg-list-pagination">
+        <div
+          className={cls('sg-list-pagination', sCls.pagination)}
+          style={sSty.pagination}
+        >
           <Pagination
             current={currentPage}
             total={total}
@@ -312,7 +338,14 @@ function ListInner<T = any>({
         </div>
       )}
 
-      {footer && <div className="sg-list-footer">{footer}</div>}
+      {footer && (
+        <div
+          className={cls('sg-list-footer', sCls.footer)}
+          style={sSty.footer}
+        >
+          {footer}
+        </div>
+      )}
     </div>
   )
 }

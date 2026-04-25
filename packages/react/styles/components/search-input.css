@@ -19,14 +19,20 @@
   z-index: 1;
 }
 
+/*
+ * `.sg-search-input-field` — тот же элемент, что и `.sg-input`.
+ * `padding` shorthand в `.sg-input` ставится первым (по порядку @import),
+ * поэтому longhand-правила здесь (ниже по каскаду) корректно перебивают его
+ * без `!important`.
+ */
 .sg-search-input-field {
-  padding-left: calc(var(--sg-padding-sm) + 20px) !important;
-  padding-right: calc(var(--sg-padding-sm) + 24px) !important;
+  padding-left: calc(var(--sg-padding-sm) + 20px);
+  padding-right: calc(var(--sg-padding-sm) + 24px);
 }
 
 .sg-search-input-with-button .sg-search-input-field {
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .sg-search-input .sg-spin {

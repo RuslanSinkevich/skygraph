@@ -83,6 +83,41 @@ export function SwitchDemo() {
         <span style={{ marginLeft: 8 }}>{checked ? 'Checked' : 'Unchecked'}</span>
       </DemoBox>
 
+      <DemoBox
+        title="Sizes"
+        description="Three sizes for varying UI densities."
+        code={`<Switch size="small" defaultChecked />
+<Switch defaultChecked />
+<Switch size="large" defaultChecked />`}
+      >
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+          <Switch size="small" defaultChecked />
+          <Switch defaultChecked />
+          <Switch size="large" defaultChecked />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Switch picks up --sg-color-primary automatically."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#e11d48' }}>
+  <Switch defaultChecked />
+</div>`}
+      >
+        <div
+          style={{
+            display: 'flex',
+            gap: 12,
+            alignItems: 'center',
+            ['--sg-color-primary' as never]: '#e11d48',
+          }}
+        >
+          <Switch defaultChecked />
+          <Switch defaultChecked checkedChildren="ON" unCheckedChildren="OFF" />
+          <Switch />
+        </div>
+      </DemoBox>
+
       <PropsTable data={switchProps} />
     </ComponentDoc>
   )

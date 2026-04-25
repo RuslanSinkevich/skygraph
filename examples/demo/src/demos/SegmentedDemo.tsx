@@ -96,6 +96,18 @@ export function SegmentedDemo() {
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Scoped brand"
+        description="Selected thumb colour follows --sg-color-primary."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#7c3aed' }}>
+  <Segmented options={['A', 'B', 'C']} />
+</div>`}
+      >
+        <div style={{ ['--sg-color-primary' as never]: '#7c3aed' }}>
+          <Segmented options={['A', 'B', 'C']} defaultValue="B" />
+        </div>
+      </DemoBox>
+
       <PropsTable data={segmentedProps} />
     </ComponentDoc>
   )

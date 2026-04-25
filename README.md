@@ -133,6 +133,11 @@ Switch to dark mode:
 3. **Instance** — `unstyled` prop + render props for custom UI
 4. **Headless** — skip CSS, use only hooks (`useField`, `useForm`, etc.)
 
+SkyGraph treats styling as a public contract. Full reference:
+
+- [`docs/styling-contract.md`](./docs/styling-contract.md) — stable tokens, root classes, slots, `classNames` / `styles` API, versioning policy.
+- [`docs/styling-recipes.md`](./docs/styling-recipes.md) — practical recipes: custom brand, dark mode, per-component overrides, conditional row/cell styling, full `unstyled` mode.
+
 ## Component List
 
 **Data Entry (18):** Button, Input, InputNumber, Textarea, Select, Checkbox, Radio, Switch, Slider, DatePicker, TimePicker, AutoComplete, Rate, Upload, ColorPicker, Cascader, TreeSelect, Mentions

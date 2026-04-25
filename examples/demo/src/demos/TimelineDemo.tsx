@@ -96,6 +96,33 @@ export function TimelineDemo() {
         ]} />
       </DemoBox>
 
+      <DemoBox
+        title="Reverse"
+        description="Flip the order of events."
+        code={`<Timeline reverse items={items} />`}
+      >
+        <Timeline reverse items={basicItems} />
+      </DemoBox>
+
+      <DemoBox
+        title="Custom color per item"
+        description="Any CSS color works in the color prop."
+        code={`<Timeline items={[
+  { children: 'Blue (default)' },
+  { children: 'Custom purple', color: '#7c3aed' },
+  { children: 'Custom pink', color: '#db2777' },
+]} />`}
+      >
+        <Timeline
+          items={[
+            { children: 'Blue (default)' },
+            { children: 'Custom purple', color: '#7c3aed' },
+            { children: 'Custom pink', color: '#db2777' },
+            { children: 'Custom amber', color: '#d97706' },
+          ]}
+        />
+      </DemoBox>
+
       <PropsTable data={timelineProps} />
       <PropsTable title="TimelineItem" data={timelineItemProps} />
     </ComponentDoc>

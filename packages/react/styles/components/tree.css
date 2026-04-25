@@ -394,10 +394,15 @@
   color: var(--sg-color-error);
 }
 
-.sg-tree-action-disabled {
-  color: var(--sg-color-text-disabled) !important;
+/*
+ * Специфичность выше, чем у `.sg-tree-action-btn:hover`, чтобы победить :hover-состояние
+ * в disabled-ветке без `!important`.
+ */
+.sg-tree-action-btn.sg-tree-action-disabled,
+.sg-tree-action-btn.sg-tree-action-disabled:hover {
+  color: var(--sg-color-text-disabled);
   cursor: not-allowed;
-  background: none !important;
+  background: none;
 }
 
 /* ═══════════════════════════════════════════
@@ -416,12 +421,12 @@
 .sg-tree-status-success { background: var(--sg-color-success); }
 .sg-tree-status-warning { background: var(--sg-color-warning); }
 .sg-tree-status-error { background: var(--sg-color-error); }
-.sg-tree-status-info { background: var(--sg-color-info, var(--sg-color-primary)); }
+.sg-tree-status-info { background: var(--sg-color-primary); }
 
 .sg-tree-node-status-success { border-left: 2px solid var(--sg-color-success); }
 .sg-tree-node-status-warning { border-left: 2px solid var(--sg-color-warning); }
 .sg-tree-node-status-error { border-left: 2px solid var(--sg-color-error); }
-.sg-tree-node-status-info { border-left: 2px solid var(--sg-color-info, var(--sg-color-primary)); }
+.sg-tree-node-status-info { border-left: 2px solid var(--sg-color-primary); }
 
 /* ═══════════════════════════════════════════
    CONNECTING LINES (tree guide lines)

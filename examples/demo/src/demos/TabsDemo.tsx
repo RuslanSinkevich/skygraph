@@ -66,6 +66,76 @@ export function TabsDemo() {
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Sizes"
+        description="Three sizes for different UI densities."
+        code={`<Tabs size="small" items={...} />
+<Tabs size="large" items={...} />`}
+        vertical
+      >
+        <div style={{ width: '100%' }}>
+          <Tabs
+            size="small"
+            items={[
+              { key: '1', label: 'Small', children: <p>Small content</p> },
+              { key: '2', label: 'Second', children: <p>Second</p> },
+            ]}
+          />
+        </div>
+        <div style={{ width: '100%' }}>
+          <Tabs
+            size="large"
+            items={[
+              { key: '1', label: 'Large', children: <p>Large content</p> },
+              { key: '2', label: 'Second', children: <p>Second</p> },
+            ]}
+          />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Active tab indicator follows --sg-color-primary."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#f59e0b' }}>
+  <Tabs items={...} />
+</div>`}
+      >
+        <div
+          style={{
+            width: '100%',
+            ['--sg-color-primary' as never]: '#f59e0b',
+          }}
+        >
+          <Tabs
+            items={[
+              { key: '1', label: 'Amber', children: <p>Amber theme</p> },
+              { key: '2', label: 'Second', children: <p>Follows tokens</p> },
+              { key: '3', label: 'Third', children: <p>No prop change needed</p> },
+            ]}
+          />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Loading & disabled tabs"
+        description="Individual items can be disabled or show a loading spinner."
+        code={`<Tabs items={[
+  { key: '1', label: 'Ready', children: 'Content' },
+  { key: '2', label: 'Loading…', loading: true, children: '…' },
+  { key: '3', label: 'Disabled', disabled: true, children: '…' },
+]} />`}
+      >
+        <div style={{ width: '100%' }}>
+          <Tabs
+            items={[
+              { key: '1', label: 'Ready', children: <p>Ready content</p> },
+              { key: '2', label: 'Loading', loading: true, children: <p>Loading</p> },
+              { key: '3', label: 'Disabled', disabled: true, children: <p>Disabled</p> },
+            ]}
+          />
+        </div>
+      </DemoBox>
+
       <PropsTable data={tabsProps} />
     </ComponentDoc>
   )

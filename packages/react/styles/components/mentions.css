@@ -10,45 +10,45 @@
 }
 
 .sg-mentions-small .sg-textarea {
-  font-size: var(--sg-font-size-sm, 12px);
+  font-size: var(--sg-font-size-sm);
 }
 
 .sg-mentions-large .sg-textarea {
-  font-size: var(--sg-font-size-lg, 16px);
+  font-size: var(--sg-font-size-lg);
 }
 
 .sg-mentions-dropdown {
   position: absolute;
   left: 0;
   right: 0;
-  z-index: 1050;
-  background: var(--sg-bg-elevated, #fff);
-  border: 1px solid var(--sg-border-color, #d9d9d9);
-  border-radius: var(--sg-border-radius, 6px);
-  box-shadow: var(--sg-box-shadow, 0 6px 16px rgba(0, 0, 0, 0.08));
+  z-index: var(--sg-z-dropdown);
+  background: var(--sg-color-bg-elevated);
+  border: 1px solid var(--sg-color-border);
+  border-radius: var(--sg-border-radius);
+  box-shadow: var(--sg-shadow-lg);
   max-height: 200px;
   overflow-y: auto;
-  padding: 4px 0;
+  padding: var(--sg-padding-xs) 0;
 }
 
 .sg-mentions-dropdown-bottom {
   top: 100%;
-  margin-top: 4px;
+  margin-top: var(--sg-margin-xs);
 }
 
 .sg-mentions-dropdown-top {
   bottom: 100%;
-  margin-bottom: 4px;
+  margin-bottom: var(--sg-margin-xs);
 }
 
 .sg-mentions-option {
-  padding: 5px 12px;
+  padding: var(--sg-padding-xs) var(--sg-padding-md);
   cursor: pointer;
-  transition: background-color 0.15s;
-  line-height: 1.5;
+  transition: background-color var(--sg-transition-duration) var(--sg-transition-timing);
+  line-height: var(--sg-line-height);
 }
 
 .sg-mentions-option:hover,
 .sg-mentions-option-active {
-  background: var(--sg-item-hover-bg, #f5f5f5);
+  background: var(--sg-color-bg-hover);
 }

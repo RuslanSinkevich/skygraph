@@ -56,6 +56,35 @@ export function EmptyDemo() {
         </Empty>
       </DemoBox>
 
+      <DemoBox
+        title="Custom image (emoji)"
+        description="Anything renderable works as an image — emoji, SVG, <img />."
+        code={`<Empty image={<span style={{ fontSize: 48 }}>📭</span>} description="Inbox zero" />`}
+      >
+        <Empty image={<span style={{ fontSize: 48 }}>📭</span>} description="Inbox zero" />
+      </DemoBox>
+
+      <DemoBox
+        title="Inside a card"
+        description="Common usage — empty state inside a Table/List/Card container."
+        code={`<div className="card-wrap">
+  <Empty description="No rows to show" />
+</div>`}
+      >
+        <div
+          style={{
+            border: '1px solid var(--sg-color-border)',
+            borderRadius: 'var(--sg-border-radius)',
+            padding: 24,
+            background: 'var(--sg-color-bg-container)',
+          }}
+        >
+          <Empty description="No rows to show">
+            <Button size="small">Reset filters</Button>
+          </Empty>
+        </div>
+      </DemoBox>
+
       <PropsTable data={emptyProps} />
     </ComponentDoc>
   )

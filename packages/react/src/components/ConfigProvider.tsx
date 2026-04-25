@@ -1,7 +1,14 @@
 import React, { createContext, useContext, useMemo } from 'react'
 import type { SizeType, SgLocale } from '../types'
 
-/** Global Skygraph component configuration merged through React context. */
+/**
+ * Global Skygraph component configuration merged through React context.
+ *
+ * По `prefixCls`: сознательно НЕ входит в публичный API до реализации
+ * (вариант A в `docs/styling-plan.md`, фаза 4). На практике все корневые классы
+ * имеют стабильный префикс `.sg-*`; если нужна изоляция — используйте изолированный
+ * скоуп на хосте (шадоу-рут/отдельный контейнер со своими токенами).
+ */
 export interface SgConfig {
   /** Default size token for nested components. */
   size?: SizeType
@@ -11,8 +18,6 @@ export interface SgConfig {
   bordered?: boolean
   /** Locale messages shallow-merged with the parent provider when set. */
   locale?: SgLocale
-  /** Root CSS class prefix applied to nested Skygraph components. */
-  prefixCls?: string
 }
 
 const SgConfigContext = createContext<SgConfig>({})
@@ -40,9 +45,8 @@ export function ConfigProvider({ children, ...config }: ConfigProviderProps) {
           ? { ...parent.locale, ...config.locale }
           : config.locale
         : parent.locale,
-      prefixCls: config.prefixCls ?? parent.prefixCls,
     }),
-    [config.size, config.disabled, config.bordered, config.locale, config.prefixCls, parent],
+    [config.size, config.disabled, config.bordered, config.locale, parent],
   )
 
   return <SgConfigContext.Provider value={merged}>{children}</SgConfigContext.Provider>

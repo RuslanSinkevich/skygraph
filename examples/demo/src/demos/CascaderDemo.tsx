@@ -127,6 +127,30 @@ const options = [
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Sizes"
+        description="Small, middle, large — match with Form/Select controls."
+        code={`<Cascader size="small" options={options} />
+<Cascader options={options} />
+<Cascader size="large" options={options} />`}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 300 }}>
+          <Cascader size="small" options={options} placeholder="Small" />
+          <Cascader options={options} placeholder="Middle" />
+          <Cascader size="large" options={options} placeholder="Large" />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Disabled"
+        description="Disable the whole cascader."
+        code={`<Cascader options={options} disabled defaultValue={['zhejiang', 'hangzhou']} />`}
+      >
+        <div style={{ width: 300 }}>
+          <Cascader options={options} disabled defaultValue={['zhejiang', 'hangzhou']} />
+        </div>
+      </DemoBox>
+
       <PropsTable data={cascaderProps} />
     </ComponentDoc>
   )

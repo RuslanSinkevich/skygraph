@@ -98,6 +98,38 @@ export function BadgeDemo() {
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Custom color"
+        description="Any CSS colour is accepted."
+        code={`<Badge color="#722ed1" count={5}><div style={box} /></Badge>`}
+      >
+        <div style={{ display: 'flex', gap: 24 }}>
+          <Badge color="#722ed1" count={5}><div style={box} /></Badge>
+          <Badge color="#eb2f96" count={12}><div style={box} /></Badge>
+          <Badge color="#16a34a" dot><div style={box} /></Badge>
+          <Badge color="#f59e0b" dot><div style={box} /></Badge>
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Default/processing badges follow --sg-color-primary."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#0ea5e9' }}>
+  <Badge status="processing" text="Uploading…" />
+</div>`}
+      >
+        <div
+          style={{
+            display: 'flex',
+            gap: 16,
+            ['--sg-color-primary' as never]: '#0ea5e9',
+          }}
+        >
+          <Badge status="processing" text="Uploading…" />
+          <Badge count={3}><div style={box} /></Badge>
+        </div>
+      </DemoBox>
+
       <PropsTable data={badgeProps} />
     </ComponentDoc>
   )

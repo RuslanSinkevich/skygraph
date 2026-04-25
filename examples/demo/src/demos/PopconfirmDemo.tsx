@@ -40,7 +40,7 @@ export function PopconfirmDemo() {
           onConfirm={() => console.log('Confirmed')}
           onCancel={() => console.log('Cancelled')}
         >
-          <Button danger>Delete</Button>
+          <Button type="primary" style={{ background: 'var(--sg-color-error)', borderColor: 'var(--sg-color-error)' }}>Delete</Button>
         </Popconfirm>
       </DemoBox>
 
@@ -62,7 +62,7 @@ export function PopconfirmDemo() {
           okText="Delete"
           cancelText="Cancel"
         >
-          <Button danger>Delete Task</Button>
+          <Button type="primary" style={{ background: 'var(--sg-color-error)', borderColor: 'var(--sg-color-error)' }}>Delete Task</Button>
         </Popconfirm>
       </DemoBox>
 
@@ -78,6 +78,34 @@ export function PopconfirmDemo() {
           <Popconfirm title="Sure?" placement="bottom"><Button>Bottom</Button></Popconfirm>
           <Popconfirm title="Sure?" placement="left"><Button>Left</Button></Popconfirm>
           <Popconfirm title="Sure?" placement="right"><Button>Right</Button></Popconfirm>
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Disabled"
+        description="When disabled, Popconfirm becomes a no-op and the trigger fires as usual."
+        code={`<Popconfirm disabled title="Never shown">
+  <Button>Disabled</Button>
+</Popconfirm>`}
+      >
+        <Popconfirm disabled title="Never shown">
+          <Button>Disabled popconfirm</Button>
+        </Popconfirm>
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="OK button follows --sg-color-primary. Override per scope to match destructive theme."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#ef4444' }}>
+  <Popconfirm title="Delete row?" okText="Delete">
+    <Button>Delete</Button>
+  </Popconfirm>
+</div>`}
+      >
+        <div style={{ ['--sg-color-primary' as never]: '#ef4444' }}>
+          <Popconfirm title="Delete row?" okText="Delete">
+            <Button type="primary">Delete</Button>
+          </Popconfirm>
         </div>
       </DemoBox>
 

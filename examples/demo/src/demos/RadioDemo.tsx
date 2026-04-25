@@ -81,6 +81,74 @@ export function RadioDemo() {
         />
       </DemoBox>
 
+      <DemoBox
+        title="Disabled"
+        description="Disable the entire group."
+        code={`<RadioGroup
+  disabled
+  defaultValue="a"
+  options={[
+    { label: 'Option A', value: 'a' },
+    { label: 'Option B', value: 'b' },
+  ]}
+/>`}
+      >
+        <RadioGroup
+          disabled
+          defaultValue="a"
+          options={[
+            { label: 'Option A', value: 'a' },
+            { label: 'Option B', value: 'b' },
+          ]}
+        />
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Radio fill uses --sg-color-primary — override on scope for custom brand."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#16a34a' }}>
+  <RadioGroup defaultValue="a" options={opts} />
+</div>`}
+      >
+        <div
+          style={{
+            ['--sg-color-primary' as never]: '#16a34a',
+            display: 'flex',
+            gap: 16,
+          }}
+        >
+          <RadioGroup
+            defaultValue="a"
+            options={[
+              { label: 'Green A', value: 'a' },
+              { label: 'Green B', value: 'b' },
+            ]}
+          />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Unstyled"
+        description="Render raw native inputs when the library look isn't desired."
+        code={`<RadioGroup
+  unstyled
+  defaultValue="a"
+  options={[
+    { label: 'Native A', value: 'a' },
+    { label: 'Native B', value: 'b' },
+  ]}
+/>`}
+      >
+        <RadioGroup
+          unstyled
+          defaultValue="a"
+          options={[
+            { label: 'Native A', value: 'a' },
+            { label: 'Native B', value: 'b' },
+          ]}
+        />
+      </DemoBox>
+
       <PropsTable data={radioProps} />
     </ComponentDoc>
   )

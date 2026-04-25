@@ -9,6 +9,8 @@ import type {
   CellSpan,
   RowId,
   TableLocale,
+  TableClassNames,
+  TableStyles,
 } from './types'
 import type { ContextMenuItem, ContextMenuState } from './ContextMenu'
 
@@ -82,6 +84,10 @@ interface BodyProps {
   emptyContent?: React.ReactNode
   /** Renders pinned top/bottom sections without zebra. */
   isPinnedSection?: boolean
+  /** Публичные классы по слотам Table. */
+  slotClassNames?: TableClassNames
+  /** Публичные стили по слотам Table. */
+  slotStyles?: TableStyles
 }
 
 /** Renders the main or pinned table body rows, cells, and expand regions. */
@@ -118,8 +124,13 @@ export function TableBody(props: BodyProps) {
     onFocusCell,
     keyboardNavigation,
     emptyContent,
+    slotClassNames,
+    slotStyles,
     isPinnedSection,
   } = props
+
+  const sCls = slotClassNames ?? {}
+  const sSty = slotStyles ?? {}
 
   const [editingCell, setEditingCell] = useState<{
     rowId: RowId
@@ -202,8 +213,8 @@ export function TableBody(props: BodyProps) {
   if (flatRows.length === 0) {
     return (
       <div
-        className="sg-table-empty"
-        style={{ gridColumn: `1 / ${totalCols + 1}` }}
+        className={['sg-table-empty', sCls.empty].filter(Boolean).join(' ')}
+        style={{ gridColumn: `1 / ${totalCols + 1}`, ...sSty.empty }}
         role="row"
       >
         <span role="cell">{emptyContent ?? t.emptyText}</span>
@@ -281,12 +292,13 @@ export function TableBody(props: BodyProps) {
                 isZebra ? 'sg-table-row-striped' : '',
                 isDragOver ? 'sg-table-row-drag-over' : '',
                 isPinned ? 'sg-table-row-pinned' : '',
+                sCls.row,
                 rowCls,
               ]
                 .filter(Boolean)
                 .join(' ')}
               role="row"
-              style={{ display: 'contents' }}
+              style={{ display: 'contents', ...sSty.row }}
               draggable={rowDraggable}
               onDragStart={
                 rowDraggable ? (e) => handleRowDragStart(e, rowIdx) : undefined
@@ -385,11 +397,12 @@ export function TableBody(props: BodyProps) {
                       isFocused ? 'sg-table-cell-focused' : '',
                       isCopied ? 'sg-table-cell-copied' : '',
                       col.copyable ? 'sg-table-cell-copyable' : '',
+                      sCls.bodyCell,
                       cellClsExtra,
                     ]
                       .filter(Boolean)
                       .join(' ')}
-                    style={cellStyle}
+                    style={{ ...cellStyle, ...sSty.bodyCell }}
                     role="cell"
                     tabIndex={keyboardNavigation ? -1 : undefined}
                     onClick={() => {

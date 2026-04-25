@@ -70,7 +70,14 @@ const skillOptions = [
 
 function InputNumberDemo() {
   const [value, setValue] = useState<number | undefined>(25)
-  return <InputNumber value={value} onChange={setValue} min={0} max={120} />
+  return (
+    <InputNumber
+      value={value}
+      onChange={(v) => setValue(v ?? undefined)}
+      min={0}
+      max={120}
+    />
+  )
 }
 
 function SliderDemo() {
@@ -109,12 +116,34 @@ function UploadDemo() {
   )
 }
 
+function UploadMultiple() {
+  const [files, setFiles] = useState<UploadFile[]>([])
+  const handleUpload = (newFiles: File[]) => {
+    const uploaded: UploadFile[] = newFiles.map((f, i) => ({
+      uid: `${Date.now()}-${i}`,
+      name: f.name,
+      size: f.size,
+      status: 'done' as const,
+    }))
+    setFiles((prev) => [...prev, ...uploaded])
+  }
+  return (
+    <Upload
+      multiple
+      accept="image/*"
+      fileList={files}
+      onUpload={handleUpload}
+      onRemove={(f) => setFiles((prev) => prev.filter((x) => x.uid !== f.uid))}
+    />
+  )
+}
+
 function FullFormDemo() {
   const [name, setName] = useState('')
   const [bio, setBio] = useState('')
   const [age, setAge] = useState<number | undefined>(25)
   const [city, setCity] = useState<string | number>('')
-  const [date, setDate] = useState('')
+  const [date, setDate] = useState<Date | null>(null)
   const [time, setTime] = useState('')
   const [skill, setSkill] = useState('')
   const [newsletter, setNewsletter] = useState(false)
@@ -135,7 +164,7 @@ function FullFormDemo() {
       </div>
       <div>
         <label className="sg-field-label">Age</label>
-        <InputNumber value={age} onChange={setAge} min={0} max={120} />
+        <InputNumber value={age} onChange={(v) => setAge(v ?? undefined)} min={0} max={120} />
       </div>
       <div>
         <label className="sg-field-label">City</label>
@@ -143,7 +172,7 @@ function FullFormDemo() {
       </div>
       <div>
         <label className="sg-field-label">Birth Date</label>
-        <DatePicker value={date} onChange={setDate} />
+        <DatePicker value={date ?? undefined} onChange={(d) => setDate(d)} />
       </div>
       <div>
         <label className="sg-field-label">Meeting Time</label>
@@ -239,6 +268,75 @@ const [value, setValue] = useState(3)
 />`}
       >
         <UploadDemo />
+      </DemoBox>
+
+      <DemoBox
+        title="InputNumber — step & disabled"
+        description="Fine-grained step value and disabled state."
+        code={`<InputNumber defaultValue={0.5} step={0.1} min={0} max={1} />
+<InputNumber defaultValue={42} disabled />`}
+      >
+        <div style={{ display: 'flex', gap: 12 }}>
+          <InputNumber defaultValue={0.5} step={0.1} min={0} max={1} />
+          <InputNumber defaultValue={42} disabled />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Slider — range & step"
+        description="Discrete steps and a disabled slider. Values snap to multiples of step."
+        code={`<Slider defaultValue={60} step={10} />
+<Slider defaultValue={30} disabled />`}
+      >
+        <div style={{ maxWidth: 420, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Slider defaultValue={60} step={10} />
+          <Slider defaultValue={30} disabled />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Rate — half, custom count, disabled"
+        description="Half-star precision, 10-star scale, or read-only display."
+        code={`<Rate defaultValue={2.5} allowHalf />
+<Rate defaultValue={7} count={10} />
+<Rate defaultValue={4} disabled />`}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <Rate defaultValue={2.5} allowHalf />
+          <Rate defaultValue={7} count={10} />
+          <Rate defaultValue={4} disabled />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Upload — multiple"
+        description="Allow users to pick several files at once."
+        code={`<Upload multiple accept="image/*" fileList={files} onUpload={handleUpload} />`}
+      >
+        <UploadMultiple />
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Slider/Rate/Switch all follow --sg-color-primary on a scope."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#db2777' }}>
+  <Slider defaultValue={50} />
+  <Rate defaultValue={3} />
+</div>`}
+      >
+        <div
+          style={{
+            ['--sg-color-primary' as never]: '#db2777',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            maxWidth: 400,
+          }}
+        >
+          <Slider defaultValue={50} />
+          <Rate defaultValue={3} />
+          <Switch defaultChecked />
+        </div>
       </DemoBox>
 
       <DemoBox

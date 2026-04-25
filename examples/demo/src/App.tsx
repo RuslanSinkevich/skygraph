@@ -45,6 +45,7 @@ import { ThemeToggle } from './demos/ThemeToggle'
 import { GettingStartedPage } from './demos/GettingStartedPage'
 import { ThemingPage } from './demos/ThemingPage'
 import { CoreApiPage } from './demos/CoreApiPage'
+import { StylingShowcasePage } from './demos/StylingShowcasePage'
 
 // ---------------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ const menu: MenuSection[] = [
     items: [
       { key: 'overview', label: 'Overview' },
       { key: 'getting-started', label: 'Getting Started' },
+      { key: 'styling-showcase', label: 'Styling Showcase' },
       { key: 'theming', label: 'Theming' },
       { key: 'core-api', label: 'Core API' },
     ],
@@ -169,6 +171,7 @@ const pages: Record<string, () => JSX.Element> = {
   'components/carousel': CarouselDemo,
   'components/descriptions': DescriptionsDemo,
   'getting-started': GettingStartedPage,
+  'styling-showcase': StylingShowcasePage,
   'theming': ThemingPage,
   'core-api': CoreApiPage,
 }
@@ -252,6 +255,7 @@ function Overview() {
 
 export default function App() {
   const [route, setRoute] = useState(getHashRoute)
+  const [query, setQuery] = useState('')
 
   useEffect(() => {
     const onHash = () => setRoute(getHashRoute())
@@ -264,14 +268,43 @@ export default function App() {
     return pages[route] ?? Overview
   }, [route])
 
+  const filteredMenu = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return menu
+    return menu
+      .map(s => ({
+        ...s,
+        items: s.items.filter(i => i.label.toLowerCase().includes(q)),
+      }))
+      .filter(s => s.items.length > 0)
+  }, [query])
+
   return (
     <div className="demo-layout">
       <aside className="demo-sidebar">
-        <div className="demo-logo" onClick={() => navigate('overview')} style={{ cursor: 'pointer' }}>
+        <div
+          className="demo-logo"
+          onClick={() => navigate('overview')}
+          style={{ cursor: 'pointer' }}
+        >
+          <span className="demo-logo-dot" />
           SkyGraph
         </div>
+        <div className="demo-search">
+          <input
+            placeholder="Search components…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            aria-label="Search components"
+          />
+        </div>
         <nav className="demo-nav">
-          {menu.map(section => (
+          {filteredMenu.length === 0 && (
+            <div style={{ padding: '16px 20px', fontSize: 12, opacity: 0.6 }}>
+              No matches.
+            </div>
+          )}
+          {filteredMenu.map(section => (
             <div key={section.title} className="demo-nav-section">
               <div className="demo-nav-section-title">{section.title}</div>
               {section.items.map(item => (
@@ -294,9 +327,32 @@ export default function App() {
         </nav>
         <div className="demo-sidebar-footer">
           <ThemeToggle />
+          <span style={{ fontSize: 11, color: 'var(--sg-color-text-tertiary)' }}>
+            v0.3
+          </span>
         </div>
       </aside>
       <main className="demo-main">
+        <div className="demo-topbar">
+          <a href="#/styling-showcase" onClick={(e) => { e.preventDefault(); navigate('styling-showcase') }}>
+            Styling Showcase
+          </a>
+          <a href="#/theming" onClick={(e) => { e.preventDefault(); navigate('theming') }}>
+            Theming
+          </a>
+          <a href="#/getting-started" onClick={(e) => { e.preventDefault(); navigate('getting-started') }}>
+            Getting Started
+          </a>
+          <a
+            href="https://github.com/skygraph/skygraph"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            GitHub
+          </a>
+          <span style={{ flex: 1 }} />
+          <ThemeToggle />
+        </div>
         <Page />
       </main>
     </div>

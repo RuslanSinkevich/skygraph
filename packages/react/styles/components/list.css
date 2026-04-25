@@ -34,6 +34,18 @@
   min-height: 0;
 }
 
+.sg-list-grid .sg-list-items {
+  --sg-list-grid-base-columns: 1fr;
+  display: grid;
+  /*
+   * Колонки определяются двумя переменными:
+   *   --sg-list-grid-columns      — наследуется от корня `.sg-list` при срабатывании media;
+   *   --sg-list-grid-base-columns — ставится инлайн на этом элементе (grid.column);
+   * media побеждает за счёт наследования, инлайн не блокирует его.
+   */
+  grid-template-columns: var(--sg-list-grid-columns, var(--sg-list-grid-base-columns));
+}
+
 /* ---- Empty ---- */
 .sg-list-empty {
   padding: var(--sg-padding-xl);
@@ -182,34 +194,40 @@
   border-radius: var(--sg-border-radius);
 }
 
-/* Responsive grid breakpoints */
+/*
+ * Responsive grid breakpoints.
+ *
+ * Переопределяем `--sg-list-grid-columns` на КОРНЕ `.sg-list` (не на .sg-list-items),
+ * чтобы инлайновый `style` на `.sg-list-items` (который задаёт base columns) не перебивал
+ * media-override. Так мы обходимся без `!important`.
+ */
 @media (max-width: 575px) {
-  .sg-list-grid-xs-1 .sg-list-items { grid-template-columns: repeat(1, 1fr) !important; }
-  .sg-list-grid-xs-2 .sg-list-items { grid-template-columns: repeat(2, 1fr) !important; }
-  .sg-list-grid-xs-3 .sg-list-items { grid-template-columns: repeat(3, 1fr) !important; }
+  .sg-list-grid-xs-1 { --sg-list-grid-columns: repeat(1, 1fr); }
+  .sg-list-grid-xs-2 { --sg-list-grid-columns: repeat(2, 1fr); }
+  .sg-list-grid-xs-3 { --sg-list-grid-columns: repeat(3, 1fr); }
 }
 
 @media (min-width: 576px) and (max-width: 767px) {
-  .sg-list-grid-sm-1 .sg-list-items { grid-template-columns: repeat(1, 1fr) !important; }
-  .sg-list-grid-sm-2 .sg-list-items { grid-template-columns: repeat(2, 1fr) !important; }
-  .sg-list-grid-sm-3 .sg-list-items { grid-template-columns: repeat(3, 1fr) !important; }
-  .sg-list-grid-sm-4 .sg-list-items { grid-template-columns: repeat(4, 1fr) !important; }
+  .sg-list-grid-sm-1 { --sg-list-grid-columns: repeat(1, 1fr); }
+  .sg-list-grid-sm-2 { --sg-list-grid-columns: repeat(2, 1fr); }
+  .sg-list-grid-sm-3 { --sg-list-grid-columns: repeat(3, 1fr); }
+  .sg-list-grid-sm-4 { --sg-list-grid-columns: repeat(4, 1fr); }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
-  .sg-list-grid-md-1 .sg-list-items { grid-template-columns: repeat(1, 1fr) !important; }
-  .sg-list-grid-md-2 .sg-list-items { grid-template-columns: repeat(2, 1fr) !important; }
-  .sg-list-grid-md-3 .sg-list-items { grid-template-columns: repeat(3, 1fr) !important; }
-  .sg-list-grid-md-4 .sg-list-items { grid-template-columns: repeat(4, 1fr) !important; }
-  .sg-list-grid-md-6 .sg-list-items { grid-template-columns: repeat(6, 1fr) !important; }
+  .sg-list-grid-md-1 { --sg-list-grid-columns: repeat(1, 1fr); }
+  .sg-list-grid-md-2 { --sg-list-grid-columns: repeat(2, 1fr); }
+  .sg-list-grid-md-3 { --sg-list-grid-columns: repeat(3, 1fr); }
+  .sg-list-grid-md-4 { --sg-list-grid-columns: repeat(4, 1fr); }
+  .sg-list-grid-md-6 { --sg-list-grid-columns: repeat(6, 1fr); }
 }
 
 @media (min-width: 992px) {
-  .sg-list-grid-lg-1 .sg-list-items { grid-template-columns: repeat(1, 1fr) !important; }
-  .sg-list-grid-lg-2 .sg-list-items { grid-template-columns: repeat(2, 1fr) !important; }
-  .sg-list-grid-lg-3 .sg-list-items { grid-template-columns: repeat(3, 1fr) !important; }
-  .sg-list-grid-lg-4 .sg-list-items { grid-template-columns: repeat(4, 1fr) !important; }
-  .sg-list-grid-lg-6 .sg-list-items { grid-template-columns: repeat(6, 1fr) !important; }
+  .sg-list-grid-lg-1 { --sg-list-grid-columns: repeat(1, 1fr); }
+  .sg-list-grid-lg-2 { --sg-list-grid-columns: repeat(2, 1fr); }
+  .sg-list-grid-lg-3 { --sg-list-grid-columns: repeat(3, 1fr); }
+  .sg-list-grid-lg-4 { --sg-list-grid-columns: repeat(4, 1fr); }
+  .sg-list-grid-lg-6 { --sg-list-grid-columns: repeat(6, 1fr); }
 }
 
 /* ---- Load more ---- */

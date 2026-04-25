@@ -93,6 +93,29 @@ export function ProgressDemo() {
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Scoped brand"
+        description="Progress picks up --sg-color-primary for active/normal states — no props needed."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#059669' }}>
+  <Progress percent={45} />
+  <Progress type="circle" percent={65} />
+</div>`}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 24,
+            ['--sg-color-primary' as never]: '#059669',
+          }}
+        >
+          <div style={{ flex: 1, maxWidth: 320 }}>
+            <Progress percent={45} />
+          </div>
+          <Progress type="circle" percent={65} />
+        </div>
+      </DemoBox>
+
       <PropsTable data={progressProps} />
     </ComponentDoc>
   )

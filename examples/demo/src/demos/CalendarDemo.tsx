@@ -163,6 +163,13 @@ export function CalendarDemo() {
         </div>
       </DemoBox>
 
+      <DemoBox title="Scoped brand" description="Active day / range uses --sg-color-primary.">
+        <div style={{ ['--sg-color-primary' as never]: '#7c3aed', display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <DatePicker placeholder="Purple brand" />
+          <RangePicker />
+        </div>
+      </DemoBox>
+
       <PropsTable data={calendarProps} />
     </ComponentDoc>
   )

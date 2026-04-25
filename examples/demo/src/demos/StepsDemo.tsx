@@ -91,6 +91,26 @@ export function StepsDemo() {
         ]} />
       </DemoBox>
 
+      <DemoBox
+        title="Size small"
+        description="Compact steps for dense layouts."
+        code={`<Steps size="small" current={1} items={items} />`}
+      >
+        <Steps size="small" current={1} items={basicSteps} />
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Active / finished step uses --sg-color-primary. Override on wrapper."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#16a34a' }}>
+  <Steps current={1} items={items} />
+</div>`}
+      >
+        <div style={{ ['--sg-color-primary' as never]: '#16a34a' }}>
+          <Steps current={1} items={basicSteps} />
+        </div>
+      </DemoBox>
+
       <PropsTable data={stepsProps} />
       <PropsTable title="StepItem" data={stepItemProps} />
     </ComponentDoc>

@@ -6,16 +6,23 @@
 }
 
 .sg-input {
+  --sg-input-height: var(--sg-height-md);
+  --sg-input-padding: var(--sg-padding-xs) var(--sg-padding-md);
+  --sg-input-font-size: var(--sg-font-size);
+  --sg-input-color: var(--sg-color-text);
+  --sg-input-bg: var(--sg-color-bg-container);
+  --sg-input-border: var(--sg-color-border);
+  --sg-input-radius: var(--sg-border-radius);
   display: block;
   width: 100%;
-  height: var(--sg-input-height, var(--sg-height-md));
-  padding: var(--sg-input-padding, var(--sg-padding-xs) var(--sg-padding-md));
-  font-size: var(--sg-input-font-size, var(--sg-font-size));
+  height: var(--sg-input-height);
+  padding: var(--sg-input-padding);
+  font-size: var(--sg-input-font-size);
   line-height: var(--sg-line-height);
-  color: var(--sg-input-color, var(--sg-color-text));
-  background: var(--sg-input-bg, var(--sg-color-bg-container));
-  border: 1px solid var(--sg-input-border, var(--sg-color-border));
-  border-radius: var(--sg-input-radius, var(--sg-border-radius));
+  color: var(--sg-input-color);
+  background: var(--sg-input-bg);
+  border: 1px solid var(--sg-input-border);
+  border-radius: var(--sg-input-radius);
   transition: color var(--sg-transition-duration) var(--sg-transition-timing),
     background var(--sg-transition-duration) var(--sg-transition-timing),
     border-color var(--sg-transition-duration) var(--sg-transition-timing),

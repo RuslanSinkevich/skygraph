@@ -236,7 +236,12 @@ function FullFormExample() {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
         <Field name="birthDate" label="Birth Date">
-          {(field) => <DatePicker value={field.value as string} onChange={(v) => field.onChange(v)} />}
+          {(field) => (
+            <DatePicker
+              value={(field.value as Date | undefined) ?? undefined}
+              onChange={(d) => field.onChange(d)}
+            />
+          )}
         </Field>
         <Field name="startTime" label="Start Time">
           {(field) => <TimePicker value={field.value as string} onChange={(v) => field.onChange(v)} />}
@@ -384,6 +389,80 @@ export function FormDemo() {
       >
         <div style={{ width: '100%' }}>
           <FullFormExample />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Horizontal layout"
+        description="Labels sit to the left of controls. Use for admin settings and compact forms."
+        code={`<Form layout="horizontal" onSubmit={(v) => console.log(v)}>
+  <Field name="name" label="Name" rules={[{ required: true }]} />
+  <Field name="email" label="Email" type="email" rules={[{ required: true }]} />
+  <SubmitButton>Save</SubmitButton>
+</Form>`}
+      >
+        <div style={{ width: '100%', maxWidth: 520 }}>
+          <Form
+            layout="horizontal"
+            defaultValues={{ name: '', email: '' }}
+            onSubmit={(v) => console.log('horizontal submit', v)}
+          >
+            <Field name="name" label="Name" rules={[{ required: true }]} />
+            <Field name="email" label="Email" type="email" rules={[{ required: true }, { type: 'email' }]} />
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              <SubmitButton>Save</SubmitButton>
+            </div>
+          </Form>
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Inline layout"
+        description="All fields in one row — perfect for search/filter bars."
+        code={`<Form layout="inline" onSubmit={(v) => console.log(v)}>
+  <Field name="q" placeholder="Search…" />
+  <Field name="status">
+    {(f) => <Select value={f.value} onChange={f.onChange} options={[...]} />}
+  </Field>
+  <SubmitButton>Search</SubmitButton>
+</Form>`}
+      >
+        <Form
+          layout="inline"
+          defaultValues={{ q: '', status: 'all' }}
+          onSubmit={(v) => console.log('inline submit', v)}
+        >
+          <Field name="q" placeholder="Search…" />
+          <Field name="status">
+            {(f) => (
+              <Select
+                value={f.value as string}
+                onChange={(v) => f.onChange(v)}
+                options={[
+                  { label: 'All', value: 'all' },
+                  { label: 'Active', value: 'active' },
+                  { label: 'Archived', value: 'archived' },
+                ]}
+              />
+            )}
+          </Field>
+          <SubmitButton>Search</SubmitButton>
+        </Form>
+      </DemoBox>
+
+      <DemoBox
+        title="Small size"
+        description="Size propagates to all descendants through Form's size prop."
+        code={`<Form size="small" layout="vertical">
+  <Field name="title" label="Title" rules={[{ required: true }]} />
+  <SubmitButton>Create</SubmitButton>
+</Form>`}
+      >
+        <div style={{ width: '100%', maxWidth: 420 }}>
+          <Form size="small" layout="vertical" defaultValues={{ title: '' }} onSubmit={() => {}}>
+            <Field name="title" label="Title" rules={[{ required: true }]} />
+            <SubmitButton>Create</SubmitButton>
+          </Form>
         </div>
       </DemoBox>
 

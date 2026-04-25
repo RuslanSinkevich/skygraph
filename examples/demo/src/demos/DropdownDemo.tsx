@@ -81,6 +81,32 @@ const items = [
         </div>
       </DemoBox>
 
+      <DemoBox
+        title="Disabled"
+        description="Disable the trigger."
+        code={`<Dropdown items={items} disabled>
+  <Button>Disabled</Button>
+</Dropdown>`}
+      >
+        <Dropdown items={items} disabled>
+          <Button>Disabled</Button>
+        </Dropdown>
+      </DemoBox>
+
+      <DemoBox
+        title="Scoped brand"
+        description="Highlight colour (focused item) follows --sg-color-primary."
+        code={`<div style={{ ['--sg-color-primary' as any]: '#db2777' }}>
+  <Dropdown items={items}><Button>Pink brand</Button></Dropdown>
+</div>`}
+      >
+        <div style={{ ['--sg-color-primary' as never]: '#db2777' }}>
+          <Dropdown items={items}>
+            <Button type="primary">Pink brand</Button>
+          </Dropdown>
+        </div>
+      </DemoBox>
+
       <PropsTable data={dropdownProps} />
       <PropsTable title="DropdownItem" data={itemProps} />
     </ComponentDoc>

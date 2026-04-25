@@ -1,8 +1,32 @@
 import type React from 'react'
 import type { UseTableOptions } from '../../../hooks/useTable'
 import type { RowId, SortConfig, SortDirection } from '@skygraph/core'
-import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../../types'
+import type { BaseComponentProps, InteractiveProps, SizableProps, SlotClassNames, SlotStyles } from '../../../types'
 import type { ContextMenuItem } from './ContextMenu'
+
+/**
+ * Имена слотов `Table` для пропов `classNames` / `styles`.
+ * Полный список и описания — `docs/styling-contract.md` §4.1.
+ */
+export type TableSlot =
+  | 'root'
+  | 'toolbar'
+  | 'scroll'
+  | 'grid'
+  | 'headerRow'
+  | 'headerCell'
+  | 'headerCellContent'
+  | 'row'
+  | 'bodyCell'
+  | 'empty'
+  | 'pagination'
+  | 'footer'
+
+/** Мапа `слот → className` для `Table`. */
+export type TableClassNames = SlotClassNames<TableSlot>
+
+/** Мапа `слот → inline-style` для `Table`. */
+export type TableStyles = SlotStyles<TableSlot>
 
 /** Re-exports core row and sort types used by the table. */
 export type { RowId, SortDirection, SortConfig }
@@ -84,6 +108,8 @@ export interface TableColumn {
   tooltip?: string | React.ReactNode
   /** Extra class for body cells. */
   cellClassName?: string | ((value: unknown, row: Record<string, unknown>, id: RowId) => string)
+  /** Extra class for header cell of this column. */
+  headerClassName?: string
   /** Shows a copy-to-clipboard control on the cell. */
   copyable?: boolean
   /** Footer aggregate for this column (built-in name or custom reducer). */
@@ -435,6 +461,14 @@ export interface TableProps extends Omit<UseTableOptions, 'columns'>, BaseCompon
 
   /** Double-click resize handle fits column to content. */
   columnAutoResize?: boolean
+
+  /**
+   * Дополнительные классы по слотам. Публичный API — см. `docs/styling-contract.md` §4.1.
+   * Имена слотов стабильны, классы-значения применяются поверх встроенных `.sg-table-*`.
+   */
+  classNames?: TableClassNames
+  /** Инлайн-стили по слотам. Публичный API — см. `docs/styling-contract.md` §4.1. */
+  styles?: TableStyles
 }
 
 /** One cell in a multi-row header grid. */

@@ -92,6 +92,24 @@ const [targetKeys, setTargetKeys] = useState(['1', '3'])
         />
       </DemoBox>
 
+      <DemoBox
+        title="Titles"
+        description="Customize column headers for both lists."
+        code={`<Transfer
+  titles={['Available', 'Selected']}
+  dataSource={mockData}
+  targetKeys={targetKeys}
+  onChange={(keys) => setTargetKeys(keys)}
+/>`}
+      >
+        <Transfer
+          titles={['Available', 'Selected']}
+          dataSource={mockData}
+          targetKeys={targetKeys}
+          onChange={(keys) => setTargetKeys(keys)}
+        />
+      </DemoBox>
+
       <PropsTable data={transferProps} />
     </ComponentDoc>
   )
