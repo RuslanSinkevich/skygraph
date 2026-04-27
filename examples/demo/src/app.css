@@ -13,7 +13,9 @@ body,
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     sans-serif;
-  background: var(--sg-color-bg);
+  /* Page canvas: same tone as the sidebar so wide monitors don't show a
+     bright white gutter right of the 1440px main column. */
+  background: var(--sg-color-bg-secondary);
   color: var(--sg-color-text);
   -webkit-font-smoothing: antialiased;
 }
@@ -140,6 +142,9 @@ body {
   max-width: 1440px;
   width: 100%;
   min-width: 0;
+  /* Keep the content column on the bright surface while the page canvas
+     (body) stays neutral. */
+  background: var(--sg-color-bg);
 }
 
 /* ── Top bar above content (theme, contract links) ────────────────────── */

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps } from '../../types'
 
 /** Props for the Empty state component. */
@@ -38,7 +39,8 @@ export function Empty({
   style,
   unstyled,
 }: EmptyProps) {
-  const desc = description === undefined ? 'No Data' : description
+  const localeDefault = useConfig().locale?.empty?.description ?? 'No Data'
+  const desc = description === undefined ? localeDefault : description
 
   if (unstyled) {
     return (

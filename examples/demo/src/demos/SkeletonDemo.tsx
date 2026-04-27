@@ -1,127 +1,132 @@
-import { Skeleton, Button } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
-import { useState } from 'react'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicSkeleton } from './skeleton/Basic.demo'
+import BasicSource from './skeleton/Basic.demo?raw'
+import { ActiveSkeleton } from './skeleton/Active.demo'
+import ActiveSource from './skeleton/Active.demo?raw'
+import { WithAvatarSkeleton } from './skeleton/WithAvatar.demo'
+import WithAvatarSource from './skeleton/WithAvatar.demo?raw'
+import { RowsSkeleton } from './skeleton/Rows.demo'
+import RowsSource from './skeleton/Rows.demo?raw'
+import { NoTitleSkeleton } from './skeleton/NoTitle.demo'
+import NoTitleSource from './skeleton/NoTitle.demo?raw'
+import { LoadingSkeleton } from './skeleton/Loading.demo'
+import LoadingSource from './skeleton/Loading.demo?raw'
+import { CardSkeleton } from './skeleton/Card.demo'
+import CardSource from './skeleton/Card.demo?raw'
+import { TokensOverrideSkeleton } from './skeleton/TokensOverride.demo'
+import TokensOverrideSource from './skeleton/TokensOverride.demo?raw'
+import { UnstyledSkeleton } from './skeleton/Unstyled.demo'
+import UnstyledSource from './skeleton/Unstyled.demo?raw'
 
 const skeletonProps: PropDef[] = [
-  { name: 'active', description: 'Show animation effect', type: 'boolean', default: 'false' },
-  { name: 'avatar', description: 'Show avatar placeholder', type: 'boolean | { size?: number; shape?: "circle" | "square" }', default: 'false' },
-  { name: 'title', description: 'Show title placeholder', type: 'boolean | { width?: number | string }', default: 'true' },
-  { name: 'paragraph', description: 'Show paragraph placeholder', type: 'boolean | { rows?: number; width?: Array<number | string> }', default: 'true' },
-  { name: 'loading', description: 'Display the skeleton when true, children when false', type: 'boolean', default: 'true' },
-  { name: 'children', description: 'Content to show when not loading', type: 'ReactNode' },
+  { name: 'active', description: 'Turn on the shimmer animation', type: 'boolean', default: 'false' },
+  { name: 'avatar', description: 'Show an avatar placeholder; object form tunes `size` and `shape`', type: 'boolean | { size?: number; shape?: "circle" | "square" }', default: 'false' },
+  { name: 'title', description: 'Show the heading bar; object form tunes `width`', type: 'boolean | { width?: number | string }', default: 'true' },
+  { name: 'paragraph', description: 'Show paragraph lines; object form tunes `rows` and per-line `width`', type: 'boolean | { rows?: number; width?: Array<number | string> }', default: 'true' },
+  { name: 'loading', description: 'When `false`, render `children` instead of the skeleton', type: 'boolean', default: 'true' },
+  { name: 'children', description: 'Real content rendered when `loading` is `false`', type: 'ReactNode' },
+  { name: 'className', description: 'Wrapper className', type: 'string' },
+  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
+  { name: 'unstyled', description: 'Drop every sg-skeleton-* class (headless mode)', type: 'boolean', default: 'false' },
+]
+
+const skeletonCssVars: CssVarDef[] = [
+  { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: 'Placeholder fill colour (avatar / title / rows)' },
+  { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.02)', description: 'Highlight colour in the shimmer gradient (`active`)' },
+  { name: 'sg-border-radius', default: '6px', description: 'Square avatar corner radius' },
+  { name: 'sg-border-radius-sm', default: '4px', description: 'Title + paragraph line corner radius' },
+  { name: 'sg-padding-lg', default: '16px', description: 'Gap between avatar and content block' },
+  { name: 'sg-margin-sm', default: '8px', description: 'Gap between paragraph lines' },
+  { name: 'sg-margin-md', default: '12px', description: 'Gap from title to paragraph block' },
 ]
 
 export function SkeletonDemo() {
-  const [loading, setLoading] = useState(true)
-
   return (
     <ComponentDoc
       title="Skeleton"
-      description="Provide a placeholder while you wait for content to load."
+      description="Layout-aware placeholder while content loads — avatar, title, and paragraph blocks, with an optional shimmer animation."
       whenToUse={[
-        'When a resource needs a long time to load.',
-        'When the content area is in a loading state, a skeleton screen provides a visual expectation.',
+        'Feed / list items that rely on a network request.',
+        'Cards and dashboard widgets that hydrate after mount.',
+        'Any screen where swapping from placeholder to content shouldn\'t jump the layout.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="Simplest Skeleton usage."
-        code={`import { Skeleton } from '@skygraph/react'
-
-<Skeleton />`}
-      >
-        <Skeleton />
+      <DemoBox title="Basic" description="Title + 3 lines, no animation." code={BasicSource}>
+        <BasicSkeleton />
       </DemoBox>
 
       <DemoBox
-        title="Active Animation"
-        description="Display active animation."
-        code={`<Skeleton active />`}
+        title="Active animation"
+        description="Turn on the shimmer for long-lived placeholders."
+        code={ActiveSource}
       >
-        <Skeleton active />
+        <ActiveSkeleton />
       </DemoBox>
 
       <DemoBox
-        title="With Avatar"
-        description="Skeleton with avatar, title and paragraph."
-        code={`<Skeleton avatar active />`}
+        title="With avatar"
+        description="Profile / feed item shape."
+        code={WithAvatarSource}
       >
-        <Skeleton avatar active />
+        <WithAvatarSkeleton />
       </DemoBox>
 
       <DemoBox
-        title="Contains Children"
-        description="Show content when loading is complete."
-        code={`const [loading, setLoading] = useState(true)
-
-<Button onClick={() => setLoading(!loading)}>Toggle</Button>
-<Skeleton loading={loading} avatar active>
-  <div>Actual content here</div>
-</Skeleton>`}
+        title="Paragraph rows & widths"
+        description="Match the line count + widths to the real content."
+        code={RowsSource}
       >
-        <div style={{ marginBottom: 12 }}>
-          <Button onClick={() => setLoading(!loading)}>Toggle Loading</Button>
-        </div>
-        <Skeleton loading={loading} avatar active>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--sg-color-primary)' }} />
-            <div>
-              <h4 style={{ margin: 0 }}>John Doe</h4>
-              <p style={{ margin: 0, color: 'var(--sg-color-text-secondary)' }}>Software Engineer at Acme Corp</p>
-            </div>
-          </div>
-        </Skeleton>
+        <RowsSkeleton />
       </DemoBox>
 
       <DemoBox
-        title="Custom Rows"
-        description="Customize the number of paragraph rows."
-        code={`<Skeleton paragraph={{ rows: 5 }} active />`}
+        title="Drop blocks"
+        description="Hide title / paragraph / avatar selectively."
+        code={NoTitleSource}
       >
-        <Skeleton paragraph={{ rows: 5 }} active />
+        <NoTitleSkeleton />
       </DemoBox>
 
       <DemoBox
-        title="Square avatar"
-        description="Skeleton.avatar accepts shape and size options."
-        code={`<Skeleton active avatar={{ shape: 'square', size: 64 }} />`}
+        title="Loading → content swap"
+        description="Flip `loading` to swap the skeleton for `children` in place."
+        code={LoadingSource}
       >
-        <Skeleton active avatar={{ shape: 'square', size: 64 }} />
-      </DemoBox>
-
-      <DemoBox
-        title="Custom paragraph widths"
-        description="Pass an array of widths to shape long/short lines."
-        code={`<Skeleton active paragraph={{ rows: 4, width: ['100%', '90%', '80%', '40%'] }} />`}
-      >
-        <Skeleton
-          active
-          paragraph={{ rows: 4, width: ['100%', '90%', '80%', '40%'] }}
-        />
+        <LoadingSkeleton />
       </DemoBox>
 
       <DemoBox
         title="Card composition"
-        description="Compose skeletons inside a card shape for loading-state layouts."
-        code={`<div style={{ padding: 16, border: '1px solid var(--sg-color-border)', borderRadius: 'var(--sg-border-radius)' }}>
-  <Skeleton active avatar title paragraph={{ rows: 3 }} />
-</div>`}
+        description="Compose several Skeletons to mirror a card grid."
+        code={CardSource}
       >
-        <div
-          style={{
-            padding: 16,
-            border: '1px solid var(--sg-color-border)',
-            borderRadius: 'var(--sg-border-radius)',
-            background: 'var(--sg-color-bg-container)',
-            maxWidth: 480,
-          }}
-        >
-          <Skeleton active avatar title paragraph={{ rows: 3 }} />
-        </div>
+        <CardSkeleton />
       </DemoBox>
 
-      <PropsTable data={skeletonProps} />
+      <DemoBox
+        title="Tokens override"
+        description="Scope the two bg tokens for a bespoke skeleton palette."
+        code={TokensOverrideSource}
+      >
+        <TokensOverrideSkeleton />
+      </DemoBox>
+
+      <DemoBox
+        title="Unstyled"
+        description="Keep aria + structure, bring your own styling."
+        code={UnstyledSource}
+      >
+        <UnstyledSkeleton />
+      </DemoBox>
+
+      <PropsTable title="Skeleton API" data={skeletonProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Skeleton has no component-private tokens — it reads `--sg-color-bg-hover` (fill) and `--sg-color-bg-secondary` (shimmer highlight). Swap both on a wrapper for a dark-mode or branded placeholder."
+        data={skeletonCssVars}
+      />
     </ComponentDoc>
   )
 }

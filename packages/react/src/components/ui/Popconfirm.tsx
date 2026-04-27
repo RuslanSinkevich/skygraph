@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useId } from 'react'
 import { Button } from './Button'
 import { Transition } from './Transition'
 import { useFocusTrap } from '../../hooks/a11y/useFocusTrap'
+import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps } from '../../types'
 
 /** Props for the confirmation bubble anchored to a trigger element. */
@@ -35,14 +36,17 @@ export function Popconfirm({
   description,
   onConfirm,
   onCancel,
-  okText = 'Yes',
-  cancelText = 'No',
+  okText: okTextProp,
+  cancelText: cancelTextProp,
   placement = 'top',
   children,
   disabled,
   className,
   unstyled,
 }: PopconfirmProps) {
+  const popconfirmLocale = useConfig().locale?.popconfirm
+  const okText = okTextProp ?? popconfirmLocale?.okText ?? 'Yes'
+  const cancelText = cancelTextProp ?? popconfirmLocale?.cancelText ?? 'No'
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const trapRef = useFocusTrap(open)

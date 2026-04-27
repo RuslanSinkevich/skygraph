@@ -1,334 +1,223 @@
-import { List, Button, Tag, Avatar } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicList } from './list/Basic.demo'
+import BasicSource from './list/Basic.demo?raw'
+import { SizesList } from './list/Sizes.demo'
+import SizesSource from './list/Sizes.demo?raw'
+import { WithMetaList } from './list/WithMeta.demo'
+import WithMetaSource from './list/WithMeta.demo?raw'
+import { GridList } from './list/Grid.demo'
+import GridSource from './list/Grid.demo?raw'
+import { PaginationList } from './list/Pagination.demo'
+import PaginationSource from './list/Pagination.demo?raw'
+import { LoadingList } from './list/Loading.demo'
+import LoadingSource from './list/Loading.demo?raw'
+import { EmptyList } from './list/Empty.demo'
+import EmptySource from './list/Empty.demo?raw'
+import { SelectableList } from './list/Selectable.demo'
+import SelectableSource from './list/Selectable.demo?raw'
+import { DraggableList } from './list/Draggable.demo'
+import DraggableSource from './list/Draggable.demo?raw'
+import { VirtualList } from './list/Virtual.demo'
+import VirtualSource from './list/Virtual.demo?raw'
+import { RowClassNameList } from './list/RowClassName.demo'
+import RowClassNameSource from './list/RowClassName.demo?raw'
+import { SlotsList } from './list/Slots.demo'
+import SlotsSource from './list/Slots.demo?raw'
+import { TokensOverrideList } from './list/TokensOverride.demo'
+import TokensOverrideSource from './list/TokensOverride.demo?raw'
+import { UnstyledList } from './list/Unstyled.demo'
+import UnstyledSource from './list/Unstyled.demo?raw'
 
 const listProps: PropDef[] = [
-  { name: 'dataSource', description: 'Data array for the list', type: 'T[]' },
-  { name: 'renderItem', description: 'Function to render each item', type: '(item: T, index: number) => ReactNode' },
-  { name: 'header', description: 'Header content', type: 'ReactNode' },
-  { name: 'footer', description: 'Footer content', type: 'ReactNode' },
-  { name: 'loading', description: 'Show loading indicator', type: 'boolean', default: 'false' },
-  { name: 'bordered', description: 'Show border around the list', type: 'boolean', default: 'false' },
-  { name: 'split', description: 'Show separator between items', type: 'boolean', default: 'true' },
-  { name: 'size', description: 'Size of the list', type: "'small' | 'default' | 'large'", default: "'default'" },
-  { name: 'pagination', description: 'Pagination config', type: 'false | { current?, pageSize?, total?, onChange? }' },
-  { name: 'grid', description: 'Grid layout config', type: '{ gutter?, column? }' },
-  { name: 'rowClassName', description: 'Custom class for item wrapper', type: 'string | (item, index) => string' },
-  { name: 'classNames', description: 'Slot classes (root/header/footer/items/item/empty/pagination)', type: 'ListClassNames' },
-  { name: 'styles', description: 'Slot inline styles (root/header/footer/items/item/empty/pagination)', type: 'ListStyles' },
-  { name: 'unstyled', description: 'Remove all built-in styles', type: 'boolean', default: 'false' },
+  { name: 'dataSource', description: 'Items to render', type: 'T[]' },
+  { name: 'renderItem', description: 'Renders a single item', type: '(item: T, index: number) => ReactNode' },
+  { name: 'header', description: 'Content above the list body', type: 'ReactNode' },
+  { name: 'footer', description: 'Content below the list body', type: 'ReactNode' },
+  { name: 'loading', description: 'Wrap the items area in a Spin overlay', type: 'boolean', default: 'false' },
+  { name: 'loadMore', description: 'Extra slot below the items for a "load more" action', type: 'ReactNode' },
+  { name: 'bordered', description: 'Outline the list and tint header / footer', type: 'boolean', default: 'false' },
+  { name: 'split', description: 'Render dividers between items', type: 'boolean', default: 'true' },
+  { name: 'hoverable', description: 'Highlight rows on hover', type: 'boolean', default: 'true' },
+  { name: 'size', description: 'Padding preset (this is List-specific; not tied to ConfigProvider.size)', type: "'small' | 'default' | 'large'", default: "'default'" },
+  { name: 'pagination', description: 'Pagination config — pass `false` to disable', type: 'false | { current?, pageSize?, total?, onChange? }' },
+  { name: 'grid', description: 'Grid layout config with responsive column counts', type: '{ gutter?, column?, xs?, sm?, md?, lg? }' },
+  { name: 'virtual', description: 'Fixed-height virtualization', type: '{ itemHeight, height, overscan? }' },
+  { name: 'locale', description: 'Localized strings (currently `emptyText`)', type: '{ emptyText?: ReactNode }' },
+  { name: 'selectable', description: 'Enable click-to-select', type: 'boolean', default: 'false' },
+  { name: 'multiSelect', description: 'Allow Ctrl/Cmd-click multi-selection', type: 'boolean', default: 'false' },
+  { name: 'selectedKeys / defaultSelectedKeys', description: 'Controlled / initial selected indices', type: 'number[]' },
+  { name: 'onSelectionChange', description: 'Fires when selection changes', type: '(keys: number[], items: T[]) => void' },
+  { name: 'draggable', description: 'Enable drag-and-drop reorder with a handle', type: 'boolean', default: 'false' },
+  { name: 'onReorder', description: 'Fires after a drop', type: '(fromIndex: number, toIndex: number) => void' },
+  { name: 'onItemClick', description: 'Row click handler (fires even without selection)', type: '(item: T, index: number) => void' },
+  { name: 'rowClassName', description: 'Static class or predicate for row styling', type: 'string | ((item, index) => string)' },
+  { name: 'classNames', description: 'Slot classes (root / header / footer / items / item / empty / pagination)', type: 'ListClassNames' },
+  { name: 'styles', description: 'Slot inline styles', type: 'ListStyles' },
+  { name: 'className / style', description: 'Root class / style', type: 'string / CSSProperties' },
+  { name: 'unstyled', description: 'Drop every sg-list-* style', type: 'boolean', default: 'false' },
 ]
 
-const data = [
-  'Racing car sprance forward with a roaring engine.',
-  'A gentle breeze sweeps over the peaceful countryside.',
-  'The morning sun cast golden rays over the horizon.',
-  'Quiet footsteps echo through the empty hallway.',
+const listItemProps: PropDef[] = [
+  { name: 'children', description: 'Main cell content', type: 'ReactNode' },
+  { name: 'actions', description: 'Inline actions rendered after the main content with hairline dividers', type: 'ReactNode[]' },
+  { name: 'extra', description: 'Secondary column aligned to the end of the row', type: 'ReactNode' },
+  { name: 'className / style', description: 'Row class / style', type: 'string / CSSProperties' },
+]
+
+const listMetaProps: PropDef[] = [
+  { name: 'avatar', description: 'Leading visual (Avatar, icon, letter)', type: 'ReactNode' },
+  { name: 'title', description: 'Primary line', type: 'ReactNode' },
+  { name: 'description', description: 'Secondary line under the title', type: 'ReactNode' },
+]
+
+const listCssVars: CssVarDef[] = [
+  { name: 'sg-color-bg', default: '#ffffff', description: 'Items background' },
+  { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.04)', description: 'Header / footer background' },
+  { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: 'Row hover background' },
+  { name: 'sg-color-border', default: '#d9d9d9', description: '`bordered` outline + action-divider lines' },
+  { name: 'sg-color-border-secondary', default: '#f0f0f0', description: 'Row dividers when `split`' },
+  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Body / title text' },
+  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: 'Action + description colour' },
+  { name: 'sg-color-primary', default: '#1677ff', description: 'Action hover colour' },
+  { name: 'sg-border-radius', default: '6px', description: '`bordered` outer radius + grid cell radius' },
+  { name: 'sg-font-size', default: '14px', description: 'Base list font size' },
+  { name: 'sg-font-size-sm', default: '12px', description: '`size="small"` + description font size' },
+  { name: 'sg-font-size-lg', default: '16px', description: '`size="large"` title font size' },
+  { name: 'sg-line-height', default: '1.57', description: 'Shared line-height' },
+  { name: 'sg-padding-sm', default: '8px', description: '`size="small"` vertical padding + action gap' },
+  { name: 'sg-padding-md', default: '12px', description: 'Default vertical padding + meta gap' },
+  { name: 'sg-padding-lg', default: '16px', description: 'Default horizontal padding' },
+  { name: 'sg-padding-xl', default: '24px', description: 'Empty-state padding + `extra` left margin' },
+  { name: 'sg-margin-xs', default: '4px', description: 'Meta title → description spacing' },
+  { name: 'sg-transition-duration', default: '180ms', description: 'Hover / action colour transition' },
 ]
 
 export function ListDemo() {
   return (
     <ComponentDoc
       title="List"
-      description="Simple list component."
+      badge="Data Display"
+      crumbs={['Data Display', 'List']}
+      description="Collection renderer with header / footer, pagination, grid, virtualization, selection and drag-and-drop."
       whenToUse={[
-        'When you need to display a collection of similar items.',
-        'When you need a list with header, footer, and separators.',
+        'When you need to render a homogeneous collection that isn\'t big enough to warrant a Table.',
+        'When the item layout is meaningful (avatar + title + actions) and you want slots for it — see `List.Item.Meta`.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="Basic list with header and footer."
-        code={`import { List } from '@skygraph/react'
+      <DemoBox title="Basic" description="dataSource + renderItem, with a bordered frame." code={BasicSource}>
+        <BasicList />
+      </DemoBox>
 
-const data = ['Item 1', 'Item 2', 'Item 3']
-
-<List
-  header="Header"
-  footer="Footer"
-  bordered
-  dataSource={data}
-  renderItem={(item) => <div style={{ padding: '8px 0' }}>{item}</div>}
-/>`}
-      >
-        <List
-          header="Header"
-          footer="Footer"
-          bordered
-          dataSource={data}
-          renderItem={(item) => <div style={{ padding: '8px 0' }}>{item}</div>}
-        />
+      <DemoBox title="Sizes" description="Small, default, large." code={SizesSource}>
+        <SizesList />
       </DemoBox>
 
       <DemoBox
-        title="Small Size"
-        description="A small size list."
-        code={`<List
-  size="small"
-  bordered
-  dataSource={data}
-  renderItem={(item) => <div style={{ padding: '4px 0' }}>{item}</div>}
-/>`}
+        title="With Meta"
+        description="List.Item + List.Item.Meta for structured rows."
+        code={WithMetaSource}
       >
-        <List
-          size="small"
-          bordered
-          header="Small List"
-          dataSource={data}
-          renderItem={(item) => <div style={{ padding: '4px 0' }}>{item}</div>}
-        />
-      </DemoBox>
-
-      <DemoBox
-        title="Large Size"
-        description="A large size list."
-        code={`<List
-  size="large"
-  bordered
-  header="Large List"
-  dataSource={data}
-  renderItem={(item) => <div style={{ padding: '12px 0' }}>{item}</div>}
-/>`}
-      >
-        <List
-          size="large"
-          bordered
-          header="Large List"
-          dataSource={data}
-          renderItem={(item) => <div style={{ padding: '12px 0' }}>{item}</div>}
-        />
-      </DemoBox>
-
-      <DemoBox
-        title="Styling: classNames / styles (slots)"
-        description="Target stable DOM slots without deep selectors."
-        code={`<List
-  dataSource={data}
-  header="Header"
-  footer="Footer"
-  classNames={{
-    root: 'demo-list-root',
-    header: 'demo-list-header',
-    item: 'demo-list-item',
-  }}
-  styles={{
-    header: { fontWeight: 700 },
-    item: { borderRadius: 10 },
-  }}
-  renderItem={(item, index) => <div style={{ padding: '8px 0' }}>{index + 1}. {item}</div>}
-/>`}
-      >
-        <List
-          dataSource={data}
-          header="Header"
-          footer="Footer"
-          classNames={{
-            root: 'demo-list-root',
-            header: 'demo-list-header',
-            item: 'demo-list-item',
-          }}
-          styles={{
-            header: { fontWeight: 700 },
-            item: { borderRadius: 10 },
-          }}
-          renderItem={(item, index) => <div style={{ padding: '8px 0' }}>{index + 1}. {item}</div>}
-        />
-      </DemoBox>
-
-      <DemoBox
-        title="Styling: tokens (per instance)"
-        description="Override component tokens on a wrapper to restyle a single list."
-        code={`<div style={{
-  ['--sg-list-item-hover-bg' as any]: 'var(--sg-color-primary-bg)',
-  ['--sg-list-border-color' as any]: 'color-mix(in srgb, var(--sg-color-primary) 25%, var(--sg-color-border-secondary) 75%)',
-}}>
-  <List ... />
-</div>`}
-      >
-        <div
-          style={{
-            width: '100%',
-            ['--sg-list-item-hover-bg' as never]: 'var(--sg-color-primary-bg)',
-            ['--sg-list-border-color' as never]:
-              'color-mix(in srgb, var(--sg-color-primary) 25%, var(--sg-color-border-secondary) 75%)',
-          }}
-        >
-          <List
-            bordered
-            header="Token-styled List"
-            dataSource={data}
-            renderItem={(item) => <div style={{ padding: '8px 0' }}>{item}</div>}
-          />
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="Styling: unstyled (headless visual)"
-        description="Strip SkyGraph styles and bring your own CSS."
-        code={`<div className="demo-unstyled-card">
-  <div className="demo-unstyled-card-title">Unstyled list wrapper</div>
-  <List
-    unstyled
-    dataSource={data}
-    renderItem={(item) => <div>{item}</div>}
-  />
-</div>`}
-      >
-        <div className="demo-unstyled-card" style={{ width: '100%' }}>
-          <div className="demo-unstyled-card-title">Unstyled list wrapper</div>
-          <div className="demo-unstyled-card-row">
-            <button className="demo-unstyled-btn" type="button">Custom action</button>
-            <Button type="primary">SkyGraph styled button</Button>
-          </div>
-          <List
-            unstyled
-            dataSource={data}
-            renderItem={(item, index) => (
-              <div
-                style={{
-                  padding: '10px 12px',
-                  borderTop: index === 0 ? '1px solid var(--sg-color-border-secondary)' : undefined,
-                  borderBottom: '1px solid var(--sg-color-border-secondary)',
-                }}
-              >
-                {item}
-              </div>
-            )}
-          />
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="With List.Item + Meta"
-        description="Structured item with avatar, title, description, actions and extra."
-        code={`<List bordered dataSource={users} renderItem={(u) => (
-  <List.Item
-    actions={[<Button type="link" key="edit">Edit</Button>, <Button type="link" key="del">Delete</Button>]}
-    extra={<Tag color={u.status}>{u.status}</Tag>}
-  >
-    <List.Item.Meta
-      avatar={<Avatar>{u.name[0]}</Avatar>}
-      title={u.name}
-      description={u.role}
-    />
-  </List.Item>
-)} />`}
-      >
-        <List
-          bordered
-          dataSource={[
-            { id: 1, name: 'Alice', role: 'Frontend engineer', status: 'success' as const },
-            { id: 2, name: 'Bob', role: 'Designer', status: 'warning' as const },
-            { id: 3, name: 'Charlie', role: 'PM', status: 'default' as const },
-          ]}
-          renderItem={(u) => (
-            <List.Item
-              actions={[
-                <Button key="edit" type="link">
-                  Edit
-                </Button>,
-                <Button key="del" type="link">
-                  Delete
-                </Button>,
-              ]}
-              extra={<Tag color={u.status}>{u.status}</Tag>}
-            >
-              <List.Item.Meta
-                avatar={<Avatar>{u.name[0]}</Avatar>}
-                title={u.name}
-                description={u.role}
-              />
-            </List.Item>
-          )}
-        />
-      </DemoBox>
-
-      <DemoBox
-        title="Conditional rowClassName"
-        description="Pick items by predicate — pinned, featured, unread — and style them."
-        code={`<List
-  dataSource={tasks}
-  rowClassName={(t) => t.pinned ? 'demo-list-item-featured' : ''}
-  renderItem={(t) => <List.Item extra={t.pinned ? <Tag>pinned</Tag> : null}>{t.title}</List.Item>}
-/>`}
-      >
-        <List
-          bordered
-          dataSource={[
-            { id: 1, title: 'Ship 0.4 release', pinned: true },
-            { id: 2, title: 'Triage issues', pinned: false },
-            { id: 3, title: 'Update docs', pinned: true },
-            { id: 4, title: 'Rework benchmarks', pinned: false },
-          ]}
-          rowClassName={(t) => (t.pinned ? 'demo-list-item-featured' : '')}
-          renderItem={(t) => (
-            <List.Item extra={t.pinned ? <Tag color="primary">pinned</Tag> : null}>
-              {t.title}
-            </List.Item>
-          )}
-        />
+        <WithMetaList />
       </DemoBox>
 
       <DemoBox
         title="Grid layout"
-        description="Render items in a responsive grid."
-        code={`<List
-  grid={{ gutter: 16, column: 3 }}
-  dataSource={cards}
-  renderItem={(c) => <div className="card">{c}</div>}
-/>`}
+        description="Responsive grid of cards with breakpoint overrides."
+        code={GridSource}
       >
-        <List
-          grid={{ gutter: 16, column: 3 }}
-          dataSource={['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta']}
-          renderItem={(card) => (
-            <div
-              style={{
-                padding: 16,
-                border: '1px solid var(--sg-color-border-secondary)',
-                borderRadius: 8,
-                textAlign: 'center',
-                background: 'var(--sg-color-bg)',
-              }}
-            >
-              {card}
-            </div>
-          )}
-        />
+        <GridList />
       </DemoBox>
 
       <DemoBox
         title="Pagination"
-        description="Built-in pagination. Set pagination={false} to disable."
-        code={`<List
-  dataSource={items}
-  pagination={{ pageSize: 3 }}
-  renderItem={(it) => <List.Item>{it}</List.Item>}
-/>`}
+        description="Built-in Pagination in the footer."
+        code={PaginationSource}
       >
-        <List
-          bordered
-          dataSource={Array.from({ length: 9 }, (_, i) => `Row ${i + 1}`)}
-          pagination={{ pageSize: 3 }}
-          renderItem={(item) => <List.Item>{item}</List.Item>}
-        />
+        <PaginationList />
       </DemoBox>
 
       <DemoBox
-        title="Loading state"
-        description="Show Spin overlay while waiting for data."
-        code={`<List loading dataSource={[]} renderItem={() => null} />`}
+        title="Loading"
+        description="Spin overlay while refreshing."
+        code={LoadingSource}
       >
-        <List
-          bordered
-          loading
-          header="Loading…"
-          dataSource={['Waiting']}
-          renderItem={(it) => <List.Item>{it}</List.Item>}
-        />
+        <LoadingList />
       </DemoBox>
 
-      <PropsTable data={listProps} />
+      <DemoBox
+        title="Empty"
+        description="Built-in Empty + localized emptyText."
+        code={EmptySource}
+      >
+        <EmptyList />
+      </DemoBox>
+
+      <DemoBox
+        title="Selectable"
+        description="Click-to-select, plus Ctrl/Cmd for multi-pick."
+        code={SelectableSource}
+      >
+        <SelectableList />
+      </DemoBox>
+
+      <DemoBox
+        title="Draggable"
+        description="Drag rows with the ⠿ handle, own the reorder."
+        code={DraggableSource}
+      >
+        <DraggableList />
+      </DemoBox>
+
+      <DemoBox
+        title="Virtual"
+        description="Windowed rendering for 10,000+ rows."
+        code={VirtualSource}
+      >
+        <VirtualList />
+      </DemoBox>
+
+      <DemoBox
+        title="rowClassName"
+        description="Highlight rows by predicate."
+        code={RowClassNameSource}
+      >
+        <RowClassNameList />
+      </DemoBox>
+
+      <DemoBox
+        title="Slots (classNames / styles)"
+        description="Target stable DOM slots."
+        code={SlotsSource}
+      >
+        <SlotsList />
+      </DemoBox>
+
+      <DemoBox
+        title="Tokens override"
+        description="Rebrand the hover / border / header via global tokens."
+        code={TokensOverrideSource}
+      >
+        <TokensOverrideList />
+      </DemoBox>
+
+      <DemoBox
+        title="Unstyled"
+        description="Drop sg-list-* styles, keep behaviour."
+        code={UnstyledSource}
+      >
+        <UnstyledList />
+      </DemoBox>
+
+      <PropsTable title="List API" data={listProps} />
+      <PropsTable title="List.Item" data={listItemProps} />
+      <PropsTable title="List.Item.Meta" data={listMetaProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="List has no component-local tokens. It reads `--sg-color-bg-hover` (rows), `--sg-color-border*` (outlines / dividers) and `--sg-color-bg-secondary` (header / footer) — override any of them on a wrapper."
+        data={listCssVars}
+      />
     </ComponentDoc>
   )
 }

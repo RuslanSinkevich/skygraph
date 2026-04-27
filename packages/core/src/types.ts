@@ -1,12 +1,24 @@
 // ── Middleware types ──
 
-export type WriteSource = 'user' | 'computed' | 'transaction' | 'engine' | 'restore'
+/**
+ * Origin of a write event as seen by the runtime.
+ *
+ * Keep this union strictly runtime-level. Engine-specific tags (form, table,
+ * tree, custom) MUST live in `WriteEvent.meta`, NOT here. Adding an engine
+ * category to this union is an architecture violation — it makes core know
+ * about engines.
+ */
+export type WriteSource = 'user' | 'computed' | 'transaction' | 'restore'
 
 export interface WriteEvent {
   path: string
   value: unknown
   oldValue: unknown
   source: WriteSource
+  /**
+   * Opaque metadata bag for engines / plugins. Middleware may read/write it.
+   * Runtime itself must never branch on specific keys here.
+   */
   meta?: Record<string, unknown>
 }
 

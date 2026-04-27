@@ -2,6 +2,7 @@ export { createForm } from './FormEngine'
 export type {
   FormEngine,
   FieldMeta,
+  FieldMetaExtensions,
   FieldStatus,
   FormState,
   GetFieldValue,

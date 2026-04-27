@@ -393,6 +393,7 @@ export function TableBody(props: BodyProps) {
                     className={[
                       'sg-table-td',
                       col.fixed ? 'sg-table-cell-fixed' : '',
+                      col.fixed ? `sg-table-cell-fixed-${col.fixed}` : '',
                       col.editable ? 'sg-table-td-editable' : '',
                       isFocused ? 'sg-table-cell-focused' : '',
                       isCopied ? 'sg-table-cell-copied' : '',

@@ -1,136 +1,127 @@
-import { Badge, Button } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
-import { useState } from 'react'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicBadge } from './badge/Basic.demo'
+import BasicSource from './badge/Basic.demo?raw'
+import { OverflowBadge } from './badge/Overflow.demo'
+import OverflowSource from './badge/Overflow.demo?raw'
+import { DotBadge } from './badge/Dot.demo'
+import DotSource from './badge/Dot.demo?raw'
+import { StatusBadge } from './badge/Status.demo'
+import StatusSource from './badge/Status.demo?raw'
+import { CustomColorBadge } from './badge/CustomColor.demo'
+import CustomColorSource from './badge/CustomColor.demo?raw'
+import { OffsetBadge } from './badge/Offset.demo'
+import OffsetSource from './badge/Offset.demo?raw'
+import { TokensOverrideBadge } from './badge/TokensOverride.demo'
+import TokensOverrideSource from './badge/TokensOverride.demo?raw'
+import { UnstyledBadge } from './badge/Unstyled.demo'
+import UnstyledSource from './badge/Unstyled.demo?raw'
 
 const badgeProps: PropDef[] = [
-  { name: 'count', description: 'Number to show in badge', type: 'number' },
-  { name: 'dot', description: 'Show a red dot instead of a number', type: 'boolean', default: 'false' },
-  { name: 'overflowCount', description: 'Max count to show', type: 'number', default: '99' },
-  { name: 'showZero', description: 'Whether to show badge when count is zero', type: 'boolean', default: 'false' },
-  { name: 'color', description: 'Custom background color', type: 'string' },
-  { name: 'status', description: 'Set Badge as a status dot', type: "'success' | 'error' | 'warning' | 'processing' | 'default'" },
-  { name: 'text', description: 'Text next to the status dot', type: 'ReactNode' },
-  { name: 'offset', description: 'Offset of the badge [right, top]', type: '[number, number]' },
+  { name: 'count', description: 'Number to show; hidden when 0 unless showZero is set', type: 'number' },
+  { name: 'dot', description: 'Render a pill-less dot instead of the count', type: 'boolean', default: 'false' },
+  { name: 'overflowCount', description: 'Cap at which count becomes "{N}+"', type: 'number', default: '99' },
+  { name: 'showZero', description: 'Keep the badge visible when count is 0', type: 'boolean', default: 'false' },
+  { name: 'color', description: 'Custom background for the count / dot (any CSS colour)', type: 'string' },
+  { name: 'status', description: 'Renders a standalone status dot + text row', type: "'success' | 'error' | 'warning' | 'processing' | 'default'" },
+  { name: 'text', description: 'Label shown next to the status dot', type: 'ReactNode' },
+  { name: 'offset', description: 'Pixel offset [right, top] applied as right + marginTop', type: '[number, number]' },
+  { name: 'children', description: 'Element to pin the badge onto', type: 'ReactNode' },
+  { name: 'className', description: 'Wrapper className', type: 'string' },
+  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
+  { name: 'unstyled', description: 'Drop sg-badge classes (headless mode)', type: 'boolean', default: 'false' },
 ]
 
-const box = { width: 42, height: 42, borderRadius: 4, background: 'var(--sg-color-bg-container-disabled)', display: 'inline-block' }
+const badgeCssVars: CssVarDef[] = [
+  { name: 'sg-color-error', default: '#ff4d4f', description: 'Default count + dot background' },
+  { name: 'sg-color-white', default: '#ffffff', description: 'Count text colour' },
+  { name: 'sg-color-bg', default: '#ffffff', description: 'Tiny outline around the pinned count / dot' },
+  { name: 'sg-color-success', default: '#52c41a', description: 'status="success" dot colour' },
+  { name: 'sg-color-warning', default: '#faad14', description: 'status="warning" dot colour' },
+  { name: 'sg-color-primary', default: '#1677ff', description: 'status="processing" dot colour (pulses)' },
+  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'status="default" dot colour' },
+  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Status text colour' },
+  { name: 'sg-font-size', default: '14px', description: 'Status text size' },
+  { name: 'sg-font-size-sm', default: '12px', description: 'Count number size' },
+  { name: 'sg-padding-sm', default: '8px', description: 'Gap between status dot and text' },
+  { name: 'sg-line-height', default: '1.5714', description: 'Status row line-height' },
+  { name: 'sg-z-base', default: '1', description: 'Stacking layer of the pinned count / dot' },
+]
 
 export function BadgeDemo() {
-  const [count, setCount] = useState(5)
-
   return (
     <ComponentDoc
       title="Badge"
-      description="Small numerical value or status descriptor for UI elements."
+      description="Small numerical counter or status indicator. Pins to a child, or renders as a standalone status row."
       whenToUse={[
-        'When you want to display a notification count on an icon or element.',
-        'Use status badges to show the state of a process.',
+        'Show unread / new / pending counts on icons, avatars, menu items.',
+        'Display a live process status (connecting, syncing, failed) in a compact row.',
+        'Signal "has activity" with a tiny dot when the exact number is not important.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="Simplest usage. Badge will be hidden when count is 0."
-        code={`import { Badge } from '@skygraph/react'
-
-<Badge count={5}>
-  <div style={{ width: 42, height: 42, background: '#eee' }} />
-</Badge>
-<Badge count={0} showZero>
-  <div style={{ width: 42, height: 42, background: '#eee' }} />
-</Badge>`}
-      >
-        <div style={{ display: 'flex', gap: 24 }}>
-          <Badge count={count}>
-            <div style={box} />
-          </Badge>
-          <Badge count={0} showZero>
-            <div style={box} />
-          </Badge>
-        </div>
-        <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
-          <Button size="small" onClick={() => setCount((c) => c - 1)}>−</Button>
-          <Button size="small" onClick={() => setCount((c) => c + 1)}>+</Button>
-        </div>
+      <DemoBox title="Basic" description="Pin a count onto any element; 0 is hidden unless showZero." code={BasicSource}>
+        <BasicBadge />
       </DemoBox>
 
       <DemoBox
-        title="Overflow Count"
-        description="When count exceeds overflowCount, it shows as overflowCount+."
-        code={`<Badge count={99}><div style={box} /></Badge>
-<Badge count={100}><div style={box} /></Badge>
-<Badge count={1000} overflowCount={999}><div style={box} /></Badge>`}
+        title="Overflow"
+        description="Numbers above overflowCount collapse to '{N}+'."
+        code={OverflowSource}
       >
-        <div style={{ display: 'flex', gap: 24 }}>
-          <Badge count={99}><div style={box} /></Badge>
-          <Badge count={100}><div style={box} /></Badge>
-          <Badge count={1000} overflowCount={999}><div style={box} /></Badge>
-        </div>
+        <OverflowBadge />
+      </DemoBox>
+
+      <DemoBox title="Dot" description="Pill-less indicator for 'has activity' signals." code={DotSource}>
+        <DotBadge />
       </DemoBox>
 
       <DemoBox
-        title="Dot"
-        description="Show a simple dot instead of a number."
-        code={`<Badge dot>
-  <div style={{ width: 42, height: 42 }} />
-</Badge>`}
+        title="Status row"
+        description="Standalone dot + label; processing pulses."
+        code={StatusSource}
       >
-        <Badge dot>
-          <div style={box} />
-        </Badge>
+        <StatusBadge />
       </DemoBox>
 
       <DemoBox
-        title="Status"
-        description="Standalone status badge."
-        code={`<Badge status="success" text="Success" />
-<Badge status="error" text="Error" />
-<Badge status="warning" text="Warning" />
-<Badge status="processing" text="Processing" />
-<Badge status="default" text="Default" />`}
+        title="Custom colour"
+        description="Pass a token reference to stay theme-aware, or a raw hex."
+        code={CustomColorSource}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <Badge status="success" text="Success" />
-          <Badge status="error" text="Error" />
-          <Badge status="warning" text="Warning" />
-          <Badge status="processing" text="Processing" />
-          <Badge status="default" text="Default" />
-        </div>
+        <CustomColorBadge />
       </DemoBox>
 
       <DemoBox
-        title="Custom color"
-        description="Any CSS colour is accepted."
-        code={`<Badge color="#722ed1" count={5}><div style={box} /></Badge>`}
+        title="Offset"
+        description="Nudge the pinned count by [right, top] pixels."
+        code={OffsetSource}
       >
-        <div style={{ display: 'flex', gap: 24 }}>
-          <Badge color="#722ed1" count={5}><div style={box} /></Badge>
-          <Badge color="#eb2f96" count={12}><div style={box} /></Badge>
-          <Badge color="#16a34a" dot><div style={box} /></Badge>
-          <Badge color="#f59e0b" dot><div style={box} /></Badge>
-        </div>
+        <OffsetBadge />
       </DemoBox>
 
       <DemoBox
-        title="Scoped brand"
-        description="Default/processing badges follow --sg-color-primary."
-        code={`<div style={{ ['--sg-color-primary' as any]: '#0ea5e9' }}>
-  <Badge status="processing" text="Uploading…" />
-</div>`}
+        title="Tokens override"
+        description="Swap --sg-color-error to rebrand every count and dot at once."
+        code={TokensOverrideSource}
       >
-        <div
-          style={{
-            display: 'flex',
-            gap: 16,
-            ['--sg-color-primary' as never]: '#0ea5e9',
-          }}
-        >
-          <Badge status="processing" text="Uploading…" />
-          <Badge count={3}><div style={box} /></Badge>
-        </div>
+        <TokensOverrideBadge />
       </DemoBox>
 
-      <PropsTable data={badgeProps} />
+      <DemoBox
+        title="Unstyled"
+        description="Drop every sg-badge class — you own the painting."
+        code={UnstyledSource}
+      >
+        <UnstyledBadge />
+      </DemoBox>
+
+      <PropsTable title="Badge API" data={badgeProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Badge composes palette tokens — the count background is `--sg-color-error` by default, status dots follow `--sg-color-{preset}`. Override `color` prop for per-instance colours, or scope the palette tokens on a wrapper for a theme-wide change."
+        data={badgeCssVars}
+      />
     </ComponentDoc>
   )
 }

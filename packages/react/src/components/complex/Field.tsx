@@ -5,6 +5,7 @@ import { Input } from '../ui/Input'
 import { Textarea } from '../ui/Textarea'
 import { Tooltip } from '../ui/Tooltip'
 import { Spin } from '../ui/Spin'
+import { useConfig } from '../ConfigProvider'
 import type { UseFieldReturn } from '../../hooks/useField'
 import type { Rule } from '@skygraph/core'
 import type { BaseComponentProps } from '../../types'
@@ -136,6 +137,9 @@ export function Field({
   const ctx = useFormContext()
   const { core, form } = ctx
   const disabled = fieldDisabled ?? ctx.disabled
+  const formLocale = useConfig().locale?.form
+  const requiredMarker = formLocale?.required ?? '*'
+  const optionalMarker = formLocale?.optional ?? '(optional)'
   const field = useField(core, form, name)
   const prevValueRef = useRef<unknown>(field.value)
 
@@ -193,10 +197,10 @@ export function Field({
         label
       )}
       {(required || ctx.requiredMark === true) && (
-        <span className="sg-field-required">*</span>
+        <span className="sg-field-required">{requiredMarker}</span>
       )}
       {ctx.requiredMark === 'optional' && !required && (
-        <span className="sg-field-optional">(optional)</span>
+        <span className="sg-field-optional">{optionalMarker}</span>
       )}
       {ctx.colon && ':'}
     </label>

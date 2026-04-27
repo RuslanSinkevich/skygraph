@@ -1,119 +1,140 @@
-import { Spin, Button } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
-import { useState } from 'react'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicSpin } from './spin/Basic.demo'
+import BasicSource from './spin/Basic.demo?raw'
+import { SizesSpin } from './spin/Sizes.demo'
+import SizesSource from './spin/Sizes.demo?raw'
+import { ContainerSpin } from './spin/Container.demo'
+import ContainerSource from './spin/Container.demo?raw'
+import { TipSpin } from './spin/Tip.demo'
+import TipSource from './spin/Tip.demo?raw'
+import { DelaySpin } from './spin/Delay.demo'
+import DelaySource from './spin/Delay.demo?raw'
+import { CustomColorSpin } from './spin/CustomColor.demo'
+import CustomColorSource from './spin/CustomColor.demo?raw'
+import { CustomIndicatorSpin } from './spin/CustomIndicator.demo'
+import CustomIndicatorSource from './spin/CustomIndicator.demo?raw'
+import { FullscreenSpin } from './spin/Fullscreen.demo'
+import FullscreenSource from './spin/Fullscreen.demo?raw'
+import { TokensOverrideSpin } from './spin/TokensOverride.demo'
+import TokensOverrideSource from './spin/TokensOverride.demo?raw'
+import { UnstyledSpin } from './spin/Unstyled.demo'
+import UnstyledSource from './spin/Unstyled.demo?raw'
 
 const spinProps: PropDef[] = [
-  { name: 'spinning', description: 'Whether Spin is visible', type: 'boolean', default: 'true' },
-  { name: 'size', description: 'Size of the spinner', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'delay', description: 'Delay before showing spinner (ms)', type: 'number' },
-  { name: 'tip', description: 'Customize description content below the spinner', type: 'string' },
-  { name: 'fullscreen', description: 'Display as fullscreen overlay', type: 'boolean', default: 'false' },
-  { name: 'indicator', description: 'Custom spinning indicator', type: 'ReactNode' },
-  { name: 'children', description: 'Content to wrap with loading overlay', type: 'ReactNode' },
+  { name: 'spinning', description: 'Whether the spinner is visible', type: 'boolean', default: 'true' },
+  { name: 'size', description: 'Ring size — 12 / 24 / 36px for small / middle / large', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+  { name: 'delay', description: 'Defer showing the spinner by N ms (prevents flicker)', type: 'number' },
+  { name: 'tip', description: 'Caption rendered below the spinner', type: 'string' },
+  { name: 'fullscreen', description: 'Cover the viewport with a dimmed backdrop at z-modal', type: 'boolean', default: 'false' },
+  { name: 'indicator', description: 'Replace the ring with a custom node', type: 'ReactNode' },
+  { name: 'children', description: 'Content to overlay with the spinner', type: 'ReactNode' },
+  { name: 'className', description: 'Wrapper className', type: 'string' },
+  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
+  { name: 'unstyled', description: 'Drop every sg-spin-* class (headless mode)', type: 'boolean', default: 'false' },
+]
+
+const spinCssVars: CssVarDef[] = [
+  { name: 'sg-spin-color', default: 'var(--sg-color-primary)', description: 'Ring colour — Spin-local, defaults to the global primary' },
+  { name: 'sg-spin-overlay-bg', default: 'rgba(255, 255, 255, 0.65)', description: 'Backdrop colour for container / fullscreen overlay' },
+  { name: 'sg-color-primary', default: '#1677ff', description: 'Default ring colour (read through `--sg-spin-color`) + tip text' },
+  { name: 'sg-font-size-sm', default: '12px', description: 'Tip text size' },
+  { name: 'sg-margin-sm', default: '8px', description: 'Gap between spinner and tip (standalone / overlay / fullscreen)' },
+  { name: 'sg-border-radius', default: '6px', description: 'Overlay corner radius (matches the wrapped block)' },
+  { name: 'sg-z-loading', default: '900', description: 'z-index of the container overlay' },
+  { name: 'sg-z-modal', default: '1000', description: 'z-index of the fullscreen backdrop' },
 ]
 
 export function SpinDemo() {
-  const [loading, setLoading] = useState(true)
-
   return (
     <ComponentDoc
       title="Spin"
-      description="A spinner for displaying loading state of a page or a section."
+      description="Loading indicator — inline, inside a container (with overlay), or fullscreen. Supports delay, custom indicators, and a single-token color override."
       whenToUse={[
-        'When part of the page is waiting for async data or during a rendering process, an appropriate loading animation can effectively alleviate user anxiety.',
-        'When wrapping a container to show loading state for an entire section.',
+        'Async sections that will render real content shortly.',
+        'Buttons + forms that need a loading mask to block duplicate submits.',
+        'Route / page transitions — paired with `fullscreen`.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="A simple loading status."
-        code={`import { Spin } from '@skygraph/react'
+      <DemoBox title="Basic" description="A standalone spinner." code={BasicSource}>
+        <BasicSpin />
+      </DemoBox>
 
-<Spin />`}
-      >
-        <Spin />
+      <DemoBox title="Sizes" description="Small / middle / large." code={SizesSource}>
+        <SizesSpin />
       </DemoBox>
 
       <DemoBox
-        title="Size"
-        description="A small, default, and large spinner."
-        code={`<Spin size="small" />
-<Spin />
-<Spin size="large" />`}
+        title="Wrapping children"
+        description="Blur + mask the wrapped content while `spinning`."
+        code={ContainerSource}
       >
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-          <Spin size="small" />
-          <Spin />
-          <Spin size="large" />
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="Container"
-        description="Wrapping content to show loading state."
-        code={`const [loading, setLoading] = useState(true)
-
-<Spin spinning={loading}>
-  <div style={{ padding: 24 }}>Content here</div>
-</Spin>
-<Button onClick={() => setLoading(!loading)}>Toggle</Button>`}
-      >
-        <Spin spinning={loading}>
-          <div style={{ padding: 24, border: '1px solid var(--sg-color-border)', borderRadius: 8 }}>
-            <p>Some content that is being loaded.</p>
-            <p>It will be blurred when loading.</p>
-          </div>
-        </Spin>
-        <div style={{ marginTop: 12 }}>
-          <Button onClick={() => setLoading(!loading)}>Toggle Loading</Button>
-        </div>
+        <ContainerSpin />
       </DemoBox>
 
       <DemoBox
         title="Tip"
-        description="A tip message below the spinner."
-        code={`<Spin tip="Loading data..." spinning>
-  <div style={{ padding: 24 }}>Content</div>
-</Spin>`}
+        description="Short status line under the spinner."
+        code={TipSource}
       >
-        <Spin tip="Loading data..." spinning>
-          <div style={{ padding: 24, border: '1px solid var(--sg-color-border)', borderRadius: 8 }}>
-            <p>Content is loading...</p>
-          </div>
-        </Spin>
+        <TipSpin />
       </DemoBox>
 
       <DemoBox
-        title="Custom colour via token"
-        description="Override --sg-spin-color on a scope. One token, no classes."
-        code={`<div style={{ ['--sg-spin-color' as any]: '#e11d48' }}>
-  <Spin size="large" />
-</div>`}
+        title="Delay"
+        description="Skip the spinner entirely for fast requests."
+        code={DelaySource}
       >
-        <div
-          style={{
-            display: 'flex',
-            gap: 20,
-            ['--sg-spin-color' as never]: '#e11d48',
-          }}
-        >
-          <Spin size="small" />
-          <Spin />
-          <Spin size="large" />
-        </div>
+        <DelaySpin />
+      </DemoBox>
+
+      <DemoBox
+        title="Custom color"
+        description="Override `--sg-spin-color` per scope — no class wrangling."
+        code={CustomColorSource}
+      >
+        <CustomColorSpin />
       </DemoBox>
 
       <DemoBox
         title="Custom indicator"
-        description="Any ReactNode as the spinner — bring your own SVG or emoji."
-        code={`<Spin indicator={<span style={{ fontSize: 22 }}>⏳</span>} />`}
+        description="Swap the ring for any ReactNode."
+        code={CustomIndicatorSource}
       >
-        <Spin indicator={<span style={{ fontSize: 22 }} aria-hidden>⏳</span>} />
-        <Spin indicator={<span style={{ fontSize: 22 }} aria-hidden>🌀</span>} />
+        <CustomIndicatorSpin />
       </DemoBox>
 
-      <PropsTable data={spinProps} />
+      <DemoBox
+        title="Fullscreen"
+        description="Viewport-level overlay at z-modal."
+        code={FullscreenSource}
+      >
+        <FullscreenSpin />
+      </DemoBox>
+
+      <DemoBox
+        title="Tokens override"
+        description="Tune ring + overlay background via CSS vars."
+        code={TokensOverrideSource}
+      >
+        <TokensOverrideSpin />
+      </DemoBox>
+
+      <DemoBox
+        title="Unstyled"
+        description="Keep the delay + overlay logic, ship your own visuals."
+        code={UnstyledSource}
+      >
+        <UnstyledSpin />
+      </DemoBox>
+
+      <PropsTable title="Spin API" data={spinProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Spin exposes two component-local tokens: `--sg-spin-color` for the ring and `--sg-spin-overlay-bg` for the container / fullscreen backdrop. Scope them on a wrapper to tint a single section without touching the global primary."
+        data={spinCssVars}
+      />
     </ComponentDoc>
   )
 }

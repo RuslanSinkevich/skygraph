@@ -17,6 +17,11 @@
       "types": "./dist/form.d.ts",
       "import": "./dist/form.js",
       "require": "./dist/form.cjs"
+    },
+    "./runtime-internal": {
+      "types": "./dist/runtime-internal.d.ts",
+      "import": "./dist/runtime-internal.js",
+      "require": "./dist/runtime-internal.cjs"
     }
   },
   "files": ["dist"],

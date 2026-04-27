@@ -205,6 +205,7 @@ export function VirtualTableBody(props: VirtualBodyProps) {
                       className={[
                         'sg-table-td',
                         col.fixed ? 'sg-table-cell-fixed' : '',
+                        col.fixed ? `sg-table-cell-fixed-${col.fixed}` : '',
                         col.editable ? 'sg-table-td-editable' : '',
                       ].filter(Boolean).join(' ')}
                       style={cellStyle}

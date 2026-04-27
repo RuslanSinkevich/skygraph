@@ -4,6 +4,7 @@ export default defineConfig({
   entry: {
     index: 'src/index.ts',
     form: 'src/engines/form/index.ts',
+    'runtime-internal': 'src/runtime-internal.ts',
   },
   format: ['esm', 'cjs'],
   dts: true,

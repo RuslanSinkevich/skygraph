@@ -1,120 +1,116 @@
-import { Avatar } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { SizesAvatar } from './avatar/Sizes.demo'
+import SizesSource from './avatar/Sizes.demo?raw'
+import { ShapesAvatar } from './avatar/Shapes.demo'
+import ShapesSource from './avatar/Shapes.demo?raw'
+import { FallbackAvatar } from './avatar/Fallback.demo'
+import FallbackSource from './avatar/Fallback.demo?raw'
+import { ColoredInitialsAvatar } from './avatar/ColoredInitials.demo'
+import ColoredInitialsSource from './avatar/ColoredInitials.demo?raw'
+import { GroupAvatar } from './avatar/Group.demo'
+import GroupSource from './avatar/Group.demo?raw'
+import { WithBadgeAvatar } from './avatar/WithBadge.demo'
+import WithBadgeSource from './avatar/WithBadge.demo?raw'
+import { TokensOverrideAvatar } from './avatar/TokensOverride.demo'
+import TokensOverrideSource from './avatar/TokensOverride.demo?raw'
+import { UnstyledAvatar } from './avatar/Unstyled.demo'
+import UnstyledSource from './avatar/Unstyled.demo?raw'
 
 const avatarProps: PropDef[] = [
-  { name: 'src', description: 'Image source for the avatar', type: 'string' },
-  { name: 'alt', description: 'Alt text for the avatar image', type: 'string' },
-  { name: 'size', description: 'Size of the avatar', type: "'small' | 'middle' | 'large' | number", default: "'middle'" },
-  { name: 'shape', description: 'Shape of the avatar', type: "'circle' | 'square'", default: "'circle'" },
-  { name: 'icon', description: 'Custom icon inside the avatar', type: 'ReactNode' },
-  { name: 'children', description: 'Text content (initials etc.)', type: 'ReactNode' },
+  { name: 'src', description: 'Image URL (photo avatar)', type: 'string' },
+  { name: 'alt', description: 'Alt text for the image', type: 'string' },
+  { name: 'aria-label', description: 'Accessible name when there is no visible text', type: 'string' },
+  { name: 'size', description: 'Preset size token or explicit px number', type: "'small' | 'middle' | 'large' | number", default: "'middle'" },
+  { name: 'shape', description: 'Circle or rounded square', type: "'circle' | 'square'", default: "'circle'" },
+  { name: 'icon', description: 'Icon shown when src is missing', type: 'ReactNode' },
+  { name: 'children', description: 'Initials / text fallback when src and icon are missing', type: 'ReactNode' },
+  { name: 'className', description: 'Wrapper className', type: 'string' },
+  { name: 'style', description: 'Wrapper inline style (overrides background etc.)', type: 'CSSProperties' },
+  { name: 'unstyled', description: 'Drop sg-avatar-* classes (headless mode)', type: 'boolean', default: 'false' },
+]
+
+const avatarCssVars: CssVarDef[] = [
+  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Fallback background when src / icon / children are absent' },
+  { name: 'sg-color-white', default: '#ffffff', description: 'Foreground colour on the tinted background' },
+  { name: 'sg-border-radius', default: '6px', description: 'Corner radius for shape="square"' },
+  { name: 'sg-color-bg-container', default: '#ffffff', description: 'Recommended border colour when stacking avatars in a group' },
 ]
 
 export function AvatarDemo() {
   return (
     <ComponentDoc
       title="Avatar"
-      description="Avatars can be used to represent people or objects."
+      description="Image, icon, or text avatar with three preset sizes and circle / square shapes. Degrades gracefully: photo → icon → initials."
       whenToUse={[
-        'When you need to display a user profile picture.',
-        'When you need to display initials when an image is not available.',
+        'Profile picture in a menu or header.',
+        'Compact "who is involved" list on a card, with a stacked group + overflow counter.',
+        'Fallback chip when a photo URL is missing and you have a name.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="Three sizes and two shapes."
-        code={`import { Avatar } from '@skygraph/react'
+      <DemoBox title="Sizes" description="Preset tokens + any px number." code={SizesSource}>
+        <SizesAvatar />
+      </DemoBox>
 
-<Avatar size="large">U</Avatar>
-<Avatar>U</Avatar>
-<Avatar size="small">U</Avatar>
-<Avatar shape="square" size="large">U</Avatar>`}
-      >
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Avatar size="large">U</Avatar>
-          <Avatar>U</Avatar>
-          <Avatar size="small">U</Avatar>
-          <Avatar shape="square" size="large">U</Avatar>
-          <Avatar shape="square">U</Avatar>
-          <Avatar shape="square" size="small">U</Avatar>
-        </div>
+      <DemoBox title="Shapes" description="Circle vs. rounded square." code={ShapesSource}>
+        <ShapesAvatar />
       </DemoBox>
 
       <DemoBox
-        title="Custom Size"
-        description="You can set the avatar size to a specific pixel value."
-        code={`<Avatar size={64}>XL</Avatar>
-<Avatar size={48}>L</Avatar>
-<Avatar size={32}>M</Avatar>`}
+        title="Fallback order"
+        description="src → icon → children."
+        code={FallbackSource}
       >
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Avatar size={64}>XL</Avatar>
-          <Avatar size={48}>L</Avatar>
-          <Avatar size={32}>M</Avatar>
-        </div>
+        <FallbackAvatar />
       </DemoBox>
 
       <DemoBox
-        title="Image"
-        description="Avatars with image source."
-        code={`<Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />
-<Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=2" shape="square" />`}
+        title="Coloured initials"
+        description="Hash the name into a palette for deterministic tints."
+        code={ColoredInitialsSource}
       >
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" size="large" />
-          <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=2" shape="square" size="large" />
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="Colored initials"
-        description="Use inline style or className to tint the background."
-        code={`<Avatar style={{ background: '#f97316', color: '#fff' }}>A</Avatar>
-<Avatar style={{ background: '#22c55e', color: '#fff' }}>B</Avatar>
-<Avatar style={{ background: '#3b82f6', color: '#fff' }}>C</Avatar>`}
-      >
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Avatar style={{ background: '#f97316', color: '#fff' }}>A</Avatar>
-          <Avatar style={{ background: '#22c55e', color: '#fff' }}>B</Avatar>
-          <Avatar style={{ background: '#3b82f6', color: '#fff' }}>C</Avatar>
-          <Avatar style={{ background: '#a855f7', color: '#fff' }}>D</Avatar>
-          <Avatar style={{ background: '#ef4444', color: '#fff' }}>E</Avatar>
-        </div>
+        <ColoredInitialsAvatar />
       </DemoBox>
 
       <DemoBox
         title="Avatar group"
-        description="Stack avatars with negative margin for a compact group."
-        code={`<div style={{ display: 'flex' }}>
-  {users.map((u, i) => (
-    <Avatar
-      key={u}
-      style={{ marginLeft: i === 0 ? 0 : -8, border: '2px solid var(--sg-color-bg-container)' }}
-    >
-      {u}
-    </Avatar>
-  ))}
-</div>`}
+        description="Stacked avatars with a +N overflow slot."
+        code={GroupSource}
       >
-        <div style={{ display: 'flex' }}>
-          {['A', 'B', 'C', 'D', '+3'].map((u, i) => (
-            <Avatar
-              key={u}
-              style={{
-                marginLeft: i === 0 ? 0 : -8,
-                border: '2px solid var(--sg-color-bg-container)',
-                background: i === 4 ? '#e5e7eb' : undefined,
-                color: i === 4 ? '#111' : undefined,
-              }}
-            >
-              {u}
-            </Avatar>
-          ))}
-        </div>
+        <GroupAvatar />
       </DemoBox>
 
-      <PropsTable data={avatarProps} />
+      <DemoBox
+        title="With Badge"
+        description="Wrap the avatar in a Badge for presence / count."
+        code={WithBadgeSource}
+      >
+        <WithBadgeAvatar />
+      </DemoBox>
+
+      <DemoBox
+        title="Tokens override"
+        description="Bump --sg-border-radius for softer squares, swap --sg-color-text-disabled for a branded fallback."
+        code={TokensOverrideSource}
+      >
+        <TokensOverrideAvatar />
+      </DemoBox>
+
+      <DemoBox
+        title="Unstyled"
+        description="Drop every sg-avatar class — you own the painting."
+        code={UnstyledSource}
+      >
+        <UnstyledAvatar />
+      </DemoBox>
+
+      <PropsTable title="Avatar API" data={avatarProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Avatar has no dedicated tokens. The fallback background is `--sg-color-text-disabled`, the square radius is `--sg-border-radius`, and text is `--sg-color-white`. For per-instance colours, inline style={{ background, color }} is the simplest override."
+        data={avatarCssVars}
+      />
     </ComponentDoc>
   )
 }

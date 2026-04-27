@@ -13,7 +13,7 @@ import type {
   ValidationResult,
 } from './types'
 
-const META_PREFIX = '$meta.'
+import { FORM_META_PREFIX as META_PREFIX } from '../namespaces'
 
 function metaPath(name: string, field: string): string {
   return `${META_PREFIX}${name}.${field}`

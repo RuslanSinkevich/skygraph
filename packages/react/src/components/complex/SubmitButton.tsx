@@ -13,6 +13,8 @@ export interface SubmitButtonProps {
   loading?: boolean
   /** Extra class names passed to {@link Button}. */
   className?: string
+  /** Inline styles forwarded to the underlying {@link Button}. */
+  style?: React.CSSProperties
   /** Strips built-in button styles on the underlying {@link Button}. */
   unstyled?: boolean
 }
@@ -25,6 +27,7 @@ export function SubmitButton({
   disabled,
   loading,
   className,
+  style,
   unstyled,
 }: SubmitButtonProps) {
   return (
@@ -34,6 +37,7 @@ export function SubmitButton({
       disabled={disabled}
       loading={loading}
       className={className}
+      style={style}
       unstyled={unstyled}
     >
       {children}

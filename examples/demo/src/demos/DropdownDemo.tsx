@@ -1,114 +1,140 @@
-import { Dropdown, Button } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicDropdown } from './dropdown/Basic.demo'
+import BasicSource from './dropdown/Basic.demo?raw'
+import { TriggerDropdown } from './dropdown/Trigger.demo'
+import TriggerSource from './dropdown/Trigger.demo?raw'
+import { PlacementDropdown } from './dropdown/Placement.demo'
+import PlacementSource from './dropdown/Placement.demo?raw'
+import { RichItemsDropdown } from './dropdown/RichItems.demo'
+import RichItemsSource from './dropdown/RichItems.demo?raw'
+import { DisabledDropdown } from './dropdown/Disabled.demo'
+import DisabledSource from './dropdown/Disabled.demo?raw'
+import { KeyboardDropdown } from './dropdown/Keyboard.demo'
+import KeyboardSource from './dropdown/Keyboard.demo?raw'
+import { TokensOverrideDropdown } from './dropdown/TokensOverride.demo'
+import TokensOverrideSource from './dropdown/TokensOverride.demo?raw'
+import { UnstyledDropdown } from './dropdown/Unstyled.demo'
+import UnstyledSource from './dropdown/Unstyled.demo?raw'
 
 const dropdownProps: PropDef[] = [
-  { name: 'items', description: 'Menu items', type: 'DropdownItem[]' },
-  { name: 'onSelect', description: 'Callback when item is selected', type: '(key: string) => void' },
-  { name: 'trigger', description: 'Trigger mode', type: "'click' | 'hover'", default: "'hover'" },
-  { name: 'placement', description: 'Placement of popup', type: "'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'", default: "'bottomLeft'" },
-  { name: 'disabled', description: 'Whether the dropdown is disabled', type: 'boolean', default: 'false' },
-  { name: 'children', description: 'Element that triggers the dropdown', type: 'ReactElement' },
+  { name: 'items', description: 'Menu rows and dividers', type: 'DropdownItem[]' },
+  { name: 'onSelect', description: 'Fires with the selected item.key', type: '(key: string) => void' },
+  { name: 'trigger', description: 'Open the menu on click or hover', type: "'click' | 'hover'", default: "'hover'" },
+  { name: 'placement', description: 'Corner the menu anchors to', type: "'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'", default: "'bottomLeft'" },
+  { name: 'disabled', description: 'Block opening and selection', type: 'boolean', default: 'false' },
+  { name: 'children', description: 'Element that acts as the trigger', type: 'ReactElement' },
+  { name: 'className', description: 'Wrapper className', type: 'string' },
+  { name: 'unstyled', description: 'Drop every sg-dropdown-* class (headless mode)', type: 'boolean', default: 'false' },
 ]
 
-const itemProps: PropDef[] = [
-  { name: 'key', description: 'Unique key of the item', type: 'string' },
-  { name: 'label', description: 'Display label', type: 'ReactNode' },
-  { name: 'disabled', description: 'Whether the item is disabled', type: 'boolean' },
-  { name: 'danger', description: 'Display as danger item', type: 'boolean' },
-  { name: 'divider', description: 'Display as divider line', type: 'boolean' },
+const dropdownItemProps: PropDef[] = [
+  { name: 'key', description: 'Stable identifier passed to onSelect', type: 'string' },
+  { name: 'label', description: 'Row content (any ReactNode)', type: 'ReactNode' },
+  { name: 'disabled', description: 'Lock the row', type: 'boolean' },
+  { name: 'danger', description: 'Paint the row in error colours', type: 'boolean' },
+  { name: 'divider', description: 'Render a separator instead of a row (label is ignored)', type: 'boolean' },
 ]
 
-const items = [
-  { key: '1', label: '1st menu item' },
-  { key: '2', label: '2nd menu item' },
-  { key: '3', label: '3rd menu item (disabled)', disabled: true },
-  { key: 'd', label: '', divider: true },
-  { key: '4', label: 'Danger item', danger: true },
+const dropdownCssVars: CssVarDef[] = [
+  { name: 'sg-color-bg-elevated', default: '#ffffff', description: 'Menu background' },
+  { name: 'sg-color-border-secondary', default: 'rgba(5, 5, 5, 0.04)', description: 'Menu border + divider colour' },
+  { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: 'Row hover background' },
+  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Row text colour' },
+  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Disabled row colour' },
+  { name: 'sg-color-error', default: '#ff4d4f', description: 'Danger row text' },
+  { name: 'sg-color-error-bg', default: '#fff2f0', description: 'Danger row hover background' },
+  { name: 'sg-font-size', default: '14px', description: 'Row text size' },
+  { name: 'sg-line-height', default: '1.5714', description: 'Row line-height' },
+  { name: 'sg-padding-xs', default: '4px', description: 'Row vertical padding + menu vertical padding' },
+  { name: 'sg-padding-md', default: '12px', description: 'Row horizontal padding' },
+  { name: 'sg-margin-xs', default: '4px', description: 'Divider vertical spacing' },
+  { name: 'sg-border-radius-lg', default: '8px', description: 'Menu corner radius' },
+  { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0,0,0,0.08)', description: 'Menu elevation' },
+  { name: 'sg-z-dropdown', default: '1050', description: 'Menu stacking layer' },
+  { name: 'sg-transition-duration', default: '180ms', description: 'Row hover + open animation speed' },
+  { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: 'Shared easing' },
 ]
 
 export function DropdownDemo() {
   return (
     <ComponentDoc
       title="Dropdown"
-      description="A dropdown list."
+      description="Anchored action menu. Opens on click or hover, fully keyboard-accessible, and supports danger / disabled / divider rows."
       whenToUse={[
-        'When there are more than a few options to choose from, you can wrap them in a Dropdown.',
-        'By hovering or clicking on the trigger, a dropdown menu should appear.',
+        'Row-level actions or kebab menus that would be noisy as inline buttons.',
+        'File / edit / view-style menus where items share semantic grouping.',
+        'Contextual navigation where hover preview is faster than click.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="The most basic dropdown menu."
-        code={`import { Dropdown, Button } from '@skygraph/react'
-
-const items = [
-  { key: '1', label: '1st menu item' },
-  { key: '2', label: '2nd menu item' },
-]
-
-<Dropdown items={items} onSelect={(key) => console.log(key)}>
-  <Button>Hover me</Button>
-</Dropdown>`}
-      >
-        <Dropdown items={items} onSelect={(key) => alert(`Selected: ${key}`)}>
-          <Button>Hover me</Button>
-        </Dropdown>
+      <DemoBox title="Basic" description="Hover to open; onSelect gets the item.key." code={BasicSource}>
+        <BasicDropdown />
       </DemoBox>
 
       <DemoBox
-        title="Click Trigger"
-        description="Trigger by clicking."
-        code={`<Dropdown items={items} trigger="click">
-  <Button>Click me</Button>
-</Dropdown>`}
+        title="Trigger"
+        description="Click for action menus, hover for chrome."
+        code={TriggerSource}
       >
-        <Dropdown items={items} trigger="click" onSelect={(key) => alert(`Selected: ${key}`)}>
-          <Button>Click me</Button>
-        </Dropdown>
+        <TriggerDropdown />
       </DemoBox>
 
       <DemoBox
         title="Placement"
-        description="Different placements."
-        code={`<Dropdown items={items} placement="bottomRight">
-  <Button>Bottom Right</Button>
-</Dropdown>`}
+        description="Four corners — pick what fits the viewport."
+        code={PlacementSource}
       >
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Dropdown items={items} placement="bottomLeft"><Button>bottomLeft</Button></Dropdown>
-          <Dropdown items={items} placement="bottomRight"><Button>bottomRight</Button></Dropdown>
-        </div>
+        <PlacementDropdown />
+      </DemoBox>
+
+      <DemoBox
+        title="Rich items"
+        description="label is a full ReactNode — icons, shortcuts, two-line rows."
+        code={RichItemsSource}
+      >
+        <RichItemsDropdown />
       </DemoBox>
 
       <DemoBox
         title="Disabled"
-        description="Disable the trigger."
-        code={`<Dropdown items={items} disabled>
-  <Button>Disabled</Button>
-</Dropdown>`}
+        description="Menu can't open; onSelect is suppressed."
+        code={DisabledSource}
       >
-        <Dropdown items={items} disabled>
-          <Button>Disabled</Button>
-        </Dropdown>
+        <DisabledDropdown />
       </DemoBox>
 
       <DemoBox
-        title="Scoped brand"
-        description="Highlight colour (focused item) follows --sg-color-primary."
-        code={`<div style={{ ['--sg-color-primary' as any]: '#db2777' }}>
-  <Dropdown items={items}><Button>Pink brand</Button></Dropdown>
-</div>`}
+        title="Keyboard"
+        description="Space / Enter open, ↑ / ↓ move, Esc closes."
+        code={KeyboardSource}
       >
-        <div style={{ ['--sg-color-primary' as never]: '#db2777' }}>
-          <Dropdown items={items}>
-            <Button type="primary">Pink brand</Button>
-          </Dropdown>
-        </div>
+        <KeyboardDropdown />
       </DemoBox>
 
-      <PropsTable data={dropdownProps} />
-      <PropsTable title="DropdownItem" data={itemProps} />
+      <DemoBox
+        title="Tokens override"
+        description="Retint surface, hover, and danger tokens on a wrapper."
+        code={TokensOverrideSource}
+      >
+        <TokensOverrideDropdown />
+      </DemoBox>
+
+      <DemoBox
+        title="Unstyled"
+        description="Keep behaviour + keyboard handling, bring your own paint."
+        code={UnstyledSource}
+      >
+        <UnstyledDropdown />
+      </DemoBox>
+
+      <PropsTable title="Dropdown API" data={dropdownProps} />
+      <PropsTable title="DropdownItem" data={dropdownItemProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Dropdown has no dedicated tokens — it composes the elevated surface palette and the hover background. `danger` rows use `--sg-color-error` + `--sg-color-error-bg`. Tune `--sg-border-radius-lg` for rounder menus."
+        data={dropdownCssVars}
+      />
     </ComponentDoc>
   )
 }

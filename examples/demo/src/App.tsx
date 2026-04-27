@@ -1,14 +1,19 @@
 import { useState, useEffect, useMemo } from 'react'
 import '../../../packages/react/styles/index.css'
 import './app.css'
+import { NotificationContainer } from '@skygraph/react'
 
 import { SpinDemo } from './demos/SpinDemo'
 import { ButtonDemo } from './demos/ButtonDemo'
 import { InputDemo } from './demos/InputDemo'
+import { InputNumberDemo } from './demos/InputNumberDemo'
+import { SliderDemo } from './demos/SliderDemo'
+import { RateDemo } from './demos/RateDemo'
 import { CheckboxDemo } from './demos/CheckboxDemo'
 import { RadioDemo } from './demos/RadioDemo'
 import { SwitchDemo } from './demos/SwitchDemo'
 import { SelectDemo } from './demos/SelectDemo'
+import { AutoCompleteDemo } from './demos/AutoCompleteDemo'
 import { TabsDemo } from './demos/TabsDemo'
 import { TooltipDemo } from './demos/TooltipDemo'
 import { ModalDemo } from './demos/ModalDemo'
@@ -41,11 +46,16 @@ import { TransferDemo } from './demos/TransferDemo'
 import { TreeSelectDemo } from './demos/TreeSelectDemo'
 import { CascaderDemo } from './demos/CascaderDemo'
 import { CalendarDemo } from './demos/CalendarDemo'
+import { DatePickerDemo } from './demos/DatePickerDemo'
+import { TimePickerDemo } from './demos/TimePickerDemo'
+import { UploadDemo } from './demos/UploadDemo'
 import { ThemeToggle } from './demos/ThemeToggle'
 import { GettingStartedPage } from './demos/GettingStartedPage'
 import { ThemingPage } from './demos/ThemingPage'
 import { CoreApiPage } from './demos/CoreApiPage'
 import { StylingShowcasePage } from './demos/StylingShowcasePage'
+import { DesignTokensPage } from './demos/DesignTokensPage'
+import { ConfigProviderDemo } from './demos/ConfigProviderDemo'
 
 // ---------------------------------------------------------------------------
 
@@ -60,7 +70,9 @@ const menu: MenuSection[] = [
       { key: 'getting-started', label: 'Getting Started' },
       { key: 'styling-showcase', label: 'Styling Showcase' },
       { key: 'theming', label: 'Theming' },
+      { key: 'design-tokens', label: 'Design Tokens' },
       { key: 'core-api', label: 'Core API' },
+      { key: 'config-provider', label: 'ConfigProvider' },
     ],
   },
   {
@@ -74,12 +86,18 @@ const menu: MenuSection[] = [
     title: 'Data Entry',
     items: [
       { key: 'components/input', label: 'Input' },
+      { key: 'components/inputnumber', label: 'InputNumber' },
       { key: 'components/select', label: 'Select' },
+      { key: 'components/autocomplete', label: 'AutoComplete' },
       { key: 'components/checkbox', label: 'Checkbox' },
       { key: 'components/radio', label: 'Radio' },
       { key: 'components/switch', label: 'Switch' },
-      { key: 'components/slider', label: 'Slider', disabled: true },
+      { key: 'components/slider', label: 'Slider' },
+      { key: 'components/rate', label: 'Rate' },
       { key: 'components/colorpicker', label: 'ColorPicker' },
+      { key: 'components/datepicker', label: 'DatePicker' },
+      { key: 'components/timepicker', label: 'TimePicker' },
+      { key: 'components/upload', label: 'Upload' },
       { key: 'components/cascader', label: 'Cascader' },
       { key: 'components/treeselect', label: 'TreeSelect' },
       { key: 'components/transfer', label: 'Transfer' },
@@ -134,10 +152,14 @@ const pages: Record<string, () => JSX.Element> = {
   'components/spin': SpinDemo,
   'components/button': ButtonDemo,
   'components/input': InputDemo,
+  'components/inputnumber': InputNumberDemo,
+  'components/slider': SliderDemo,
+  'components/rate': RateDemo,
   'components/checkbox': CheckboxDemo,
   'components/radio': RadioDemo,
   'components/switch': SwitchDemo,
   'components/select': SelectDemo,
+  'components/autocomplete': AutoCompleteDemo,
   'components/tabs': TabsDemo,
   'components/tooltip': TooltipDemo,
   'components/modal': ModalDemo,
@@ -159,6 +181,9 @@ const pages: Record<string, () => JSX.Element> = {
   'components/list': ListDemo,
   'components/transfer': TransferDemo,
   'components/calendar': CalendarDemo,
+  'components/datepicker': DatePickerDemo,
+  'components/timepicker': TimePickerDemo,
+  'components/upload': UploadDemo,
   'components/menu': MenuDemo,
   'components/collapse': CollapseDemo,
   'components/colorpicker': ColorPickerDemo,
@@ -173,7 +198,9 @@ const pages: Record<string, () => JSX.Element> = {
   'getting-started': GettingStartedPage,
   'styling-showcase': StylingShowcasePage,
   'theming': ThemingPage,
+  'design-tokens': DesignTokensPage,
   'core-api': CoreApiPage,
+  'config-provider': ConfigProviderDemo,
 }
 
 // ---------------------------------------------------------------------------
@@ -355,6 +382,9 @@ export default function App() {
         </div>
         <Page />
       </main>
+      <NotificationContainer placement="topRight" />
+      <NotificationContainer placement="topLeft" />
+      <NotificationContainer placement="bottomRight" />
     </div>
   )
 }

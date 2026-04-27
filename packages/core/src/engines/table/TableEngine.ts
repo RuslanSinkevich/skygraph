@@ -11,7 +11,7 @@ import type {
   TableState,
 } from './types'
 
-const TABLE_PREFIX = '$table.'
+import { TABLE_PREFIX } from '../namespaces'
 
 function rowPath(tableId: string, rowId: RowId, column: string): string {
   return `${TABLE_PREFIX}${tableId}.byId.${rowId}.${column}`

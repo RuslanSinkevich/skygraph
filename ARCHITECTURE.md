@@ -67,9 +67,27 @@
 ### Правила границ (нарушение = баг архитектуры)
 
 - `runtime/` **НЕ** импортирует из `engines/`
-- `engines/` импортирует из `runtime/` через internal API
+- `engines/` используют **публичный** `Core` интерфейс (`../../types`)
+- Если engine-у действительно нужен доступ к runtime-примитивам — только через `@skygraph/core/runtime-internal` (нестабильный API)
+- `engines/` **НЕ** импортируют друг друга (form не знает про table и наоборот)
 - `@skygraph/react` импортирует из `@skygraph/core` только через **public API**
 - `components/ui/` (Spin, Button) **НЕ** импортирует из `runtime/` и `engines/`
+
+Эти правила **статически enforced** через ESLint (`no-restricted-imports` в `eslint.config.js`). Попытка нарушить — ошибка сборки, а не code review pending.
+
+### Engine path namespaces
+
+Engine, который пишет в `Core` store под `$`-префиксом, **обязан** зарезервировать свой префикс через `reservePrefix(engineName, prefix)` из `engines/namespaces.ts`. Коллизия между двумя engines бросает исключение на загрузке модуля, а не молча перетирает данные.
+
+Зарезервированные префиксы:
+
+| Engine | Префикс |
+|---|---|
+| form  | `$meta.`  |
+| table | `$table.` |
+| tree  | `$tree.`  |
+
+Пользовательские данные не должны жить под `$` — эта зона для engines.
 
 ---
 
@@ -206,7 +224,25 @@ interface ValidationResult {
 }
 ```
 
-FieldMeta — расширяемая. Новые поля можно добавлять. Существующие нельзя убирать или переименовывать.
+### Расширение FieldMeta
+
+Встроенные поля (`touched`, `dirty`, `errors`, `warnings`, `validating`, `status`) **заморожены**: их нельзя убирать, переименовывать или менять типы — это breaking change.
+
+Плагины добавляют свои поля через TypeScript declaration merging на интерфейс `FieldMetaExtensions`:
+
+```typescript
+// my-plugin.d.ts
+declare module '@skygraph/core' {
+  interface FieldMetaExtensions {
+    submittedAt?: number
+    serverValidationId?: string
+  }
+}
+```
+
+После этого `getFieldState(name).submittedAt` строго типизирован во всём проекте.
+
+Для runtime-уровня без типов есть `extra?: Record<string, unknown>` — bag для произвольных данных, если declaration merging не подходит (например, динамические ключи).
 
 ---
 

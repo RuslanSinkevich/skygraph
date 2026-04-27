@@ -53,6 +53,9 @@ export function Upload({
 }: UploadProps) {
   const config = useConfig()
   const disabled = disabledProp ?? config.disabled
+  const uploadLocale = config.locale?.upload
+  const uploadText = uploadLocale?.uploadText ?? 'Upload'
+  const removeLabel = uploadLocale?.removeFile ?? 'Remove file'
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleClick = () => {
@@ -91,7 +94,7 @@ export function Upload({
       <div onClick={handleClick}>
         {children ?? (
           <Button disabled={disabled} loading={loading}>
-            Upload
+            {uploadText}
           </Button>
         )}
       </div>
@@ -116,6 +119,9 @@ export function Upload({
                 <span
                   className={unstyled ? '' : 'sg-upload-item-remove'}
                   onClick={() => onRemove?.(file)}
+                  role="button"
+                  aria-label={removeLabel}
+                  tabIndex={0}
                 >
                   ×
                 </span>

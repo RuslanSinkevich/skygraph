@@ -1,142 +1,99 @@
-import { Tabs } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicTabs } from './tabs/Basic.demo'
+import BasicSource from './tabs/Basic.demo?raw'
+import { ControlledTabs } from './tabs/Controlled.demo'
+import ControlledSource from './tabs/Controlled.demo?raw'
+import { SizesTabs } from './tabs/Sizes.demo'
+import SizesSource from './tabs/Sizes.demo?raw'
+import { RichLabelsTabs } from './tabs/RichLabels.demo'
+import RichLabelsSource from './tabs/RichLabels.demo?raw'
+import { StatesTabs } from './tabs/States.demo'
+import StatesSource from './tabs/States.demo?raw'
+import { TokensOverrideTabs } from './tabs/TokensOverride.demo'
+import TokensOverrideSource from './tabs/TokensOverride.demo?raw'
 
 const tabsProps: PropDef[] = [
-  { name: 'items', description: 'Tab items configuration', type: 'Array<{ key, label, children, disabled?, loading? }>' },
-  { name: 'activeKey', description: 'Currently active tab key', type: 'string' },
-  { name: 'defaultActiveKey', description: 'Default active tab key', type: 'string' },
-  { name: 'onChange', description: 'Callback when tab changes', type: '(key: string) => void' },
-  { name: 'type', description: 'Tab style type', type: "'line' | 'card'", default: "'line'" },
-  { name: 'size', description: 'Tab size', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'centered', description: 'Center tabs', type: 'boolean', default: 'false' },
-  { name: 'className', description: 'Additional CSS class', type: 'string' },
-  { name: 'unstyled', description: 'Remove all built-in styles', type: 'boolean', default: 'false' },
+  { name: 'items', description: 'Tab definitions', type: 'TabItem[]' },
+  { name: 'activeKey', description: 'Controlled active key', type: 'string' },
+  { name: 'defaultActiveKey', description: 'Initial active key (uncontrolled)', type: 'string' },
+  { name: 'onChange', description: 'Fires after user interaction changes the active tab', type: '(key: string) => void' },
+  { name: 'size', description: 'Tab list size (inherits from ConfigProvider)', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+  { name: 'className', description: 'Extra class on the root', type: 'string' },
+  { name: 'style', description: 'Inline styles on the root', type: 'CSSProperties' },
+  { name: 'unstyled', description: 'Opt out of SkyGraph styling', type: 'boolean', default: 'false' },
+]
+
+const tabItemProps: PropDef[] = [
+  { name: 'key', description: 'Unique identifier — used for active state and ARIA', type: 'string' },
+  { name: 'label', description: 'Tab label (ReactNode — icons, badges allowed)', type: 'ReactNode' },
+  { name: 'children', description: 'Panel body shown when this tab is active', type: 'ReactNode' },
+  { name: 'disabled', description: 'Grey out and block activation', type: 'boolean', default: 'false' },
+  { name: 'loading', description: 'Show spinner, block activation', type: 'boolean', default: 'false' },
+]
+
+const tabsCssVars: CssVarDef[] = [
+  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Active tab label + underline indicator' },
+  { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: 'Hovered (inactive) tab label' },
+  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Panel body text' },
+  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: 'Inactive tab label' },
+  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Disabled tab label' },
+  { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: 'Tab list bottom border' },
+  { name: 'sg-font-size', default: '14px', description: 'Tab label font size (sm/lg variants override)' },
+  { name: 'sg-padding-sm', default: '8px', description: 'Vertical tab padding' },
+  { name: 'sg-padding-lg', default: '16px', description: 'Horizontal tab padding' },
+  { name: 'sg-padding-xs', default: '4px', description: 'Gap between label text and loading spinner' },
+  { name: 'sg-margin-md', default: '16px', description: 'Space between tab list and panel body' },
+  { name: 'sg-spin-color', default: 'var(--sg-color-primary) on active tab', description: 'Loading indicator color' },
 ]
 
 export function TabsDemo() {
   return (
     <ComponentDoc
       title="Tabs"
-      description="Tabs make it easy to switch between different views."
+      description="Switch between related views without leaving the page."
       whenToUse={[
-        'Card-type tabs for switching between views inside a card.',
-        'Standard line tabs for flat navigation between content areas.',
+        'When a single resource has multiple views that share context (details / activity / settings).',
+        'When you want lightweight navigation that keeps the user on the current screen.',
+        'For stepwise flows consider <Steps> instead — Tabs does not imply order.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="Default tabs with three panels."
-        code={`import { Tabs } from '@skygraph/react'
+      <DemoBox title="Basic" description="Default tabs with three panels." code={BasicSource}>
+        <BasicTabs />
+      </DemoBox>
 
-<Tabs items={[
-  { key: '1', label: 'Tab 1', children: <p>Content of Tab 1</p> },
-  { key: '2', label: 'Tab 2', children: <p>Content of Tab 2</p> },
-  { key: '3', label: 'Tab 3', children: <p>Content of Tab 3</p> },
-]} />`}
-      >
-        <div style={{ width: '100%' }}>
-          <Tabs
-            items={[
-              { key: '1', label: 'Tab 1', children: <p>Content of Tab 1</p> },
-              { key: '2', label: 'Tab 2', children: <p>Content of Tab 2</p> },
-              { key: '3', label: 'Tab 3', children: <p>Content of Tab 3</p> },
-            ]}
-          />
-        </div>
+      <DemoBox title="Controlled" description="Drive active key from outside (deep links, wizards)." code={ControlledSource}>
+        <ControlledTabs />
+      </DemoBox>
+
+      <DemoBox title="Sizes" description="Three sizes for different densities." code={SizesSource}>
+        <SizesTabs />
+      </DemoBox>
+
+      <DemoBox title="Rich labels" description="Mix badges, icons, and status dots into the label." code={RichLabelsSource}>
+        <RichLabelsTabs />
+      </DemoBox>
+
+      <DemoBox title="Loading & disabled" description="Per-item flags gate activation." code={StatesSource}>
+        <StatesTabs />
       </DemoBox>
 
       <DemoBox
-        title="Disabled & Loading"
-        description="Tabs with a disabled and a loading tab."
-        code={`<Tabs items={[
-  { key: '1', label: 'Tab 1', children: <p>Content</p> },
-  { key: '2', label: 'Loading', children: <p>...</p>, loading: true },
-  { key: '3', label: 'Disabled', children: <p>Nope</p>, disabled: true },
-]} />`}
+        title="Tokens override"
+        description="Scoped --sg-color-primary re-skins the underline + active label."
+        code={TokensOverrideSource}
       >
-        <div style={{ width: '100%' }}>
-          <Tabs
-            items={[
-              { key: '1', label: 'Tab 1', children: <p>Content of Tab 1</p> },
-              { key: '2', label: 'Loading', children: <p>Loading content...</p>, loading: true },
-              { key: '3', label: 'Disabled', children: <p>Nope</p>, disabled: true },
-            ]}
-          />
-        </div>
+        <TokensOverrideTabs />
       </DemoBox>
 
-      <DemoBox
-        title="Sizes"
-        description="Three sizes for different UI densities."
-        code={`<Tabs size="small" items={...} />
-<Tabs size="large" items={...} />`}
-        vertical
-      >
-        <div style={{ width: '100%' }}>
-          <Tabs
-            size="small"
-            items={[
-              { key: '1', label: 'Small', children: <p>Small content</p> },
-              { key: '2', label: 'Second', children: <p>Second</p> },
-            ]}
-          />
-        </div>
-        <div style={{ width: '100%' }}>
-          <Tabs
-            size="large"
-            items={[
-              { key: '1', label: 'Large', children: <p>Large content</p> },
-              { key: '2', label: 'Second', children: <p>Second</p> },
-            ]}
-          />
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="Scoped brand"
-        description="Active tab indicator follows --sg-color-primary."
-        code={`<div style={{ ['--sg-color-primary' as any]: '#f59e0b' }}>
-  <Tabs items={...} />
-</div>`}
-      >
-        <div
-          style={{
-            width: '100%',
-            ['--sg-color-primary' as never]: '#f59e0b',
-          }}
-        >
-          <Tabs
-            items={[
-              { key: '1', label: 'Amber', children: <p>Amber theme</p> },
-              { key: '2', label: 'Second', children: <p>Follows tokens</p> },
-              { key: '3', label: 'Third', children: <p>No prop change needed</p> },
-            ]}
-          />
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="Loading & disabled tabs"
-        description="Individual items can be disabled or show a loading spinner."
-        code={`<Tabs items={[
-  { key: '1', label: 'Ready', children: 'Content' },
-  { key: '2', label: 'Loading…', loading: true, children: '…' },
-  { key: '3', label: 'Disabled', disabled: true, children: '…' },
-]} />`}
-      >
-        <div style={{ width: '100%' }}>
-          <Tabs
-            items={[
-              { key: '1', label: 'Ready', children: <p>Ready content</p> },
-              { key: '2', label: 'Loading', loading: true, children: <p>Loading</p> },
-              { key: '3', label: 'Disabled', disabled: true, children: <p>Disabled</p> },
-            ]}
-          />
-        </div>
-      </DemoBox>
-
-      <PropsTable data={tabsProps} />
+      <PropsTable title="Tabs API" data={tabsProps} />
+      <PropsTable title="TabItem" data={tabItemProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Tabs is almost entirely driven by --sg-color-primary (the underline) and --sg-color-text-* (labels)."
+        data={tabsCssVars}
+      />
     </ComponentDoc>
   )
 }

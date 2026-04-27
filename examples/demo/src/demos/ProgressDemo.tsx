@@ -1,122 +1,138 @@
-import { Progress, Button } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
-import { useState } from 'react'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { LineProgress } from './progress/Line.demo'
+import LineSource from './progress/Line.demo?raw'
+import { CircleProgress } from './progress/Circle.demo'
+import CircleSource from './progress/Circle.demo?raw'
+import { DynamicProgress } from './progress/Dynamic.demo'
+import DynamicSource from './progress/Dynamic.demo?raw'
+import { ActiveProgress } from './progress/Active.demo'
+import ActiveSource from './progress/Active.demo?raw'
+import { CustomColorProgress } from './progress/CustomColor.demo'
+import CustomColorSource from './progress/CustomColor.demo?raw'
+import { SizesProgress } from './progress/Sizes.demo'
+import SizesSource from './progress/Sizes.demo?raw'
+import { NoInfoProgress } from './progress/NoInfo.demo'
+import NoInfoSource from './progress/NoInfo.demo?raw'
+import { TokensOverrideProgress } from './progress/TokensOverride.demo'
+import TokensOverrideSource from './progress/TokensOverride.demo?raw'
+import { UnstyledProgress } from './progress/Unstyled.demo'
+import UnstyledSource from './progress/Unstyled.demo?raw'
 
 const progressProps: PropDef[] = [
-  { name: 'percent', description: 'Completion percentage', type: 'number' },
-  { name: 'type', description: 'Type of progress', type: "'line' | 'circle'", default: "'line'" },
-  { name: 'status', description: 'Status of the progress', type: "'normal' | 'success' | 'error' | 'active'", default: "'normal'" },
-  { name: 'showInfo', description: 'Whether to display the percentage text', type: 'boolean', default: 'true' },
-  { name: 'strokeWidth', description: 'Width of the progress bar stroke', type: 'number' },
-  { name: 'strokeColor', description: 'Color of the progress bar', type: 'string' },
-  { name: 'width', description: 'Width of the circular progress', type: 'number', default: '120' },
-  { name: 'size', description: 'Size of the progress', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+  { name: 'percent', description: 'Completion value from 0–100 (clamped)', type: 'number', required: true },
+  { name: 'type', description: 'Horizontal bar vs circular ring', type: "'line' | 'circle'", default: "'line'" },
+  { name: 'status', description: 'Visual state — `normal` auto-flips to `success` at 100%', type: "'normal' | 'success' | 'error' | 'active'", default: "'normal'" },
+  { name: 'showInfo', description: 'Render the percentage label', type: 'boolean', default: 'true' },
+  { name: 'strokeWidth', description: 'Bar height (line) or ring thickness (circle), in px', type: 'number' },
+  { name: 'strokeColor', description: 'Custom fill colour that overrides the status colour', type: 'string' },
+  { name: 'width', description: 'SVG outer size for `type="circle"`', type: 'number', default: '120' },
+  { name: 'size', description: 'Picks up size from ConfigProvider; `small` thins the line bar to 6px', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+  { name: 'className', description: 'Wrapper className', type: 'string' },
+  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
+  { name: 'unstyled', description: 'Drop every sg-progress-* class (headless mode)', type: 'boolean', default: 'false' },
+]
+
+const progressCssVars: CssVarDef[] = [
+  { name: 'sg-color-primary', default: '#1677ff', description: 'Filled bar / ring colour for `status="normal" | "active"`' },
+  { name: 'sg-color-success', default: '#52c41a', description: 'Filled colour + label tint for `status="success"`' },
+  { name: 'sg-color-error', default: '#ff4d4f', description: 'Filled colour + label tint for `status="error"`' },
+  { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: 'Line track background + circle trail stroke' },
+  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Ring centre label colour' },
+  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: 'Line percentage label colour' },
+  { name: 'sg-font-size-sm', default: '12px', description: 'Line percentage label size' },
+  { name: 'sg-font-size-xl', default: '20px', description: 'Ring percentage label size' },
+  { name: 'sg-padding-sm', default: '8px', description: 'Gap between bar and trailing label' },
+  { name: 'sg-transition-duration', default: '180ms', description: 'Fill width / stroke-dashoffset transition' },
+  { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: 'Shared easing' },
 ]
 
 export function ProgressDemo() {
-  const [percent, setPercent] = useState(30)
-
-  const increase = () => setPercent((p) => Math.min(100, p + 10))
-  const decrease = () => setPercent((p) => Math.max(0, p - 10))
-
   return (
     <ComponentDoc
       title="Progress"
-      description="Display the current progress of an operation flow."
+      description="Line or circular progress indicator with success/error/active states and a built-in shimmer animation for long-running operations."
       whenToUse={[
-        'When an operation takes a long time to complete.',
-        'When you need to display the completion percentage of an operation.',
+        'Uploads, file processing, syncs — any task with a measurable percentage.',
+        'Dashboards that track KPI completion against a target.',
+        'Wizards / onboarding flows that show how far the user has progressed.',
       ]}
     >
-      <DemoBox
-        title="Line"
-        description="A standard progress bar."
-        code={`import { Progress } from '@skygraph/react'
-
-<Progress percent={30} />
-<Progress percent={50} status="active" />
-<Progress percent={70} status="error" />
-<Progress percent={100} />`}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 400 }}>
-          <Progress percent={30} />
-          <Progress percent={50} status="active" />
-          <Progress percent={70} status="error" />
-          <Progress percent={100} />
-        </div>
+      <DemoBox title="Line" description="Standard horizontal bar with status colours." code={LineSource}>
+        <LineProgress />
       </DemoBox>
 
       <DemoBox
         title="Circle"
-        description="A circular progress bar."
-        code={`<Progress type="circle" percent={75} />
-<Progress type="circle" percent={100} />
-<Progress type="circle" percent={70} status="error" />`}
+        description="SVG ring for compact dashboards and cards."
+        code={CircleSource}
       >
-        <div style={{ display: 'flex', gap: 24 }}>
-          <Progress type="circle" percent={75} />
-          <Progress type="circle" percent={100} />
-          <Progress type="circle" percent={70} status="error" />
-        </div>
+        <CircleProgress />
+      </DemoBox>
+
+      <DemoBox
+        title="Active shimmer"
+        description={'`status="active"` sweeps a highlight across the fill.'}
+        code={ActiveSource}
+      >
+        <ActiveProgress />
       </DemoBox>
 
       <DemoBox
         title="Dynamic"
-        description="A dynamic progress bar."
-        code={`const [percent, setPercent] = useState(30)
-
-<Progress percent={percent} />
-<Button onClick={() => setPercent(p => Math.min(100, p + 10))}>+</Button>
-<Button onClick={() => setPercent(p => Math.max(0, p - 10))}>-</Button>`}
+        description="Drive `percent` from React state; clamping is built-in."
+        code={DynamicSource}
       >
-        <div style={{ maxWidth: 400 }}>
-          <Progress percent={percent} />
-          <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
-            <Button size="small" onClick={decrease}>−</Button>
-            <Button size="small" onClick={increase}>+</Button>
-          </div>
-        </div>
+        <DynamicProgress />
       </DemoBox>
 
       <DemoBox
-        title="Custom Color"
-        description="Custom stroke color."
-        code={`<Progress percent={50} strokeColor="#722ed1" />
-<Progress type="circle" percent={75} strokeColor="#eb2f96" />`}
+        title="Custom color"
+        description="`strokeColor` overrides the status-based theme colour."
+        code={CustomColorSource}
       >
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-          <div style={{ flex: 1, maxWidth: 300 }}>
-            <Progress percent={50} strokeColor="#722ed1" />
-          </div>
-          <Progress type="circle" percent={75} strokeColor="#eb2f96" />
-        </div>
+        <CustomColorProgress />
       </DemoBox>
 
       <DemoBox
-        title="Scoped brand"
-        description="Progress picks up --sg-color-primary for active/normal states — no props needed."
-        code={`<div style={{ ['--sg-color-primary' as any]: '#059669' }}>
-  <Progress percent={45} />
-  <Progress type="circle" percent={65} />
-</div>`}
+        title="Sizes & strokeWidth"
+        description={'`size="small"` thins the bar; `strokeWidth` wins if you need an exact pixel value.'}
+        code={SizesSource}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 24,
-            ['--sg-color-primary' as never]: '#059669',
-          }}
-        >
-          <div style={{ flex: 1, maxWidth: 320 }}>
-            <Progress percent={45} />
-          </div>
-          <Progress type="circle" percent={65} />
-        </div>
+        <SizesProgress />
       </DemoBox>
 
-      <PropsTable data={progressProps} />
+      <DemoBox
+        title="Hide label"
+        description="`showInfo={false}` drops the trailing / inner percentage text."
+        code={NoInfoSource}
+      >
+        <NoInfoProgress />
+      </DemoBox>
+
+      <DemoBox
+        title="Tokens override"
+        description="Scope the theme primitives to rebrand every bar inside a container."
+        code={TokensOverrideSource}
+      >
+        <TokensOverrideProgress />
+      </DemoBox>
+
+      <DemoBox
+        title="Unstyled"
+        description="Keep clamping + aria, paint the track and fill yourself."
+        code={UnstyledSource}
+      >
+        <UnstyledProgress />
+      </DemoBox>
+
+      <PropsTable title="Progress API" data={progressProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Progress has no component-private tokens. The fill follows `--sg-color-primary` / `--sg-color-success` / `--sg-color-error` depending on `status`; the track is `--sg-color-bg-hover`. Override those globals on a wrapper (or on `:root`) to rebrand."
+        data={progressCssVars}
+      />
     </ComponentDoc>
   )
 }

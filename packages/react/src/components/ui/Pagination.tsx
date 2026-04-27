@@ -51,6 +51,10 @@ export function Pagination({
 }: PaginationProps) {
   const config = useConfig()
   const disabled = disabledProp ?? config.disabled ?? false
+  const locale = config.locale?.pagination
+  const totalPrefix = locale?.totalPrefix ?? 'Total'
+  const itemsPerPageLabel = locale?.itemsPerPage ?? '/ page'
+  const jumpLabel = locale?.jump ?? 'Go to'
   const [jumpValue, setJumpValue] = useState('')
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
@@ -82,7 +86,7 @@ export function Pagination({
         </span>
       )
     }
-    return <span className="sg-pagination-total">Total {total}</span>
+    return <span className="sg-pagination-total">{totalPrefix} {total}</span>
   }
 
   const renderSizeChanger = () => {
@@ -96,7 +100,7 @@ export function Pagination({
       >
         {pageSizeOptions.map((opt) => (
           <option key={opt} value={opt}>
-            {opt} / page
+            {opt} {itemsPerPageLabel}
           </option>
         ))}
       </select>
@@ -107,7 +111,7 @@ export function Pagination({
     if (!showQuickJumper) return null
     return (
       <span className="sg-pagination-quick-jumper">
-        Go to
+        {jumpLabel}
         <input
           type="text"
           value={jumpValue}

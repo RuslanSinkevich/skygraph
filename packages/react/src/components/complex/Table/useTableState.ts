@@ -56,6 +56,7 @@ export function useTableState(props: TableProps) {
     onGroupExpandChange,
     pinnedRows: pinnedRowsConfig,
     keyboardNavigation,
+    scroll,
     footer: _footer,
     showRowNumber: _showRowNumber,
     fullscreenable: _fullscreenable,
@@ -67,6 +68,10 @@ export function useTableState(props: TableProps) {
     columnAutoResize: _columnAutoResize,
     ...tableOptions
   } = props
+
+  /** When `scroll.x` is set, the author opts into hard pixel columns with a
+   * horizontal scrollbar. Otherwise the table flexes to fit its container. */
+  const hasScrollX = scroll?.x != null
 
   const { visibleRows, tableState, setSort, setSorts, clearSort, setPage, setFilterFn } =
     useTable(tableOptions)
@@ -89,6 +94,8 @@ export function useTableState(props: TableProps) {
     for (const c of leafColumns) w[c.key] = c.width ?? DEFAULT_COL_WIDTH
     return w
   })
+  /** Columns the user has drag/auto-resized. Pinned to exact px — wins over auto-layout. */
+  const [userResizedCols, setUserResizedCols] = useState<Set<string>>(() => new Set())
 
   const [colOrder, setColOrder] = useState<string[]>(() => leafColumns.map((c) => c.key))
   const [dragCol, setDragCol] = useState<string | null>(null)
@@ -418,6 +425,9 @@ export function useTableState(props: TableProps) {
         ...prev,
         [resizeRef.current!.col]: Math.max(min, resizeRef.current!.startW + diff),
       }))
+      setUserResizedCols((prev) =>
+        prev.has(resizeRef.current!.col) ? prev : new Set(prev).add(resizeRef.current!.col),
+      )
     }
     const onUp = () => {
       resizeRef.current = null
@@ -585,6 +595,7 @@ export function useTableState(props: TableProps) {
       const min = headerCol?.minWidth ?? MIN_COL_WIDTH
       const optimal = Math.max(min, Math.max(maxLen, headerLen) * charWidth + padding)
       setColWidths((prev) => ({ ...prev, [colKey]: optimal }))
+      setUserResizedCols((prev) => (prev.has(colKey) ? prev : new Set(prev).add(colKey)))
     },
     [visibleRows, leafColumns],
   )
@@ -637,9 +648,36 @@ export function useTableState(props: TableProps) {
   if (rowSelection) extraBefore.push(SELECTION_COL_WIDTH)
   if (expandable) extraBefore.push(SELECTION_COL_WIDTH)
 
-  const colTemplates = columns.map(
-    (c) => `${colWidths[c.key] ?? c.width ?? DEFAULT_COL_WIDTH}px`,
-  )
+  // Grid-template rules:
+  //
+  // Mode A — `scroll.x` is SET (author wants a horizontal scrollbar):
+  //   • Every width is a hard pixel — columns never shrink. Sticky offsets
+  //     for fixed columns stay stable, table punches out of the container
+  //     and the scroll handles overflow.
+  //
+  // Mode B — `scroll.x` is NOT set (fluid layout):
+  //   • No `width` / not resized → `minmax(MIN, 1fr)` — flex column.
+  //   • Has `width` → `minmax(MIN, ${w}fr)` — may shrink as low as
+  //     `MIN_COL_WIDTH` and grow proportionally to its declared width,
+  //     so the whole table always fits the container without overflow.
+  //   • Fixed/resized columns keep their exact px (sticky offsets / user
+  //     resize must not be disturbed by auto-layout).
+  const colTemplates = columns.map((c) => {
+    const resized = userResizedCols.has(c.key)
+    const w = colWidths[c.key] ?? c.width ?? DEFAULT_COL_WIDTH
+
+    if (hasScrollX) {
+      return c.width == null && !resized ? `${DEFAULT_COL_WIDTH}px` : `${w}px`
+    }
+
+    if (c.fixed || resized) {
+      return `${w}px`
+    }
+    if (c.width == null) {
+      return `minmax(${MIN_COL_WIDTH}px, 1fr)`
+    }
+    return `minmax(${MIN_COL_WIDTH}px, ${w}fr)`
+  })
   const gridTemplate = [...extraBefore, ...colTemplates].join(' ')
   const totalCols = extraBefore.length + columns.length
 

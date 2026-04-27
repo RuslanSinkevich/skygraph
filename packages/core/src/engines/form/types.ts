@@ -1,6 +1,29 @@
 export type FieldStatus = 'success' | 'warning' | 'error' | 'validating' | undefined
 
-export interface FieldMeta {
+/**
+ * Extension slot for FieldMeta.
+ *
+ * Third-party plugins that need to attach typed metadata to fields MUST do so
+ * via TypeScript declaration merging against this interface. Do NOT edit the
+ * built-in fields of `FieldMeta` — that is a breaking change.
+ *
+ * Example (in a plugin's `.d.ts` or module file):
+ *
+ * ```ts
+ * declare module '@skygraph/core' {
+ *   interface FieldMetaExtensions {
+ *     submittedAt?: number
+ *     serverValidationId?: string
+ *   }
+ * }
+ * ```
+ *
+ * Values are stored in the `extra` bag at runtime and surface as strongly
+ * typed fields on `FieldMeta` through this interface.
+ */
+export interface FieldMetaExtensions {}
+
+export interface FieldMeta extends FieldMetaExtensions {
   touched: boolean
   dirty: boolean
   errors: string[]
@@ -9,6 +32,11 @@ export interface FieldMeta {
   status: FieldStatus
   /** @deprecated Use errors[0] ?? null */
   error: string | null
+  /**
+   * Untyped metadata bag for runtime-level extension. Prefer declaration
+   * merging on `FieldMetaExtensions` for typed access.
+   */
+  extra?: Record<string, unknown>
 }
 
 export interface FormState {

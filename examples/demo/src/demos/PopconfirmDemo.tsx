@@ -1,115 +1,121 @@
-import { Popconfirm, Button } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicPopconfirm } from './popconfirm/Basic.demo'
+import BasicSource from './popconfirm/Basic.demo?raw'
+import { WithDescriptionPopconfirm } from './popconfirm/WithDescription.demo'
+import WithDescriptionSource from './popconfirm/WithDescription.demo?raw'
+import { PlacementPopconfirm } from './popconfirm/Placement.demo'
+import PlacementSource from './popconfirm/Placement.demo?raw'
+import { DisabledPopconfirm } from './popconfirm/Disabled.demo'
+import DisabledSource from './popconfirm/Disabled.demo?raw'
+import { InTablePopconfirm } from './popconfirm/InTable.demo'
+import InTableSource from './popconfirm/InTable.demo?raw'
+import { TokensOverridePopconfirm } from './popconfirm/TokensOverride.demo'
+import TokensOverrideSource from './popconfirm/TokensOverride.demo?raw'
+import { UnstyledPopconfirm } from './popconfirm/Unstyled.demo'
+import UnstyledSource from './popconfirm/Unstyled.demo?raw'
 
 const popconfirmProps: PropDef[] = [
-  { name: 'title', description: 'The title of the confirmation box', type: 'ReactNode' },
-  { name: 'description', description: 'Additional description', type: 'ReactNode' },
-  { name: 'onConfirm', description: 'Callback when confirm button is clicked', type: '() => void' },
-  { name: 'onCancel', description: 'Callback when cancel button is clicked', type: '() => void' },
-  { name: 'okText', description: 'Text of the Confirm button', type: 'string', default: "'Yes'" },
-  { name: 'cancelText', description: 'Text of the Cancel button', type: 'string', default: "'No'" },
-  { name: 'placement', description: 'Placement of the popconfirm', type: "'top' | 'bottom' | 'left' | 'right'", default: "'top'" },
-  { name: 'disabled', description: 'Whether the popconfirm is disabled', type: 'boolean', default: 'false' },
+  { name: 'title', description: 'Main confirmation question — shown next to the ⚠ icon', type: 'ReactNode' },
+  { name: 'description', description: 'Optional second line below the title', type: 'ReactNode' },
+  { name: 'onConfirm', description: 'Fires when the OK button is pressed', type: '() => void' },
+  { name: 'onCancel', description: 'Fires when the Cancel button is pressed', type: '() => void' },
+  { name: 'okText', description: 'Label of the primary button', type: 'string', default: "'Yes'" },
+  { name: 'cancelText', description: 'Label of the secondary button', type: 'string', default: "'No'" },
+  { name: 'placement', description: 'Side of the trigger the bubble opens on', type: "'top' | 'bottom' | 'left' | 'right'", default: "'top'" },
+  { name: 'disabled', description: 'Skip the confirm entirely; trigger fires its own onClick', type: 'boolean', default: 'false' },
+  { name: 'children', description: 'Single element that opens the bubble on click', type: 'ReactElement' },
+  { name: 'className', description: 'Wrapper className', type: 'string' },
+  { name: 'unstyled', description: 'Drop every sg-popconfirm-* class (headless mode)', type: 'boolean', default: 'false' },
+]
+
+const popconfirmCssVars: CssVarDef[] = [
+  { name: 'sg-color-bg-elevated', default: '#ffffff', description: 'Bubble background + arrow fill' },
+  { name: 'sg-color-border-secondary', default: 'rgba(5, 5, 5, 0.04)', description: 'Bubble border + arrow border' },
+  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Title colour' },
+  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: 'Description colour' },
+  { name: 'sg-color-warning', default: '#faad14', description: 'Warning icon colour next to the title' },
+  { name: 'sg-color-primary', default: '#1677ff', description: 'Primary OK button — swap to restyle the confirm action' },
+  { name: 'sg-font-size', default: '14px', description: 'Title font size' },
+  { name: 'sg-font-size-sm', default: '12px', description: 'Description font size' },
+  { name: 'sg-font-size-lg', default: '16px', description: 'Warning icon size' },
+  { name: 'sg-padding-sm', default: '8px', description: 'Icon ↔ title gap + button gap' },
+  { name: 'sg-padding-md', default: '12px', description: 'Bubble padding' },
+  { name: 'sg-margin-xs', default: '4px', description: 'Title ↔ description gap' },
+  { name: 'sg-border-radius-lg', default: '8px', description: 'Bubble corner radius' },
+  { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0,0,0,0.08)', description: 'Bubble elevation' },
 ]
 
 export function PopconfirmDemo() {
   return (
     <ComponentDoc
       title="Popconfirm"
-      description="A simple and compact confirmation dialog of an action."
+      description="Compact confirm dialog anchored to a trigger. Lighter than Modal, more visible than a Tooltip, locked with a focus trap while open."
       whenToUse={[
-        'When a simple confirmation is needed before an action, like deleting an item.',
-        'Compared with Modal.confirm, Popconfirm is lighter and more contextual.',
+        'Row-level destructive actions in tables / lists (delete, archive).',
+        'Toolbar actions that need a last-chance confirmation but not a modal.',
+        'Anywhere you want "Are you sure?" without breaking the flow of the page.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="The basic example."
-        code={`import { Popconfirm, Button } from '@skygraph/react'
-
-<Popconfirm
-  title="Are you sure?"
-  onConfirm={() => console.log('Confirmed')}
->
-  <Button>Delete</Button>
-</Popconfirm>`}
-      >
-        <Popconfirm
-          title="Are you sure you want to delete this?"
-          onConfirm={() => console.log('Confirmed')}
-          onCancel={() => console.log('Cancelled')}
-        >
-          <Button type="primary" style={{ background: 'var(--sg-color-error)', borderColor: 'var(--sg-color-error)' }}>Delete</Button>
-        </Popconfirm>
+      <DemoBox title="Basic" description="Confirm / cancel callbacks and an inline status line." code={BasicSource}>
+        <BasicPopconfirm />
       </DemoBox>
 
       <DemoBox
-        title="With Description"
-        description="Adding a description for more context."
-        code={`<Popconfirm
-  title="Delete the task"
-  description="This action cannot be undone."
-  okText="Delete"
-  cancelText="Cancel"
->
-  <Button danger>Delete</Button>
-</Popconfirm>`}
+        title="Title + description"
+        description="Second line under the title, beside the warning icon."
+        code={WithDescriptionSource}
       >
-        <Popconfirm
-          title="Delete the task"
-          description="This action cannot be undone."
-          okText="Delete"
-          cancelText="Cancel"
-        >
-          <Button type="primary" style={{ background: 'var(--sg-color-error)', borderColor: 'var(--sg-color-error)' }}>Delete Task</Button>
-        </Popconfirm>
+        <WithDescriptionPopconfirm />
       </DemoBox>
 
       <DemoBox
         title="Placement"
-        description="Four placements."
-        code={`<Popconfirm title="Sure?" placement="bottom">
-  <Button>Bottom</Button>
-</Popconfirm>`}
+        description="Four sides, no auto-flip."
+        code={PlacementSource}
       >
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Popconfirm title="Sure?" placement="top"><Button>Top</Button></Popconfirm>
-          <Popconfirm title="Sure?" placement="bottom"><Button>Bottom</Button></Popconfirm>
-          <Popconfirm title="Sure?" placement="left"><Button>Left</Button></Popconfirm>
-          <Popconfirm title="Sure?" placement="right"><Button>Right</Button></Popconfirm>
-        </div>
+        <PlacementPopconfirm />
       </DemoBox>
 
       <DemoBox
-        title="Disabled"
-        description="When disabled, Popconfirm becomes a no-op and the trigger fires as usual."
-        code={`<Popconfirm disabled title="Never shown">
-  <Button>Disabled</Button>
-</Popconfirm>`}
+        title="Disabled = pass-through"
+        description="With disabled, the trigger's own onClick fires without a bubble."
+        code={DisabledSource}
       >
-        <Popconfirm disabled title="Never shown">
-          <Button>Disabled popconfirm</Button>
-        </Popconfirm>
+        <DisabledPopconfirm />
       </DemoBox>
 
       <DemoBox
-        title="Scoped brand"
-        description="OK button follows --sg-color-primary. Override per scope to match destructive theme."
-        code={`<div style={{ ['--sg-color-primary' as any]: '#ef4444' }}>
-  <Popconfirm title="Delete row?" okText="Delete">
-    <Button>Delete</Button>
-  </Popconfirm>
-</div>`}
+        title="Row-level delete"
+        description="Canonical table usage — placement='left' keeps the bubble inside the body."
+        code={InTableSource}
       >
-        <div style={{ ['--sg-color-primary' as never]: '#ef4444' }}>
-          <Popconfirm title="Delete row?" okText="Delete">
-            <Button type="primary">Delete</Button>
-          </Popconfirm>
-        </div>
+        <InTablePopconfirm />
       </DemoBox>
 
-      <PropsTable data={popconfirmProps} />
+      <DemoBox
+        title="Tokens override"
+        description="Retint every surface with --sg-color-bg-elevated, --sg-color-warning, and --sg-color-primary."
+        code={TokensOverrideSource}
+      >
+        <TokensOverridePopconfirm />
+      </DemoBox>
+
+      <DemoBox
+        title="Unstyled"
+        description="Behaviour + focus trap + ARIA; painting is yours."
+        code={UnstyledSource}
+      >
+        <UnstyledPopconfirm />
+      </DemoBox>
+
+      <PropsTable title="Popconfirm API" data={popconfirmProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Popconfirm has no dedicated tokens — it reuses the surface + text palette. Swap `--sg-color-warning` to change the icon, `--sg-color-primary` to rebrand the OK button. For pure cosmetic changes (shadow, radius), scope the `*-lg` globals."
+        data={popconfirmCssVars}
+      />
     </ComponentDoc>
   )
 }

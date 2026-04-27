@@ -8,7 +8,8 @@ import type {
   TreeState,
 } from './types'
 
-const TREE_PREFIX = '$tree.'
+import { TREE_PREFIX } from '../namespaces'
+
 let treeCounter = 0
 
 interface InternalNode {

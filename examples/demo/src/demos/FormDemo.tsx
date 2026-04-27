@@ -1,474 +1,325 @@
-import { useState } from 'react'
-import {
-  Form,
-  Field,
-  FormList,
-  SubmitButton,
-  Button,
-  useFormContext,
-  useWatch,
-  Select,
-  Checkbox,
-  RadioGroup,
-  Switch,
-  InputNumber,
-  DatePicker,
-  TimePicker,
-  AutoComplete,
-  Slider,
-  Rate,
-  Upload,
-} from '@skygraph/react'
-import type { UploadFile } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicForm } from './form/BasicForm.demo'
+import BasicFormSource from './form/BasicForm.demo?raw'
+import { ValidationRulesForm } from './form/ValidationRules.demo'
+import ValidationRulesSource from './form/ValidationRules.demo?raw'
+import { DependentFieldsForm } from './form/DependentFields.demo'
+import DependentFieldsSource from './form/DependentFields.demo?raw'
+import { AsyncValidationForm } from './form/AsyncValidation.demo'
+import AsyncValidationSource from './form/AsyncValidation.demo?raw'
+import { LayoutVerticalForm } from './form/LayoutVertical.demo'
+import LayoutVerticalSource from './form/LayoutVertical.demo?raw'
+import { LayoutHorizontalForm } from './form/LayoutHorizontal.demo'
+import LayoutHorizontalSource from './form/LayoutHorizontal.demo?raw'
+import { LayoutInlineForm } from './form/LayoutInline.demo'
+import LayoutInlineSource from './form/LayoutInline.demo?raw'
+import { RequiredMarkForm } from './form/RequiredMark.demo'
+import RequiredMarkSource from './form/RequiredMark.demo?raw'
+import { FormSizes } from './form/FormSizes.demo'
+import FormSizesSource from './form/FormSizes.demo?raw'
+import { DisabledForm } from './form/DisabledForm.demo'
+import DisabledFormSource from './form/DisabledForm.demo?raw'
+import { FormControlsShowcase } from './form/FormControls.demo'
+import FormControlsSource from './form/FormControls.demo?raw'
+import { FormListDynamic } from './form/FormListDynamic.demo'
+import FormListDynamicSource from './form/FormListDynamic.demo?raw'
+import { NestedFieldsForm } from './form/NestedFields.demo'
+import NestedFieldsSource from './form/NestedFields.demo?raw'
+import { ProgrammaticControlForm } from './form/ProgrammaticControl.demo'
+import ProgrammaticControlSource from './form/ProgrammaticControl.demo?raw'
+import { LiveWatchForm } from './form/LiveWatch.demo'
+import LiveWatchSource from './form/LiveWatch.demo?raw'
+import { FieldStatusForm } from './form/FieldStatus.demo'
+import FieldStatusSource from './form/FieldStatus.demo?raw'
+import { LoginCardForm } from './form/LoginCard.demo'
+import LoginCardSource from './form/LoginCard.demo?raw'
+import { SearchBarForm } from './form/SearchBar.demo'
+import SearchBarSource from './form/SearchBar.demo?raw'
+import { ProfileSettingsForm } from './form/ProfileSettings.demo'
+import ProfileSettingsSource from './form/ProfileSettings.demo?raw'
+import { SchemaFormBasic } from './form/SchemaFormBasic.demo'
+import SchemaFormBasicSource from './form/SchemaFormBasic.demo?raw'
+import { SchemaFormLayout } from './form/SchemaFormLayout.demo'
+import SchemaFormLayoutSource from './form/SchemaFormLayout.demo?raw'
 
 const formProps: PropDef[] = [
-  { name: 'layout', description: 'Form layout', type: "'horizontal' | 'vertical' | 'inline'", default: "'horizontal'" },
+  { name: 'layout', description: 'Form layout', type: "'horizontal' | 'vertical' | 'inline'", default: "'vertical'" },
   { name: 'defaultValues', description: 'Initial form values', type: 'Record<string, any>' },
-  { name: 'onSubmit', description: 'Submit handler', type: '(values) => void | Promise' },
+  { name: 'onSubmit', description: 'Submit handler', type: '(values) => void | Promise<void>' },
   { name: 'onSubmitInvalid', description: 'Called if validation fails on submit', type: '(errors) => void' },
   { name: 'onValuesChange', description: 'Callback when any value changes', type: '(changed, all) => void' },
   { name: 'validateTrigger', description: 'When to validate', type: "'onChange' | 'onBlur' | 'onSubmit'", default: "'onChange'" },
-  { name: 'scrollToFirstError', description: 'Scroll to first error on submit', type: 'boolean', default: 'false' },
+  { name: 'scrollToFirstError', description: 'Scroll to first error on submit', type: 'boolean | ScrollIntoViewOptions', default: 'false' },
   { name: 'preserve', description: 'Preserve values of unmounted fields', type: 'boolean', default: 'true' },
   { name: 'disabled', description: 'Disable all form controls', type: 'boolean', default: 'false' },
   { name: 'size', description: 'Form controls size', type: "'small' | 'middle' | 'large'" },
+  { name: 'requiredMark', description: 'How required fields are marked', type: "boolean | 'optional'", default: 'true' },
+  { name: 'colon', description: 'Append colon after labels', type: 'boolean', default: 'true' },
+  { name: 'labelCol', description: 'Label grid (horizontal layout)', type: '{ span?: number; offset?: number }' },
+  { name: 'wrapperCol', description: 'Control grid (horizontal layout)', type: '{ span?: number; offset?: number }' },
+  { name: 'labelAlign', description: 'Label alignment (horizontal layout)', type: "'left' | 'right'" },
+  { name: 'feedbackIcons', description: 'Custom icons per validation state', type: '{ success?, warning?, error?, validating? }' },
+  { name: 'form', description: 'External useForm instance (for imperative control)', type: 'UseFormReturn' },
 ]
 
 const fieldProps: PropDef[] = [
   { name: 'name', description: 'Field name (path in form values)', type: 'string' },
   { name: 'label', description: 'Field label', type: 'string' },
+  { name: 'required', description: 'Shorthand for `{ required: true }` rule', type: 'boolean' },
   { name: 'rules', description: 'Validation rules array', type: 'Rule[]' },
-  { name: 'type', description: 'Input type', type: "'text' | 'password' | 'email' | 'textarea' | ..." },
-  { name: 'placeholder', description: 'Placeholder text', type: 'string' },
-  { name: 'tooltip', description: 'Help tooltip next to label', type: 'string' },
-  { name: 'help', description: 'Help text below the field', type: 'string' },
-  { name: 'extra', description: 'Extra text below the field', type: 'string' },
+  { name: 'warningRules', description: 'Rules that produce warnings (non-blocking)', type: 'Rule[]' },
   { name: 'dependencies', description: 'Fields to watch for re-validation', type: 'string[]' },
-  { name: 'children', description: 'Render prop for custom controls', type: '(field) => ReactNode' },
+  { name: 'type', description: 'Built-in input type when no children are passed', type: "'text' | 'email' | 'password' | 'number' | 'textarea'" },
+  { name: 'placeholder', description: 'Placeholder text', type: 'string' },
+  { name: 'disabled', description: 'Disables this field (overrides form-level)', type: 'boolean' },
+  { name: 'hidden', description: 'Hides the field but keeps its value registered', type: 'boolean' },
+  { name: 'tooltip', description: 'Help tooltip next to label', type: 'string' },
+  { name: 'help', description: 'Help text below the control', type: 'ReactNode' },
+  { name: 'extra', description: 'Extra supplementary content below', type: 'ReactNode' },
+  { name: 'validateStatus', description: 'Manual validation state badge', type: "'success' | 'warning' | 'error' | 'validating'" },
+  { name: 'hasFeedback', description: 'Show status icon inside the control', type: 'boolean' },
+  { name: 'normalize', description: 'Maps raw change values before committing', type: '(value, prevValue) => unknown' },
+  { name: 'valuePropName', description: 'Prop name holding the value on child control', type: 'string', default: "'value'" },
+  { name: 'validateFirst', description: 'Stop after the first failing rule', type: 'boolean', default: 'false' },
+  { name: 'preserve', description: 'Keep value on unregister (overrides form)', type: 'boolean' },
+  { name: 'labelCol', description: 'Overrides form labelCol for this field', type: '{ span?: number; offset?: number }' },
+  { name: 'wrapperCol', description: 'Overrides form wrapperCol for this field', type: '{ span?: number; offset?: number }' },
+  { name: 'children', description: 'Render prop for custom controls', type: '(field: UseFieldReturn) => ReactNode' },
 ]
 
 const formListProps: PropDef[] = [
   { name: 'name', description: 'Array field name in form values', type: 'string' },
-  { name: 'children', description: 'Render prop: (fields, operations) => ReactNode', type: 'Function' },
+  { name: 'initialValue', description: 'Seed value if path is empty on mount', type: 'unknown[]' },
+  { name: 'draggable', description: 'Provide dragProps on each row for HTML5 DnD', type: 'boolean', default: 'false' },
+  { name: 'children', description: '(fields, { add, remove, move, replace }, meta) => ReactNode', type: 'Function' },
 ]
 
-const roleOptions = [
-  { label: 'Developer', value: 'dev' },
-  { label: 'Designer', value: 'design' },
-  { label: 'Manager', value: 'manager' },
-  { label: 'QA Engineer', value: 'qa' },
+const schemaFormProps: PropDef[] = [
+  { name: 'schema', description: 'JSON Schema object or a Zod schema (`_def` present) — converted to JSON Schema internally', type: 'JSONSchema | ZodSchema' },
+  { name: 'onSubmit', description: 'Receives all values after a successful submit', type: '(values) => void | Promise<void>' },
+  { name: 'layout', description: 'Passed through to the inner Form', type: "'horizontal' | 'vertical' | 'inline'" },
+  { name: 'size', description: 'Controls size for all generated fields', type: "'small' | 'middle' | 'large'" },
+  { name: 'disabled', description: 'Disables every generated control + inner Form', type: 'boolean', default: 'false' },
+  { name: 'labelCol', description: '24-column span for labels (horizontal layout)', type: '{ span?: number; offset?: number }' },
+  { name: 'wrapperCol', description: '24-column span for controls (horizontal layout)', type: '{ span?: number; offset?: number }' },
+  { name: 'form', description: 'External `useForm()` instance (skip the internal one created from schema defaults)', type: 'UseFormReturn' },
+  { name: 'submitText', description: 'Label of the default submit button when `children` is omitted', type: 'string', default: "'Submit'" },
+  { name: 'children', description: 'Custom submit button / footer (replaces the default `<button type="submit">`)', type: 'ReactNode' },
 ]
 
-const skillOptions = [
-  { label: 'React', value: 'React' },
-  { label: 'TypeScript', value: 'TypeScript' },
-  { label: 'Node.js', value: 'Node.js' },
-  { label: 'Python', value: 'Python' },
+const formCssVars: CssVarDef[] = [
+  { name: 'sg-color-error', default: 'var(--sg-red-5)', description: 'Error text + border on invalid fields' },
+  { name: 'sg-color-error-bg', default: 'var(--sg-red-1)', description: 'Focus ring tint on invalid fields' },
+  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Label + input text color' },
+  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Help / extra hint text' },
+  { name: 'sg-font-size', default: '14px', description: 'Field text size' },
+  { name: 'sg-font-size-sm', default: '12px', description: 'Help / error message size' },
+  { name: 'sg-margin-xs', default: '4px', description: 'Gap between label and control' },
+  { name: 'sg-margin-md', default: '16px', description: 'Bottom spacing between fields' },
+  { name: 'sg-padding-md', default: '12px', description: 'Horizontal gap in horizontal layout' },
+  { name: 'sg-padding-sm', default: '8px', description: 'Inline-layout gap between controls' },
+  { name: 'sg-line-height', default: '1.5714', description: 'Label / help line height' },
+  { name: 'sg-input-border', default: 'var(--sg-color-border)', description: 'Overridden to --sg-color-error on invalid field (via Input tokens)' },
 ]
-
-function LiveState() {
-  const { core } = useFormContext()
-  const username = useWatch(core, 'username')
-  const email = useWatch(core, 'email')
-  const role = useWatch(core, 'role')
-  const experience = useWatch(core, 'experience')
-  const rating = useWatch(core, 'rating')
-  const newsletter = useWatch(core, 'newsletter')
-
-  const entries = [
-    ['username', username],
-    ['email', email],
-    ['role', role],
-    ['experience', experience],
-    ['rating', rating],
-    ['newsletter', newsletter],
-  ] as const
-
-  return (
-    <div style={{
-      padding: '10px 14px',
-      background: 'var(--sg-color-bg-secondary)',
-      borderRadius: 'var(--sg-border-radius)',
-      border: '1px solid var(--sg-color-border)',
-      fontSize: 12,
-      fontFamily: 'monospace',
-      color: 'var(--sg-color-text-secondary)',
-      marginBottom: 20,
-    }}>
-      <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--sg-color-text-primary)', fontFamily: 'inherit' }}>
-        useWatch — live values
-      </div>
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {entries.map(([key, val]) => (
-          <span key={key}>
-            <span style={{ color: 'var(--sg-color-primary)' }}>{key}</span>
-            {': '}
-            <span style={{ color: 'var(--sg-color-text-tertiary)' }}>
-              {val === '' ? '""' : JSON.stringify(val ?? null)}
-            </span>
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function FormActions() {
-  const { form } = useFormContext()
-  const [validationResult, setValidationResult] = useState<string | null>(null)
-
-  return (
-    <div style={{
-      display: 'flex', gap: 8, flexWrap: 'wrap',
-      padding: '12px 0',
-      borderTop: '1px solid var(--sg-color-border)',
-      borderBottom: '1px solid var(--sg-color-border)',
-      marginBottom: 20,
-    }}>
-      <Button type="default" onClick={() => { form.reset(); setValidationResult(null) }}>Reset</Button>
-      <Button type="default" onClick={() => {
-        form.setFieldsValue({
-          username: 'john_doe', email: 'john@example.com',
-          password: 'secret123', confirm: 'secret123',
-          bio: 'Full-stack developer.', age: 28,
-          role: 'dev', skill: 'TypeScript',
-          gender: 'male', newsletter: true, darkMode: true,
-          experience: 75, rating: 4,
-        })
-        setValidationResult(null)
-      }}>Fill Sample Data</Button>
-      <Button type="default" onClick={async () => {
-        const result = await form.validate()
-        if (result.valid) {
-          setValidationResult('All fields valid')
-        } else {
-          const count = Object.keys(result.errors).length
-          setValidationResult(`${count} error(s): ${Object.keys(result.errors).join(', ')}`)
-        }
-      }}>Validate All</Button>
-      {validationResult && (
-        <span style={{
-          alignSelf: 'center', fontSize: 12,
-          color: validationResult.startsWith('All')
-            ? 'var(--sg-color-success, #52c41a)'
-            : 'var(--sg-color-error, #ff4d4f)',
-        }}>{validationResult}</span>
-      )}
-    </div>
-  )
-}
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <h4 style={{
-      margin: '0 0 12px', fontSize: 13, fontWeight: 600,
-      textTransform: 'uppercase', letterSpacing: '0.5px',
-      color: 'var(--sg-color-text-tertiary)',
-    }}>{children}</h4>
-  )
-}
-
-function FullFormExample() {
-  const [files, setFiles] = useState<UploadFile[]>([])
-  const [submittedData, setSubmittedData] = useState<string | null>(null)
-
-  const handleUpload = (newFiles: File[]) => {
-    const uploaded: UploadFile[] = newFiles.map((f, i) => ({
-      uid: `${Date.now()}-${i}`, name: f.name, size: f.size, status: 'done' as const,
-    }))
-    setFiles(prev => [...prev, ...uploaded])
-  }
-
-  return (
-    <Form
-      layout="vertical"
-      defaultValues={{
-        username: '', email: '', password: '', confirm: '', bio: '',
-        age: 25, role: '', skill: '', birthDate: '', startTime: '',
-        gender: 'other', newsletter: false, darkMode: false,
-        experience: 50, rating: 3, phones: [''], tags: [''],
-      }}
-      onSubmit={async (values) => {
-        setSubmittedData(JSON.stringify({ ...values, files: files.map(f => f.name) }, null, 2))
-      }}
-      onSubmitInvalid={(errors) => { console.log('Validation errors:', errors) }}
-    >
-      <LiveState />
-      <FormActions />
-
-      <SectionTitle>Account</SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-        <Field name="username" label="Username" tooltip="Letters, numbers, underscores."
-          help="This will be your public display name"
-          rules={[{ required: true }, { min: 3, message: 'At least 3 characters' }, { pattern: /^[a-zA-Z0-9_]+$/, message: 'Only letters, numbers, underscores' }]}
-          placeholder="e.g. john_doe" />
-        <Field name="email" label="Email" type="email"
-          rules={[{ required: true }, { type: 'email' }]}
-          placeholder="your@email.com" />
-        <Field name="password" label="Password" type="password"
-          rules={[{ required: true }, { min: 6, message: 'At least 6 characters' }]}
-          placeholder="Min 6 characters" />
-        <Field name="confirm" label="Confirm Password" type="password"
-          dependencies={['password']}
-          rules={[
-            { required: true },
-            { validator: (value, getFieldValue) => value && value !== getFieldValue('password') ? 'Passwords do not match' : null },
-          ]}
-          placeholder="Repeat password" />
-      </div>
-
-      <SectionTitle>Profile</SectionTitle>
-      <Field name="bio" label="Bio" type="textarea" extra="Markdown is supported"
-        rules={[{ max: 200, message: 'Max 200 characters' }]}
-        placeholder="Tell about yourself..." />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0 16px' }}>
-        <Field name="age" label="Age">
-          {(field) => <InputNumber value={field.value as number} onChange={(v) => field.onChange(v)} min={18} max={99} />}
-        </Field>
-        <Field name="role" label="Role" rules={[{ required: true, message: 'Select a role' }]}>
-          {(field) => <Select value={field.value as string} onChange={(v) => field.onChange(v)} placeholder="Select role" options={roleOptions} />}
-        </Field>
-        <Field name="skill" label="Primary Skill">
-          {(field) => <AutoComplete value={field.value as string} onChange={(v) => field.onChange(v)} options={skillOptions} placeholder="Type to search..." />}
-        </Field>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-        <Field name="birthDate" label="Birth Date">
-          {(field) => (
-            <DatePicker
-              value={(field.value as Date | undefined) ?? undefined}
-              onChange={(d) => field.onChange(d)}
-            />
-          )}
-        </Field>
-        <Field name="startTime" label="Start Time">
-          {(field) => <TimePicker value={field.value as string} onChange={(v) => field.onChange(v)} />}
-        </Field>
-      </div>
-
-      <SectionTitle>Preferences</SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-        <Field name="gender" label="Gender">
-          {(field) => <RadioGroup value={field.value as string} onChange={(v) => field.onChange(v)} options={[{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'Other', value: 'other' }]} />}
-        </Field>
-        <div style={{ marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <Field name="newsletter">
-            {(field) => <Checkbox checked={field.value as boolean} onChange={(v) => field.onChange(v)}>Subscribe to newsletter</Checkbox>}
-          </Field>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Field name="darkMode">
-              {(field) => <Switch checked={field.value as boolean} onChange={(v) => field.onChange(v)} />}
-            </Field>
-            <span>Dark mode</span>
-          </div>
-        </div>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-        <Field name="experience" label="Experience Level">
-          {(field) => <Slider value={field.value as number} onChange={(v) => field.onChange(v)} />}
-        </Field>
-        <Field name="rating" label="Rate our platform">
-          {(field) => <Rate value={field.value as number} onChange={(v) => field.onChange(v)} />}
-        </Field>
-      </div>
-
-      <SectionTitle>Dynamic Fields (FormList)</SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-        <div style={{ marginBottom: 16 }}>
-          <label className="sg-field-label">Phone Numbers</label>
-          <FormList name="phones">
-            {(fields, { add, remove }) => (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {fields.map((f) => (
-                  <div key={f.key} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <Field name={`phones.${f.index}`} placeholder={`Phone #${f.index + 1}`}
-                      rules={[{ pattern: /^[+\d\s()-]*$/, message: 'Invalid phone format' }]} />
-                    {fields.length > 1 && <Button type="text" onClick={() => remove(f.index)} style={{ flexShrink: 0 }}>×</Button>}
-                  </div>
-                ))}
-                <Button type="dashed" onClick={() => add('')} style={{ alignSelf: 'flex-start' }}>+ Add phone</Button>
-              </div>
-            )}
-          </FormList>
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          <label className="sg-field-label">Tags</label>
-          <FormList name="tags">
-            {(fields, { add, remove }) => (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {fields.map((f) => (
-                  <div key={f.key} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <Field name={`tags.${f.index}`} placeholder={`Tag #${f.index + 1}`} />
-                    {fields.length > 1 && <Button type="text" onClick={() => remove(f.index)} style={{ flexShrink: 0 }}>×</Button>}
-                  </div>
-                ))}
-                <Button type="dashed" onClick={() => add('')} style={{ alignSelf: 'flex-start' }}>+ Add tag</Button>
-              </div>
-            )}
-          </FormList>
-        </div>
-      </div>
-
-      <SectionTitle>Attachments</SectionTitle>
-      <div style={{ marginBottom: 16 }}>
-        <Upload accept=".pdf,.doc,.docx,.txt" fileList={files}
-          onUpload={handleUpload}
-          onRemove={(f) => setFiles(prev => prev.filter(x => x.uid !== f.uid))} />
-      </div>
-
-      <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
-        <SubmitButton>Submit Application</SubmitButton>
-      </div>
-
-      {submittedData && (
-        <div style={{ marginTop: 20, padding: 16, background: 'var(--sg-color-bg-secondary)',
-          borderRadius: 'var(--sg-border-radius)', border: '1px solid var(--sg-color-success, #52c41a)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <strong style={{ color: 'var(--sg-color-success, #52c41a)' }}>Submitted successfully</strong>
-            <Button type="text" onClick={() => setSubmittedData(null)}>Close</Button>
-          </div>
-          <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', color: 'var(--sg-color-text-secondary)', whiteSpace: 'pre-wrap', maxHeight: 300, overflow: 'auto' }}>
-            {submittedData}
-          </pre>
-        </div>
-      )}
-    </Form>
-  )
-}
 
 export function FormDemo() {
   return (
     <ComponentDoc
       title="Form"
-      description="High-performance form with field-level validation, dependencies, dynamic fields, and programmatic control."
+      description="High-performance form with field-level validation, dependencies, dynamic arrays, and imperative control."
       whenToUse={[
-        'When you need to create/edit data with validation.',
+        'When you need to create or edit data with validation.',
         'When the form has dependent fields (e.g. confirm password).',
-        'For dynamic field arrays (phones, tags, addresses).',
+        'For dynamic arrays — phones, tags, addresses.',
+        'For search/filter bars using `layout="inline"`.',
       ]}
     >
+      {/* ── Basics ──────────────────────────────────────────────────── */}
       <DemoBox
-        title="Complete Form"
-        description="Full form demo — validation, dependencies, dynamic fields, useWatch, programmatic control, file upload."
-        code={`import { Form, Field, FormList, SubmitButton, useWatch } from '@skygraph/react'
-
-<Form
-  layout="vertical"
-  defaultValues={{ username: '', email: '', ... }}
-  onSubmit={async (values) => { console.log(values) }}
->
-  <Field name="username" label="Username"
-    rules={[{ required: true }, { min: 3 }]}
-    placeholder="e.g. john_doe" />
-
-  <Field name="email" label="Email" type="email"
-    rules={[{ required: true }, { type: 'email' }]} />
-
-  <Field name="role" label="Role" rules={[{ required: true }]}>
-    {(field) => (
-      <Select value={field.value} onChange={field.onChange}
-        options={[{ label: 'Dev', value: 'dev' }, ...]} />
-    )}
-  </Field>
-
-  <FormList name="phones">
-    {(fields, { add, remove }) => (
-      <>
-        {fields.map((f) => (
-          <Field key={f.key} name={\`phones.\${f.index}\`} />
-        ))}
-        <Button onClick={() => add('')}>+ Add</Button>
-      </>
-    )}
-  </FormList>
-
-  <SubmitButton>Submit</SubmitButton>
-</Form>`}
+        title="Basic"
+        description="Minimal form: two fields with rules and a submit button."
+        code={BasicFormSource}
       >
-        <div style={{ width: '100%' }}>
-          <FullFormExample />
-        </div>
+        <BasicForm />
       </DemoBox>
 
       <DemoBox
-        title="Horizontal layout"
-        description="Labels sit to the left of controls. Use for admin settings and compact forms."
-        code={`<Form layout="horizontal" onSubmit={(v) => console.log(v)}>
-  <Field name="name" label="Name" rules={[{ required: true }]} />
-  <Field name="email" label="Email" type="email" rules={[{ required: true }]} />
-  <SubmitButton>Save</SubmitButton>
-</Form>`}
+        title="Validation rules"
+        description="Required, length, regex, builtin types (`email`, `url`), and custom validators — each with its own message."
+        code={ValidationRulesSource}
       >
-        <div style={{ width: '100%', maxWidth: 520 }}>
-          <Form
-            layout="horizontal"
-            defaultValues={{ name: '', email: '' }}
-            onSubmit={(v) => console.log('horizontal submit', v)}
-          >
-            <Field name="name" label="Name" rules={[{ required: true }]} />
-            <Field name="email" label="Email" type="email" rules={[{ required: true }, { type: 'email' }]} />
-            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-              <SubmitButton>Save</SubmitButton>
-            </div>
-          </Form>
-        </div>
+        <ValidationRulesForm />
       </DemoBox>
 
       <DemoBox
-        title="Inline layout"
-        description="All fields in one row — perfect for search/filter bars."
-        code={`<Form layout="inline" onSubmit={(v) => console.log(v)}>
-  <Field name="q" placeholder="Search…" />
-  <Field name="status">
-    {(f) => <Select value={f.value} onChange={f.onChange} options={[...]} />}
-  </Field>
-  <SubmitButton>Search</SubmitButton>
-</Form>`}
+        title="Dependent fields"
+        description="`dependencies` triggers re-validation when the linked field changes. Classic password / confirm pattern."
+        code={DependentFieldsSource}
       >
-        <Form
-          layout="inline"
-          defaultValues={{ q: '', status: 'all' }}
-          onSubmit={(v) => console.log('inline submit', v)}
-        >
-          <Field name="q" placeholder="Search…" />
-          <Field name="status">
-            {(f) => (
-              <Select
-                value={f.value as string}
-                onChange={(v) => f.onChange(v)}
-                options={[
-                  { label: 'All', value: 'all' },
-                  { label: 'Active', value: 'active' },
-                  { label: 'Archived', value: 'archived' },
-                ]}
-              />
-            )}
-          </Field>
-          <SubmitButton>Search</SubmitButton>
-        </Form>
+        <DependentFieldsForm />
       </DemoBox>
 
       <DemoBox
-        title="Small size"
-        description="Size propagates to all descendants through Form's size prop."
-        code={`<Form size="small" layout="vertical">
-  <Field name="title" label="Title" rules={[{ required: true }]} />
-  <SubmitButton>Create</SubmitButton>
-</Form>`}
+        title="Async validation"
+        description="Validators may return a Promise. The field shows a spinner while the check runs."
+        code={AsyncValidationSource}
       >
-        <div style={{ width: '100%', maxWidth: 420 }}>
-          <Form size="small" layout="vertical" defaultValues={{ title: '' }} onSubmit={() => {}}>
-            <Field name="title" label="Title" rules={[{ required: true }]} />
-            <SubmitButton>Create</SubmitButton>
-          </Form>
-        </div>
+        <AsyncValidationForm />
+      </DemoBox>
+
+      {/* ── Layout ─────────────────────────────────────────────────── */}
+      <DemoBox
+        title="Layout — vertical"
+        description="Labels above controls. Default and recommended for signup / profile forms."
+        code={LayoutVerticalSource}
+      >
+        <LayoutVerticalForm />
+      </DemoBox>
+
+      <DemoBox
+        title="Layout — horizontal"
+        description="24-column grid via `labelCol` / `wrapperCol`. Great for admin settings."
+        code={LayoutHorizontalSource}
+      >
+        <LayoutHorizontalForm />
+      </DemoBox>
+
+      <DemoBox
+        title="Layout — inline"
+        description="Everything in a single row — perfect for search / filter bars."
+        code={LayoutInlineSource}
+      >
+        <LayoutInlineForm />
+      </DemoBox>
+
+      <DemoBox
+        title="Required mark"
+        description="Choose how required fields are highlighted: asterisk, nothing, or the inverted 'optional' convention."
+        code={RequiredMarkSource}
+      >
+        <RequiredMarkForm />
+      </DemoBox>
+
+      <DemoBox
+        title="Sizes"
+        description="`size` on the form propagates to every control inside."
+        code={FormSizesSource}
+      >
+        <FormSizes />
+      </DemoBox>
+
+      <DemoBox
+        title="Disabled"
+        description="Form-level disable turns off every control in one go; individual fields can opt in or out."
+        code={DisabledFormSource}
+      >
+        <DisabledForm />
+      </DemoBox>
+
+      {/* ── Controls ───────────────────────────────────────────────── */}
+      <DemoBox
+        title="Controls gallery"
+        description="One form wired to every supported control — Select, Checkbox, RadioGroup, Switch, InputNumber, DatePicker, TimePicker, AutoComplete, Slider, Rate."
+        code={FormControlsSource}
+      >
+        <FormControlsShowcase />
+      </DemoBox>
+
+      <DemoBox
+        title="Field status & feedback"
+        description="`validateStatus` + `hasFeedback` for manual status (success / warning / error / validating)."
+        code={FieldStatusSource}
+      >
+        <FieldStatusForm />
+      </DemoBox>
+
+      {/* ── Dynamic / Nested ───────────────────────────────────────── */}
+      <DemoBox
+        title="Dynamic list (FormList)"
+        description="Add / remove / reorder array items. Each row is an independent `<Field>` and validates on its own."
+        code={FormListDynamicSource}
+      >
+        <FormListDynamic />
+      </DemoBox>
+
+      <DemoBox
+        title="Nested fields"
+        description="Dotted names (`address.city`) auto-store into nested objects."
+        code={NestedFieldsSource}
+      >
+        <NestedFieldsForm />
+      </DemoBox>
+
+      {/* ── Imperative / Observed ──────────────────────────────────── */}
+      <DemoBox
+        title="Programmatic control"
+        description="`useForm()` exposes `reset`, `setFieldsValue`, `validate`, `submit`. Share the instance via the `form` prop."
+        code={ProgrammaticControlSource}
+      >
+        <ProgrammaticControlForm />
+      </DemoBox>
+
+      <DemoBox
+        title="Live values (useWatch)"
+        description="`useWatch(core, path)` re-renders only when that field changes — ideal for live previews."
+        code={LiveWatchSource}
+      >
+        <LiveWatchForm />
+      </DemoBox>
+
+      {/* ── Styling patterns ───────────────────────────────────────── */}
+      <DemoBox
+        title="Login card"
+        description="A real-world styled container — the form itself stays semantic, all look-and-feel lives in `.demo-login-card`."
+        code={LoginCardSource}
+      >
+        <LoginCardForm />
+      </DemoBox>
+
+      <DemoBox
+        title="Search bar"
+        description="Inline layout wrapped in a styled card. The panel collects `q`, role, status, and a date filter."
+        code={SearchBarSource}
+      >
+        <SearchBarForm />
+      </DemoBox>
+
+      <DemoBox
+        title="Profile settings"
+        description="Sectioned multi-column form: personal info, notifications (Switches), and avatar upload."
+        code={ProfileSettingsSource}
+      >
+        <ProfileSettingsForm />
+      </DemoBox>
+
+      {/* ── Schema-driven ──────────────────────────────────────────── */}
+      <DemoBox
+        title="SchemaForm — JSON Schema"
+        description="`<SchemaForm schema={...}/>` derives fields, rules and default values from a JSON Schema. Pass a Zod schema instead — it is converted via `zodToJsonSchema` before rendering."
+        code={SchemaFormBasicSource}
+      >
+        <SchemaFormBasic />
+      </DemoBox>
+
+      <DemoBox
+        title="SchemaForm — layout & size"
+        description="`layout`, `size`, `disabled`, `labelCol`, `wrapperCol` are passed through to the underlying Form — no wrapper needed."
+        code={SchemaFormLayoutSource}
+      >
+        <SchemaFormLayout />
       </DemoBox>
 
       <PropsTable title="Form API" data={formProps} />
       <PropsTable title="Field API" data={fieldProps} />
       <PropsTable title="FormList API" data={formListProps} />
+      <PropsTable title="SchemaForm API" data={schemaFormProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Form inherits most styling from its inner Input. Override these to retune errors, spacing, or typography just for this form."
+        data={formCssVars}
+      />
     </ComponentDoc>
   )
 }

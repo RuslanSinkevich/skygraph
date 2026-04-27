@@ -299,6 +299,7 @@ export function TableHeader(props: HeaderProps) {
                     'sg-table-th',
                     isLeaf && cell.col.sortable ? 'sg-table-th-sortable' : '',
                     cell.col.fixed ? 'sg-table-cell-fixed' : '',
+                    cell.col.fixed ? `sg-table-cell-fixed-${cell.col.fixed}` : '',
                     cell.colSpan > 1 ? 'sg-table-th-group' : '',
                     sCls.headerCell,
                     cell.col.headerClassName,
@@ -378,6 +379,7 @@ export function TableHeader(props: HeaderProps) {
             col.sortable ? 'sg-table-th-sortable' : '',
             dragOver === col.key ? 'sg-table-th-drag-over' : '',
             col.fixed ? 'sg-table-cell-fixed' : '',
+            col.fixed ? `sg-table-cell-fixed-${col.fixed}` : '',
             sCls.headerCell,
             col.headerClassName,
           ]

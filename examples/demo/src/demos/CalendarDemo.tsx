@@ -1,176 +1,176 @@
-import { Calendar, DatePicker, RangePicker, TimePicker } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
-import { useState } from 'react'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicCalendar } from './calendar/Basic.demo'
+import BasicSource from './calendar/Basic.demo?raw'
+import { CardCalendar } from './calendar/Card.demo'
+import CardSource from './calendar/Card.demo?raw'
+import { ControlledCalendar } from './calendar/Controlled.demo'
+import ControlledSource from './calendar/Controlled.demo?raw'
+import { DisabledDatesCalendar } from './calendar/DisabledDates.demo'
+import DisabledDatesSource from './calendar/DisabledDates.demo?raw'
+import { YearModeCalendar } from './calendar/YearMode.demo'
+import YearModeSource from './calendar/YearMode.demo?raw'
+import { WeekNumbersCalendar } from './calendar/WeekNumbers.demo'
+import WeekNumbersSource from './calendar/WeekNumbers.demo?raw'
+import { RangeSelectionCalendar } from './calendar/RangeSelection.demo'
+import RangeSelectionSource from './calendar/RangeSelection.demo?raw'
+import { MultipleSelectionCalendar } from './calendar/MultipleSelection.demo'
+import MultipleSelectionSource from './calendar/MultipleSelection.demo?raw'
+import { EventsCalendar } from './calendar/Events.demo'
+import EventsSource from './calendar/Events.demo?raw'
+import { CustomCellCalendar } from './calendar/CustomCell.demo'
+import CustomCellSource from './calendar/CustomCell.demo?raw'
+import { CustomHeaderCalendar } from './calendar/CustomHeader.demo'
+import CustomHeaderSource from './calendar/CustomHeader.demo?raw'
+import { LocaleCalendar } from './calendar/Locale.demo'
+import LocaleSource from './calendar/Locale.demo?raw'
+import { TokensOverrideCalendar } from './calendar/TokensOverride.demo'
+import TokensOverrideSource from './calendar/TokensOverride.demo?raw'
+import { UnstyledCalendar } from './calendar/Unstyled.demo'
+import UnstyledSource from './calendar/Unstyled.demo?raw'
 
 const calendarProps: PropDef[] = [
-  { name: 'value', description: 'Current date value (controlled)', type: 'Date' },
-  { name: 'defaultValue', description: 'Default date value', type: 'Date' },
-  { name: 'mode', description: 'Display mode', type: "'month' | 'year'", default: "'month'" },
-  { name: 'onChange', description: 'Callback when date changes', type: '(date: Date) => void' },
-  { name: 'onPanelChange', description: 'Callback when panel changes', type: '(date: Date, mode) => void' },
-  { name: 'fullscreen', description: 'Display fullscreen or compact card', type: 'boolean', default: 'true' },
-  { name: 'disabledDate', description: 'Function to disable specific dates', type: '(date: Date) => boolean' },
-  { name: 'cellRender', description: 'Custom cell renderer', type: '(date: Date, info) => ReactNode' },
-  { name: 'headerRender', description: 'Custom header renderer', type: '(info) => ReactNode' },
+  { name: 'value', description: 'Controlled selected date', type: 'Date' },
+  { name: 'defaultValue', description: 'Initial date when uncontrolled', type: 'Date' },
+  { name: 'onChange', description: 'Fires on date pick', type: '(date: Date) => void' },
+  { name: 'onSelect', description: 'Fires on any cell selection (incl. month picks)', type: '(date: Date) => void' },
+  { name: 'onPanelChange', description: 'Fires when visible panel or mode changes', type: '(date, mode) => void' },
+  { name: 'mode', description: 'Controlled panel mode', type: "'month' | 'year'", default: "'month'" },
+  { name: 'fullscreen', description: 'Full desktop layout vs. compact card', type: 'boolean', default: 'true' },
+  { name: 'disabledDate', description: 'Block interaction on specific dates', type: '(date: Date) => boolean' },
+  { name: 'cellRender', description: 'Inject custom content under a cell', type: '(date, info) => ReactNode' },
+  { name: 'headerRender', description: 'Replace the default chrome', type: '(info: CalendarHeaderInfo) => ReactNode' },
+  { name: 'locale', description: 'Override month/day names + today label', type: 'CalendarLocale' },
+  { name: 'weekStartDay', description: '0 = Sunday … 6 = Saturday', type: '0 | 1 | 2 | 3 | 4 | 5 | 6', default: '0' },
+  { name: 'showWeekNumber', description: 'Add ISO week column', type: 'boolean', default: 'false' },
+  { name: 'rangeSelection', description: 'Enable start/end range picking', type: 'boolean', default: 'false' },
+  { name: 'rangeValue', description: 'Controlled range', type: '[Date | null, Date | null]' },
+  { name: 'defaultRangeValue', description: 'Initial range', type: '[Date | null, Date | null]' },
+  { name: 'onRangeChange', description: 'Fires when the range changes', type: '(range) => void' },
+  { name: 'multipleSelection', description: 'Toggle multiple dates independently', type: 'boolean', default: 'false' },
+  { name: 'multipleValue', description: 'Controlled list of dates', type: 'Date[]' },
+  { name: 'defaultMultipleValue', description: 'Initial list of dates', type: 'Date[]' },
+  { name: 'onMultipleChange', description: 'Fires when the set of dates changes', type: '(dates: Date[]) => void' },
+  { name: 'events', description: 'Event markers per date', type: 'CalendarEvent[]' },
+  { name: 'maxEvents', description: 'Max events per cell before "+N"', type: 'number', default: '3' },
+  { name: 'keyboard', description: 'Enable keyboard navigation', type: 'boolean', default: 'true' },
+  { name: 'className', description: 'Root className', type: 'string' },
+  { name: 'style', description: 'Root inline style', type: 'CSSProperties' },
+  { name: 'unstyled', description: 'Drop SkyGraph classes — semantics only', type: 'boolean', default: 'false' },
+]
+
+const calendarEventProps: PropDef[] = [
+  { name: 'date', description: 'Event date', type: 'Date' },
+  { name: 'title', description: 'Short label shown on the cell', type: 'string' },
+  { name: 'color', description: 'CSS color of the dot/chip', type: 'string' },
+  { name: 'key', description: 'React key for this event', type: 'string' },
+]
+
+const calendarCssVars: CssVarDef[] = [
+  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Selected day, range endpoints, "Today" accent, focus outline' },
+  { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: 'Range highlight, hover in card mode' },
+  { name: 'sg-color-bg-container', default: '#ffffff', description: 'Calendar surface + controls background' },
+  { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: 'Cell hover background' },
+  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Day number + controls text' },
+  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: 'Column headers, prev/next buttons, footer' },
+  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Out-of-month days, helper labels' },
+  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Disabled days' },
+  { name: 'sg-color-border', default: 'var(--sg-gray-5)', description: 'Input/select borders in chrome' },
+  { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: 'Grid divider, header bottom border' },
+  { name: 'sg-color-success', default: 'var(--sg-green-6)', description: 'Event dots when color omitted (success variant)' },
+  { name: 'sg-color-warning', default: 'var(--sg-orange-5)', description: 'Event dots (warning variant)' },
+  { name: 'sg-color-error', default: 'var(--sg-red-5)', description: 'Event dots (error variant)' },
+  { name: 'sg-border-radius-lg', default: '8px', description: 'Outer card radius' },
+  { name: 'sg-border-radius-sm', default: '4px', description: 'Cell radius + chrome buttons' },
+  { name: 'sg-font-size', default: '14px', description: 'Default font size' },
+  { name: 'sg-font-size-sm', default: '12px', description: 'Column headers, events, footer' },
+  { name: 'sg-font-size-lg', default: '16px', description: 'Day numbers in fullscreen' },
+  { name: 'sg-padding-xs', default: '8px', description: 'Inner grid gaps + chrome padding' },
+  { name: 'sg-padding-sm', default: '12px', description: 'Row padding' },
+  { name: 'sg-padding-md', default: '16px', description: 'Header padding' },
+  { name: 'sg-padding-lg', default: '24px', description: 'Footer padding' },
+  { name: 'sg-transition-duration', default: '0.2s', description: 'Cell hover / selection transition' },
 ]
 
 export function CalendarDemo() {
-  const [selectedDate, setSelectedDate] = useState(new Date())
-  const [pickerDate, setPickerDate] = useState<Date | null>(null)
-  const [rangeValue, setRangeValue] = useState<[Date | null, Date | null]>([null, null])
-  const [timeValue, setTimeValue] = useState('')
-
-  const presets = [
-    { label: 'Today', value: new Date() },
-    { label: 'Yesterday', value: new Date(Date.now() - 86400000) },
-    { label: 'Last week', value: new Date(Date.now() - 7 * 86400000) },
-  ]
-
-  const rangePresets = [
-    { label: 'Last 7 days', value: [new Date(Date.now() - 7 * 86400000), new Date()] as [Date, Date] },
-    { label: 'Last 30 days', value: [new Date(Date.now() - 30 * 86400000), new Date()] as [Date, Date] },
-    { label: 'This month', value: [new Date(new Date().getFullYear(), new Date().getMonth(), 1), new Date()] as [Date, Date] },
-  ]
-
   return (
     <ComponentDoc
-      title="Calendar / DatePicker / TimePicker"
-      description="Date and time selection components with range, time, and preset support."
+      title="Calendar"
+      description="Full-screen or card calendar with range, multiple selection, events, custom cells, and i18n. Perfect for dashboards, schedulers, and date-heavy forms."
       whenToUse={[
-        'When you want to display a full calendar view.',
-        'When you need date selection with a dropdown picker.',
-        'When you need date range or datetime selection.',
-        'When you need time-only selection.',
+        'As a month/year view inside an admin dashboard or scheduler.',
+        'When you need event dots per day or colored capacity indicators.',
+        'For picking a range or multiple distinct dates (vacation, holidays).',
       ]}
     >
-      {/* Calendar demos */}
-      <DemoBox title="Calendar — Basic" description="Full-screen calendar.">
-        <Calendar />
+      <DemoBox title="Basic" description="Full-screen month view." code={BasicSource}>
+        <BasicCalendar />
       </DemoBox>
 
-      <DemoBox title="Calendar — Card" description="Compact card calendar.">
-        <div style={{ maxWidth: 320 }}>
-          <Calendar fullscreen={false} />
-        </div>
+      <DemoBox title="Card mode" description="Compact layout for sidebars or popovers." code={CardSource}>
+        <CardCalendar />
       </DemoBox>
 
-      <DemoBox title="Calendar — Controlled" description="Controlled with selected date display.">
-        <div style={{ maxWidth: 320 }}>
-          <p>Selected: {selectedDate.toLocaleDateString()}</p>
-          <Calendar value={selectedDate} onChange={setSelectedDate} fullscreen={false} />
-        </div>
+      <DemoBox title="Controlled" description="Parent owns the selected date." code={ControlledSource}>
+        <ControlledCalendar />
       </DemoBox>
 
-      <DemoBox title="Calendar — Disabled weekends" description="Weekends are disabled.">
-        <div style={{ maxWidth: 320 }}>
-          <Calendar
-            fullscreen={false}
-            disabledDate={(d) => d.getDay() === 0 || d.getDay() === 6}
-          />
-        </div>
+      <DemoBox title="Disabled dates" description="Gray out past days + weekends." code={DisabledDatesSource}>
+        <DisabledDatesCalendar />
       </DemoBox>
 
-      {/* DatePicker demos */}
-      <DemoBox title="DatePicker — Basic" description="Standard date picker dropdown.">
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <DatePicker placeholder="Select date" />
-          <DatePicker placeholder="With presets" presets={presets} />
-        </div>
+      <DemoBox title="Year mode" description="12-month grid driven by onPanelChange." code={YearModeSource}>
+        <YearModeCalendar />
       </DemoBox>
 
-      <DemoBox title="DatePicker — Controlled" description="Controlled DatePicker.">
-        <div>
-          <p>Selected: {pickerDate?.toLocaleDateString() ?? 'none'}</p>
-          <DatePicker
-            value={pickerDate}
-            onChange={(d) => setPickerDate(d)}
-          />
-        </div>
+      <DemoBox title="Week numbers + Monday start" description="ISO week column and weekStartDay." code={WeekNumbersSource}>
+        <WeekNumbersCalendar />
       </DemoBox>
 
-      <DemoBox title="DatePicker — Disabled dates" description="Weekends disabled, past dates disabled.">
-        <DatePicker
-          disabledDate={(d) => d.getDay() === 0 || d.getDay() === 6 || d < new Date(new Date().setHours(0, 0, 0, 0))}
-          placeholder="No weekends / past"
-        />
+      <DemoBox title="Range selection" description="rangeSelection with controlled rangeValue." code={RangeSelectionSource}>
+        <RangeSelectionCalendar />
       </DemoBox>
 
-      <DemoBox title="DatePicker — Month / Year" description="Pick month or year only.">
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <DatePicker picker="month" placeholder="Select month" />
-          <DatePicker picker="year" placeholder="Select year" />
-        </div>
+      <DemoBox title="Multiple selection" description="Toggle independent dates." code={MultipleSelectionSource}>
+        <MultipleSelectionCalendar />
       </DemoBox>
 
-      <DemoBox title="DatePicker — DateTime" description="Date with time selection (showTime).">
-        <DatePicker showTime placeholder="Select datetime" showNow />
+      <DemoBox title="Events" description="Colored chips + '+N more' overflow." code={EventsSource}>
+        <EventsCalendar />
       </DemoBox>
 
-      <DemoBox title="DatePicker — Sizes" description="Small, middle, large.">
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-          <DatePicker size="small" placeholder="Small" />
-          <DatePicker size="middle" placeholder="Middle" />
-          <DatePicker size="large" placeholder="Large" />
-        </div>
+      <DemoBox title="Custom cell" description="Render capacity dots under each day." code={CustomCellSource}>
+        <CustomCellCalendar />
       </DemoBox>
 
-      {/* RangePicker demos */}
-      <DemoBox title="RangePicker — Basic" description="Dual-panel date range selection.">
-        <RangePicker />
+      <DemoBox title="Custom header" description="Minimal prev / title / next chrome." code={CustomHeaderSource}>
+        <CustomHeaderCalendar />
       </DemoBox>
 
-      <DemoBox title="RangePicker — With presets" description="Quick range presets sidebar.">
-        <RangePicker presets={rangePresets} />
+      <DemoBox title="Locale" description="Russian day/month labels + Monday start + week numbers." code={LocaleSource}>
+        <LocaleCalendar />
       </DemoBox>
 
-      <DemoBox title="RangePicker — Controlled" description="Controlled range picker.">
-        <div>
-          <p>
-            Range: {rangeValue[0]?.toLocaleDateString() ?? '?'} → {rangeValue[1]?.toLocaleDateString() ?? '?'}
-          </p>
-          <RangePicker
-            value={rangeValue}
-            onChange={(dates) => setRangeValue(dates)}
-          />
-        </div>
+      <DemoBox
+        title="Tokens override"
+        description="Scope global tokens on a wrapper to re-skin."
+        code={TokensOverrideSource}
+      >
+        <TokensOverrideCalendar />
       </DemoBox>
 
-      <DemoBox title="RangePicker — DateTime" description="Range with time selection.">
-        <RangePicker showTime placeholder={['Start datetime', 'End datetime']} />
+      <DemoBox title="Unstyled" description="Semantics only, paint with your own CSS." code={UnstyledSource}>
+        <UnstyledCalendar />
       </DemoBox>
 
-      {/* TimePicker demos */}
-      <DemoBox title="TimePicker — Basic" description="Scroll column time picker.">
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <TimePicker placeholder="Select time" />
-          <TimePicker placeholder="No seconds" showSecond={false} />
-        </div>
-      </DemoBox>
-
-      <DemoBox title="TimePicker — 12-hour" description="12-hour format with AM/PM.">
-        <TimePicker use12Hours placeholder="12h format" />
-      </DemoBox>
-
-      <DemoBox title="TimePicker — Steps" description="Custom hour/minute steps.">
-        <TimePicker hourStep={2} minuteStep={15} placeholder="2h / 15m steps" />
-      </DemoBox>
-
-      <DemoBox title="TimePicker — Controlled" description="Controlled time picker.">
-        <div>
-          <p>Time: {timeValue || 'none'}</p>
-          <TimePicker value={timeValue} onChange={setTimeValue} />
-        </div>
-      </DemoBox>
-
-      <DemoBox title="Scoped brand" description="Active day / range uses --sg-color-primary.">
-        <div style={{ ['--sg-color-primary' as never]: '#7c3aed', display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <DatePicker placeholder="Purple brand" />
-          <RangePicker />
-        </div>
-      </DemoBox>
-
-      <PropsTable data={calendarProps} />
+      <PropsTable title="Calendar API" data={calendarProps} />
+      <PropsTable title="CalendarEvent" data={calendarEventProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Calendar has no component-scoped tokens — it is fully driven by the global palette, spacing and radius variables. Override them on a scoped wrapper to re-skin a single instance."
+        data={calendarCssVars}
+      />
     </ComponentDoc>
   )
 }

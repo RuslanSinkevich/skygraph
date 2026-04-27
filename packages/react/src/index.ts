@@ -1,6 +1,15 @@
 // Common types
 export type { SizeType, BaseComponentProps, InteractiveProps, SizableProps } from './types'
-export type { SgLocale, PaginationLocale, ModalLocale } from './types'
+export type {
+  SgLocale,
+  PaginationLocale,
+  ModalLocale,
+  PopconfirmLocale,
+  EmptyLocale,
+  FormLocale,
+  UploadLocale,
+  TransferLocale,
+} from './types'
 
 // ConfigProvider
 export { ConfigProvider, useConfig } from './components/ConfigProvider'
@@ -49,6 +58,9 @@ export type { UseTableOptions, UseTableReturn } from './hooks/useTable'
 export { Tree } from './components/complex/Tree'
 export type {
   TreeProps,
+  TreeKey,
+  TreeNodeData,
+  TreeFieldNames,
   TreeLocale,
   TreeNodeStatus,
   TreeNodeAction,
@@ -141,13 +153,13 @@ export type { SkeletonProps } from './components/ui/Skeleton'
 export { Segmented } from './components/ui/Segmented'
 export type { SegmentedProps } from './components/ui/Segmented'
 export { Steps } from './components/ui/Steps'
-export type { StepsProps } from './components/ui/Steps'
+export type { StepsProps, StepItem } from './components/ui/Steps'
 export { Timeline } from './components/ui/Timeline'
-export type { TimelineProps } from './components/ui/Timeline'
+export type { TimelineProps, TimelineItem } from './components/ui/Timeline'
 export { Carousel } from './components/ui/Carousel'
 export type { CarouselProps } from './components/ui/Carousel'
 export { Descriptions } from './components/ui/Descriptions'
-export type { DescriptionsProps } from './components/ui/Descriptions'
+export type { DescriptionsProps, DescriptionsItem } from './components/ui/Descriptions'
 
 // Schema Forms
 export { useFieldArray } from './hooks/useFieldArray'

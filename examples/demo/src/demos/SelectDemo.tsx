@@ -1,158 +1,118 @@
-import { useState } from 'react'
-import { Select } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicSelect } from './select/Basic.demo'
+import BasicSource from './select/Basic.demo?raw'
+import { UncontrolledSelect } from './select/Uncontrolled.demo'
+import UncontrolledSource from './select/Uncontrolled.demo?raw'
+import { SelectSizes } from './select/Sizes.demo'
+import SizesSource from './select/Sizes.demo?raw'
+import { DisabledSelect } from './select/Disabled.demo'
+import DisabledSource from './select/Disabled.demo?raw'
+import { LoadingSelect } from './select/Loading.demo'
+import LoadingSource from './select/Loading.demo?raw'
+import { NumericValuesSelect } from './select/NumericValues.demo'
+import NumericValuesSource from './select/NumericValues.demo?raw'
+import { TokensOverrideSelect } from './select/TokensOverride.demo'
+import TokensOverrideSource from './select/TokensOverride.demo?raw'
+import { UnstyledSelect } from './select/Unstyled.demo'
+import UnstyledSource from './select/Unstyled.demo?raw'
 
 const selectProps: PropDef[] = [
   { name: 'value', description: 'Currently selected value', type: 'string | number' },
-  { name: 'defaultValue', description: 'Default selected value', type: 'string | number' },
+  { name: 'defaultValue', description: 'Default selected value (uncontrolled)', type: 'string | number' },
   { name: 'onChange', description: 'Callback when selection changes', type: '(value: string | number) => void' },
-  { name: 'options', description: 'Data for options', type: 'Array<{ label, value, disabled?, loading? }>' },
-  { name: 'placeholder', description: 'Placeholder text', type: 'string' },
-  { name: 'size', description: 'Select size', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'disabled', description: 'Disable the selector', type: 'boolean', default: 'false' },
-  { name: 'loading', description: 'Show loading spinner for the whole select', type: 'boolean', default: 'false' },
-  { name: 'allowClear', description: 'Show clear button', type: 'boolean', default: 'false' },
-  { name: 'showSearch', description: 'Enable search filtering', type: 'boolean', default: 'false' },
-  { name: 'unstyled', description: 'Remove all built-in styles (headless mode)', type: 'boolean', default: 'false' },
+  { name: 'onBlur', description: 'Called when the control loses focus', type: '() => void' },
+  { name: 'options', description: 'Options list', type: 'SelectOption[]' },
+  { name: 'placeholder', description: 'Placeholder shown when nothing is selected', type: 'string', default: "'Select...'" },
+  { name: 'size', description: 'Control size (propagates from ConfigProvider)', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+  { name: 'disabled', description: 'Disables the selector', type: 'boolean', default: 'false' },
+  { name: 'loading', description: 'Show a spinner and block input', type: 'boolean', default: 'false' },
+  { name: 'unstyled', description: 'Render the native <select> with no styling', type: 'boolean', default: 'false' },
+  { name: 'className', description: 'Extra class on the control', type: 'string' },
+  { name: 'style', description: 'Inline styles on the control', type: 'CSSProperties' },
+]
+
+const optionProps: PropDef[] = [
+  { name: 'label', description: 'Display text', type: 'string' },
+  { name: 'value', description: 'Value submitted on change', type: 'string | number' },
+  { name: 'disabled', description: 'Make this option unselectable', type: 'boolean', default: 'false' },
+  { name: 'loading', description: 'Show per-option loading state', type: 'boolean', default: 'false' },
+]
+
+const selectCssVars: CssVarDef[] = [
+  { name: 'sg-input-height', default: 'var(--sg-height-md)', description: 'Control height (shared with Input)' },
+  { name: 'sg-input-padding', default: 'var(--sg-padding-xs) var(--sg-padding-md)', description: 'Inner padding' },
+  { name: 'sg-input-bg', default: 'var(--sg-color-bg-container)', description: 'Control background' },
+  { name: 'sg-input-border', default: 'var(--sg-color-border)', description: 'Border color (state-driven)' },
+  { name: 'sg-input-radius', default: 'var(--sg-border-radius)', description: 'Corner radius' },
+  { name: 'sg-input-color', default: 'var(--sg-color-text)', description: 'Value text color' },
+  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Open state border + focus ring' },
+  { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: 'Highlighted option background' },
+  { name: 'sg-color-bg-elevated', default: 'var(--sg-gray-1)', description: 'Dropdown panel background' },
+  { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0, 0, 0, 0.12)', description: 'Dropdown panel shadow' },
+  { name: 'sg-color-text-placeholder', default: 'rgba(0, 0, 0, 0.25)', description: 'Placeholder color' },
+  { name: 'sg-spin-color', default: 'var(--sg-color-text-tertiary)', description: 'Loading spinner inside the control' },
 ]
 
 export function SelectDemo() {
-  const [val, setVal] = useState<string | number>('')
-
   return (
     <ComponentDoc
       title="Select"
-      description="Select component to select a value from options."
+      description="Single-value selector with keyboard navigation, loading states, and native fallback."
       whenToUse={[
-        'When a user needs to select from a predefined list of options.',
-        'When the number of options is relatively small (for long lists, consider AutoComplete).',
+        'When a user picks one value from a small, predefined list.',
+        'For long, searchable lists use AutoComplete instead.',
+        'Inside forms — wrap with <Field> to get validation.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="Basic select usage with controlled value."
-        code={`import { Select } from '@skygraph/react'
+      <DemoBox title="Basic" description="Controlled value with `value` / `onChange`." code={BasicSource}>
+        <BasicSelect />
+      </DemoBox>
 
-const [val, setVal] = useState('')
+      <DemoBox title="Uncontrolled" description="`defaultValue` seeds the initial choice; SkyGraph tracks the rest." code={UncontrolledSource}>
+        <UncontrolledSelect />
+      </DemoBox>
 
-<Select
-  placeholder="Choose city"
-  value={val}
-  onChange={setVal}
-  options={[
-    { label: 'Moscow', value: 'moscow' },
-    { label: 'Berlin', value: 'berlin' },
-    { label: 'Tokyo', value: 'tokyo' },
-    { label: 'Disabled', value: 'x', disabled: true },
-  ]}
-/>`}
-      >
-        <Select
-          placeholder="Choose city"
-          value={val}
-          onChange={setVal}
-          options={[
-            { label: 'Moscow', value: 'moscow' },
-            { label: 'Berlin', value: 'berlin' },
-            { label: 'Tokyo', value: 'tokyo' },
-            { label: 'Disabled', value: 'x', disabled: true },
-          ]}
-        />
+      <DemoBox title="Sizes" description="Small / middle / large — match your form density." code={SizesSource}>
+        <SelectSizes />
+      </DemoBox>
+
+      <DemoBox title="Disabled" description="Disable the whole control or single options." code={DisabledSource}>
+        <DisabledSelect />
+      </DemoBox>
+
+      <DemoBox title="Loading" description="Loading on the select vs. a single option." code={LoadingSource}>
+        <LoadingSelect />
+      </DemoBox>
+
+      <DemoBox title="Numeric values" description="`value` preserves number types (important for IDs)." code={NumericValuesSource}>
+        <NumericValuesSelect />
       </DemoBox>
 
       <DemoBox
-        title="Size"
-        description="Select comes in three sizes."
-        code={`<Select size="small" placeholder="Small" options={...} />
-<Select placeholder="Default" options={...} />
-<Select size="large" placeholder="Large" options={...} />`}
+        title="Tokens override"
+        description="Scope one Select to different tokens — same component, different skin."
+        code={TokensOverrideSource}
       >
-        <Select
-          size="small"
-          placeholder="Small"
-          options={[{ label: 'One', value: 1 }, { label: 'Two', value: 2 }]}
-        />
-        <Select
-          placeholder="Default"
-          options={[{ label: 'One', value: 1 }, { label: 'Two', value: 2 }]}
-        />
-        <Select
-          size="large"
-          placeholder="Large"
-          options={[{ label: 'One', value: 1 }, { label: 'Two', value: 2 }]}
-        />
+        <TokensOverrideSelect />
       </DemoBox>
 
       <DemoBox
-        title="Loading"
-        description="Show a loading indicator. Can also set loading on individual options."
-        code={`<Select loading placeholder="Loading all..." options={[]} />
-<Select
-  placeholder="Option loading"
-  options={[
-    { label: 'Ready', value: 'ready' },
-    { label: 'Syncing...', value: 'sync', loading: true },
-  ]}
-/>`}
+        title="Unstyled"
+        description="Native <select> with no library styling — headless mode."
+        code={UnstyledSource}
       >
-        <Select loading placeholder="Loading all..." options={[]} />
-        <Select
-          placeholder="Option loading"
-          options={[
-            { label: 'Ready', value: 'ready' },
-            { label: 'Syncing...', value: 'sync', loading: true },
-            { label: 'Failed', value: 'fail', disabled: true },
-          ]}
-        />
+        <UnstyledSelect />
       </DemoBox>
 
-      <DemoBox
-        title="Component tokens"
-        description="Override --sg-input-* — Select shares the input tokens."
-        code={`<div style={{
-  ['--sg-input-height' as any]: '44px',
-  ['--sg-input-radius' as any]: '14px',
-}}>
-  <Select options={options} placeholder="Large soft" />
-</div>`}
-      >
-        <div
-          style={{
-            ['--sg-input-height' as never]: '44px',
-            ['--sg-input-radius' as never]: '14px',
-          }}
-        >
-          <Select
-            placeholder="Large soft"
-            options={[
-              { label: 'One', value: 1 },
-              { label: 'Two', value: 2 },
-            ]}
-          />
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="Scoped brand"
-        description="Highlighted option follows --sg-color-primary."
-        code={`<div style={{ ['--sg-color-primary' as any]: '#059669' }}>
-  <Select options={...} />
-</div>`}
-      >
-        <div style={{ ['--sg-color-primary' as never]: '#059669' }}>
-          <Select
-            placeholder="Green select"
-            options={[
-              { label: 'Apple', value: 'a' },
-              { label: 'Pear', value: 'p' },
-              { label: 'Mango', value: 'm' },
-            ]}
-          />
-        </div>
-      </DemoBox>
-
-      <PropsTable data={selectProps} />
+      <PropsTable title="Select API" data={selectProps} />
+      <PropsTable title="SelectOption" data={optionProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Select inherits the Input tokens plus its own dropdown panel variables."
+        data={selectCssVars}
+      />
     </ComponentDoc>
   )
 }

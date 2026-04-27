@@ -1,165 +1,111 @@
-import { TreeSelect } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
-import { useState } from 'react'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicTreeSelect } from './treeselect/Basic.demo'
+import BasicSource from './treeselect/Basic.demo?raw'
+import { MultipleTreeSelect } from './treeselect/Multiple.demo'
+import MultipleSource from './treeselect/Multiple.demo?raw'
+import { CheckableTreeSelect } from './treeselect/Checkable.demo'
+import CheckableSource from './treeselect/Checkable.demo?raw'
+import { SearchTreeSelect } from './treeselect/Search.demo'
+import SearchSource from './treeselect/Search.demo?raw'
+import { DisabledNodesTreeSelect } from './treeselect/DisabledNodes.demo'
+import DisabledNodesSource from './treeselect/DisabledNodes.demo?raw'
+import { SizesTreeSelect } from './treeselect/Sizes.demo'
+import SizesSource from './treeselect/Sizes.demo?raw'
+import { TokensOverrideTreeSelect } from './treeselect/TokensOverride.demo'
+import TokensOverrideSource from './treeselect/TokensOverride.demo?raw'
 
 const treeSelectProps: PropDef[] = [
-  { name: 'treeData', description: 'Tree data', type: 'TreeSelectNode[]' },
-  { name: 'value', description: 'Selected value(s)', type: 'string | string[]' },
-  { name: 'defaultValue', description: 'Default selected value(s)', type: 'string | string[]' },
-  { name: 'onChange', description: 'Callback when selection changes', type: '(value: string | string[]) => void' },
-  { name: 'multiple', description: 'Support multiple selection', type: 'boolean', default: 'false' },
-  { name: 'treeCheckable', description: 'Show checkbox in tree nodes', type: 'boolean', default: 'false' },
-  { name: 'showSearch', description: 'Show search input', type: 'boolean', default: 'false' },
-  { name: 'allowClear', description: 'Show clear button', type: 'boolean', default: 'false' },
-  { name: 'placeholder', description: 'Placeholder text', type: 'string' },
-  { name: 'treeDefaultExpandAll', description: 'Expand all nodes by default', type: 'boolean', default: 'false' },
-  { name: 'disabled', description: 'Disable the selector', type: 'boolean', default: 'false' },
+  { name: 'treeData', description: 'Hierarchical nodes', type: 'TreeSelectNode[]' },
+  { name: 'value', description: 'Selected key(s)', type: 'string | string[]' },
+  { name: 'defaultValue', description: 'Initial selection (uncontrolled)', type: 'string | string[]' },
+  { name: 'onChange', description: 'Selection change callback', type: '(value: string | string[]) => void' },
+  { name: 'multiple', description: 'Enable multi-select (tag-style)', type: 'boolean', default: 'false' },
+  { name: 'treeCheckable', description: 'Render checkboxes, cascade-select subtrees', type: 'boolean', default: 'false' },
+  { name: 'showSearch', description: 'Show filter input in the dropdown', type: 'boolean', default: 'false' },
+  { name: 'allowClear', description: 'Show clear button when there is a value', type: 'boolean', default: 'false' },
+  { name: 'placeholder', description: 'Placeholder shown when empty', type: 'string', default: "'Select...'" },
+  { name: 'treeDefaultExpandAll', description: 'Expand every parent on mount', type: 'boolean', default: 'false' },
+  { name: 'size', description: 'Control size', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+  { name: 'disabled', description: 'Disable the whole selector', type: 'boolean', default: 'false' },
+  { name: 'unstyled', description: 'Render without SkyGraph styles', type: 'boolean', default: 'false' },
 ]
 
-const treeData = [
-  {
-    key: 'parent-1',
-    title: 'Parent 1',
-    children: [
-      { key: 'child-1-1', title: 'Child 1-1' },
-      { key: 'child-1-2', title: 'Child 1-2' },
-    ],
-  },
-  {
-    key: 'parent-2',
-    title: 'Parent 2',
-    children: [
-      { key: 'child-2-1', title: 'Child 2-1' },
-      { key: 'child-2-2', title: 'Child 2-2' },
-    ],
-  },
+const nodeProps: PropDef[] = [
+  { name: 'key', description: 'Unique identifier used in `value`', type: 'string' },
+  { name: 'title', description: 'Display label', type: 'ReactNode' },
+  { name: 'children', description: 'Nested child nodes', type: 'TreeSelectNode[]' },
+  { name: 'disabled', description: 'Block selection on this node', type: 'boolean', default: 'false' },
+  { name: 'selectable', description: 'Per-node selection enable', type: 'boolean', default: 'true' },
+  { name: 'checkable', description: 'Per-node checkbox enable', type: 'boolean', default: 'true' },
+]
+
+const treeSelectCssVars: CssVarDef[] = [
+  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Focused/active node + selected pill fill' },
+  { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: 'Focus ring around the control' },
+  { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: 'Hover border of the control' },
+  { name: 'sg-input-bg', default: 'var(--sg-color-bg-container)', description: 'Control background (shared with Input)' },
+  { name: 'sg-input-border', default: 'var(--sg-color-border)', description: 'Control border color' },
+  { name: 'sg-input-radius', default: 'var(--sg-border-radius)', description: 'Control radius' },
+  { name: 'sg-input-height', default: 'var(--sg-height-md)', description: 'Control min-height' },
+  { name: 'sg-color-bg-elevated', default: 'var(--sg-gray-1)', description: 'Dropdown panel background' },
+  { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0, 0, 0, 0.12)', description: 'Dropdown panel shadow' },
+  { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: 'Row hover background in the dropdown' },
+  { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: 'Tag border in multi-select mode' },
+  { name: 'sg-border-radius-sm', default: '4px', description: 'Selected-tag radius' },
 ]
 
 export function TreeSelectDemo() {
-  const [value, setValue] = useState<string | string[]>('')
-
   return (
     <ComponentDoc
       title="TreeSelect"
-      description="Tree selection control."
+      description="Dropdown selector backed by a tree. Pick one leaf, many leaves, or cascade whole subtrees."
       whenToUse={[
-        'When you need to select from a hierarchical data structure.',
-        'Similar to Select, but uses a tree structure for the dropdown.',
+        'When options have a hierarchy (org charts, regions, taxonomies).',
+        'When you want multi-select with parent/child cascading (`treeCheckable`).',
+        'Inside forms — wrap with <Field> to capture validation.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="The most basic usage."
-        code={`import { TreeSelect } from '@skygraph/react'
+      <DemoBox title="Basic" description="Single-value picker." code={BasicSource}>
+        <BasicTreeSelect />
+      </DemoBox>
 
-const treeData = [
-  { key: 'parent-1', title: 'Parent 1', children: [
-    { key: 'child-1-1', title: 'Child 1-1' },
-    { key: 'child-1-2', title: 'Child 1-2' },
-  ]},
-]
+      <DemoBox title="Multiple" description="Pick multiple leaves — selections render as tags." code={MultipleSource}>
+        <MultipleTreeSelect />
+      </DemoBox>
 
-<TreeSelect
-  treeData={treeData}
-  placeholder="Please select"
-  treeDefaultExpandAll
-/>`}
-      >
-        <div style={{ width: 300 }}>
-          <TreeSelect
-            treeData={treeData}
-            placeholder="Please select"
-            treeDefaultExpandAll
-            value={value}
-            onChange={setValue}
-            allowClear
-          />
-        </div>
+      <DemoBox title="Checkable" description="Checkboxes with subtree cascade." code={CheckableSource}>
+        <CheckableTreeSelect />
+      </DemoBox>
+
+      <DemoBox title="Search" description="Filter nodes by typing." code={SearchSource}>
+        <SearchTreeSelect />
+      </DemoBox>
+
+      <DemoBox title="Disabled nodes" description="Per-node `disabled` greys out specific rows." code={DisabledNodesSource}>
+        <DisabledNodesTreeSelect />
+      </DemoBox>
+
+      <DemoBox title="Sizes" description="Three sizes, same structure." code={SizesSource}>
+        <SizesTreeSelect />
       </DemoBox>
 
       <DemoBox
-        title="Multiple"
-        description="Multiple selection mode."
-        code={`<TreeSelect
-  treeData={treeData}
-  multiple
-  treeDefaultExpandAll
-  placeholder="Select multiple"
-/>`}
+        title="Tokens override"
+        description="Scope tokens to theme one TreeSelect without touching the rest of the page."
+        code={TokensOverrideSource}
       >
-        <div style={{ width: 300 }}>
-          <TreeSelect
-            treeData={treeData}
-            multiple
-            treeDefaultExpandAll
-            placeholder="Select multiple"
-            allowClear
-          />
-        </div>
+        <TokensOverrideTreeSelect />
       </DemoBox>
 
-      <DemoBox
-        title="Checkable"
-        description="Tree checkable mode."
-        code={`<TreeSelect
-  treeData={treeData}
-  treeCheckable
-  treeDefaultExpandAll
-  placeholder="Check nodes"
-/>`}
-      >
-        <div style={{ width: 300 }}>
-          <TreeSelect
-            treeData={treeData}
-            treeCheckable
-            treeDefaultExpandAll
-            placeholder="Check nodes"
-            allowClear
-          />
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="Search"
-        description="Filter nodes as you type."
-        code={`<TreeSelect
-  showSearch
-  treeData={treeData}
-  treeDefaultExpandAll
-  placeholder="Start typing..."
-/>`}
-      >
-        <div style={{ width: 300 }}>
-          <TreeSelect
-            showSearch
-            treeData={treeData}
-            treeDefaultExpandAll
-            placeholder="Start typing..."
-            allowClear
-          />
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="Scoped brand"
-        description="Selected tag / highlight uses --sg-color-primary."
-        code={`<div style={{ ['--sg-color-primary' as any]: '#16a34a' }}>
-  <TreeSelect multiple treeData={treeData} />
-</div>`}
-      >
-        <div style={{ ['--sg-color-primary' as never]: '#16a34a', width: 300 }}>
-          <TreeSelect
-            treeData={treeData}
-            multiple
-            treeDefaultExpandAll
-            placeholder="Scoped brand"
-            allowClear
-          />
-        </div>
-      </DemoBox>
-
-      <PropsTable data={treeSelectProps} />
+      <PropsTable title="TreeSelect API" data={treeSelectProps} />
+      <PropsTable title="TreeSelectNode" data={nodeProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="TreeSelect shares Input's control tokens; the dropdown reuses the same overlay + hover variables as Select."
+        data={treeSelectCssVars}
+      />
     </ComponentDoc>
   )
 }

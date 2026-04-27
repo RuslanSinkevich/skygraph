@@ -1,113 +1,114 @@
-import { Carousel } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicCarousel } from './carousel/Basic.demo'
+import BasicSource from './carousel/Basic.demo?raw'
+import { AutoplayCarousel } from './carousel/Autoplay.demo'
+import AutoplaySource from './carousel/Autoplay.demo?raw'
+import { FadeCarousel } from './carousel/Fade.demo'
+import FadeSource from './carousel/Fade.demo?raw'
+import { DotPositionCarousel } from './carousel/DotPosition.demo'
+import DotPositionSource from './carousel/DotPosition.demo?raw'
+import { HiddenDotsCarousel } from './carousel/HiddenDots.demo'
+import HiddenDotsSource from './carousel/HiddenDots.demo?raw'
+import { TokensOverrideCarousel } from './carousel/TokensOverride.demo'
+import TokensOverrideSource from './carousel/TokensOverride.demo?raw'
+import { UnstyledCarousel } from './carousel/Unstyled.demo'
+import UnstyledSource from './carousel/Unstyled.demo?raw'
 
 const carouselProps: PropDef[] = [
-  { name: 'autoplay', description: 'Whether to auto-scroll', type: 'boolean', default: 'false' },
-  { name: 'autoplaySpeed', description: 'Delay between auto-scroll (ms)', type: 'number', default: '3000' },
-  { name: 'dots', description: 'Show dot indicators', type: 'boolean', default: 'true' },
-  { name: 'dotPosition', description: 'Position of the dot indicators', type: "'top' | 'bottom' | 'left' | 'right'", default: "'bottom'" },
-  { name: 'effect', description: 'Transition effect', type: "'slide' | 'fade'", default: "'slide'" },
-  { name: 'children', description: 'Slides content', type: 'ReactNode' },
+  { name: 'autoplay', description: 'Advance to the next slide on an interval', type: 'boolean', default: 'false' },
+  { name: 'autoplaySpeed', description: 'Interval between autoplay steps (ms)', type: 'number', default: '3000' },
+  { name: 'dots', description: 'Render the dot navigation strip', type: 'boolean', default: 'true' },
+  { name: 'dotPosition', description: 'Where to dock the dots (left / right flip the layout to vertical)', type: "'top' | 'bottom' | 'left' | 'right'", default: "'bottom'" },
+  { name: 'effect', description: 'Transition style — horizontal slide or crossfade', type: "'slide' | 'fade'", default: "'slide'" },
+  { name: 'children', description: 'Each direct child is one slide', type: 'ReactNode' },
+  { name: 'className', description: 'Extra class on the root', type: 'string' },
+  { name: 'style', description: 'Inline style on the root', type: 'CSSProperties' },
+  { name: 'unstyled', description: 'Drop sg-carousel-* styles — only the active slide and numbered buttons render', type: 'boolean', default: 'false' },
 ]
 
-const slideStyle: React.CSSProperties = {
-  height: 160,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: 24,
-  fontWeight: 600,
-  color: '#fff',
-  borderRadius: 8,
-}
-
-const colors = ['#364d79', '#4a7c59', '#8b5e3c', '#6b3fa0']
+const carouselCssVars: CssVarDef[] = [
+  { name: 'sg-color-primary', default: '#1677ff', description: 'Active dot colour (wider "pill")' },
+  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Idle dot colour' },
+  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Hovered dot colour' },
+  { name: 'sg-font-size', default: '14px', description: 'Inherited font size inside the track' },
+  { name: 'sg-padding-xs', default: '4px', description: 'Gap between dots' },
+  { name: 'sg-padding-sm', default: '8px', description: 'Padding around the dot strip' },
+  { name: 'sg-transition-duration', default: '180ms', description: 'Slide / fade duration + dot colour transition' },
+  { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: 'Shared easing for transitions' },
+]
 
 export function CarouselDemo() {
   return (
     <ComponentDoc
       title="Carousel"
-      description="A carousel component. Loops through elements."
+      badge="Data Display"
+      crumbs={['Data Display', 'Carousel']}
+      description="Rotating slide container with dot navigation, four dot positions, and slide / fade transitions."
       whenToUse={[
-        'When there is a group of content on the same level to display in a rotating manner.',
-        'When content in limited space needs to be displayed cyclically.',
+        'When a group of content on the same level needs to rotate through a single viewport — hero banners, testimonials.',
+        'When limited horizontal space must cycle through a few items rather than scroll.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="Basic carousel."
-        code={`import { Carousel } from '@skygraph/react'
-
-<Carousel>
-  <div style={{ height: 160, background: '#364d79' }}>Slide 1</div>
-  <div style={{ height: 160, background: '#4a7c59' }}>Slide 2</div>
-  <div style={{ height: 160, background: '#8b5e3c' }}>Slide 3</div>
-  <div style={{ height: 160, background: '#6b3fa0' }}>Slide 4</div>
-</Carousel>`}
-      >
-        <Carousel>
-          {colors.map((bg, i) => (
-            <div key={i} style={{ ...slideStyle, background: bg }}>Slide {i + 1}</div>
-          ))}
-        </Carousel>
+      <DemoBox title="Basic" description="Default slide transition, dots bottom-centre." code={BasicSource}>
+        <BasicCarousel />
       </DemoBox>
 
       <DemoBox
         title="Autoplay"
-        description="Slides automatically."
-        code={`<Carousel autoplay>
-  <div>Slide 1</div>
-  <div>Slide 2</div>
-</Carousel>`}
+        description="Auto-advance every `autoplaySpeed` ms."
+        code={AutoplaySource}
       >
-        <Carousel autoplay>
-          {colors.map((bg, i) => (
-            <div key={i} style={{ ...slideStyle, background: bg }}>Slide {i + 1}</div>
-          ))}
-        </Carousel>
+        <AutoplayCarousel />
       </DemoBox>
 
       <DemoBox
-        title="Fade Effect"
-        description="Use fade transition effect."
-        code={`<Carousel effect="fade">
-  <div>Slide 1</div>
-  <div>Slide 2</div>
-</Carousel>`}
+        title="Fade"
+        description="Cross-fade slides via opacity."
+        code={FadeSource}
       >
-        <Carousel effect="fade">
-          {colors.map((bg, i) => (
-            <div key={i} style={{ ...slideStyle, background: bg }}>Slide {i + 1}</div>
-          ))}
-        </Carousel>
+        <FadeCarousel />
       </DemoBox>
 
       <DemoBox
         title="Dot position"
-        description="Move indicators to the top, left, or right."
-        code={`<Carousel dotPosition="right">...</Carousel>`}
+        description="Top, bottom (default), left or right — left / right go vertical."
+        code={DotPositionSource}
       >
-        <Carousel dotPosition="right">
-          {colors.map((bg, i) => (
-            <div key={i} style={{ ...slideStyle, background: bg }}>Side {i + 1}</div>
-          ))}
-        </Carousel>
+        <DotPositionCarousel />
       </DemoBox>
 
       <DemoBox
         title="Hidden dots"
-        description="Disable indicator dots when the control is decorative."
-        code={`<Carousel dots={false}>...</Carousel>`}
+        description="`dots={false}` for decorative carousels."
+        code={HiddenDotsSource}
       >
-        <Carousel dots={false} autoplay>
-          {colors.map((bg, i) => (
-            <div key={i} style={{ ...slideStyle, background: bg }}>Clean {i + 1}</div>
-          ))}
-        </Carousel>
+        <HiddenDotsCarousel />
       </DemoBox>
 
-      <PropsTable data={carouselProps} />
+      <DemoBox
+        title="Tokens override"
+        description="Scope the dot colours to rebrand."
+        code={TokensOverrideSource}
+      >
+        <TokensOverrideCarousel />
+      </DemoBox>
+
+      <DemoBox
+        title="Unstyled"
+        description="Active slide + numbered buttons, zero built-in CSS."
+        code={UnstyledSource}
+      >
+        <UnstyledCarousel />
+      </DemoBox>
+
+      <PropsTable title="Carousel API" data={carouselProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Carousel has no component-local tokens. The dot colours come from the global palette — rebrand by scoping `--sg-color-primary` + `--sg-color-text-disabled` + `--sg-color-text-tertiary`."
+        data={carouselCssVars}
+      />
     </ComponentDoc>
   )
 }

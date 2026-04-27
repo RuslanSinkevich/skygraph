@@ -1,124 +1,104 @@
-import { Switch } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
-import { useState } from 'react'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicSwitch } from './switch/Basic.demo'
+import BasicSource from './switch/Basic.demo?raw'
+import { TextIconSwitch } from './switch/TextIcon.demo'
+import TextIconSource from './switch/TextIcon.demo?raw'
+import { SizesSwitch } from './switch/Sizes.demo'
+import SizesSource from './switch/Sizes.demo?raw'
+import { StatesSwitch } from './switch/States.demo'
+import StatesSource from './switch/States.demo?raw'
+import { AsyncToggleSwitch } from './switch/AsyncToggle.demo'
+import AsyncToggleSource from './switch/AsyncToggle.demo?raw'
+import { InFormSwitch } from './switch/InForm.demo'
+import InFormSource from './switch/InForm.demo?raw'
+import { TokensOverrideSwitch } from './switch/TokensOverride.demo'
+import TokensOverrideSource from './switch/TokensOverride.demo?raw'
+import { UnstyledSwitch } from './switch/Unstyled.demo'
+import UnstyledSource from './switch/Unstyled.demo?raw'
 
 const switchProps: PropDef[] = [
-  { name: 'checked', description: 'Determine whether the Switch is checked', type: 'boolean' },
-  { name: 'defaultChecked', description: 'Initial checked state', type: 'boolean', default: 'false' },
-  { name: 'onChange', description: 'Callback when state changes', type: '(checked: boolean) => void' },
-  { name: 'disabled', description: 'Disable the switch', type: 'boolean', default: 'false' },
-  { name: 'loading', description: 'Show loading state on the switch', type: 'boolean', default: 'false' },
-  { name: 'size', description: 'Size of the switch', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'checkedChildren', description: 'Content shown when checked', type: 'ReactNode' },
-  { name: 'unCheckedChildren', description: 'Content shown when unchecked', type: 'ReactNode' },
+  { name: 'checked', description: 'Controlled on state', type: 'boolean' },
+  { name: 'defaultChecked', description: 'Initial on state when uncontrolled', type: 'boolean', default: 'false' },
+  { name: 'onChange', description: 'Fires when the switch is toggled', type: '(checked: boolean) => void' },
+  { name: 'disabled', description: 'Block interaction but keep visual state', type: 'boolean', default: 'false' },
+  { name: 'loading', description: 'Show inline spinner and block interaction', type: 'boolean', default: 'false' },
+  { name: 'size', description: 'Size preset (large currently renders like default)', type: "'small' | 'middle' | 'large'", default: "'middle'" },
+  { name: 'checkedChildren', description: 'Content rendered inside the track when on', type: 'ReactNode' },
+  { name: 'unCheckedChildren', description: 'Content rendered inside the track when off', type: 'ReactNode' },
+  { name: 'className', description: 'Wrapper className', type: 'string' },
+  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
+  { name: 'unstyled', description: 'Drop SkyGraph classes — keep role/aria only', type: 'boolean', default: 'false' },
+]
+
+const switchCssVars: CssVarDef[] = [
+  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Track background in the on state' },
+  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Track background in the off state' },
+  { name: 'sg-color-white', default: '#ffffff', description: 'Thumb (handle) color and inner label color' },
+  { name: 'sg-shadow-sm', default: '0 1px 2px rgba(0, 0, 0, 0.05)', description: 'Thumb drop-shadow' },
+  { name: 'sg-font-size-sm', default: '12px', description: 'Font size of the inner on/off label' },
+  { name: 'sg-transition-duration', default: '180ms', description: 'Thumb & background transition duration' },
+  { name: 'sg-transition-timing', default: 'cubic-bezier(.4,0,.2,1)', description: 'Thumb & background easing' },
 ]
 
 export function SwitchDemo() {
-  const [checked, setChecked] = useState(false)
-
   return (
     <ComponentDoc
       title="Switch"
-      description="Switching selector."
+      description="Boolean selector that commits immediately. Pair it with a label and — for slow networks — the `loading` state."
       whenToUse={[
-        'When you need to represent the switching between two states or on-off state.',
-        'The difference between Switch and Checkbox is that Switch triggers a state change directly, but Checkbox is generally used for state marking.',
+        'Flip a single state that takes effect right away (dark mode, notifications, publish state).',
+        'Inline in settings rows where a commit-on-click toggle is more natural than a form submit.',
+        'Reach for Checkbox instead if the value is submitted later as part of a form.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="The most basic usage."
-        code={`import { Switch } from '@skygraph/react'
+      <DemoBox title="Basic" description="Controlled on/off with live readout." code={BasicSource}>
+        <BasicSwitch />
+      </DemoBox>
 
-<Switch defaultChecked />`}
-      >
-        <Switch defaultChecked />
+      <DemoBox title="Text & icon" description="checkedChildren / unCheckedChildren render inside the track." code={TextIconSource}>
+        <TextIconSwitch />
+      </DemoBox>
+
+      <DemoBox title="Sizes" description="small for compact toolbars; default for forms." code={SizesSource}>
+        <SizesSwitch />
+      </DemoBox>
+
+      <DemoBox title="States" description="Disabled keeps the state; loading blocks interaction." code={StatesSource}>
+        <StatesSwitch />
       </DemoBox>
 
       <DemoBox
-        title="Text & Icon"
-        description="With text or icon inside."
-        code={`<Switch checkedChildren="ON" unCheckedChildren="OFF" defaultChecked />
-<Switch checkedChildren="1" unCheckedChildren="0" />`}
+        title="Optimistic async toggle"
+        description="Flip first, show a spinner, roll back on error."
+        code={AsyncToggleSource}
       >
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-          <Switch checkedChildren="ON" unCheckedChildren="OFF" defaultChecked />
-          <Switch checkedChildren="1" unCheckedChildren="0" />
-        </div>
+        <AsyncToggleSwitch />
       </DemoBox>
 
       <DemoBox
-        title="Disabled"
-        description="Disabled state of Switch."
-        code={`<Switch disabled />
-<Switch disabled defaultChecked />`}
+        title="Inside a Form"
+        description="Use valuePropName='checked' to bind Switch to a boolean field."
+        code={InFormSource}
       >
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-          <Switch disabled />
-          <Switch disabled defaultChecked />
-        </div>
+        <InFormSwitch />
       </DemoBox>
 
-      <DemoBox
-        title="Loading"
-        description="Loading state of Switch."
-        code={`<Switch loading />
-<Switch loading defaultChecked />`}
-      >
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-          <Switch loading />
-          <Switch loading defaultChecked />
-        </div>
+      <DemoBox title="Tokens override" description="Scope global tokens to rebrand a group." code={TokensOverrideSource}>
+        <TokensOverrideSwitch />
       </DemoBox>
 
-      <DemoBox
-        title="Controlled"
-        description="Controlled Switch."
-        code={`const [checked, setChecked] = useState(false)
-
-<Switch checked={checked} onChange={setChecked} />`}
-      >
-        <Switch checked={checked} onChange={setChecked} />
-        <span style={{ marginLeft: 8 }}>{checked ? 'Checked' : 'Unchecked'}</span>
+      <DemoBox title="Unstyled" description="Semantics only — paint it yourself." code={UnstyledSource}>
+        <UnstyledSwitch />
       </DemoBox>
 
-      <DemoBox
-        title="Sizes"
-        description="Three sizes for varying UI densities."
-        code={`<Switch size="small" defaultChecked />
-<Switch defaultChecked />
-<Switch size="large" defaultChecked />`}
-      >
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-          <Switch size="small" defaultChecked />
-          <Switch defaultChecked />
-          <Switch size="large" defaultChecked />
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="Scoped brand"
-        description="Switch picks up --sg-color-primary automatically."
-        code={`<div style={{ ['--sg-color-primary' as any]: '#e11d48' }}>
-  <Switch defaultChecked />
-</div>`}
-      >
-        <div
-          style={{
-            display: 'flex',
-            gap: 12,
-            alignItems: 'center',
-            ['--sg-color-primary' as never]: '#e11d48',
-          }}
-        >
-          <Switch defaultChecked />
-          <Switch defaultChecked checkedChildren="ON" unCheckedChildren="OFF" />
-          <Switch />
-        </div>
-      </DemoBox>
-
-      <PropsTable data={switchProps} />
+      <PropsTable title="Switch API" data={switchProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Switch uses only global tokens. To rebrand, scope `--sg-color-primary` (on), `--sg-color-text-disabled` (off) and `--sg-color-white` (thumb) on a parent."
+        data={switchCssVars}
+      />
     </ComponentDoc>
   )
 }

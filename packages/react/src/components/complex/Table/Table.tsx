@@ -323,7 +323,11 @@ export function Table(props: TableProps) {
       )}
 
       <div
-        className={slotClass('sg-table-scroll', sCls.scroll)}
+        className={slotClass(
+          'sg-table-scroll',
+          scroll?.x ? 'sg-table-scroll-x' : '',
+          sCls.scroll,
+        )}
         style={slotStyle(
           Object.keys(scrollStyle).length > 0 ? scrollStyle : undefined,
           sSty.scroll,

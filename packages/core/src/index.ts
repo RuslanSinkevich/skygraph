@@ -41,6 +41,7 @@ export { createForm } from './engines/form/index'
 export type {
   FormEngine,
   FieldMeta,
+  FieldMetaExtensions,
   FormState,
   GetFieldValue,
   Rule,
@@ -52,6 +53,14 @@ export type {
   ValidationMode,
   FormListOperation,
 } from './engines/form/index'
+
+export {
+  reservePrefix,
+  listReservedPrefixes,
+  FORM_META_PREFIX,
+  TABLE_PREFIX,
+  TREE_PREFIX,
+} from './engines/namespaces'
 
 export { createTable } from './engines/table/index'
 export type {

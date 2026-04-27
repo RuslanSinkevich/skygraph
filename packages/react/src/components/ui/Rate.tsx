@@ -41,8 +41,29 @@ export function Rate({
 
   const handleClick = (starValue: number) => {
     if (disabled) return
-    setInternalValue(starValue)
-    onChange?.(starValue)
+    const next = currentValue === starValue ? 0 : starValue
+    setInternalValue(next)
+    onChange?.(next)
+  }
+
+  const handleStarClick = (starIndex: number, clientX: number, rect: DOMRect) => {
+    if (disabled) return
+    if (!allowHalf) {
+      handleClick(starIndex)
+      return
+    }
+    const isLeftHalf = clientX - rect.left < rect.width / 2
+    handleClick(isLeftHalf ? starIndex - 0.5 : starIndex)
+  }
+
+  const handleStarHover = (starIndex: number, clientX: number, rect: DOMRect) => {
+    if (disabled) return
+    if (!allowHalf) {
+      setHoverValue(starIndex)
+      return
+    }
+    const isLeftHalf = clientX - rect.left < rect.width / 2
+    setHoverValue(isLeftHalf ? starIndex - 0.5 : starIndex)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent, _starIndex: number) => {
@@ -89,9 +110,13 @@ export function Rate({
             aria-checked={isFull}
             aria-label={`${starIndex} star${starIndex > 1 ? 's' : ''}`}
             tabIndex={disabled ? -1 : 0}
-            onClick={() => handleClick(allowHalf ? starIndex - 0.5 : starIndex)}
+            onClick={(e) =>
+              handleStarClick(starIndex, e.clientX, e.currentTarget.getBoundingClientRect())
+            }
             onKeyDown={(e) => handleKeyDown(e, starIndex)}
-            onMouseEnter={() => !disabled && setHoverValue(starIndex)}
+            onMouseMove={(e) =>
+              handleStarHover(starIndex, e.clientX, e.currentTarget.getBoundingClientRect())
+            }
             onMouseLeave={() => !disabled && setHoverValue(null)}
           >
             {character}

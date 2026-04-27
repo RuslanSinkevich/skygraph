@@ -1,175 +1,123 @@
-import { Drawer, Button } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
-import { useState } from 'react'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicDrawer } from './drawer/Basic.demo'
+import BasicSource from './drawer/Basic.demo?raw'
+import { PlacementDrawer } from './drawer/Placement.demo'
+import PlacementSource from './drawer/Placement.demo?raw'
+import { SizesDrawer } from './drawer/Sizes.demo'
+import SizesSource from './drawer/Sizes.demo?raw'
+import { FooterDrawer } from './drawer/Footer.demo'
+import FooterSource from './drawer/Footer.demo?raw'
+import { NoMaskDrawer } from './drawer/NoMask.demo'
+import NoMaskSource from './drawer/NoMask.demo?raw'
+import { TokensOverrideDrawer } from './drawer/TokensOverride.demo'
+import TokensOverrideSource from './drawer/TokensOverride.demo?raw'
+import { UnstyledDrawer } from './drawer/Unstyled.demo'
+import UnstyledSource from './drawer/Unstyled.demo?raw'
 
 const drawerProps: PropDef[] = [
-  { name: 'open', description: 'Whether the Drawer dialog is visible', type: 'boolean' },
-  { name: 'onClose', description: 'Callback when Drawer is closed', type: '() => void' },
-  { name: 'title', description: 'Title of the Drawer', type: 'ReactNode' },
-  { name: 'placement', description: 'Placement of the Drawer', type: "'left' | 'right' | 'top' | 'bottom'", default: "'right'" },
-  { name: 'width', description: 'Width of the Drawer (horizontal placement)', type: 'number | string', default: '378' },
-  { name: 'height', description: 'Height of the Drawer (vertical placement)', type: 'number | string', default: '378' },
-  { name: 'closable', description: 'Whether to show close button', type: 'boolean', default: 'true' },
-  { name: 'mask', description: 'Whether to show mask', type: 'boolean', default: 'true' },
-  { name: 'maskClosable', description: 'Close Drawer by clicking mask', type: 'boolean', default: 'true' },
-  { name: 'footer', description: 'Footer content of the Drawer', type: 'ReactNode' },
+  { name: 'open', description: 'Whether the Drawer is visible', type: 'boolean' },
+  { name: 'onClose', description: 'Called on ESC, mask click, or × button', type: '() => void' },
+  { name: 'title', description: 'Header content next to the close control', type: 'ReactNode' },
+  { name: 'children', description: 'Scrollable body content', type: 'ReactNode' },
+  { name: 'footer', description: 'Sticky footer row for actions', type: 'ReactNode' },
+  { name: 'placement', description: 'Edge the panel slides in from', type: "'left' | 'right' | 'top' | 'bottom'", default: "'right'" },
+  { name: 'width', description: 'Panel width (horizontal placement)', type: 'number | string', default: '378' },
+  { name: 'height', description: 'Panel height (vertical placement)', type: 'number | string', default: '378' },
+  { name: 'closable', description: 'Show the × header button', type: 'boolean', default: 'true' },
+  { name: 'mask', description: 'Render the dimmed backdrop', type: 'boolean', default: 'true' },
+  { name: 'maskClosable', description: 'Clicking the mask calls onClose', type: 'boolean', default: 'true' },
+  { name: 'className', description: 'Panel className', type: 'string' },
+  { name: 'style', description: 'Panel inline style', type: 'CSSProperties' },
+  { name: 'unstyled', description: 'Drop every sg-drawer-* class (headless mode)', type: 'boolean', default: 'false' },
 ]
 
-function BasicDrawer() {
-  const [open, setOpen] = useState(false)
-  return (
-    <>
-      <Button type="primary" onClick={() => setOpen(true)}>Open Drawer</Button>
-      <Drawer open={open} onClose={() => setOpen(false)} title="Basic Drawer">
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Drawer>
-    </>
-  )
-}
-
-function PlacementDrawer() {
-  const [open, setOpen] = useState(false)
-  const [placement, setPlacement] = useState<'left' | 'right' | 'top' | 'bottom'>('right')
-  return (
-    <>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {(['left', 'right', 'top', 'bottom'] as const).map((p) => (
-          <Button key={p} onClick={() => { setPlacement(p); setOpen(true) }}>
-            {p}
-          </Button>
-        ))}
-      </div>
-      <Drawer open={open} onClose={() => setOpen(false)} title={`${placement} Drawer`} placement={placement}>
-        <p>Drawer from the {placement}.</p>
-      </Drawer>
-    </>
-  )
-}
-
-function FooterDrawer() {
-  const [open, setOpen] = useState(false)
-  const close = () => setOpen(false)
-  return (
-    <>
-      <Button onClick={() => setOpen(true)}>Open with footer</Button>
-      <Drawer
-        open={open}
-        onClose={close}
-        title="Edit record"
-        footer={
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <Button onClick={close}>Cancel</Button>
-            <Button type="primary" onClick={close}>Save</Button>
-          </div>
-        }
-      >
-        <p>Form goes here…</p>
-      </Drawer>
-    </>
-  )
-}
-
-function WideDrawer() {
-  const [open, setOpen] = useState(false)
-  return (
-    <>
-      <Button onClick={() => setOpen(true)}>Open wide (640)</Button>
-      <Drawer open={open} onClose={() => setOpen(false)} title="Wide drawer" width={640}>
-        <p>width = 640</p>
-      </Drawer>
-    </>
-  )
-}
-
-function ThemedDrawer() {
-  const [open, setOpen] = useState(false)
-  return (
-    <div style={{ ['--sg-color-primary' as never]: '#0ea5e9' }}>
-      <Button type="primary" onClick={() => setOpen(true)}>Open scoped</Button>
-      <Drawer open={open} onClose={() => setOpen(false)} title="Scoped brand">
-        <p>Primary button inside drawer uses scoped token.</p>
-        <Button type="primary">Save</Button>
-      </Drawer>
-    </div>
-  )
-}
+const drawerCssVars: CssVarDef[] = [
+  { name: 'sg-color-bg-elevated', default: '#ffffff', description: 'Panel background' },
+  { name: 'sg-color-overlay', default: 'rgba(0, 0, 0, 0.45)', description: 'Mask colour + opacity' },
+  { name: 'sg-color-border-secondary', default: 'rgba(5, 5, 5, 0.04)', description: 'Header / footer divider' },
+  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Title colour' },
+  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: '× close button colour' },
+  { name: 'sg-font-size-lg', default: '16px', description: 'Title font size' },
+  { name: 'sg-font-size-xl', default: '20px', description: '× close glyph size' },
+  { name: 'sg-padding-md', default: '12px', description: 'Header / footer vertical padding' },
+  { name: 'sg-padding-xl', default: '24px', description: 'Body padding + header / footer horizontal padding' },
+  { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0,0,0,0.08)', description: 'Panel elevation' },
+  { name: 'sg-transition-duration', default: '180ms', description: 'Slide-in / fade-in speed' },
+  { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: 'Shared easing' },
+  { name: 'sg-z-modal', default: '1000', description: 'Stacking layer for the drawer root' },
+]
 
 export function DrawerDemo() {
   return (
     <ComponentDoc
       title="Drawer"
-      description="A panel which slides in from the edge of the screen."
+      description="Edge-anchored panel that slides in from any side. Uses a focus trap, ESC-to-close, and an optional mask. Body scrolls while header / footer stay pinned."
       whenToUse={[
-        'When you need a panel attached to the edge that provides supplementary content.',
-        'Use when a Modal is too heavy and you want to keep context.',
+        'Edit a record or filter a list without losing page context.',
+        'Show supplementary navigation / notifications tray.',
+        "Reveal a side form that's too heavy for a Popover and too light for a Modal.",
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="Basic drawer from the right."
-        code={`import { Drawer, Button } from '@skygraph/react'
-
-const [open, setOpen] = useState(false)
-
-<Button type="primary" onClick={() => setOpen(true)}>Open Drawer</Button>
-<Drawer open={open} onClose={() => setOpen(false)} title="Basic Drawer">
-  <p>Some contents...</p>
-</Drawer>`}
-      >
+      <DemoBox title="Basic" description="Right-side drawer with focus trap + ESC support." code={BasicSource}>
         <BasicDrawer />
       </DemoBox>
 
       <DemoBox
         title="Placement"
-        description="The Drawer can appear from any edge."
-        code={`<Drawer placement="left" open={open} onClose={onClose} title="Left">
-  <p>Content</p>
-</Drawer>`}
+        description="Slide in from any edge; width / height switch automatically."
+        code={PlacementSource}
       >
         <PlacementDrawer />
       </DemoBox>
 
       <DemoBox
-        title="With footer"
-        description="Attach actions in a sticky footer."
-        code={`<Drawer
-  open={open}
-  onClose={close}
-  title="Edit record"
-  footer={
-    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-      <Button onClick={close}>Cancel</Button>
-      <Button type="primary" onClick={close}>Save</Button>
-    </div>
-  }
->
-  <p>Form goes here</p>
-</Drawer>`}
+        title="Custom size"
+        description="Any CSS length works — px, %, vw. Use % for mobile-friendly drawers."
+        code={SizesSource}
+      >
+        <SizesDrawer />
+      </DemoBox>
+
+      <DemoBox
+        title="Sticky footer"
+        description="Body scrolls, footer stays pinned."
+        code={FooterSource}
       >
         <FooterDrawer />
       </DemoBox>
 
       <DemoBox
-        title="Custom size"
-        description="Override width for horizontal drawers or height for vertical."
-        code={`<Drawer width={640} ... />`}
+        title="Mask options"
+        description="Turn off the mask, or keep it but force the × / ESC."
+        code={NoMaskSource}
       >
-        <WideDrawer />
+        <NoMaskDrawer />
       </DemoBox>
 
       <DemoBox
-        title="Scoped brand"
-        description="Actions inside Drawer follow --sg-color-primary."
-        code={`<div style={{ ['--sg-color-primary' as any]: '#0ea5e9' }}>
-  <Drawer ... />
-</div>`}
+        title="Tokens override"
+        description="Scope surface tokens on a wrapper for a dark-mode drawer."
+        code={TokensOverrideSource}
       >
-        <ThemedDrawer />
+        <TokensOverrideDrawer />
       </DemoBox>
 
-      <PropsTable data={drawerProps} />
+      <DemoBox
+        title="Unstyled"
+        description="Keep a11y + ESC / trap; do your own painting."
+        code={UnstyledSource}
+      >
+        <UnstyledDrawer />
+      </DemoBox>
+
+      <PropsTable title="Drawer API" data={drawerProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Drawer has no dedicated tokens — the panel is `--sg-color-bg-elevated`, the mask is `--sg-color-overlay`, and the lift is `--sg-shadow-lg`. Override them on a wrapper to restyle without editing the global theme."
+        data={drawerCssVars}
+      />
     </ComponentDoc>
   )
 }

@@ -1,0 +1,116 @@
+/*
+ * Styles used by the Table "Styling" demos. Everything here is demo-only CSS
+ * built on top of public SkyGraph slots and CSS tokens — no deep selectors
+ * into internal DOM, no !important.
+ */
+
+/* ── StyledSlots.demo ───────────────────────────────────────────────── */
+.demo-table-root {
+  border-radius: var(--sg-border-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 1px 2px color-mix(in srgb, black 8%, transparent);
+}
+.demo-table-toolbar {
+  background: color-mix(in srgb, var(--sg-color-primary-bg) 55%, var(--sg-color-bg) 45%);
+  padding: 6px 10px;
+}
+.demo-table-th {
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--sg-color-text-secondary);
+}
+.demo-table-td {
+  font-variant-numeric: tabular-nums;
+}
+/* Row itself is `display: contents` — style through its .sg-table-td children. */
+.demo-table-row:nth-child(even) .sg-table-td {
+  background: color-mix(in srgb, var(--sg-color-bg-secondary) 35%, var(--sg-color-bg));
+}
+.demo-th-name {
+  color: var(--sg-color-primary);
+}
+.demo-th-status {
+  color: var(--sg-color-warning);
+}
+
+/* ── ConditionalRows.demo ───────────────────────────────────────────── */
+.demo-row-active .sg-table-td {
+  background: color-mix(in srgb, var(--sg-color-success-bg) 55%, var(--sg-color-bg));
+}
+.demo-row-inactive .sg-table-td {
+  color: var(--sg-color-text-tertiary);
+  font-style: italic;
+}
+.demo-row-vip .sg-table-td {
+  background: color-mix(in srgb, var(--sg-color-warning-bg) 70%, var(--sg-color-bg));
+}
+.demo-row-vip .sg-table-td:first-child {
+  box-shadow: inset 3px 0 0 var(--sg-color-warning);
+}
+
+/* ── FinanceStyle.demo ──────────────────────────────────────────────── */
+.demo-finance-root {
+  font-variant-numeric: tabular-nums;
+  --sg-table-header-bg: color-mix(in srgb, var(--sg-color-bg-secondary) 70%, var(--sg-color-bg) 30%);
+  --sg-table-cell-padding: 8px 12px;
+}
+.demo-ticker {
+  font-family: SFMono-Regular, Consolas, Menlo, monospace;
+  font-weight: 600;
+  background: var(--sg-color-bg-secondary);
+  color: var(--sg-color-text);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.demo-delta-up {
+  color: var(--sg-color-success);
+  font-weight: 600;
+}
+.demo-delta-down {
+  color: var(--sg-color-error);
+  font-weight: 600;
+}
+.demo-delta-up::before {
+  content: '▲ ';
+  font-size: 0.8em;
+}
+.demo-delta-down::before {
+  content: '▼ ';
+  font-size: 0.8em;
+}
+
+/* ── Unstyled.demo ──────────────────────────────────────────────────── */
+.demo-unstyled-card {
+  padding: 16px;
+  border: 1px dashed var(--sg-color-border);
+  border-radius: var(--sg-border-radius-lg);
+  background: var(--sg-color-bg-secondary);
+}
+.demo-unstyled-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--sg-color-text-secondary);
+}
+.demo-unstyled-card-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+.demo-unstyled-btn {
+  border: 1px solid var(--sg-color-border);
+  background: var(--sg-color-bg);
+  color: var(--sg-color-text);
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.demo-unstyled-btn:hover {
+  border-color: var(--sg-color-primary);
+  color: var(--sg-color-primary);
+}

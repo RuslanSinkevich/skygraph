@@ -25,6 +25,24 @@ function cloneDate(d: Date): Date {
   return new Date(d.getTime())
 }
 
+/**
+ * Coerce arbitrary input into a valid `Date` or `null`.
+ *
+ * Form bindings frequently pass non-Date values (empty strings from
+ * `defaultValues: { birthDate: '' }`, ISO strings from a server, numbers from
+ * timestamps, `Invalid Date` objects). Calling `.getFullYear()` on any of those
+ * throws — so normalize at the boundary and treat garbage as "no value".
+ */
+function toValidDate(input: unknown): Date | null {
+  if (input == null || input === '') return null
+  if (input instanceof Date) return isNaN(input.getTime()) ? null : input
+  if (typeof input === 'string' || typeof input === 'number') {
+    const d = new Date(input)
+    return isNaN(d.getTime()) ? null : d
+  }
+  return null
+}
+
 function formatDate(d: Date | null, fmt: string): string {
   if (!d) return ''
   const pad = (n: number) => String(n).padStart(2, '0')
@@ -544,12 +562,15 @@ export function DatePicker({
   const hasTime = !!showTime
   const fmt = formatProp ?? (hasTime ? 'YYYY-MM-DD HH:mm:ss' : picker === 'month' ? 'YYYY-MM' : picker === 'year' ? 'YYYY' : 'YYYY-MM-DD')
 
-  const [internalValue, setInternalValue] = useState<Date | null>(value !== undefined ? value : (defaultValue ?? null))
+  const normalizedValue = toValidDate(value)
+  const normalizedDefault = toValidDate(defaultValue)
+
+  const [internalValue, setInternalValue] = useState<Date | null>(value !== undefined ? normalizedValue : normalizedDefault)
   const [internalOpen, setInternalOpen] = useState(false)
   const [inputText, setInputText] = useState('')
   const [isInputting, setIsInputting] = useState(false)
 
-  const currentValue = value !== undefined ? value : internalValue
+  const currentValue = value !== undefined ? normalizedValue : internalValue
   const isOpen = openProp ?? internalOpen
 
   const [viewYear, setViewYear] = useState(() => (currentValue ?? new Date()).getFullYear())
@@ -584,11 +605,12 @@ export function DatePicker({
 
   useEffect(() => {
     if (value !== undefined) {
-      setInternalValue(value)
-      if (value) {
-        setViewYear(value.getFullYear())
-        setViewMonth(value.getMonth())
-        setTempTime(value)
+      const normalized = toValidDate(value)
+      setInternalValue(normalized)
+      if (normalized) {
+        setViewYear(normalized.getFullYear())
+        setViewMonth(normalized.getMonth())
+        setTempTime(normalized)
       }
     }
   }, [value])
@@ -877,14 +899,21 @@ export function RangePicker({
   const timeConfig: ShowTimeConfig = typeof showTime === 'object' ? showTime : {}
   const fmt = formatProp ?? (hasTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD')
 
+  const normalizeRange = (
+    raw: [unknown, unknown] | null | undefined,
+  ): [Date | null, Date | null] => [toValidDate(raw?.[0]), toValidDate(raw?.[1])]
+
+  const normalizedValue = value ? normalizeRange(value) : null
+  const normalizedDefault = defaultValue ? normalizeRange(defaultValue) : null
+
   const [internalValue, setInternalValue] = useState<[Date | null, Date | null]>(
-    value ?? defaultValue ?? [null, null],
+    normalizedValue ?? normalizedDefault ?? [null, null],
   )
   const [internalOpen, setInternalOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState<0 | 1>(0)
   const [hoverDate, setHoverDate] = useState<Date | null>(null)
 
-  const currentValue = value ?? internalValue
+  const currentValue = normalizedValue ?? internalValue
   const isOpen = openProp ?? internalOpen
 
   const now = new Date()
@@ -912,7 +941,8 @@ export function RangePicker({
   }, [onOpenChange])
 
   useEffect(() => {
-    if (value) setInternalValue(value)
+    if (value) setInternalValue(normalizeRange(value))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   const openDropdown = () => {

@@ -1,187 +1,100 @@
-import { useState } from 'react'
-import { Button, Modal } from '@skygraph/react'
-import { ComponentDoc, DemoBox, PropsTable } from '../components'
-import type { PropDef } from '../components'
+import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
+import type { PropDef, CssVarDef } from '../components'
+
+import { BasicModal } from './modal/Basic.demo'
+import BasicSource from './modal/Basic.demo?raw'
+import { AsyncConfirmModal } from './modal/AsyncConfirm.demo'
+import AsyncConfirmSource from './modal/AsyncConfirm.demo?raw'
+import { WidthsModal } from './modal/Widths.demo'
+import WidthsSource from './modal/Widths.demo?raw'
+import { NoFooterModal } from './modal/NoFooter.demo'
+import NoFooterSource from './modal/NoFooter.demo?raw'
+import { TokensOverrideModal } from './modal/TokensOverride.demo'
+import TokensOverrideSource from './modal/TokensOverride.demo?raw'
+import { UnstyledModal } from './modal/Unstyled.demo'
+import UnstyledSource from './modal/Unstyled.demo?raw'
 
 const modalProps: PropDef[] = [
-  { name: 'open', description: 'Whether the modal is visible', type: 'boolean', default: 'false' },
-  { name: 'onClose', description: 'Callback when modal is closed', type: '() => void' },
-  { name: 'title', description: 'Title of the modal', type: 'ReactNode' },
-  { name: 'footer', description: 'Footer content (buttons etc.)', type: 'ReactNode' },
-  { name: 'children', description: 'Modal body content', type: 'ReactNode' },
-  { name: 'width', description: 'Width of the modal dialog', type: 'string | number', default: '520' },
-  { name: 'closable', description: 'Show close icon', type: 'boolean', default: 'true' },
-  { name: 'maskClosable', description: 'Close on mask click', type: 'boolean', default: 'true' },
-  { name: 'centered', description: 'Center modal vertically', type: 'boolean', default: 'false' },
-  { name: 'className', description: 'Additional CSS class', type: 'string' },
-  { name: 'style', description: 'Inline styles for the modal dialog', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Remove all built-in styles', type: 'boolean', default: 'false' },
+  { name: 'open', description: 'Controls visibility', type: 'boolean', default: 'false' },
+  { name: 'onClose', description: 'Called on Escape, mask click, or close button', type: '() => void' },
+  { name: 'title', description: 'Optional heading + accessible name', type: 'string' },
+  { name: 'footer', description: 'Action area under the body — usually two Buttons', type: 'ReactNode' },
+  { name: 'children', description: 'Body content', type: 'ReactNode' },
+  { name: 'width', description: 'Dialog width (number = px, or any CSS length)', type: 'number | string', default: '520' },
+  { name: 'className', description: 'Extra class on the dialog root', type: 'string' },
+  { name: 'unstyled', description: 'Keep semantics, drop SkyGraph styles', type: 'boolean', default: 'false' },
+]
+
+const modalCssVars: CssVarDef[] = [
+  { name: 'sg-z-modal', default: '1000', description: 'Stacking layer for the mask + dialog' },
+  { name: 'sg-color-overlay', default: 'rgba(0, 0, 0, 0.45)', description: 'Backdrop fill — dark-theme tuned automatically' },
+  { name: 'sg-color-bg-elevated', default: 'var(--sg-gray-1)', description: 'Dialog background' },
+  { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: 'Header / footer divider lines' },
+  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Title + body text' },
+  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Close icon (× button)' },
+  { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: 'Close icon hover background' },
+  { name: 'sg-border-radius-lg', default: '8px', description: 'Dialog corner radius' },
+  { name: 'sg-border-radius-sm', default: '4px', description: 'Close icon hit-area radius' },
+  { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0, 0, 0, 0.12)', description: 'Dialog drop shadow' },
+  { name: 'sg-padding-lg', default: '16px', description: 'Header + body padding' },
+  { name: 'sg-padding-md', default: '12px', description: 'Footer vertical padding' },
+  { name: 'sg-padding-sm', default: '8px', description: 'Gap between footer buttons' },
+  { name: 'sg-padding-xl', default: '24px', description: 'Spacious empty-state / centered layout padding' },
+  { name: 'sg-font-size-lg', default: '16px', description: 'Title font size' },
+  { name: 'sg-font-size-xl', default: '20px', description: 'Close icon font size' },
 ]
 
 export function ModalDemo() {
-  const [open, setOpen] = useState(false)
-  const [open2, setOpen2] = useState(false)
-  const [openWide, setOpenWide] = useState(false)
-  const [openBrand, setOpenBrand] = useState(false)
-  const [openUnstyled, setOpenUnstyled] = useState(false)
-
   return (
     <ComponentDoc
       title="Modal"
       badge="Feedback"
       crumbs={['Feedback', 'Modal']}
-      description="Modal dialogs for user interactions that require attention. Fully unstyled-capable and brand-scoped."
+      description="Dialog with focus trap, Escape-to-close, and scoped token re-skinning."
       whenToUse={[
-        'When requiring users to interact with the application without jumping to a new page.',
-        'When you need to show additional information or confirmation.',
+        'When a user must complete a short task before returning to context (create, confirm, edit).',
+        'When you need to show important details without navigating away.',
+        'For lightweight confirmations prefer <Popconfirm>. For stepwise flows consider <Drawer>.',
       ]}
     >
-      <DemoBox
-        title="Basic"
-        description="Basic modal dialog with title, content, and footer buttons."
-        code={`const [open, setOpen] = useState(false)
+      <DemoBox title="Basic" description="Title, body, two-button footer." code={BasicSource}>
+        <BasicModal />
+      </DemoBox>
 
-<Button type="primary" onClick={() => setOpen(true)}>
-  Open Modal
-</Button>
-<Modal
-  open={open}
-  onClose={() => setOpen(false)}
-  title="SkyGraph Modal"
-  footer={<>
-    <Button onClick={() => setOpen(false)}>Cancel</Button>
-    <Button type="primary" onClick={() => setOpen(false)}>OK</Button>
-  </>}
->
-  <p>Modal content goes here.</p>
-</Modal>`}
-      >
-        <Button type="primary" onClick={() => setOpen(true)}>Open Modal</Button>
-        <Modal
-          open={open}
-          onClose={() => setOpen(false)}
-          title="SkyGraph Modal"
-          footer={
-            <>
-              <Button onClick={() => setOpen(false)}>Cancel</Button>
-              <Button type="primary" onClick={() => setOpen(false)}>OK</Button>
-            </>
-          }
-        >
-          <p>Modal content. Press Esc or click outside to close.</p>
-        </Modal>
+      <DemoBox title="Async confirmation" description="Loading footer + guarded Cancel while the task runs." code={AsyncConfirmSource}>
+        <AsyncConfirmModal />
+      </DemoBox>
+
+      <DemoBox title="Widths" description="`width` takes pixels or any CSS length." code={WidthsSource}>
+        <WidthsModal />
+      </DemoBox>
+
+      <DemoBox title="No footer" description="Leave `footer` off to remove the divider — read-only dialogs." code={NoFooterSource}>
+        <NoFooterModal />
       </DemoBox>
 
       <DemoBox
-        title="Loading in footer"
-        description="Button with loading state in the modal footer for async operations."
-        code={`<Modal
-  open={open}
-  onClose={() => setOpen(false)}
-  title="Saving..."
-  footer={<>
-    <Button onClick={() => setOpen(false)}>Cancel</Button>
-    <Button type="primary" loading>Saving...</Button>
-  </>}
->
-  <p>Please wait while saving...</p>
-</Modal>`}
+        title="Tokens override"
+        description="Scope `--sg-color-primary` + `--sg-border-radius-lg` to re-skin one modal."
+        code={TokensOverrideSource}
       >
-        <Button onClick={() => setOpen2(true)}>Open with loading</Button>
-        <Modal
-          open={open2}
-          onClose={() => setOpen2(false)}
-          title="Saving..."
-          footer={
-            <>
-              <Button onClick={() => setOpen2(false)}>Cancel</Button>
-              <Button type="primary" loading onClick={() => setOpen2(false)}>Saving...</Button>
-            </>
-          }
-        >
-          <p>Please wait while saving...</p>
-        </Modal>
+        <TokensOverrideModal />
       </DemoBox>
 
       <DemoBox
-        title="Custom width"
-        description="Control the dialog width."
-        code={`<Modal open={open} width={720} title="Wide modal" />`}
+        title="Unstyled"
+        description="Headless mode — keeps focus trap and ARIA, drops the visuals."
+        code={UnstyledSource}
       >
-        <Button onClick={() => setOpenWide(true)}>Open 720px modal</Button>
-        <Modal
-          open={openWide}
-          onClose={() => setOpenWide(false)}
-          title="Wide 720px"
-          width={720}
-          footer={<Button onClick={() => setOpenWide(false)}>Close</Button>}
-        >
-          <p>Use width to fit dense layouts — tables, forms, previews.</p>
-        </Modal>
+        <UnstyledModal />
       </DemoBox>
 
-      <DemoBox
-        title="Scoped brand"
-        description="Wrap Modal in a themed container to re-skin it without touching CSS."
-        code={`<div style={{ ['--sg-color-primary' as any]: '#7c3aed', ['--sg-border-radius' as any]: '14px' }}>
-  <Modal ... />
-</div>`}
-      >
-        <Button type="primary" onClick={() => setOpenBrand(true)}>
-          Open themed modal
-        </Button>
-        <div
-          style={{
-            ['--sg-color-primary' as never]: '#7c3aed',
-            ['--sg-color-primary-hover' as never]: '#6d28d9',
-            ['--sg-color-primary-bg' as never]: '#f3e8ff',
-            ['--sg-border-radius' as never]: '14px',
-          }}
-        >
-          <Modal
-            open={openBrand}
-            onClose={() => setOpenBrand(false)}
-            title="Themed brand"
-            footer={
-              <>
-                <Button onClick={() => setOpenBrand(false)}>Cancel</Button>
-                <Button type="primary" onClick={() => setOpenBrand(false)}>
-                  Confirm
-                </Button>
-              </>
-            }
-          >
-            <p>Every button inside the modal picks up the scoped tokens. No component change.</p>
-          </Modal>
-        </div>
-      </DemoBox>
-
-      <DemoBox
-        title="Unstyled modal"
-        description="Drop SkyGraph CSS — keep semantics (role=dialog, aria-modal, focus trap)."
-        code={`<Modal unstyled open={open} className="my-dialog" />`}
-      >
-        <Button onClick={() => setOpenUnstyled(true)}>Open unstyled</Button>
-        <Modal
-          unstyled
-          open={openUnstyled}
-          onClose={() => setOpenUnstyled(false)}
-          title="Custom dialog"
-          className="demo-unstyled-card"
-        >
-          <div style={{ padding: 14, fontSize: 13 }}>
-            SkyGraph ships no CSS for this dialog. The backdrop and centering
-            are from your own styles.
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
-            <Button unstyled className="demo-unstyled-btn" onClick={() => setOpenUnstyled(false)}>
-              Close
-            </Button>
-          </div>
-        </Modal>
-      </DemoBox>
-
-      <PropsTable data={modalProps} />
+      <PropsTable title="Modal API" data={modalProps} />
+      <CssVarsTable
+        title="CSS Variables"
+        hint="Modal exposes structural spacing + colors. The content (Buttons, Forms) follows its own tokens."
+        data={modalCssVars}
+      />
     </ComponentDoc>
   )
 }
