@@ -12,10 +12,14 @@ export interface InputProps extends BaseComponentProps, InteractiveProps, Sizabl
   placeholder?: string
   /** Native HTML input type. @default 'text' */
   type?: 'text' | 'email' | 'password' | 'number'
+  /** DOM id forwarded to the underlying `<input>`. */
+  id?: string
   /** Exposes invalid state to assistive technologies. */
   'aria-invalid'?: boolean | 'false' | 'true' | 'grammar' | 'spelling'
   /** Marks the field as required for assistive technologies. */
   'aria-required'?: boolean | 'false' | 'true'
+  /** Connects the input to description / error nodes for assistive technologies. */
+  'aria-describedby'?: string
   /** Called when the text value changes. */
   onChange?: (value: string) => void
   /** Called when the input loses focus. */
@@ -38,6 +42,8 @@ export function Input({
   onFocus,
   'aria-invalid': ariaInvalid,
   'aria-required': ariaRequired,
+  'aria-describedby': ariaDescribedBy,
+  id,
   className,
   style,
   unstyled,
@@ -64,6 +70,7 @@ export function Input({
   return (
     <span className={wrapperClasses} style={style}>
       <input
+        id={id}
         type={type}
         className={inputClasses}
         value={value}
@@ -72,6 +79,7 @@ export function Input({
         disabled={disabled || loading}
         aria-invalid={ariaInvalid}
         aria-required={ariaRequired}
+        aria-describedby={ariaDescribedBy}
         onChange={(e) => onChange?.(e.target.value)}
         onBlur={onBlur}
         onFocus={onFocus}

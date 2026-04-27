@@ -3,6 +3,7 @@ import { Form } from './Form'
 import { Field } from './Field'
 import { AutoField } from './AutoField/AutoField'
 import { useForm } from '../../hooks/useForm'
+import { useConfig } from '../ConfigProvider'
 import {
   jsonSchemaToFields,
   jsonSchemaToRules,
@@ -68,9 +69,10 @@ export function SchemaForm({
   wrapperCol,
   className,
   style,
-  submitText = 'Submit',
+  submitText: submitTextProp,
   children,
 }: SchemaFormProps) {
+  const submitText = submitTextProp ?? useConfig().locale?.form?.submitText ?? 'Submit'
   const jsonSchema: JSONSchema = isZodSchema(rawSchema)
     ? zodToJsonSchema(rawSchema as Parameters<typeof zodToJsonSchema>[0])
     : (rawSchema as JSONSchema)

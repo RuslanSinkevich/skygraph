@@ -20,7 +20,7 @@ const providerProps: PropDef[] = [
   { name: 'size', description: 'Default `size` for descendants. Per-component props still win.', type: "'small' | 'middle' | 'large'" },
   { name: 'disabled', description: 'Disables every descendant control that reads the context (Input, Button, Select, Switch, Checkbox, etc.).', type: 'boolean' },
   { name: 'bordered', description: 'Default bordered flag. Currently consumed by Table; other components keep their own defaults.', type: 'boolean' },
-  { name: 'locale', description: 'Shallow-merged into the parent locale. Currently consumed by Transfer (titles / search / not-found). Other components are queued for the i18n pass.', type: 'SgLocale' },
+  { name: 'locale', description: 'Shallow-merged into the parent locale. Consumed by Empty, Pagination, Popconfirm, Upload, Form field markers, SchemaForm submit, Transfer and Calendar. Presets available: `en_US`, `ru_RU`.', type: 'SgLocale' },
   { name: 'children', description: 'Subtree that reads the merged config via `useConfig()`.', type: 'ReactNode' },
 ]
 
@@ -40,6 +40,11 @@ const localeProps: PropDef[] = [
 const hookProps: PropDef[] = [
   { name: 'useConfig()', description: 'Returns the merged SgConfig from the nearest ancestor ConfigProvider. Components use it to resolve `size` / `disabled` / `locale`.', type: '() => SgConfig' },
   { name: 'useConfigWithDefaults(props, defaults)', description: 'Resolves effective `size` and `disabled` from props → context → defaults. Returns the original props plus `resolvedSize` and `resolvedDisabled`.', type: '(props, defaults) => props & { resolvedSize, resolvedDisabled }' },
+]
+
+const presetProps: PropDef[] = [
+  { name: 'en_US', description: 'English (US) locale preset. Covers all components currently consuming locale.', type: 'SgLocale' },
+  { name: 'ru_RU', description: 'Russian (RU) locale preset. Covers all components currently consuming locale.', type: 'SgLocale' },
 ]
 
 export function ConfigProviderDemo() {
@@ -86,8 +91,8 @@ export function ConfigProviderDemo() {
       </DemoBox>
 
       <DemoBox
-        title="Locale (Transfer)"
-        description="`locale` is shallow-merged with the parent provider. Transfer reads `titles`, `searchPlaceholder`, `notFoundContent` from it — the rest of the tree is ready for the i18n rollout."
+        title="Locale presets (en_US / ru_RU)"
+        description="Flip the provider between the bundled `en_US` and `ru_RU` presets and watch Empty, Pagination, Popconfirm, Upload, and SchemaForm swap their strings. Override individual keys by passing your own `SgLocale`."
         code={LocaleSource}
       >
         <LocaleConfigProvider />
@@ -111,6 +116,7 @@ export function ConfigProviderDemo() {
 
       <PropsTable title="ConfigProvider API" data={providerProps} />
       <PropsTable title="SgLocale shape" data={localeProps} />
+      <PropsTable title="Locale presets" data={presetProps} />
       <PropsTable title="Hooks" data={hookProps} />
     </ComponentDoc>
   )

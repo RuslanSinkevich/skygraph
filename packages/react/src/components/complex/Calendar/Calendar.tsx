@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { CalendarProps, CalendarEvent } from './types'
 import { DEFAULT_MONTH_NAMES, DEFAULT_DAY_NAMES } from './types'
+import { useConfig } from '../../ConfigProvider'
 
 function isSameDay(a: Date, b: Date): boolean {
   return a.getFullYear() === b.getFullYear()
@@ -135,9 +136,10 @@ export function Calendar(props: CalendarProps) {
     keyboard = true,
   } = props
 
-  const monthNames = locale?.monthNames ?? DEFAULT_MONTH_NAMES
-  const baseDayNames = locale?.dayNames ?? DEFAULT_DAY_NAMES
-  const todayLabel = locale?.today ?? 'Today'
+  const ctxCalendarLocale = useConfig().locale?.calendar
+  const monthNames = locale?.monthNames ?? ctxCalendarLocale?.monthNames ?? DEFAULT_MONTH_NAMES
+  const baseDayNames = locale?.dayNames ?? ctxCalendarLocale?.dayNames ?? DEFAULT_DAY_NAMES
+  const todayLabel = locale?.today ?? ctxCalendarLocale?.today ?? 'Today'
   const weekLabel = locale?.week ?? 'W'
 
   const dayNames = useMemo(() => {

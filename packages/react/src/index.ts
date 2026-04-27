@@ -15,6 +15,9 @@ export type {
 export { ConfigProvider, useConfig } from './components/ConfigProvider'
 export type { SgConfig, ConfigProviderProps } from './components/ConfigProvider'
 
+// Locale presets
+export { en_US, ru_RU } from './locales'
+
 // Hooks
 export { useField } from './hooks/useField'
 export type { UseFieldReturn } from './hooks/useField'

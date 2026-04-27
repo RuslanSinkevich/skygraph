@@ -1,38 +1,82 @@
 import { useState } from 'react'
-import { ConfigProvider, Transfer } from '@skygraph/react'
-import type { SgLocale } from '@skygraph/react'
+import {
+  ConfigProvider,
+  Empty,
+  Pagination,
+  Popconfirm,
+  Button,
+  Upload,
+  SchemaForm,
+  Segmented,
+  en_US,
+  ru_RU,
+} from '@skygraph/react'
 
-const data = Array.from({ length: 8 }).map((_, i) => ({
-  key: String(i + 1),
-  title: `Item ${i + 1}`,
-}))
-
-const ruLocale: SgLocale = {
-  transfer: {
-    titles: ['Доступно', 'Выбрано'],
-    searchPlaceholder: 'Поиск…',
-    notFoundContent: 'Ничего не найдено',
+const schema = {
+  properties: {
+    name: { type: 'string', title: 'Name', minLength: 2 },
+    email: { type: 'string', format: 'email', title: 'Email' },
   },
+  required: ['name', 'email'],
 }
 
 export function LocaleConfigProvider() {
-  const [targetKeys, setTargetKeys] = useState<string[]>(['2', '4'])
+  const [lang, setLang] = useState<'en' | 'ru'>('en')
+  const [page, setPage] = useState(1)
+  const locale = lang === 'en' ? en_US : ru_RU
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <p style={{ margin: 0, fontSize: 13, color: 'var(--sg-color-text-secondary)' }}>
-        Only <code>Transfer</code> reads strings from <code>ConfigProvider.locale</code>{' '}
-        today. The root locale shape exists for every component — fill in the rest as
-        the i18n pass rolls out.
-      </p>
-      <ConfigProvider locale={ruLocale}>
-        <Transfer
-          dataSource={data}
-          targetKeys={targetKeys}
-          onChange={(keys) => setTargetKeys(keys)}
-          showSearch
-          listStyle={{ width: 220, height: 220 }}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 13, color: 'var(--sg-color-text-secondary)' }}>
+          Locale preset:
+        </span>
+        <Segmented
+          value={lang}
+          onChange={(v) => setLang(v as 'en' | 'ru')}
+          options={[
+            { label: 'en_US', value: 'en' },
+            { label: 'ru_RU', value: 'ru' },
+          ]}
         />
+      </div>
+
+      <ConfigProvider locale={locale}>
+        <div style={{ display: 'grid', gap: 24, gridTemplateColumns: '1fr 1fr' }}>
+          <section>
+            <h4 style={{ margin: '0 0 8px' }}>Empty</h4>
+            <Empty />
+          </section>
+
+          <section>
+            <h4 style={{ margin: '0 0 8px' }}>Pagination</h4>
+            <Pagination
+              current={page}
+              total={245}
+              onChange={setPage}
+              showTotal
+              showSizeChanger
+              showQuickJumper
+            />
+          </section>
+
+          <section>
+            <h4 style={{ margin: '0 0 8px' }}>Popconfirm</h4>
+            <Popconfirm title="Delete item?" onConfirm={() => {}}>
+              <Button type="primary">Delete</Button>
+            </Popconfirm>
+          </section>
+
+          <section>
+            <h4 style={{ margin: '0 0 8px' }}>Upload</h4>
+            <Upload />
+          </section>
+
+          <section style={{ gridColumn: '1 / -1' }}>
+            <h4 style={{ margin: '0 0 8px' }}>SchemaForm + Field markers</h4>
+            <SchemaForm schema={schema} layout="horizontal" onSubmit={() => {}} />
+          </section>
+        </div>
       </ConfigProvider>
     </div>
   )

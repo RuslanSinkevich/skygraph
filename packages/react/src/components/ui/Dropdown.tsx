@@ -128,6 +128,18 @@ export function Dropdown({
         if (!open) setOpen(true)
         else setFocusedIndex((i) => getNextMenuIndex(i, -1))
         break
+      case 'Home':
+        if (open) {
+          e.preventDefault()
+          setFocusedIndex(getNextMenuIndex(-1, 1))
+        }
+        break
+      case 'End':
+        if (open) {
+          e.preventDefault()
+          setFocusedIndex(getNextMenuIndex(items.length, -1))
+        }
+        break
     }
   }
 

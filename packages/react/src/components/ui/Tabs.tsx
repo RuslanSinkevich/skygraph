@@ -99,6 +99,7 @@ export function Tabs({
             onClick={() => handleClick(item.key, item.disabled, item.loading)}
             onKeyDown={(e) => {
               const enabledItems = items.filter((i) => !i.disabled && !i.loading)
+              if (enabledItems.length === 0) return
               const curIdx = enabledItems.findIndex((i) => i.key === item.key)
               if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
                 e.preventDefault()
@@ -108,6 +109,12 @@ export function Tabs({
                 e.preventDefault()
                 const prev = enabledItems[(curIdx - 1 + enabledItems.length) % enabledItems.length]
                 if (prev) handleClick(prev.key)
+              } else if (e.key === 'Home') {
+                e.preventDefault()
+                handleClick(enabledItems[0].key)
+              } else if (e.key === 'End') {
+                e.preventDefault()
+                handleClick(enabledItems[enabledItems.length - 1].key)
               }
             }}
           >

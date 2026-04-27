@@ -17,6 +17,14 @@ export interface TextareaProps extends BaseComponentProps, InteractiveProps, Siz
   maxLength?: number
   /** Shows current length (and `maxLength` when set) beside the field in styled mode. */
   showCount?: boolean
+  /** DOM id forwarded to the underlying `<textarea>`. */
+  id?: string
+  /** Exposes invalid state to assistive technologies. */
+  'aria-invalid'?: boolean | 'false' | 'true' | 'grammar' | 'spelling'
+  /** Connects the textarea to description / error nodes for assistive technologies. */
+  'aria-describedby'?: string
+  /** Marks the field as required for assistive technologies. */
+  'aria-required'?: boolean | 'false' | 'true'
   /** Emits the full string on each change. */
   onChange?: (value: string) => void
   /** Passed through to the textarea blur event. */
@@ -41,6 +49,10 @@ export function Textarea({
   onChange,
   onBlur,
   onFocus,
+  id,
+  'aria-invalid': ariaInvalid,
+  'aria-describedby': ariaDescribedBy,
+  'aria-required': ariaRequired,
   className,
   style,
   unstyled,
@@ -68,12 +80,16 @@ export function Textarea({
   return (
     <div className={wrapperClass} style={style}>
       <textarea
+        id={id}
         className={unstyled ? '' : 'sg-input sg-textarea'}
         value={currentValue}
         placeholder={placeholder}
         rows={rows}
         disabled={disabled || loading}
         aria-disabled={disabled || loading}
+        aria-invalid={ariaInvalid}
+        aria-describedby={ariaDescribedBy}
+        aria-required={ariaRequired}
         onChange={handleChange}
         onBlur={onBlur}
         onFocus={onFocus}

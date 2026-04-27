@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useId, useRef } from 'react'
 import { useFormContext } from './FormContext'
 import { useField } from '../../hooks/useField'
 import { Input } from '../ui/Input'
@@ -140,6 +140,9 @@ export function Field({
   const formLocale = useConfig().locale?.form
   const requiredMarker = formLocale?.required ?? '*'
   const optionalMarker = formLocale?.optional ?? '(optional)'
+  const autoId = useId()
+  const fieldId = `sg-field-${autoId.replace(/:/g, '')}-${name.replace(/\./g, '-')}`
+  const helpId = `${fieldId}-help`
   const field = useField(core, form, name)
   const prevValueRef = useRef<unknown>(field.value)
 
@@ -182,6 +185,7 @@ export function Field({
 
   const labelNode = label ? (
     <label
+      htmlFor={fieldId}
       className="sg-field-label"
       style={
         layout === 'horizontal' && lCol?.offset
@@ -207,7 +211,7 @@ export function Field({
   ) : null
 
   const errorNodes = hasErrors ? (
-    <div className="sg-field-error" role="alert">
+    <div id={helpId} className="sg-field-error" role="alert">
       {field.errors.map((e, i) => (
         <div key={i}>{e}</div>
       ))}
@@ -215,7 +219,7 @@ export function Field({
   ) : null
 
   const warningNodes = hasWarnings && !hasErrors ? (
-    <div className="sg-field-warning">
+    <div id={helpId} className="sg-field-warning">
       {field.warnings.map((w, i) => (
         <div key={i}>{w}</div>
       ))}
@@ -223,7 +227,8 @@ export function Field({
   ) : null
 
   const helpNode =
-    errorNodes ?? warningNodes ?? (help ? <div className="sg-field-help">{help}</div> : null)
+    errorNodes ?? warningNodes ?? (help ? <div id={helpId} className="sg-field-help">{help}</div> : null)
+  const describedBy = helpNode ? helpId : undefined
 
   const extraNode = extra ? <div className="sg-field-extra">{extra}</div> : null
 
@@ -255,15 +260,20 @@ export function Field({
     const inputElement =
       type === 'textarea' ? (
         <Textarea
+          id={fieldId}
           value={(field.value as string) ?? ''}
           onChange={(v) => wrappedOnChange(v)}
           onBlur={field.onBlur}
           disabled={disabled}
           placeholder={placeholder}
           unstyled={unstyled}
+          aria-invalid={hasErrors || undefined}
+          aria-required={required || undefined}
+          aria-describedby={describedBy}
         />
       ) : (
         <Input
+          id={fieldId}
           type={type}
           value={(field.value as string) ?? ''}
           onChange={(v) => wrappedOnChange(type === 'number' ? Number(v) : v)}
@@ -271,6 +281,9 @@ export function Field({
           disabled={disabled}
           placeholder={placeholder}
           unstyled={unstyled}
+          aria-invalid={hasErrors || undefined}
+          aria-required={required || undefined}
+          aria-describedby={describedBy}
         />
       )
 
