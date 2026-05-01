@@ -22,6 +22,8 @@ export interface UseTableReturn {
   table: TableEngine
   visibleRows: Array<{ id: RowId; data: Record<string, unknown> }>
   tableState: TableState
+  /** Snapshot of pinned columns; refreshes after `pinColumn` / `clearPinned`. */
+  pinnedColumns: { left: string[]; right: string[] }
   setSort: (column: string, direction: SortDirection) => void
   setSorts: (sorts: SortConfig[]) => void
   clearSort: () => void
@@ -32,6 +34,8 @@ export interface UseTableReturn {
   setPage: (page: number) => void
   nextPage: () => void
   prevPage: () => void
+  pinColumn: (column: string, side: 'left' | 'right' | null) => void
+  clearPinned: () => void
   refresh: () => void
 }
 
@@ -47,6 +51,7 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
 
   const [visibleRows, setVisibleRows] = useState(() => table.getVisibleRows())
   const [tableState, setTableState] = useState(() => table.getTableState())
+  const [pinnedColumns, setPinnedColumns] = useState(() => table.getPinnedColumns())
 
   const prevDataRef = useRef(options?.data)
   useEffect(() => {
@@ -65,6 +70,20 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
   const refresh = useCallback(() => {
     setVisibleRows(table.getVisibleRows())
     setTableState(table.getTableState())
+    setPinnedColumns(table.getPinnedColumns())
+  }, [table])
+
+  const pinColumn = useCallback(
+    (column: string, side: 'left' | 'right' | null) => {
+      table.pinColumn(column, side)
+      setPinnedColumns(table.getPinnedColumns())
+    },
+    [table],
+  )
+
+  const clearPinned = useCallback(() => {
+    table.clearPinned()
+    setPinnedColumns(table.getPinnedColumns())
   }, [table])
 
   const setSort = useCallback(
@@ -141,6 +160,7 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
       table,
       visibleRows,
       tableState,
+      pinnedColumns,
       setSort,
       setSorts,
       clearSort,
@@ -151,6 +171,8 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
       setPage,
       nextPage,
       prevPage,
+      pinColumn,
+      clearPinned,
       refresh,
     }),
     [
@@ -158,6 +180,7 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
       table,
       visibleRows,
       tableState,
+      pinnedColumns,
       setSort,
       setSorts,
       clearSort,
@@ -168,6 +191,8 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
       setPage,
       nextPage,
       prevPage,
+      pinColumn,
+      clearPinned,
       refresh,
     ]
   )

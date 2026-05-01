@@ -42,6 +42,18 @@
   text-overflow: ellipsis;
 }
 
+.sg-diagram-node-draggable {
+  transition: box-shadow 120ms ease;
+}
+
+.sg-diagram-node-draggable:hover {
+  box-shadow: var(--sg-shadow);
+}
+
+.sg-diagram-node-draggable:active {
+  cursor: grabbing;
+}
+
 .sg-diagram-edges {
   /* sits behind nodes; no pointer events */
 }

@@ -160,6 +160,32 @@ describe('Diagram component', () => {
     expect(lCount).toBe(3)
   })
 
+  it('draggable adds sg-diagram-node-draggable class and grab cursor', () => {
+    const { result } = renderHook(() => useGraph())
+    act(() => {
+      result.current.graph.addNode({ id: 'a', transform: { x: 0, y: 0 } })
+    })
+    const { container } = render(
+      <Diagram graph={result.current.graph} state={result.current.state} draggable />,
+    )
+    const nodeEl = container.querySelector('.sg-diagram-node-draggable') as HTMLElement
+    expect(nodeEl).not.toBeNull()
+    expect(nodeEl.style.cursor).toBe('grab')
+  })
+
+  it('not-draggable nodes have no cursor styling', () => {
+    const { result } = renderHook(() => useGraph())
+    act(() => {
+      result.current.graph.addNode({ id: 'a', transform: { x: 0, y: 0 } })
+    })
+    const { container } = render(
+      <Diagram graph={result.current.graph} state={result.current.state} />,
+    )
+    const nodeEl = container.querySelector('.sg-diagram-node') as HTMLElement
+    expect(container.querySelector('.sg-diagram-node-draggable')).toBeNull()
+    expect(nodeEl.style.cursor).toBe('')
+  })
+
   it('straight edges (default) produce a single L segment', () => {
     const { result } = renderHook(() => useGraph())
     act(() => {

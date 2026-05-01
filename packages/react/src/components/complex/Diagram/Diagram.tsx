@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
+import { useMemo, useRef } from 'react'
+import type { CSSProperties, MouseEvent as ReactMouseEvent, ReactNode } from 'react'
 import { routeOrthogonal, pointsToPath } from '@skygraph/core'
 import type {
   AABB,
@@ -41,6 +41,18 @@ export interface DiagramProps {
   style?: CSSProperties
   /** Drop the default `sg-diagram-*` class names. */
   unstyled?: boolean
+  /**
+   * Enable click-and-drag to move nodes. The handler receives the new
+   * position in the parent's coordinate space and is expected to call
+   * `graph.moveNode(...)` (the default handler does exactly this).
+   *
+   * Set `true` for the default behaviour, `false` (default) to disable,
+   * or pass a custom function for richer drag logic (e.g. snap-to-grid,
+   * permission checks).
+   *
+   * @default false
+   */
+  draggable?: boolean | ((id: NodeId, x: number, y: number) => void)
 }
 
 interface ResolvedAnchor {
@@ -158,6 +170,7 @@ export function Diagram({
   className,
   style,
   unstyled = false,
+  draggable = false,
 }: DiagramProps) {
   const nodes = useMemo(() => Array.from(state.nodes.values()), [state])
   const edges = useMemo(() => Array.from(state.edges.values()), [state])
@@ -175,6 +188,46 @@ export function Diagram({
     height,
     overflow: 'auto',
     ...style,
+  }
+
+  // ─── Drag handler ────────────────────────────────────────────────────────
+  const dragRef = useRef<{ id: NodeId; startX: number; startY: number; nodeX: number; nodeY: number } | null>(null)
+
+  function applyMove(id: NodeId, x: number, y: number) {
+    if (typeof draggable === 'function') draggable(id, x, y)
+    else graph.moveNode(id, x, y)
+  }
+
+  function handleNodeMouseDown(id: NodeId) {
+    return (e: ReactMouseEvent<HTMLDivElement>) => {
+      if (!draggable) return
+      const node = graph.getNode(id)
+      if (!node) return
+      e.preventDefault()
+      e.stopPropagation()
+      dragRef.current = {
+        id,
+        startX: e.clientX,
+        startY: e.clientY,
+        nodeX: node.transform.x,
+        nodeY: node.transform.y,
+      }
+
+      function onMove(ev: MouseEvent) {
+        const d = dragRef.current
+        if (!d) return
+        const dx = ev.clientX - d.startX
+        const dy = ev.clientY - d.startY
+        applyMove(d.id, d.nodeX + dx, d.nodeY + dy)
+      }
+      function onUp() {
+        dragRef.current = null
+        window.removeEventListener('mousemove', onMove)
+        window.removeEventListener('mouseup', onUp)
+      }
+      window.addEventListener('mousemove', onMove)
+      window.addEventListener('mouseup', onUp)
+    }
   }
 
   return (
@@ -196,7 +249,11 @@ export function Diagram({
         const bounds = graph.boundsOf(node.id)
         const nodeClass = unstyled
           ? undefined
-          : ['sg-diagram-node', `sg-diagram-node-${node.outline.kind}`].join(' ')
+          : [
+              'sg-diagram-node',
+              `sg-diagram-node-${node.outline.kind}`,
+              draggable ? 'sg-diagram-node-draggable' : '',
+            ].filter(Boolean).join(' ')
         return (
           <div
             key={node.id}
@@ -208,7 +265,10 @@ export function Diagram({
               top: bounds.y,
               width: bounds.w,
               height: bounds.h,
+              cursor: draggable ? 'grab' : undefined,
+              userSelect: draggable ? 'none' : undefined,
             }}
+            onMouseDown={draggable ? handleNodeMouseDown(node.id) : undefined}
           >
             {renderNode(node)}
           </div>
