@@ -1,3 +1,9 @@
+/**
+ * @deprecated Internal — kept only for `__tests__/new-components.test.tsx`.
+ * The public `Transfer` (from `@skygraph/react`) points at `complex/Transfer`,
+ * which has a richer surface (pagination, sortable, locale, footer, etc.).
+ * This file is not exported from the package barrel.
+ */
 import React, { useState, useMemo } from 'react'
 import { useConfig } from '../ConfigProvider'
 import { Checkbox } from './Checkbox'

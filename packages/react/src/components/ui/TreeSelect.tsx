@@ -2,7 +2,13 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../types'
 
-/** A single node in the tree select data source. */
+/**
+ * @deprecated Use {@link TreeNodeData} from `@skygraph/core` (re-exported by
+ * `@skygraph/react`). The `ui/TreeSelect` implementation is kept on disk for
+ * `__tests__/new-components.test.tsx` (relies on `(value: string|string[])`
+ * `onChange` and `Select…` placeholder defaults). New consumers MUST use the
+ * `complex/TreeSelect` exposed as the main `TreeSelect` from `@skygraph/react`.
+ */
 export interface TreeSelectNode {
   /** Unique key used in selection value arrays. */
   key: string
