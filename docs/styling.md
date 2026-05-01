@@ -1,5 +1,7 @@
 # Стили и темы
 
+> Этот документ — внутренний гайд для разработчиков библиотеки. Публичный контракт стилизации (что обещаем потребителям) — в [`./styling-contract.md`](./styling-contract.md). Практические рецепты — в [`./styling-recipes.md`](./styling-recipes.md). Свежий автоотчёт по токенам/классам/dead-CSS — `pnpm audit:styles` → [`./_audit/styling-audit.md`](./_audit/styling-audit.md).
+
 ## Дизайн-токены
 
 Все токены определены в `packages/react/styles/tokens.css` через CSS-переменные.

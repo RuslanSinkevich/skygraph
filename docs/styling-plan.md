@@ -2,6 +2,14 @@
 
 > План реализации `docs/styling-contract.md`.
 > Цель: зафиксировать стилевой контракт **до первого публичного релиза**, пока потребителей нет и ломать безопасно.
+>
+> **Статус (2026-05-01):**
+> - Фаза 0 (инвентаризация) ✅ — `scripts/audit-styles.mjs` + `_audit/styling-audit.md`. После расширения детектом template literals false-positive 201 → 53.
+> - Фаза 1 (нормализация токенов) ✅ — `pnpm check:tokens` зелёный (91 токен, 64 файла).
+> - Фаза 2 (zero `!important`) ✅ — `pnpm check:no-important` зелёный.
+> - Фаза 3 (стилевой контракт) ✅ — `docs/styling-contract.md` опубликован, `Table` / `List` имеют `classNames`/`styles` slots.
+> - Фаза 4 (camelCase placement) ⚠ частично — добавлены kebab-aliases для dropdown / notification в CSS, JS-генерация остаётся camelCase.
+> - Оставшиеся хвосты: 53 действительно-dead CSS classes, 111 DOM unstyled. Требуют ручной ревизии — записаны в `TODO-cycle.md`.
 
 ---
 
