@@ -4,6 +4,7 @@ import {
   colorForSeries,
   normalizePadding,
 } from './types'
+import { ChartLegend } from './ChartLegend'
 import type { BaseChartProps } from './types'
 
 export interface AreaChartProps extends BaseChartProps {
@@ -31,6 +32,7 @@ export function AreaChart({
   stacked = false,
   strokeWidth = 2,
   fillOpacity = 0.25,
+  legend = false,
 }: AreaChartProps) {
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
@@ -77,10 +79,10 @@ export function AreaChart({
 
   const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-area', className].filter(Boolean).join(' ')
 
-  return (
+  const svg = (
     <svg
       className={wrapperClass}
-      style={style}
+      style={legend ? undefined : style}
       width={width}
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
@@ -117,5 +119,13 @@ export function AreaChart({
         )
       })}
     </svg>
+  )
+
+  if (!legend) return svg
+  return (
+    <div className={unstyled ? undefined : 'sg-chart-wrapper'} style={style}>
+      {svg}
+      <ChartLegend series={series} />
+    </div>
   )
 }

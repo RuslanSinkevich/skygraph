@@ -4,6 +4,7 @@ import {
   colorForSeries,
   normalizePadding,
 } from './types'
+import { ChartLegend } from './ChartLegend'
 import type { BaseChartProps } from './types'
 
 export interface BarChartProps extends BaseChartProps {
@@ -28,6 +29,7 @@ export function BarChart({
   padding,
   groupGap = 0.2,
   barGap = 0.1,
+  legend = false,
 }: BarChartProps) {
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
@@ -55,10 +57,10 @@ export function BarChart({
 
   const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-bar', className].filter(Boolean).join(' ')
 
-  return (
+  const svg = (
     <svg
       className={wrapperClass}
-      style={style}
+      style={legend ? undefined : style}
       width={width}
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
@@ -98,5 +100,13 @@ export function BarChart({
         })
       })}
     </svg>
+  )
+
+  if (!legend) return svg
+  return (
+    <div className={unstyled ? undefined : 'sg-chart-wrapper'} style={style}>
+      {svg}
+      <ChartLegend series={series} />
+    </div>
   )
 }

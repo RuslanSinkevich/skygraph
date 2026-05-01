@@ -4,6 +4,7 @@ import {
   colorForSeries,
   normalizePadding,
 } from './types'
+import { ChartLegend } from './ChartLegend'
 import type { BaseChartProps } from './types'
 
 export interface LineChartProps extends BaseChartProps {
@@ -28,6 +29,7 @@ export function LineChart({
   padding,
   markers = true,
   strokeWidth = 2,
+  legend = false,
 }: LineChartProps) {
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
@@ -52,10 +54,10 @@ export function LineChart({
 
   const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-line', className].filter(Boolean).join(' ')
 
-  return (
+  const svg = (
     <svg
       className={wrapperClass}
-      style={style}
+      style={legend ? undefined : style}
       width={width}
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
@@ -108,5 +110,13 @@ export function LineChart({
         )
       })}
     </svg>
+  )
+
+  if (!legend) return svg
+  return (
+    <div className={unstyled ? undefined : 'sg-chart-wrapper'} style={style}>
+      {svg}
+      <ChartLegend series={series} />
+    </div>
   )
 }

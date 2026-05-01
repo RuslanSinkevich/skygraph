@@ -249,6 +249,65 @@ describe('PieChart', () => {
   })
 })
 
+describe('Chart legend', () => {
+  it('LineChart renders no legend by default', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [1] }]}
+      />,
+    )
+    expect(container.querySelector('.sg-chart-legend')).toBeNull()
+  })
+
+  it('LineChart renders a legend when legend=true', () => {
+    const { container, getByText } = render(
+      <LineChart
+        categories={['a']}
+        series={[
+          { id: 's1', label: 'Visits', values: [1] },
+          { id: 's2', label: 'Orders', values: [2] },
+        ]}
+        legend
+      />,
+    )
+    expect(container.querySelector('.sg-chart-legend')).not.toBeNull()
+    expect(getByText('Visits')).toBeDefined()
+    expect(getByText('Orders')).toBeDefined()
+  })
+
+  it('BarChart legend renders one item per series', () => {
+    const { container } = render(
+      <BarChart
+        categories={['a', 'b']}
+        series={[
+          { id: 's1', label: 'A', values: [1, 2] },
+          { id: 's2', label: 'B', values: [3, 4] },
+          { id: 's3', label: 'C', values: [5, 6] },
+        ]}
+        legend
+      />,
+    )
+    const items = container.querySelectorAll('.sg-chart-legend-item')
+    expect(items.length).toBe(3)
+  })
+
+  it('AreaChart legend uses series colors as swatches', () => {
+    const { container } = render(
+      <AreaChart
+        categories={['a']}
+        series={[
+          { id: 's1', label: 'A', values: [10], color: '#abcdef' },
+        ]}
+        legend
+      />,
+    )
+    const swatch = container.querySelector('.sg-chart-legend-swatch') as HTMLElement
+    expect(swatch).not.toBeNull()
+    expect(swatch.style.background).toContain('rgb')
+  })
+})
+
 describe('colorForSeries / palette', () => {
   it('uses the explicit color when provided on the series', () => {
     const s: ChartSeries = { id: 'x', label: 'X', values: [1], color: '#ff0000' }

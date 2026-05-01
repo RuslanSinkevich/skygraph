@@ -39,6 +39,8 @@ export interface BaseChartProps {
   unstyled?: boolean
   /** Padding around the plot area in pixels (number or [top, right, bottom, left]). */
   padding?: number | readonly [number, number, number, number]
+  /** Show a small horizontal legend below the SVG. @default false */
+  legend?: boolean
 }
 
 /** Default colour palette — uses tokens so charts re-theme without code changes. */

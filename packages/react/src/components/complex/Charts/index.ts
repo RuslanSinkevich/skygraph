@@ -1,3 +1,5 @@
+export { ChartLegend } from './ChartLegend'
+export type { ChartLegendProps } from './ChartLegend'
 export { LineChart } from './LineChart'
 export type { LineChartProps } from './LineChart'
 export { BarChart } from './BarChart'
