@@ -992,10 +992,136 @@ jobs:
 
 ## 8. Dead code, дубли, неконсистентное именование
 
-привет я тут подумал а есть темка прикольная создай файл типо назови стрим с со мной и пиши туда что хочеш спросить у меня а я буду иногда отвечать и так мы будем обшяться не прерывая с
-им))))ы
+### 8.1 Сводка по уже выявленному в предыдущих секциях
 
-_Заполняется в ходе аудита._
+| Находка | Где описано | Приоритет |
+|---------|-------------|-----------|
+| `complex/Transfer/` — мёртвый код, не экспортируется | 4.6 | Высокий |
+| `runtime-internal.ts` — публичный, но не используется | 2.6 | Низкий |
+| 228 dead-классов в CSS | 5.4.1 | Средний |
+| 124 класса в DOM без стилей | 5.4.2 | Средний |
+| `themes/default.css`, `themes/dark.css` — дубль `@import` | 5.1 | Низкий |
+| `package-lock.json` — атавизм | 4.8 | Низкий |
+| `workspaces` (npm) + `pnpm-workspace.yaml` (pnpm) | 7.1 | Низкий |
+| Старые `XxxDemo.tsx` и новые `<comp>/Variant.demo.tsx` сосуществуют | 6.5 | Средний |
+| `PLAN.md` (старый план) рядом с `STREAM-PLAN.md` | 1.1 | Низкий — оставить как историю |
+
+### 8.2 Дубли компонентов под одним именем
+
+#### TreeSelect — две разные реализации
+
+```
+import { TreeSelect } from '@skygraph/react'        → ui/TreeSelect.tsx (без core, 295 строк)
+import { TreeSelect } from '@skygraph/react/tree'   → complex/TreeSelect/TreeSelect.tsx (с core)
+```
+
+Обе используют CSS-классы `sg-tree-select-*` (видны в DOM). Стилевой файл `treeselect.css` использует префикс `sg-treeselect-*` (без дефиса). **Двойная путаница**: разные имплементации + разные CSS-префиксы.
+
+**Действие:** мини-стрим — выбрать одну реализацию.
+
+#### Transfer — две реализации, complex мёртвый
+
+```
+import { Transfer } from '@skygraph/react'   → ui/Transfer.tsx (214 строк) — публичный
+complex/Transfer/Transfer.tsx                → используется только в тестах — мёртвый
+```
+
+**Действие:** удалить `complex/Transfer/` или вернуть в публичный API.
+
+#### Calendar — реэкспорт через ui
+
+```
+ui/Calendar.tsx (5 строк):
+  export { Calendar } from '../complex/Calendar'
+```
+
+Это не дубль, но `ui/Calendar.tsx` **нарушает идею «ui без core»** косвенно (через реэкспорт компонента, использующего core). ESLint правило проверяет прямые импорты, не реэкспорты.
+
+**Действие:** либо удалить `ui/Calendar.tsx` и экспортировать прямо в `index.ts` из complex.
+
+### 8.3 Непоследовательное именование CSS-классов
+
+#### Button: `sg-button-*` vs `sg-btn-*`
+
+```typescript
+// packages/react/src/components/ui/Button.tsx
+'sg-button'
+'sg-button-${type}'    // primary, default, dashed, link, text
+'sg-button-${size}'    // small, middle, large
+'sg-button-loading'
+
+// packages/react/src/components/complex/SchemaForm.tsx
+<button className="sg-btn sg-btn-primary">
+```
+
+**Проблема:** `SchemaForm` использует **`sg-btn-primary`**, который **не определён в CSS** (только в DOM по `_audit/styling-audit.md`). Кнопка submit в SchemaForm не получает стилей.
+
+В `button.css` сами **CSS-переменные** называются `--sg-btn-*` (короткое имя), но классы — `sg-button-*` (полное). Это внутренняя непоследовательность.
+
+**Действие:** унифицировать в `sg-button` или `sg-btn`. Исправить SchemaForm.tsx.
+
+#### DatePicker: `sg-datepicker-*` vs `sg-dp-*`
+
+В `datepicker.css`:
+- 21 правил с `sg-datepicker-*` (главная обёртка, range, sizes).
+- 78 правил с `sg-dp-*` (time-cell, dropdown, now/today buttons).
+
+Сокращение `dp` для внутренних элементов компонента **не задокументировано** в `styling-contract.md`.
+
+**Действие:** либо унифицировать на `sg-datepicker-*`, либо явно задокументировать сокращение.
+
+#### TreeSelect: `sg-treeselect-*` vs `sg-tree-select-*`
+
+CSS определяет `sg-treeselect-large`, `sg-treeselect-small` (без дефиса). DOM использует `sg-tree-select-*` (с дефисами). Расхождение приводит к 16+ DOM-классам без стилей.
+
+**Действие:** унифицировать (рекомендация — `sg-tree-select-*` с дефисами).
+
+### 8.4 Сокращения и unification
+
+| Префикс | Что обозначает | Полный | Расхождение |
+|---------|----------------|--------|-------------|
+| `sg-btn-*` | Button (атрибуты + класс в SchemaForm) | `sg-button-*` | ❌ Расходится |
+| `sg-dp-*` | DatePicker внутренности | `sg-datepicker-*` | ⚠ Не задокументировано |
+| `sg-treeselect-*` | TreeSelect (CSS) | `sg-tree-select-*` | ❌ Расходится |
+
+### 8.5 Dropdown placement классы — camelCase
+
+CSS:
+- `.sg-dropdown-bottomLeft`, `.sg-dropdown-bottomRight`, `.sg-dropdown-topLeft`, `.sg-dropdown-topRight` (camelCase).
+- Аналогично для `.sg-tooltip-{top|right|bottom|left}`, `.sg-popconfirm-{top|...}`, `.sg-notification-{topLeft|...}`.
+
+**camelCase в CSS-классах** — антипаттерн (общепринят kebab-case). Скорее всего наследие от React-prop'а `placement: 'bottomLeft'` и прямое склеивание `\`sg-dropdown-${placement}\``.
+
+**Действие:** перевести на kebab-case или нормализовать через утилиту преобразования.
+
+### 8.6 Транзиции — runtime-классы (не мёртвый код)
+
+Классы `.sg-fade-enter-from`, `.sg-fade-enter-active`, `.sg-slide-up-leave-to` и т.д. (~30 классов) фигурируют **только в CSS** по `_audit/styling-audit.md`. Это потому что `Transition.tsx` добавляет их **программно** через `classList.add(\`sg-${name}-enter-from\`)`, а grep по DOM-литералам их не находит.
+
+**Это НЕ мёртвый код**, это runtime-генерируемые классы. Стоит **исключить такие префиксы из подсчёта в `audit-styles.mjs`** (whitelist для runtime-классов transitions).
+
+**Действие:** добавить allowlist в `scripts/audit-styles.mjs` для известных runtime-префиксов (`sg-fade-`, `sg-slide-*-`, `sg-zoom-`, `sg-collapse-`).
+
+### 8.7 Старая страница `tokens-data.ts` vs. `DesignTokensPage.tsx`
+
+В `examples/demo/src/`:
+- `tokens/tokens-data.ts` — данные токенов (216 строк).
+- `demos/DesignTokensPage.tsx` — страница с токенами (301 строк).
+
+Они работают вместе: data → page. Не дубль. Но кандидат на проверку в Стрим 9 — может ли `tokens-data.ts` авто-генерироваться из реального `tokens.css` (сейчас, видимо, ведётся вручную и расходится с CSS).
+
+### 8.8 Вердикт по dead code и дублям
+
+| Категория | Найдено |
+|-----------|---------|
+| Дубли компонентов под одним именем | 2 (TreeSelect, Transfer) |
+| Реэкспорт нарушающий чистоту слоя | 1 (ui/Calendar) |
+| Непоследовательное именование CSS | 3 (Button, DatePicker, TreeSelect) |
+| camelCase в CSS-классах | 4 группы (dropdown, tooltip, popconfirm, notification) |
+| Dead-классы CSS | 228 (часть — runtime transitions, нужен allowlist) |
+| DOM-классы без стилей | 124 (часть — последствие расхождения нейминга) |
+| Мёртвая папка | 1 (`complex/Transfer/`) |
+| Атавизмы | 2 (`package-lock.json`, npm `workspaces`) |
 
 ## 9. Локализация и a11y (беглый обзор)
 
