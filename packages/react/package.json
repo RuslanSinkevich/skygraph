@@ -65,6 +65,7 @@
     "build": "tsup",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "clean": "rimraf dist"
   },
   "peerDependencies": {

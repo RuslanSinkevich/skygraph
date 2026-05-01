@@ -87,6 +87,12 @@
 - ❌ **`complex/Transfer/` — мёртвый код.** Не экспортируется ни из одного entrypoint, используется только в тестах. Решить: удалить или вернуть в API.
 - ⚠ **`ui/Calendar.tsx` — реэкспорт от complex.** Нарушает идею "ui без core" косвенно (через реэкспорт компонента, использующего core). Не баг, но кандидат на унификацию.
 
+### Coverage (configured, нужен dev-package)
+
+- ✅ `vitest.config.ts` в обоих пакетах с конфигом `coverage` (provider v8, thresholds, includes/excludes).
+- ✅ npm-скрипты `test:coverage` добавлены в `packages/{core,react}/package.json`.
+- ⚠ Для запуска нужно установить **`@vitest/coverage-v8`** в devDependencies каждого пакета (`pnpm -F @skygraph/core add -D @vitest/coverage-v8` и аналогично для react). Без него `pnpm test:coverage` упадёт с подсказкой что пакет нужен.
+
 ### Тесты
 
 - **README пишет 428 тестов, фактически 497.** Цифры устарели. Обновить в Стриме 9 (документация).
