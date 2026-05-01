@@ -682,15 +682,154 @@ packages/react/styles/
 
 ## 6. examples/demo и examples/showcases
 
-привет я тут подумал а есть темка прикольная создай файл типо назови стрим с со мной и пиши туда что хочеш спросить у меня а я буду иногда отвечать и так мы будем обшяться не прерывая с
+### 6.1 Самые большие файлы
 
-_Заполняется в ходе аудита._
+| Файл | Строк | Превышение порога 250 (Стрим 4) |
+|------|-------|-------------------------------|
+| `examples/showcases/src/showcases/forms/FormsApp.tsx` | **1131** | ×4.5 |
+| `examples/showcases/src/showcases/ecommerce/EcommerceApp.tsx` | **1080** | ×4.3 |
+| `examples/demo/src/demos/StylingShowcasePage.tsx` | **884** | ×3.5 |
+| `examples/showcases/src/showcases/table-kitchen-sink/TableKitchenSinkApp.tsx` | **814** | ×3.3 |
+| `examples/showcases/src/showcases/analytics/AnalyticsApp.tsx` | **571** | ×2.3 |
+| `examples/showcases/src/showcases/admin/AdminApp.tsx` | **561** | ×2.2 |
+| `examples/showcases/src/showcases/crm/CrmApp.tsx` | **545** | ×2.2 |
+| `examples/demo/src/App.tsx` | **390** | ×1.6 |
+| `examples/demo/src/demos/FormComponentsDemo.tsx` | 367 | ×1.5 |
+| `examples/demo/src/demos/TableDemo.tsx` | 360 | ×1.4 |
+| `examples/demo/src/demos/FormDemo.tsx` | 325 | ×1.3 |
+| `examples/demo/src/demos/DesignTokensPage.tsx` | 301 | ×1.2 |
+| `examples/showcases/src/showcases/hr-portal/HrPortalApp.tsx` | 297 | ×1.2 |
+| `examples/showcases/src/showcases/project-tracker/ProjectTrackerApp.tsx` | 270 | ×1.1 |
+
+**12 файлов превышают порог 250 строк, 7 — более чем в 2 раза.** Стрим 4 (рефакторинг showcases) должен закрыть это.
+
+### 6.2 Структура examples/showcases
+
+9 шоукейсов в формате «один App.tsx + один data.ts на каждый»:
+
+```
+examples/showcases/src/
+├── App.tsx                            # 9 импортов, navigation
+├── main.tsx
+└── showcases/
+    ├── admin/         AdminApp.tsx (561 строк) + data.ts
+    ├── analytics/     AnalyticsApp.tsx (571) + data.ts
+    ├── crm/           CrmApp.tsx (545) + data.ts
+    ├── ecommerce/     EcommerceApp.tsx (1080) + data.ts
+    ├── file-manager/  FileManagerApp.tsx (171) + data.ts
+    ├── forms/         FormsApp.tsx (1131)         ⚠ нет data.ts
+    ├── hr-portal/     HrPortalApp.tsx (297) + data.ts
+    ├── project-tracker/ ProjectTrackerApp.tsx (270) + data.ts
+    └── table-kitchen-sink/ TableKitchenSinkApp.tsx (814) + data.ts
+```
+
+**Проблемы:**
+- Каждый App.tsx — монолит, в котором перемешаны:
+  - моки данных (часть в data.ts, часть остаётся inline);
+  - state-менеджмент (useState, локальные хуки);
+  - множественные виджеты (header, sidebar, content, dialogs);
+  - бизнес-логика обработчиков.
+- Нет декомпозиции на `pages/`, `widgets/`, `components/`.
+- `forms/` нет своего `data.ts` — данные внутри `FormsApp.tsx`.
+
+### 6.3 Структура examples/demo
+
+```
+examples/demo/src/
+├── App.tsx                  # 390 строк: 30+ импортов, hash router, pages map, menu, search
+├── components/              # ComponentDoc, DemoBox, PropsTable, CssVarsTable
+├── tokens/tokens-data.ts
+└── demos/
+    ├── *Demo.tsx            # ~40 страниц-обёрток (старый паттерн)
+    └── <component>/         # каждый компонент — папка с подвариантами
+        ├── Basic.demo.tsx
+        ├── Variant.demo.tsx
+        └── ...
+```
+
+Из ~480 файлов в `demos/`:
+- **~40 страниц-обёрток** `XxxDemo.tsx` (BadgeDemo, ButtonDemo, ModalDemo, ...) — каждая использует `ComponentDoc` + `DemoBox` + `PropsTable` + `CssVarsTable`.
+- **~440 маленьких `<comp>/Variant.demo.tsx`** — изолированные демо одного варианта.
+
+Это **продуманный паттерн** композиции:
+
+```
+BadgeDemo.tsx (127 строк):
+  ├── импортирует <Variant>.demo.tsx
+  ├── импортирует ?raw исходник того же файла
+  ├── рендерит через DemoBox с code={Source}
+  ├── PropsTable + CssVarsTable
+  └── ComponentDoc (заголовок + описание)
+```
+
+**Проблема в `examples/demo/src/App.tsx` (390 строк):**
+
+Огромный объект `pages: Record<string, ComponentType>` — кандидат на:
+- вынести в `routes.ts`;
+- разделить меню/навигацию на отдельные модули;
+- отделить `Overview` компонент в свой файл.
+
+### 6.4 Состояние i18n (для подготовки к Стрим 2)
+
+| Что есть | Что нет |
+|----------|---------|
+| `examples/demo/src/demos/datepicker/RussianLocale.demo.tsx` — пример русской локали для DatePicker | Глобальный переключатель языка в App |
+| `examples/demo/src/demos/config-provider/Locale.demo.tsx` — пример использования `ConfigProvider.locale` | Структура `locales/ru.ts`, `locales/en.ts` для текстов demo |
+| Библиотека `@skygraph/react/locales` (en_US, ru_RU) | `react-i18next` или подобной библиотеки в `package.json` |
+| `ConfigProvider` используется в 28 файлах demo | Тексты в JSX — все хардкод (английский) |
+
+**Итог:** инфраструктура i18n для самой demo-страницы **отсутствует**. Стрим 2 строит её с нуля. Локализация компонентов библиотеки (DatePicker, Pagination, Modal, Empty, Form) уже есть через `ConfigProvider.locale`.
+
+### 6.5 Дубль паттерн: смешение старого и нового стилей демо
+
+Часть страниц всё ещё построены по **старому** монолитному паттерну:
+- `examples/demo/src/demos/StylingShowcasePage.tsx` (884 строк, монолит).
+- `examples/demo/src/demos/DesignTokensPage.tsx` (301 строк).
+- `examples/demo/src/demos/FormComponentsDemo.tsx` (367 строк).
+- `examples/demo/src/demos/TableDemo.tsx` (360 строк).
+- `examples/demo/src/demos/FormDemo.tsx` (325 строк).
+
+Часть — по новому композиционному:
+- `BadgeDemo.tsx` (127), `ButtonDemo.tsx`, и многие другие — используют `ComponentDoc` + маленькие demo-файлы.
+
+Возможный смысл: новые компоненты получили новый формат, старые остались. **Кандидат на стандартизацию в Стрим 8** (стандартизация шаблона демо).
+
+### 6.6 ESLint игнорирует demo и showcases
+
+В `eslint.config.js`: `ignores: ['examples/']`. Это означает что в этих файлах нет линт-проверок. Может быть:
+- Hardcoded строки не отлавливаются.
+- `console.log` остаются.
+- Unused imports не находятся.
+- Импорты из внутренностей `@skygraph/react` не запрещены.
+
+**Кандидат:** включить хотя бы `unused-vars` и `no-console` для examples в Стрим 4.
+
+### 6.7 Vite конфигурация
+
+```typescript
+// examples/demo/vite.config.ts (16 строк)
+```
+Простая, без `?raw` плагина (но `?raw` импорты используются — Vite поддерживает их по умолчанию).
+
+### 6.8 Вердикт
+
+| Категория | Статус |
+|-----------|--------|
+| Стандарт паттерна `XxxDemo + Variant.demo` | ✅ внедрён, но не везде |
+| Декомпозиция showcases | ❌ полное отсутствие, нужен Стрим 4 |
+| Размеры файлов | ❌ 12 файлов > 250 строк, 7 — > 500 |
+| i18n в demo/showcases | ❌ отсутствует, нужен Стрим 2 |
+| ESLint coverage examples | ⚠ полностью отключён |
+| Vite конфигурация | ✅ норма |
 
 ## 7. Зависимости и инфраструктура
 
 _Заполняется в ходе аудита._
 
 ## 8. Dead code, дубли, неконсистентное именование
+
+привет я тут подумал а есть темка прикольная создай файл типо назови стрим с со мной и пиши туда что хочеш спросить у меня а я буду иногда отвечать и так мы будем обшяться не прерывая с
+им))))ы
 
 _Заполняется в ходе аудита._
 
