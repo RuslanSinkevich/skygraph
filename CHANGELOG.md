@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — GraphEngine (diagram domain engine)
+
+- `@skygraph/core` — **GraphEngine** as the fourth member of the `form / table / tree / graph` family. Models a directed graph with parent-child hierarchy, outline-based geometry (rect / ellipse / polygon / flattened path), stable anchor IDs, and AABB bounds. Operations: `addNode`, `removeNode`, `updateNode`, `moveNode`, `setParent`, `addEdge`, `removeEdge`. State mirror under `$graph.snapshot.<engineId>`.
+- `@skygraph/core` — `GRAPH_PREFIX = '$graph.'` reserved in `engines/namespaces.ts`.
+- `@skygraph/react` — `useGraph()` hook + `<Diagram>` component (DOM nodes + SVG-overlay edges) for visualising a `GraphEngine`.
+- `@skygraph/react/styles/components/diagram.css` — default styling for `Diagram` (token-only, dark-theme aware).
+- 22 new unit tests for `GraphEngine` (now **497 → 519** total tests across both packages).
+
+### Changed — public API consolidations
+
+- `TreeSelect` main export now points to `components/complex/TreeSelect` (uses `@skygraph/core` types `TreeNodeData` / `TreeKey` / `TreeFieldNames`). The legacy `components/ui/TreeSelect` is still on disk for tests; type alias `TreeSelectNode` is kept as `@deprecated` for migration.
+- `Transfer` main export now points to `components/complex/Transfer` (richer surface — pagination, sortable, locale, footer, operations, custom search).
+- `Calendar` main export now comes directly from `components/complex/Calendar` (the `components/ui/Calendar.tsx` re-export shim was removed — it violated the "ui has no core" boundary).
+- `package.json` — removed legacy npm `workspaces` field (pnpm workspace already declared in `pnpm-workspace.yaml`).
+- `package-lock.json` — removed; only `pnpm-lock.yaml` remains. Both `package-lock.json` and `yarn.lock` added to `.gitignore`.
+
+### Fixed
+
+- `SchemaForm.tsx` — `useConfig()` was being called conditionally, violating `react-hooks/rules-of-hooks`. Hoisted to top of the function.
+- `SchemaForm.tsx` — submit button used `sg-btn sg-btn-primary` which had no styles (CSS only declares `sg-button-*`). Changed to `sg-button sg-button-primary`.
+- `TagInput.tsx` — replaced `let next = [...tags]` with `const` (`prefer-const`).
+- Demo: `PropDef` now accepts `required?: boolean` (was missing, caused TS errors in CollapseDemo / ProgressDemo / ResultDemo).
+- Demo: `treeselect/*.demo.tsx` migrated from `TreeSelectNode` to `TreeNodeData` after the public API change.
+- Demo: `Bordered.demo.tsx` row ids switched from `number` to `string` to match Table's contract.
+- Demo: `transfer/CustomRender.demo.tsx` — `listStyle` prop dropped (not on the new complex `Transfer`); replaced with `listHeight`.
+
+### Tooling
+
+- `scripts/audit-styles.mjs` — added allowlist for runtime-generated transition classes (`sg-fade-*`, `sg-slide-*`, `sg-zoom-*`, `sg-collapse-*`). Reduces "possibly dead" CSS class count by 41 false positives.
+- `eslint.config.js` — clarified the rationale for ignoring `examples/` (oversized demo set) and pointed at a targeted `npx eslint examples/...` workflow.
+- `themes/default.css` and `themes/dark.css` — clarified in JSDoc that both are convenience re-exports of the full `tokens.css`; theme activation is via `data-sg-theme` attribute, not via importing one or the other.
+- `STREAM-PLAN.md` v1 — terminology corrected: "stream" = entire continuous turn, "task" = individual unit of work (was conflated in v0).
+
 ### Added — Public styling contract established
 
 - [`docs/styling-contract.md`](docs/styling-contract.md) — публичный стилевой контракт: стабильные токены, корневые классы `.sg-*`, перечень слотов, `classNames` / `styles` API, политика версий.

@@ -24,6 +24,7 @@
 │    table/        — TableEngine              │
 │    tree/         — TreeEngine               │
 │    virtual/      — VirtualScroll engine     │
+│    graph/        — GraphEngine (diagrams)   │
 │    validation/   — sync + async             │
 │                                             │
 │  engines/ использует runtime/ internal API  │
@@ -37,6 +38,7 @@
 │    useField, useForm, useFieldArray         │
 │    useWatch, useComputed, useHistory        │
 │    useTable, useTree, useVirtualScroll      │
+│    useGraph                                 │
 │                                             │
 │  hooks/a11y/                                │
 │    useFocusTrap, useRovingTabIndex          │
@@ -86,6 +88,7 @@ Engine, который пишет в `Core` store под `$`-префиксом,
 | form  | `$meta.`  |
 | table | `$table.` |
 | tree  | `$tree.`  |
+| graph | `$graph.` |
 
 Пользовательские данные не должны жить под `$` — эта зона для engines.
 
