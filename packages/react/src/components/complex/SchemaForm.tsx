@@ -120,7 +120,7 @@ export function SchemaForm({
         </Field>
       ))}
       {children ?? (
-        <button type="submit" className="sg-btn sg-btn-primary">
+        <button type="submit" className="sg-button sg-button-primary">
           {submitText}
         </button>
       )}

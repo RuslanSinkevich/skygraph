@@ -1,6 +1,10 @@
 # Dependencies
 node_modules/
 
+# Lockfiles — pnpm only (npm/yarn lockfiles are atavisms here)
+package-lock.json
+yarn.lock
+
 # Build outputs
 dist/
 *.tsbuildinfo

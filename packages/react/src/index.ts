@@ -77,8 +77,24 @@ export type {
 export { useTree } from './hooks/useTree'
 export type { UseTreeOptions, UseTreeReturn } from './hooks/useTree'
 
-export { TreeSelect } from './components/ui/TreeSelect'
-export type { TreeSelectProps, TreeSelectNode } from './components/ui/TreeSelect'
+// TreeSelect — main export now points to the complex (core-backed) implementation.
+// The old ui-only TreeSelect is kept under `./components/ui/TreeSelect` for tests
+// and for backwards-compat type aliases (`TreeSelectNode`), but new consumers
+// should use the complex props (`TreeNodeData`).
+export { TreeSelect } from './components/complex/TreeSelect'
+export type {
+  TreeSelectProps,
+  TreeKey,
+  TreeNodeData,
+  TreeFieldNames,
+} from './components/complex/TreeSelect'
+
+/**
+ * @deprecated Use {@link TreeNodeData} from `@skygraph/core`-backed TreeSelect.
+ * Kept as an alias to avoid breaking existing demos / data sources during the
+ * migration window. Will be removed once all callsites move to `TreeNodeData`.
+ */
+export type { TreeSelectNode } from './components/ui/TreeSelect'
 export { Cascader } from './components/complex/Cascader'
 export type { CascaderProps, CascaderOption } from './components/complex/Cascader'
 export { Calendar } from './components/ui/Calendar'
@@ -208,8 +224,16 @@ export type {
 // Complex components (additional)
 export { List } from './components/complex/List'
 export type { ListProps, ListItemProps, ListItemMetaProps } from './components/complex/List'
-export { Transfer } from './components/ui/Transfer'
-export type { TransferProps, TransferItem } from './components/ui/Transfer'
+// Transfer — main export now points to the complex (pagination, sortable,
+// locale, footer, operations) implementation. The simpler ui-only Transfer is
+// kept under `./components/ui/Transfer` for tests and as a fallback.
+export { Transfer, TransferList } from './components/complex/Transfer'
+export type {
+  TransferProps,
+  TransferItem,
+  TransferListProps,
+  TransferLocale,
+} from './components/complex/Transfer'
 export { Mentions } from './components/ui/Mentions'
 export type { MentionsProps, MentionOption } from './components/ui/Mentions'
 export { Transition } from './components/ui/Transition'
