@@ -1,131 +1,76 @@
+import { useI18n } from '../i18n'
+
 export function CoreApiPage() {
+  const { t } = useI18n()
+  const c = t.coreApi
+
   return (
     <section className="doc-page">
-      <h1>Core API</h1>
-      <p className="doc-lead">
-        The <code>@skygraph/core</code> package provides four factory functions.
-        Each returns a reactive engine that can be used standalone or plugged into
-        React via <code>@skygraph/react</code>.
-      </p>
+      <h1>{c.title}</h1>
+      <p className="doc-lead">{c.lead}</p>
 
-      {/* ---- createCore ---- */}
-      <h2 id="create-core">createCore()</h2>
-      <p>
-        Low-level reactive state container. Foundation for all other engines.
-      </p>
-      <table className="doc-table">
-        <thead>
-          <tr><th>Method</th><th>Signature</th><th>Description</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>get</code></td><td><code>(path: string) =&gt; T</code></td><td>Read value at path</td></tr>
-          <tr><td><code>set</code></td><td><code>(path: string, value: T) =&gt; void</code></td><td>Write value at path</td></tr>
-          <tr><td><code>subscribe</code></td><td><code>(path: string, cb: Fn) =&gt; Unsubscribe</code></td><td>Watch a path for changes</td></tr>
-          <tr><td><code>batch</code></td><td><code>(fn: () =&gt; void) =&gt; void</code></td><td>Batch multiple updates into one notification</td></tr>
-          <tr><td><code>getState</code></td><td><code>() =&gt; Record&lt;string, T&gt;</code></td><td>Snapshot of entire state</td></tr>
-        </tbody>
-      </table>
+      <h2 id="create-core">{c.sectionStore}</h2>
+      <p>{c.sectionStoreLead}</p>
       <pre className="doc-code"><code>{`import { createCore } from '@skygraph/core'
 
-const core = createCore({ count: 0, name: '' })
+const core = createCore()
+core.set('user.name', 'Ada')
+core.subscribe('user.name', (v) => console.log(v))
+core.batch(() => {
+  core.set('user.email', 'ada@example.com')
+  core.set('user.age', 36)
+})`}</code></pre>
 
-core.subscribe('count', (val) => console.log('count:', val))
-core.set('count', 1)       // logs "count: 1"
-core.get('count')           // 1`}</code></pre>
+      <h2 id="domain-engines">{c.sectionEngines}</h2>
+      <p>{c.sectionEnginesLead}</p>
+      <pre className="doc-code"><code>{`import {
+  createCore,
+  createForm,
+  createTable,
+  createTree,
+  createGraph,
+  createVirtual,
+} from '@skygraph/core'
 
-      {/* ---- createForm ---- */}
-      <h2 id="create-form">createForm()</h2>
-      <p>
-        Form engine with validation, field dependencies, and dynamic field lists.
-      </p>
-      <table className="doc-table">
-        <thead>
-          <tr><th>Method</th><th>Signature</th><th>Description</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>getFieldValue</code></td><td><code>(name: string) =&gt; T</code></td><td>Get current field value</td></tr>
-          <tr><td><code>setFieldsValue</code></td><td><code>(values: Partial) =&gt; void</code></td><td>Set multiple fields at once</td></tr>
-          <tr><td><code>validate</code></td><td><code>() =&gt; Promise&lt;ValidationResult&gt;</code></td><td>Run all rules, return errors</td></tr>
-          <tr><td><code>reset</code></td><td><code>() =&gt; void</code></td><td>Reset to default values</td></tr>
-          <tr><td><code>submit</code></td><td><code>() =&gt; Promise&lt;void&gt;</code></td><td>Validate then call onSubmit</td></tr>
-        </tbody>
-      </table>
-      <pre className="doc-code"><code>{`import { createForm } from '@skygraph/core'
+const core = createCore()
+const form  = createForm(core)
+const table = createTable(core)
+const tree  = createTree(core)
+const graph = createGraph(core)
+const virtual = createVirtual({ itemSize: 32, itemCount: 1000 })`}</code></pre>
 
-const form = createForm({
-  defaultValues: { email: '', password: '' },
-  rules: {
-    email: [{ required: true }, { type: 'email' }],
-    password: [{ required: true }, { min: 6 }],
-  },
-})
+      <h2 id="typed-core">{c.sectionTyped}</h2>
+      <p>{c.sectionTypedLead}</p>
+      <pre className="doc-code"><code>{`import { createCore, createTypedCore } from '@skygraph/core'
 
-await form.validate()
-// { valid: false, errors: { email: '...', password: '...' } }`}</code></pre>
+interface State {
+  user: { name: string; age: number }
+}
+const typed = createTypedCore<State>(createCore())
+typed.set('user.name', 'Ada')   // ok
+typed.set('user.bogus', 'x')    // ts error`}</code></pre>
 
-      {/* ---- createTable ---- */}
-      <h2 id="create-table">createTable()</h2>
-      <p>
-        Table engine — sorting, filtering, pagination, row selection.
-      </p>
-      <table className="doc-table">
-        <thead>
-          <tr><th>Method</th><th>Signature</th><th>Description</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>setData</code></td><td><code>(rows: T[]) =&gt; void</code></td><td>Load data</td></tr>
-          <tr><td><code>sort</code></td><td><code>(col: string, dir: SortDirection) =&gt; void</code></td><td>Sort by column</td></tr>
-          <tr><td><code>filter</code></td><td><code>(col: string, fn: FilterFn) =&gt; void</code></td><td>Apply column filter</td></tr>
-          <tr><td><code>setPage</code></td><td><code>(page: number) =&gt; void</code></td><td>Navigate to page</td></tr>
-          <tr><td><code>getRows</code></td><td><code>() =&gt; T[]</code></td><td>Get visible (sorted/filtered/paged) rows</td></tr>
-          <tr><td><code>selectRow</code></td><td><code>(id: RowId) =&gt; void</code></td><td>Toggle row selection</td></tr>
-        </tbody>
-      </table>
-      <pre className="doc-code"><code>{`import { createTable } from '@skygraph/core'
+      <h2 id="middleware">{c.sectionMiddleware}</h2>
+      <p>{c.sectionMiddlewareLead}</p>
+      <pre className="doc-code"><code>{`import { createCore, loggerMiddleware, freezeMiddleware } from '@skygraph/core'
 
-const table = createTable({
-  data: users,
-  pageSize: 10,
-  columns: ['name', 'email', 'role'],
-})
+const core = createCore()
+core.use(loggerMiddleware())
+core.use(freezeMiddleware())`}</code></pre>
 
-table.sort('name', 'asc')
-table.filter('role', (val) => val === 'admin')
-const rows = table.getRows()`}</code></pre>
+      <h2 id="graph">{c.sectionGraph}</h2>
+      <p>{c.sectionGraphLead}</p>
+      <pre className="doc-code"><code>{`import { createCore, createGraph } from '@skygraph/core'
 
-      {/* ---- createTree ---- */}
-      <h2 id="create-tree">createTree()</h2>
-      <p>
-        Tree engine — expand/collapse, check, search, drag-and-drop state.
-      </p>
-      <table className="doc-table">
-        <thead>
-          <tr><th>Method</th><th>Signature</th><th>Description</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>expand</code></td><td><code>(key: TreeKey) =&gt; void</code></td><td>Expand a node</td></tr>
-          <tr><td><code>collapse</code></td><td><code>(key: TreeKey) =&gt; void</code></td><td>Collapse a node</td></tr>
-          <tr><td><code>check</code></td><td><code>(key: TreeKey) =&gt; void</code></td><td>Toggle checkbox</td></tr>
-          <tr><td><code>expandAll</code></td><td><code>() =&gt; void</code></td><td>Expand entire tree</td></tr>
-          <tr><td><code>filter</code></td><td><code>(query: string) =&gt; void</code></td><td>Filter nodes by text</td></tr>
-          <tr><td><code>getChecked</code></td><td><code>() =&gt; TreeKey[]</code></td><td>Get checked keys</td></tr>
-        </tbody>
-      </table>
-      <pre className="doc-code"><code>{`import { createTree } from '@skygraph/core'
+const core = createCore()
+const graph = createGraph(core)
+const a = graph.addNode({ outline: { kind: 'rect', w: 80, h: 40 } })
+const b = graph.addNode({ outline: { kind: 'rect', w: 80, h: 40 }, transform: { x: 200, y: 0 } })
+graph.addEdge({ from: { node: a, anchor: 'ne' }, to: { node: b, anchor: 'nw' } })
 
-const tree = createTree({
-  data: [
-    { key: '1', title: 'Documents', children: [
-      { key: '1-1', title: 'Resume.pdf' },
-      { key: '1-2', title: 'Cover.docx' },
-    ]},
-    { key: '2', title: 'Photos', children: [] },
-  ],
-})
-
-tree.expandAll()
-tree.check('1-1')
-tree.getChecked() // ['1-1']`}</code></pre>
+graph.subscribe(() => {
+  console.log('graph changed:', graph.getState())
+})`}</code></pre>
     </section>
   )
 }

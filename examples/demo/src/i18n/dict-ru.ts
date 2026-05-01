@@ -96,6 +96,62 @@ export const ru: DemoDict = {
     examples: 'Примеры',
   },
 
+  theming: {
+    title: 'Темизация',
+    lead:
+      'SkyGraph использует трёхслойную систему CSS-переменных. Переопределите любой слой, чтобы создать свою тему — без шага сборки и без рантайма JS.',
+    threeLayersHeading: 'Три слоя',
+    colLayer: 'Слой',
+    colPrefix: 'Префикс',
+    colPurpose: 'Назначение',
+    layerPalette: 'Палитра',
+    layerPalettePurpose: 'Сырые цвета: blue-500, gray-100 и т.п.',
+    layerSemantic: 'Семантика',
+    layerSemanticPurpose: 'По смыслу: primary, success, error, bg, text',
+    layerComponent: 'Компоненты',
+    layerComponentPurpose: 'Токены под каждый компонент для тонкой настройки',
+    layersFooter:
+      'Палитра питает семантические токены, те — компонентные. Переопределяйте на любом слое — нижестоящие наследуют автоматически.',
+    darkModeHeading: 'Тёмная тема',
+    darkModeLead: 'Переключайте тёмную тему одним атрибутом на корневом элементе:',
+    darkModeNote:
+      'SkyGraph поставляет светлую и тёмную палитры. Семантический слой ссылается на палитру, поэтому тёмная тема меняет весь вид без JS-нагрузки.',
+    customThemeHeading: 'Своя тема',
+    customThemeLead: 'Переопределите основной цвет, задав семантические переменные в своём CSS:',
+    customThemeFooter:
+      'Все компоненты, которые ссылаются на --sg-color-primary, подхватят новый цвет — кнопки, ссылки, активные состояния, focus ring и т.д.',
+    perComponentHeading: 'Точечная настройка по компонентам',
+    perComponentLead: 'Каждый компонент даёт свои CSS-переменные для прицельных переопределений:',
+    slotsHeading: 'Стилизация через слоты (classNames / styles)',
+    slotsLead:
+      'У сложных компонентов есть именованные слоты для каждого DOM-узла — без глубоких селекторов. Используйте classNames для классов и styles для inline-стилей. Имена слотов и соответствующие стабильные DOM-классы входят в публичный стилевой контракт.',
+    headlessHeading: 'Headless-режим',
+    headlessLead:
+      'Нужен полный контроль над стилями? Передайте unstyled в любой компонент — все CSS SkyGraph отключатся. Реактивное поведение и доступность остаются. Подключайте свои классы:',
+    headlessFooter:
+      'Headless работает по отдельному компоненту — мешайте styled и unstyled в одном приложении свободно.',
+  },
+
+  coreApi: {
+    title: 'API ядра',
+    lead: 'Чистый TS реактивный рантайм + предметные движки. Никакой зависимости от React в ядре; React-слой — тонкий адаптер.',
+    sectionStore: 'Store — реактивный key/value по путям',
+    sectionStoreLead:
+      'Централизованное состояние, точечные подписки по путям, транзакционные коммиты, батч-уведомления, computed с детектом циклов.',
+    sectionEngines: 'Предметные движки',
+    sectionEnginesLead:
+      'FormEngine, TableEngine, TreeEngine, VirtualEngine, GraphEngine — каждый владеет namespace `$<name>.` в Store и даёт сфокусированный API для своей предметной области.',
+    sectionTyped: 'TypedCore — типобезопасные пути',
+    sectionTypedLead:
+      'Оберните runtime Core в generic TypedCore<T> для автокомплита и TS-проверки путей без рантайм-нагрузки.',
+    sectionMiddleware: 'Pipeline middleware',
+    sectionMiddlewareLead:
+      'Подключайте logger / freeze / persistence / validation между записями и уведомлениями. Настраивайте порядок и пишите свои.',
+    sectionGraph: 'GraphEngine — диаграммы',
+    sectionGraphLead:
+      'Узлы (outline / transform / parent / anchorPolicy), рёбра (стабильные anchor ID), инкрементальные якоря и AABB, подписки на snapshot для React.',
+  },
+
   gettingStarted: {
     title: 'Быстрый старт',
     lead: 'Начните работу со SkyGraph меньше чем за 5 минут.',

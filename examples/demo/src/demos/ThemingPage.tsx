@@ -1,54 +1,47 @@
+import { useI18n } from '../i18n'
+
 export function ThemingPage() {
+  const { t } = useI18n()
+  const th = t.theming
+
   return (
     <section className="doc-page">
-      <h1>Theming</h1>
-      <p className="doc-lead">
-        SkyGraph uses a 3-layer CSS variable system. Override any layer to create
-        your own theme — no build step, no JS runtime cost.
-      </p>
+      <h1>{th.title}</h1>
+      <p className="doc-lead">{th.lead}</p>
 
-      <h2 id="three-layers">Three Layers</h2>
+      <h2 id="three-layers">{th.threeLayersHeading}</h2>
       <table className="doc-table">
         <thead>
           <tr>
-            <th>Layer</th>
-            <th>Prefix</th>
-            <th>Purpose</th>
+            <th>{th.colLayer}</th>
+            <th>{th.colPrefix}</th>
+            <th>{th.colPurpose}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>Palette</strong></td>
+            <td><strong>{th.layerPalette}</strong></td>
             <td><code>--sg-palette-*</code></td>
-            <td>Raw colors: blue-500, gray-100, etc.</td>
+            <td>{th.layerPalettePurpose}</td>
           </tr>
           <tr>
-            <td><strong>Semantic</strong></td>
+            <td><strong>{th.layerSemantic}</strong></td>
             <td><code>--sg-color-*</code></td>
-            <td>Intent-based: primary, success, error, bg, text</td>
+            <td>{th.layerSemanticPurpose}</td>
           </tr>
           <tr>
-            <td><strong>Component</strong></td>
+            <td><strong>{th.layerComponent}</strong></td>
             <td><code>--sg-btn-*, --sg-input-*</code></td>
-            <td>Per-component tokens for fine-grained control</td>
+            <td>{th.layerComponentPurpose}</td>
           </tr>
         </tbody>
       </table>
-      <p>
-        Palette feeds into semantic tokens, which feed into component tokens.
-        Override at any layer — downstream tokens inherit automatically.
-      </p>
+      <p>{th.layersFooter}</p>
 
-      <h2 id="dark-mode">Dark Mode</h2>
-      <p>
-        Toggle dark mode by setting a single attribute on the root element:
-      </p>
+      <h2 id="dark-mode">{th.darkModeHeading}</h2>
+      <p>{th.darkModeLead}</p>
       <pre className="doc-code"><code>{`document.documentElement.setAttribute('data-sg-theme', 'dark')`}</code></pre>
-      <p>
-        SkyGraph ships light and dark palettes. The semantic layer references
-        palette variables, so dark mode swaps the entire look with zero JS
-        overhead.
-      </p>
+      <p>{th.darkModeNote}</p>
       <pre className="doc-code"><code>{`<!-- Static HTML approach -->
 <html data-sg-theme="dark">
   ...
@@ -67,25 +60,18 @@ function ThemeSwitch() {
   return <Switch checked={dark} onChange={toggle} />
 }`}</code></pre>
 
-      <h2 id="custom-theme">Custom Theme</h2>
-      <p>
-        Override the primary color by setting semantic variables in your CSS:
-      </p>
+      <h2 id="custom-theme">{th.customThemeHeading}</h2>
+      <p>{th.customThemeLead}</p>
       <pre className="doc-code"><code>{`:root {
   --sg-color-primary: #7c3aed;
   --sg-color-primary-hover: #6d28d9;
   --sg-color-primary-active: #5b21b6;
   --sg-color-primary-bg: rgba(124, 58, 237, 0.08);
 }`}</code></pre>
-      <p>
-        All components that reference <code>--sg-color-primary</code> will pick up
-        the new color — buttons, links, active states, focus rings, etc.
-      </p>
+      <p>{th.customThemeFooter}</p>
 
-      <h2 id="component-tokens">Per-Component Customization</h2>
-      <p>
-        Each component exposes its own CSS variables for surgical overrides:
-      </p>
+      <h2 id="component-tokens">{th.perComponentHeading}</h2>
+      <p>{th.perComponentLead}</p>
       <pre className="doc-code"><code>{`/* Make buttons taller with rounded corners */
 :root {
   --sg-btn-height: 40px;
@@ -99,13 +85,8 @@ function ThemeSwitch() {
   --sg-input-border-radius: 8px;
 }`}</code></pre>
 
-      <h2 id="slots">Slot-based styling (classNames / styles)</h2>
-      <p>
-        For complex components you can target specific DOM nodes via named slots —
-        without relying on deep selectors. Use <code>classNames</code> for CSS
-        classes and <code>styles</code> for inline styles. Slot keys and the
-        corresponding stable DOM classes are part of the public styling contract.
-      </p>
+      <h2 id="slots">{th.slotsHeading}</h2>
+      <p>{th.slotsLead}</p>
       <pre className="doc-code"><code>{`<Table
   classNames={{
     root: 'orders-table',
@@ -120,21 +101,14 @@ function ThemeSwitch() {
   ...
 />`}</code></pre>
 
-      <h2 id="headless">Headless Mode</h2>
-      <p>
-        Need full control over styling? Pass <code>unstyled</code> to any
-        component to strip all SkyGraph CSS. You keep the reactive behavior
-        and accessibility — bring your own classes:
-      </p>
+      <h2 id="headless">{th.headlessHeading}</h2>
+      <p>{th.headlessLead}</p>
       <pre className="doc-code"><code>{`<Button unstyled className="my-btn">
   Custom styled
 </Button>
 
 <Select unstyled className="my-select" options={opts} />`}</code></pre>
-      <p>
-        Headless mode is per-component — mix styled and unstyled freely in the
-        same app.
-      </p>
+      <p>{th.headlessFooter}</p>
     </section>
   )
 }

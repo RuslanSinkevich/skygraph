@@ -110,6 +110,50 @@ export interface DemoDict {
     examples: string
   }
 
+  theming: {
+    title: string
+    lead: string
+    threeLayersHeading: string
+    colLayer: string
+    colPrefix: string
+    colPurpose: string
+    layerPalette: string
+    layerPalettePurpose: string
+    layerSemantic: string
+    layerSemanticPurpose: string
+    layerComponent: string
+    layerComponentPurpose: string
+    layersFooter: string
+    darkModeHeading: string
+    darkModeLead: string
+    darkModeNote: string
+    customThemeHeading: string
+    customThemeLead: string
+    customThemeFooter: string
+    perComponentHeading: string
+    perComponentLead: string
+    slotsHeading: string
+    slotsLead: string
+    headlessHeading: string
+    headlessLead: string
+    headlessFooter: string
+  }
+
+  coreApi: {
+    title: string
+    lead: string
+    sectionStore: string
+    sectionStoreLead: string
+    sectionEngines: string
+    sectionEnginesLead: string
+    sectionTyped: string
+    sectionTypedLead: string
+    sectionMiddleware: string
+    sectionMiddlewareLead: string
+    sectionGraph: string
+    sectionGraphLead: string
+  }
+
   gettingStarted: {
     title: string
     lead: string
