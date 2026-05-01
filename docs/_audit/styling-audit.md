@@ -12,12 +12,13 @@
 ## 2. Классы `.sg-*`
 
 - В CSS определено классов: **874**.
-- В DOM компонентов используется строк-классов: **750**.
-- Совпадают (есть и в CSS, и в DOM): **643**.
-- Только в CSS (возможно мёртвый код): **231**.
-- Только в DOM (нет стилей): **107**.
+- В DOM компонентов используется строк-классов: **749**.
+- Совпадают (есть и в CSS, и в DOM): **644**.
+- Только в CSS, runtime-генерируемые (Transition): **41** (исключены из dead-code).
+- Только в CSS, **возможно мёртвый код**: **189**.
+- Только в DOM (нет стилей): **105**.
 
-<details><summary>Только в CSS</summary>
+<details><summary>Только в CSS — возможно мёртвый код</summary>
 
 - `.sg-avatar-circle`
 - `.sg-avatar-square`
@@ -29,7 +30,6 @@
 - `.sg-button-dashed`
 - `.sg-button-large`
 - `.sg-button-link`
-- `.sg-button-primary`
 - `.sg-button-small`
 - `.sg-button-text`
 - `.sg-carousel-dots-left`
@@ -40,13 +40,7 @@
 - `.sg-cascader-option-check-active`
 - `.sg-cascader-search-check-active`
 - `.sg-cascader-small`
-- `.sg-collapse-enter-active`
-- `.sg-collapse-enter-from`
-- `.sg-collapse-enter-to`
 - `.sg-collapse-large`
-- `.sg-collapse-leave-active`
-- `.sg-collapse-leave-from`
-- `.sg-collapse-leave-to`
 - `.sg-collapse-middle`
 - `.sg-collapse-small`
 - `.sg-colorpicker-large`
@@ -73,11 +67,6 @@
 - `.sg-dropdown-bottomRight`
 - `.sg-dropdown-topLeft`
 - `.sg-dropdown-topRight`
-- `.sg-fade-enter-active`
-- `.sg-fade-enter-to`
-- `.sg-fade-leave-active`
-- `.sg-fade-leave-from`
-- `.sg-fade-leave-to`
 - `.sg-form-horizontal`
 - `.sg-form-inline`
 - `.sg-form-large`
@@ -153,30 +142,6 @@
 - `.sg-select-trigger`
 - `.sg-skeleton-avatar-circle`
 - `.sg-skeleton-avatar-square`
-- `.sg-slide-down-enter-active`
-- `.sg-slide-down-enter-from`
-- `.sg-slide-down-enter-to`
-- `.sg-slide-down-leave-active`
-- `.sg-slide-down-leave-from`
-- `.sg-slide-down-leave-to`
-- `.sg-slide-left-enter-active`
-- `.sg-slide-left-enter-from`
-- `.sg-slide-left-enter-to`
-- `.sg-slide-left-leave-active`
-- `.sg-slide-left-leave-from`
-- `.sg-slide-left-leave-to`
-- `.sg-slide-right-enter-active`
-- `.sg-slide-right-enter-from`
-- `.sg-slide-right-enter-to`
-- `.sg-slide-right-leave-active`
-- `.sg-slide-right-leave-from`
-- `.sg-slide-right-leave-to`
-- `.sg-slide-up-enter-active`
-- `.sg-slide-up-enter-from`
-- `.sg-slide-up-enter-to`
-- `.sg-slide-up-leave-active`
-- `.sg-slide-up-leave-from`
-- `.sg-slide-up-leave-to`
 - `.sg-spin-default`
 - `.sg-spin-large`
 - `.sg-spin-small`
@@ -244,6 +209,46 @@
 - `.sg-treeselect-large`
 - `.sg-treeselect-small`
 - `.sg-upload-item-error`
+
+</details>
+
+<details><summary>Только в CSS — runtime-генерируемые (не мёртвый код)</summary>
+
+- `.sg-collapse-enter-active`
+- `.sg-collapse-enter-from`
+- `.sg-collapse-enter-to`
+- `.sg-collapse-leave-active`
+- `.sg-collapse-leave-from`
+- `.sg-collapse-leave-to`
+- `.sg-fade-enter-active`
+- `.sg-fade-enter-to`
+- `.sg-fade-leave-active`
+- `.sg-fade-leave-from`
+- `.sg-fade-leave-to`
+- `.sg-slide-down-enter-active`
+- `.sg-slide-down-enter-from`
+- `.sg-slide-down-enter-to`
+- `.sg-slide-down-leave-active`
+- `.sg-slide-down-leave-from`
+- `.sg-slide-down-leave-to`
+- `.sg-slide-left-enter-active`
+- `.sg-slide-left-enter-from`
+- `.sg-slide-left-enter-to`
+- `.sg-slide-left-leave-active`
+- `.sg-slide-left-leave-from`
+- `.sg-slide-left-leave-to`
+- `.sg-slide-right-enter-active`
+- `.sg-slide-right-enter-from`
+- `.sg-slide-right-enter-to`
+- `.sg-slide-right-leave-active`
+- `.sg-slide-right-leave-from`
+- `.sg-slide-right-leave-to`
+- `.sg-slide-up-enter-active`
+- `.sg-slide-up-enter-from`
+- `.sg-slide-up-enter-to`
+- `.sg-slide-up-leave-active`
+- `.sg-slide-up-leave-from`
+- `.sg-slide-up-leave-to`
 - `.sg-zoom-enter-active`
 - `.sg-zoom-enter-from`
 - `.sg-zoom-enter-to`
@@ -256,8 +261,6 @@
 <details><summary>Только в DOM</summary>
 
 - `sg-autofield`
-- `sg-btn`
-- `sg-btn-primary`
 - `sg-calendar-cell-events`
 - `sg-calendar-cell-focused`
 - `sg-calendar-cell-in-range`

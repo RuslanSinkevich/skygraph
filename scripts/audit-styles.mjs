@@ -32,6 +32,30 @@ const CLASS_RE = /\.(sg-[a-zA-Z0-9_-]+)/g;
 const HEX_RE = /#([0-9a-fA-F]{3,8})\b/g;
 const CLASS_IN_TSX_RE = /['"`]([^'"`]*sg-[a-zA-Z0-9_-][^'"`]*)['"`]/g;
 
+// ── Runtime-generated class allowlist ────────────────────────────────────
+//
+// Some classes are added via `classList.add(...)` at runtime (animations,
+// transitions, dynamic placement) and therefore never appear as a literal in
+// any TSX file. They are NOT dead code. We exclude them from the
+// "only in CSS" list so the report stays signal-heavy.
+//
+// Known runtime prefixes:
+//   - Transition component (`packages/react/src/components/ui/Transition.tsx`)
+//     emits `<name>-enter-from`, `<name>-enter-active`, `<name>-enter-to`,
+//     `<name>-leave-from`, `<name>-leave-active`, `<name>-leave-to`. Used
+//     names: `fade`, `slide-up`, `slide-down`, `slide-left`, `slide-right`,
+//     `zoom`, `collapse`.
+const RUNTIME_CLASS_PATTERNS = [
+  /^sg-fade-(enter|leave)(-(from|active|to))?$/,
+  /^sg-slide-(up|down|left|right)-(enter|leave)(-(from|active|to))?$/,
+  /^sg-zoom-(enter|leave)(-(from|active|to))?$/,
+  /^sg-collapse-(enter|leave)(-(from|active|to))?$/,
+];
+
+function isRuntimeClass(name) {
+  return RUNTIME_CLASS_PATTERNS.some((re) => re.test(name));
+}
+
 async function walk(dir, exts) {
   const out = [];
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -113,7 +137,9 @@ async function main() {
   }
 
   // === Report ===
-  const classesOnlyInCss = [...classesInCss].filter((c) => !classesInDom.has(c)).sort();
+  const classesOnlyInCssRaw = [...classesInCss].filter((c) => !classesInDom.has(c));
+  const classesOnlyInCssRuntime = classesOnlyInCssRaw.filter(isRuntimeClass).sort();
+  const classesOnlyInCss = classesOnlyInCssRaw.filter((c) => !isRuntimeClass(c)).sort();
   const classesOnlyInDom = [...classesInDom].filter((c) => !classesInCss.has(c)).sort();
   const classesInBoth = [...classesInCss].filter((c) => classesInDom.has(c)).sort();
 
@@ -147,15 +173,24 @@ async function main() {
   lines.push(`- В CSS определено классов: **${classesInCss.size}**.`);
   lines.push(`- В DOM компонентов используется строк-классов: **${classesInDom.size}**.`);
   lines.push(`- Совпадают (есть и в CSS, и в DOM): **${classesInBoth.length}**.`);
-  lines.push(`- Только в CSS (возможно мёртвый код): **${classesOnlyInCss.length}**.`);
+  lines.push(`- Только в CSS, runtime-генерируемые (Transition): **${classesOnlyInCssRuntime.length}** (исключены из dead-code).`);
+  lines.push(`- Только в CSS, **возможно мёртвый код**: **${classesOnlyInCss.length}**.`);
   lines.push(`- Только в DOM (нет стилей): **${classesOnlyInDom.length}**.`);
   lines.push('');
-  lines.push('<details><summary>Только в CSS</summary>');
+  lines.push('<details><summary>Только в CSS — возможно мёртвый код</summary>');
   lines.push('');
   for (const c of classesOnlyInCss) lines.push(`- \`.${c}\``);
   lines.push('');
   lines.push('</details>');
   lines.push('');
+  if (classesOnlyInCssRuntime.length) {
+    lines.push('<details><summary>Только в CSS — runtime-генерируемые (не мёртвый код)</summary>');
+    lines.push('');
+    for (const c of classesOnlyInCssRuntime) lines.push(`- \`.${c}\``);
+    lines.push('');
+    lines.push('</details>');
+    lines.push('');
+  }
   lines.push('<details><summary>Только в DOM</summary>');
   lines.push('');
   for (const c of classesOnlyInDom) lines.push(`- \`${c}\``);
