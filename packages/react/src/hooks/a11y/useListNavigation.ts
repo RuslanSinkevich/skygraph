@@ -12,7 +12,7 @@ export function useListNavigation(options: ListNavigationOptions) {
   const [activeIndex, setActiveIndex] = useState(-1)
   const itemsRef = useRef<(HTMLElement | null)[]>([])
   const typeaheadRef = useRef('')
-  const typeaheadTimerRef = useRef<ReturnType<typeof setTimeout>>()
+  const typeaheadTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const labelsRef = useRef<string[]>([])
 
   const setItemRef = useCallback(

@@ -6,7 +6,7 @@ import {
   InputPassword, SearchInput, TagInput, PinInput, InlineEdit, InputGroup,
   notification, NotificationContainer,
 } from '@skygraph/react'
-import type { TabItem, SelectOption } from '@skygraph/react'
+import type { TabItem, SelectOption, AutoCompleteOption } from '@skygraph/react'
 
 /* ── Tab 1: All Controls Gallery ──────────────────── */
 
@@ -30,7 +30,7 @@ function ControlsGallery() {
   const [inlineVal, setInlineVal] = useState('Click me to edit')
   const [autoVal, setAutoVal] = useState('')
 
-  const autoOptions: SelectOption[] = useMemo(() => {
+  const autoOptions: AutoCompleteOption[] = useMemo(() => {
     if (!autoVal) return []
     return ['gmail.com', 'outlook.com', 'yahoo.com'].map(d => ({
       label: `${autoVal}@${d}`,
@@ -120,7 +120,7 @@ function ControlsGallery() {
           <label className="forms-label">RadioGroup</label>
           <RadioGroup
             value={radio}
-            onChange={setRadio}
+            onChange={(v) => setRadio(String(v))}
             options={[
               { label: 'Option A', value: 'a' },
               { label: 'Option B', value: 'b' },
@@ -365,7 +365,7 @@ function ValidationDemo() {
             </Field>
           </div>
           <div className="forms-cell">
-            <Field name="agree" required rules={[{ validator: (_r, v) => v ? Promise.resolve() : Promise.reject('You must agree') }]}>
+            <Field name="agree" required rules={[{ validator: (v) => v ? null : 'You must agree' }]}>
               {(field) => <Checkbox checked={field.value as boolean} onChange={field.onChange}>I agree to the Terms of Service</Checkbox>}
             </Field>
           </div>
@@ -504,7 +504,7 @@ function WizardDemo() {
               <label className="forms-label">Plan</label>
               <RadioGroup
                 value={data.plan}
-                onChange={(v) => patch({ plan: v })}
+                onChange={(v) => patch({ plan: String(v) })}
                 options={[
                   { label: 'Free — Basic features', value: 'free' },
                   { label: 'Pro — All features, priority support', value: 'pro' },
@@ -913,7 +913,7 @@ function MockupsDemo() {
               <Field name="password" label="Password" required rules={[{ required: true }, { min: 8 }]}>
                 {(f) => <InputPassword value={f.value as string ?? ''} onChange={f.onChange} onBlur={f.onBlur} placeholder="Min 8 characters" showStrength />}
               </Field>
-              <Field name="agree" required rules={[{ validator: (_r, v) => v ? Promise.resolve() : Promise.reject('Required') }]}>
+              <Field name="agree" required rules={[{ validator: (v) => v ? null : 'Required' }]}>
                 {(f) => <Checkbox checked={f.value as boolean} onChange={f.onChange}>I agree to Terms & Privacy Policy</Checkbox>}
               </Field>
               <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 8 }}>Create Account</Button>

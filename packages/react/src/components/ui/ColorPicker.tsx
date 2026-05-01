@@ -195,7 +195,7 @@ export function ColorPicker({
   const [textInput, setTextInput] = useState(formatColor(currentHex, format))
 
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const satPanelRef = useRef<HTMLDivElement>(null)
   const hueBarRef = useRef<HTMLDivElement>(null)
   const draggingRef = useRef<'sat' | 'hue' | null>(null)

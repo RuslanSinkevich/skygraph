@@ -63,6 +63,16 @@ export interface FormProps extends UseFormOptions {
     /** Icon while async validation is running. */
     validating?: React.ReactNode
   }
+  /**
+   * Called with the form values when the form passes validation and submits.
+   * Alias for `onSubmit`. Both fire; if both are provided, `onSubmit` runs first.
+   */
+  onFinish?: (values: Record<string, unknown>) => void | Promise<void>
+  /**
+   * Initial field values. Alias for `defaultValues` (the underlying Form
+   * engine option). When both are provided, `defaultValues` wins.
+   */
+  initialValues?: Record<string, unknown>
 }
 
 /**
@@ -86,13 +96,25 @@ export function Form({
   scrollToFirstError,
   preserve,
   feedbackIcons,
+  onFinish,
+  initialValues,
   ...formOptions
 }: FormProps) {
   const config = useConfig()
   const size = sizeProp ?? config.size ?? 'middle'
   const disabled = disabledProp ?? config.disabled
 
-  const internalForm = useForm(externalForm ? undefined : formOptions)
+  // `initialValues` is an antd-style alias for the engine's `defaultValues`.
+  const mergedFormOptions = {
+    ...formOptions,
+    defaultValues: formOptions.defaultValues ?? initialValues,
+    onSubmit: async (values: Record<string, unknown>) => {
+      await formOptions.onSubmit?.(values)
+      await onFinish?.(values)
+    },
+  }
+
+  const internalForm = useForm(externalForm ? undefined : mergedFormOptions)
   const { core, form, submit } = externalForm ?? internalForm
   const formRef = useRef<HTMLFormElement>(null)
 

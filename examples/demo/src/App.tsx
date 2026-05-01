@@ -1,3 +1,4 @@
+import type React from 'react'
 import { useState, useEffect, useMemo } from 'react'
 import '../../../packages/react/styles/index.css'
 import './app.css'
@@ -166,7 +167,7 @@ function buildMenu(t: DemoDict): MenuSection[] {
   ]
 }
 
-const pages: Record<string, () => JSX.Element> = {
+const pages: Record<string, () => React.JSX.Element> = {
   'components/spin': SpinDemo,
   'components/button': ButtonDemo,
   'components/input': InputDemo,

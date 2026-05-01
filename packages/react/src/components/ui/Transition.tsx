@@ -21,7 +21,7 @@ export interface TransitionProps {
   /** Fires once the leave transition timer completes. */
   onAfterLeave?: () => void
   /** Single React element whose `className` will be merged with transition classes. */
-  children: React.ReactElement
+  children: React.ReactElement<{ className?: string; ref?: React.Ref<HTMLElement> }>
   /** When `true`, removes the child from the tree after leave; when `false`, keeps it mounted. @default true */
   unmountOnExit?: boolean
 }
@@ -47,7 +47,7 @@ export function Transition({
   const [mounted, setMounted] = useState(visible)
   const [phase, setPhase] = useState<Phase>(visible ? 'idle' : 'idle')
   const nodeRef = useRef<HTMLElement | null>(null)
-  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const prevVisible = useRef(visible)
 
   const getEnterClasses = useCallback(() => {

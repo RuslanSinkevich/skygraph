@@ -55,6 +55,7 @@ export type {
   HeaderCell,
   FlatRow,
 } from './components/complex/Table'
+export type { RowId, SortConfig, SortDirection, ColumnFilter, FilterFn } from '@skygraph/core'
 export { useTable } from './hooks/useTable'
 export type { UseTableOptions, UseTableReturn } from './hooks/useTable'
 

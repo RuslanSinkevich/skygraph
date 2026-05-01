@@ -3,7 +3,7 @@ import {
   Table, Tag, Badge, notification, NotificationContainer, Segmented,
   Button, Empty, Descriptions, Drawer,
 } from '@skygraph/react'
-import type { TableColumn, RowId, SummaryCell, CellSpan, TableLocale } from '@skygraph/react'
+import type { TableColumn, RowId, SortConfig, SummaryCell, CellSpan, TableLocale } from '@skygraph/react'
 import { employees, treeEmployees, statusColors } from './data'
 
 const statusTag = (val: unknown) => {
@@ -32,8 +32,8 @@ const tableData = employees.map((e) => ({
   data: { ...e } as Record<string, unknown>,
 }))
 
-const locale: TableLocale = {
-  search: 'Search in table...',
+const locale = {
+  searchPlaceholder: 'Search in table...',
   filterConfirm: 'Apply',
   filterReset: 'Reset',
   sortAsc: 'Sort ascending',
@@ -70,7 +70,7 @@ const locale: TableLocale = {
   max: 'Max',
   totalRows: (total: number) => `${total} rows total`,
   selectedRows: (count: number) => `${count} selected`,
-}
+} as TableLocale
 
 // ---------------------------------------------------------------------------
 // FULL FEATURE — every compatible prop in one table
@@ -78,7 +78,7 @@ const locale: TableLocale = {
 function FullFeatureDemo() {
   const [selectedKeys, setSelectedKeys] = useState<RowId[]>([])
   const [editData, setEditData] = useState(tableData)
-  const [sorts, setSorts] = useState<Array<{ key: string; direction: 'asc' | 'desc' }>>([])
+  const [sorts, setSorts] = useState<SortConfig[]>([])
   const [hiddenCols, setHiddenCols] = useState<string[]>([])
   const [detailDrawer, setDetailDrawer] = useState<Record<string, unknown> | null>(null)
 
@@ -382,8 +382,8 @@ function FullFeatureDemo() {
 
         /* Header context menu */
         headerContextMenu={(col) => [
-          { key: 'sort-asc', label: `Sort ${String(col.title)} ascending`, onClick: () => setSorts([{ key: col.key, direction: 'asc' }]) },
-          { key: 'sort-desc', label: `Sort ${String(col.title)} descending`, onClick: () => setSorts([{ key: col.key, direction: 'desc' }]) },
+          { key: 'sort-asc', label: `Sort ${String(col.title)} ascending`, onClick: () => setSorts([{ column: col.key, direction: 'asc' }]) },
+          { key: 'sort-desc', label: `Sort ${String(col.title)} descending`, onClick: () => setSorts([{ column: col.key, direction: 'desc' }]) },
           { key: 'div1', label: '', divider: true },
           { key: 'hide', label: 'Hide column', onClick: () => setHiddenCols(prev => [...prev, col.key]) },
         ]}
@@ -512,9 +512,9 @@ function TreeDemo() {
 // VIRTUAL SCROLL
 // ---------------------------------------------------------------------------
 function VirtualDemo() {
-  const largeData = useMemo(
+  const largeData = useMemo<Array<{ id: RowId; data: Record<string, unknown> }>>(
     () => {
-      const result = []
+      const result: Array<{ id: RowId; data: Record<string, unknown> }> = []
       for (let i = 0; i < 5; i++) {
         for (const e of employees) {
           result.push({

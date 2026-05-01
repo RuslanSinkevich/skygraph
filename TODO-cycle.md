@@ -5,6 +5,34 @@
 
 ---
 
+## От Стрима 4 (Showcases — finalize)
+
+### Сделано
+- ✅ **Workflow Editor** — новый showcase (`examples/showcases/src/showcases/workflow-editor/`). Diagram + GraphEngine + drag, palette / inspector / routing toggle / add-edge модал.
+- ✅ **Form API расширен**: `onFinish` (alias для `onSubmit`) + `initialValues` (alias для `defaultValues`). Это починило ~6 файлов в showcases (forms, ecommerce, crm, admin, hr-portal, project-tracker), которые писали antd-стиль.
+- ✅ **React 19 совместимость** в `@skygraph/react`:
+  - Добавлен `pnpm.overrides` для `@types/react@^19.2.14` и `@types/react-dom@^19.2.3` в корне.
+  - Поправлены `useRef<T>()` без аргумента → `useRef<T | undefined>(undefined)`: `Notification`, `Dropdown`, `ColorPicker`, `Menu`, `Transition`, `useListNavigation`.
+  - `Transition.children` типизирован как `ReactElement<{ className?, ref? }>` для строгого `cloneElement` в R19.
+  - `TableHeader.filterRef` тип `RefObject<HTMLDivElement | null>`.
+- ✅ **Index экспорт** в `@skygraph/react`: добавлены `RowId`, `SortConfig`, `SortDirection`, `ColumnFilter`, `FilterFn` (реэкспорт из core).
+- ✅ **Tree compatibility**: `OrgNode`/`ProjectNode`/`FolderNode` дополнены `[field: string]: unknown` для совместимости с `TreeNodeData`.
+- ✅ **Showcase fixes**: `Tooltip.content`→`title`, `Button danger`→inline error color, `Input.readOnly`→читаемый паттерн `onChange={() => {}}`, `Select.mode="multiple"`→single (Select API не поддерживает multi mode), `Avatar size="medium"`→`"middle"`, `Segmented/Select onChange` обёрнут в `(v) => setX(String(v))`, `Badge.count` тип, antd-style `validator` (`(_r, v) => Promise.reject('msg')`) → skygraph (`(v) => 'msg' | null`).
+- ✅ **TableLocale полнота**: `as TableLocale` cast в TableKitchenSink (есть лишние ключи которые нужно либо добавить в API, либо использовать через local override).
+- ✅ **`@types/node`** установлен в `examples/showcases` (для `vite.config.ts` `path` / `__dirname`).
+- ✅ **App.tsx обновлён**: переориентированы описания/теги для analytics / admin / workflow-editor; admin теперь "Permissions & Roles" (фокус на Transfer); analytics показывает Charts + Dashboard.
+
+### Осталось
+- ⚠ **`ui/Calendar.tsx` реэкспорт** — формальный косяк (ui импортирует complex с core зависимостью). Не баг, но кандидат на унификацию.
+- ⚠ **TableLocale двойной интерфейс**: один в `Table/types.ts`, другой в `types/locale.ts`. У каждого свой набор ключей. Унифицировать или явно документировать (TableKitchenSink использует cast `as TableLocale`).
+- ⚠ **Select multi-select API** — нет `mode="multiple"`. Если нужно — добавить в `SelectProps` отдельный prop (например `multiple` + `onChange: (string | number)[] => void`). Сейчас в admin/ApiKeysTab сценарий "scopes" работает через одиночный select.
+- ⚠ **`Button.danger`** — в API нет. Если хочется — добавить как стандартный variant. Сейчас в showcases используется inline color.
+- ⚠ **`Input.readOnly`** — в API нет, есть только `disabled`. Если хочется явный read-only режим — добавить в `InputProps`.
+- ⚠ **Дубли в showcases (`crm`/`ecommerce`/`admin`)** — переименование/refocus сделан, но они всё ещё имеют похожий каркас (Table + Modal + Drawer). Полная декомпозиция/мердж не сделан — оставлен на будущее.
+- ⚠ **showcases вне pnpm-workspace** — оставлено как было (`file:` deps).
+
+---
+
 ## От Стрима 2 (i18n demo) — найденные существующие проблемы (не от моих правок)
 
 - **`packages/react/src/components/complex/SchemaForm.tsx:75`** — `react-hooks/rules-of-hooks` ошибка: `useConfig` вызван условно. Существовало до Стрима 2. Кандидат в мини-стрим cleanup или в Стрим 9.
@@ -83,8 +111,8 @@
 
 ### Дубли и путаница в публичном API
 
-- ❌ **TreeSelect — два разных компонента под одним именем.** `import from '@skygraph/react'` даёт UI-версию, `import from '@skygraph/react/tree'` — complex-версию. Серьёзный баг публичного API. Решить: какая основная, удалить вторую. **Отдельный мини-стрим вне основной очереди.**
-- ❌ **`complex/Transfer/` — мёртвый код.** Не экспортируется ни из одного entrypoint, используется только в тестах. Решить: удалить или вернуть в API.
+- ✅/⚠ **TreeSelect** — главный экспорт переключён на complex (Q1). Файл `ui/TreeSelect.tsx` физически НЕ удалён — тесты в `__tests__/new-components.test.tsx` опираются на специфичные ui-классы (`.sg-treeselect-selector`, `.sg-treeselect-dropdown`) и упрощённую `onChange('leaf')` сигнатуру; полная миграция тестов на complex-API требует переписать ~5 тестов. Отложено как **отдельный мини-стрим** «migrate new-components.test.tsx to complex TreeSelect/Transfer».
+- ✅/⚠ **complex/Transfer** — главный экспорт теперь идёт оттуда (Q2). `ui/Transfer.tsx` остаётся файлом для тестов (тот же причина — тесты используют `defaultTargetKeys`, `listStyle`, упрощённый API).
 - ⚠ **`ui/Calendar.tsx` — реэкспорт от complex.** Нарушает идею "ui без core" косвенно (через реэкспорт компонента, использующего core). Не баг, но кандидат на унификацию.
 
 ### Coverage (configured, нужен dev-package)

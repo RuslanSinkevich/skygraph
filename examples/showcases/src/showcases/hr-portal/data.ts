@@ -14,6 +14,7 @@ export interface OrgNode {
   key: string
   title: string
   children?: OrgNode[]
+  [field: string]: unknown
 }
 
 export interface LeaveRecord {

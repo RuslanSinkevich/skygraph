@@ -11,6 +11,7 @@ export interface FolderNode {
   key: string
   title: string
   children?: FolderNode[]
+  [field: string]: unknown
 }
 
 const fileIcons: Record<FileItem['type'], string> = {

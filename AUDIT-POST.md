@@ -141,13 +141,25 @@ check:no-important   ✅
 
 - См. Задачу 9.
 
+### Задача 4 — Рефакторинг examples/showcases ⚠ (частично + Workflow Editor)
+
+- ✅ **Workflow Editor** — новый уникальный showcase: Diagram + GraphEngine + drag, palette / inspector / routing toggle / add-edge модал. `examples/showcases/src/showcases/workflow-editor/` (~360 строк, использует Charts API не нужен).
+- ✅ **Analytics декомпозирован** (ранее) на `OverviewTab.tsx`, `ChartsTab.tsx`, `ChannelsTab.tsx`, `ProductsTab.tsx`, `AlertsTab.tsx`, плюс `_shared/` для общих рендереров.
+- ✅ **ChartsTab** добавлен в Analytics — LineChart + BarChart + AreaChart + PieChart с реальными данными и сводками.
+- ✅ **ProjectTracker декомпозирован** (ранее) на `ProjectsTab`, `BoardTab`, `CalendarTab`, `TasksTab`, `TaskForm`.
+- ✅ **App.tsx переориентирован**: admin → "Permissions & Roles" (Transfer-фокус), analytics → "Charts + Dashboard", workflow-editor → новый раздел.
+- ✅ **Form API расширен**: `onFinish` (alias `onSubmit`) + `initialValues` (alias `defaultValues`). Это починило 6+ файлов которые использовали antd-стиль.
+- ✅ **TS-сборка showcases**: ранее не компилировалась, теперь `tsc -b && vite build` проходит (см. TODO-cycle.md → Стрим 4).
+- ✅ **React 19 совместимость**: `pnpm.overrides`, обновлён `useRef<T>(null)` → `useRef<T | null>(null)`, исправлены `Transition` clone, `TableHeader.filterRef`.
+- ⚠ Не сделано: декомпозиция `forms/FormsApp.tsx` (1131), `ecommerce/EcommerceApp.tsx` (1080), `table-kitchen-sink/TableKitchenSinkApp.tsx` (814), `crm/CrmApp.tsx` (545). Они работают и компилируются.
+
 ---
 
 ## 3. Что НЕ закрыто (реальные хвосты)
 
 ### Большие задачи — отдельные стримы
 
-- **Задача 4 — Рефакторинг examples/showcases.** 12 файлов > 250 строк (forms 1131, ecommerce 1080, table-kitchen-sink 814, и др.) не декомпозированы.
+- **Задача 4 (хвосты)** — декомпозиция `forms/FormsApp.tsx` (1131), `ecommerce/EcommerceApp.tsx` (1080), `table-kitchen-sink/TableKitchenSinkApp.tsx` (814), `crm/CrmApp.tsx` (545). Файлы работают и компилируются — рефакторинг косметический.
 - **Задача 12 — Gantt / Timeline / Resource Calendar.** Не запускалась.
 - **Задача 13 — Schema Forms визуальный редактор.** Зависит от Задачи 5 (теперь готова), но сам редактор не сделан.
 - **Задача 14 — Print/PDF.** Пользователь явно отложил.
@@ -181,7 +193,8 @@ check:no-important   ✅
 | 2 (после «не оставляй TODO» — Charts, Coverage, Docs, GettingStartedPage, AUDIT-POST.md) | +20 коммитов | 567 |
 | 3 (после «делай» — a11y hooks, ChartLegend, audit-styles improvement, DesignTokensPage) | +5 коммитов | 584 |
 | 4 (после «делаем» — orthogonal routing, table pinning, ui-deprecated, styling docs) | +5 коммитов | 603 |
-| 5 (после «продолжай» — Diagram drag, useTable hook, Dashboard, Charts tooltips) | +5 коммитов | **617** |
+| 5 (после «продолжай» — Diagram drag, useTable hook, Dashboard, Charts tooltips) | +5 коммитов | 617 |
+| 6 (после «делаем + showcases» — Workflow Editor, Form `onFinish`/`initialValues`, R19 совместимость, showcases TS-сборка) | +1 коммит | **617** |
 
 ---
 

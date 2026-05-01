@@ -92,7 +92,7 @@ export function NotificationContainer({
   unstyled,
 }: NotificationContainerProps) {
   const [list, setList] = useState<NotificationItem[]>([])
-  const listenerRef = useRef<Listener>()
+  const listenerRef = useRef<Listener | undefined>(undefined)
 
   useEffect(() => {
     const fn: Listener = (newItems) => setList(newItems)

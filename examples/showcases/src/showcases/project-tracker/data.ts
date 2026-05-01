@@ -17,6 +17,7 @@ export interface ProjectNode {
   key: string
   title: string
   children?: ProjectNode[]
+  [field: string]: unknown
 }
 
 const taskTitles = [

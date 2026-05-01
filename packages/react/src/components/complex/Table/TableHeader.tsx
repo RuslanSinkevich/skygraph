@@ -84,7 +84,7 @@ interface HeaderProps {
     getFilterDropdownProps: (col: TableColumn) => FilterDropdownProps
   }
   /** Ref attached to the open filter panel for outside click. */
-  filterRef: React.RefObject<HTMLDivElement>
+  filterRef: React.RefObject<HTMLDivElement | null>
   /** Active multi-sort configuration. */
   sorts: SortConfig[]
   /** 0-based sort priority index for a column, or -1. */

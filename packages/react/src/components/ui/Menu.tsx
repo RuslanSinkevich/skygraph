@@ -435,7 +435,7 @@ function StyledMenuItem({
 }) {
   const popoverRef = useRef<HTMLLIElement>(null)
   const [hoverOpen, setHoverOpen] = useState(false)
-  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   useEffect(() => {
     return () => clearTimeout(timerRef.current)

@@ -233,3 +233,46 @@ _(пользователь пишет сюда; агент перечитыва�
 - Charts: оси, анимации, brushing.
 - Dashboard.Editor (drag/resize) — отдельный мини-стрим.
 - TableEngine pro дальше: column resize/reorder с persist, virtualization динамической высоты, группировка + агрегации.
+
+### 2026-05-01 (шестая итерация — «продолжим» / showcases finalize)
+
+**Команда:** _«полная проверка и доработка убери однотипные оставь только уникальный расширь их замени утсаревшие разбей их нормально. добавь новые»._
+
+Выполнено:
+
+1. **Workflow Editor — новый showcase** (`workflow-editor/`). Уникальный, использует Diagram + GraphEngine + drag.
+   - Palette сбоку (Start/Task/Decision/End с разными outline'ами: rect/ellipse/polygon).
+   - Inspector справа: id, kind, position, edge counts, rename, delete.
+   - Routing toggle (straight ↔ orthogonal) — пересоздаёт все edges.
+   - Add Node / Add Edge модалки (без skygraph Form — простой state, чтобы не зависеть от validation API).
+   - Reset to template, Lock/Unlock layout.
+   - Стили в `app.css` (~190 строк новых правил `.we-*`).
+
+2. **Form API расширен:** добавлены `onFinish` (alias для `onSubmit`) и `initialValues` (alias для `defaultValues`). Это backward-совместимое расширение починило ~6 файлов в showcases.
+
+3. **React 19 совместимость:**
+   - `pnpm.overrides` для `@types/react@^19.2.14` и `@types/react-dom@^19.2.3` в корне.
+   - `useRef<T>()` без аргумента → `useRef<T | undefined>(undefined)`: `Notification`, `Dropdown`, `ColorPicker`, `Menu`, `Transition`, `useListNavigation`.
+   - `Transition.children` типизирован как `ReactElement<{ className?, ref? }>`.
+   - `TableHeader.filterRef` тип `RefObject<HTMLDivElement | null>`.
+
+4. **Index экспорт:** `RowId`, `SortConfig`, `SortDirection`, `ColumnFilter`, `FilterFn` теперь реэкспортируются из `@skygraph/core` через `@skygraph/react`.
+
+5. **Tree совместимость:** `OrgNode`/`ProjectNode`/`FolderNode` дополнены `[field: string]: unknown`.
+
+6. **Прочие фиксы в showcases:** `Tooltip.content`→`title`, `Button.danger`→inline color, `Input.readOnly`→`onChange={() => {}}`, `Select.mode="multiple"`→single, `Avatar size="medium"`→`"middle"`, `Segmented/Select onChange` обёртки `(v) => setX(String(v))`, `Badge.count` тип, antd-style `validator` сигнатура → skygraph.
+
+7. **Demo build fix:** `JSX.Element` → `React.JSX.Element` (R19 убрал глобальный JSX namespace).
+
+**Состояние сборки:**
+- `pnpm --filter @skygraph/core test`: 270 ✅
+- `pnpm --filter @skygraph/react test`: 347 ✅
+- `pnpm --filter @skygraph/react build`: ✅
+- `examples/demo` build (tsc+vite): ✅
+- `examples/showcases` build (tsc+vite): ✅ (ранее не компилировалось)
+
+**Что осталось** (явный физический лимит):
+- Декомпозиция `forms/FormsApp.tsx` (1131), `ecommerce/EcommerceApp.tsx` (1080), `table-kitchen-sink/TableKitchenSinkApp.tsx` (814) — файлы работают и собираются, рефактор косметический.
+- TableLocale двойной интерфейс (`Table/types.ts` vs `types/locale.ts`) — унификация.
+- Расширить публичный API: `Button.danger`, `Input.readOnly`, `Select.multiple` — сейчас в showcases используются workaround'ы.
+- Хвосты предыдущих стримов остаются (см. список выше).
