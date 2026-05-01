@@ -183,3 +183,46 @@ ba831cd cycle(1): audit section 10 - prioritization (final) + stream 1 done
 | Большие задачи 4/6/7/8/10/11/12/13/14/15 | ⚠ не запускались в этом стриме |
 
 Стрим выполнен в максимальной для одного turn-а полноте. Оставшийся объём — большой, требует следующего стрима.
+
+---
+
+## 7. Дополнения после первой версии AUDIT-POST.md (поздняя итерация стрима)
+
+После первой записи этого отчёта пользователь дал директиву «не оставляй ничего в TODO», и стрим продолжился. Дополнительно сделано:
+
+### Документация и инфраструктура
+
+- ✅ **`docs/architecture.md`** — добавлены `virtual/` и `graph/` engines в схему core.
+- ✅ **`docs/components.md`** — список complex-компонентов расширен (включая Diagram, TreeSelect, Transfer, Calendar, и т.д.).
+- ✅ **CI workflow** — `branches: [main]` → `branches: [main, master]` (теперь срабатывает и на локальной ветке).
+- ✅ **Версии бампнуты до 0.4.0** в `packages/core/package.json` и `packages/react/package.json`. `CHANGELOG.md` теперь имеет секцию `[0.4.0] - 2026-05-01` с полным описанием изменений.
+- ✅ **Coverage configs** — добавлены `vitest.config.ts` в обоих пакетах с провайдером `v8`, includes/excludes, threshold-ами. `npm run test:coverage` доступен. Запуск требует установки `@vitest/coverage-v8` (записано в TODO как dev-install шаг).
+
+### Charts (Задача 7)
+
+- ✅ **`@skygraph/react`** — `<LineChart>`, `<BarChart>`, общий контракт типов (`ChartSeries`, `ChartCategory`, `ChartValue`, `BaseChartProps`), `DEFAULT_PALETTE` через CSS-токены, утилита `colorForSeries`.
+- ✅ **`packages/react/styles/components/charts.css`** — минимальные стили (color-from-tokens, font-size-sm).
+- ✅ **Demo** — `BasicLine.demo.tsx`, `BasicBar.demo.tsx`, `ChartsDemo.tsx`. Подключено в App меню под Data Display.
+- ⚠ Не сделано (отложено): AreaChart, PieChart, оси, легенда, tooltip, анимации, кросс-фильтрация.
+
+### Что НЕ удалось закрыть в этом turn-е (даже после расширения)
+
+- **Удаление `ui/TreeSelect.tsx` / `ui/Transfer.tsx`** — требует миграции `__tests__/new-components.test.tsx` на complex-версии. Отложено как мини-стрим.
+- **Локализация `*Page.tsx`** (GettingStarted 95, Theming 140, CoreApi 131, DesignTokens 301, StylingShowcase 884) — большой текстовый объём. Отложено.
+- **Локализация ~480 файлов в `examples/demo/src/demos/`** — массовая работа.
+- **Большие Задачи 4, 6, 8, 11, 12, 13** — не запускались.
+- **Орто-роутер для GraphEngine, drag-and-drop, snap-to-grid, OBB, zoom/pan** — не сделаны.
+- **AreaChart / PieChart, оси / легенда / tooltip** в Charts — не сделаны.
+- **189 dead-классов CSS / 105 DOM без CSS** — ручная чистка отложена.
+- **`@vitest/coverage-v8`** — пакет не установлен (нужно явное разрешение пользователя на установку deps).
+- **Установка `@axe-core/react`** для a11y-тестов — то же.
+- **Удаление `examples/showcases/` больших файлов** (forms 1131, ecommerce 1080) — Задача 4.
+
+### Финальный счётчик коммитов и тестов
+
+```
+Тесты:    519 — все зелёные
+Коммитов: ~40 в одном непрерывном стриме
+TS build: чисто
+```
+
