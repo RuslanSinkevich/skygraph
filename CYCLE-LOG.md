@@ -161,3 +161,141 @@
 - Все стримы (1, 2, 3, ..., 7+) — в одном непрерывном turn-е.
 - Сообщения от пользователя — через `STREAM-CHAT.md`.
 - В конце каждого крупного стрима — обязательная проверка `STREAM-CHAT.md` на новые сообщения.
+
+---
+
+## Стрим 1.5 — Audit-fixes (Q1-Q4 от пользователя + bonus cleanup)
+
+**Старт:** 2026-05-01, сразу после Стрима 2.
+**Триггер:** ответы пользователя в `STREAM-CHAT.md` на 4 вопроса агента + явное разрешение «выполни отдельно не спрашивая».
+
+### Сделано
+
+| ID | Что | Артефакт |
+|----|-----|----------|
+| Q1 | `TreeSelect` главный экспорт переключён на complex-версию (с core); ui-версия оставлена файлом; `TreeSelectNode` deprecated alias сохранён | `packages/react/src/index.ts` |
+| Q2 | `complex/Transfer` (богаче — pagination/sortable/locale/footer/operations) возвращён в публичный API как главный `Transfer` | `packages/react/src/index.ts` |
+| Q3 | 38 посторонних `M`/`MM`/`AM` файлов из worktree закоммичены отдельным `chore:` коммитом | (38 файлов) |
+| Q4 | `package-lock.json` удалён, добавлен в `.gitignore` (+ `yarn.lock`) | `.gitignore`, root |
+| Bonus 1 | `workspaces` (npm-атавизм) удалён из корневого `package.json` | `package.json` |
+| Bonus 2 | `sg-btn-primary` → `sg-button sg-button-primary` в `SchemaForm.tsx` (теперь кнопка submit получает стили) | `packages/react/src/components/complex/SchemaForm.tsx` |
+| — | Перепроверены `#ff4d4f` и `#fff` — это **fallback-значения** в `var(...)`, не магические цвета. Оставлены. | `form.css`, `badge.css`, `avatar.css`, ... |
+| — | `#fff` в `colorpicker.css` — оправдан (рамка курсора над цветной палитрой). Оставлен. | `colorpicker.css` |
+
+497 тестов зелёные после всех изменений.
+
+---
+
+## Стрим 9 (частично) — Документация: обновление README
+
+**Сделано:** обновлены устаревшие числа.
+
+| Где | Было | Стало |
+|-----|------|-------|
+| Hero/Features раздел | "55+ React Components" | **65+** |
+| Packages таблица | "55+ components" | **65+** |
+| Tests раздел | "428 tests (146+282)" | **497 tests (217+280)** |
+| Development раздел | "(428 tests)" | **(497 tests)** |
+
+`docs/status.md`, `docs/architecture.md`, расхождения CI/локальной ветки — отложены в `TODO-cycle.md`.
+
+---
+
+## Стрим 5 — GraphEngine (скаффолд)
+
+**Старт:** 2026-05-01, последний крупный кусок в этом turn-е.
+**Цель:** новый движок графов как четвёртый в линейке `form/table/tree/virtual`.
+**Артефакты:** 4 новых файла + расширение namespaces / index / тесты.
+
+### Что сделано
+
+1. ✅ `packages/core/src/engines/graph/types.ts` — полный TypeScript-контракт (Node, Edge, Outline {rect/ellipse/polygon/path}, AnchorPolicy {perEdge/byLength/manual}, NodeTransform, AABB, GraphEngine interface).
+2. ✅ `packages/core/src/engines/graph/GraphEngine.ts` — реализация:
+   - `addNode/removeNode/updateNode/moveNode` — управление узлами.
+   - `setParent` с проверкой циклов (no self-parent, no ancestor cycle).
+   - `addEdge/removeEdge` — управление рёбрами + `edgesByNode` индекс для O(degree) lookup.
+   - `anchorsOf` — генератор якорей (rect: 4 угла + k на ребро; polygon: вершины + k на сегмент; ellipse: равномерно по углу; manual: stable IDs).
+   - `boundsOf` — AABB в мировых координатах с композицией через `parentId` цепочку.
+   - `geomRevision` — монотонная версия, инкрементируется только при transform/outline/anchorPolicy изменениях (не на data).
+   - Snapshot публикуется в Core store под `$graph.snapshot.<engineId>` для реактивных подписчиков.
+3. ✅ `packages/core/src/engines/graph/index.ts` — barrel.
+4. ✅ `packages/core/src/engines/namespaces.ts` — добавлен `GRAPH_PREFIX = '$graph.'`.
+5. ✅ `packages/core/src/index.ts` — публичный экспорт `createGraph` + 18 типов.
+6. ✅ `packages/core/src/__tests__/graph.test.ts` — **22 теста** в 6 группах (nodes, hierarchy, edges, anchors, bounds, store integration). Все зелёные.
+
+### НЕ сделано (по STREAM-PLAN — отложено)
+
+- Orthogonal-роутер (избегание препятствий) — Стрим 5 (продолжение) или отдельный.
+- Drag-and-drop из палитры — Стрим 5 (продолжение).
+- Повороты узлов в bounds (OBB) — пока только AABB без поворота.
+- React-компонент `<Diagram>` — следующий мини-стрим.
+- Демо-страница `examples/demo/src/demos/diagram/Basic.demo.tsx` — следующий мини-стрим.
+
+---
+
+## Финальный отчёт по всему turn-у
+
+### Стримы, закрытые в этом turn-е
+
+| Стрим | Статус | Коммитов |
+|-------|--------|----------|
+| **Стрим 1** (Аудит всей системы) | ✅ ЗАКРЫТ полностью (10 секций AUDIT.md) | 11 |
+| **Стрим 2** (i18n demo — инфра + App shell) | ✅ Минимальный скоуп ЗАКРЫТ. Локализация отдельных demo-страниц — в мини-стримы 2a–2e (TODO) | 1 |
+| **Стрим 1.5** (audit-fixes Q1-Q4) | ✅ ЗАКРЫТ | 2 (chore + audit-fixes) |
+| **Стрим 9** (доки — README) | ⚠ ЧАСТИЧНО (только числа в README; status.md, architecture, CI ветка — в TODO) | 1 |
+| **Стрим 5** (GraphEngine) | ⚠ СКАФФОЛД ЗАКРЫТ (модель + 22 теста). React `<Diagram>` + демо — в продолжение | 1 |
+
+### Тесты
+
+```
+core:    217 → 239 (+22 graph)
+react:   280 → 280 (без изменений)
+total:   497 → 519
+```
+Все 519 тестов **зелёные**.
+
+### Отложено в `TODO-cycle.md`
+
+- Локализация ~480 demo-страниц (мини-стримы 2a–2e).
+- `docs/status.md`, `docs/architecture.md`, CI ветка main/master, дубль workspaces — Стрим 9 (продолжение).
+- 228 dead-классов CSS, 124 DOM-классов без CSS, camelCase в dropdown/notification — мини-стрим стилей.
+- React `<Diagram>` компонент + demo — мини-стрим 5b.
+- Orthogonal routing, undo/redo для GraphEngine — мини-стрим 5c.
+- Coverage, R18/R19 матрица, slow test isolation, прямые тесты `runtime/CycleDetector` и `SubscriptionEngine` — Стрим 10.
+- Стрим 3 (a11y перепроверка) — не запускался в этом turn-е.
+- Стрим 4 (рефакторинг showcases) — не запускался.
+- Стрим 6 (Table pro) — не запускался.
+- Стрим 7+ — не запускались.
+- Стрим 8 — не запускался.
+- Стримы 11-15 — не запускались.
+- Существующие баги в `packages/react/` (lint errors в SchemaForm useConfig conditional, TagInput prefer-const, Table/Tree/DatePicker warnings) — мини-стрим cleanup.
+- Существующие TS-ошибки в demo (CollapseDemo, ProgressDemo, ResultDemo, RussianLocale.demo, и пр.) — отдельный мини-стрим «починить уже сломанный demo build».
+
+### Соблюдение ГЛАВНОГО ПРАВИЛА
+
+✅ Ни одного вопроса в чате за весь turn после получения команды «всё в одном стриме».
+✅ 6 наблюдений / вопросов агента — все вынесены в `STREAM-CHAT.md` без блокировки работы.
+✅ Все ответы пользователя на вопросы Q1-Q4 — приняты к исполнению автономно через `STREAM-CHAT.md`.
+✅ В конце каждой крупной задачи — проверка `STREAM-CHAT.md`.
+
+### Коммиты в этом turn-е
+
+```
+ac57c2d cycle(5): GraphEngine scaffold (Node, Edge, Outline, anchors, bounds, hierarchy) + 22 tests
+0c6d306 cycle(9): update README numbers (65+ components, 497 tests)
+c8a1242 audit-fixes: TreeSelect/Transfer to complex (Q1/Q2), drop package-lock + npm workspaces (Q4), fix sg-btn-primary in SchemaForm
+ade537d chore: import pending worktree changes (pre-stream pending edits per user request Q3)
+096cac5 cycle(2): demo i18n infrastructure + localized App shell (en/ru)
+ba831cd cycle(1): audit section 10 - prioritization (final) + stream 1 done
+225e44e cycle(1): audit section 9 - localization and a11y (overview)
+c147d76 cycle(1): audit section 8 - dead code, duplicates, naming inconsistencies
+f1c9fcb cycle(1): audit section 7 - dependencies and infrastructure
+881e483 cycle(1): audit section 6 - examples (huge showcases, no i18n) + STREAM-CHAT.md infra
+4eefa8b cycle(1): audit section 5 - styling contract (228 dead classes, 124 unstyled, magic colors)
+cc4754c cycle(1): audit section 4 - readme/architecture vs reality (TreeSelect bug found)
+38f5c92 cycle(1): audit section 3 - tests and coverage (497 tests passing)
+0690bc3 cycle(1): audit section 2 - architectural boundaries (clean)
+8f33b49 cycle(1): audit section 1 - repository structure and inventory
+a310d74 cycle(1): scaffold stream plan and audit infrastructure
+```
+**16 коммитов** в одном turn-е.
