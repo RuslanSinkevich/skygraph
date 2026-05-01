@@ -11,7 +11,10 @@ skygraph/
 │   └── demo/          ← Vite-приложение с демками всех компонентов
 ├── docs/              ← Эта документация
 ├── ARCHITECTURE.md    ← Конституция архитектуры (не менять)
-├── PLAN.md            ← Первоначальный план
+├── STREAM-PLAN.md     ← План задач для длинных стримов
+├── AUDIT.md           ← Свежий аудит репозитория
+├── CYCLE-LOG.md       ← Журнал работ
+├── PLAN.md            ← Архивный первоначальный план
 └── tsconfig.base.json
 ```
 
@@ -19,16 +22,18 @@ skygraph/
 
 ```bash
 # Из корня skygraph/
-npm install
+pnpm install
 
 # Собрать core (обязательно перед react, т.к. react зависит от dist)
-cd packages/core
-npm run build
+pnpm -F @skygraph/core build
+pnpm -F @skygraph/react build
 
 # Запустить демо-приложение
 cd examples/demo
-npm run dev
+pnpm dev
 ```
+
+> Корень монорепы использует **pnpm** (см. `pnpm-workspace.yaml`). Внутри `examples/demo/` тоже подходят `npm` команды, но рекомендуется pnpm для согласованности.
 
 ## Сборка пакетов
 

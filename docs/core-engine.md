@@ -1,5 +1,8 @@
 # Core Engine — руководство по разработке
 
+> Текущие встроенные движки: **FormEngine**, **TableEngine**, **TreeEngine**, **VirtualEngine**, **GraphEngine**.
+> Каждый владеет namespace `$<name>.` в Store (см. `engines/namespaces.ts`) и предоставляет фокусированный API.
+
 ## Как устроен runtime
 
 ### Store
