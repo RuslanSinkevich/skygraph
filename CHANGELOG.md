@@ -13,8 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **GraphEngine.subscribe(cb)** — public engine-level subscription used by the React adapter to avoid path-prefix lookups.
 - **AreaChart** — stacked / non-stacked SVG area chart with strokeWidth + fillOpacity props.
 - **PieChart** — pie / donut chart (innerRadius), clockwise from 12 o'clock, `<title>` for accessibility, palette color resolution.
-- **+48 tests**: GraphEngine edge cases (15), Diagram + useGraph integration (11), Charts incl. Area/Pie (22). Total now **567** (254 + 313).
-- Localized `ThemingPage` and `CoreApiPage` in demo (en/ru), plus 5 system demo components (PropsTable, CssVarsTable, DemoBox, ComponentDoc, App shell).
+- **ChartLegend** — shared component, opt-in via `legend` prop on Line/Bar/Area charts.
+- **+65 tests** in this round: GraphEngine edge cases (+15), Diagram + useGraph integration (+11), Charts incl. Area/Pie/legend (+26), a11y hooks (+13). Total now **584** (254 + 330).
+- Localized in demo (en/ru): App shell, system components (PropsTable, CssVarsTable, DemoBox, ComponentDoc), and 4 *Page.tsx (GettingStarted, Theming, CoreApi, **DesignTokens**).
+- `docs/conventions.md` updated: modern demo pattern (DemoBox + raw imports), i18n schema, stream artifacts, commit prefixes.
+
+### Changed
+
+- `audit-styles.mjs` — detects template-literal classes (`` `sg-X-${var}` ``) and excludes them from the dead-code count. Result: 201 → **53** possibly-dead classes (3.8x more accurate).
+- `useGraph` snapshot caching via `useRef` + `graph.subscribe()` — fixes infinite-loop with `useSyncExternalStore`.
+- `charts.css` — replaced unknown `var(--sg-font-family, inherit)` with plain `inherit`.
 
 ### Changed
 

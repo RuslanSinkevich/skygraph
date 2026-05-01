@@ -27,6 +27,8 @@ _(пользователь пишет сюда; агент перечитыва�
 
 важно обнови документацию всю
 
+
+
 ---
 
 ## Сообщения от агента
@@ -128,3 +130,39 @@ _(пользователь пишет сюда; агент перечитыва�
 - conventions.md / styling.md / styling-plan.md — не аудированы в этом стриме
 
 Все хвосты прописаны в `TODO-cycle.md` и `AUDIT-POST.md`. Жду следующей команды.
+
+### 2026-05-01 (третья итерация — после команды «делай»)
+
+Принял. Сделано без вопросов:
+
+**Тесты (+17 за итерацию, итого 584):**
+- a11y-hooks.test.tsx — новый, **13 тестов** для useRovingTabIndex и useListNavigation (orientation, loop/clamp, Home/End, ArrowUp/Down, typeahead, onSelect, Escape).
+- charts.test.tsx — **+4 теста** для legend prop (Line / Bar / Area).
+
+**Новый компонент:**
+- **ChartLegend** — shared минимальная горизонтальная легенда. Подключена в LineChart/BarChart/AreaChart через опциональный `legend` prop. Экспорт в публичный API.
+
+**audit-styles улучшение:**
+- Скрипт теперь детектит **template-literal классы** (`` `sg-X-${...}` ``) — это устранило массу false-positives. **Количество "dead-classes" уменьшилось 201 → 53** (3.8× точнее). Файл `_audit/styling-audit.md` теперь полезен для реальной чистки.
+
+**Локализация:**
+- **DesignTokensPage** — переведена. Чем-то она была сложная (поиск, таблицы, override examples), но всё пошло через словарь.
+
+**Документация:**
+- **README** — 584 тестов (было 567).
+- **CHANGELOG** — обновлён Unreleased раздел с этой итерацией.
+- **docs/conventions.md** — добавлен раздел про современный demo-паттерн (DemoBox + ?raw), про i18n схему, про стрим-артефакты, про commit prefixes.
+
+**Реальные хвосты** (что физически отложено):
+- StylingShowcasePage (884 строки) — единственная *Page без локализации.
+- ~480 demo-файлов (`<comp>/Variant.demo.tsx`) с английским хардкодом.
+- examples/showcases декомпозиция (forms 1131, ecommerce 1080, и пр).
+- Удаление `ui/TreeSelect.tsx` / `ui/Transfer.tsx` (требует переписать 11 тестов).
+- Dashboard, Gantt, SchemaForm-редактор, TableEngine pro features, Print/PDF.
+- Charts: оси, tooltip, анимации (легенда — есть).
+- GraphEngine: orthogonal routing, drag-and-drop, undo/redo, OBB, zoom/pan.
+- 53 действительно-dead CSS classes (требует ручной проверки) + 111 DOM unstyled.
+- @vitest/coverage-v8, @axe-core/react — нужен dev-install.
+- styling.md / styling-plan.md — не аудированы (styling-contract.md / styling-recipes.md в порядке).
+
+Все хвосты в `TODO-cycle.md`, `AUDIT-POST.md`, плюс эта запись.
