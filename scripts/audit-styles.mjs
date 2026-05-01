@@ -31,6 +31,11 @@ const DECL_RE = /(^|[^a-zA-Z0-9-])(--sg-[a-zA-Z0-9-]+)\s*:/g;
 const CLASS_RE = /\.(sg-[a-zA-Z0-9_-]+)/g;
 const HEX_RE = /#([0-9a-fA-F]{3,8})\b/g;
 const CLASS_IN_TSX_RE = /['"`]([^'"`]*sg-[a-zA-Z0-9_-][^'"`]*)['"`]/g;
+// Detect template literals like `sg-button-${type}` or `sg-tooltip-${placement}` —
+// the prefix is dynamic-suffixed so we can't enumerate the actual classes from
+// source. We instead capture the prefix and treat any class with that prefix
+// as "used at runtime" (not dead).
+const TEMPLATE_PREFIX_RE = /`(sg-[a-zA-Z0-9_-]*?)-\$\{/g;
 
 // ── Runtime-generated class allowlist ────────────────────────────────────
 //
@@ -109,6 +114,9 @@ async function main() {
     for (const c of collectByRegex(src, CLASS_RE, 1)) classesInCss.add(c);
   }
   const classesInDom = new Set();
+  // Prefixes captured from template literals like `sg-button-${type}`.
+  // Any CSS class starting with `<prefix>-` is considered used-at-runtime.
+  const dynamicPrefixes = new Set();
   for (const file of srcFiles) {
     const src = await fs.readFile(file, 'utf8');
     CLASS_IN_TSX_RE.lastIndex = 0;
@@ -120,6 +128,17 @@ async function main() {
         if (/^sg-[a-zA-Z0-9_-]+$/.test(p)) classesInDom.add(p);
       }
     }
+    TEMPLATE_PREFIX_RE.lastIndex = 0;
+    while ((m = TEMPLATE_PREFIX_RE.exec(src)) !== null) {
+      dynamicPrefixes.add(m[1]);
+    }
+  }
+
+  function isDynamic(c) {
+    for (const prefix of dynamicPrefixes) {
+      if (c.startsWith(prefix + '-')) return true;
+    }
+    return false;
   }
 
   // === Magic hex / rgba в компонентных CSS ===
@@ -139,7 +158,12 @@ async function main() {
   // === Report ===
   const classesOnlyInCssRaw = [...classesInCss].filter((c) => !classesInDom.has(c));
   const classesOnlyInCssRuntime = classesOnlyInCssRaw.filter(isRuntimeClass).sort();
-  const classesOnlyInCss = classesOnlyInCssRaw.filter((c) => !isRuntimeClass(c)).sort();
+  const classesOnlyInCssDynamic = classesOnlyInCssRaw
+    .filter((c) => !isRuntimeClass(c) && isDynamic(c))
+    .sort();
+  const classesOnlyInCss = classesOnlyInCssRaw
+    .filter((c) => !isRuntimeClass(c) && !isDynamic(c))
+    .sort();
   const classesOnlyInDom = [...classesInDom].filter((c) => !classesInCss.has(c)).sort();
   const classesInBoth = [...classesInCss].filter((c) => classesInDom.has(c)).sort();
 
@@ -174,8 +198,10 @@ async function main() {
   lines.push(`- В DOM компонентов используется строк-классов: **${classesInDom.size}**.`);
   lines.push(`- Совпадают (есть и в CSS, и в DOM): **${classesInBoth.length}**.`);
   lines.push(`- Только в CSS, runtime-генерируемые (Transition): **${classesOnlyInCssRuntime.length}** (исключены из dead-code).`);
+  lines.push(`- Только в CSS, динамически-генерируемые (template literals \`sg-X-\${...}\`): **${classesOnlyInCssDynamic.length}** (исключены из dead-code).`);
   lines.push(`- Только в CSS, **возможно мёртвый код**: **${classesOnlyInCss.length}**.`);
   lines.push(`- Только в DOM (нет стилей): **${classesOnlyInDom.length}**.`);
+  lines.push(`- Найденных в коде template-prefix'ов: **${dynamicPrefixes.size}**.`);
   lines.push('');
   lines.push('<details><summary>Только в CSS — возможно мёртвый код</summary>');
   lines.push('');
@@ -184,9 +210,18 @@ async function main() {
   lines.push('</details>');
   lines.push('');
   if (classesOnlyInCssRuntime.length) {
-    lines.push('<details><summary>Только в CSS — runtime-генерируемые (не мёртвый код)</summary>');
+    lines.push('<details><summary>Только в CSS — runtime-генерируемые transitions (не мёртвый код)</summary>');
     lines.push('');
     for (const c of classesOnlyInCssRuntime) lines.push(`- \`.${c}\``);
+    lines.push('');
+    lines.push('</details>');
+    lines.push('');
+  }
+
+  if (classesOnlyInCssDynamic.length) {
+    lines.push('<details><summary>Только в CSS — генерируются динамически (template literals в коде)</summary>');
+    lines.push('');
+    for (const c of classesOnlyInCssDynamic) lines.push(`- \`.${c}\``);
     lines.push('');
     lines.push('</details>');
     lines.push('');

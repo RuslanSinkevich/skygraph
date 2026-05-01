@@ -12,21 +12,122 @@
 ## 2. Классы `.sg-*`
 
 - В CSS определено классов: **894**.
-- В DOM компонентов используется строк-классов: **759**.
+- В DOM компонентов используется строк-классов: **763**.
 - Совпадают (есть и в CSS, и в DOM): **652**.
 - Только в CSS, runtime-генерируемые (Transition): **41** (исключены из dead-code).
-- Только в CSS, **возможно мёртвый код**: **201**.
-- Только в DOM (нет стилей): **107**.
+- Только в CSS, динамически-генерируемые (template literals `sg-X-${...}`): **148** (исключены из dead-code).
+- Только в CSS, **возможно мёртвый код**: **53**.
+- Только в DOM (нет стилей): **111**.
+- Найденных в коде template-prefix'ов: **56**.
 
 <details><summary>Только в CSS — возможно мёртвый код</summary>
 
-- `.sg-avatar-circle`
-- `.sg-avatar-square`
 - `.sg-badge-status-default`
 - `.sg-badge-status-error`
 - `.sg-badge-status-processing`
 - `.sg-badge-status-success`
 - `.sg-badge-status-warning`
+- `.sg-dp-footer-link`
+- `.sg-dp-time-cell`
+- `.sg-dp-time-cell-active`
+- `.sg-dropdown-bottom-left`
+- `.sg-dropdown-bottom-right`
+- `.sg-dropdown-bottomLeft`
+- `.sg-dropdown-bottomRight`
+- `.sg-dropdown-top-left`
+- `.sg-dropdown-top-right`
+- `.sg-dropdown-topLeft`
+- `.sg-dropdown-topRight`
+- `.sg-modal-body-loading`
+- `.sg-notification-bottom-left`
+- `.sg-notification-bottom-right`
+- `.sg-notification-bottomLeft`
+- `.sg-notification-bottomRight`
+- `.sg-notification-error`
+- `.sg-notification-info`
+- `.sg-notification-success`
+- `.sg-notification-top-left`
+- `.sg-notification-top-right`
+- `.sg-notification-topLeft`
+- `.sg-notification-topRight`
+- `.sg-notification-warning`
+- `.sg-pagination-item-active`
+- `.sg-popconfirm-bottom`
+- `.sg-popconfirm-left`
+- `.sg-popconfirm-right`
+- `.sg-popconfirm-top`
+- `.sg-tooltip-bottom`
+- `.sg-tooltip-left`
+- `.sg-tooltip-right`
+- `.sg-tooltip-top`
+- `.sg-tree-action-btn`
+- `.sg-tree-action-danger`
+- `.sg-tree-indent-branch`
+- `.sg-tree-indent-branch-last`
+- `.sg-tree-indent-line`
+- `.sg-tree-indent-line-hidden`
+- `.sg-tree-status-error`
+- `.sg-tree-status-info`
+- `.sg-tree-status-success`
+- `.sg-tree-status-warning`
+- `.sg-tree-switcher-arrow`
+- `.sg-tree-switcher-arrow-open`
+- `.sg-tree-switcher-open`
+- `.sg-tree-title`
+- `.sg-tree-title-selectable`
+
+</details>
+
+<details><summary>Только в CSS — runtime-генерируемые transitions (не мёртвый код)</summary>
+
+- `.sg-collapse-enter-active`
+- `.sg-collapse-enter-from`
+- `.sg-collapse-enter-to`
+- `.sg-collapse-leave-active`
+- `.sg-collapse-leave-from`
+- `.sg-collapse-leave-to`
+- `.sg-fade-enter-active`
+- `.sg-fade-enter-to`
+- `.sg-fade-leave-active`
+- `.sg-fade-leave-from`
+- `.sg-fade-leave-to`
+- `.sg-slide-down-enter-active`
+- `.sg-slide-down-enter-from`
+- `.sg-slide-down-enter-to`
+- `.sg-slide-down-leave-active`
+- `.sg-slide-down-leave-from`
+- `.sg-slide-down-leave-to`
+- `.sg-slide-left-enter-active`
+- `.sg-slide-left-enter-from`
+- `.sg-slide-left-enter-to`
+- `.sg-slide-left-leave-active`
+- `.sg-slide-left-leave-from`
+- `.sg-slide-left-leave-to`
+- `.sg-slide-right-enter-active`
+- `.sg-slide-right-enter-from`
+- `.sg-slide-right-enter-to`
+- `.sg-slide-right-leave-active`
+- `.sg-slide-right-leave-from`
+- `.sg-slide-right-leave-to`
+- `.sg-slide-up-enter-active`
+- `.sg-slide-up-enter-from`
+- `.sg-slide-up-enter-to`
+- `.sg-slide-up-leave-active`
+- `.sg-slide-up-leave-from`
+- `.sg-slide-up-leave-to`
+- `.sg-zoom-enter-active`
+- `.sg-zoom-enter-from`
+- `.sg-zoom-enter-to`
+- `.sg-zoom-leave-active`
+- `.sg-zoom-leave-from`
+- `.sg-zoom-leave-to`
+
+</details>
+
+<details><summary>Только в CSS — генерируются динамически (template literals в коде)</summary>
+
+- `.sg-avatar-circle`
+- `.sg-avatar-square`
 - `.sg-button-dashed`
 - `.sg-button-large`
 - `.sg-button-link`
@@ -60,21 +161,10 @@
 - `.sg-dp-dropdown-bottomRight`
 - `.sg-dp-dropdown-topLeft`
 - `.sg-dp-dropdown-topRight`
-- `.sg-dp-footer-link`
-- `.sg-dp-time-cell`
-- `.sg-dp-time-cell-active`
 - `.sg-drawer-bottom`
 - `.sg-drawer-left`
 - `.sg-drawer-right`
 - `.sg-drawer-top`
-- `.sg-dropdown-bottom-left`
-- `.sg-dropdown-bottom-right`
-- `.sg-dropdown-bottomLeft`
-- `.sg-dropdown-bottomRight`
-- `.sg-dropdown-top-left`
-- `.sg-dropdown-top-right`
-- `.sg-dropdown-topLeft`
-- `.sg-dropdown-topRight`
 - `.sg-form-horizontal`
 - `.sg-form-inline`
 - `.sg-form-large`
@@ -119,28 +209,10 @@
 - `.sg-menu-horizontal`
 - `.sg-menu-inline`
 - `.sg-menu-vertical`
-- `.sg-modal-body-loading`
-- `.sg-notification-bottom-left`
-- `.sg-notification-bottom-right`
-- `.sg-notification-bottomLeft`
-- `.sg-notification-bottomRight`
-- `.sg-notification-error`
-- `.sg-notification-info`
-- `.sg-notification-success`
-- `.sg-notification-top-left`
-- `.sg-notification-top-right`
-- `.sg-notification-topLeft`
-- `.sg-notification-topRight`
-- `.sg-notification-warning`
-- `.sg-pagination-item-active`
 - `.sg-pin-input-cell-large`
 - `.sg-pin-input-cell-small`
 - `.sg-pin-input-large`
 - `.sg-pin-input-small`
-- `.sg-popconfirm-bottom`
-- `.sg-popconfirm-left`
-- `.sg-popconfirm-right`
-- `.sg-popconfirm-top`
 - `.sg-progress-active`
 - `.sg-progress-error`
 - `.sg-progress-success`
@@ -195,78 +267,13 @@
 - `.sg-timeline-right`
 - `.sg-timepicker-large`
 - `.sg-timepicker-small`
-- `.sg-tooltip-bottom`
-- `.sg-tooltip-left`
-- `.sg-tooltip-right`
-- `.sg-tooltip-top`
-- `.sg-tree-action-btn`
-- `.sg-tree-action-danger`
-- `.sg-tree-indent-branch`
-- `.sg-tree-indent-branch-last`
-- `.sg-tree-indent-line`
-- `.sg-tree-indent-line-hidden`
 - `.sg-tree-node-status-error`
 - `.sg-tree-node-status-info`
 - `.sg-tree-node-status-success`
 - `.sg-tree-node-status-warning`
-- `.sg-tree-status-error`
-- `.sg-tree-status-info`
-- `.sg-tree-status-success`
-- `.sg-tree-status-warning`
-- `.sg-tree-switcher-arrow`
-- `.sg-tree-switcher-arrow-open`
-- `.sg-tree-switcher-open`
-- `.sg-tree-title`
-- `.sg-tree-title-selectable`
 - `.sg-treeselect-large`
 - `.sg-treeselect-small`
 - `.sg-upload-item-error`
-
-</details>
-
-<details><summary>Только в CSS — runtime-генерируемые (не мёртвый код)</summary>
-
-- `.sg-collapse-enter-active`
-- `.sg-collapse-enter-from`
-- `.sg-collapse-enter-to`
-- `.sg-collapse-leave-active`
-- `.sg-collapse-leave-from`
-- `.sg-collapse-leave-to`
-- `.sg-fade-enter-active`
-- `.sg-fade-enter-to`
-- `.sg-fade-leave-active`
-- `.sg-fade-leave-from`
-- `.sg-fade-leave-to`
-- `.sg-slide-down-enter-active`
-- `.sg-slide-down-enter-from`
-- `.sg-slide-down-enter-to`
-- `.sg-slide-down-leave-active`
-- `.sg-slide-down-leave-from`
-- `.sg-slide-down-leave-to`
-- `.sg-slide-left-enter-active`
-- `.sg-slide-left-enter-from`
-- `.sg-slide-left-enter-to`
-- `.sg-slide-left-leave-active`
-- `.sg-slide-left-leave-from`
-- `.sg-slide-left-leave-to`
-- `.sg-slide-right-enter-active`
-- `.sg-slide-right-enter-from`
-- `.sg-slide-right-enter-to`
-- `.sg-slide-right-leave-active`
-- `.sg-slide-right-leave-from`
-- `.sg-slide-right-leave-to`
-- `.sg-slide-up-enter-active`
-- `.sg-slide-up-enter-from`
-- `.sg-slide-up-enter-to`
-- `.sg-slide-up-leave-active`
-- `.sg-slide-up-leave-from`
-- `.sg-slide-up-leave-to`
-- `.sg-zoom-enter-active`
-- `.sg-zoom-enter-from`
-- `.sg-zoom-enter-to`
-- `.sg-zoom-leave-active`
-- `.sg-zoom-leave-from`
-- `.sg-zoom-leave-to`
 
 </details>
 
@@ -290,7 +297,11 @@
 - `sg-cascader-multiple`
 - `sg-cascader-option-loading`
 - `sg-chart-area`
+- `sg-chart-legend`
+- `sg-chart-legend-item`
+- `sg-chart-legend-swatch`
 - `sg-chart-pie`
+- `sg-chart-wrapper`
 - `sg-collapse-panel-active`
 - `sg-context-menu`
 - `sg-context-menu-divider`
