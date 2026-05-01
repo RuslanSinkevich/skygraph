@@ -5,6 +5,10 @@ import { BasicLineChart } from './charts/BasicLine.demo'
 import BasicLineSource from './charts/BasicLine.demo?raw'
 import { BasicBarChart } from './charts/BasicBar.demo'
 import BasicBarSource from './charts/BasicBar.demo?raw'
+import { BasicAreaChart } from './charts/BasicArea.demo'
+import BasicAreaSource from './charts/BasicArea.demo?raw'
+import { BasicPieChart } from './charts/BasicPie.demo'
+import BasicPieSource from './charts/BasicPie.demo?raw'
 
 const baseProps: PropDef[] = [
   { name: 'categories', description: 'X-axis categories (string[] or number[])', type: 'ChartCategory[]', required: true },
@@ -52,6 +56,22 @@ export function ChartsDemo() {
         code={BasicBarSource}
       >
         <BasicBarChart />
+      </DemoBox>
+
+      <DemoBox
+        title="Area chart (stacked)"
+        description="Stacked daily traffic by device. Top stroke + filled body share the series colour at 25% opacity."
+        code={BasicAreaSource}
+      >
+        <BasicAreaChart />
+      </DemoBox>
+
+      <DemoBox
+        title="Pie / donut chart"
+        description="Slices clockwise from 12 o'clock. Set innerRadius > 0 for a donut (right). Negative values are clamped to zero."
+        code={BasicPieSource}
+      >
+        <BasicPieChart />
       </DemoBox>
 
       <PropsTable title="Common Chart API" data={baseProps} />

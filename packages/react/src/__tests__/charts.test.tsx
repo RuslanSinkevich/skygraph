@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 import {
+  AreaChart,
   BarChart,
   LineChart,
+  PieChart,
   DEFAULT_PALETTE,
   colorForSeries,
 } from '../index'
@@ -129,6 +131,121 @@ describe('BarChart', () => {
       />,
     )
     expect(container.querySelectorAll('rect').length).toBe(2)
+  })
+})
+
+describe('AreaChart', () => {
+  it('renders an area path + a top line per series', () => {
+    const { container } = render(
+      <AreaChart
+        categories={['a', 'b', 'c']}
+        series={[
+          { id: 's1', label: 'A', values: [1, 2, 3] },
+          { id: 's2', label: 'B', values: [3, 2, 1] },
+        ]}
+      />,
+    )
+    // 2 paths per series (area fill + top stroke) → 4 paths total.
+    expect(container.querySelectorAll('path').length).toBe(4)
+  })
+
+  it('stacked mode produces cumulative areas', () => {
+    const { container } = render(
+      <AreaChart
+        categories={['a', 'b']}
+        series={[
+          { id: 's1', label: 'A', values: [1, 2] },
+          { id: 's2', label: 'B', values: [1, 1] },
+        ]}
+        stacked
+      />,
+    )
+    // Same path count (2 series × 2 paths) — stacking is reflected in y-coords.
+    expect(container.querySelectorAll('path').length).toBe(4)
+  })
+
+  it('handles empty series gracefully', () => {
+    expect(() =>
+      render(<AreaChart categories={['a']} series={[]} />),
+    ).not.toThrow()
+  })
+})
+
+describe('PieChart', () => {
+  it('renders one path per non-zero slice', () => {
+    const { container } = render(
+      <PieChart
+        data={[
+          { id: 'a', label: 'A', value: 30 },
+          { id: 'b', label: 'B', value: 50 },
+          { id: 'c', label: 'C', value: 20 },
+        ]}
+      />,
+    )
+    expect(container.querySelectorAll('path').length).toBe(3)
+  })
+
+  it('skips zero-value slices', () => {
+    const { container } = render(
+      <PieChart
+        data={[
+          { id: 'a', label: 'A', value: 100 },
+          { id: 'b', label: 'B', value: 0 },
+        ]}
+      />,
+    )
+    expect(container.querySelectorAll('path').length).toBe(1)
+  })
+
+  it('clamps negative values to 0', () => {
+    const { container } = render(
+      <PieChart
+        data={[
+          { id: 'a', label: 'A', value: 50 },
+          { id: 'b', label: 'B', value: -10 },
+          { id: 'c', label: 'C', value: 50 },
+        ]}
+      />,
+    )
+    expect(container.querySelectorAll('path').length).toBe(2)
+  })
+
+  it('renders an empty SVG when total is zero', () => {
+    const { container } = render(
+      <PieChart
+        data={[
+          { id: 'a', label: 'A', value: 0 },
+          { id: 'b', label: 'B', value: 0 },
+        ]}
+      />,
+    )
+    expect(container.querySelectorAll('path').length).toBe(0)
+  })
+
+  it('donut mode (innerRadius > 0) builds the path with two arcs', () => {
+    const { container } = render(
+      <PieChart
+        innerRadius={30}
+        outerRadius={60}
+        data={[
+          { id: 'a', label: 'A', value: 50 },
+          { id: 'b', label: 'B', value: 50 },
+        ]}
+      />,
+    )
+    const paths = container.querySelectorAll('path')
+    expect(paths.length).toBe(2)
+    // Donut path uses two `A ... A ...` arcs.
+    expect(paths[0]!.getAttribute('d')).toMatch(/A .* A /)
+  })
+
+  it('uses explicit slice color over palette', () => {
+    const { container } = render(
+      <PieChart
+        data={[{ id: 'x', label: 'X', value: 100, color: '#ff0000' }]}
+      />,
+    )
+    expect(container.querySelector('path')!.getAttribute('fill')).toBe('#ff0000')
   })
 })
 

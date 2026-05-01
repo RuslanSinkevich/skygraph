@@ -215,10 +215,13 @@ export { Diagram } from './components/complex/Diagram'
 export type { DiagramProps, DiagramNodeRenderer } from './components/complex/Diagram'
 
 // Charts (v0 SVG primitives)
-export { LineChart, BarChart, DEFAULT_PALETTE, colorForSeries } from './components/complex/Charts'
+export { LineChart, BarChart, AreaChart, PieChart, DEFAULT_PALETTE, colorForSeries } from './components/complex/Charts'
 export type {
   LineChartProps,
   BarChartProps,
+  AreaChartProps,
+  PieChartProps,
+  PieChartSlice,
   BaseChartProps,
   ChartCategory,
   ChartSeries,
