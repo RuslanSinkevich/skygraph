@@ -24,25 +24,32 @@
   to { opacity: 1; transform: scaleY(1); }
 }
 
-.sg-dropdown-bottomLeft {
+/* Placement variants — both camelCase (legacy, generated as
+ * `sg-dropdown-${placement}` from a camelCase prop) and kebab-case (preferred
+ * canonical name) are accepted. Keep both selectors in sync. */
+.sg-dropdown-bottomLeft,
+.sg-dropdown-bottom-left {
   top: calc(100% + 4px);
   left: 0;
   transform-origin: top left;
 }
 
-.sg-dropdown-bottomRight {
+.sg-dropdown-bottomRight,
+.sg-dropdown-bottom-right {
   top: calc(100% + 4px);
   right: 0;
   transform-origin: top right;
 }
 
-.sg-dropdown-topLeft {
+.sg-dropdown-topLeft,
+.sg-dropdown-top-left {
   bottom: calc(100% + 4px);
   left: 0;
   transform-origin: bottom left;
 }
 
-.sg-dropdown-topRight {
+.sg-dropdown-topRight,
+.sg-dropdown-top-right {
   bottom: calc(100% + 4px);
   right: 0;
   transform-origin: bottom right;

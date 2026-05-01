@@ -7,22 +7,28 @@
   pointer-events: none;
 }
 
-.sg-notification-topRight {
+/* Placement variants — see dropdown.css note: both camelCase (legacy) and
+ * kebab-case (canonical) selectors are kept in sync. */
+.sg-notification-topRight,
+.sg-notification-top-right {
   top: var(--sg-padding-xl);
   right: var(--sg-padding-xl);
 }
 
-.sg-notification-topLeft {
+.sg-notification-topLeft,
+.sg-notification-top-left {
   top: var(--sg-padding-xl);
   left: var(--sg-padding-xl);
 }
 
-.sg-notification-bottomRight {
+.sg-notification-bottomRight,
+.sg-notification-bottom-right {
   bottom: var(--sg-padding-xl);
   right: var(--sg-padding-xl);
 }
 
-.sg-notification-bottomLeft {
+.sg-notification-bottomLeft,
+.sg-notification-bottom-left {
   bottom: var(--sg-padding-xl);
   left: var(--sg-padding-xl);
 }
