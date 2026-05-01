@@ -208,6 +208,12 @@ export type { UseHistoryReturn } from './hooks/useHistory'
 export { HistoryPanel } from './components/devtools/HistoryPanel'
 export type { HistoryPanelProps } from './components/devtools/HistoryPanel'
 
+// Diagram (GraphEngine view)
+export { useGraph } from './hooks/useGraph'
+export type { UseGraphOptions, UseGraphReturn } from './hooks/useGraph'
+export { Diagram } from './components/complex/Diagram'
+export type { DiagramProps, DiagramNodeRenderer } from './components/complex/Diagram'
+
 // DataGrid
 export { DataGrid } from './components/complex/DataGrid'
 export type {

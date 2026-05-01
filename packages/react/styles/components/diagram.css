@@ -1,0 +1,52 @@
+/* Diagram — visual layer for GraphEngine. */
+
+.sg-diagram {
+  background: var(--sg-color-bg);
+  border: 1px solid var(--sg-color-border);
+  border-radius: var(--sg-border-radius);
+}
+
+.sg-diagram-node {
+  background: var(--sg-color-bg-elevated);
+  border: 1px solid var(--sg-color-border);
+  border-radius: var(--sg-border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--sg-font-size);
+  color: var(--sg-color-text);
+  box-shadow: var(--sg-shadow-sm);
+  user-select: none;
+}
+
+.sg-diagram-node-rect {
+  /* default; nothing extra */
+}
+
+.sg-diagram-node-ellipse {
+  border-radius: 50%;
+}
+
+.sg-diagram-node-polygon,
+.sg-diagram-node-path {
+  /* For non-rect outlines the bbox-sized DIV is just a label container — the
+   * actual shape lives in the SVG overlay (or a custom renderer). */
+  background: transparent;
+  border: 1px dashed var(--sg-color-border);
+}
+
+.sg-diagram-node-label {
+  padding: 0 var(--sg-padding-md);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sg-diagram-edges {
+  /* sits behind nodes; no pointer events */
+}
+
+.sg-diagram-edge {
+  stroke: var(--sg-color-border);
+  stroke-width: 1.5;
+}
