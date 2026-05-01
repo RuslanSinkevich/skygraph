@@ -1,33 +1,31 @@
+import { useI18n } from '../i18n'
+
 export function GettingStartedPage() {
+  const { t } = useI18n()
+  const g = t.gettingStarted
+
   return (
     <section className="doc-page">
-      <h1>Getting Started</h1>
-      <p className="doc-lead">
-        Get up and running with SkyGraph in under 5 minutes.
-      </p>
+      <h1>{g.title}</h1>
+      <p className="doc-lead">{g.lead}</p>
 
-      <h2 id="installation">Installation</h2>
-      <p>Install the core engine and React bindings:</p>
+      <h2 id="installation">{g.installation}</h2>
+      <p>{g.installLeadNpm}</p>
       <pre className="doc-code"><code>npm install @skygraph/core @skygraph/react</code></pre>
-      <p>Or with pnpm:</p>
+      <p>{g.installLeadPnpm}</p>
       <pre className="doc-code"><code>pnpm add @skygraph/core @skygraph/react</code></pre>
 
-      <h2 id="import-styles">Import Styles</h2>
-      <p>
-        SkyGraph ships a default theme via CSS. Import it once at the root of your app:
-      </p>
+      <h2 id="import-styles">{g.importStyles}</h2>
+      <p>{g.importStylesLead}</p>
       <pre className="doc-code"><code>{`import '@skygraph/react/styles'`}</code></pre>
       <p>
-        This gives you the full design system — palette, spacing, typography, and
-        component tokens. You can override any variable (see{' '}
-        <a href="#/theming" className="doc-link">Theming</a>).
+        {g.importStylesNote1}
+        <a href="#/theming" className="doc-link">{g.importStylesNote2Theming}</a>
+        {').'}
       </p>
 
-      <h2 id="basic-form">Basic Form Example</h2>
-      <p>
-        SkyGraph's reactive core powers forms out of the box — validation,
-        dependencies, and dynamic fields with zero boilerplate:
-      </p>
+      <h2 id="basic-form">{g.basicForm}</h2>
+      <p>{g.basicFormLead}</p>
       <pre className="doc-code"><code>{`import { Form, Field, SubmitButton } from '@skygraph/react'
 
 function LoginForm() {
@@ -53,10 +51,8 @@ function LoginForm() {
   )
 }`}</code></pre>
 
-      <h2 id="individual-components">Using Individual Components</h2>
-      <p>
-        Every component works standalone — no provider or context required:
-      </p>
+      <h2 id="individual-components">{g.individualComponents}</h2>
+      <p>{g.individualComponentsLead}</p>
       <pre className="doc-code"><code>{`import { Button, Switch, Select } from '@skygraph/react'
 
 function App() {
@@ -75,19 +71,19 @@ function App() {
   )
 }`}</code></pre>
 
-      <h2 id="whats-next">What's Next</h2>
+      <h2 id="whats-next">{g.whatsNext}</h2>
       <div className="doc-card-row">
         <a href="#/theming" className="doc-next-card">
-          <strong>Theming</strong>
-          <span>CSS variables, dark mode, custom palettes</span>
+          <strong>{g.cardThemingTitle}</strong>
+          <span>{g.cardThemingDesc}</span>
         </a>
         <a href="#/core-api" className="doc-next-card">
-          <strong>Core API</strong>
-          <span>createCore, createForm, createTable, createTree</span>
+          <strong>{g.cardCoreApiTitle}</strong>
+          <span>{g.cardCoreApiDesc}</span>
         </a>
         <a href="#/components/button" className="doc-next-card">
-          <strong>Components</strong>
-          <span>Browse 35+ ready-made UI components</span>
+          <strong>{g.cardComponentsTitle}</strong>
+          <span>{g.cardComponentsDesc}</span>
         </a>
       </div>
     </section>

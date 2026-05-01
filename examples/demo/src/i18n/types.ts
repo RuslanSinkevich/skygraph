@@ -109,4 +109,27 @@ export interface DemoDict {
     whenToUse: string
     examples: string
   }
+
+  gettingStarted: {
+    title: string
+    lead: string
+    installation: string
+    installLeadNpm: string
+    installLeadPnpm: string
+    importStyles: string
+    importStylesLead: string
+    importStylesNote1: string
+    importStylesNote2Theming: string
+    basicForm: string
+    basicFormLead: string
+    individualComponents: string
+    individualComponentsLead: string
+    whatsNext: string
+    cardThemingTitle: string
+    cardThemingDesc: string
+    cardCoreApiTitle: string
+    cardCoreApiDesc: string
+    cardComponentsTitle: string
+    cardComponentsDesc: string
+  }
 }

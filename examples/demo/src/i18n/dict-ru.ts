@@ -95,4 +95,31 @@ export const ru: DemoDict = {
     whenToUse: 'Когда использовать',
     examples: 'Примеры',
   },
+
+  gettingStarted: {
+    title: 'Быстрый старт',
+    lead: 'Начните работу со SkyGraph меньше чем за 5 минут.',
+    installation: 'Установка',
+    installLeadNpm: 'Установите ядро и React-биндинги:',
+    installLeadPnpm: 'Или через pnpm:',
+    importStyles: 'Подключение стилей',
+    importStylesLead:
+      'SkyGraph поставляет тему по умолчанию через CSS. Подключите её один раз в корне приложения:',
+    importStylesNote1:
+      'Это даст полную дизайн-систему — палитру, отступы, типографику и компонентные токены. Любую переменную можно переопределить (см. ',
+    importStylesNote2Theming: 'Темизация',
+    basicForm: 'Простая форма',
+    basicFormLead:
+      'Реактивное ядро SkyGraph даёт формы из коробки — валидация, зависимости и динамические поля без шаблонного кода:',
+    individualComponents: 'Использование отдельных компонентов',
+    individualComponentsLead:
+      'Каждый компонент работает самостоятельно — без провайдера или контекста:',
+    whatsNext: 'Что дальше',
+    cardThemingTitle: 'Темизация',
+    cardThemingDesc: 'CSS-переменные, тёмная тема, свои палитры',
+    cardCoreApiTitle: 'API ядра',
+    cardCoreApiDesc: 'createCore, createForm, createTable, createTree, createGraph',
+    cardComponentsTitle: 'Компоненты',
+    cardComponentsDesc: 'Более 65 готовых UI-компонентов',
+  },
 }

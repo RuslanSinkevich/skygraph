@@ -95,4 +95,31 @@ export const en: DemoDict = {
     whenToUse: 'When To Use',
     examples: 'Examples',
   },
+
+  gettingStarted: {
+    title: 'Getting Started',
+    lead: 'Get up and running with SkyGraph in under 5 minutes.',
+    installation: 'Installation',
+    installLeadNpm: 'Install the core engine and React bindings:',
+    installLeadPnpm: 'Or with pnpm:',
+    importStyles: 'Import Styles',
+    importStylesLead:
+      'SkyGraph ships a default theme via CSS. Import it once at the root of your app:',
+    importStylesNote1:
+      'This gives you the full design system — palette, spacing, typography, and component tokens. You can override any variable (see ',
+    importStylesNote2Theming: 'Theming',
+    basicForm: 'Basic Form Example',
+    basicFormLead:
+      "SkyGraph's reactive core powers forms out of the box — validation, dependencies, and dynamic fields with zero boilerplate:",
+    individualComponents: 'Using Individual Components',
+    individualComponentsLead:
+      'Every component works standalone — no provider or context required:',
+    whatsNext: "What's Next",
+    cardThemingTitle: 'Theming',
+    cardThemingDesc: 'CSS variables, dark mode, custom palettes',
+    cardCoreApiTitle: 'Core API',
+    cardCoreApiDesc: 'createCore, createForm, createTable, createTree, createGraph',
+    cardComponentsTitle: 'Components',
+    cardComponentsDesc: 'Browse 65+ ready-made UI components',
+  },
 }
