@@ -215,7 +215,94 @@ packages/react/src/
 
 ## 2. Архитектурные границы
 
-_Заполняется в ходе аудита._
+### 2.1 Заявленные границы (`ARCHITECTURE.md` + `eslint.config.js`)
+
+```
+runtime/   ──❌──>  engines/        (запрещено)
+engines/   ──❌──>  engines/        (cross-import между form/table/tree запрещён)
+engines/   ──❌──>  runtime/Store, runtime/Batch, ...   (только через ../../types или runtime-internal)
+ui/        ──❌──>  @skygraph/core/runtime-internal, /form, **/engines, **/runtime
+```
+
+Нарушения **статически enforced** через `no-restricted-imports` в flat-конфиге ESLint.
+
+### 2.2 Фактическая проверка (grep по импортам)
+
+| Граница | Проверено | Нарушений |
+|---------|-----------|-----------|
+| `runtime/` не импортирует `engines/` | grep `from "*engines/*"` в `runtime/` | **0** |
+| `engines/` не cross-import (form↔table↔tree) | grep `from "*../{form,table,tree,virtual}/*"` в `engines/*/` | **0** |
+| `engines/` не лезут в `runtime/Store` и т.п. | grep `from "*runtime/<primitive>"` в `engines/` | **0** |
+| `engines/` не используют `runtime/` напрямую | grep `from "../runtime"` или `"../../runtime"` в `engines/` | **0** |
+| `components/ui/` не импортирует `@skygraph/core` | grep `@skygraph/core` в `components/ui/` | **0** |
+
+### 2.3 Что фактически импортируют engines
+
+```
+FormEngine.ts:  import type { Core } from '../../types'
+                import { FORM_META_PREFIX as META_PREFIX } from '../namespaces'
+
+TableEngine.ts: import type { Core } from '../../types'
+                import { TABLE_PREFIX } from '../namespaces'
+
+TreeEngine.ts:  import type { Core } from '../../types'
+                import { TREE_PREFIX } from '../namespaces'
+```
+
+**Чисто** — все 3 engine берут только публичный `Core` интерфейс + свой зарезервированный префикс. `runtime-internal` фактически не используется ни одним engine.
+
+### 2.4 Что импортируют React-хуки
+
+```
+useForm.ts:    createCore, createForm + типы из '@skygraph/core' (public)
+useTable.ts:   createCore, createTable
+useTree.ts:    createCore, createTree
+useHistory.ts: Core, createHistory + HistoryPlugin/Options
+useVirtualScroll.ts: createVirtual + VirtualEngine/VirtualRange
+useField/useWatch/useComputed/useFieldArray: только типы (Core, FormEngine, FieldMeta, Rule, ...)
+```
+
+Все импорты идут через публичный `@skygraph/core`. Никаких subpath `/runtime-internal`.
+
+### 2.5 Что импортируют complex-компоненты
+
+| Файл | Импорт |
+|------|--------|
+| `Form.tsx` | type `ValidationMode` |
+| `FormContext.ts` | type `Core, FormEngine` |
+| `FormProvider.tsx` | type `FormEngine` |
+| `FormList.tsx` | type `FormListOperation` |
+| `Field.tsx` | type `Rule` |
+| `Table/helpers.ts`, `Table/types.ts` | type `RowId, SortConfig, SortDirection` |
+| `Tree/types.ts`, `TreeSelect/types.ts` | type `TreeKey, TreeNodeData, TreeFieldNames` |
+| `VirtualList/VirtualList.tsx` | type `VirtualItem` |
+
+Все импорты — **только типы**. Реализационная связь идёт через хуки.
+
+### 2.6 Замечание: `runtime-internal` фактически не используется
+
+`packages/core/src/runtime-internal.ts` экспортирует Store, SubscriptionEngine, Batch, Transaction, ComputedEngine, CycleDetector, Scheduler как **публичный entrypoint** для авторов кастомных engines. Но:
+
+- Никто из встроенных engines (form/table/tree/virtual) его не импортирует.
+- Никто из `@skygraph/react` его не импортирует.
+
+Это не нарушение, но кандидат в **TODO**: либо появится первый внешний потребитель (например, GraphEngine из Стрима 5), либо стоит подумать, нужен ли вообще этот публичный subpath.
+
+### 2.7 ESLint игнорирует `examples/`
+
+В `eslint.config.js`:
+```
+ignores: ['**/dist/', '**/node_modules/', 'examples/']
+```
+
+Следствие: внутри `examples/demo/` и `examples/showcases/` границы импортов **не проверяются**. Демо может неконтролируемо импортировать что угодно (это не критично — демо должно использовать только публичный API через npm/pnpm-link, но проверки нет).
+
+### 2.8 Вердикт по архитектурным границам
+
+**Зелёный.** Заявленные границы соблюдаются и фактически, и через статические правила. Минорные замечания:
+
+- `runtime-internal` — неиспользуемая публичная поверхность (заявлена для будущих внешних engines).
+- ESLint не покрывает `examples/`.
 
 ## 3. Состояние тестов и покрытие
 
