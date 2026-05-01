@@ -166,3 +166,35 @@ _(пользователь пишет сюда; агент перечитыва�
 - styling.md / styling-plan.md — не аудированы (styling-contract.md / styling-recipes.md в порядке).
 
 Все хвосты в `TODO-cycle.md`, `AUDIT-POST.md`, плюс эта запись.
+
+### 2026-05-01 (четвёртая итерация — после команды «делаем»)
+
+Принял. Добавлено:
+
+**Тесты (+19, итого 603):**
+- GraphEngine routing: 37 → **46** (+9 для routeOrthogonal/pointsToPath: HV/VH auto-pick, preferred override, edge cases).
+- Diagram routing: 11 → **14** (+3 для orthogonal/manual/straight edge variants).
+- TableEngine pinning: 20 → **27** (+7: pin/unpin/move side/clearPinned/reset/store mirror).
+
+**Новые фичи:**
+
+1. **Orthogonal routing для GraphEngine** — `routeOrthogonal(start, end, preferred?)` строит L-образный путь между двумя точками. `pointsToPath(points)` сериализует полилинию в SVG `d` атрибут. Auto-режим выбирает HV или VH по наибольшему смещению. `<Diagram>` теперь смотрит на `edge.routing` и рисует соответствующий path: 'straight' (прямая), 'orthogonal' (L-роут), 'manual' (через waypoints). Препятствия пока **не учитываются** — это отдельная большая задача (нужен spatial index по bounds).
+2. **TableEngine column pinning** — `pinColumn(column, side)`, `getPinnedColumns()`, `clearPinned()`. State зеркалится в core store. Минимальный API без перестроения колонок — это уже задача React-слоя.
+
+**Прочее:**
+- `ui/TreeSelect.tsx` и `ui/Transfer.tsx` помечены как `@deprecated` (вместо удаления — это бы сломало 11 тестов с ui-специфичным API).
+- `docs/styling.md` — кросс-ссылки на styling-contract.md, styling-recipes.md и автоотчёт.
+- `docs/styling-plan.md` — добавлен статус (Фазы 0-3 done, Фаза 4 partial).
+- `README` / `CHANGELOG` обновлены (603 тестов).
+
+**Реальные хвосты на следующую итерацию:**
+- StylingShowcasePage (884 строки) — последняя *Page без локализации.
+- ~480 demo-файлов (`<comp>/Variant.demo.tsx`) с английским хардкодом.
+- examples/showcases декомпозиция (forms 1131, ecommerce 1080).
+- Удаление `ui/TreeSelect.tsx`/`ui/Transfer.tsx` (нужно переписать 11 тестов).
+- TableEngine pinning **в UI слое** (Table component должен использовать `getPinnedColumns()` для render order).
+- Dashboard, Gantt, SchemaForm-редактор, Print/PDF.
+- Charts: оси, tooltip, анимации.
+- GraphEngine: drag-and-drop, undo/redo, OBB, zoom/pan, **orthogonal routing с препятствиями**.
+- 53 dead CSS / 111 DOM unstyled — ручная ревизия.
+- @vitest/coverage-v8, @axe-core/react — нужен dev-install.

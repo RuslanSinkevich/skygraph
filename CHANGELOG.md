@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **GraphEngine orthogonal routing** — new `routeOrthogonal(start, end)` and `pointsToPath(points)` helpers exported from `@skygraph/core`. `<Diagram>` now renders edges differently based on `edge.routing` (`'straight' | 'orthogonal' | 'manual'`); manual mode uses the edge's `waypoints`.
+- **TableEngine column pinning** — `pinColumn(column, side)`, `getPinnedColumns()`, `clearPinned()`. State mirrored into the Core store under `$table.<id>.state.pinnedLeft|pinnedRight`.
+- **+19 tests** in this iteration: GraphEngine routing (9) + Diagram routing variants (3) + TableEngine pinning (7). Total now **603** (270 + 333).
 - **Diagram component** + **useGraph** hook in `@skygraph/react` — visual layer for `GraphEngine` (DOM nodes + SVG-overlay edges, custom renderNode, outline-kind modifier classes).
 - **GraphEngine.subscribe(cb)** — public engine-level subscription used by the React adapter to avoid path-prefix lookups.
 - **AreaChart** — stacked / non-stacked SVG area chart with strokeWidth + fillOpacity props.
