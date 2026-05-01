@@ -6,6 +6,7 @@ import {
   categoryOrder,
 } from '../tokens/tokens-data'
 import type { TokenCategory, TokenDef } from '../tokens/tokens-data'
+import { useI18n } from '../i18n'
 
 /**
  * Design Tokens page — a searchable index of every public `--sg-*`
@@ -108,6 +109,8 @@ function GlobalSection({
 }
 
 export function DesignTokensPage() {
+  const { t } = useI18n()
+  const dt = t.designTokens
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
@@ -152,13 +155,8 @@ export function DesignTokensPage() {
   return (
     <section className="doc-page">
       <header className="doc-header">
-        <h1 className="doc-component-title">Design Tokens</h1>
-        <p className="doc-lead">
-          Every SkyGraph visual is driven by a CSS custom property. Override
-          a token on <code>:root</code> for app-wide changes, on a wrapper
-          <code>{' <div style={{ \'--sg-...\': ... }}> '}</code> for a
-          subtree, or on a single component instance.
-        </p>
+        <h1 className="doc-component-title">{dt.title}</h1>
+        <p className="doc-lead">{dt.lead}</p>
       </header>
 
       <div
@@ -169,10 +167,10 @@ export function DesignTokensPage() {
       >
         <input
           type="search"
-          placeholder="Search tokens (e.g. radius, primary, shadow, table)…"
+          placeholder={dt.searchPlaceholder}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-label="Search tokens"
+          aria-label={dt.searchAriaLabel}
           style={{
             width: '100%',
             maxWidth: 520,
@@ -192,13 +190,13 @@ export function DesignTokensPage() {
             color: 'var(--sg-color-text-secondary)',
           }}
         >
-          {filtered.global.length} global tokens ·{' '}
+          {filtered.global.length} {dt.summaryGlobal} ·{' '}
           {filtered.components.reduce((acc, g) => acc + g.vars.length, 0)}{' '}
-          component tokens across {filtered.components.length} components
+          {dt.summaryComponentsLeft} {filtered.components.length} {dt.summaryComponentsRight}
         </div>
       </div>
 
-      <h2>Global tokens</h2>
+      <h2>{dt.globalHeading}</h2>
       <p
         style={{
           marginTop: -8,
@@ -206,7 +204,7 @@ export function DesignTokensPage() {
           color: 'var(--sg-color-text-secondary)',
         }}
       >
-        Semantic tokens change with the theme. Palette tokens stay fixed.
+        {dt.globalLead}
       </p>
       {categoryOrder.map((c) => (
         <GlobalSection
@@ -216,7 +214,7 @@ export function DesignTokensPage() {
         />
       ))}
 
-      <h2>Per-component tokens</h2>
+      <h2>{dt.perComponentHeading}</h2>
       <p
         style={{
           marginTop: -8,
@@ -224,8 +222,7 @@ export function DesignTokensPage() {
           color: 'var(--sg-color-text-secondary)',
         }}
       >
-        These variables are declared by a specific component and are the
-        cleanest way to re-skin just that component.
+        {dt.perComponentLead}
       </p>
       {filtered.components.map((g) => (
         <div
@@ -259,7 +256,7 @@ export function DesignTokensPage() {
         </div>
       ))}
 
-      <h2>Override examples</h2>
+      <h2>{dt.overrideHeading}</h2>
       <div className="demo-props-section">
         <p
           style={{
@@ -268,7 +265,7 @@ export function DesignTokensPage() {
             marginTop: 0,
           }}
         >
-          App-wide brand swap:
+          {dt.overrideAppWide}
         </p>
         <pre className="doc-code">
           <code>{`:root {
@@ -285,7 +282,7 @@ export function DesignTokensPage() {
             marginTop: 20,
           }}
         >
-          Per-subtree override (scoped to one page / card):
+          {dt.overrideSubtree}
         </p>
         <pre className="doc-code">
           <code>{`<div style={{

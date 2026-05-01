@@ -132,6 +132,28 @@ export const ru: DemoDict = {
       'Headless работает по отдельному компоненту — мешайте styled и unstyled в одном приложении свободно.',
   },
 
+  designTokens: {
+    title: 'Дизайн-токены',
+    lead:
+      'Каждый визуал SkyGraph управляется CSS-переменной. Переопределите токен на `:root` для изменений на уровне всего приложения, на обёртке — для поддерева, или на одном инстансе компонента.',
+    searchPlaceholder: 'Поиск токенов (например, radius, primary, shadow, table)…',
+    searchAriaLabel: 'Поиск токенов',
+    summaryGlobal: 'глобальных токенов',
+    summaryComponentsLeft: 'компонентных токенов на',
+    summaryComponentsRight: 'компонентов',
+    globalHeading: 'Глобальные токены',
+    globalLead: 'Семантические токены меняются с темой. Токены палитры — фиксированы.',
+    perComponentHeading: 'Токены компонентов',
+    perComponentLead:
+      'Эти переменные объявляются конкретным компонентом — самый чистый путь перекрасить именно его.',
+    overrideHeading: 'Примеры переопределений',
+    overrideAppWide: 'Глобальная смена бренда:',
+    overrideSubtree: 'Переопределение по поддереву (одна страница / карточка):',
+    colVariable: 'Переменная',
+    colDefault: 'По умолчанию',
+    colDescription: 'Описание',
+  },
+
   coreApi: {
     title: 'API ядра',
     lead: 'Чистый TS реактивный рантайм + предметные движки. Никакой зависимости от React в ядре; React-слой — тонкий адаптер.',

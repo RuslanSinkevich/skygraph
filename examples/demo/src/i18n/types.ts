@@ -139,6 +139,26 @@ export interface DemoDict {
     headlessFooter: string
   }
 
+  designTokens: {
+    title: string
+    lead: string
+    searchPlaceholder: string
+    searchAriaLabel: string
+    summaryGlobal: string
+    summaryComponentsLeft: string
+    summaryComponentsRight: string
+    globalHeading: string
+    globalLead: string
+    perComponentHeading: string
+    perComponentLead: string
+    overrideHeading: string
+    overrideAppWide: string
+    overrideSubtree: string
+    colVariable: string
+    colDefault: string
+    colDescription: string
+  }
+
   coreApi: {
     title: string
     lead: string

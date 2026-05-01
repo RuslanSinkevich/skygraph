@@ -130,6 +130,28 @@ export const en: DemoDict = {
     headlessFooter: 'Headless mode is per-component — mix styled and unstyled freely in the same app.',
   },
 
+  designTokens: {
+    title: 'Design Tokens',
+    lead:
+      'Every SkyGraph visual is driven by a CSS custom property. Override a token on `:root` for app-wide changes, on a wrapper for a subtree, or on a single component instance.',
+    searchPlaceholder: 'Search tokens (e.g. radius, primary, shadow, table)…',
+    searchAriaLabel: 'Search tokens',
+    summaryGlobal: 'global tokens',
+    summaryComponentsLeft: 'component tokens across',
+    summaryComponentsRight: 'components',
+    globalHeading: 'Global tokens',
+    globalLead: 'Semantic tokens change with the theme. Palette tokens stay fixed.',
+    perComponentHeading: 'Per-component tokens',
+    perComponentLead:
+      'These variables are declared by a specific component and are the cleanest way to re-skin just that component.',
+    overrideHeading: 'Override examples',
+    overrideAppWide: 'App-wide brand swap:',
+    overrideSubtree: 'Per-subtree override (scoped to one page / card):',
+    colVariable: 'Variable',
+    colDefault: 'Default',
+    colDescription: 'Description',
+  },
+
   coreApi: {
     title: 'Core API',
     lead: 'Pure-TS reactive runtime + domain engines. Zero React dependency in core; React layer is a thin adapter.',
