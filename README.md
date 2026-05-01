@@ -13,7 +13,7 @@ AntD-level components + reactive state management out of the box. Forms, tables,
 
 - **Reactive Core** — path-based store with granular subscriptions, transactions, batching, computed values, cycle detection, middleware pipeline, time-travel debugging
 - **Domain Engines** — FormEngine (validation, dependencies, multiple errors/warnings, preserve), TableEngine (sort, filter, pagination, virtual scroll), TreeEngine (check cascade, drag & drop, async load)
-- **55+ React Components** — from Button to DataGrid, Calendar, Tree, Transfer, Mentions, TreeSelect, Cascader
+- **65+ React Components** — from Button to DataGrid, Calendar, Tree, Transfer, Mentions, TreeSelect, Cascader
 - **ConfigProvider** — centralized defaults for size, disabled, locale (React Context, not CSS)
 - **Schema Forms** — auto-generate forms from JSON Schema or Zod schemas
 - **Zero-runtime CSS** — 3-layer token system (palette → semantic → component), dark mode via `data-sg-theme`
@@ -53,7 +53,7 @@ function App() {
 | Package | Description | Size |
 |---------|------------|------|
 | `@skygraph/core` | Reactive runtime + form/table/tree engines | ~28 KB (ESM) |
-| `@skygraph/react` | React hooks, 55+ components, CSS styles | ~260 KB (ESM) |
+| `@skygraph/react` | React hooks, 65+ components, CSS styles | ~260 KB (ESM) |
 
 ## Architecture
 
@@ -155,9 +155,9 @@ SkyGraph treats styling as a public contract. Full reference:
 ## Tests
 
 ```
-428 tests across core + react packages
-  @skygraph/core:  146 tests (form, runtime, engines)
-  @skygraph/react: 282 tests (components, hooks, adapters, a11y)
+497 tests across core + react packages
+  @skygraph/core:  217 tests (form, runtime, engines, table, tree, virtual, history, middleware, typed, benchmarks)
+  @skygraph/react: 280 tests (components, hooks, adapters, a11y, styling contract)
 ```
 
 ## Development
@@ -165,7 +165,7 @@ SkyGraph treats styling as a public contract. Full reference:
 ```bash
 pnpm install           # install deps
 pnpm build             # build all packages
-pnpm test              # run tests (428 tests)
+pnpm test              # run tests (497 tests)
 pnpm lint              # eslint
 pnpm format            # prettier
 
