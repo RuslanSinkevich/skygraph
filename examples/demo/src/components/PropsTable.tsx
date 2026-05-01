@@ -3,6 +3,8 @@ export interface PropDef {
   description: string
   type: string
   default?: string
+  /** Mark prop as required — renders an asterisk next to the name. */
+  required?: boolean
 }
 
 export interface PropsTableProps {
@@ -26,7 +28,10 @@ export function PropsTable({ title = 'API', data }: PropsTableProps) {
         <tbody>
           {data.map((prop) => (
             <tr key={prop.name}>
-              <td><code>{prop.name}</code></td>
+              <td>
+                <code>{prop.name}</code>
+                {prop.required ? <span aria-label="required" style={{ color: 'var(--sg-color-error)' }}> *</span> : null}
+              </td>
               <td>{prop.description}</td>
               <td><code>{prop.type}</code></td>
               <td>{prop.default ? <code>{prop.default}</code> : '—'}</td>

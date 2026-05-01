@@ -1,8 +1,8 @@
-import type { TreeSelectNode } from '@skygraph/react'
+import type { TreeNodeData } from '@skygraph/react'
 
 /** Org chart with 3 departments × multiple teams. Big enough to show
  *  search filtering and multi-select without being overwhelming. */
-export const orgTree: TreeSelectNode[] = [
+export const orgTree: TreeNodeData[] = [
   {
     key: 'eng',
     title: 'Engineering',

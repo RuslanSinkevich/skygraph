@@ -81,13 +81,12 @@ export type { UseTreeOptions, UseTreeReturn } from './hooks/useTree'
 // The old ui-only TreeSelect is kept under `./components/ui/TreeSelect` for tests
 // and for backwards-compat type aliases (`TreeSelectNode`), but new consumers
 // should use the complex props (`TreeNodeData`).
+//
+// `TreeKey`, `TreeNodeData`, `TreeFieldNames` are already exported above
+// (from `./components/complex/Tree`) — re-exporting them here would produce a
+// duplicate identifier in the rolled-up `.d.ts`.
 export { TreeSelect } from './components/complex/TreeSelect'
-export type {
-  TreeSelectProps,
-  TreeKey,
-  TreeNodeData,
-  TreeFieldNames,
-} from './components/complex/TreeSelect'
+export type { TreeSelectProps } from './components/complex/TreeSelect'
 
 /**
  * @deprecated Use {@link TreeNodeData} from `@skygraph/core`-backed TreeSelect.
@@ -230,12 +229,13 @@ export type { ListProps, ListItemProps, ListItemMetaProps } from './components/c
 // Transfer — main export now points to the complex (pagination, sortable,
 // locale, footer, operations) implementation. The simpler ui-only Transfer is
 // kept under `./components/ui/Transfer` for tests and as a fallback.
+// `TransferLocale` is already exported above (from `./types`) — avoid a
+// duplicate identifier in the rolled-up `.d.ts`.
 export { Transfer, TransferList } from './components/complex/Transfer'
 export type {
   TransferProps,
   TransferItem,
   TransferListProps,
-  TransferLocale,
 } from './components/complex/Transfer'
 export { Mentions } from './components/ui/Mentions'
 export type { MentionsProps, MentionOption } from './components/ui/Mentions'

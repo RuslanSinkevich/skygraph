@@ -26,7 +26,7 @@ export function CustomRenderTransfer() {
           )}
         </div>
       )}
-      listStyle={{ width: 280, height: 260 }}
+      listHeight={260}
     />
   )
 }

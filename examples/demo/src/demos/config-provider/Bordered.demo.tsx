@@ -7,9 +7,9 @@ const columns = [
 ]
 
 const data = [
-  { id: 1, data: { name: 'Alice', role: 'Designer', status: 'Active' } },
-  { id: 2, data: { name: 'Bob', role: 'Engineer', status: 'Away' } },
-  { id: 3, data: { name: 'Carol', role: 'PM', status: 'Active' } },
+  { id: '1', data: { name: 'Alice', role: 'Designer', status: 'Active' } },
+  { id: '2', data: { name: 'Bob', role: 'Engineer', status: 'Away' } },
+  { id: '3', data: { name: 'Carol', role: 'PM', status: 'Active' } },
 ]
 
 export function BorderedConfigProvider() {

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { TreeSelect } from '@skygraph/react'
+import type { TreeKey } from '@skygraph/react'
 import { orgTree } from './data'
 
 /**
@@ -8,14 +9,14 @@ import { orgTree } from './data'
  * hierarchical groups rather than individual leaves.
  */
 export function CheckableTreeSelect() {
-  const [value, setValue] = useState<string | string[]>([])
+  const [value, setValue] = useState<TreeKey | TreeKey[]>([])
   return (
     <div style={{ width: 380 }}>
       <TreeSelect
         treeData={orgTree}
         treeCheckable
         value={value}
-        onChange={setValue}
+        onChange={(next) => setValue(next)}
         treeDefaultExpandAll
         placeholder="Tick subtrees"
         allowClear
