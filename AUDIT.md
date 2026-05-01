@@ -824,7 +824,171 @@ BadgeDemo.tsx (127 строк):
 
 ## 7. Зависимости и инфраструктура
 
-_Заполняется в ходе аудита._
+### 7.1 Workspace конфигурация
+
+**Конфликт двух систем:**
+
+```yaml
+# pnpm-workspace.yaml
+packages:
+  - 'packages/*'
+```
+
+```json
+// package.json
+"workspaces": ["packages/*"]
+```
+
+- `pnpm-workspace.yaml` — для pnpm.
+- `workspaces` в корневом `package.json` — для **npm/yarn**, pnpm их игнорирует (или поддерживает как fallback).
+
+**Расхождение скоупа:** оба не включают `examples/`. Демо и showcases подключают пакеты через **`file:../../packages/{core,react}`** (file: protocol), а не через workspace. Это работает, но выпадает из единой workspace-инфраструктуры (нет автоматических symlinks pnpm для examples).
+
+**Кандидат:**
+- удалить `workspaces` из корневого `package.json` (npm-атавизм);
+- расширить `pnpm-workspace.yaml` до `packages: ['packages/*', 'examples/*']`, заменить `file:` на `workspace:*` в demo/showcases;
+- ИЛИ подтвердить что текущая схема намеренная и оставить.
+
+### 7.2 Версии React — расхождение между библиотекой и demo
+
+| Место | React | Заметка |
+|-------|-------|---------|
+| `packages/react/package.json` peer | `>=18.0.0` | покрывает R18 и R19 |
+| `packages/react/package.json` dev | `^18.0.0` (фактически 18.3.1) | тесты идут на R18 |
+| `examples/demo/package.json` | `^19.2.4` | demo на **R19** |
+| `examples/showcases/package.json` | `^19.2.4` | showcases на **R19** |
+
+Технически peer `>=18` это допускает, но **тесты библиотеки идут только на R18**. На R19 поведение в demo может немного отличаться (StrictMode rerender, suspense, эффекты). Это потенциальный источник багов.
+
+**Кандидат:**
+- добавить вторую матрицу тестов на R19 в `react` пакете;
+- ИЛИ обновить devDep до R19 и тестировать на нём.
+
+### 7.3 Версии TypeScript
+
+| Место | TS |
+|-------|-----|
+| `packages/core/package.json` dev | `^5.4.0` (установлено 5.9.3) |
+| `packages/react/package.json` dev | `^5.4.0` (установлено 5.9.3) |
+| `examples/*/package.json` | `~5.9.3` |
+
+Через `^` все upgrade'ятся до 5.9.3 — фактически совпадают. Норма.
+
+### 7.4 Установленные версии (pnpm list -r)
+
+```
+root:
+  eslint 9.39.4
+  typescript-eslint 8.58.1
+  prettier 3.8.2
+
+core:
+  tsup 8.5.1
+  vitest 2.1.9
+  typescript 5.9.3
+  rimraf 5.0.10
+
+react:
+  @testing-library/react 16.3.2
+  @types/react 18.3.28
+  jsdom 25.0.1
+  react 18.3.1
+  react-dom 18.3.1
+```
+
+Все версии современные (по состоянию на ~апрель 2026). Major-обновлений в очевидной зоне риска нет.
+
+### 7.5 Build (tsup)
+
+**`packages/core/tsup.config.ts`** объявляет 3 entrypoint:
+- `index` (главный)
+- `form` (subpath)
+- `runtime-internal` (subpath, нестабильный)
+
+Subpaths `table`, `tree`, `virtual` в core **отсутствуют** в build entrypoints (есть только в react). В `index.ts` все export'ы есть, но через subpath не достучаться.
+
+**`packages/react/tsup.config.ts`** объявляет 7 entrypoints:
+- `index`, `form`, `table`, `tree`, `datagrid`, `virtual`, `devtools`.
+
+Совпадает с заявленным в `package.json#exports`. Хорошо.
+
+`external: ['react', 'react-dom', '@skygraph/core']` — корректная маркировка peers.
+
+### 7.6 Lockfiles
+
+- ✅ `pnpm-lock.yaml` — основной.
+- ❌ `package-lock.json` — **атавизм npm**. Нужно удалить.
+
+Когда оба присутствуют — npm и pnpm могут давать разные деревья. Если кто-то случайно сделает `npm install` в корне, package-lock обновится и расхождение усугубится.
+
+### 7.7 CI workflow `.github/workflows/ci.yml`
+
+```yaml
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    matrix:
+      node-version: [18, 20, 22]
+    steps:
+      - uses: pnpm/action-setup@v4 (v9)
+      - pnpm install --frozen-lockfile
+      - pnpm lint
+      - pnpm check:styles
+      - pnpm build
+      - pnpm test
+```
+
+**Замечания:**
+- Триггер на ветку `main`, локальная ветка — `master` (см. Секцию 4.7).
+- Матрица node 18/20/22 — нормально (Node 18 LTS подходит к концу, можно подумать про 24).
+- Не запускается `pnpm audit:styles` — генерация `_audit/styling-audit.md` остаётся за разработчиком (см. Секцию 5.5).
+- Нет шага coverage.
+
+Также есть `deploy.yml` (содержимое не аудировано в этом стриме).
+
+### 7.8 Скрипты в package.json (root)
+
+```json
+"scripts": {
+  "build": "pnpm -r build",
+  "test": "pnpm -r test",
+  "lint": "eslint packages/",
+  "format": "prettier --write \"packages/**/*.{ts,tsx,css,json}\"",
+  "format:check": "prettier --check \"packages/**/*.{ts,tsx,css,json}\"",
+  "clean": "pnpm -r clean",
+  "audit:styles": "node scripts/audit-styles.mjs",
+  "check:tokens": "node scripts/check-tokens.mjs",
+  "check:no-important": "node scripts/check-no-important.mjs",
+  "check:styles": "pnpm run check:tokens && pnpm run check:no-important"
+}
+```
+
+**Замечания:**
+- `lint` ограничен `packages/` — examples не линтятся (см. Секцию 6.6).
+- `format` тоже только `packages/**` — examples не форматируются.
+- Нет команды `pnpm dev` (для запуска demo/showcases). Запуск идёт через `cd examples/demo && pnpm dev`.
+
+### 7.9 Issue/PR templates
+
+Есть `.github/ISSUE_TEMPLATE/bug_report.md` + `feature_request.md` + `pull_request_template.md`. Содержимое не аудировано в этом стриме (можно расширить в Стрим 9).
+
+### 7.10 Вердикт
+
+| Категория | Статус |
+|-----------|--------|
+| Workspace конфигурация | ⚠ конфликт `workspaces` (npm) + `pnpm-workspace.yaml` |
+| Examples в workspace | ❌ не подключены, использует `file:` protocol |
+| Версии React | ⚠ R18 в core/react, R19 в demo/showcases |
+| Версии TypeScript | ✅ совпадают (5.9.3 везде) |
+| tsup конфиги | ✅ корректные |
+| Lockfile | ❌ дубль npm + pnpm |
+| CI | ⚠ ветка `main` vs локальная `master` |
+| Скрипты root | ⚠ format/lint только для `packages/`, не для examples |
 
 ## 8. Dead code, дубли, неконсистентное именование
 

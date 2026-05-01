@@ -19,6 +19,17 @@
 - **Расхождение CI vs локальная ветка.** CI триггерится на `main`, локально `master`. Проверить состояние удалённого репо, унифицировать.
 - **Дубль lockfile.** В корне `package-lock.json` + `pnpm-lock.yaml`. Удалить `package-lock.json`, добавить в `.gitignore`.
 
+### Зависимости и инфраструктура
+
+- **Дубль workspace декларации.** Корневой `package.json` имеет `"workspaces": ["packages/*"]` (npm), плюс `pnpm-workspace.yaml`. Удалить npm-вариант или подтвердить намерение оставить.
+- **Examples вне workspace.** `examples/demo` и `examples/showcases` подключают core/react через `file:../../packages/...`. Решить: расширить `pnpm-workspace.yaml` до `examples/*` + использовать `workspace:*`, или оставить `file:` намеренно.
+- **React 18 vs React 19.** `packages/react` тестируется на R18 (devDep `^18.0.0`), demo/showcases используют R19. Добавить вторую матрицу тестов на R19 ИЛИ обновить devDep.
+- **Удалить `package-lock.json`** в корне (атавизм npm). Добавить в `.gitignore` ИЛИ git rm и закоммитить.
+- **`audit:styles` не запускается в CI.** Добавить как шаг проверки (фейлить если изменился `_audit/styling-audit.md`).
+- **`format` и `lint` в root скриптах не покрывают `examples/`.** Расширить до `examples/**` или добавить отдельные команды.
+- **CI не имеет coverage step.** Добавить вместе с настройкой coverage в Стрим 10.
+- **Subpaths `table/tree/virtual` отсутствуют в `core/tsup.config.ts`** как entrypoints. Только `index`, `form`, `runtime-internal`. Если хочется отдельный путь `@skygraph/core/table` (как в react) — добавить.
+
 ### Стилевой контракт
 
 - **228 dead-классов в CSS.** Сгенерированы по старым паттернам именования (`.sg-button-large`, `.sg-table-large`, `.sg-form-vertical`, ...). Часть из них — transitions (используются динамически при анимации). Большая часть — legacy. Кандидат на чистку в мини-стриме после Стрима 7.
