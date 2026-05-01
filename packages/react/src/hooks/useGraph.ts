@@ -1,4 +1,4 @@
-import { useMemo, useSyncExternalStore } from 'react'
+import { useMemo, useRef, useSyncExternalStore } from 'react'
 import { createCore, createGraph } from '@skygraph/core'
 import type {
   Core,
@@ -43,10 +43,23 @@ export function useGraph(options: UseGraphOptions = {}): UseGraphReturn {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [externalCore])
 
+  // Cache the snapshot reference so `useSyncExternalStore` can compare by
+  // identity. We rebuild it ONLY when the engine commits (subscribe callback
+  // fires) — not on every render. This is what `useSyncExternalStore`
+  // requires: getSnapshot must be referentially stable between commits.
+  const snapshotRef = useRef<GraphState | null>(null)
+  if (snapshotRef.current === null) {
+    snapshotRef.current = graph.getState()
+  }
+
   const state = useSyncExternalStore(
-    (cb) => core.subscribe('$graph.snapshot', cb),
-    () => graph.getState(),
-    () => graph.getState(),
+    (cb) =>
+      graph.subscribe(() => {
+        snapshotRef.current = graph.getState()
+        cb()
+      }),
+    () => snapshotRef.current!,
+    () => snapshotRef.current!,
   )
 
   return { graph, state, core }

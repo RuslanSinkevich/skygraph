@@ -58,18 +58,28 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
   let nodeCounter = 0
   let edgeCounter = 0
 
-  // ─── Persistence — mirror snapshots into the Core store ───────────────────
+  // ─── Persistence + local subscribers ──────────────────────────────────────
   //
-  // We use plain "value" writes under the engine prefix so other engines /
-  // subscribers can react via `core.subscribe(`${prefix}snapshot`)`. The
-  // snapshot rebuild is intentionally cheap (Map → arrays) — we expect callers
-  // to debounce by wrapping a batch of operations in `core.batch(...)`.
+  // We mirror snapshots into the Core store so other engines / external
+  // observers can react via `core.subscribe(...)`. We ALSO maintain a small
+  // local subscriber set that React adapters use directly — that avoids
+  // having to know the engineId-suffixed path from the outside.
+
+  const localSubscribers = new Set<() => void>()
 
   function publishSnapshot() {
     core.set(`${prefix}snapshot.${engineId}`, {
       nodes: Array.from(nodes.values()),
       edges: Array.from(edges.values()),
     })
+    for (const cb of localSubscribers) cb()
+  }
+
+  function subscribeLocal(cb: () => void): () => void {
+    localSubscribers.add(cb)
+    return () => {
+      localSubscribers.delete(cb)
+    }
   }
 
   publishSnapshot() // initial empty snapshot
@@ -500,6 +510,7 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
     edgesOf,
     anchorsOf,
     boundsOf,
+    subscribe: subscribeLocal,
     clear,
   }
 }

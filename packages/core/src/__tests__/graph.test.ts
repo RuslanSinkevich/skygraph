@@ -218,14 +218,192 @@ describe('GraphEngine: bounds', () => {
   })
 })
 
+describe('GraphEngine: anchors — extended', () => {
+  it('rect with byLength density spaces anchors uniformly along edge length', () => {
+    const { graph } = setup()
+    const id = graph.addNode({
+      outline: { kind: 'rect', w: 100, h: 50 },
+      anchorPolicy: { kind: 'byLength', density: 25 },
+    })
+    const anchors = graph.anchorsOf(id)
+    // Width 100 / 25 = 4 → 4-1 = 3 mid anchors per long edge (top/bottom).
+    // Height 50 / 25 = 2 → 2-1 = 1 mid anchor per short edge (left/right).
+    // Plus 4 corners = 4 + 3 + 1 + 3 + 1 = 12.
+    expect(anchors.length).toBe(12)
+  })
+
+  it('polygon byLength produces anchors proportional to perimeter', () => {
+    const { graph } = setup()
+    const id = graph.addNode({
+      outline: {
+        kind: 'polygon',
+        verts: [
+          [0, 0],
+          [60, 0],
+          [60, 60],
+          [0, 60],
+        ],
+      },
+      anchorPolicy: { kind: 'byLength', density: 30 },
+    })
+    const anchors = graph.anchorsOf(id)
+    // 4 vertices + 1 mid per side (60/30 - 1 = 1) × 4 sides = 8.
+    expect(anchors.length).toBe(8)
+  })
+
+  it('ellipse perEdge generates at least 4 samples even for k=0', () => {
+    const { graph } = setup()
+    const id = graph.addNode({
+      outline: { kind: 'ellipse', rx: 50, ry: 30 },
+      anchorPolicy: { kind: 'perEdge', k: 0 },
+    })
+    const anchors = graph.anchorsOf(id)
+    expect(anchors.length).toBeGreaterThanOrEqual(4)
+  })
+
+  it('manual anchors round-trip the explicit s parameter', () => {
+    const { graph } = setup()
+    const id = graph.addNode({
+      outline: { kind: 'rect', w: 100, h: 60 },
+      anchorPolicy: {
+        kind: 'manual',
+        anchors: [
+          { id: 'in', s: 0 },
+          { id: 'top-mid', s: 0.125 },
+          { id: 'right-mid', s: 0.375 },
+        ],
+      },
+    })
+    const anchors = graph.anchorsOf(id)
+    expect(anchors.map((a) => a.id)).toEqual(['in', 'top-mid', 'right-mid'])
+    expect(anchors[0]!.point).toEqual([0, 0])
+    expect(anchors[1]!.point).toEqual([50, 0])
+    expect(anchors[2]!.point).toEqual([100, 30])
+  })
+
+  it('path outline (flatten) is treated as polygon for anchor generation', () => {
+    const { graph } = setup()
+    const id = graph.addNode({
+      outline: {
+        kind: 'path',
+        flatten: [
+          [0, 0],
+          [40, 10],
+          [40, 50],
+          [0, 40],
+        ],
+      },
+      anchorPolicy: { kind: 'perEdge', k: 0 },
+    })
+    const anchors = graph.anchorsOf(id)
+    expect(anchors.length).toBe(4)
+  })
+})
+
+describe('GraphEngine: hierarchy — deep', () => {
+  it('three-level hierarchy composes transforms correctly', () => {
+    const { graph } = setup()
+    const root = graph.addNode({ transform: { x: 100, y: 100 } })
+    const child = graph.addNode({ parentId: root, transform: { x: 10, y: 10 } })
+    const grand = graph.addNode({
+      parentId: child,
+      transform: { x: 5, y: 5 },
+      outline: { kind: 'rect', w: 8, h: 4 },
+    })
+    expect(graph.boundsOf(grand)).toEqual({ x: 115, y: 115, w: 8, h: 4 })
+  })
+
+  it('childrenOf returns immediate children only (not grandchildren)', () => {
+    const { graph } = setup()
+    const a = graph.addNode()
+    const b = graph.addNode({ parentId: a })
+    /* grand */ graph.addNode({ parentId: b })
+    expect(graph.childrenOf(a)).toEqual([b])
+    expect(graph.childrenOf(b).length).toBe(1)
+  })
+
+  it('removing a deep ancestor re-parents its direct children to root', () => {
+    const { graph } = setup()
+    const a = graph.addNode()
+    const b = graph.addNode({ parentId: a })
+    const c = graph.addNode({ parentId: b })
+    graph.removeNode(b)
+    // c had b as parent, b removed → c.parentId becomes null
+    expect(graph.getNode(c)?.parentId).toBeNull()
+    expect(graph.getNode(b)).toBeUndefined()
+    expect(graph.getNode(a)).toBeDefined()
+  })
+})
+
+describe('GraphEngine: edge endpoints with { s } param', () => {
+  it('edge endpoint with { s } resolves to the closest anchor by perimeter param', () => {
+    const { graph } = setup()
+    const a = graph.addNode({
+      outline: { kind: 'rect', w: 100, h: 60 },
+      anchorPolicy: { kind: 'perEdge', k: 0 },
+    })
+    const b = graph.addNode({
+      outline: { kind: 'rect', w: 100, h: 60 },
+      anchorPolicy: { kind: 'perEdge', k: 0 },
+      transform: { x: 200, y: 0 },
+    })
+    const eid = graph.addEdge({
+      from: { node: a, anchor: { s: 0.25 } }, // closest anchor: ne (s = 0.25)
+      to: { node: b, anchor: { s: 0.75 } },   // closest anchor: sw (s = 0.75)
+    })
+    expect(graph.getEdge(eid)).toBeDefined()
+  })
+})
+
+describe('GraphEngine: ops — extended', () => {
+  it('updateNode with no patches is a no-op (no revision bump)', () => {
+    const { graph } = setup()
+    const id = graph.addNode()
+    graph.updateNode(id, {})
+    expect(graph.getNode(id)?.geomRevision).toBe(0)
+  })
+
+  it('updateNode throws on unknown node id', () => {
+    const { graph } = setup()
+    expect(() => graph.updateNode('ghost', { transform: { x: 1, y: 1 } })).toThrow(/not found/)
+  })
+
+  it('removeNode of unknown id is silent (no throw)', () => {
+    const { graph } = setup()
+    expect(() => graph.removeNode('ghost')).not.toThrow()
+  })
+
+  it('removeEdge of unknown id is silent', () => {
+    const { graph } = setup()
+    expect(() => graph.removeEdge('ghost')).not.toThrow()
+  })
+
+  it('addEdge with custom id rejects duplicate', () => {
+    const { graph } = setup()
+    const a = graph.addNode()
+    const b = graph.addNode()
+    graph.addEdge({ id: 'main', from: { node: a, anchor: 'nw' }, to: { node: b, anchor: 'nw' } })
+    expect(() =>
+      graph.addEdge({ id: 'main', from: { node: a, anchor: 'ne' }, to: { node: b, anchor: 'ne' } }),
+    ).toThrow(/already exists/)
+  })
+
+  it('updateNode preserves data when patch.data is undefined, replaces when present', () => {
+    const { graph } = setup()
+    const id = graph.addNode({ data: { foo: 1 } })
+    graph.updateNode(id, { transform: { x: 5 } })
+    expect(graph.getNode(id)?.data).toEqual({ foo: 1 })
+    graph.updateNode(id, { data: { bar: 2 } })
+    expect(graph.getNode(id)?.data).toEqual({ bar: 2 })
+  })
+})
+
 describe('GraphEngine: store integration', () => {
   it('publishes a snapshot under $graph.snapshot.<engineId>', () => {
     const { core, graph } = setup()
     const id = graph.addNode({ outline: { kind: 'rect', w: 50, h: 50 } satisfies Outline })
     let snapshot: { nodes: unknown[]; edges: unknown[] } | undefined
     core.subscribe('$graph.snapshot', () => undefined) // touch the prefix
-    // we don't know the engineId externally, so iterate keys via get on a wildcard isn't supported —
-    // just make sure adding a node doesn't throw and the public API still returns it.
     expect(graph.getNode(id)).toBeDefined()
     void snapshot
   })

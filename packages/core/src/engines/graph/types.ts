@@ -244,6 +244,15 @@ export interface GraphEngine {
   boundsOf(id: NodeId): AABB
 
   /**
+   * Subscribe to commits — callback fires after every snapshot publish
+   * (any `addNode`, `removeNode`, `addEdge`, etc.). Returns an unsubscribe fn.
+   *
+   * Prefer this for React adapters: it sidesteps the `$graph.snapshot.<id>`
+   * path lookup that varies per engine instance.
+   */
+  subscribe(cb: () => void): () => void
+
+  /**
    * Reset the graph (drops all nodes / edges).
    * @internal Test helper.
    */
