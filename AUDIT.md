@@ -434,7 +434,146 @@ packages/react test:  RUN  v2.1.9
 
 ## 4. Расхождения README / ARCHITECTURE с фактом
 
-_Заполняется в ходе аудита._
+### 4.1 Числа компонентов
+
+| Источник | UI | Complex | Всего | CSS |
+|----------|-----|---------|-------|-----|
+| `README.md` | 44 | 11 | "**55+**" | 49 |
+| `docs/status.md` (2026-04-06) | 39 | 11 | 50 | 53 |
+| `ARCHITECTURE.md` | "44 ui" в схеме | — | — | — |
+| **Фактически** (.tsx файлы) | **50** | **16 уникальных** | **66** | **56** |
+
+**Расхождение:** README отстаёт на ~11 компонентов, status.md отстаёт сильнее. CSS-файлов на 7 больше чем заявлено в README, на 3 больше чем в status.md.
+
+### 4.2 Число тестов
+
+| Источник | Заявлено |
+|----------|----------|
+| `README.md` | 428 (146 + 282) |
+| **Фактически** | **497 (217 + 280)** |
+
+(Подробности в Секции 3.) Расхождение: +69 тестов суммарно.
+
+### 4.3 docs/status.md устарел
+
+Файл датирован 2026-04-06. Расхождения с реальностью:
+
+| Заявление в `status.md` | Факт |
+|-------------------------|------|
+| ❌ Нет тестов для TreeEngine | ✅ Есть `tree.test.ts` (45 тестов) |
+| 50 компонентов | ~66 |
+| 53 CSS-файлов | 56 |
+| 41 демо-страница | ~480+ файлов в `demos/` (после введения `*/Variant.demo.tsx` паттерна) |
+| Известные проблемы: `Notification.tsx` `useCallback` unused | требует проверки в текущей версии |
+| Известные проблемы: `useField.ts` `onFieldBlur` не существует | требует проверки в текущей версии |
+
+**Решение:** обновить или пометить как archived в Стриме 9.
+
+### 4.4 ARCHITECTURE.md vs реальность
+
+| Заявление | Реальность | Статус |
+|-----------|------------|--------|
+| Префикс form `$meta.` | `FORM_META_PREFIX = '$meta.'` | ✅ совпадает |
+| Префикс table `$table.` | `TABLE_PREFIX = '$table.'` | ✅ совпадает |
+| Префикс tree `$tree.` | `TREE_PREFIX = '$tree.'` | ✅ совпадает |
+| Engines не cross-import | grep подтверждает | ✅ соблюдается |
+| ESLint статически enforce'ит границы | `eslint.config.js` имеет правила | ✅ совпадает |
+| `runtime/` не импортирует `engines/` | grep подтверждает | ✅ соблюдается |
+| Core API заморожен | публичный `index.ts` стабилен | ✅ совпадает |
+| FormEngine API заморожен | API существует и не урезан | ✅ совпадает |
+
+В целом **ARCHITECTURE.md актуален**, расхождений нет.
+
+### 4.5 Subpath entrypoints — путаница с TreeSelect
+
+`packages/react/package.json` декларирует subpath exports:
+- `@skygraph/react` (главный)
+- `@skygraph/react/form` (`form.ts`)
+- `@skygraph/react/table` (`table.ts`)
+- `@skygraph/react/tree` (`tree.ts`)
+- `@skygraph/react/virtual` (`virtual.ts`)
+- `@skygraph/react/datagrid` (`datagrid.ts`)
+- `@skygraph/react/devtools` (`devtools.ts`)
+
+**Проблема:** `TreeSelect` экспортируется по-разному из двух entrypoint:
+
+| Импорт | Реализация | Путь файла |
+|--------|------------|------------|
+| `import { TreeSelect } from '@skygraph/react'` | **UI-версия** (без core) | `components/ui/TreeSelect.tsx` |
+| `import { TreeSelect } from '@skygraph/react/tree'` | **Complex-версия** (с core) | `components/complex/TreeSelect/` |
+
+Это два **разных компонента** с одним именем. Пользователь получит разную семантику в зависимости от пути импорта. Это **серьёзный баг публичного API**.
+
+`Calendar`: экспорт идёт из `ui/Calendar.tsx`, который **реэкспортирует** complex-версию. Не дубль, но `ui/Calendar.tsx` нарушает идею "ui без core" (Calendar внутри использует core через хуки).
+
+**Кандидат на исправление в отдельном стриме (не в текущей очереди):**
+- Решить какая реализация `TreeSelect` основная, удалить вторую.
+- Решить нужен ли `ui/Calendar.tsx` как реэкспорт или унифицировать.
+
+### 4.6 `complex/Transfer/` — мёртвый код
+
+`Transfer` экспортируется в публичном `index.ts` из `components/ui/Transfer`. Сама папка `components/complex/Transfer/` содержит:
+- `Transfer.tsx`
+- `TransferList.tsx`
+- `types.ts`
+- `index.ts`
+
+Эта реализация **не экспортируется ни из одного публичного entrypoint**. Используется только в `__tests__/complex-components.test.tsx`. Это либо забытый рефакторинг (была complex-версия, заменили на ui), либо незавершённая миграция в обратную сторону.
+
+**Кандидат:** удалить `components/complex/Transfer/` или вернуть в публичный API.
+
+### 4.7 CI workflow на ветке `main`, локальная ветка — `master`
+
+`.github/workflows/ci.yml`:
+```yaml
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+```
+
+Локальная ветка — `master`. CI badge в README ссылается на `actions/workflows/ci.yml` — но если репозиторий на GitHub использует `master`, CI **никогда не запустится**. Если основная ветка на удалённом — `main`, тогда расхождение между локальным и удалённым.
+
+**Кандидат:** проверить какая ветка основная на удалённом, привести в соответствие.
+
+### 4.8 README указывает использовать pnpm, но есть `package-lock.json`
+
+Корень репо содержит ОДНОВРЕМЕННО:
+- `pnpm-workspace.yaml` + `pnpm-lock.yaml` (основная система)
+- `package-lock.json` (атавизм npm)
+
+README пишет:
+```bash
+pnpm install
+pnpm build
+pnpm test
+```
+
+`package-lock.json` либо забыт от npm-версии до перехода на pnpm, либо генерируется при случайном `npm install` в корне. **Кандидат:** удалить `package-lock.json`, добавить в `.gitignore`.
+
+### 4.9 README упоминает «428 tests» в двух местах
+
+```markdown
+**Tests** — 282 new tests across UI components, hooks, and adapters (428 total)  ← в CHANGELOG 0.2.0
+428 tests across core + react packages
+  @skygraph/core:  146 tests (form, runtime, engines)
+  @skygraph/react: 282 tests (components, hooks, adapters, a11y)
+```
+
+Цифры одинаковые в README и CHANGELOG[0.2.0]. Релизы были 0.2.0 → 0.3.0, тесты прирастали — но цифра не обновлялась. Кандидат в Стрим 9.
+
+### 4.10 Вердикт
+
+| Категория | Статус |
+|-----------|--------|
+| ARCHITECTURE.md vs реализация | ✅ соответствует |
+| README числа | ⚠ устарели (компоненты, тесты) |
+| docs/status.md | ⚠ заметно устарел (2026-04-06) |
+| Subpath entrypoints | ❌ **баг**: TreeSelect двойной |
+| Complex/Transfer | ❌ мёртвый код |
+| CI vs локальная ветка | ⚠ возможное расхождение main/master |
+| Lockfiles | ⚠ дубль npm + pnpm |
 
 ## 5. Стилевой контракт
 
