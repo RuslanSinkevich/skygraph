@@ -56,6 +56,7 @@ import { CoreApiPage } from './demos/CoreApiPage'
 import { StylingShowcasePage } from './demos/StylingShowcasePage'
 import { DesignTokensPage } from './demos/DesignTokensPage'
 import { ConfigProviderDemo } from './demos/ConfigProviderDemo'
+import { DiagramDemo } from './demos/DiagramDemo'
 
 import { useI18n, LanguageSwitch } from './i18n'
 import type { DemoDict } from './i18n'
@@ -122,6 +123,7 @@ function buildMenu(t: DemoDict): MenuSection[] {
         { key: 'components/table', label: 'Table' },
         { key: 'components/tree', label: 'Tree' },
         { key: 'components/list', label: 'List' },
+        { key: 'components/diagram', label: 'Diagram' },
         { key: 'components/descriptions', label: 'Descriptions' },
         { key: 'components/collapse', label: 'Collapse' },
         { key: 'components/carousel', label: 'Carousel' },
@@ -207,6 +209,7 @@ const pages: Record<string, () => JSX.Element> = {
   'components/timeline': TimelineDemo,
   'components/carousel': CarouselDemo,
   'components/descriptions': DescriptionsDemo,
+  'components/diagram': DiagramDemo,
   'getting-started': GettingStartedPage,
   'styling-showcase': StylingShowcasePage,
   'theming': ThemingPage,
