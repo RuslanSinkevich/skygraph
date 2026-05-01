@@ -39,6 +39,13 @@
 - **`themes/default.css` и `themes/dark.css` — пустые `@import '../tokens.css'`.** Подключение `dark.css` даёт оба theme-селектора, что вводит пользователя в заблуждение. Решить: либо удалить эти файлы, либо вынести в них только соответствующие селекторы темы.
 - **`audit:styles` не интегрирован в CI.** Кандидат: запускать в CI с проверкой что `_audit/styling-audit.md` не изменился, либо в pre-commit.
 
+### a11y и локализация
+
+- **Нет автоматических a11y-тестов.** Кандидат: добавить `@axe-core/react` или `jest-axe` в `packages/react/devDependencies`, написать `a11y.test.tsx` с проверкой основных компонентов. Сделать в Стрим 3.
+- **Гибридная локализация.** Часть компонентов через `ConfigProvider.locale` (Empty, Pagination, Modal, Form, Upload, Transfer, Calendar, Popconfirm), часть через локальный `locale={...}` проп (Table, Tree, DataGrid). Не баг, но кандидат на унификацию или явное документирование. Стрим 9.
+- **Компоненты без локалей в `SgLocale`:** `TreeSelect`, `Cascader`, `Mentions`, `AutoComplete`, `ColorPicker`, `Steps`, `Carousel`, `Result`, `Tabs`, `Drawer`, `Notification`, `Dropdown`, `Menu`, `Breadcrumb`. Если они используют локали — добавить в SgLocale в Стрим 2.
+- **Минорные пробелы a11y по beglyму обзору** (требует ручной проверки в Стрим 3): `Carousel`, `Slider` (мало `aria-value*`), `Switch` (нет явного `role="switch"`), `Mentions` (нет `role="combobox"`), `Segmented` (нет radiogroup), `Cascader` (нет упоминаний), `Empty` (без aria), `VirtualList` (не нашёл).
+
 ### Дубли и путаница в публичном API
 
 - ❌ **TreeSelect — два разных компонента под одним именем.** `import from '@skygraph/react'` даёт UI-версию, `import from '@skygraph/react/tree'` — complex-версию. Серьёзный баг публичного API. Решить: какая основная, удалить вторую. **Отдельный мини-стрим вне основной очереди.**

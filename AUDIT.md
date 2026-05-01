@@ -1125,7 +1125,134 @@ CSS:
 
 ## 9. Локализация и a11y (беглый обзор)
 
-_Заполняется в ходе аудита._
+> Это **беглый** обзор — детальная ревизия делается в Стрим 3 (a11y) и при подготовке Стрима 2 (i18n demo).
+
+### 9.1 Локализация в библиотеке
+
+`@skygraph/react` имеет:
+- `locales/en_US.ts` — английская локаль (по умолчанию).
+- `locales/ru_RU.ts` — русская локаль.
+- `types/locale.ts` — `SgLocale` (контракт всех ключей).
+
+Текущий состав ключей (по `en_US.ts`):
+
+| Раздел | Покрытые компоненты |
+|--------|--------------------|
+| `empty` | `Empty` |
+| `pagination` | `Pagination` |
+| `popconfirm` | `Popconfirm` |
+| `modal` | `Modal` |
+| `form` | `Form`, `SchemaForm` |
+| `upload` | `Upload` |
+| `transfer` | `Transfer` |
+| `calendar` | `Calendar` |
+
+Подключение через `<ConfigProvider locale={...}>`.
+
+**Что НЕ покрыто локалями (имеют свои локальные строки или хардкод):**
+- `Table` (имеет `TableLocale` — отдельный per-prop, не через ConfigProvider).
+- `Tree` (имеет `TreeLocale` — то же).
+- `DataGrid` (имеет `DataGridLocale`).
+- `TreeSelect`, `Cascader`, `Mentions`, `AutoComplete`, `ColorPicker`, `Steps`, `Carousel`, `Result`, `Tabs`, `Drawer`, `Notification`, `Dropdown`, `Menu`, `Breadcrumb`.
+
+Гибридная схема: часть локалей через `ConfigProvider.locale`, часть — через прямой проп `locale={...}` в компоненте. Это **не нарушение**, но создаёт две разные точки настройки локализации.
+
+**Кандидат для отдельного стрима:** унифицировать локализацию — все строки через ConfigProvider.locale, или хотя бы зафиксировать раскол в `styling-contract.md` / `docs/components.md`.
+
+### 9.2 a11y — статистика
+
+#### Использование ARIA-атрибутов
+
+Файлов с `aria-(label|describedby|labelledby|live|expanded|selected|checked|disabled|hidden|haspopup|controls|current|sort|busy|invalid|required)`:
+
+**47 компонентов.** Самые активные:
+- `complex/AutoField` — 17
+- `complex/Table/TableHeader` — 12
+- `complex/Tree` (Tree + TreeNodeRow) — 8
+- `ui/Input` — 9
+- `ui/Menu` — 8
+- `ui/InputPassword` — 7
+- `ui/TreeSelect` — 7
+- `ui/Modal` — 6, `ui/Drawer` — 6, `complex/Field` — 6
+- `ui/Pagination` — 5, `ui/Tooltip` — 5
+
+#### Использование `role=*`
+
+Файлов с явными ARIA-ролями (button|dialog|menu|listbox|option|tab|tooltip|status|alert|combobox|...):
+
+**~36 компонентов.** Самые активные:
+- `complex/Table/TableHeader` — 12
+- `complex/Table/Table` — 9
+- `ui/Menu` — 9
+- `complex/DataGrid/DataGrid` — 7
+- `ui/Tabs` — 6
+- `ui/Tree/Tree` — 4
+- `ui/Notification` — 2
+- `ui/Modal` — 2
+
+#### a11y-хуки в `hooks/a11y/`
+
+- `useFocusTrap(active)` — ловушка фокуса для модалок/drawers.
+- `useRovingTabIndex(options)` — roving tabindex для таб-групп / меню.
+- `useListNavigation(options)` — клавиши Up/Down/Home/End для списков.
+
+Все три экспортированы публично через `index.ts`.
+
+### 9.3 Что точно покрыто a11y (по beglyму обзору)
+
+✅ Покрыто:
+- Form / Field / SubmitButton (`required`, `aria-invalid`, фидбэк)
+- Table / TableHeader / DataGrid (role=row/cell, aria-sort)
+- Tree (role=tree, aria-expanded, aria-selected)
+- Menu / Tabs / Tooltip (roving + role)
+- Modal / Drawer (focus trap)
+- Pagination (aria-current, aria-label)
+
+⚠ Требует проверки в Стриме 3:
+- `Carousel` (3 role/aria) — достаточно ли для "carousel" pattern?
+- `Steps` (1 role/aria) — должен быть `aria-current` на активном шаге, проверить.
+- `Rate` (3 aria) — должна быть keyboard навигация стрелками.
+- `Slider` (1 aria) — мало для slider'а, обычно нужно `aria-valuemin/max/now`.
+- `ColorPicker` (2 aria) — palette должна быть navigable.
+- `Mentions` (1 aria) — combobox с tags, нужен `role="combobox"` + `aria-autocomplete`.
+- `Switch` (2 aria) — обычно `role="switch"` + `aria-checked`.
+- `Segmented` (1 aria, 3 role) — должен быть как radiogroup.
+- `Cascader` — не нашёл прямых упоминаний (не в списке) — потенциально без a11y.
+- `TimePicker` (3 aria, 1 role) — мало.
+
+❌ Без a11y (по grep):
+- `ui/Empty.tsx` — есть только `role` (2 совпадения, без aria-*).
+- `complex/VirtualList` — не нашёл (виртуализированный список без role="listbox" — возможно).
+
+(Числа из grep могут быть приблизительные — точная проверка в Стриме 3.)
+
+### 9.4 Тесты a11y
+
+В `__tests__/styling-contract.test.tsx` (13 тестов) — частично проверяет CSS-контракт, не полный a11y.
+
+В `__tests__/components.test.tsx`, `complex-components.test.tsx` — большинство тестов на функциональность, не на ARIA.
+
+**Нет специализированного `a11y.test.tsx`** или интеграции с `@axe-core/react` / `jest-axe`. Это проблема — автоматического a11y-регресса нет.
+
+**Кандидат:** в Стрим 3 добавить `@axe-core/react` тесты на каждый компонент.
+
+### 9.5 README заявляет «ARIA на всех 24+»
+
+Из `CHANGELOG[0.2.0]`:
+> ARIA attributes on 24+ components, keyboard navigation for Select, Dropdown, AutoComplete, Menu, Tabs, Rate, Slider
+
+Фактически покрыто **намного больше** компонентов (~47 файлов с aria, ~36 с role). Это **прирост** с того релиза, не отставание. Хорошо.
+
+### 9.6 Вердикт по a11y и локализации
+
+| Категория | Состояние |
+|-----------|-----------|
+| `SgLocale` контракт + en_US/ru_RU | ✅ есть, но покрывает только 8 компонентов |
+| Гибридная локализация (ConfigProvider + per-prop) | ⚠ норма для library, но требует документации |
+| a11y покрытие компонентов | ✅ 47/66 имеют aria, 36/66 имеют role |
+| Хуки a11y | ✅ useFocusTrap / useRovingTabIndex / useListNavigation |
+| Автоматические a11y-тесты (axe-core) | ❌ отсутствуют |
+| Полная ревизия по компонентам | ❌ нужен Стрим 3 |
 
 ## 10. Приоритизация исправлений
 
