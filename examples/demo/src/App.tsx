@@ -57,96 +57,108 @@ import { StylingShowcasePage } from './demos/StylingShowcasePage'
 import { DesignTokensPage } from './demos/DesignTokensPage'
 import { ConfigProviderDemo } from './demos/ConfigProviderDemo'
 
+import { useI18n, LanguageSwitch } from './i18n'
+import type { DemoDict } from './i18n'
+
 // ---------------------------------------------------------------------------
 
 type MenuItem = { key: string; label: string; disabled?: boolean }
 type MenuSection = { title: string; items: MenuItem[] }
 
-const menu: MenuSection[] = [
-  {
-    title: 'Guide',
-    items: [
-      { key: 'overview', label: 'Overview' },
-      { key: 'getting-started', label: 'Getting Started' },
-      { key: 'styling-showcase', label: 'Styling Showcase' },
-      { key: 'theming', label: 'Theming' },
-      { key: 'design-tokens', label: 'Design Tokens' },
-      { key: 'core-api', label: 'Core API' },
-      { key: 'config-provider', label: 'ConfigProvider' },
-    ],
-  },
-  {
-    title: 'General',
-    items: [
-      { key: 'components/button', label: 'Button' },
-      { key: 'components/spin', label: 'Spin' },
-    ],
-  },
-  {
-    title: 'Data Entry',
-    items: [
-      { key: 'components/input', label: 'Input' },
-      { key: 'components/inputnumber', label: 'InputNumber' },
-      { key: 'components/select', label: 'Select' },
-      { key: 'components/autocomplete', label: 'AutoComplete' },
-      { key: 'components/checkbox', label: 'Checkbox' },
-      { key: 'components/radio', label: 'Radio' },
-      { key: 'components/switch', label: 'Switch' },
-      { key: 'components/slider', label: 'Slider' },
-      { key: 'components/rate', label: 'Rate' },
-      { key: 'components/colorpicker', label: 'ColorPicker' },
-      { key: 'components/datepicker', label: 'DatePicker' },
-      { key: 'components/timepicker', label: 'TimePicker' },
-      { key: 'components/upload', label: 'Upload' },
-      { key: 'components/cascader', label: 'Cascader' },
-      { key: 'components/treeselect', label: 'TreeSelect' },
-      { key: 'components/transfer', label: 'Transfer' },
-      { key: 'components/calendar', label: 'Calendar' },
-      { key: 'components/form', label: 'Form' },
-    ],
-  },
-  {
-    title: 'Data Display',
-    items: [
-      { key: 'components/table', label: 'Table' },
-      { key: 'components/tree', label: 'Tree' },
-      { key: 'components/list', label: 'List' },
-      { key: 'components/descriptions', label: 'Descriptions' },
-      { key: 'components/collapse', label: 'Collapse' },
-      { key: 'components/carousel', label: 'Carousel' },
-      { key: 'components/badge', label: 'Badge' },
-      { key: 'components/tag', label: 'Tag' },
-      { key: 'components/avatar', label: 'Avatar' },
-      { key: 'components/tooltip', label: 'Tooltip' },
-      { key: 'components/timeline', label: 'Timeline' },
-    ],
-  },
-  {
-    title: 'Feedback',
-    items: [
-      { key: 'components/modal', label: 'Modal' },
-      { key: 'components/drawer', label: 'Drawer' },
-      { key: 'components/notification', label: 'Notification' },
-      { key: 'components/popconfirm', label: 'Popconfirm' },
-      { key: 'components/progress', label: 'Progress' },
-      { key: 'components/result', label: 'Result' },
-      { key: 'components/skeleton', label: 'Skeleton' },
-      { key: 'components/empty', label: 'Empty' },
-    ],
-  },
-  {
-    title: 'Navigation',
-    items: [
-      { key: 'components/tabs', label: 'Tabs' },
-      { key: 'components/menu', label: 'Menu' },
-      { key: 'components/breadcrumb', label: 'Breadcrumb' },
-      { key: 'components/dropdown', label: 'Dropdown' },
-      { key: 'components/pagination', label: 'Pagination' },
-      { key: 'components/steps', label: 'Steps' },
-      { key: 'components/segmented', label: 'Segmented' },
-    ],
-  },
-]
+/**
+ * Build the sidebar menu for the current locale.
+ *
+ * Component names ("Button", "Input", "Modal", ...) are technical terms and
+ * stay the same in both languages — only group titles and Guide entries are
+ * localized.
+ */
+function buildMenu(t: DemoDict): MenuSection[] {
+  return [
+    {
+      title: t.menuSections.guide,
+      items: [
+        { key: 'overview', label: t.menuItems.overview },
+        { key: 'getting-started', label: t.menuItems.gettingStarted },
+        { key: 'styling-showcase', label: t.menuItems.stylingShowcase },
+        { key: 'theming', label: t.menuItems.theming },
+        { key: 'design-tokens', label: t.menuItems.designTokens },
+        { key: 'core-api', label: t.menuItems.coreApi },
+        { key: 'config-provider', label: t.menuItems.configProvider },
+      ],
+    },
+    {
+      title: t.menuSections.general,
+      items: [
+        { key: 'components/button', label: 'Button' },
+        { key: 'components/spin', label: 'Spin' },
+      ],
+    },
+    {
+      title: t.menuSections.dataEntry,
+      items: [
+        { key: 'components/input', label: 'Input' },
+        { key: 'components/inputnumber', label: 'InputNumber' },
+        { key: 'components/select', label: 'Select' },
+        { key: 'components/autocomplete', label: 'AutoComplete' },
+        { key: 'components/checkbox', label: 'Checkbox' },
+        { key: 'components/radio', label: 'Radio' },
+        { key: 'components/switch', label: 'Switch' },
+        { key: 'components/slider', label: 'Slider' },
+        { key: 'components/rate', label: 'Rate' },
+        { key: 'components/colorpicker', label: 'ColorPicker' },
+        { key: 'components/datepicker', label: 'DatePicker' },
+        { key: 'components/timepicker', label: 'TimePicker' },
+        { key: 'components/upload', label: 'Upload' },
+        { key: 'components/cascader', label: 'Cascader' },
+        { key: 'components/treeselect', label: 'TreeSelect' },
+        { key: 'components/transfer', label: 'Transfer' },
+        { key: 'components/calendar', label: 'Calendar' },
+        { key: 'components/form', label: 'Form' },
+      ],
+    },
+    {
+      title: t.menuSections.dataDisplay,
+      items: [
+        { key: 'components/table', label: 'Table' },
+        { key: 'components/tree', label: 'Tree' },
+        { key: 'components/list', label: 'List' },
+        { key: 'components/descriptions', label: 'Descriptions' },
+        { key: 'components/collapse', label: 'Collapse' },
+        { key: 'components/carousel', label: 'Carousel' },
+        { key: 'components/badge', label: 'Badge' },
+        { key: 'components/tag', label: 'Tag' },
+        { key: 'components/avatar', label: 'Avatar' },
+        { key: 'components/tooltip', label: 'Tooltip' },
+        { key: 'components/timeline', label: 'Timeline' },
+      ],
+    },
+    {
+      title: t.menuSections.feedback,
+      items: [
+        { key: 'components/modal', label: 'Modal' },
+        { key: 'components/drawer', label: 'Drawer' },
+        { key: 'components/notification', label: 'Notification' },
+        { key: 'components/popconfirm', label: 'Popconfirm' },
+        { key: 'components/progress', label: 'Progress' },
+        { key: 'components/result', label: 'Result' },
+        { key: 'components/skeleton', label: 'Skeleton' },
+        { key: 'components/empty', label: 'Empty' },
+      ],
+    },
+    {
+      title: t.menuSections.navigation,
+      items: [
+        { key: 'components/tabs', label: 'Tabs' },
+        { key: 'components/menu', label: 'Menu' },
+        { key: 'components/breadcrumb', label: 'Breadcrumb' },
+        { key: 'components/dropdown', label: 'Dropdown' },
+        { key: 'components/pagination', label: 'Pagination' },
+        { key: 'components/steps', label: 'Steps' },
+        { key: 'components/segmented', label: 'Segmented' },
+      ],
+    },
+  ]
+}
 
 const pages: Record<string, () => JSX.Element> = {
   'components/spin': SpinDemo,
@@ -219,46 +231,40 @@ function navigate(key: string) {
 const COMPONENT_COUNT = Object.keys(pages).filter(k => k.startsWith('components/')).length
 
 function Overview() {
+  const { t } = useI18n()
+  const menu = useMemo(() => buildMenu(t), [t])
+
   return (
     <section className="doc-page">
       <div className="doc-hero">
-        <h1>SkyGraph</h1>
-        <p className="doc-hero-tagline">Reactive UI Library</p>
-        <p className="doc-hero-sub">
-          Headless reactive core + 50+ styled components.
-          TypeScript-first. Zero runtime CSS-in-JS.
-        </p>
+        <h1>{t.app.appTitle}</h1>
+        <p className="doc-hero-tagline">{t.app.tagline}</p>
+        <p className="doc-hero-sub">{t.app.heroSub}</p>
         <pre className="doc-code doc-hero-install"><code>npm install @skygraph/core @skygraph/react</code></pre>
       </div>
 
       <div className="doc-features">
         <div className="doc-feature-card">
           <div className="doc-feature-icon">⚡</div>
-          <strong>Reactive Core</strong>
-          <span>
-            Fine-grained subscriptions. Batch updates. No re-render waterfalls.
-          </span>
+          <strong>{t.features.reactiveCoreTitle}</strong>
+          <span>{t.features.reactiveCoreDesc}</span>
         </div>
         <div className="doc-feature-card">
           <div className="doc-feature-icon">🧩</div>
-          <strong>{COMPONENT_COUNT}+ Components</strong>
-          <span>
-            Forms, tables, trees, modals, pickers — production-ready out of the box.
-          </span>
+          <strong>{COMPONENT_COUNT}{t.app.componentsBadgeSuffix}</strong>
+          <span>{t.features.componentsDesc}</span>
         </div>
         <div className="doc-feature-card">
           <div className="doc-feature-icon">🎨</div>
-          <strong>Zero Runtime CSS</strong>
-          <span>
-            Pure CSS variables. Dark mode in one attribute. No styled-components.
-          </span>
+          <strong>{t.features.zeroRuntimeTitle}</strong>
+          <span>{t.features.zeroRuntimeDesc}</span>
         </div>
       </div>
 
-      <h2>Browse Components</h2>
+      <h2>{t.overview.browseHeading}</h2>
       <div className="demo-overview-grid">
         {menu
-          .filter(s => s.title !== 'Guide')
+          .filter(s => s.title !== t.menuSections.guide)
           .map(section => (
             section.items
               .filter(m => !m.disabled)
@@ -281,6 +287,7 @@ function Overview() {
 // ---------------------------------------------------------------------------
 
 export default function App() {
+  const { t } = useI18n()
   const [route, setRoute] = useState(getHashRoute)
   const [query, setQuery] = useState('')
 
@@ -289,6 +296,8 @@ export default function App() {
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
+
+  const menu = useMemo(() => buildMenu(t), [t])
 
   const Page = useMemo(() => {
     if (route === 'overview') return Overview
@@ -304,7 +313,7 @@ export default function App() {
         items: s.items.filter(i => i.label.toLowerCase().includes(q)),
       }))
       .filter(s => s.items.length > 0)
-  }, [query])
+  }, [query, menu])
 
   return (
     <div className="demo-layout">
@@ -315,20 +324,20 @@ export default function App() {
           style={{ cursor: 'pointer' }}
         >
           <span className="demo-logo-dot" />
-          SkyGraph
+          {t.app.appTitle}
         </div>
         <div className="demo-search">
           <input
-            placeholder="Search components…"
+            placeholder={t.search.placeholder}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search components"
+            aria-label={t.search.ariaLabel}
           />
         </div>
         <nav className="demo-nav">
           {filteredMenu.length === 0 && (
             <div style={{ padding: '16px 20px', fontSize: 12, opacity: 0.6 }}>
-              No matches.
+              {t.search.noMatches}
             </div>
           )}
           {filteredMenu.map(section => (
@@ -354,6 +363,7 @@ export default function App() {
         </nav>
         <div className="demo-sidebar-footer">
           <ThemeToggle />
+          <LanguageSwitch />
           <span style={{ fontSize: 11, color: 'var(--sg-color-text-tertiary)' }}>
             v0.3
           </span>
@@ -362,20 +372,20 @@ export default function App() {
       <main className="demo-main">
         <div className="demo-topbar">
           <a href="#/styling-showcase" onClick={(e) => { e.preventDefault(); navigate('styling-showcase') }}>
-            Styling Showcase
+            {t.topbar.stylingShowcase}
           </a>
           <a href="#/theming" onClick={(e) => { e.preventDefault(); navigate('theming') }}>
-            Theming
+            {t.topbar.theming}
           </a>
           <a href="#/getting-started" onClick={(e) => { e.preventDefault(); navigate('getting-started') }}>
-            Getting Started
+            {t.topbar.gettingStarted}
           </a>
           <a
             href="https://github.com/skygraph/skygraph"
             target="_blank"
             rel="noreferrer noopener"
           >
-            GitHub
+            {t.topbar.github}
           </a>
           <span style={{ flex: 1 }} />
           <ThemeToggle />

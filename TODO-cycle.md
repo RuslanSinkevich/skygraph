@@ -5,6 +5,36 @@
 
 ---
 
+## От Стрима 2 (i18n demo) — найденные существующие проблемы (не от моих правок)
+
+- **`packages/react/src/components/complex/SchemaForm.tsx:75`** — `react-hooks/rules-of-hooks` ошибка: `useConfig` вызван условно. Существовало до Стрима 2. Кандидат в мини-стрим cleanup или в Стрим 9.
+- **`packages/react/src/components/ui/TagInput.tsx:90`** — `prefer-const` ошибка: `next` никогда не переприсваивается. Существовало до Стрима 2.
+- **`packages/react/src/components/complex/Table/Table.tsx:87`** — warning `react-hooks/exhaustive-deps` про `rowNumConfig`.
+- **`packages/react/src/components/complex/Tree/Tree.tsx:420`** — warning про missing deps в useCallback.
+- **`packages/react/src/components/ui/DatePicker.tsx:980`** — warning unused eslint-disable directive.
+- **TS-ошибки в demo**, существовавшие до стрима (в файлах из git status как `M`/`MM`/`AM`):
+  - `CollapseDemo.tsx`, `ProgressDemo.tsx`, `ResultDemo.tsx` — `'required'` не существует в `PropDef`. Видимо, тип `PropDef` менялся, а демо не обновили.
+  - `config-provider/Locale.demo.tsx`, `datepicker/RussianLocale.demo.tsx` — пытаются импортировать `en_US`/`ru_RU` из `@skygraph/react`, но они не экспортированы (хотя в `packages/react/src/index.ts` строка 19 их экспортирует! — ❓ возможно `dist/` устарел).
+  - `descriptions/data.ts`, `timeline/data.ts` — пытаются импортировать `DescriptionsItem`/`TimelineItem`, не экспортированные.
+  - `steps/data.ts` — `StepItem` declared locally, but not exported.
+  - `Modal` — отсутствует prop `onOk` (видимо переименован).
+  - `Tabs` — отсутствует prop `type`.
+  - `config-provider/Bordered.demo.tsx` — `id: number` несовместим с `id: string` в `Record<string, unknown>` контракте.
+
+Всё это нужно почистить в **отдельном мини-стриме «починить уже сломанный demo build»** или в Стрим 4 (рефакторинг showcases).
+
+## От Стрима 2 (i18n demo)
+
+- **Локализация отдельных demo-страниц.** В `examples/demo/src/demos/` ~480 файлов с хардкодными английскими строками (заголовки `ComponentDoc`, описания `whenToUse`, hint'ы `DemoBox`, описания `PropsTable`/`CssVarsTable`). В Стрим 2 сделана только инфраструктура + локализация шапки/меню/Overview. Оставшиеся страницы — серия мини-стримов:
+  - Мини-стрим 2a: главные `*Page.tsx` (StylingShowcasePage, DesignTokensPage, GettingStartedPage, ThemingPage, CoreApiPage, ConfigProviderDemo).
+  - Мини-стрим 2b: страницы Form (FormDemo, FormComponentsDemo, ConfigProvider locale demo).
+  - Мини-стрим 2c: страницы Table / Tree / List / DataGrid.
+  - Мини-стрим 2d: остальные XxxDemo.tsx (40+).
+  - Мини-стрим 2e: маленькие `<comp>/<Variant>.demo.tsx` (~440 файлов — описания внутри маленьких демо обычно очень короткие, можно проходом).
+- **`PropsTable` и `CssVarsTable`** — компоненты в `examples/demo/src/components/`. У них есть фиксированные строки заголовков, кнопок, ariaLabels — добавить их ключи в `DemoDict` (мини-стрим 2a).
+- **`examples/showcases/`** — отдельная задача, попадает в Стрим 4 (рефакторинг showcases). Локализация showcases там же.
+- **`@skygraph/react/locales/en_US.ts` и `ru_RU.ts`** — это локали **самой библиотеки** (не demo). Можно подключить их вместе с `ConfigProvider locale={ru_RU}` при выборе языка. Пока не реализовано — записан как кандидат для следующего мини-стрима.
+
 ## От Стрима 1 (Аудит)
 
 ### Архитектура
