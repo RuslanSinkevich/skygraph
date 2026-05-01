@@ -62,4 +62,37 @@ export const en: DemoDict = {
     en: 'English',
     ru: 'Русский',
   },
+
+  propsTable: {
+    titleApi: 'API',
+    colProperty: 'Property',
+    colDescription: 'Description',
+    colType: 'Type',
+    colDefault: 'Default',
+    requiredLabel: 'required',
+  },
+
+  cssVarsTable: {
+    title: 'CSS Variables',
+    colVariable: 'Variable',
+    colDefault: 'Default',
+    colDescription: 'Description',
+  },
+
+  demoBox: {
+    toolbarLabel: 'Demo actions',
+    showCode: 'Show Code',
+    hideCode: 'Hide Code',
+    showCodeAria: 'Show code',
+    hideCodeAria: 'Hide code',
+    copyCode: 'Copy code',
+    copy: 'Copy',
+    copied: 'Copied',
+    copiedToast: 'Copied!',
+  },
+
+  componentDoc: {
+    whenToUse: 'When To Use',
+    examples: 'Examples',
+  },
 }

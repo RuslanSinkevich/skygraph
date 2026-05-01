@@ -1,3 +1,5 @@
+import { useI18n } from '../i18n'
+
 export interface PropDef {
   name: string
   description: string
@@ -12,17 +14,20 @@ export interface PropsTableProps {
   data: PropDef[]
 }
 
-export function PropsTable({ title = 'API', data }: PropsTableProps) {
+export function PropsTable({ title, data }: PropsTableProps) {
+  const { t } = useI18n()
+  const heading = title ?? t.propsTable.titleApi
+
   return (
     <div className="demo-props-section">
-      <h3 className="demo-props-title">{title}</h3>
+      <h3 className="demo-props-title">{heading}</h3>
       <table className="doc-table">
         <thead>
           <tr>
-            <th>Property</th>
-            <th>Description</th>
-            <th>Type</th>
-            <th>Default</th>
+            <th>{t.propsTable.colProperty}</th>
+            <th>{t.propsTable.colDescription}</th>
+            <th>{t.propsTable.colType}</th>
+            <th>{t.propsTable.colDefault}</th>
           </tr>
         </thead>
         <tbody>
@@ -30,7 +35,11 @@ export function PropsTable({ title = 'API', data }: PropsTableProps) {
             <tr key={prop.name}>
               <td>
                 <code>{prop.name}</code>
-                {prop.required ? <span aria-label="required" style={{ color: 'var(--sg-color-error)' }}> *</span> : null}
+                {prop.required ? (
+                  <span aria-label={t.propsTable.requiredLabel} style={{ color: 'var(--sg-color-error)' }}>
+                    {' *'}
+                  </span>
+                ) : null}
               </td>
               <td>{prop.description}</td>
               <td><code>{prop.type}</code></td>

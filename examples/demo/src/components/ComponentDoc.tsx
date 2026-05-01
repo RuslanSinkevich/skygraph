@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useI18n } from '../i18n'
 
 export interface ComponentDocProps {
   title: string
@@ -22,6 +23,7 @@ export function ComponentDoc({
   notes,
   children,
 }: ComponentDocProps) {
+  const { t } = useI18n()
   return (
     <section className="doc-page">
       {crumbs && crumbs.length > 0 && (
@@ -45,7 +47,7 @@ export function ComponentDoc({
 
       {whenToUse && whenToUse.length > 0 && (
         <div className="doc-when-to-use">
-          <h2>When To Use</h2>
+          <h2>{t.componentDoc.whenToUse}</h2>
           <ul>
             {whenToUse.map((item, i) => (
               <li key={i}>{item}</li>
@@ -56,7 +58,7 @@ export function ComponentDoc({
 
       {notes && <div className="doc-notes">{notes}</div>}
 
-      <h2>Examples</h2>
+      <h2>{t.componentDoc.examples}</h2>
       <div className="doc-demos">{children}</div>
     </section>
   )

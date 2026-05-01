@@ -1,14 +1,9 @@
+import { useI18n } from '../i18n'
+
 /**
  * Documents CSS custom properties exposed by a component. Keep one entry
  * per overridable token — if the token is set by the component itself but
  * not meant to be tweaked, don't list it.
- *
- * Override a variable anywhere above the component in the DOM and it
- * cascades in:
- *
- *    <div style={{ '--sg-table-header-bg': '#f0f5ff' } as any}>
- *      <Table ... />
- *    </div>
  */
 export interface CssVarDef {
   /** Variable name without the leading `--`. */
@@ -26,16 +21,15 @@ export interface CssVarsTableProps {
   data: CssVarDef[]
 }
 
-export function CssVarsTable({
-  title = 'CSS Variables',
-  hint,
-  data,
-}: CssVarsTableProps) {
+export function CssVarsTable({ title, hint, data }: CssVarsTableProps) {
+  const { t } = useI18n()
   if (data.length === 0) return null
+
+  const heading = title ?? t.cssVarsTable.title
 
   return (
     <div className="demo-props-section">
-      <h3 className="demo-props-title">{title}</h3>
+      <h3 className="demo-props-title">{heading}</h3>
       {hint && (
         <p
           style={{
@@ -50,9 +44,9 @@ export function CssVarsTable({
       <table className="doc-table">
         <thead>
           <tr>
-            <th style={{ width: '30%' }}>Variable</th>
-            <th style={{ width: '28%' }}>Default</th>
-            <th>Description</th>
+            <th style={{ width: '30%' }}>{t.cssVarsTable.colVariable}</th>
+            <th style={{ width: '28%' }}>{t.cssVarsTable.colDefault}</th>
+            <th>{t.cssVarsTable.colDescription}</th>
           </tr>
         </thead>
         <tbody>

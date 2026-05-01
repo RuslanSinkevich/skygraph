@@ -62,4 +62,37 @@ export const ru: DemoDict = {
     en: 'English',
     ru: 'Русский',
   },
+
+  propsTable: {
+    titleApi: 'API',
+    colProperty: 'Свойство',
+    colDescription: 'Описание',
+    colType: 'Тип',
+    colDefault: 'По умолчанию',
+    requiredLabel: 'обязательное',
+  },
+
+  cssVarsTable: {
+    title: 'CSS-переменные',
+    colVariable: 'Переменная',
+    colDefault: 'По умолчанию',
+    colDescription: 'Описание',
+  },
+
+  demoBox: {
+    toolbarLabel: 'Действия демо',
+    showCode: 'Показать код',
+    hideCode: 'Скрыть код',
+    showCodeAria: 'Показать код',
+    hideCodeAria: 'Скрыть код',
+    copyCode: 'Скопировать код',
+    copy: 'Копировать',
+    copied: 'Скопировано',
+    copiedToast: 'Скопировано!',
+  },
+
+  componentDoc: {
+    whenToUse: 'Когда использовать',
+    examples: 'Примеры',
+  },
 }

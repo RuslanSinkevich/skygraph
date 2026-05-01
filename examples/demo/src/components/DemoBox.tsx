@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { useI18n } from '../i18n'
 
 export interface DemoBoxProps {
   title: string
@@ -22,6 +23,7 @@ export function DemoBox({
   flush = false,
   vertical = false,
 }: DemoBoxProps) {
+  const { t } = useI18n()
   const [open, setOpen] = useState(defaultOpen)
   const [copied, setCopied] = useState(false)
   const codeRef = useRef<HTMLPreElement>(null)
@@ -58,26 +60,26 @@ export function DemoBox({
       </div>
 
       {hasCode && (
-        <div className="demo-box-actions" role="toolbar" aria-label="Demo actions">
+        <div className="demo-box-actions" role="toolbar" aria-label={t.demoBox.toolbarLabel}>
           <button
             className="demo-box-action"
             onClick={copy}
-            aria-label="Copy code"
+            aria-label={t.demoBox.copyCode}
             type="button"
-            title={copied ? 'Copied!' : 'Copy code'}
+            title={copied ? t.demoBox.copiedToast : t.demoBox.copyCode}
           >
             <span aria-hidden>{copied ? '✓' : '⎘'}</span>
-            <span>{copied ? 'Copied' : 'Copy'}</span>
+            <span>{copied ? t.demoBox.copied : t.demoBox.copy}</span>
           </button>
           <button
             className="demo-box-action"
             onClick={() => setOpen(!open)}
             aria-expanded={open}
-            aria-label={open ? 'Hide code' : 'Show code'}
+            aria-label={open ? t.demoBox.hideCodeAria : t.demoBox.showCodeAria}
             type="button"
           >
             <span aria-hidden>{open ? '⌃' : '⌄'}</span>
-            <span>{open ? 'Hide Code' : 'Show Code'}</span>
+            <span>{open ? t.demoBox.hideCode : t.demoBox.showCode}</span>
           </button>
         </div>
       )}

@@ -76,4 +76,37 @@ export interface DemoDict {
     en: string
     ru: string
   }
+
+  propsTable: {
+    titleApi: string
+    colProperty: string
+    colDescription: string
+    colType: string
+    colDefault: string
+    requiredLabel: string
+  }
+
+  cssVarsTable: {
+    title: string
+    colVariable: string
+    colDefault: string
+    colDescription: string
+  }
+
+  demoBox: {
+    toolbarLabel: string
+    showCode: string
+    hideCode: string
+    showCodeAria: string
+    hideCodeAria: string
+    copyCode: string
+    copy: string
+    copied: string
+    copiedToast: string
+  }
+
+  componentDoc: {
+    whenToUse: string
+    examples: string
+  }
 }
