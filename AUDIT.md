@@ -306,7 +306,131 @@ ignores: ['**/dist/', '**/node_modules/', 'examples/']
 
 ## 3. Состояние тестов и покрытие
 
-_Заполняется в ходе аудита._
+### 3.1 Запуск (фактически)
+
+Команда: `pnpm -r test`
+
+```
+packages/core test:  RUN  v2.1.9
+  ✓ core.test.ts            (20 tests)  16ms
+  ✓ table-extended.test.ts  (20 tests)  16ms
+  ✓ middleware.test.ts      (17 tests)  13ms
+  ✓ tree.test.ts            (45 tests)  30ms
+  ✓ form-extended.test.ts   (28 tests)  275ms
+  ✓ form.test.ts            (19 tests)  336ms
+  ✓ virtual.test.ts         (18 tests)  8ms
+  ✓ history.test.ts         (15 tests)  151ms
+  ✓ typed.test.ts           (5 tests)   7ms
+  ✓ benchmark.test.ts       (8 tests)   151ms
+  ✓ table.test.ts           (22 tests)  11013ms  ⚠
+  Test Files  11 passed (11)
+       Tests  217 passed (217)
+    Duration  12.58s
+
+packages/react test:  RUN  v2.1.9
+  ✓ jsonSchemaAdapter.test.ts     (8 tests)
+  ✓ hooks.test.tsx                (23 tests)
+  ✓ new-components.test.tsx       (20 tests)
+  ✓ components.test.tsx           (49 tests)
+  ✓ zodAdapter.test.ts            (5 tests)
+  ✓ styling-contract.test.tsx     (13 tests)
+  ✓ export.test.ts                (5 tests)
+  ✓ ui-components.test.tsx        (103 tests)
+  ✓ complex-components.test.tsx   (54 tests)
+  Test Files  9 passed (9)
+       Tests  280 passed (280)
+    Duration  6.91s
+```
+
+**Все тесты зелёные.**
+
+### 3.2 Сводка
+
+| Метрика | Core | React | Всего |
+|---------|------|-------|-------|
+| Тестовых файлов | 11 | 9 | **20** |
+| Тестов (it/test) | 217 | 280 | **497** |
+| Время (быстрее на холодном запуске) | 12.58s | 6.91s | ~19.5s |
+
+### 3.3 Расхождение с заявленным числом
+
+`README.md` пишет **«428 tests across core + react»** (146 + 282).
+
+Фактически:
+- **core: 217** (заявлено 146 — недосчитали 71)
+- **react: 280** (заявлено 282 — почти совпало, ±2)
+- **всего: 497** (заявлено 428 — недосчитали 69)
+
+Скорее всего цифра в README заморожена с релиза 0.3.0 / Unreleased и не обновлялась. Кандидат в Стрим 9 (доки).
+
+### 3.4 Покрытие по модулям
+
+Косвенное покрытие (по наличию специализированного теста):
+
+| Модуль | Тестовый файл | Покрытие |
+|--------|----------------|----------|
+| `runtime/Store` | `core.test.ts` (через Core API) | косвенное |
+| `runtime/Batch` | `core.test.ts` | косвенное |
+| `runtime/Transaction` | `core.test.ts` | косвенное |
+| `runtime/ComputedEngine` | `core.test.ts` | косвенное |
+| `runtime/Scheduler` | `core.test.ts` | косвенное |
+| `runtime/CycleDetector` | — | **только через core** |
+| `runtime/SubscriptionEngine` | — | **только через core** |
+| `engines/form/FormEngine` | `form.test.ts` + `form-extended.test.ts` | **47 тестов** |
+| `engines/table/TableEngine` | `table.test.ts` + `table-extended.test.ts` | **42 теста** |
+| `engines/tree/TreeEngine` | `tree.test.ts` | **45 тестов** |
+| `engines/virtual/VirtualEngine` | `virtual.test.ts` | **18 тестов** |
+| `middleware/*` | `middleware.test.ts` | **17 тестов** |
+| `plugins/history` | `history.test.ts` | **15 тестов** |
+| `typed.ts` (TypedCore) | `typed.test.ts` | **5 тестов** |
+| `*` (производительность) | `benchmark.test.ts` | **8 тестов** |
+
+> ⚠ Замечание: `docs/status.md` ошибочно заявляет «❌ Нет тестов для TreeEngine». Фактически — 45 тестов в `tree.test.ts`. Расхождение в Секции 4.
+
+### 3.5 Покрытие React-пакета
+
+| Область | Тесты |
+|---------|-------|
+| UI-компоненты | `ui-components.test.tsx` (103) + `components.test.tsx` (49) + `new-components.test.tsx` (20) |
+| Complex-компоненты | `complex-components.test.tsx` (54) |
+| Хуки | `hooks.test.tsx` (23) |
+| Адаптеры | `jsonSchemaAdapter.test.ts` (8) + `zodAdapter.test.ts` (5) |
+| Стилевой контракт | `styling-contract.test.tsx` (13) |
+| Экспорт CSV/TSV | `export.test.ts` (5) |
+
+### 3.6 Конфигурация vitest
+
+- `packages/react/vitest.config.ts` — есть, environment: `jsdom`, `globals: true`.
+- `packages/core/vitest.config.ts` — **отсутствует** (vitest работает на дефолтах). Это норма для core, но если потребуется coverage / setupFiles — придётся добавить.
+- **Coverage не настроен** ни в одном пакете (нет `--coverage` флагов, нет `@vitest/coverage-*` в devDependencies). Невозможно посчитать процент покрытия по строкам.
+
+### 3.7 Производительность (бенчмарки)
+
+Из `benchmark.test.ts` и `table.test.ts > scalability`:
+
+| Сценарий | Время | Комментарий |
+|----------|-------|-------------|
+| Core: 10k set | 13.5ms | хорошо |
+| Core: 10k get | 1.9ms | очень хорошо |
+| Core: 10k subscribe | 9.2ms | хорошо |
+| Core: 10k unsubscribe | 5.8ms | хорошо |
+| Form: 1000 register | 17ms | хорошо |
+| Form: 1000 setValue | 8.4ms | хорошо |
+| Form: 1000 validate (sync) | 28.1ms | хорошо |
+| Table: 100k addRows | **1237ms** | приемлемо |
+| Table: 100k getVisible | **0.3ms** | отлично |
+| Table: 100k sort | **6634ms** | ⚠ медленно |
+| Table: 100k filter | **3126ms** | ⚠ медленно |
+
+**Замечание:** `table.test.ts` на 100k строках — единственный медленный тест в наборе (11 секунд). Это влияет на скорость CI и dev-цикла. Кандидат: вынести в отдельный набор «slow / benchmark» с `vitest --testNamePattern` или `it.skip` по умолчанию + ручной запуск. Записано в TODO.
+
+### 3.8 Вердикт по тестам
+
+- Все тесты зелёные.
+- Хорошее покрытие engines (form/table/tree/virtual).
+- Нет настроенного coverage — нельзя посчитать % по строкам.
+- README цифры устарели на ~69 тестов.
+- Один тест (table.test.ts scalability) ест 11s — кандидат на изоляцию.
 
 ## 4. Расхождения README / ARCHITECTURE с фактом
 

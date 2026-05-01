@@ -12,4 +12,13 @@
 - **`runtime-internal.ts` не используется.** Публичный entrypoint для авторов кастомных engines, но ни встроенные engines (form/table/tree/virtual), ни `@skygraph/react` его не импортируют. Решить: оставить как surface для GraphEngine (Стрим 5), либо убрать как dead surface area.
 - **`examples/` исключены из ESLint.** В `eslint.config.js` стоит `ignores: ['examples/']`. Демо может бесконтрольно импортировать внутренности. Кандидат: добавить отдельную конфигурацию для examples с базовыми правилами.
 
+### Тесты
+
+- **README пишет 428 тестов, фактически 497.** Цифры устарели. Обновить в Стриме 9 (документация).
+- **Coverage не настроен.** Ни в `packages/core`, ни в `packages/react` нет конфига coverage и нет `@vitest/coverage-*` в devDependencies. Невозможно посчитать % покрытия. Решить: добавить coverage в Стрим 10 (бенчмарки/перфоманс).
+- **`table.test.ts > scalability > 100k rows` занимает 11 секунд.** Замедляет dev-цикл и CI. Кандидат: вынести в отдельный slow-набор (`*.bench.test.ts` с условным `describe.skip` или флагом `RUN_BENCH=1`).
+- **`packages/core` не имеет своего `vitest.config.ts`.** Работает на дефолтах. Не критично, но если потребуется setup или coverage — придётся создавать.
+- **TableEngine sort/filter на 100k строках медленные** (6.6s / 3.1s). Кандидат на оптимизацию в Стрим 6 (Table pro).
+- **Косвенное покрытие `runtime/CycleDetector` и `runtime/SubscriptionEngine`.** Тестируются через `core.test.ts` транзитивно. Прямые unit-тесты этих модулей отсутствуют — кандидат на расширение тестов.
+
 ---
