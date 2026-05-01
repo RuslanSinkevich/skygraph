@@ -249,6 +249,38 @@ describe('PieChart', () => {
   })
 })
 
+describe('Chart tooltips (native title)', () => {
+  it('LineChart marker has a <title> with series label, category, value', () => {
+    const { container } = render(
+      <LineChart
+        categories={['Mon']}
+        series={[{ id: 's', label: 'Visits', values: [42] }]}
+      />,
+    )
+    const title = container.querySelector('circle title')
+    expect(title?.textContent).toBe('Visits · Mon: 42')
+  })
+
+  it('BarChart bar has a <title> tooltip', () => {
+    const { container } = render(
+      <BarChart
+        categories={['Q1']}
+        series={[{ id: 'r', label: 'Revenue', values: [100] }]}
+      />,
+    )
+    const title = container.querySelector('rect title')
+    expect(title?.textContent).toBe('Revenue · Q1: 100')
+  })
+
+  it('PieChart slice <title> includes label and value', () => {
+    const { container } = render(
+      <PieChart data={[{ id: 'a', label: 'Alpha', value: 25 }]} />,
+    )
+    const title = container.querySelector('path title')
+    expect(title?.textContent).toBe('Alpha: 25')
+  })
+})
+
 describe('Chart legend', () => {
   it('LineChart renders no legend by default', () => {
     const { container } = render(

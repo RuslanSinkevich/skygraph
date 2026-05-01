@@ -103,7 +103,9 @@ export function LineChart({
                   cy={yFor(v)}
                   r={Math.max(2, strokeWidth)}
                   fill={stroke}
-                />
+                >
+                  <title>{`${s.label} · ${categories[i]}: ${v}`}</title>
+                </circle>
               )
             })}
           </g>

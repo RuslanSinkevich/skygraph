@@ -95,7 +95,9 @@ export function BarChart({
               height={h}
               fill={colorForSeries(s, si)}
               rx={2}
-            />
+            >
+              <title>{`${s.label} · ${categories[gi]}: ${v}`}</title>
+            </rect>
           )
         })
       })}
