@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { createCore } from '../Core'
 import { createGraph } from '../engines/graph/GraphEngine'
+import { routeOrthogonal, pointsToPath } from '../engines/graph/routing'
 import type { Outline } from '../engines/graph/types'
 
 function setup() {
@@ -395,6 +396,52 @@ describe('GraphEngine: ops — extended', () => {
     expect(graph.getNode(id)?.data).toEqual({ foo: 1 })
     graph.updateNode(id, { data: { bar: 2 } })
     expect(graph.getNode(id)?.data).toEqual({ bar: 2 })
+  })
+})
+
+describe('Orthogonal routing', () => {
+  it('returns straight line when start.x == end.x', () => {
+    const path = routeOrthogonal([10, 0], [10, 50])
+    expect(path).toEqual([[10, 0], [10, 50]])
+  })
+
+  it('returns straight line when start.y == end.y', () => {
+    const path = routeOrthogonal([0, 20], [80, 20])
+    expect(path).toEqual([[0, 20], [80, 20]])
+  })
+
+  it('returns 3-point L-route for diagonal points (auto, dx >= dy → HV)', () => {
+    const path = routeOrthogonal([0, 0], [100, 30])
+    // dx=100, dy=30 → HV → corner at (end.x, start.y) = (100, 0)
+    expect(path).toEqual([[0, 0], [100, 0], [100, 30]])
+  })
+
+  it('auto picks VH when dy > dx', () => {
+    const path = routeOrthogonal([0, 0], [30, 100])
+    // dx=30, dy=100 → VH → corner at (start.x, end.y) = (0, 100)
+    expect(path).toEqual([[0, 0], [0, 100], [30, 100]])
+  })
+
+  it('preferred=hv overrides auto', () => {
+    const path = routeOrthogonal([0, 0], [30, 100], 'hv')
+    expect(path).toEqual([[0, 0], [30, 0], [30, 100]])
+  })
+
+  it('preferred=vh overrides auto', () => {
+    const path = routeOrthogonal([0, 0], [100, 30], 'vh')
+    expect(path).toEqual([[0, 0], [0, 30], [100, 30]])
+  })
+
+  it('pointsToPath builds an SVG d attribute from polyline', () => {
+    expect(pointsToPath([[0, 0], [10, 0], [10, 5]])).toBe('M 0 0 L 10 0 L 10 5')
+  })
+
+  it('pointsToPath returns empty string for empty array', () => {
+    expect(pointsToPath([])).toBe('')
+  })
+
+  it('pointsToPath handles single point (just M)', () => {
+    expect(pointsToPath([[3, 4]])).toBe('M 3 4 ')
   })
 })
 

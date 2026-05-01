@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
+import { routeOrthogonal, pointsToPath } from '@skygraph/core'
 import type {
   AABB,
   Anchor,
@@ -106,8 +107,24 @@ function defaultRenderNode(node: GraphNode): ReactNode {
   return <span className="sg-diagram-node-label">{node.id}</span>
 }
 
-function pathFromPoints(p0: Point, p1: Point): string {
-  return `M ${p0[0]} ${p0[1]} L ${p1[0]} ${p1[1]}`
+function buildEdgePath(
+  edge: GraphEdge,
+  start: Point,
+  end: Point,
+): string {
+  switch (edge.routing) {
+    case 'orthogonal': {
+      const points = routeOrthogonal(start, end)
+      return pointsToPath(points)
+    }
+    case 'manual': {
+      const wp = edge.waypoints ?? []
+      return pointsToPath([start, ...wp, end])
+    }
+    case 'straight':
+    default:
+      return `M ${start[0]} ${start[1]} L ${end[0]} ${end[1]}`
+  }
 }
 
 function unionBounds(boxes: AABB[]): AABB {
@@ -208,8 +225,8 @@ function renderEdge(graph: GraphEngine, edge: GraphEdge): ReactNode {
   return (
     <path
       key={edge.id}
-      d={pathFromPoints(a, b)}
-      className="sg-diagram-edge"
+      d={buildEdgePath(edge, a, b)}
+      className={`sg-diagram-edge sg-diagram-edge-${edge.routing}`}
       fill="none"
     />
   )

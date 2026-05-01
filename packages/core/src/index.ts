@@ -63,7 +63,7 @@ export {
   GRAPH_PREFIX,
 } from './engines/namespaces'
 
-export { createGraph } from './engines/graph/index'
+export { createGraph, routeOrthogonal, pointsToPath } from './engines/graph/index'
 export type {
   AABB,
   Anchor,

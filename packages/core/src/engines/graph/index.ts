@@ -1,4 +1,5 @@
 export { createGraph } from './GraphEngine'
+export { routeOrthogonal, pointsToPath } from './routing'
 
 export type {
   AABB,

@@ -110,6 +110,75 @@ describe('Diagram component', () => {
     expect(container.querySelectorAll('.sg-diagram-node').length).toBe(0)
     expect(container.querySelectorAll('.sg-diagram-edge').length).toBe(0)
   })
+
+  it('orthogonal edges produce L-shaped paths (3 points)', () => {
+    const { result } = renderHook(() => useGraph())
+    act(() => {
+      const a = result.current.graph.addNode({
+        id: 'a', transform: { x: 0, y: 0 }, outline: { kind: 'rect', w: 50, h: 30 },
+      })
+      const b = result.current.graph.addNode({
+        id: 'b', transform: { x: 200, y: 100 }, outline: { kind: 'rect', w: 50, h: 30 },
+      })
+      result.current.graph.addEdge({
+        from: { node: a, anchor: 'ne' },
+        to: { node: b, anchor: 'nw' },
+        routing: 'orthogonal',
+      })
+    })
+    const { container } = render(
+      <Diagram graph={result.current.graph} state={result.current.state} />,
+    )
+    const path = container.querySelector('.sg-diagram-edge-orthogonal') as SVGPathElement
+    expect(path).not.toBeNull()
+    const d = path.getAttribute('d')!
+    // L-route → 3 points → 2 L commands
+    const lCount = (d.match(/L /g) ?? []).length
+    expect(lCount).toBe(2)
+  })
+
+  it('manual edges with waypoints render through them', () => {
+    const { result } = renderHook(() => useGraph())
+    act(() => {
+      const a = result.current.graph.addNode({ id: 'a', transform: { x: 0, y: 0 } })
+      const b = result.current.graph.addNode({ id: 'b', transform: { x: 100, y: 100 } })
+      result.current.graph.addEdge({
+        from: { node: a, anchor: 'ne' },
+        to: { node: b, anchor: 'nw' },
+        routing: 'manual',
+        waypoints: [[50, 0], [50, 100]],
+      })
+    })
+    const { container } = render(
+      <Diagram graph={result.current.graph} state={result.current.state} />,
+    )
+    const path = container.querySelector('.sg-diagram-edge-manual') as SVGPathElement
+    expect(path).not.toBeNull()
+    const d = path.getAttribute('d')!
+    // start + 2 waypoints + end = 4 points → 3 L commands
+    const lCount = (d.match(/L /g) ?? []).length
+    expect(lCount).toBe(3)
+  })
+
+  it('straight edges (default) produce a single L segment', () => {
+    const { result } = renderHook(() => useGraph())
+    act(() => {
+      const a = result.current.graph.addNode({ id: 'a', transform: { x: 0, y: 0 } })
+      const b = result.current.graph.addNode({ id: 'b', transform: { x: 100, y: 100 } })
+      result.current.graph.addEdge({
+        from: { node: a, anchor: 'ne' },
+        to: { node: b, anchor: 'nw' },
+        // routing defaults to 'straight'
+      })
+    })
+    const { container } = render(
+      <Diagram graph={result.current.graph} state={result.current.state} />,
+    )
+    const path = container.querySelector('.sg-diagram-edge-straight') as SVGPathElement
+    expect(path).not.toBeNull()
+    const d = path.getAttribute('d')!
+    expect((d.match(/L /g) ?? []).length).toBe(1)
+  })
 })
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
