@@ -60,7 +60,30 @@ export {
   FORM_META_PREFIX,
   TABLE_PREFIX,
   TREE_PREFIX,
+  GRAPH_PREFIX,
 } from './engines/namespaces'
+
+export { createGraph } from './engines/graph/index'
+export type {
+  AABB,
+  Anchor,
+  AnchorId,
+  AnchorPolicy,
+  EdgeEndpoint,
+  EdgeId,
+  EdgeInit,
+  GraphEdge,
+  GraphEngine,
+  GraphEngineOptions,
+  GraphNode,
+  GraphState,
+  NodeId,
+  NodeInit,
+  NodeTransform,
+  NodeUpdate,
+  Outline,
+  Point,
+} from './engines/graph/index'
 
 export { createTable } from './engines/table/index'
 export type {

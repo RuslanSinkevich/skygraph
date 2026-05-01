@@ -60,3 +60,4 @@ export function __resetPrefixes(): void {
 export const FORM_META_PREFIX = reservePrefix('form', '$meta.')
 export const TABLE_PREFIX = reservePrefix('table', '$table.')
 export const TREE_PREFIX = reservePrefix('tree', '$tree.')
+export const GRAPH_PREFIX = reservePrefix('graph', '$graph.')
