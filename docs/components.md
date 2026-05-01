@@ -12,7 +12,7 @@
 
 Используют core через хуки. Если > 300 строк — разбивать на папку.
 
-Примеры: Form, Table, Tree, TreeSelect, Transfer, Calendar, List, Cascader, DataGrid, AutoField, SchemaForm, FormList, FormProvider, VirtualList, **Diagram** (визуальный слой `GraphEngine`).
+Примеры: Form, Table, Tree, TreeSelect, Transfer, Calendar, List, Cascader, DataGrid, AutoField, SchemaForm, FormList, FormProvider, VirtualList, **Diagram** (визуальный слой `GraphEngine` с поддержкой draggable узлов и orthogonal-роутинга рёбер), **Charts** (LineChart / BarChart / AreaChart / PieChart + ChartLegend), **Dashboard** (CSS-grid layout для виджетов).
 
 ## Как добавить UI-компонент
 

@@ -37,8 +37,8 @@
 │  hooks/                                     │
 │    useField, useForm, useFieldArray         │
 │    useWatch, useComputed, useHistory        │
-│    useTable, useTree, useVirtualScroll      │
-│    useGraph                                 │
+│    useTable (+pinning), useTree             │
+│    useVirtualScroll, useGraph               │
 │                                             │
 │  hooks/a11y/                                │
 │    useFocusTrap, useRovingTabIndex          │

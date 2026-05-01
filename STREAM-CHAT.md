@@ -198,3 +198,38 @@ _(пользователь пишет сюда; агент перечитыва�
 - GraphEngine: drag-and-drop, undo/redo, OBB, zoom/pan, **orthogonal routing с препятствиями**.
 - 53 dead CSS / 111 DOM unstyled — ручная ревизия.
 - @vitest/coverage-v8, @axe-core/react — нужен dev-install.
+
+### 2026-05-01 (пятая итерация — после команды «продолжай, в конце дотошно обнови документацию»)
+
+Принял. Выполнено:
+
+**Тесты (+14, итого 617):**
+- diagram.test.tsx: 14 → **16** (+2 для draggable cursor / class).
+- charts.test.tsx: 26 → **29** (+3 для native title tooltips: line marker, bar rect, pie slice).
+- dashboard.test.tsx: новый, **9 тестов** (wrapper class, widgets count, gridColumn/Row, header omit, gridTemplate/rowHeight/gap, unstyled, render callback, empty).
+
+**Новые фичи:**
+
+1. **Diagram draggable nodes** — `draggable` prop на `<Diagram>`. Mouse drag вызывает `graph.moveNode(id, x, y)` (или custom callback). CSS hooks: `sg-diagram-node-draggable`, hover-shadow, active-grabbing cursor.
+2. **`useTable` pinning hook** — расширен новыми методами `pinColumn`, `clearPinned` + reactive state `pinnedColumns: { left, right }`. Использует TableEngine API из предыдущей итерации.
+3. **Dashboard component** — минимальный CSS-grid layout. `<Dashboard widgets={...} columns={12} rowHeight={80} gap={16}>`. Виджеты с `(x, y, w, h)`, `title`/`children`/`render`, `unstyled`. Demo страница интегрирует Charts (Line + Bar + KPI tile + activity feed).
+4. **Charts native tooltips** — `<title>` элементы на marker / rect / slice. Текст: `"<series> · <category>: <value>"` (Pie: `"<label>: <value>"`).
+
+**Дотошное обновление документации:**
+- `README.md` — 75+ компонентов, 617 тестов, новая категория «Visualization (5)» в Component List.
+- `CHANGELOG.md` — расширенный Unreleased со всеми фичами этой итерации.
+- `ARCHITECTURE.md` — `useTable (+pinning)` упомянут.
+- `docs/architecture.md` — `routeOrthogonal` в graph-движке, `column pinning` в table.
+- `docs/components.md` — Charts + ChartLegend + Dashboard в complex-компонентах.
+- `AUDIT-POST.md` — полностью переписан как финальная версия с историей всех 5 итераций, 617 тестов.
+
+**Реальные хвосты на следующие стримы** (физический лимит контекста):
+- StylingShowcasePage (884 строки) и ~480 demo-файлов локализация — рутина.
+- Задачи 4 (рефакторинг showcases), 12 (Gantt), 13 (SchemaForm-редактор), 14 (Print/PDF).
+- Удаление `ui/TreeSelect.tsx` / `ui/Transfer.tsx` (требует переписать 11 тестов).
+- 53 dead CSS / 111 DOM unstyled — ручная ревизия.
+- @vitest/coverage-v8, @axe-core/react — dev-install.
+- GraphEngine: orthogonal routing **с препятствиями**, undo/redo, OBB, zoom/pan, snap-to-grid.
+- Charts: оси, анимации, brushing.
+- Dashboard.Editor (drag/resize) — отдельный мини-стрим.
+- TableEngine pro дальше: column resize/reorder с persist, virtualization динамической высоты, группировка + агрегации.

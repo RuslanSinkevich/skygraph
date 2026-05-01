@@ -12,8 +12,8 @@ AntD-level components + reactive state management out of the box. Forms, tables,
 ## Features
 
 - **Reactive Core** — path-based store with granular subscriptions, transactions, batching, computed values, cycle detection, middleware pipeline, time-travel debugging
-- **Domain Engines** — FormEngine (validation, dependencies, multiple errors/warnings, preserve), TableEngine (sort, filter, pagination, virtual scroll), TreeEngine (check cascade, drag & drop, async load), **GraphEngine** (nodes / edges / hierarchy / anchors for diagrams)
-- **70+ React Components** — Button to DataGrid, Calendar, Tree, Transfer, Mentions, TreeSelect, Cascader, **Diagram** (visual layer of GraphEngine), **Charts** (Line / Bar / Area / Pie)
+- **Domain Engines** — FormEngine (validation, dependencies, multiple errors/warnings, preserve), TableEngine (sort, filter, pagination, virtual scroll, **column pinning**), TreeEngine (check cascade, drag & drop, async load), **GraphEngine** (nodes / edges / hierarchy / anchors / **orthogonal routing** for diagrams)
+- **75+ React Components** — Button to DataGrid, Calendar, Tree, Transfer, Mentions, TreeSelect, Cascader, **Diagram** (visual layer of GraphEngine, **draggable nodes**), **Charts** (Line / Bar / Area / Pie + **legend** + **tooltips**), **Dashboard** (CSS-grid widget layout)
 - **ConfigProvider** — centralized defaults for size, disabled, locale (React Context, not CSS)
 - **Schema Forms** — auto-generate forms from JSON Schema or Zod schemas
 - **Zero-runtime CSS** — 3-layer token system (palette → semantic → component), dark mode via `data-sg-theme`
@@ -53,7 +53,7 @@ function App() {
 | Package | Description | Size |
 |---------|------------|------|
 | `@skygraph/core` | Reactive runtime + form/table/tree engines | ~28 KB (ESM) |
-| `@skygraph/react` | React hooks, 70+ components, CSS styles | ~260 KB (ESM) |
+| `@skygraph/react` | React hooks, 75+ components, CSS styles | ~260 KB (ESM) |
 
 ## Architecture
 
@@ -142,7 +142,9 @@ SkyGraph treats styling as a public contract. Full reference:
 
 **Data Entry (18):** Button, Input, InputNumber, Textarea, Select, Checkbox, Radio, Switch, Slider, DatePicker, TimePicker, AutoComplete, Rate, Upload, ColorPicker, Cascader, TreeSelect, Mentions
 
-**Data Display (16):** Table, DataGrid, Tree, List, Tabs, Collapse, Descriptions, Badge, Tag, Avatar, Calendar, Carousel, Timeline, Steps, Segmented, Skeleton
+**Data Display (17):** Table, DataGrid, Tree, List, Tabs, Collapse, Descriptions, Badge, Tag, Avatar, Calendar, Carousel, Timeline, Steps, Segmented, Skeleton, **Diagram**
+
+**Visualization (5):** **LineChart**, **BarChart**, **AreaChart**, **PieChart**, **Dashboard**
 
 **Feedback (9):** Modal, Drawer, Notification, Popconfirm, Tooltip, Progress, Spin, Result, Empty
 
@@ -155,9 +157,9 @@ SkyGraph treats styling as a public contract. Full reference:
 ## Tests
 
 ```
-603 tests across core + react packages
+617 tests across core + react packages
   @skygraph/core:  270 tests (runtime, form, table+pinning, tree, virtual, graph+routing, middleware, history, typed, benchmarks)
-  @skygraph/react: 333 tests (components, hooks, adapters, a11y hooks, styling contract, diagram+routing, charts+legend)
+  @skygraph/react: 347 tests (components, hooks, adapters, a11y hooks, styling contract, diagram+drag, charts+legend+tooltip, dashboard)
 ```
 
 ## Development
@@ -165,7 +167,7 @@ SkyGraph treats styling as a public contract. Full reference:
 ```bash
 pnpm install           # install deps
 pnpm build             # build all packages
-pnpm test              # run tests (603 tests)
+pnpm test              # run tests (617 tests)
 pnpm lint              # eslint
 pnpm format            # prettier
 

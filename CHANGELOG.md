@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Dashboard component** — minimal CSS-grid widget layout. `<Dashboard widgets={...} columns={12} rowHeight={80} gap={16}>`. Each widget pins to `(x, y, w, h)` cells; supports `title`, `children`/`render`, `unstyled`. v0 has no drag/resize — that's a follow-up. +9 tests, demo with Charts integration.
+- **Diagram draggable nodes** — `<Diagram draggable />` enables click-and-drag to move nodes (calls `graph.moveNode`). Pass a function for custom drag handlers. CSS hooks: `sg-diagram-node-draggable`, `:hover` raises shadow, `:active` switches cursor to grabbing.
+- **Charts native tooltips** — `<title>` elements on Line markers, Bar rects, Pie slices. Tooltip text: `"<series> · <category>: <value>"` (Pie: `"<label>: <value>"`).
+- **`useTable` pinning hook** — exposes `pinColumn(column, side)`, `clearPinned()`, and `pinnedColumns: { left, right }` state from `useTable()`. Reactive bridge over the new `TableEngine.pinColumn` API.
 - **GraphEngine orthogonal routing** — new `routeOrthogonal(start, end)` and `pointsToPath(points)` helpers exported from `@skygraph/core`. `<Diagram>` now renders edges differently based on `edge.routing` (`'straight' | 'orthogonal' | 'manual'`); manual mode uses the edge's `waypoints`.
 - **TableEngine column pinning** — `pinColumn(column, side)`, `getPinnedColumns()`, `clearPinned()`. State mirrored into the Core store under `$table.<id>.state.pinnedLeft|pinnedRight`.
-- **+19 tests** in this iteration: GraphEngine routing (9) + Diagram routing variants (3) + TableEngine pinning (7). Total now **603** (270 + 333).
+- **+33 tests** in this round: GraphEngine routing (+9), Diagram routing variants (+3), Diagram drag (+2), TableEngine pinning (+7), Charts tooltips (+3), Dashboard (+9). Total now **617** (270 + 347).
 - **Diagram component** + **useGraph** hook in `@skygraph/react` — visual layer for `GraphEngine` (DOM nodes + SVG-overlay edges, custom renderNode, outline-kind modifier classes).
 - **GraphEngine.subscribe(cb)** — public engine-level subscription used by the React adapter to avoid path-prefix lookups.
 - **AreaChart** — stacked / non-stacked SVG area chart with strokeWidth + fillOpacity props.

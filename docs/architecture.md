@@ -25,10 +25,10 @@ core/src/
 │   └── Node.ts           — узел графа
 ├── engines/              ← предметная логика
 │   ├── form/             — FormEngine (валидация, поля, списки)
-│   ├── table/            — TableEngine (строки, сортировка, фильтры, пагинация)
+│   ├── table/            — TableEngine (строки, сортировка, фильтры, пагинация, **column pinning**)
 │   ├── tree/             — TreeEngine (expand, check, select, drag, filter)
 │   ├── virtual/          — VirtualEngine (windowed rendering)
-│   └── graph/            — GraphEngine (узлы / рёбра / иерархия / якоря — для диаграмм)
+│   └── graph/            — GraphEngine (узлы / рёбра / иерархия / якоря + **routeOrthogonal** для диаграмм)
 ├── Core.ts               — CoreImpl (собирает runtime)
 ├── typed.ts              — TypedCore (типизированные пути)
 ├── types.ts              — Core interface
