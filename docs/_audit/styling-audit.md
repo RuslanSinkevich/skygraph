@@ -11,12 +11,12 @@
 
 ## 2. Классы `.sg-*`
 
-- В CSS определено классов: **874**.
-- В DOM компонентов используется строк-классов: **749**.
-- Совпадают (есть и в CSS, и в DOM): **644**.
+- В CSS определено классов: **894**.
+- В DOM компонентов используется строк-классов: **759**.
+- Совпадают (есть и в CSS, и в DOM): **652**.
 - Только в CSS, runtime-генерируемые (Transition): **41** (исключены из dead-code).
-- Только в CSS, **возможно мёртвый код**: **189**.
-- Только в DOM (нет стилей): **105**.
+- Только в CSS, **возможно мёртвый код**: **201**.
+- Только в DOM (нет стилей): **107**.
 
 <details><summary>Только в CSS — возможно мёртвый код</summary>
 
@@ -52,6 +52,10 @@
 - `.sg-datepicker-small`
 - `.sg-descriptions-middle`
 - `.sg-descriptions-small`
+- `.sg-diagram-node-ellipse`
+- `.sg-diagram-node-path`
+- `.sg-diagram-node-polygon`
+- `.sg-diagram-node-rect`
 - `.sg-dp-dropdown-bottomLeft`
 - `.sg-dp-dropdown-bottomRight`
 - `.sg-dp-dropdown-topLeft`
@@ -63,8 +67,12 @@
 - `.sg-drawer-left`
 - `.sg-drawer-right`
 - `.sg-drawer-top`
+- `.sg-dropdown-bottom-left`
+- `.sg-dropdown-bottom-right`
 - `.sg-dropdown-bottomLeft`
 - `.sg-dropdown-bottomRight`
+- `.sg-dropdown-top-left`
+- `.sg-dropdown-top-right`
 - `.sg-dropdown-topLeft`
 - `.sg-dropdown-topRight`
 - `.sg-form-horizontal`
@@ -112,11 +120,15 @@
 - `.sg-menu-inline`
 - `.sg-menu-vertical`
 - `.sg-modal-body-loading`
+- `.sg-notification-bottom-left`
+- `.sg-notification-bottom-right`
 - `.sg-notification-bottomLeft`
 - `.sg-notification-bottomRight`
 - `.sg-notification-error`
 - `.sg-notification-info`
 - `.sg-notification-success`
+- `.sg-notification-top-left`
+- `.sg-notification-top-right`
 - `.sg-notification-topLeft`
 - `.sg-notification-topRight`
 - `.sg-notification-warning`
@@ -277,6 +289,8 @@
 - `sg-calendar-week-number`
 - `sg-cascader-multiple`
 - `sg-cascader-option-loading`
+- `sg-chart-area`
+- `sg-chart-pie`
 - `sg-collapse-panel-active`
 - `sg-context-menu`
 - `sg-context-menu-divider`

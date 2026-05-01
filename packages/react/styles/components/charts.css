@@ -7,7 +7,7 @@
 
 .sg-chart {
   display: block;
-  font-family: var(--sg-font-family, inherit);
+  font-family: inherit;
   font-size: var(--sg-font-size-sm);
   color: var(--sg-color-text-secondary);
 }

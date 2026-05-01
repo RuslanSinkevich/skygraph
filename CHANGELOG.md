@@ -7,7 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-(no entries yet)
+### Added
+
+- **Diagram component** + **useGraph** hook in `@skygraph/react` — visual layer for `GraphEngine` (DOM nodes + SVG-overlay edges, custom renderNode, outline-kind modifier classes).
+- **GraphEngine.subscribe(cb)** — public engine-level subscription used by the React adapter to avoid path-prefix lookups.
+- **AreaChart** — stacked / non-stacked SVG area chart with strokeWidth + fillOpacity props.
+- **PieChart** — pie / donut chart (innerRadius), clockwise from 12 o'clock, `<title>` for accessibility, palette color resolution.
+- **+48 tests**: GraphEngine edge cases (15), Diagram + useGraph integration (11), Charts incl. Area/Pie (22). Total now **567** (254 + 313).
+- Localized `ThemingPage` and `CoreApiPage` in demo (en/ru), plus 5 system demo components (PropsTable, CssVarsTable, DemoBox, ComponentDoc, App shell).
+
+### Changed
+
+- `useGraph` now caches snapshot via `useRef` and subscribes through the new `graph.subscribe()` API — fixes infinite-loop issue with `useSyncExternalStore`.
+- `charts.css` — replaced unknown `var(--sg-font-family, inherit)` with plain `inherit` (token wasn't declared in `tokens.css`, broke `check:tokens`).
 
 ## [0.4.0] - 2026-05-01
 

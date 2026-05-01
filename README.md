@@ -12,8 +12,8 @@ AntD-level components + reactive state management out of the box. Forms, tables,
 ## Features
 
 - **Reactive Core** — path-based store with granular subscriptions, transactions, batching, computed values, cycle detection, middleware pipeline, time-travel debugging
-- **Domain Engines** — FormEngine (validation, dependencies, multiple errors/warnings, preserve), TableEngine (sort, filter, pagination, virtual scroll), TreeEngine (check cascade, drag & drop, async load)
-- **65+ React Components** — from Button to DataGrid, Calendar, Tree, Transfer, Mentions, TreeSelect, Cascader
+- **Domain Engines** — FormEngine (validation, dependencies, multiple errors/warnings, preserve), TableEngine (sort, filter, pagination, virtual scroll), TreeEngine (check cascade, drag & drop, async load), **GraphEngine** (nodes / edges / hierarchy / anchors for diagrams)
+- **70+ React Components** — Button to DataGrid, Calendar, Tree, Transfer, Mentions, TreeSelect, Cascader, **Diagram** (visual layer of GraphEngine), **Charts** (Line / Bar / Area / Pie)
 - **ConfigProvider** — centralized defaults for size, disabled, locale (React Context, not CSS)
 - **Schema Forms** — auto-generate forms from JSON Schema or Zod schemas
 - **Zero-runtime CSS** — 3-layer token system (palette → semantic → component), dark mode via `data-sg-theme`
@@ -53,7 +53,7 @@ function App() {
 | Package | Description | Size |
 |---------|------------|------|
 | `@skygraph/core` | Reactive runtime + form/table/tree engines | ~28 KB (ESM) |
-| `@skygraph/react` | React hooks, 65+ components, CSS styles | ~260 KB (ESM) |
+| `@skygraph/react` | React hooks, 70+ components, CSS styles | ~260 KB (ESM) |
 
 ## Architecture
 
@@ -155,9 +155,9 @@ SkyGraph treats styling as a public contract. Full reference:
 ## Tests
 
 ```
-497 tests across core + react packages
-  @skygraph/core:  217 tests (form, runtime, engines, table, tree, virtual, history, middleware, typed, benchmarks)
-  @skygraph/react: 280 tests (components, hooks, adapters, a11y, styling contract)
+567 tests across core + react packages
+  @skygraph/core:  254 tests (runtime, form, table, tree, virtual, graph, middleware, history, typed, benchmarks)
+  @skygraph/react: 313 tests (components, hooks, adapters, a11y, styling contract, diagram, charts)
 ```
 
 ## Development
@@ -165,7 +165,7 @@ SkyGraph treats styling as a public contract. Full reference:
 ```bash
 pnpm install           # install deps
 pnpm build             # build all packages
-pnpm test              # run tests (497 tests)
+pnpm test              # run tests (567 tests)
 pnpm lint              # eslint
 pnpm format            # prettier
 
