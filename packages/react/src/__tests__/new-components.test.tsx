@@ -4,7 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import React from 'react'
 
 import { Transfer } from '../components/ui/Transfer'
-import { Calendar } from '../components/ui/Calendar'
+import { Calendar } from '../components/complex/Calendar'
 import { TreeSelect } from '../components/ui/TreeSelect'
 import { Mentions } from '../components/ui/Mentions'
 

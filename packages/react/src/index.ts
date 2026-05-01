@@ -97,8 +97,11 @@ export type {
 export type { TreeSelectNode } from './components/ui/TreeSelect'
 export { Cascader } from './components/complex/Cascader'
 export type { CascaderProps, CascaderOption } from './components/complex/Cascader'
-export { Calendar } from './components/ui/Calendar'
-export type { CalendarProps, CalendarLocale, CalendarHeaderInfo, CalendarCellInfo, CalendarEvent } from './components/ui/Calendar'
+// Calendar lives in components/complex/ (uses core indirectly via state hooks).
+// The previous ui/Calendar.tsx was a re-export shim that violated the
+// "ui/ has no core" boundary; we now export directly from complex.
+export { Calendar } from './components/complex/Calendar'
+export type { CalendarProps, CalendarLocale, CalendarHeaderInfo, CalendarCellInfo, CalendarEvent } from './components/complex/Calendar'
 
 // UI components (pure React, no core)
 export { Spin } from './components/ui/Spin'
