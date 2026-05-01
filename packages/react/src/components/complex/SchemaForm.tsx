@@ -72,7 +72,8 @@ export function SchemaForm({
   submitText: submitTextProp,
   children,
 }: SchemaFormProps) {
-  const submitText = submitTextProp ?? useConfig().locale?.form?.submitText ?? 'Submit'
+  const config = useConfig()
+  const submitText = submitTextProp ?? config.locale?.form?.submitText ?? 'Submit'
   const jsonSchema: JSONSchema = isZodSchema(rawSchema)
     ? zodToJsonSchema(rawSchema as Parameters<typeof zodToJsonSchema>[0])
     : (rawSchema as JSONSchema)

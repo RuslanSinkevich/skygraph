@@ -87,7 +87,7 @@ export function TagInput({
     e.preventDefault()
     const text = e.clipboardData.getData('text')
     const pasted = text.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean)
-    let next = [...tags]
+    const next = [...tags]
     for (const t of pasted) {
       if (maxTags && next.length >= maxTags) break
       if (!allowDuplicates && next.includes(t)) continue
