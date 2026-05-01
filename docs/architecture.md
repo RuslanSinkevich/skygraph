@@ -26,7 +26,9 @@ core/src/
 ├── engines/              ← предметная логика
 │   ├── form/             — FormEngine (валидация, поля, списки)
 │   ├── table/            — TableEngine (строки, сортировка, фильтры, пагинация)
-│   └── tree/             — TreeEngine (expand, check, select, drag, filter)
+│   ├── tree/             — TreeEngine (expand, check, select, drag, filter)
+│   ├── virtual/          — VirtualEngine (windowed rendering)
+│   └── graph/            — GraphEngine (узлы / рёбра / иерархия / якоря — для диаграмм)
 ├── Core.ts               — CoreImpl (собирает runtime)
 ├── typed.ts              — TypedCore (типизированные пути)
 ├── types.ts              — Core interface

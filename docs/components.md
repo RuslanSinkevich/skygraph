@@ -12,7 +12,7 @@
 
 Используют core через хуки. Если > 300 строк — разбивать на папку.
 
-Примеры: Form, Table, Tree
+Примеры: Form, Table, Tree, TreeSelect, Transfer, Calendar, List, Cascader, DataGrid, AutoField, SchemaForm, FormList, FormProvider, VirtualList, **Diagram** (визуальный слой `GraphEngine`).
 
 ## Как добавить UI-компонент
 
