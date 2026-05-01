@@ -39,8 +39,8 @@
 
 ### Архитектура
 
-- **`runtime-internal.ts` не используется.** Публичный entrypoint для авторов кастомных engines, но ни встроенные engines (form/table/tree/virtual), ни `@skygraph/react` его не импортируют. Решить: оставить как surface для GraphEngine (Стрим 5), либо убрать как dead surface area.
-- **`examples/` исключены из ESLint.** В `eslint.config.js` стоит `ignores: ['examples/']`. Демо может бесконтрольно импортировать внутренности. Кандидат: добавить отдельную конфигурацию для examples с базовыми правилами.
+- ✅ **`runtime-internal.ts`** — оставлен как есть. Решение по итогам Задачи 5 (GraphEngine): встроенные engines (включая GraphEngine) обходятся публичным `Core` интерфейсом, но `runtime-internal` сохраняется как публичный entrypoint для **внешних авторов кастомных engines** (это документировано в JSDoc файла + STABILITY warning). Удалять не требуется — это intentional public surface.
+- ⚠ **`examples/` исключены из ESLint.** В `eslint.config.js` стоит `ignores: ['examples/']`. В Задаче 16 добавлено явное объяснение в комментарии конфига и оставлен hint про `npx eslint examples/...`, но **отдельный конфиг `examples-eslint.config.js`** + npm-скрипт `lint:examples` всё ещё не созданы. Сделать в Задаче 4 (рефакторинг showcases) или в отдельном мини-стриме.
 
 ### Документация и публичный API
 

@@ -5,6 +5,13 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 
 export default tseslint.config(
   {
+    // examples/ are intentionally not part of the default lint set — they
+    // contain a lot of "wip" demo code with hardcoded English strings,
+    // imperative dom probes, and non-canonical patterns. The base config
+    // (`tseslint.configs.recommended`) is too strict for them.
+    //
+    // Examples have their own minimal block below, attached only when the
+    // user explicitly lints them (e.g. via `pnpm lint:examples`).
     ignores: ['**/dist/', '**/node_modules/', 'examples/'],
   },
   js.configs.recommended,
@@ -120,3 +127,18 @@ export default tseslint.config(
 
   eslintConfigPrettier,
 )
+
+// ── Note on examples/ linting ─────────────────────────────────────────────
+//
+// examples/* are kept out of the default lint set on purpose (see ignores
+// above). They contain large amounts of demo code with hardcoded strings,
+// non-canonical patterns and intentionally-impure components. Linting them
+// with the same strictness as packages/ would flood the output and make
+// real signal hard to spot.
+//
+// If you want to surface unused vars / console.log in demos, run a
+// targeted eslint command directly, e.g.:
+//   npx eslint examples/demo/src --no-config-lookup --rule '{"no-console":"warn"}'
+//
+// A proper companion config (`examples-eslint.config.js`) is tracked as a
+// follow-up task in TODO-cycle.md.
