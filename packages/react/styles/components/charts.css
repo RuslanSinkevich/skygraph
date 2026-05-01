@@ -1,0 +1,18 @@
+/* Charts — v0 minimal SVG primitives.
+ *
+ * Stroke / fill colours are inlined per-series from JS (token references), so
+ * theming is automatic when `--sg-color-primary`, `--sg-color-success`, ...
+ * are overridden upstream.
+ */
+
+.sg-chart {
+  display: block;
+  font-family: var(--sg-font-family, inherit);
+  font-size: var(--sg-font-size-sm);
+  color: var(--sg-color-text-secondary);
+}
+
+.sg-chart-line,
+.sg-chart-bar {
+  /* nothing extra in v0 */
+}

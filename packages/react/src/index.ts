@@ -214,6 +214,17 @@ export type { UseGraphOptions, UseGraphReturn } from './hooks/useGraph'
 export { Diagram } from './components/complex/Diagram'
 export type { DiagramProps, DiagramNodeRenderer } from './components/complex/Diagram'
 
+// Charts (v0 SVG primitives)
+export { LineChart, BarChart, DEFAULT_PALETTE, colorForSeries } from './components/complex/Charts'
+export type {
+  LineChartProps,
+  BarChartProps,
+  BaseChartProps,
+  ChartCategory,
+  ChartSeries,
+  ChartValue,
+} from './components/complex/Charts'
+
 // DataGrid
 export { DataGrid } from './components/complex/DataGrid'
 export type {
