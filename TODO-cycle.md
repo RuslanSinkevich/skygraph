@@ -74,7 +74,12 @@
 - **Нет автоматических a11y-тестов.** Кандидат: добавить `@axe-core/react` или `jest-axe` в `packages/react/devDependencies`, написать `a11y.test.tsx` с проверкой основных компонентов. Сделать в Стрим 3.
 - **Гибридная локализация.** Часть компонентов через `ConfigProvider.locale` (Empty, Pagination, Modal, Form, Upload, Transfer, Calendar, Popconfirm), часть через локальный `locale={...}` проп (Table, Tree, DataGrid). Не баг, но кандидат на унификацию или явное документирование. Стрим 9.
 - **Компоненты без локалей в `SgLocale`:** `TreeSelect`, `Cascader`, `Mentions`, `AutoComplete`, `ColorPicker`, `Steps`, `Carousel`, `Result`, `Tabs`, `Drawer`, `Notification`, `Dropdown`, `Menu`, `Breadcrumb`. Если они используют локали — добавить в SgLocale в Стрим 2.
-- **Минорные пробелы a11y по beglyму обзору** (требует ручной проверки в Стрим 3): `Carousel`, `Slider` (мало `aria-value*`), `Switch` (нет явного `role="switch"`), `Mentions` (нет `role="combobox"`), `Segmented` (нет radiogroup), `Cascader` (нет упоминаний), `Empty` (без aria), `VirtualList` (не нашёл).
+- ⚠ **Минорные пробелы a11y** — после ручной проверки оказалось что Аудит частично ошибался (grep по count не отражал факт):
+  - ✅ `Switch` — имеет `role="switch"` + `aria-checked` в обоих режимах.
+  - ✅ `Slider` — имеет `role="slider"` + `aria-valuemin/max/now` + `aria-disabled`.
+  - ✅ `Segmented` — имеет `role="radiogroup"` + `role="radio"` + `aria-checked` в обоих режимах.
+  - ✅ `Empty` — имеет `role="status"`.
+  - ⚠ Не проверены вручную (отложено в Задачу 3 «полная a11y перепроверка»): `Carousel`, `Mentions`, `Cascader`, `VirtualList`, `Rate`, `ColorPicker`, `TimePicker`. Нужно добавить тесты с `@axe-core/react`.
 
 ### Дубли и путаница в публичном API
 
