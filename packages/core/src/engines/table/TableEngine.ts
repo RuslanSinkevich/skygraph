@@ -33,6 +33,8 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
   let filters: ColumnFilter[] = []
   let customFilterFn: FilterFn | null = null
   let page = 1
+  let pinnedLeft: string[] = []
+  let pinnedRight: string[] = []
 
   function getRowData(id: RowId): Record<string, unknown> | undefined {
     const prefix = `${TABLE_PREFIX}${tableId}.byId.${id}.`
@@ -283,6 +285,26 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       recomputeFiltered()
     },
 
+    pinColumn(column: string, side: 'left' | 'right' | null): void {
+      pinnedLeft = pinnedLeft.filter((c) => c !== column)
+      pinnedRight = pinnedRight.filter((c) => c !== column)
+      if (side === 'left') pinnedLeft.push(column)
+      else if (side === 'right') pinnedRight.push(column)
+      core.set(statePath(tableId, 'pinnedLeft'), [...pinnedLeft])
+      core.set(statePath(tableId, 'pinnedRight'), [...pinnedRight])
+    },
+
+    getPinnedColumns(): { left: string[]; right: string[] } {
+      return { left: [...pinnedLeft], right: [...pinnedRight] }
+    },
+
+    clearPinned(): void {
+      pinnedLeft = []
+      pinnedRight = []
+      core.set(statePath(tableId, 'pinnedLeft'), [])
+      core.set(statePath(tableId, 'pinnedRight'), [])
+    },
+
     moveRows(ids: RowId[], toIndex: number): void {
       const items = ids.map((id) => {
         const idx = order.indexOf(id)
@@ -345,6 +367,8 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       filters = []
       customFilterFn = null
       page = 1
+      pinnedLeft = []
+      pinnedRight = []
       publishState()
     },
   }

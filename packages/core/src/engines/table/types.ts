@@ -67,6 +67,13 @@ export interface TableEngine {
   moveRow(fromIndex: number, toIndex: number): void
   moveRows(ids: RowId[], toIndex: number): void
 
+  /** Pin a column to a side, or unpin (`side = null`). */
+  pinColumn(column: string, side: 'left' | 'right' | null): void
+  /** Snapshot of currently pinned columns. */
+  getPinnedColumns(): { left: string[]; right: string[] }
+  /** Drop all pin assignments. */
+  clearPinned(): void
+
   getExportData(options?: ExportOptions): string[][]
 
   getTableState(): TableState
