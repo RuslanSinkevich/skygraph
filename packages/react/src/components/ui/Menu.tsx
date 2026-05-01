@@ -1,5 +1,49 @@
-import { useState, useRef, useEffect, type ReactNode } from 'react'
+import { useState, useRef, useEffect, useCallback, type ReactNode, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import type { BaseComponentProps, SizableProps } from '../../types'
+
+function collectNavigableItems(
+  items: MenuItem[],
+  openKeys: string[],
+  mode: 'vertical' | 'horizontal' | 'inline',
+  out: MenuItem[] = [],
+): MenuItem[] {
+  for (const item of items) {
+    if (item.type === 'divider') continue
+    if (item.type === 'group') {
+      if (item.children) collectNavigableItems(item.children, openKeys, mode, out)
+      continue
+    }
+    if (item.disabled) continue
+    out.push(item)
+    if (mode === 'inline' && item.children?.length && openKeys.includes(item.key)) {
+      collectNavigableItems(item.children, openKeys, mode, out)
+    }
+  }
+  return out
+}
+
+function findByKey(items: MenuItem[], key: string): MenuItem | null {
+  for (const item of items) {
+    if (item.key === key && item.type !== 'divider' && item.type !== 'group') return item
+    if (item.children) {
+      const found = findByKey(item.children, key)
+      if (found) return found
+    }
+  }
+  return null
+}
+
+function findParentKey(items: MenuItem[], key: string, parent: string | null = null): string | null {
+  for (const item of items) {
+    if (item.key === key) return parent
+    if (item.children) {
+      const nextParent = item.type === 'group' ? parent : item.key
+      const found = findParentKey(item.children, key, nextParent)
+      if (found !== null) return found
+    }
+  }
+  return null
+}
 
 /** Single menu entry: leaf item, submenu, group heading, or divider. */
 export interface MenuItem {
@@ -68,13 +112,28 @@ export function Menu({
   const [internalOpen, setInternalOpen] = useState<string[]>(
     openKeys ?? defaultOpenKeys
   )
+  const rootRef = useRef<HTMLUListElement>(null)
 
   const currentSelected = selectedKeys ?? internalSelected
   const currentOpen = openKeys ?? internalOpen
 
+  const navigable = collectNavigableItems(items, currentOpen, mode)
+  const initialActive =
+    currentSelected.find((k) => navigable.some((n) => n.key === k)) ??
+    navigable[0]?.key ??
+    ''
+  const [activeKey, setActiveKey] = useState(initialActive)
+
+  useEffect(() => {
+    if (!activeKey || !navigable.some((n) => n.key === activeKey)) {
+      setActiveKey(navigable[0]?.key ?? '')
+    }
+  }, [activeKey, navigable])
+
   const handleSelect = (key: string) => {
     const next = [key]
     setInternalSelected(next)
+    setActiveKey(key)
     onSelect?.({ key, selectedKeys: next })
   }
 
@@ -86,17 +145,131 @@ export function Menu({
     onOpenChange?.(next)
   }
 
+  const focusKey = useCallback((key: string) => {
+    setActiveKey(key)
+    const el = rootRef.current?.querySelector<HTMLElement>(
+      `[data-menu-key="${CSS.escape(key)}"]`,
+    )
+    el?.focus()
+  }, [])
+
+  const moveBy = useCallback(
+    (delta: 1 | -1) => {
+      if (navigable.length === 0) return
+      const idx = navigable.findIndex((n) => n.key === activeKey)
+      const base = idx < 0 ? (delta === 1 ? -1 : 0) : idx
+      const next = (base + delta + navigable.length) % navigable.length
+      focusKey(navigable[next].key)
+    },
+    [navigable, activeKey, focusKey],
+  )
+
+  const isInlineParentOf = (parentKey: string, childKey: string): boolean => {
+    const parent = findByKey(items, parentKey)
+    if (!parent?.children) return false
+    return parent.children.some((c) => c.key === childKey)
+  }
+
+  const handleRootKeyDown = (e: ReactKeyboardEvent<HTMLUListElement>) => {
+    if (navigable.length === 0) return
+    const horizontal = mode === 'horizontal'
+    const primaryNext = horizontal ? 'ArrowRight' : 'ArrowDown'
+    const primaryPrev = horizontal ? 'ArrowLeft' : 'ArrowUp'
+
+    switch (e.key) {
+      case primaryNext:
+        e.preventDefault()
+        moveBy(1)
+        break
+      case primaryPrev:
+        e.preventDefault()
+        moveBy(-1)
+        break
+      case 'Home':
+        e.preventDefault()
+        focusKey(navigable[0].key)
+        break
+      case 'End':
+        e.preventDefault()
+        focusKey(navigable[navigable.length - 1].key)
+        break
+      case 'Enter':
+      case ' ': {
+        const current = findByKey(items, activeKey)
+        if (!current || current.disabled) return
+        e.preventDefault()
+        if (current.children?.length) {
+          if (mode === 'inline') toggleOpen(current.key)
+        } else {
+          handleSelect(current.key)
+        }
+        break
+      }
+      case 'ArrowRight': {
+        if (horizontal) return
+        const current = findByKey(items, activeKey)
+        if (mode === 'inline' && current?.children?.length) {
+          e.preventDefault()
+          if (!currentOpen.includes(current.key)) toggleOpen(current.key)
+          else {
+            const first = current.children.find((c) => !c.disabled && c.type !== 'divider')
+            if (first) focusKey(first.key)
+          }
+        }
+        break
+      }
+      case 'ArrowLeft': {
+        if (horizontal) return
+        const current = findByKey(items, activeKey)
+        if (!current) return
+        if (mode === 'inline' && current.children?.length && currentOpen.includes(current.key)) {
+          e.preventDefault()
+          toggleOpen(current.key)
+          return
+        }
+        const parent = findParentKey(items, activeKey)
+        if (parent && isInlineParentOf(parent, activeKey) && mode === 'inline') {
+          e.preventDefault()
+          focusKey(parent)
+        }
+        break
+      }
+      case 'Escape': {
+        const current = findByKey(items, activeKey)
+        const parent = findParentKey(items, activeKey)
+        if (parent && mode === 'inline' && currentOpen.includes(parent)) {
+          e.preventDefault()
+          toggleOpen(parent)
+          focusKey(parent)
+        } else if (current?.children?.length && mode === 'inline' && currentOpen.includes(current.key)) {
+          e.preventDefault()
+          toggleOpen(current.key)
+        }
+        break
+      }
+    }
+  }
+
   if (unstyled) {
     return (
-      <ul role="menu" className={className} style={style}>
+      <ul
+        ref={rootRef}
+        role="menu"
+        aria-orientation={mode === 'horizontal' ? 'horizontal' : 'vertical'}
+        className={className}
+        style={style}
+        onKeyDown={handleRootKeyDown}
+      >
         {items.map((item) => (
           <UnstyledMenuItem
             key={item.key}
             item={item}
             selectedKeys={currentSelected}
             openKeys={currentOpen}
+            activeKey={activeKey}
             onSelect={handleSelect}
             onToggleOpen={toggleOpen}
+            onFocusKey={setActiveKey}
           />
         ))}
       </ul>
@@ -114,7 +287,14 @@ export function Menu({
     .join(' ')
 
   return (
-    <ul role="menu" className={rootClasses} style={style}>
+    <ul
+      ref={rootRef}
+      role="menu"
+      aria-orientation={mode === 'horizontal' ? 'horizontal' : 'vertical'}
+      className={rootClasses}
+      style={style}
+      onKeyDown={handleRootKeyDown}
+    >
       {items.map((item) => (
         <StyledMenuItem
           key={item.key}
@@ -122,8 +302,10 @@ export function Menu({
           mode={mode}
           selectedKeys={currentSelected}
           openKeys={currentOpen}
+          activeKey={activeKey}
           onSelect={handleSelect}
           onToggleOpen={toggleOpen}
+          onFocusKey={setActiveKey}
           inlineCollapsed={inlineCollapsed}
           depth={0}
         />
@@ -138,14 +320,18 @@ function UnstyledMenuItem({
   item,
   selectedKeys,
   openKeys,
+  activeKey,
   onSelect,
   onToggleOpen,
+  onFocusKey,
 }: {
   item: MenuItem
   selectedKeys: string[]
   openKeys: string[]
+  activeKey: string
   onSelect: (key: string) => void
   onToggleOpen: (key: string) => void
+  onFocusKey: (key: string) => void
 }) {
   if (item.type === 'divider') return <li role="separator" />
   if (item.type === 'group') {
@@ -159,8 +345,10 @@ function UnstyledMenuItem({
               item={child}
               selectedKeys={selectedKeys}
               openKeys={openKeys}
+              activeKey={activeKey}
               onSelect={onSelect}
               onToggleOpen={onToggleOpen}
+              onFocusKey={onFocusKey}
             />
           ))}
         </ul>
@@ -169,12 +357,17 @@ function UnstyledMenuItem({
   }
   if (item.children?.length) {
     const isOpen = openKeys.includes(item.key)
+    const isActive = activeKey === item.key
     return (
       <li>
         <button
+          data-menu-key={item.key}
           disabled={item.disabled}
           aria-expanded={isOpen}
+          aria-haspopup="menu"
+          tabIndex={isActive ? 0 : -1}
           onClick={() => onToggleOpen(item.key)}
+          onFocus={() => onFocusKey(item.key)}
         >
           {item.icon}
           {item.label}
@@ -187,8 +380,10 @@ function UnstyledMenuItem({
                 item={child}
                 selectedKeys={selectedKeys}
                 openKeys={openKeys}
+                activeKey={activeKey}
                 onSelect={onSelect}
                 onToggleOpen={onToggleOpen}
+                onFocusKey={onFocusKey}
               />
             ))}
           </ul>
@@ -196,11 +391,16 @@ function UnstyledMenuItem({
       </li>
     )
   }
+  const isActive = activeKey === item.key
   return (
     <li
       role="menuitem"
+      data-menu-key={item.key}
+      tabIndex={isActive ? 0 : -1}
       aria-selected={selectedKeys.includes(item.key)}
+      aria-disabled={item.disabled || undefined}
       onClick={() => !item.disabled && onSelect(item.key)}
+      onFocus={() => onFocusKey(item.key)}
     >
       {item.icon}
       {item.label}
@@ -215,8 +415,10 @@ function StyledMenuItem({
   mode,
   selectedKeys,
   openKeys,
+  activeKey,
   onSelect,
   onToggleOpen,
+  onFocusKey,
   inlineCollapsed,
   depth,
 }: {
@@ -224,8 +426,10 @@ function StyledMenuItem({
   mode: 'vertical' | 'horizontal' | 'inline'
   selectedKeys: string[]
   openKeys: string[]
+  activeKey: string
   onSelect: (key: string) => void
   onToggleOpen: (key: string) => void
+  onFocusKey: (key: string) => void
   inlineCollapsed: boolean
   depth: number
 }) {
@@ -253,8 +457,10 @@ function StyledMenuItem({
               mode={mode}
               selectedKeys={selectedKeys}
               openKeys={openKeys}
+              activeKey={activeKey}
               onSelect={onSelect}
               onToggleOpen={onToggleOpen}
+              onFocusKey={onFocusKey}
               inlineCollapsed={inlineCollapsed}
               depth={depth}
             />
@@ -319,11 +525,16 @@ function StyledMenuItem({
     >
       <div
         role="menuitem"
+        data-menu-key={item.key}
+        tabIndex={activeKey === item.key ? 0 : -1}
         aria-selected={isSelected}
+        aria-disabled={item.disabled || undefined}
+        aria-haspopup={hasChildren ? 'menu' : undefined}
         aria-expanded={hasChildren ? (showPopover ? hoverOpen : isInlineOpen) : undefined}
         className={itemClasses}
         style={{ paddingLeft }}
         onClick={handleItemClick}
+        onFocus={() => onFocusKey(item.key)}
       >
         {item.icon && <span className="sg-menu-item-icon">{item.icon}</span>}
         {!(inlineCollapsed && depth === 0) && (
@@ -361,8 +572,10 @@ function StyledMenuItem({
               mode={mode}
               selectedKeys={selectedKeys}
               openKeys={openKeys}
+              activeKey={activeKey}
               onSelect={onSelect}
               onToggleOpen={onToggleOpen}
+              onFocusKey={onFocusKey}
               inlineCollapsed={inlineCollapsed}
               depth={depth + 1}
             />
@@ -380,8 +593,10 @@ function StyledMenuItem({
               mode={mode}
               selectedKeys={selectedKeys}
               openKeys={openKeys}
+              activeKey={activeKey}
               onSelect={onSelect}
               onToggleOpen={onToggleOpen}
+              onFocusKey={onFocusKey}
               inlineCollapsed={false}
               depth={0}
             />

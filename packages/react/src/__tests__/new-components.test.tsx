@@ -118,13 +118,13 @@ describe('TreeSelect', () => {
 
   it('opens dropdown on click', () => {
     const { container } = render(<TreeSelect treeData={treeData} />)
-    fireEvent.click(container.querySelector('.sg-tree-select-selector')!)
-    expect(container.querySelector('.sg-tree-select-dropdown')).toBeTruthy()
+    fireEvent.click(container.querySelector('.sg-treeselect-selector')!)
+    expect(container.querySelector('.sg-treeselect-dropdown')).toBeTruthy()
   })
 
   it('shows tree nodes', () => {
     const { container } = render(<TreeSelect treeData={treeData} treeDefaultExpandAll />)
-    fireEvent.click(container.querySelector('.sg-tree-select-selector')!)
+    fireEvent.click(container.querySelector('.sg-treeselect-selector')!)
     expect(screen.getByText('Parent 1')).toBeDefined()
     expect(screen.getByText('Child 1')).toBeDefined()
     expect(screen.getByText('Leaf')).toBeDefined()
@@ -133,15 +133,15 @@ describe('TreeSelect', () => {
   it('selects leaf node', () => {
     const fn = vi.fn()
     const { container } = render(<TreeSelect treeData={treeData} onChange={fn} />)
-    fireEvent.click(container.querySelector('.sg-tree-select-selector')!)
+    fireEvent.click(container.querySelector('.sg-treeselect-selector')!)
     fireEvent.click(screen.getByText('Leaf'))
     expect(fn).toHaveBeenCalledWith('leaf')
   })
 
   it('disabled blocks open', () => {
     const { container } = render(<TreeSelect treeData={treeData} disabled />)
-    fireEvent.click(container.querySelector('.sg-tree-select-selector')!)
-    expect(container.querySelector('.sg-tree-select-dropdown')).toBeNull()
+    fireEvent.click(container.querySelector('.sg-treeselect-selector')!)
+    expect(container.querySelector('.sg-treeselect-dropdown')).toBeNull()
   })
 })
 

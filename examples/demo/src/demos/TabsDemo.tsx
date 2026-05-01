@@ -13,12 +13,20 @@ import { StatesTabs } from './tabs/States.demo'
 import StatesSource from './tabs/States.demo?raw'
 import { TokensOverrideTabs } from './tabs/TokensOverride.demo'
 import TokensOverrideSource from './tabs/TokensOverride.demo?raw'
+import { LineTabs } from './tabs/Line.demo'
+import LineSource from './tabs/Line.demo?raw'
 
 const tabsProps: PropDef[] = [
   { name: 'items', description: 'Tab definitions', type: 'TabItem[]' },
   { name: 'activeKey', description: 'Controlled active key', type: 'string' },
   { name: 'defaultActiveKey', description: 'Initial active key (uncontrolled)', type: 'string' },
   { name: 'onChange', description: 'Fires after user interaction changes the active tab', type: '(key: string) => void' },
+  {
+    name: 'type',
+    description: 'Visual style: `card` — bordered tabs attached to the panel; `line` — underline indicator only',
+    type: "'card' | 'line'",
+    default: "'card'",
+  },
   { name: 'size', description: 'Tab list size (inherits from ConfigProvider)', type: "'small' | 'middle' | 'large'", default: "'middle'" },
   { name: 'className', description: 'Extra class on the root', type: 'string' },
   { name: 'style', description: 'Inline styles on the root', type: 'CSSProperties' },
@@ -34,12 +42,18 @@ const tabItemProps: PropDef[] = [
 ]
 
 const tabsCssVars: CssVarDef[] = [
-  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Active tab label + underline indicator' },
+  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Active tab label; underline (`line`) or accent on `card`' },
   { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: 'Hovered (inactive) tab label' },
   { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Panel body text' },
   { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: 'Inactive tab label' },
   { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Disabled tab label' },
-  { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: 'Tab list bottom border' },
+  {
+    name: 'sg-color-border-secondary',
+    default: 'var(--sg-gray-4)',
+    description: '`line`: nav bottom rule; `card`: outer box + tab seams + panel top',
+  },
+  { name: 'sg-color-bg', default: 'var(--sg-gray-1)', description: '`card`: active tab + panel surface' },
+  { name: 'sg-color-bg-secondary', default: 'var(--sg-gray-2)', description: '`card`: inactive tab strip background' },
   { name: 'sg-font-size', default: '14px', description: 'Tab label font size (sm/lg variants override)' },
   { name: 'sg-padding-sm', default: '8px', description: 'Vertical tab padding' },
   { name: 'sg-padding-lg', default: '16px', description: 'Horizontal tab padding' },
@@ -63,6 +77,14 @@ export function TabsDemo() {
         <BasicTabs />
       </DemoBox>
 
+      <DemoBox
+        title="Line"
+        description='Underline-only strip — pass type="line" for the flatter look.'
+        code={LineSource}
+      >
+        <LineTabs />
+      </DemoBox>
+
       <DemoBox title="Controlled" description="Drive active key from outside (deep links, wizards)." code={ControlledSource}>
         <ControlledTabs />
       </DemoBox>
@@ -81,7 +103,7 @@ export function TabsDemo() {
 
       <DemoBox
         title="Tokens override"
-        description="Scoped --sg-color-primary re-skins the underline + active label."
+        description='Scoped --sg-color-primary re-skins the active tab + card seams (default type="card").'
         code={TokensOverrideSource}
       >
         <TokensOverrideTabs />
@@ -91,7 +113,7 @@ export function TabsDemo() {
       <PropsTable title="TabItem" data={tabItemProps} />
       <CssVarsTable
         title="CSS Variables"
-        hint="Tabs is almost entirely driven by --sg-color-primary (the underline) and --sg-color-text-* (labels)."
+        hint="Default `card` uses primary + surface tokens; `line` leans on primary for the underline and text tokens for labels."
         data={tabsCssVars}
       />
     </ComponentDoc>

@@ -13,12 +13,19 @@ import { TokensOverrideModal } from './modal/TokensOverride.demo'
 import TokensOverrideSource from './modal/TokensOverride.demo?raw'
 import { UnstyledModal } from './modal/Unstyled.demo'
 import UnstyledSource from './modal/Unstyled.demo?raw'
+import { DefaultFooterModal } from './modal/DefaultFooter.demo'
+import DefaultFooterSource from './modal/DefaultFooter.demo?raw'
 
 const modalProps: PropDef[] = [
   { name: 'open', description: 'Controls visibility', type: 'boolean', default: 'false' },
   { name: 'onClose', description: 'Called on Escape, mask click, or close button', type: '() => void' },
   { name: 'title', description: 'Optional heading + accessible name', type: 'string' },
-  { name: 'footer', description: 'Action area under the body — usually two Buttons', type: 'ReactNode' },
+  { name: 'footer', description: 'Override the footer area. Omit to use the default OK/Cancel when `onOk` is set. Pass `null` to drop the footer entirely.', type: 'ReactNode | null' },
+  { name: 'onOk', description: 'Called when the default OK button is clicked. Enables the default footer when `footer` is omitted.', type: '() => void | Promise<void>' },
+  { name: 'okText', description: 'Default OK label. Falls back to `locale.modal.okText` → "OK".', type: 'string' },
+  { name: 'cancelText', description: 'Default Cancel label. Falls back to `locale.modal.cancelText` → "Cancel".', type: 'string' },
+  { name: 'okType', description: 'Visual type of the default OK button.', type: "'primary' | 'default' | 'dashed' | 'text'", default: "'primary'" },
+  { name: 'confirmLoading', description: 'Puts the OK button in loading state and disables Cancel.', type: 'boolean' },
   { name: 'children', description: 'Body content', type: 'ReactNode' },
   { name: 'width', description: 'Dialog width (number = px, or any CSS length)', type: 'number | string', default: '520' },
   { name: 'className', description: 'Extra class on the dialog root', type: 'string' },
@@ -61,6 +68,14 @@ export function ModalDemo() {
         <BasicModal />
       </DemoBox>
 
+      <DemoBox
+        title="Default footer (onOk)"
+        description="Omit `footer` and pass `onOk` — SkyGraph renders Cancel + OK wired to the locale. `confirmLoading` disables Cancel and spins OK."
+        code={DefaultFooterSource}
+      >
+        <DefaultFooterModal />
+      </DemoBox>
+
       <DemoBox title="Async confirmation" description="Loading footer + guarded Cancel while the task runs." code={AsyncConfirmSource}>
         <AsyncConfirmModal />
       </DemoBox>
@@ -69,7 +84,11 @@ export function ModalDemo() {
         <WidthsModal />
       </DemoBox>
 
-      <DemoBox title="No footer" description="Leave `footer` off to remove the divider — read-only dialogs." code={NoFooterSource}>
+      <DemoBox
+        title="No footer"
+        description="Pass `footer={null}` to drop the divider — read-only dialogs with only the close button."
+        code={NoFooterSource}
+      >
         <NoFooterModal />
       </DemoBox>
 

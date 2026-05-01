@@ -19,6 +19,12 @@ export interface TabItem {
 
 /** Props for the tab list and associated single visible panel. */
 export interface TabsProps extends BaseComponentProps, SizableProps {
+  /**
+   * Visual chrome: `card` — bordered strip with the active tab attached to the
+   * panel (classic desktop tabs). `line` — minimal underline indicator only.
+   * @default 'card'
+   */
+  type?: 'line' | 'card'
   /** Tab definitions including labels and panel content. */
   items: TabItem[]
   /** Controlled active tab key. */
@@ -34,6 +40,7 @@ export interface TabsProps extends BaseComponentProps, SizableProps {
  * Resolves initial active key from props, then first item, when uncontrolled.
  */
 export function Tabs({
+  type: typeProp,
   items,
   activeKey,
   defaultActiveKey,
@@ -45,6 +52,7 @@ export function Tabs({
 }: TabsProps) {
   const config = useConfig()
   const size = sizeProp ?? config.size ?? 'middle'
+  const type = typeProp ?? 'card'
   const [internalKey, setInternalKey] = useState(
     activeKey ?? defaultActiveKey ?? items[0]?.key ?? ''
   )
@@ -80,7 +88,17 @@ export function Tabs({
   }
 
   return (
-    <div className={['sg-tabs', `sg-tabs-${size}`, className].filter(Boolean).join(' ')} style={style}>
+    <div
+      className={[
+        'sg-tabs',
+        `sg-tabs-${size}`,
+        type === 'line' ? 'sg-tabs-line' : 'sg-tabs-card',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      style={style}
+    >
       <div className="sg-tabs-nav" role="tablist">
         {items.map((item) => (
           <div

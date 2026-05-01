@@ -49,5 +49,7 @@ export const ru_RU: SgLocale = {
     ],
     dayNames: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
     today: 'Сегодня',
+    now: 'Сейчас',
+    week: 'Нед',
   },
 }

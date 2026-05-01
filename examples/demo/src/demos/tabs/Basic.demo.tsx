@@ -2,7 +2,8 @@ import { Tabs } from '@skygraph/react'
 
 /**
  * Three panels, no controlled state — Tabs remembers the active key on
- * its own and activates the first tab by default.
+ * its own and activates the first tab by default. Default `type` is
+ * `card` (bordered classic tabs); use `type="line"` for the underline-only strip.
  */
 export function BasicTabs() {
   return (

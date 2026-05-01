@@ -95,6 +95,64 @@ describe('Table', () => {
     expect(customs[0].textContent).toBe('Alice')
   })
 
+  it('keeps explicit column widths in pixels in fluid layout', () => {
+    const { container } = render(
+      <Table
+        columns={[
+          { key: 'name', title: 'Name' },
+          { key: 'age', title: 'Age', width: 80 },
+          { key: 'city', title: 'City' },
+        ]}
+        data={tableData}
+        showPagination={false}
+      />,
+    )
+
+    const grid = container.querySelector('.sg-table-grid') as HTMLElement
+    expect(grid.style.gridTemplateColumns).toContain('minmax(50px, 80px)')
+    expect(grid.style.gridTemplateColumns).not.toContain('80fr')
+  })
+
+  it('stretches all explicit column widths to fill fluid layout', () => {
+    const { container } = render(
+      <Table
+        columns={[
+          { key: 'name', title: 'Name', width: 180 },
+          { key: 'age', title: 'Age', width: 80 },
+          { key: 'city', title: 'City', width: 120 },
+        ]}
+        data={tableData}
+        showPagination={false}
+      />,
+    )
+
+    const grid = container.querySelector('.sg-table-grid') as HTMLElement
+    expect(grid.style.gridTemplateColumns).toContain('minmax(50px, 180fr)')
+    expect(grid.style.gridTemplateColumns).toContain('minmax(50px, 80fr)')
+  })
+
+  it('fills extra numeric scroll width without a blank trailing track', () => {
+    const { container } = render(
+      <Table
+        columns={[
+          { key: 'name', title: 'Name', width: 160, fixed: 'left' },
+          { key: 'age', title: 'Age', width: 80 },
+          { key: 'city', title: 'City', width: 120 },
+          { key: 'action', title: 'Action', width: 90, fixed: 'right' },
+        ]}
+        data={tableData}
+        scroll={{ x: 500 }}
+        showPagination={false}
+      />,
+    )
+
+    const grid = container.querySelector('.sg-table-grid') as HTMLElement
+    expect(grid.style.gridTemplateColumns).toContain('160px')
+    expect(grid.style.gridTemplateColumns).toContain('minmax(80px, 80fr)')
+    expect(grid.style.gridTemplateColumns).toContain('minmax(120px, 120fr)')
+    expect(grid.style.gridTemplateColumns).toContain('90px')
+  })
+
   it('expandable rows', () => {
     const expandConfig = {
       expandedRowRender: (row: Record<string, unknown>) => (

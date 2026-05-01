@@ -215,6 +215,17 @@ describe('Tabs', () => {
     expect(fn).toHaveBeenCalledWith('2')
     expect(screen.getByText('Content B')).toBeDefined()
   })
+
+  it('uses card chrome by default', () => {
+    const { container } = render(<Tabs items={items} />)
+    expect(container.querySelector('.sg-tabs-card')).toBeTruthy()
+  })
+
+  it('uses line chrome when type is line', () => {
+    const { container } = render(<Tabs items={items} type="line" />)
+    expect(container.querySelector('.sg-tabs-line')).toBeTruthy()
+    expect(container.querySelector('.sg-tabs-card')).toBeFalsy()
+  })
 })
 
 describe('Tag', () => {

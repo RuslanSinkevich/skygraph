@@ -140,7 +140,7 @@ export function Calendar(props: CalendarProps) {
   const monthNames = locale?.monthNames ?? ctxCalendarLocale?.monthNames ?? DEFAULT_MONTH_NAMES
   const baseDayNames = locale?.dayNames ?? ctxCalendarLocale?.dayNames ?? DEFAULT_DAY_NAMES
   const todayLabel = locale?.today ?? ctxCalendarLocale?.today ?? 'Today'
-  const weekLabel = locale?.week ?? 'W'
+  const weekLabel = locale?.week ?? ctxCalendarLocale?.week ?? 'W'
 
   const dayNames = useMemo(() => {
     if (weekStartDay === 0) return baseDayNames

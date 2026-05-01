@@ -21,6 +21,8 @@ import { RangePresetsDatePicker } from './datepicker/RangePresets.demo'
 import RangePresetsSource from './datepicker/RangePresets.demo?raw'
 import { TokensOverrideDatePicker } from './datepicker/TokensOverride.demo'
 import TokensOverrideSource from './datepicker/TokensOverride.demo?raw'
+import { RussianLocaleDatePicker } from './datepicker/RussianLocale.demo'
+import RussianLocaleSource from './datepicker/RussianLocale.demo?raw'
 
 const datePickerProps: PropDef[] = [
   { name: 'value', description: 'Controlled date; `null` means cleared', type: 'Date | null' },
@@ -110,6 +112,14 @@ export function DatePickerDemo() {
 
       <DemoBox title="Date + time" description="`showTime` adds hour/minute columns." code={WithTimeSource}>
         <WithTimeDatePicker />
+      </DemoBox>
+
+      <DemoBox
+        title="Russian locale (ru_RU)"
+        description="Календарь и подписи футера из `locale.calendar` и `locale.modal` внутри `ConfigProvider` с пресетом `ru_RU`."
+        code={RussianLocaleSource}
+      >
+        <RussianLocaleDatePicker />
       </DemoBox>
 
       <DemoBox title="Disabled dates" description="Predicate decides which cells are blocked." code={DisabledDatesSource}>

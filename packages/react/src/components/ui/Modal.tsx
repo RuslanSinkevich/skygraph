@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useId } from 'react'
 import { Button } from './Button'
 import { Transition } from './Transition'
 import { useFocusTrap } from '../../hooks/a11y/useFocusTrap'
+import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps } from '../../types'
 
 /** Props for the modal dialog overlay. */
@@ -14,10 +15,23 @@ export interface ModalProps extends BaseComponentProps {
   title?: string
   /** Main dialog body content. */
   children?: React.ReactNode
-  /** Optional footer region below the body (e.g. actions). */
+  /**
+   * Footer region below the body. Omit to render the default OK / Cancel pair
+   * (enabled when `onOk` is provided). Pass `null` to hide the footer entirely.
+   */
   footer?: React.ReactNode
   /** Dialog width as a CSS length or number (pixels). @default 520 */
   width?: number | string
+  /** Called when the default OK button is clicked. Enables the default footer. */
+  onOk?: () => void | Promise<void>
+  /** Label for the default OK button. Falls back to `locale.modal.okText` → `OK`. */
+  okText?: string
+  /** Label for the default Cancel button. Falls back to `locale.modal.cancelText` → `Cancel`. */
+  cancelText?: string
+  /** Visual type of the default OK button. @default 'primary' */
+  okType?: 'primary' | 'default' | 'dashed' | 'text'
+  /** Shows the OK button in loading state and disables interactions. */
+  confirmLoading?: boolean
 }
 
 /**
@@ -31,6 +45,11 @@ export function Modal({
   children,
   footer,
   width = 520,
+  onOk,
+  okText: okTextProp,
+  cancelText: cancelTextProp,
+  okType = 'primary',
+  confirmLoading,
   className,
   unstyled,
 }: ModalProps) {
@@ -38,6 +57,25 @@ export function Modal({
   const titleId = `${uid}-title`
   const bodyId = `${uid}-body`
   const trapRef = useFocusTrap(open)
+  const modalLocale = useConfig().locale?.modal
+  const okText = okTextProp ?? modalLocale?.okText ?? 'OK'
+  const cancelText = cancelTextProp ?? modalLocale?.cancelText ?? 'Cancel'
+
+  const defaultFooter =
+    footer === null
+      ? null
+      : footer === undefined && onOk
+        ? (
+          <>
+            <Button onClick={onClose} disabled={confirmLoading}>
+              {cancelText}
+            </Button>
+            <Button type={okType} loading={confirmLoading} onClick={() => onOk()}>
+              {okText}
+            </Button>
+          </>
+        )
+        : footer
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -66,7 +104,7 @@ export function Modal({
       >
         {title && <div id={titleId}>{title}</div>}
         <div id={bodyId}>{children}</div>
-        {footer && <div>{footer}</div>}
+        {defaultFooter && <div>{defaultFooter}</div>}
         <Button type="text" onClick={onClose} unstyled aria-label="Close">x</Button>
       </div>
     )
@@ -98,7 +136,7 @@ export function Modal({
               </Button>
             </div>
             <div className="sg-modal-body" id={bodyId}>{children}</div>
-            {footer && <div className="sg-modal-footer">{footer}</div>}
+            {defaultFooter && <div className="sg-modal-footer">{defaultFooter}</div>}
           </div>
         </Transition>
       </div>

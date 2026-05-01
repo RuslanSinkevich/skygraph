@@ -8,6 +8,8 @@ import {
   Upload,
   SchemaForm,
   Segmented,
+  Modal,
+  Calendar,
   en_US,
   ru_RU,
 } from '@skygraph/react'
@@ -23,6 +25,7 @@ const schema = {
 export function LocaleConfigProvider() {
   const [lang, setLang] = useState<'en' | 'ru'>('en')
   const [page, setPage] = useState(1)
+  const [modalOpen, setModalOpen] = useState(false)
   const locale = lang === 'en' ? en_US : ru_RU
 
   return (
@@ -70,6 +73,24 @@ export function LocaleConfigProvider() {
           <section>
             <h4 style={{ margin: '0 0 8px' }}>Upload</h4>
             <Upload />
+          </section>
+
+          <section>
+            <h4 style={{ margin: '0 0 8px' }}>Modal (default footer)</h4>
+            <Button onClick={() => setModalOpen(true)}>Open modal</Button>
+            <Modal
+              open={modalOpen}
+              onClose={() => setModalOpen(false)}
+              onOk={() => setModalOpen(false)}
+              title="Example"
+            >
+              Body text. OK / Cancel labels follow the provider locale.
+            </Modal>
+          </section>
+
+          <section style={{ gridColumn: '1 / -1' }}>
+            <h4 style={{ margin: '0 0 8px' }}>Calendar</h4>
+            <Calendar fullscreen={false} />
           </section>
 
           <section style={{ gridColumn: '1 / -1' }}>

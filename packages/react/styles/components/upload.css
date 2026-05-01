@@ -35,6 +35,16 @@
   cursor: pointer;
   color: var(--sg-color-text-tertiary);
   font-size: var(--sg-font-size);
+  background: transparent;
+  border: none;
+  padding: 0 var(--sg-padding-xs);
+  line-height: 1;
+  border-radius: var(--sg-border-radius-sm);
 }
 
 .sg-upload-item-remove:hover { color: var(--sg-color-error); }
+
+.sg-upload-item-remove:focus-visible {
+  outline: 2px solid var(--sg-color-primary);
+  outline-offset: 2px;
+}

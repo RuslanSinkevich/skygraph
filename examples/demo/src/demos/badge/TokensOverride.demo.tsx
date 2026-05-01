@@ -5,7 +5,9 @@ const box = {
   width: 42,
   height: 42,
   borderRadius: 6,
-  background: 'var(--sg-color-bg-container-disabled)',
+  background: 'var(--sg-color-bg-container)',
+  border: '1px solid color-mix(in srgb, var(--sg-color-error) 30%, transparent)',
+  boxShadow: 'inset 0 0 0 1px color-mix(in srgb, white 55%, transparent)',
   display: 'inline-block',
 }
 

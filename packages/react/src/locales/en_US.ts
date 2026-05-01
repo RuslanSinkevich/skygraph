@@ -52,5 +52,7 @@ export const en_US: SgLocale = {
     ],
     dayNames: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
     today: 'Today',
+    now: 'Now',
+    week: 'W',
   },
 }

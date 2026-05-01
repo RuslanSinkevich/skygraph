@@ -5,6 +5,13 @@
 .sg-datepicker {
   position: relative;
   display: inline-block;
+  /* Match the trigger min-width so flex parents do not squeeze below one full field + suffix. */
+  min-width: 200px;
+  max-width: 100%;
+}
+
+.sg-datepicker.sg-datepicker-range {
+  min-width: 320px;
 }
 
 .sg-datepicker-disabled {
@@ -19,7 +26,8 @@
   align-items: center;
   gap: var(--sg-padding-xs);
   height: var(--sg-height-md);
-  padding: 0 var(--sg-padding-sm) 0 var(--sg-padding-md);
+  /* Symmetric horizontal padding so the suffix icon stays inside the border (long placeholders + flex shrink). */
+  padding: 0 var(--sg-padding-md) 0 var(--sg-padding-md);
   border: 1px solid var(--sg-color-border);
   border-radius: var(--sg-border-radius);
   background: var(--sg-color-bg-container);
@@ -46,7 +54,10 @@
 }
 
 .sg-datepicker-input-text {
-  flex: 1;
+  /* `flex-basis: 0` + `min-width: 0` avoids `<input>` intrinsic min-width from long placeholders eating the suffix. */
+  flex: 1 1 0;
+  min-width: 0;
+  width: 0;
   border: none;
   outline: none;
   background: transparent;
@@ -54,7 +65,8 @@
   font-size: inherit;
   font-family: inherit;
   padding: 0;
-  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sg-datepicker-placeholder {
@@ -68,6 +80,8 @@
   margin-left: auto;
   color: var(--sg-color-text-tertiary);
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .sg-datepicker-icon {
@@ -87,6 +101,14 @@
 }
 
 /* Size variants */
+
+.sg-datepicker.sg-datepicker-small {
+  min-width: 170px;
+}
+
+.sg-datepicker.sg-datepicker-large {
+  min-width: 230px;
+}
 
 .sg-datepicker-small .sg-datepicker-input {
   height: var(--sg-height-sm);
@@ -145,11 +167,14 @@
 
 .sg-dp-dropdown-inner {
   display: flex;
+  min-width: 0;
 }
 
 .sg-dp-content {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 /* ── Presets sidebar ── */
@@ -198,6 +223,27 @@
   font-size: var(--sg-font-size);
   color: var(--sg-color-text);
   cursor: default;
+}
+
+/* Clickable month/year title (single DatePicker) — replaces the old footer link. */
+button.sg-dp-panel-title.sg-dp-panel-title-btn {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 2px var(--sg-padding-xs);
+  margin: 0;
+  border-radius: var(--sg-border-radius-sm);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--sg-font-size);
+  color: var(--sg-color-text);
+  transition: color var(--sg-transition-duration),
+    background var(--sg-transition-duration);
+}
+
+button.sg-dp-panel-title.sg-dp-panel-title-btn:hover {
+  color: var(--sg-color-primary);
+  background: var(--sg-color-bg-hover);
 }
 
 .sg-dp-nav-btn {
@@ -403,14 +449,17 @@
 .sg-dp-time-panel {
   display: flex;
   border-top: 1px solid var(--sg-color-border-secondary);
-  max-height: 200px;
+  max-height: 168px;
+  min-width: 0;
+  width: 100%;
 }
 
 .sg-dp-time-col {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   overflow-y: auto;
   border-right: 1px solid var(--sg-color-border-secondary);
-  max-height: 200px;
+  max-height: 168px;
   scrollbar-width: thin;
 }
 
@@ -445,11 +494,26 @@
 
 .sg-dp-footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: var(--sg-padding-xs) var(--sg-padding-sm);
   padding: var(--sg-padding-xs) var(--sg-padding-sm);
   border-top: 1px solid var(--sg-color-border-secondary);
   min-height: 36px;
+}
+
+.sg-dp-footer-start {
+  display: flex;
+  align-items: center;
+  gap: var(--sg-padding-xs);
+  margin-right: auto;
+}
+
+.sg-dp-footer-end {
+  display: flex;
+  align-items: center;
+  gap: var(--sg-padding-xs);
 }
 
 .sg-dp-footer-btn {
@@ -475,7 +539,6 @@
   background: var(--sg-color-primary);
   border-color: var(--sg-color-primary);
   color: var(--sg-color-white);
-  margin-left: auto;
 }
 
 .sg-dp-ok-btn:hover {
@@ -514,10 +577,13 @@
 .sg-dp-range-time {
   display: flex;
   border-top: 1px solid var(--sg-color-border-secondary);
+  min-width: 0;
+  width: 100%;
 }
 
 .sg-dp-range-time .sg-dp-time-panel {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   border-top: none;
 }
 

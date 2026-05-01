@@ -296,7 +296,7 @@ export function useTableState(props: TableProps) {
         }
       }
     },
-    [multiSort, sorts, onSortsChange, setSort, clearSort],
+    [multiSort, sorts, onSortsChange, setSort, setSorts, clearSort],
   )
 
   const getSortIndex = useCallback(
@@ -651,23 +651,51 @@ export function useTableState(props: TableProps) {
   // Grid-template rules:
   //
   // Mode A — `scroll.x` is SET (author wants a horizontal scrollbar):
-  //   • Every width is a hard pixel — columns never shrink. Sticky offsets
-  //     for fixed columns stay stable, table punches out of the container
-  //     and the scroll handles overflow.
+  //   • Widths are hard pixels by default — columns never shrink. Sticky
+  //     offsets for fixed columns stay stable, table punches out of the
+  //     container and the scroll handles overflow.
+  //   • If numeric `scroll.x` is wider than the declared tracks, regular
+  //     columns flex to absorb the remainder instead of leaving blank space.
   //
   // Mode B — `scroll.x` is NOT set (fluid layout):
   //   • No `width` / not resized → `minmax(MIN, 1fr)` — flex column.
-  //   • Has `width` → `minmax(MIN, ${w}fr)` — may shrink as low as
-  //     `MIN_COL_WIDTH` and grow proportionally to its declared width,
-  //     so the whole table always fits the container without overflow.
+  //   • Mixed explicit/auto widths → explicit widths stay px while auto
+  //     columns share the remaining space.
+  //   • All regular columns have widths → those widths become fr weights,
+  //     so the table fills the container without leaving a blank tail.
   //   • Fixed/resized columns keep their exact px (sticky offsets / user
   //     resize must not be disturbed by auto-layout).
+  const hasAutoColumns = columns.some(
+    (c) => !c.fixed && !userResizedCols.has(c.key) && c.width == null,
+  )
+  const shouldFlexExplicitWidths = !hasScrollX && !hasAutoColumns
+  const scrollXMinWidth =
+    typeof scroll?.x === 'number'
+      ? scroll.x
+      : typeof scroll?.x === 'string' && scroll.x.trim().endsWith('px')
+        ? Number.parseFloat(scroll.x)
+        : null
+  const declaredGridWidth =
+    extraBefore.reduce((sum, w) => sum + Number.parseFloat(w), 0) +
+    columns.reduce(
+      (sum, c) => sum + (colWidths[c.key] ?? c.width ?? DEFAULT_COL_WIDTH),
+      0,
+    )
+  const shouldFillScrollX =
+    hasScrollX &&
+    scrollXMinWidth !== null &&
+    Number.isFinite(scrollXMinWidth) &&
+    scrollXMinWidth > declaredGridWidth
+
   const colTemplates = columns.map((c) => {
     const resized = userResizedCols.has(c.key)
     const w = colWidths[c.key] ?? c.width ?? DEFAULT_COL_WIDTH
 
     if (hasScrollX) {
-      return c.width == null && !resized ? `${DEFAULT_COL_WIDTH}px` : `${w}px`
+      if (c.fixed || resized) {
+        return `${w}px`
+      }
+      return shouldFillScrollX ? `minmax(${w}px, ${w}fr)` : `${w}px`
     }
 
     if (c.fixed || resized) {
@@ -676,7 +704,10 @@ export function useTableState(props: TableProps) {
     if (c.width == null) {
       return `minmax(${MIN_COL_WIDTH}px, 1fr)`
     }
-    return `minmax(${MIN_COL_WIDTH}px, ${w}fr)`
+    if (shouldFlexExplicitWidths) {
+      return `minmax(${MIN_COL_WIDTH}px, ${w}fr)`
+    }
+    return `minmax(${MIN_COL_WIDTH}px, ${w}px)`
   })
   const gridTemplate = [...extraBefore, ...colTemplates].join(' ')
   const totalCols = extraBefore.length + columns.length

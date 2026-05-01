@@ -173,30 +173,60 @@ export function TreeSelect({
 
   const wrapperClass = unstyled
     ? className ?? ''
-    : ['sg-tree-select', `sg-tree-select-${size}`, disabled ? 'sg-tree-select-disabled' : '', className].filter(Boolean).join(' ')
+    : [
+        'sg-treeselect',
+        `sg-treeselect-${size}`,
+        open ? 'sg-treeselect-open' : '',
+        disabled ? 'sg-treeselect-disabled' : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')
 
   return (
     <div className={wrapperClass} style={style} ref={ref}>
       <div
-        className={unstyled ? '' : 'sg-tree-select-selector'}
+        className={unstyled ? '' : 'sg-treeselect-selector'}
         onClick={() => !disabled && setOpen(!open)}
         role="combobox"
         aria-expanded={open}
         aria-haspopup="tree"
       >
-        <span className={displayValue ? '' : (unstyled ? '' : 'sg-select-placeholder')}>
-          {displayValue ?? placeholder}
-        </span>
-        {allowClear && selectedKeys.length > 0 && !disabled && (
-          <span className={unstyled ? '' : 'sg-tree-select-clear'} onClick={handleClear}>×</span>
-        )}
+        <div className={unstyled ? '' : 'sg-treeselect-selection-wrap'}>
+          <span
+            className={
+              unstyled
+                ? ''
+                : displayValue
+                  ? 'sg-treeselect-selection-item'
+                  : 'sg-treeselect-placeholder'
+            }
+          >
+            {displayValue ?? placeholder}
+          </span>
+        </div>
+        <div className={unstyled ? '' : 'sg-treeselect-actions'}>
+          {allowClear && selectedKeys.length > 0 && !disabled && (
+            <span
+              className={unstyled ? '' : 'sg-treeselect-clear'}
+              onClick={handleClear}
+              role="button"
+              aria-label="Clear"
+            >
+              ×
+            </span>
+          )}
+          <span className={unstyled ? '' : 'sg-treeselect-arrow'} aria-hidden>
+            {open ? '\u25B2' : '\u25BC'}
+          </span>
+        </div>
       </div>
       {open && (
-        <div className={unstyled ? '' : 'sg-tree-select-dropdown'} role="tree">
+        <div className={unstyled ? '' : 'sg-treeselect-dropdown'} role="tree">
           {showSearch && (
-            <div className={unstyled ? '' : 'sg-tree-select-search'}>
+            <div className={unstyled ? '' : 'sg-treeselect-search'}>
               <input
-                className={unstyled ? '' : 'sg-input'}
+                className={unstyled ? '' : 'sg-treeselect-search-input'}
                 placeholder="Search..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -204,7 +234,7 @@ export function TreeSelect({
               />
             </div>
           )}
-          <div className={unstyled ? '' : 'sg-tree-select-tree'}>
+          <div className={unstyled ? '' : 'sg-treeselect-tree'}>
             {visibleNodes.map((node) => {
               const hasChildren = !!node.children?.length
               const isExpanded = expandedKeys.has(node.key)
@@ -214,21 +244,38 @@ export function TreeSelect({
                 <div
                   key={node.key}
                   className={unstyled ? '' : [
-                    'sg-tree-select-node',
-                    isSelected ? 'sg-tree-select-node-selected' : '',
-                    node.disabled ? 'sg-tree-select-node-disabled' : '',
+                    'sg-treeselect-node',
+                    isSelected ? 'sg-treeselect-node-selected' : '',
+                    node.disabled ? 'sg-treeselect-node-disabled' : '',
                   ].filter(Boolean).join(' ')}
                   style={!search ? { paddingLeft: `${node.depth * 20 + 8}px` } : undefined}
                   role="treeitem"
                   aria-selected={isSelected}
                   aria-expanded={hasChildren ? isExpanded : undefined}
                 >
-                  {hasChildren && !search && (
+                  {!search && (
                     <span
-                      className={unstyled ? '' : 'sg-tree-select-switcher'}
-                      onClick={() => toggleExpand(node.key)}
+                      className={
+                        unstyled
+                          ? ''
+                          : [
+                              'sg-treeselect-switcher',
+                              hasChildren ? '' : 'sg-treeselect-switcher-leaf',
+                            ]
+                              .filter(Boolean)
+                              .join(' ')
+                      }
+                      onClick={
+                        hasChildren
+                          ? (e) => {
+                              e.stopPropagation()
+                              toggleExpand(node.key)
+                            }
+                          : undefined
+                      }
+                      aria-hidden={!hasChildren}
                     >
-                      {isExpanded ? '▼' : '▶'}
+                      {hasChildren ? (isExpanded ? '\u25BC' : '\u25B6') : ''}
                     </span>
                   )}
                   {treeCheckable && (
@@ -237,12 +284,17 @@ export function TreeSelect({
                       checked={isSelected}
                       disabled={node.disabled}
                       onChange={() => !node.disabled && handleSelect(node.key)}
-                      className={unstyled ? '' : 'sg-tree-select-checkbox'}
+                      className={unstyled ? '' : 'sg-treeselect-checkbox'}
                     />
                   )}
                   <span
-                    className={unstyled ? '' : 'sg-tree-select-title'}
-                    onClick={() => !node.disabled && (hasChildren && !search ? toggleExpand(node.key) : handleSelect(node.key))}
+                    className={unstyled ? '' : 'sg-treeselect-title'}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (node.disabled) return
+                      if (hasChildren && !search) toggleExpand(node.key)
+                      else handleSelect(node.key)
+                    }}
                   >
                     {node.title}
                   </span>

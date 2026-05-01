@@ -1,16 +1,7 @@
 import type React from 'react'
+import type { CalendarLocale } from '../../../types/locale'
 
-/** Localized labels for month/day names and the "today" action. */
-export interface CalendarLocale {
-  /** Full month names in order (January–December). */
-  monthNames?: string[]
-  /** Weekday abbreviations starting Sunday. */
-  dayNames?: string[]
-  /** Label for the today shortcut button. */
-  today?: string
-  /** Week number column header. */
-  week?: string
-}
+export type { CalendarLocale }
 
 /** Values passed to `headerRender` for custom calendar chrome. */
 export interface CalendarHeaderInfo {

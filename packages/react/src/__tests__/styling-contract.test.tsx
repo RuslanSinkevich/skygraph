@@ -213,6 +213,7 @@ describe('Tabs — styling contract', () => {
       />,
     )
     expect(container.querySelector('.sg-tabs')).toBeTruthy()
+    expect(container.querySelector('.sg-tabs-card')).toBeTruthy()
     expect(container.querySelector('.sg-tabs-nav')).toBeTruthy()
     expect(container.querySelector('.sg-tabs-tab')).toBeTruthy()
     expect(container.querySelector('.sg-tabs-content')).toBeTruthy()

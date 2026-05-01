@@ -116,15 +116,14 @@ export function Upload({
                 {file.name}
               </span>
               {file.status !== 'uploading' && (
-                <span
+                <button
+                  type="button"
                   className={unstyled ? '' : 'sg-upload-item-remove'}
                   onClick={() => onRemove?.(file)}
-                  role="button"
-                  aria-label={removeLabel}
-                  tabIndex={0}
+                  aria-label={`${removeLabel}: ${file.name}`}
                 >
                   ×
-                </span>
+                </button>
               )}
             </div>
           ))}

@@ -134,6 +134,10 @@ export interface CalendarLocale {
   dayNames?: string[]
   /** Label for the "Today" button. */
   today?: string
+  /** Label for the "Now" shortcut when picking date + time. */
+  now?: string
+  /** Column header for the ISO week number when `showWeekNumber` is enabled. */
+  week?: string
 }
 
 /** Root locale object that aggregates all component-level locales. */
