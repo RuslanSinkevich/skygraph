@@ -214,6 +214,10 @@ export type { UseGraphOptions, UseGraphReturn } from './hooks/useGraph'
 export { Diagram } from './components/complex/Diagram'
 export type { DiagramProps, DiagramNodeRenderer } from './components/complex/Diagram'
 
+// Dashboard (static-layout grid for widgets)
+export { Dashboard } from './components/complex/Dashboard'
+export type { DashboardProps, DashboardWidget } from './components/complex/Dashboard'
+
 // Charts (v0 SVG primitives)
 export {
   LineChart,

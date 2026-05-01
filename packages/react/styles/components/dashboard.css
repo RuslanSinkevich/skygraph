@@ -1,0 +1,32 @@
+/* Dashboard — minimal static-layout grid for widgets. */
+
+.sg-dashboard {
+  width: 100%;
+}
+
+.sg-dashboard-widget {
+  background: var(--sg-color-bg-elevated);
+  border: 1px solid var(--sg-color-border);
+  border-radius: var(--sg-border-radius);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--sg-shadow-sm);
+}
+
+.sg-dashboard-widget-header {
+  padding: var(--sg-padding-sm) var(--sg-padding-md);
+  font-weight: 600;
+  font-size: var(--sg-font-size);
+  color: var(--sg-color-text);
+  border-bottom: 1px solid var(--sg-color-border-secondary);
+  background: var(--sg-color-bg-container);
+}
+
+.sg-dashboard-widget-body {
+  flex: 1;
+  padding: var(--sg-padding-md);
+  font-size: var(--sg-font-size);
+  color: var(--sg-color-text-secondary);
+  overflow: auto;
+}

@@ -58,6 +58,7 @@ import { DesignTokensPage } from './demos/DesignTokensPage'
 import { ConfigProviderDemo } from './demos/ConfigProviderDemo'
 import { DiagramDemo } from './demos/DiagramDemo'
 import { ChartsDemo } from './demos/ChartsDemo'
+import { DashboardDemo } from './demos/DashboardDemo'
 
 import { useI18n, LanguageSwitch } from './i18n'
 import type { DemoDict } from './i18n'
@@ -126,6 +127,7 @@ function buildMenu(t: DemoDict): MenuSection[] {
         { key: 'components/list', label: 'List' },
         { key: 'components/diagram', label: 'Diagram' },
         { key: 'components/charts', label: 'Charts' },
+        { key: 'components/dashboard', label: 'Dashboard' },
         { key: 'components/descriptions', label: 'Descriptions' },
         { key: 'components/collapse', label: 'Collapse' },
         { key: 'components/carousel', label: 'Carousel' },
@@ -213,6 +215,7 @@ const pages: Record<string, () => JSX.Element> = {
   'components/descriptions': DescriptionsDemo,
   'components/diagram': DiagramDemo,
   'components/charts': ChartsDemo,
+  'components/dashboard': DashboardDemo,
   'getting-started': GettingStartedPage,
   'styling-showcase': StylingShowcasePage,
   'theming': ThemingPage,
