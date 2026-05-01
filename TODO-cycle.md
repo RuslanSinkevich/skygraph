@@ -19,6 +19,15 @@
 - **Расхождение CI vs локальная ветка.** CI триггерится на `main`, локально `master`. Проверить состояние удалённого репо, унифицировать.
 - **Дубль lockfile.** В корне `package-lock.json` + `pnpm-lock.yaml`. Удалить `package-lock.json`, добавить в `.gitignore`.
 
+### Стилевой контракт
+
+- **228 dead-классов в CSS.** Сгенерированы по старым паттернам именования (`.sg-button-large`, `.sg-table-large`, `.sg-form-vertical`, ...). Часть из них — transitions (используются динамически при анимации). Большая часть — legacy. Кандидат на чистку в мини-стриме после Стрима 7.
+- **124 класса в DOM без CSS** (`sg-btn`, `sg-btn-primary`, `sg-datagrid-*`, `sg-tree-select-*`, `sg-field-feedback-*`, ...). Решить: добавить стили или удалить из JSX.
+- **Магический `#ff4d4f` в `form.css`** — заменить на `var(--sg-red-5)` или `var(--sg-color-error)`.
+- **Магический `#fff` в 6 файлах** (avatar, badge, colorpicker, menu, pagination, steps) — заменить на `var(--sg-gray-1)` или `var(--sg-color-bg)`. Критично для dark theme.
+- **`themes/default.css` и `themes/dark.css` — пустые `@import '../tokens.css'`.** Подключение `dark.css` даёт оба theme-селектора, что вводит пользователя в заблуждение. Решить: либо удалить эти файлы, либо вынести в них только соответствующие селекторы темы.
+- **`audit:styles` не интегрирован в CI.** Кандидат: запускать в CI с проверкой что `_audit/styling-audit.md` не изменился, либо в pre-commit.
+
 ### Дубли и путаница в публичном API
 
 - ❌ **TreeSelect — два разных компонента под одним именем.** `import from '@skygraph/react'` даёт UI-версию, `import from '@skygraph/react/tree'` — complex-версию. Серьёзный баг публичного API. Решить: какая основная, удалить вторую. **Отдельный мини-стрим вне основной очереди.**

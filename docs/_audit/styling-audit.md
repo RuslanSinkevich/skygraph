@@ -11,11 +11,11 @@
 
 ## 2. Классы `.sg-*`
 
-- В CSS определено классов: **853**.
-- В DOM компонентов используется строк-классов: **749**.
-- Совпадают (есть и в CSS, и в DOM): **625**.
-- Только в CSS (возможно мёртвый код): **228**.
-- Только в DOM (нет стилей): **124**.
+- В CSS определено классов: **874**.
+- В DOM компонентов используется строк-классов: **750**.
+- Совпадают (есть и в CSS, и в DOM): **643**.
+- Только в CSS (возможно мёртвый код): **231**.
+- Только в DOM (нет стилей): **107**.
 
 <details><summary>Только в CSS</summary>
 
@@ -62,6 +62,7 @@
 - `.sg-dp-dropdown-bottomRight`
 - `.sg-dp-dropdown-topLeft`
 - `.sg-dp-dropdown-topRight`
+- `.sg-dp-footer-link`
 - `.sg-dp-time-cell`
 - `.sg-dp-time-cell-active`
 - `.sg-drawer-bottom`
@@ -187,6 +188,8 @@
 - `.sg-steps-small`
 - `.sg-steps-vertical`
 - `.sg-switch-small`
+- `.sg-table-cell-fixed-left`
+- `.sg-table-cell-fixed-right`
 - `.sg-table-density-active`
 - `.sg-table-density-option`
 - `.sg-table-expand-btn`
@@ -298,7 +301,6 @@
 - `sg-datagrid-summary-cell`
 - `sg-datagrid-summary-row`
 - `sg-datepicker-loading`
-- `sg-datepicker-range`
 - `sg-dp-dropdown-range`
 - `sg-dp-now-btn`
 - `sg-dp-today-btn`
@@ -327,11 +329,8 @@
 - `sg-list-virtual-container`
 - `sg-menu-submenu`
 - `sg-menu-submenu-open`
-- `sg-pagination-jumper-input`
 - `sg-pagination-next`
 - `sg-pagination-prev`
-- `sg-pagination-quick-jumper`
-- `sg-pagination-size-changer`
 - `sg-progress`
 - `sg-radio-checked`
 - `sg-search-input-loading`
@@ -360,19 +359,6 @@
 - `sg-tree-node-expanded`
 - `sg-tree-node-leaf`
 - `sg-tree-node-show-line`
-- `sg-tree-select`
-- `sg-tree-select-checkbox`
-- `sg-tree-select-clear`
-- `sg-tree-select-disabled`
-- `sg-tree-select-dropdown`
-- `sg-tree-select-node`
-- `sg-tree-select-node-disabled`
-- `sg-tree-select-node-selected`
-- `sg-tree-select-search`
-- `sg-tree-select-selector`
-- `sg-tree-select-switcher`
-- `sg-tree-select-title`
-- `sg-tree-select-tree`
 - `sg-treeselect-multiple`
 - `sg-upload-loading`
 - `sg-zoom`
