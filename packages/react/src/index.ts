@@ -219,23 +219,31 @@ export type { DiagramProps, DiagramNodeRenderer } from './components/complex/Dia
 export { Dashboard } from './components/complex/Dashboard'
 export type { DashboardProps, DashboardWidget } from './components/complex/Dashboard'
 
-// Charts (v0 SVG primitives)
+// Charts (SVG primitives + animations + crosshair)
 export {
   LineChart,
   BarChart,
   AreaChart,
   PieChart,
   ChartLegend,
+  ChartCrosshair,
   DEFAULT_PALETTE,
+  DEFAULT_CHART_ANIMATION_MS,
   colorForSeries,
+  resolveChartAnimation,
+  chartDataKey,
 } from './components/complex/Charts'
 export type {
   LineChartProps,
+  LineChartCrosshair,
   BarChartProps,
   AreaChartProps,
   PieChartProps,
   PieChartSlice,
   ChartLegendProps,
+  ChartCrosshairProps,
+  ChartCrosshairPoint,
+  ChartAnimation,
   BaseChartProps,
   ChartCategory,
   ChartSeries,

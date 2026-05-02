@@ -170,10 +170,10 @@ export function Tree(props: TreeProps) {
   // ═══════════════════════════════════════════
   const [editingKey, setEditingKey] = useState<TreeKey | null>(null)
 
-  const isNodeEditable = (node: TreeNodeData): boolean => {
+  const isNodeEditable = useCallback((node: TreeNodeData): boolean => {
     if (typeof editable === 'function') return editable(node)
     return !!editable
-  }
+  }, [editable])
 
   const handleEditStart = useCallback((key: TreeKey) => {
     setEditingKey(key)
@@ -328,6 +328,30 @@ export function Tree(props: TreeProps) {
   }
 
   // ═══════════════════════════════════════════
+  // VIRTUAL SCROLL (refs declared early — used by keyboard handlers below)
+  // ═══════════════════════════════════════════
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [scrollTop, setScrollTop] = useState(0)
+  const itemHeight = NODE_HEIGHT
+
+  // Scrolls the virtual viewport so the row for `key` is visible. Declared
+  // before `handleKeyDown` so it can be listed in the callback's deps array
+  // (otherwise eslint-react-hooks/exhaustive-deps complains).
+  const scrollToFocused = useCallback((key: TreeKey) => {
+    const index = flatNodes.findIndex((item) => item.key === key)
+    if (index === -1) return
+    const el = containerRef.current ?? treeRef.current
+    if (!el) return
+    const targetTop = index * itemHeight
+    const { scrollTop: st, clientHeight: ch } = el
+    if (targetTop < st) {
+      el.scrollTop = targetTop
+    } else if (targetTop + itemHeight > st + ch) {
+      el.scrollTop = targetTop + itemHeight - ch
+    }
+  }, [flatNodes, itemHeight])
+
+  // ═══════════════════════════════════════════
   // KEYBOARD NAVIGATION
   // ═══════════════════════════════════════════
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -417,16 +441,15 @@ export function Tree(props: TreeProps) {
         break
       }
     }
-  }, [keyboard, disabled, editingKey, flatNodes, focusedKey, treeState.expandedKeys,
-      handleExpand, handleCheck, handleSelect, expandAll, setFocusedKey, checkable, selectable])
+  }, [
+    keyboard, disabled, editingKey, flatNodes, focusedKey, treeState.expandedKeys,
+    handleExpand, handleCheck, handleSelect, expandAll, setFocusedKey,
+    checkable, selectable, scrollToFocused, isNodeEditable, handleEditStart,
+  ])
 
   // ═══════════════════════════════════════════
-  // VIRTUAL SCROLL
+  // VIRTUAL SCROLL (handlers + memoized slices)
   // ═══════════════════════════════════════════
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [scrollTop, setScrollTop] = useState(0)
-  const itemHeight = NODE_HEIGHT
-
   const handleScroll = useCallback(() => {
     if (containerRef.current) {
       setScrollTop(containerRef.current.scrollTop)
@@ -449,21 +472,6 @@ export function Tree(props: TreeProps) {
   }, [useVirtual, height, scrollTop, itemHeight])
 
   const totalHeight = flatNodes.length * itemHeight
-
-  // Scroll to focused node
-  const scrollToFocused = useCallback((key: TreeKey) => {
-    const index = flatNodes.findIndex((item) => item.key === key)
-    if (index === -1) return
-    const el = containerRef.current ?? treeRef.current
-    if (!el) return
-    const targetTop = index * itemHeight
-    const { scrollTop: st, clientHeight: ch } = el
-    if (targetTop < st) {
-      el.scrollTop = targetTop
-    } else if (targetTop + itemHeight > st + ch) {
-      el.scrollTop = targetTop + itemHeight - ch
-    }
-  }, [flatNodes, itemHeight])
 
   // scrollToKey prop
   useEffect(() => {

@@ -21,6 +21,12 @@ import { RadioGroup } from '../components/ui/Radio'
 import { Select } from '../components/ui/Select'
 import { Modal } from '../components/ui/Modal'
 import { Tabs } from '../components/ui/Tabs'
+import { Carousel } from '../components/ui/Carousel'
+import { Mentions } from '../components/ui/Mentions'
+import { Rate } from '../components/ui/Rate'
+import { Cascader } from '../components/complex/Cascader'
+// `ColorPicker` and `TimePicker` are intentionally not imported — both have
+// known violations captured as `it.todo` below.
 
 interface AxeViolation {
   rule: string
@@ -125,10 +131,40 @@ describe('a11y smoke (axe-core)', () => {
     expect(await runAxe(container)).toEqual([])
   })
 
-  // TODO(a11y): `Select` (styled) must accept `aria-label` /
-  // `aria-labelledby` to satisfy WCAG 4.1.2 when the visual label is not a
-  // native `<label>`-associated control. Tracked in TODO-cycle.md.
-  it.todo('Select (styled) — name via aria-label / aria-labelledby')
+  // Closed by tab D — Select (styled) now accepts `aria-label` /
+  // `aria-labelledby` and applies them to the `role="combobox"` trigger.
+  it('Select (styled) — name via aria-label — no violations', async () => {
+    const { container } = render(
+      <Select
+        aria-label="Pick a fruit"
+        value="a"
+        onChange={() => {}}
+        options={[
+          { value: 'a', label: 'Apple' },
+          { value: 'b', label: 'Banana' },
+        ]}
+      />,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  it('Select (styled) — name via aria-labelledby — no violations', async () => {
+    const { container } = render(
+      <div>
+        <span id="fruit-lbl">Fruit</span>
+        <Select
+          aria-labelledby="fruit-lbl"
+          value="a"
+          onChange={() => {}}
+          options={[
+            { value: 'a', label: 'Apple' },
+            { value: 'b', label: 'Banana' },
+          ]}
+        />
+      </div>,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
 
   it('Modal open with title — no violations', async () => {
     const { container } = render(
@@ -148,6 +184,80 @@ describe('a11y smoke (axe-core)', () => {
           { key: 'a', label: 'One', children: <p>One panel</p> },
           { key: 'b', label: 'Two', children: <p>Two panel</p> },
         ]}
+      />,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  it('Carousel — no violations', async () => {
+    const { container } = render(
+      <Carousel dots>
+        <div>Slide one</div>
+        <div>Slide two</div>
+        <div>Slide three</div>
+      </Carousel>,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  it('Mentions wrapped in a label — no violations', async () => {
+    const { container } = render(
+      <label>
+        <span>Comment</span>
+        <Mentions
+          value=""
+          onChange={() => {}}
+          options={[
+            { value: 'alice', label: 'Alice' },
+            { value: 'bob', label: 'Bob' },
+          ]}
+        />
+      </label>,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  it('Rate with aria-label — no violations', async () => {
+    const { container } = render(
+      <div role="group" aria-label="Rating">
+        <Rate value={3} onChange={() => {}} />
+      </div>,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  // Known gap: the styled `ColorPicker` trigger is a `<div>` (no ARIA role),
+  // but it carries `aria-haspopup` / `aria-expanded` — axe flags this as
+  // `aria-allowed-attr` (critical). Fix: give the trigger `role="button"` or
+  // render it as a `<button>`. Tracked separately from this tab.
+  it.todo(
+    'ColorPicker (closed) — aria-allowed-attr on trigger (needs role=button or <button>)',
+  )
+
+  // Known gap: the `TimePicker` styled trigger is an `<input>` inside a
+  // `role="combobox"` wrapper but neither has a programmatic accessible name,
+  // so axe `aria-input-field-name` (serious) fires. Wrapping in a `<label>`
+  // does not associate because the trigger nests below the combobox role.
+  // Fix: accept `aria-label` / `aria-labelledby` like the new Select.
+  it.todo(
+    'TimePicker (closed) — aria-input-field-name (needs aria-label / aria-labelledby)',
+  )
+
+  it('Cascader (closed) — no violations', async () => {
+    const { container } = render(
+      <Cascader
+        options={[
+          {
+            value: 'a',
+            label: 'A',
+            children: [
+              { value: 'a1', label: 'A1' },
+              { value: 'a2', label: 'A2' },
+            ],
+          },
+          { value: 'b', label: 'B' },
+        ]}
+        onChange={() => {}}
       />,
     )
     expect(await runAxe(container)).toEqual([])

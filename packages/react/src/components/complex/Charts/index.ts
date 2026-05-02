@@ -1,7 +1,9 @@
 export { ChartLegend } from './ChartLegend'
 export type { ChartLegendProps } from './ChartLegend'
+export { ChartCrosshair } from './ChartCrosshair'
+export type { ChartCrosshairProps, ChartCrosshairPoint } from './ChartCrosshair'
 export { LineChart } from './LineChart'
-export type { LineChartProps } from './LineChart'
+export type { LineChartProps, LineChartCrosshair } from './LineChart'
 export { BarChart } from './BarChart'
 export type { BarChartProps } from './BarChart'
 export { AreaChart } from './AreaChart'
@@ -10,8 +12,15 @@ export { PieChart } from './PieChart'
 export type { PieChartProps, PieChartSlice } from './PieChart'
 export type {
   BaseChartProps,
+  ChartAnimation,
   ChartCategory,
   ChartSeries,
   ChartValue,
 } from './types'
-export { DEFAULT_PALETTE, colorForSeries } from './types'
+export {
+  DEFAULT_PALETTE,
+  colorForSeries,
+  resolveChartAnimation,
+  chartDataKey,
+  DEFAULT_CHART_ANIMATION_MS,
+} from './types'

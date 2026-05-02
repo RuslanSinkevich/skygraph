@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest'
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import {
   AreaChart,
   BarChart,
   LineChart,
   PieChart,
   DEFAULT_PALETTE,
+  DEFAULT_CHART_ANIMATION_MS,
   colorForSeries,
+  resolveChartAnimation,
 } from '../index'
 import type { ChartSeries } from '../index'
 
@@ -481,6 +483,241 @@ describe('Chart axes', () => {
     expect(container.querySelector('.sg-chart-axis-grid')).toBeNull()
     // The structural data hooks are still in place.
     expect(container.querySelector('[data-sg-axis="y"]')).not.toBeNull()
+  })
+})
+
+describe('Chart animations', () => {
+  it('resolveChartAnimation: undefined → enabled with default duration', () => {
+    expect(resolveChartAnimation(undefined)).toEqual({
+      enabled: true,
+      duration: DEFAULT_CHART_ANIMATION_MS,
+    })
+  })
+
+  it('resolveChartAnimation: false → disabled', () => {
+    expect(resolveChartAnimation(false)).toEqual({ enabled: false, duration: 0 })
+  })
+
+  it('resolveChartAnimation: { duration } → custom duration', () => {
+    expect(resolveChartAnimation({ duration: 1234 })).toEqual({
+      enabled: true,
+      duration: 1234,
+    })
+  })
+
+  it('LineChart applies sg-chart-line-segment-animate class by default', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+      />,
+    )
+    const segs = container.querySelectorAll('.sg-chart-line-segment-animate')
+    // 1 series × 2 segments → 2 animated segments.
+    expect(segs.length).toBe(2)
+    // stroke-dasharray and offset are inlined per segment so the CSS keyframe
+    // can animate `stroke-dashoffset` to 0.
+    const first = segs[0] as SVGLineElement
+    expect(first.style.strokeDasharray).toBeTruthy()
+    expect(first.style.strokeDashoffset).toBe(first.style.strokeDasharray)
+  })
+
+  it('LineChart drops animation classes when animate=false', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+        animate={false}
+      />,
+    )
+    expect(container.querySelectorAll('.sg-chart-line-segment-animate').length).toBe(0)
+    expect(container.querySelector('.sg-chart-line-animate')).toBeNull()
+  })
+
+  it('LineChart honours animate.duration on segment animationDuration style', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+        animate={{ duration: 800 }}
+      />,
+    )
+    const seg = container.querySelector('.sg-chart-line-segment-animate') as SVGLineElement
+    expect(seg).not.toBeNull()
+    // 1 segment → animationDuration === 800ms / 1 segment.
+    expect(seg.style.animationDuration).toBe('800ms')
+  })
+
+  it('BarChart applies sg-chart-bar-animate class on every <rect>', () => {
+    const { container } = render(
+      <BarChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [10, 20, 30] }]}
+      />,
+    )
+    const animated = container.querySelectorAll('.sg-chart-bar-animate')
+    expect(animated.length).toBe(3)
+    // transformOrigin is inlined so the keyframe `scaleY(0) → scaleY(1)`
+    // pivots from the zero baseline.
+    const first = animated[0] as SVGRectElement
+    expect(first.style.transformOrigin).toBeTruthy()
+  })
+
+  it('AreaChart applies sg-chart-area-animate per series group', () => {
+    const { container } = render(
+      <AreaChart
+        categories={['a', 'b', 'c']}
+        series={[
+          { id: 's1', label: 'A', values: [1, 2, 3] },
+          { id: 's2', label: 'B', values: [3, 2, 1] },
+        ]}
+      />,
+    )
+    expect(container.querySelectorAll('.sg-chart-area-animate').length).toBe(2)
+  })
+
+  it('PieChart applies sg-chart-pie-animate on each slice', () => {
+    const { container } = render(
+      <PieChart
+        data={[
+          { id: 'a', label: 'A', value: 30 },
+          { id: 'b', label: 'B', value: 70 },
+        ]}
+      />,
+    )
+    expect(container.querySelectorAll('.sg-chart-pie-animate').length).toBe(2)
+  })
+
+  it('All charts drop animation classes under unstyled', () => {
+    const { container } = render(
+      <div>
+        <LineChart
+          categories={['a', 'b']}
+          series={[{ id: 's', label: 'S', values: [1, 2] }]}
+          unstyled
+        />
+        <BarChart
+          categories={['a']}
+          series={[{ id: 's', label: 'S', values: [10] }]}
+          unstyled
+        />
+        <AreaChart
+          categories={['a', 'b']}
+          series={[{ id: 's', label: 'S', values: [1, 2] }]}
+          unstyled
+        />
+        <PieChart data={[{ id: 'a', label: 'A', value: 1 }]} unstyled />
+      </div>,
+    )
+    expect(container.querySelector('.sg-chart-line-segment-animate')).toBeNull()
+    expect(container.querySelector('.sg-chart-bar-animate')).toBeNull()
+    expect(container.querySelector('.sg-chart-area-animate')).toBeNull()
+    expect(container.querySelector('.sg-chart-pie-animate')).toBeNull()
+  })
+})
+
+describe('LineChart crosshair', () => {
+  // Helper to mock getBoundingClientRect on a JSX <svg> in jsdom (which
+  // returns zeroed rects by default — that disables our hit-test logic).
+  function patchSvgRect(svg: SVGSVGElement, width = 600, height = 200) {
+    Object.defineProperty(svg, 'getBoundingClientRect', {
+      value: () => ({ left: 0, top: 0, right: width, bottom: height, width, height, x: 0, y: 0, toJSON: () => '' }),
+      configurable: true,
+    })
+  }
+
+  it('does not render crosshair overlay by default', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+      />,
+    )
+    expect(container.querySelector('[data-sg-chart-crosshair]')).toBeNull()
+  })
+
+  it('renders the vertical guide on mouseMove when crosshair=true', () => {
+    const { container } = render(
+      <LineChart
+        categories={['Mon', 'Tue', 'Wed']}
+        series={[{ id: 's', label: 'Visits', values: [10, 20, 30] }]}
+        crosshair
+      />,
+    )
+    const svg = container.querySelector('svg')!
+    patchSvgRect(svg as SVGSVGElement)
+    // Move near the middle column → ChartCrosshair should mount.
+    fireEvent.mouseMove(svg, { clientX: 300, clientY: 100 })
+    expect(container.querySelector('[data-sg-chart-crosshair]')).not.toBeNull()
+    expect(container.querySelector('[data-sg-chart-crosshair-line]')).not.toBeNull()
+  })
+
+  it('removes the crosshair on mouseLeave', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+        crosshair
+      />,
+    )
+    const svg = container.querySelector('svg')!
+    patchSvgRect(svg as SVGSVGElement)
+    fireEvent.mouseMove(svg, { clientX: 300, clientY: 100 })
+    expect(container.querySelector('[data-sg-chart-crosshair]')).not.toBeNull()
+    fireEvent.mouseLeave(svg)
+    expect(container.querySelector('[data-sg-chart-crosshair]')).toBeNull()
+  })
+
+  it('crosshair tooltip lists one row per non-null series at the hovered category', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[
+          { id: 's1', label: 'Alpha', values: [10, 20] },
+          { id: 's2', label: 'Beta', values: [5, null] },
+          { id: 's3', label: 'Gamma', values: [1, 2] },
+        ]}
+        crosshair
+      />,
+    )
+    const svg = container.querySelector('svg')!
+    patchSvgRect(svg as SVGSVGElement)
+    // Click on the second category (right edge of the plot).
+    fireEvent.mouseMove(svg, { clientX: 600, clientY: 100 })
+    const dots = container.querySelectorAll('[data-sg-chart-crosshair-dot]')
+    // Beta has null at idx 1 → only Alpha + Gamma render dots.
+    expect(dots.length).toBe(2)
+  })
+
+  it('crosshair valueFormatter is forwarded to the tooltip values', () => {
+    const fmt = (n: number) => `$${n.toFixed(2)}`
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'Sales', values: [10, 20] }]}
+        crosshair={{ valueFormatter: fmt }}
+      />,
+    )
+    const svg = container.querySelector('svg')!
+    patchSvgRect(svg as SVGSVGElement)
+    fireEvent.mouseMove(svg, { clientX: 0, clientY: 100 })
+    const value = container.querySelector('.sg-chart-crosshair-tooltip-value')
+    expect(value?.textContent).toBe('$10.00')
+  })
+
+  it('mouse outside the plot range does not render crosshair', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+        crosshair
+      />,
+    )
+    const svg = container.querySelector('svg')!
+    patchSvgRect(svg as SVGSVGElement)
+    // Way past the right edge.
+    fireEvent.mouseMove(svg, { clientX: 10000, clientY: 100 })
+    expect(container.querySelector('[data-sg-chart-crosshair]')).toBeNull()
   })
 })
 

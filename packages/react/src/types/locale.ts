@@ -90,6 +90,44 @@ export interface TableLocale {
   copiedToClipboard?: string
   /** Row number column header. */
   rowNumber?: string
+  /** Toolbar dropdown trigger label for picking a `groupBy` field. */
+  groupByLabel?: string
+  /** "No grouping" option label inside the group-by dropdown. */
+  groupByNone?: string
+  /** Placeholder for advanced filter scalar value input. */
+  filterAdvancedValuePlaceholder?: string
+  /** Placeholder for advanced filter `in` / `notIn` comma-separated input. */
+  filterAdvancedInPlaceholder?: string
+  /** Placeholder for the upper bound of `between` operator. */
+  filterAdvancedBetweenMaxPlaceholder?: string
+  /** Operator label: equal. */
+  filterOpEq?: string
+  /** Operator label: not equal. */
+  filterOpNeq?: string
+  /** Operator label: less than. */
+  filterOpLt?: string
+  /** Operator label: less than or equal. */
+  filterOpLte?: string
+  /** Operator label: greater than. */
+  filterOpGt?: string
+  /** Operator label: greater than or equal. */
+  filterOpGte?: string
+  /** Operator label: between (inclusive). */
+  filterOpBetween?: string
+  /** Operator label: in list. */
+  filterOpIn?: string
+  /** Operator label: not in list. */
+  filterOpNotIn?: string
+  /** Operator label: contains substring. */
+  filterOpContains?: string
+  /** Operator label: starts with. */
+  filterOpStartsWith?: string
+  /** Operator label: ends with. */
+  filterOpEndsWith?: string
+  /** Operator label: is empty / null. */
+  filterOpIsEmpty?: string
+  /** Operator label: is not empty. */
+  filterOpIsNotEmpty?: string
 }
 
 /** Locale strings for the DataGrid component. */

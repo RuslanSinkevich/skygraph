@@ -90,9 +90,9 @@ Drag-drop конструктор форм над `SchemaForm`. Зависит о
 
 - **`SchemaForm.tsx:75`** — `react-hooks/rules-of-hooks` ошибка: `useConfig` вызван условно (✅ уже починен в Стриме 1, но проверить актуально ли).
 - **`Table/Table.tsx:87`** — warning `react-hooks/exhaustive-deps` про `rowNumConfig`.
-- **`Tree/Tree.tsx:420`** — warning про missing deps в useCallback.
-- **`DatePicker.tsx:980`** — warning unused eslint-disable directive.
-- **`SubmitButton`** в `SchemaForm.tsx` — ранее использовал `sg-btn sg-btn-primary` (не существуют), исправлено на `sg-button-*`. Проверить нет ли подобного в других местах.
+- ✅ **`Tree/Tree.tsx`** — warning про missing deps в `handleKeyDown`. Починено в Tab D: `isNodeEditable` обёрнута в `useCallback`, `scrollToFocused` вынесен выше, добавлены `scrollToFocused` / `isNodeEditable` / `handleEditStart` в deps.
+- ✅ **`DatePicker.tsx:980`** — warning unused eslint-disable directive. Удалена в Tab D.
+- ✅ **`SubmitButton`** в `SchemaForm.tsx` — `sg-btn` → `sg-button` (ранее починено). Tab D: проверка по `rg "sg-btn"` подтвердила, что нигде в `src/` устаревший класс не используется (только CSS-переменные `--sg-btn-*` остались как часть styling-contract).
 
 ---
 

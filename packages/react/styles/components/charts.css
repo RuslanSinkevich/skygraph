@@ -1,8 +1,12 @@
-/* Charts — v0 minimal SVG primitives.
+/* Charts — SVG primitives.
  *
  * Stroke / fill colours are inlined per-series from JS (token references), so
  * theming is automatic when `--sg-color-primary`, `--sg-color-success`, ...
  * are overridden upstream.
+ *
+ * Mount / data-change animations are pure CSS (no rAF loops). Each chart
+ * passes `--sg-chart-anim-duration` (or `animation-duration` inline) and
+ * relies on `@keyframes` declared here.
  */
 
 .sg-chart {
@@ -14,7 +18,7 @@
 
 .sg-chart-line,
 .sg-chart-bar {
-  /* nothing extra in v0 */
+  /* nothing extra */
 }
 
 /* Axes — opt-in via `xAxis` / `yAxis` props on Line/Bar/Area charts. */
@@ -34,4 +38,133 @@
 .sg-chart-axis-label {
   fill: var(--sg-color-text);
   font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Animations
+ *
+ * Each chart family applies its own keyframe to the per-series / per-bar
+ * group node. `key={…}` on those groups changes whenever data changes,
+ * which re-mounts the node and re-triggers the animation. When `animate`
+ * is `false`, the animation classes are not applied at all.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* Line chart — per-segment "draw-in" via stroke-dashoffset. The exact
+ * dasharray / offset values are set inline (we know the segment length
+ * at render time), and per-segment delay creates a left-to-right reveal. */
+.sg-chart-line-segment-animate {
+  animation-name: sg-chart-line-draw;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+}
+
+@keyframes sg-chart-line-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Container fade for the whole series group (markers + segments). */
+.sg-chart-line-animate {
+  animation: sg-chart-line-fade var(--sg-chart-anim-duration, 600ms) ease-out both;
+}
+
+@keyframes sg-chart-line-fade {
+  from { opacity: 0.05; }
+  to { opacity: 1; }
+}
+
+/* Bar chart — each <rect> grows from its baseline (transform-origin set
+ * inline so positive bars rise from the bottom and negative bars descend
+ * from the top). `transform-box: fill-box` makes pixel transform-origin
+ * resolve relative to the SVG element itself. */
+.sg-chart-bar-animate {
+  transform-box: fill-box;
+  animation-name: sg-chart-bar-grow;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  transform: scaleY(0);
+}
+
+@keyframes sg-chart-bar-grow {
+  to { transform: scaleY(1); }
+}
+
+/* Area chart — fade + slight slide-up of the whole filled region. We avoid
+ * clip-path (poorer SVG support across browsers) in favour of opacity +
+ * translate, which is enough to convey the entrance without heavy paint. */
+.sg-chart-area-animate {
+  animation: sg-chart-area-fade var(--sg-chart-anim-duration, 600ms) ease-out both;
+  transform-box: fill-box;
+}
+
+@keyframes sg-chart-area-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pie chart — each slice rotates from -90deg to its final angle and fades
+ * in. `transform-origin` is set inline to the pie centre. */
+.sg-chart-pie-animate {
+  transform-box: view-box;
+  animation-name: sg-chart-pie-rotate;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  opacity: 0;
+}
+
+@keyframes sg-chart-pie-rotate {
+  from {
+    transform: rotate(-90deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Reduce-motion users get static charts. */
+@media (prefers-reduced-motion: reduce) {
+  .sg-chart-line-segment-animate,
+  .sg-chart-line-animate,
+  .sg-chart-bar-animate,
+  .sg-chart-area-animate,
+  .sg-chart-pie-animate {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Crosshair
+ *
+ * Hover overlay rendered by `<ChartCrosshair>` (currently used by LineChart).
+ * All visual chrome is here so theming stays token-based.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+.sg-chart-crosshair {
+  pointer-events: none;
+}
+
+.sg-chart-crosshair-line {
+  /* stroke set inline so token references resolve outside CSS. */
+}
+
+.sg-chart-crosshair-tooltip-bg {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+}
+
+.sg-chart-crosshair-tooltip-title,
+.sg-chart-crosshair-tooltip-label,
+.sg-chart-crosshair-tooltip-value {
+  font-family: inherit;
 }

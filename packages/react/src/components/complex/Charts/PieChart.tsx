@@ -1,5 +1,10 @@
 import { useMemo } from 'react'
-import { colorForSeries } from './types'
+import {
+  chartDataKey,
+  colorForSeries,
+  resolveChartAnimation,
+  type ChartAnimation,
+} from './types'
 import type { ChartSeries } from './types'
 import type { CSSProperties } from 'react'
 
@@ -28,6 +33,12 @@ export interface PieChartProps {
   unstyled?: boolean
   className?: string
   style?: CSSProperties
+  /**
+   * Mount / data-change animation toggle. When enabled, slices fade-in and
+   * rotate from `-90deg` to `0deg` around the pie centre.
+   * @default true
+   */
+  animate?: ChartAnimation
 }
 
 /**
@@ -43,6 +54,7 @@ export function PieChart({
   unstyled = false,
   className,
   style,
+  animate,
 }: PieChartProps) {
   const total = useMemo(
     () => data.reduce((sum, d) => sum + Math.max(0, d.value), 0),
@@ -53,6 +65,16 @@ export function PieChart({
   const cy = typeof height === 'number' ? height / 2 : 100
 
   const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-pie', className].filter(Boolean).join(' ')
+
+  const anim = resolveChartAnimation(animate)
+  const animKey = useMemo(() => chartDataKey([data]), [data])
+  const animClass = anim.enabled && !unstyled ? 'sg-chart-pie-animate' : undefined
+  const animStyle: CSSProperties | undefined = anim.enabled
+    ? {
+        transformOrigin: `${cx}px ${cy}px`,
+        animationDuration: `${anim.duration}ms`,
+      }
+    : undefined
 
   if (total === 0 || data.length === 0) {
     return (
@@ -116,12 +138,20 @@ export function PieChart({
             ].join(' ')
 
         const fakeSeries: ChartSeries = { id: slice.id, label: slice.label, values: [], color: slice.color }
+        const sliceStyle: CSSProperties | undefined = anim.enabled
+          ? {
+              ...animStyle,
+              animationDelay: `${(i / Math.max(1, data.length)) * (anim.duration * 0.4)}ms`,
+            }
+          : undefined
         return (
           <path
-            key={slice.id}
+            key={`${slice.id}-${animKey}`}
+            className={animClass}
             d={d}
             fill={colorForSeries(fakeSeries, i)}
             data-slice-id={slice.id}
+            style={sliceStyle}
           >
             <title>{`${slice.label}: ${slice.value}`}</title>
           </path>

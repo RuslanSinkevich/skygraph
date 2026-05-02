@@ -24,6 +24,19 @@ interface SelectPropsBase extends BaseComponentProps, InteractiveProps, SizableP
   placeholder?: string
   /** Called when the control loses focus. */
   onBlur?: () => void
+  /**
+   * Accessible name for the control. Required for the styled (non-`unstyled`)
+   * variant when there is no surrounding `<label htmlFor=...>` — the styled
+   * trigger is a `<div role="combobox">` and a parent `<label>` cannot
+   * associate. WCAG 4.1.2 expects a name for every interactive control;
+   * provide either `'aria-label'` or `'aria-labelledby'`.
+   *
+   * In the `unstyled` variant the underlying native `<select>` is fully
+   * labelable, so this prop is purely informational there.
+   */
+  'aria-label'?: string
+  /** Id(s) of the element(s) that describe this control. Mirrors `aria-label`. */
+  'aria-labelledby'?: string
 }
 
 /** Single-select variant. `value` is one option value. */
@@ -74,6 +87,8 @@ export function Select(props: SelectProps) {
     className,
     style,
     unstyled,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
   } = props
 
   const isMultiple = props.multiple === true
@@ -162,6 +177,8 @@ export function Select(props: SelectProps) {
           multiple
           value={currentMultiple.map(String)}
           disabled={disabled || loading}
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledBy}
           onChange={(e) => {
             const picked = Array.from(e.target.selectedOptions).map((o) => {
               const v = o.value
@@ -186,6 +203,8 @@ export function Select(props: SelectProps) {
         style={style}
         value={currentSingle as string}
         disabled={disabled || loading}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
         onChange={(e) => {
           const v = e.target.value
           const numVal = Number(v)
@@ -263,6 +282,9 @@ export function Select(props: SelectProps) {
         aria-haspopup="listbox"
         aria-controls={listboxId}
         aria-multiselectable={isMultiple || undefined}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        aria-disabled={disabled || loading || undefined}
         tabIndex={disabled || loading ? -1 : 0}
         onClick={() => !disabled && !loading && setOpen(!open)}
         onKeyDown={(e) => {

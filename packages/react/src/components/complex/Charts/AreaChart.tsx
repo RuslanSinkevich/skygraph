@@ -1,8 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 import {
   chartBounds,
+  chartDataKey,
   colorForSeries,
   normalizePadding,
+  resolveChartAnimation,
 } from './types'
 import { ChartLegend } from './ChartLegend'
 import { ChartAxes } from './ChartAxes'
@@ -36,6 +38,7 @@ export function AreaChart({
   legend = false,
   xAxis,
   yAxis,
+  animate,
 }: AreaChartProps) {
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
@@ -82,6 +85,16 @@ export function AreaChart({
 
   const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-area', className].filter(Boolean).join(' ')
 
+  const anim = resolveChartAnimation(animate)
+  const animKey = useMemo(
+    () => chartDataKey([categories, series.map((s) => s.values), stacked]),
+    [categories, series, stacked],
+  )
+  const animStyle: CSSProperties | undefined = anim.enabled
+    ? ({ ['--sg-chart-anim-duration' as string]: `${anim.duration}ms` } as CSSProperties)
+    : undefined
+  const animClass = anim.enabled && !unstyled ? 'sg-chart-area-animate' : undefined
+
   const svg = (
     <svg
       className={wrapperClass}
@@ -127,7 +140,7 @@ export function AreaChart({
           .map((p, i) => (i === 0 ? `M ${p[0]} ${p[1]}` : `L ${p[0]} ${p[1]}`))
           .join(' ')
         return (
-          <g key={s.id}>
+          <g key={`${s.id}-${animKey}`} className={animClass} style={animStyle}>
             <path d={areaPath} fill={color} fillOpacity={fillOpacity} stroke="none" />
             <path d={linePath} fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
           </g>

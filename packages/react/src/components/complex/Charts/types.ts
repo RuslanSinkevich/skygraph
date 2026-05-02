@@ -53,6 +53,56 @@ export interface YAxisOptions {
   gridLines?: boolean
 }
 
+/**
+ * Animation configuration for chart mount / data transitions.
+ *
+ * - `true` / omitted — enable with default duration (600ms).
+ * - `false` — disable entirely (no animation classes / styles applied).
+ * - `{ duration: ms }` — explicit duration in milliseconds.
+ *
+ * Implementation is pure CSS (no `requestAnimationFrame` loops): we pass the
+ * duration as a `--sg-chart-anim-duration` custom property on the animated
+ * elements and let `@keyframes` in `charts.css` handle the timing.
+ */
+export type ChartAnimation = boolean | { duration?: number }
+
+/** Default animation duration in milliseconds (when `animate` is not given a number). */
+export const DEFAULT_CHART_ANIMATION_MS = 600
+
+/** Resolves a `ChartAnimation` value into a normalized `{ enabled, duration }` shape. */
+export function resolveChartAnimation(animate: ChartAnimation | undefined): {
+  enabled: boolean
+  duration: number
+} {
+  if (animate === false) return { enabled: false, duration: 0 }
+  if (animate === undefined || animate === true) {
+    return { enabled: true, duration: DEFAULT_CHART_ANIMATION_MS }
+  }
+  return {
+    enabled: true,
+    duration: animate.duration ?? DEFAULT_CHART_ANIMATION_MS,
+  }
+}
+
+/**
+ * Builds a stable string key from a list of values that re-mounts animated
+ * subtrees only when the data really changes (categories / series). Used as
+ * `key={...}` on animated `<g>` groups so CSS animations re-trigger on data
+ * updates, not on every render.
+ */
+export function chartDataKey(parts: readonly unknown[]): string {
+  let out = ''
+  for (let i = 0; i < parts.length; i++) {
+    if (i > 0) out += '|'
+    try {
+      out += JSON.stringify(parts[i])
+    } catch {
+      out += String(parts[i])
+    }
+  }
+  return out
+}
+
 /** Common shape for chart props. */
 export interface BaseChartProps {
   /** Categories along the X axis. */
@@ -73,6 +123,11 @@ export interface BaseChartProps {
   padding?: number | readonly [number, number, number, number]
   /** Show a small horizontal legend below the SVG. @default false */
   legend?: boolean
+  /**
+   * Mount / data-change animation toggle. Pure CSS, no rAF loops.
+   * @default true
+   */
+  animate?: ChartAnimation
   /**
    * Optional X axis configuration. When omitted, no x-axis is rendered
    * (v0 backward-compat). When provided, ticks / labels / optional title

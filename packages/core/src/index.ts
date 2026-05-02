@@ -63,7 +63,14 @@ export {
   GRAPH_PREFIX,
 } from './engines/namespaces'
 
-export { createGraph, routeOrthogonal, pointsToPath } from './engines/graph/index'
+export {
+  createGraph,
+  routeOrthogonal,
+  pointsToPath,
+  aabbFromOBB,
+  obbCorners,
+  obbContainsPoint,
+} from './engines/graph/index'
 export type {
   AABB,
   Anchor,
@@ -81,11 +88,19 @@ export type {
   NodeInit,
   NodeTransform,
   NodeUpdate,
+  OBB,
   Outline,
   Point,
+  RouteOrthogonalOptions,
 } from './engines/graph/index'
 
-export { createTable } from './engines/table/index'
+export {
+  createTable,
+  matchesOperator,
+  matchesColumnFilter,
+  resolveOperator,
+  computeAggregate,
+} from './engines/table/index'
 export type {
   TableEngine,
   TableState,
@@ -95,6 +110,12 @@ export type {
   SortDirection,
   ColumnFilter,
   FilterFn,
+  FilterOperator,
+  AdvancedFilter,
+  AggregateType,
+  AggregateFn,
+  ColumnAggregate,
+  TableGroup,
 } from './engines/table/index'
 
 export { createTree } from './engines/tree/index'

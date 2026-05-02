@@ -1,8 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 import {
   chartBounds,
+  chartDataKey,
   colorForSeries,
   normalizePadding,
+  resolveChartAnimation,
 } from './types'
 import { ChartLegend } from './ChartLegend'
 import { ChartAxes } from './ChartAxes'
@@ -33,6 +35,7 @@ export function BarChart({
   legend = false,
   xAxis,
   yAxis,
+  animate,
 }: BarChartProps) {
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
@@ -59,6 +62,13 @@ export function BarChart({
   const barWidth = barSlot * (1 - barGap)
 
   const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-bar', className].filter(Boolean).join(' ')
+
+  const anim = resolveChartAnimation(animate)
+  const animKey = useMemo(
+    () => chartDataKey([categories, series.map((s) => s.values)]),
+    [categories, series],
+  )
+  const animClass = anim.enabled && !unstyled ? 'sg-chart-bar-animate' : undefined
 
   const svg = (
     <svg
@@ -102,15 +112,28 @@ export function BarChart({
           const yTop = pt + ((top - Math.max(v, 0)) / span) * plotH
           const yBottom = pt + ((top - Math.min(v, 0)) / span) * plotH
           const h = Math.max(0, yBottom - yTop)
+          // Origin: zero baseline so positive bars grow upwards and negative
+          // bars grow downwards. `transform-box: fill-box` (set in CSS) makes
+          // pixel-space transform-origin work on SVG <rect>.
+          const originY = v >= 0 ? yBottom : yTop
+          const animStyle: CSSProperties | undefined = anim.enabled
+            ? {
+                transformOrigin: `${x + barWidth / 2}px ${originY}px`,
+                animationDuration: `${anim.duration}ms`,
+                animationDelay: `${(gi / Math.max(1, categories.length)) * (anim.duration * 0.3)}ms`,
+              }
+            : undefined
           return (
             <rect
-              key={`${s.id}-${gi}`}
+              key={`${s.id}-${gi}-${animKey}`}
+              className={animClass}
               x={x}
               y={yTop}
               width={Math.max(1, barWidth)}
               height={h}
               fill={colorForSeries(s, si)}
               rx={2}
+              style={animStyle}
             >
               <title>{`${s.label} · ${categories[gi]}: ${v}`}</title>
             </rect>

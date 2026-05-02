@@ -977,7 +977,6 @@ export function RangePicker({
 
   useEffect(() => {
     if (value) setInternalValue(normalizeRange(value))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   const openDropdown = () => {
