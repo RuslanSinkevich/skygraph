@@ -2,7 +2,15 @@ import type React from 'react'
 import type { UseTableOptions } from '../../../hooks/useTable'
 import type { RowId, SortConfig, SortDirection } from '@skygraph/core'
 import type { BaseComponentProps, InteractiveProps, SizableProps, SlotClassNames, SlotStyles } from '../../../types'
+import type { TableLocale } from '../../../types/locale'
 import type { ContextMenuItem } from './ContextMenu'
+
+/**
+ * Re-exports the canonical TableLocale from `types/locale.ts`. The two
+ * declarations were unified during the post-stream cleanup; keep using
+ * `from '../../../types/locale'` for new code.
+ */
+export type { TableLocale }
 
 /**
  * Имена слотов `Table` для пропов `classNames` / `styles`.
@@ -190,82 +198,6 @@ export interface GroupRow {
   expanded: boolean
   /** Per-column aggregate display for the group header. */
   aggregates: Record<string, React.ReactNode>
-}
-
-/** Localizable strings for the table UI. */
-export interface TableLocale {
-  /** Empty state body text. */
-  emptyText?: React.ReactNode
-  /** Filter reset button label. */
-  filterReset?: string
-  /** Filter confirm button label. */
-  filterConfirm?: string
-  /** Placeholder for filter list search. */
-  filterSearchPlaceholder?: string
-  /** Message when filter search has no matches. */
-  filterEmptyText?: string
-  /** Toolbar global search placeholder. */
-  searchPlaceholder?: string
-  /** Ascending sort affordance in header. */
-  sortAsc?: React.ReactNode
-  /** Descending sort affordance in header. */
-  sortDesc?: React.ReactNode
-  /** Row/tree expander icon. */
-  expandIcon?: React.ReactNode
-  /** Default column filter icon. */
-  filterIcon?: React.ReactNode
-  /** Column search-mode filter icon. */
-  searchIcon?: React.ReactNode
-  /** Formats total row count label. */
-  totalRows?: (count: number) => string
-  /** Formats selection count in the summary bar. */
-  selectedRows?: (count: number) => string
-  /** CSV export toolbar label. */
-  exportCSV?: string
-  /** JSON export toolbar label. */
-  exportJSON?: string
-  /** Copy table toolbar label. */
-  copyTable?: string
-  /** Pin column to left context label. */
-  pinLeft?: string
-  /** Pin column to right context label. */
-  pinRight?: string
-  /** Unpin column context label. */
-  unpin?: string
-  /** Column visibility menu trigger label. */
-  showColumns?: string
-  /** Print toolbar label. */
-  print?: string
-  /** Enter fullscreen label. */
-  fullscreen?: string
-  /** Exit fullscreen label. */
-  exitFullscreen?: string
-  /** Density menu trigger label. */
-  density?: string
-  /** Compact density option. */
-  densitySmall?: string
-  /** Default density option. */
-  densityMiddle?: string
-  /** Comfortable density option. */
-  densityLarge?: string
-  /** Collapse all groups toolbar label. */
-  groupCollapse?: string
-  /** Expand all groups toolbar label. */
-  groupExpand?: string
-  /** Aggregate label for sum. */
-  sum?: string
-  /** Aggregate label for average. */
-  avg?: string
-  /** Aggregate label for count. */
-  count?: string
-  /** Aggregate label for minimum. */
-  min?: string
-  /** Aggregate label for maximum. */
-  max?: string
-  /** Copy success toast (reserved). */
-  copiedToClipboard?: string
-  /** Row number column header. */
-  rowNumber?: string
 }
 
 export const DEFAULT_LOCALE: Required<TableLocale> = {

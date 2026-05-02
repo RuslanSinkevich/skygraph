@@ -24,7 +24,9 @@
       "require": "./dist/runtime-internal.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -33,7 +35,15 @@
     "url": "https://github.com/skygraph/skygraph.git",
     "directory": "packages/core"
   },
-  "keywords": ["reactive", "state", "graph", "form", "table", "tree", "engine"],
+  "keywords": [
+    "reactive",
+    "state",
+    "graph",
+    "form",
+    "table",
+    "tree",
+    "engine"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
@@ -42,9 +52,10 @@
     "clean": "rimraf dist"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.9",
+    "rimraf": "^5.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
-    "vitest": "^2.0.0",
-    "rimraf": "^5.0.0"
+    "vitest": "^2.0.0"
   }
 }

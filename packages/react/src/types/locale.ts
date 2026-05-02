@@ -12,46 +12,84 @@ export interface PaginationLocale {
   page?: string
 }
 
-/** Locale strings for the Table component. */
+/**
+ * Localizable strings for the `Table` component. This is the *single*
+ * canonical declaration; `complex/Table/types.ts` re-exports the same type
+ * to keep imports stable inside the Table subtree.
+ */
 export interface TableLocale {
-  /** Placeholder shown when the table has no data. */
+  /** Empty state body text. */
   emptyText?: React.ReactNode
-  /** Label for the filter-reset button. */
+  /** Filter reset button label. */
   filterReset?: string
-  /** Label for the filter-confirm button. */
+  /** Filter confirm button label. */
   filterConfirm?: string
-  /** Placeholder inside the filter search input. */
+  /** Placeholder for filter list search. */
   filterSearchPlaceholder?: string
-  /** Text shown when no filter options match. */
+  /** Message when filter search has no matches. */
   filterEmptyText?: string
-  /** Placeholder for the table search input. */
+  /** Toolbar global search placeholder. */
   searchPlaceholder?: string
-  /** Content for the ascending-sort indicator. */
+  /** Ascending sort affordance in header. */
   sortAsc?: React.ReactNode
-  /** Content for the descending-sort indicator. */
+  /** Descending sort affordance in header. */
   sortDesc?: React.ReactNode
-  /** Custom expand-row icon. */
+  /** Row/tree expander icon. */
   expandIcon?: React.ReactNode
-  /** Custom filter icon. */
+  /** Default column filter icon. */
   filterIcon?: React.ReactNode
-  /** Custom search icon. */
+  /** Column search-mode filter icon. */
   searchIcon?: React.ReactNode
-  /** Formatter for total-row count (e.g. `(n) => \`${n} rows\``). */
+  /** Formats total row count label. */
   totalRows?: (count: number) => string
-  /** Formatter for selected-row count (e.g. `(n) => \`${n} selected\``). */
+  /** Formats selection count in the summary bar. */
   selectedRows?: (count: number) => string
-  /** Label for the "Export CSV" action. */
+  /** CSV export toolbar label. */
   exportCSV?: string
-  /** Label for the "Copy table" action. */
+  /** JSON export toolbar label. */
+  exportJSON?: string
+  /** Copy table toolbar label. */
   copyTable?: string
-  /** Label for the "Pin left" column action. */
+  /** Pin column to left context label. */
   pinLeft?: string
-  /** Label for the "Pin right" column action. */
+  /** Pin column to right context label. */
   pinRight?: string
-  /** Label for the "Unpin" column action. */
+  /** Unpin column context label. */
   unpin?: string
-  /** Label for the "Show columns" toggle. */
+  /** Column visibility menu trigger label. */
   showColumns?: string
+  /** Print toolbar label. */
+  print?: string
+  /** Enter fullscreen label. */
+  fullscreen?: string
+  /** Exit fullscreen label. */
+  exitFullscreen?: string
+  /** Density menu trigger label. */
+  density?: string
+  /** Compact density option. */
+  densitySmall?: string
+  /** Default density option. */
+  densityMiddle?: string
+  /** Comfortable density option. */
+  densityLarge?: string
+  /** Collapse all groups toolbar label. */
+  groupCollapse?: string
+  /** Expand all groups toolbar label. */
+  groupExpand?: string
+  /** Aggregate label for sum. */
+  sum?: string
+  /** Aggregate label for average. */
+  avg?: string
+  /** Aggregate label for count. */
+  count?: string
+  /** Aggregate label for minimum. */
+  min?: string
+  /** Aggregate label for maximum. */
+  max?: string
+  /** Copy success toast (reserved). */
+  copiedToClipboard?: string
+  /** Row number column header. */
+  rowNumber?: string
 }
 
 /** Locale strings for the DataGrid component. */

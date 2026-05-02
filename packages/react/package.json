@@ -51,7 +51,10 @@
     "./styles/themes/default.css": "./styles/themes/default.css",
     "./styles/components/*": "./styles/components/*"
   },
-  "files": ["dist", "styles"],
+  "files": [
+    "dist",
+    "styles"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -60,7 +63,16 @@
     "url": "https://github.com/skygraph/skygraph.git",
     "directory": "packages/react"
   },
-  "keywords": ["react", "ui", "components", "form", "table", "tree", "design-system", "skygraph"],
+  "keywords": [
+    "react",
+    "ui",
+    "components",
+    "form",
+    "table",
+    "tree",
+    "design-system",
+    "skygraph"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run --passWithNoTests",
@@ -74,16 +86,19 @@
     "react-dom": ">=18.0.0"
   },
   "devDependencies": {
+    "@axe-core/react": "^4.10.2",
     "@skygraph/core": "file:../core",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "@vitest/coverage-v8": "^2.1.9",
+    "axe-core": "^4.10.3",
     "jsdom": "^25.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "rimraf": "^5.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
-    "vitest": "^2.0.0",
-    "rimraf": "^5.0.0"
+    "vitest": "^2.0.0"
   }
 }

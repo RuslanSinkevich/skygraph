@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@skygraph/core": "file:../../packages/core",
-    "@skygraph/react": "file:../../packages/react",
+    "@skygraph/core": "workspace:*",
+    "@skygraph/react": "workspace:*",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
