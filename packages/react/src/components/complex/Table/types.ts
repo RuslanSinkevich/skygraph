@@ -1,6 +1,15 @@
 import type React from 'react'
 import type { UseTableOptions } from '../../../hooks/useTable'
-import type { RowId, SortConfig, SortDirection } from '@skygraph/core'
+import type {
+  AdvancedFilter,
+  ColumnFilter,
+  ColumnAggregate,
+  FilterOperator,
+  RowId,
+  SortConfig,
+  SortDirection,
+  TableGroup,
+} from '@skygraph/core'
 import type { BaseComponentProps, InteractiveProps, SizableProps, SlotClassNames, SlotStyles } from '../../../types'
 import type { TableLocale } from '../../../types/locale'
 import type { ContextMenuItem } from './ContextMenu'
@@ -37,7 +46,16 @@ export type TableClassNames = SlotClassNames<TableSlot>
 export type TableStyles = SlotStyles<TableSlot>
 
 /** Re-exports core row and sort types used by the table. */
-export type { RowId, SortDirection, SortConfig }
+export type {
+  RowId,
+  SortDirection,
+  SortConfig,
+  AdvancedFilter,
+  ColumnFilter,
+  ColumnAggregate,
+  FilterOperator,
+  TableGroup,
+}
 
 /** Cell merge span metadata from `onCell`. */
 export interface CellSpan {
@@ -100,8 +118,25 @@ export interface TableColumn {
   filterMultiple?: boolean
   /** Enables or customizes filter option search in the menu. */
   filterSearch?: boolean | ((input: string, record: { text: string; value: unknown }) => boolean)
-  /** Filter UI mode: value list menu or per-column search. */
-  filterMode?: 'menu' | 'search'
+  /**
+   * Filter UI mode:
+   *  - `'menu'` — preset list with checkboxes (default).
+   *  - `'search'` — single search input.
+   *  - `'advanced'` — operator picker + value input (`AdvancedFilter`).
+   */
+  filterMode?: 'menu' | 'search' | 'advanced'
+  /**
+   * Список доступных операторов в `advanced`-моде. По умолчанию выводится
+   * полный набор кроме строгих строковых операторов (для нестроковых полей).
+   * Передайте свой массив, чтобы ограничить пользователя.
+   */
+  advancedFilterOperators?: FilterOperator[]
+  /**
+   * Тип значения колонки — подсказка для `advanced`-режима, чтобы выбрать
+   * корректный input (`number` / `text`) и стартовый набор операторов.
+   * @default 'text'
+   */
+  advancedFilterType?: 'text' | 'number'
   /** Controlled active filter values for the column. */
   filteredValue?: unknown[]
   /** Initial filter values for uncontrolled usage. */
@@ -237,6 +272,25 @@ export const DEFAULT_LOCALE: Required<TableLocale> = {
   max: 'Max',
   copiedToClipboard: 'Copied!',
   rowNumber: '#',
+  groupByLabel: 'Group by',
+  groupByNone: 'No grouping',
+  filterAdvancedValuePlaceholder: 'Value',
+  filterAdvancedInPlaceholder: 'value1, value2, ...',
+  filterAdvancedBetweenMaxPlaceholder: 'Max',
+  filterOpEq: '=',
+  filterOpNeq: '≠',
+  filterOpLt: '<',
+  filterOpLte: '≤',
+  filterOpGt: '>',
+  filterOpGte: '≥',
+  filterOpBetween: 'between',
+  filterOpIn: 'in',
+  filterOpNotIn: 'not in',
+  filterOpContains: 'contains',
+  filterOpStartsWith: 'starts with',
+  filterOpEndsWith: 'ends with',
+  filterOpIsEmpty: 'is empty',
+  filterOpIsNotEmpty: 'is not empty',
 }
 
 export const DEFAULT_COL_WIDTH = 150
@@ -372,6 +426,14 @@ export interface TableProps extends Omit<UseTableOptions, 'columns'>, BaseCompon
   defaultGroupExpanded?: boolean
   /** Fires when a group expand state changes. */
   onGroupExpandChange?: (groupKey: string, expanded: boolean) => void
+  /**
+   * Optional list of fields the user can pick to group by from the toolbar
+   * dropdown. When omitted, the dropdown is hidden and only the controlled
+   * `groupBy` value is used.
+   */
+  groupByOptions?: Array<{ key: string; label: React.ReactNode }>
+  /** Called when the user picks a different `groupBy` field from the toolbar. */
+  onGroupByChange?: (field: string | null) => void
 
   /** Arrow-key focus navigation between cells. */
   keyboardNavigation?: boolean

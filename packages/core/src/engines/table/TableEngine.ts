@@ -1,5 +1,7 @@
 import type { Core } from '../../types'
 import type {
+  AdvancedFilter,
+  ColumnAggregate,
   ColumnFilter,
   ExportOptions,
   FilterFn,
@@ -7,11 +9,13 @@ import type {
   SortConfig,
   SortDirection,
   TableEngine,
+  TableGroup,
   TableOptions,
   TableState,
 } from './types'
 
 import { TABLE_PREFIX } from '../namespaces'
+import { computeAggregate, matchesColumnFilter } from './filter'
 
 function rowPath(tableId: string, rowId: RowId, column: string): string {
   return `${TABLE_PREFIX}${tableId}.byId.${rowId}.${column}`
@@ -36,6 +40,11 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
   let pinnedLeft: string[] = []
   let pinnedRight: string[] = []
   let columnWidths: Record<string, number> = {}
+
+  // Группировка
+  let groupByField: string | null = null
+  let columnAggregates: ColumnAggregate[] = []
+  let groups: TableGroup[] = []
 
   function getRowData(id: RowId): Record<string, unknown> | undefined {
     const prefix = `${TABLE_PREFIX}${tableId}.byId.${id}.`
@@ -66,33 +75,7 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
     if (customFilterFn && !customFilterFn(rowData)) return false
 
     for (const f of filters) {
-      const val = rowData[f.column]
-      const op = f.operator ?? 'eq'
-
-      switch (op) {
-        case 'eq':
-          if (val !== f.value) return false
-          break
-        case 'contains':
-          if (
-            typeof val !== 'string' ||
-            !val.toLowerCase().includes(String(f.value).toLowerCase())
-          )
-            return false
-          break
-        case 'gt':
-          if (typeof val !== 'number' || typeof f.value !== 'number' || val <= f.value) return false
-          break
-        case 'lt':
-          if (typeof val !== 'number' || typeof f.value !== 'number' || val >= f.value) return false
-          break
-        case 'gte':
-          if (typeof val !== 'number' || typeof f.value !== 'number' || val < f.value) return false
-          break
-        case 'lte':
-          if (typeof val !== 'number' || typeof f.value !== 'number' || val > f.value) return false
-          break
-      }
+      if (!matchesColumnFilter(rowData, f)) return false
     }
     return true
   }
@@ -132,7 +115,40 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
     const totalPages = Math.max(1, Math.ceil(filteredOrder.length / currentPageSize))
     if (page > totalPages) page = totalPages
 
+    recomputeGroups()
     publishState()
+  }
+
+  function recomputeGroups(): void {
+    if (!groupByField) {
+      groups = []
+      return
+    }
+
+    const map = new Map<string, { value: unknown; rows: RowId[] }>()
+    const orderKeys: string[] = []
+
+    for (const id of filteredOrder) {
+      const data = getRowData(id)
+      if (!data) continue
+      const raw = data[groupByField]
+      const key = raw == null ? '__null__' : String(raw)
+      if (!map.has(key)) {
+        map.set(key, { value: raw, rows: [] })
+        orderKeys.push(key)
+      }
+      map.get(key)!.rows.push(id)
+    }
+
+    groups = orderKeys.map((key) => {
+      const { value, rows } = map.get(key)!
+      const aggregates: Record<string, unknown> = {}
+      for (const agg of columnAggregates) {
+        const values = rows.map((id) => core.get(rowPath(tableId, id, agg.column)))
+        aggregates[agg.column] = computeAggregate(values, agg.type)
+      }
+      return { key, value, rows, aggregates }
+    })
   }
 
   function publishState(): void {
@@ -142,6 +158,8 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
     core.set(statePath(tableId, 'page'), page)
     core.set(statePath(tableId, 'pageSize'), currentPageSize)
     core.set(statePath(tableId, 'totalPages'), totalPages)
+    core.set(statePath(tableId, 'groupBy'), groupByField)
+    core.set(statePath(tableId, 'groupCount'), groups.length)
   }
 
   function getColumnKeys(): string[] {
@@ -149,6 +167,19 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
     if (order.length === 0) return []
     const first = getRowData(order[0])
     return first ? Object.keys(first) : []
+  }
+
+  /** Привести `AdvancedFilter | ColumnFilter` к единому `ColumnFilter`. */
+  function toColumnFilter(
+    column: string,
+    filter: AdvancedFilter | ColumnFilter,
+  ): ColumnFilter {
+    const adv = filter as AdvancedFilter
+    if (adv.op != null) {
+      return { column, operator: adv.op, value: adv.value }
+    }
+    const cf = filter as ColumnFilter
+    return { column, operator: cf.operator, value: cf.value }
   }
 
   const table: TableEngine = {
@@ -253,6 +284,15 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
 
     setFilterFn(fn: FilterFn | null): void {
       customFilterFn = fn
+      recomputeFiltered()
+    },
+
+    setColumnFilter(column, filter): void {
+      filters = filters.filter((f) => f.column !== column)
+      if (filter !== null) {
+        filters.push(toColumnFilter(column, filter))
+      }
+      page = 1
       recomputeFiltered()
     },
 
@@ -376,7 +416,36 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
         sorts: [...sorts],
         sort: sorts.length > 0 ? sorts[0] : null,
         filters: [...filters],
+        groupBy: groupByField,
+        groupCount: groups.length,
       }
+    },
+
+    groupBy(field, aggregates): void {
+      groupByField = field ?? null
+      columnAggregates = aggregates ? [...aggregates] : []
+      recomputeGroups()
+      publishState()
+    },
+
+    clearGroupBy(): void {
+      groupByField = null
+      columnAggregates = []
+      groups = []
+      publishState()
+    },
+
+    getGroupBy(): string | null {
+      return groupByField
+    },
+
+    getGroups(): TableGroup[] {
+      return groups.map((g) => ({
+        key: g.key,
+        value: g.value,
+        rows: [...g.rows],
+        aggregates: { ...g.aggregates },
+      }))
     },
 
     reset(): void {
@@ -389,6 +458,9 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       pinnedLeft = []
       pinnedRight = []
       columnWidths = {}
+      groupByField = null
+      columnAggregates = []
+      groups = []
       core.set(statePath(tableId, 'columnWidths'), {})
       publishState()
     },

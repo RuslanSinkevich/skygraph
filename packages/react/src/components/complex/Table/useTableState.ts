@@ -13,6 +13,7 @@ import {
   computeColumnAggregates,
 } from './helpers'
 import type {
+  AdvancedFilter,
   TableColumn,
   TableProps,
   FlatRow,
@@ -74,6 +75,7 @@ export function useTableState(props: TableProps) {
   const hasScrollX = scroll?.x != null
 
   const {
+    table,
     visibleRows,
     tableState,
     columnWidths: persistedColWidths,
@@ -187,7 +189,27 @@ export function useTableState(props: TableProps) {
   })
   const [filterSearchText, setFilterSearchText] = useState<Record<string, string>>({})
   const [openFilterDropdown, setOpenFilterDropdown] = useState<string | null>(null)
+  const [advancedFilters, setAdvancedFiltersState] = useState<Record<string, AdvancedFilter>>({})
   const filterRef = useRef<HTMLDivElement>(null)
+
+  /**
+   * Apply / clear an advanced column filter through the engine and mirror
+   * it into local state so the trigger lights up. Engine path takes
+   * precedence over the legacy `customFilterFn` path because the engine
+   * runs filters before sort and pagination.
+   */
+  const setAdvancedFilter = useCallback(
+    (colKey: string, filter: AdvancedFilter | null) => {
+      setAdvancedFiltersState((prev) => {
+        const next = { ...prev }
+        if (filter == null) delete next[colKey]
+        else next[colKey] = filter
+        return next
+      })
+      table.setColumnFilter(colKey, filter)
+    },
+    [table],
+  )
 
   const resizeRef = useRef<{ col: string; startX: number; startW: number } | null>(null)
 
@@ -513,6 +535,27 @@ export function useTableState(props: TableProps) {
   const [density, setDensity] = useState<'small' | 'middle' | 'large'>('middle')
 
   // ---- Group By ----
+  // Engine-side grouping: keep core in sync so Core consumers (subscribers,
+  // exports, snapshot) see the same `groupBy` field as the React UI.
+  // Aggregates are passed through from `column.aggregate` when configured —
+  // engine recomputes them after each filter / sort change.
+  useEffect(() => {
+    if (!groupBy) {
+      table.clearGroupBy()
+      return
+    }
+    const aggregates = leafColumns
+      .filter((c) => c.aggregate)
+      .map((c) => ({
+        column: c.key,
+        type:
+          typeof c.aggregate === 'function'
+            ? (c.aggregate as (vals: unknown[]) => unknown)
+            : (c.aggregate as 'sum' | 'avg' | 'count' | 'min' | 'max'),
+      }))
+    table.groupBy(groupBy, aggregates)
+  }, [groupBy, leafColumns, table])
+
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => {
     return defaultGroupExpanded ? new Set(['__all__']) : new Set()
   })
@@ -804,7 +847,7 @@ export function useTableState(props: TableProps) {
     treeExpanded,
     handleToggleTreeExpand,
     // Filters
-    filterState: { activeFilters, filterSearchText, openFilterDropdown },
+    filterState: { activeFilters, filterSearchText, openFilterDropdown, advancedFilters },
     filterActions: {
       setOpenFilterDropdown,
       handleFilterToggle,
@@ -814,6 +857,7 @@ export function useTableState(props: TableProps) {
       handleSearchFilterChange,
       setFilterSearchText,
       getFilterDropdownProps,
+      setAdvancedFilter,
     },
     filterRef,
     // Drag columns

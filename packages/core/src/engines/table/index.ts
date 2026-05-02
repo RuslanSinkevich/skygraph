@@ -1,4 +1,10 @@
 export { createTable } from './TableEngine'
+export {
+  matchesOperator,
+  matchesColumnFilter,
+  resolveOperator,
+  computeAggregate,
+} from './filter'
 export type {
   TableEngine,
   TableState,
@@ -9,4 +15,10 @@ export type {
   SortDirection,
   ColumnFilter,
   FilterFn,
+  FilterOperator,
+  AdvancedFilter,
+  AggregateType,
+  AggregateFn,
+  ColumnAggregate,
+  TableGroup,
 } from './types'

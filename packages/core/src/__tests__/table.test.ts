@@ -410,6 +410,308 @@ describe('TableEngine: column widths', () => {
   })
 })
 
+describe('TableEngine: advanced filter operators', () => {
+  function makeTable() {
+    const core = createCore()
+    const table = createTable(core, { pageSize: 100 })
+    table.addRows([
+      { id: 'r1', data: { name: 'Alice', city: 'Moscow', score: 50, tag: 'a' } },
+      { id: 'r2', data: { name: 'Bob', city: 'Berlin', score: 80, tag: 'b' } },
+      { id: 'r3', data: { name: 'Charlie', city: 'Moscow', score: 70, tag: '' } },
+      { id: 'r4', data: { name: 'Dave', city: 'Paris', score: 100, tag: null } },
+    ])
+    return table
+  }
+
+  it('eq operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('city', { op: 'eq', value: 'Moscow' })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r1', 'r3'])
+  })
+
+  it('neq operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('city', { op: 'neq', value: 'Moscow' })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r2', 'r4'])
+  })
+
+  it('lt operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('score', { op: 'lt', value: 70 })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r1'])
+  })
+
+  it('lte operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('score', { op: 'lte', value: 70 })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r1', 'r3'])
+  })
+
+  it('gt operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('score', { op: 'gt', value: 70 })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r2', 'r4'])
+  })
+
+  it('gte operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('score', { op: 'gte', value: 70 })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r2', 'r3', 'r4'])
+  })
+
+  it('between operator (inclusive)', () => {
+    const table = makeTable()
+    table.setColumnFilter('score', { op: 'between', value: [70, 90] })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r2', 'r3'])
+  })
+
+  it('in operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('city', { op: 'in', value: ['Moscow', 'Paris'] })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r1', 'r3', 'r4'])
+  })
+
+  it('notIn operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('city', { op: 'notIn', value: ['Moscow', 'Paris'] })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r2'])
+  })
+
+  it('contains operator (case-insensitive)', () => {
+    const table = makeTable()
+    table.setColumnFilter('name', { op: 'contains', value: 'AL' })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r1'])
+  })
+
+  it('startsWith operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('name', { op: 'startsWith', value: 'b' })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r2'])
+  })
+
+  it('endsWith operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('name', { op: 'endsWith', value: 'e' })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r1', 'r3', 'r4'])
+  })
+
+  it('isEmpty operator (matches null and "")', () => {
+    const table = makeTable()
+    table.setColumnFilter('tag', { op: 'isEmpty' })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r3', 'r4'])
+  })
+
+  it('isNotEmpty operator', () => {
+    const table = makeTable()
+    table.setColumnFilter('tag', { op: 'isNotEmpty' })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r1', 'r2'])
+  })
+
+  it('setColumnFilter(null) clears the column filter', () => {
+    const table = makeTable()
+    table.setColumnFilter('city', { op: 'eq', value: 'Moscow' })
+    expect(table.getVisibleRows().length).toBe(2)
+    table.setColumnFilter('city', null)
+    expect(table.getVisibleRows().length).toBe(4)
+  })
+
+  it('setColumnFilter accepts ColumnFilter shape (legacy)', () => {
+    const table = makeTable()
+    table.setColumnFilter('score', { column: 'score', operator: 'gte', value: 80 })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r2', 'r4'])
+  })
+
+  it('addFilter with array value behaves as `in` (backward-compat)', () => {
+    const table = makeTable()
+    table.addFilter({ column: 'city', value: ['Moscow', 'Berlin'] })
+    expect(table.getVisibleRows().map((r) => r.id)).toEqual(['r1', 'r2', 'r3'])
+  })
+})
+
+describe('TableEngine: groupBy', () => {
+  function makeTable() {
+    const core = createCore()
+    const table = createTable(core, { pageSize: 100 })
+    table.addRows([
+      { id: 'r1', data: { name: 'Alice', city: 'Moscow', score: 50 } },
+      { id: 'r2', data: { name: 'Bob', city: 'Berlin', score: 80 } },
+      { id: 'r3', data: { name: 'Charlie', city: 'Moscow', score: 70 } },
+      { id: 'r4', data: { name: 'Dave', city: 'Berlin', score: 100 } },
+      { id: 'r5', data: { name: 'Eve', city: 'Paris', score: 60 } },
+    ])
+    return table
+  }
+
+  it('groups rows by field', () => {
+    const table = makeTable()
+    table.groupBy('city')
+    const g = table.getGroups()
+    expect(g.length).toBe(3)
+    expect(g.map((x) => x.key)).toEqual(['Moscow', 'Berlin', 'Paris'])
+  })
+
+  it('group rows contain matching ids in original order', () => {
+    const table = makeTable()
+    table.groupBy('city')
+    const moscow = table.getGroups().find((g) => g.key === 'Moscow')!
+    expect(moscow.rows).toEqual(['r1', 'r3'])
+  })
+
+  it('group value preserves raw type', () => {
+    const core = createCore()
+    const table = createTable(core, { pageSize: 100 })
+    table.addRows([
+      { id: 'a', data: { active: true, n: 1 } },
+      { id: 'b', data: { active: false, n: 2 } },
+      { id: 'c', data: { active: true, n: 3 } },
+    ])
+    table.groupBy('active')
+    const groups = table.getGroups()
+    expect(groups.length).toBe(2)
+    expect(groups.find((g) => g.key === 'true')!.value).toBe(true)
+    expect(groups.find((g) => g.key === 'false')!.value).toBe(false)
+  })
+
+  it('null group falls into __null__ key', () => {
+    const core = createCore()
+    const table = createTable(core, { pageSize: 100 })
+    table.addRows([
+      { id: 'a', data: { x: 'A', n: 1 } },
+      { id: 'b', data: { x: null, n: 2 } },
+      { id: 'c', data: { x: null, n: 3 } },
+    ])
+    table.groupBy('x')
+    const groups = table.getGroups()
+    expect(groups.find((g) => g.key === '__null__')!.rows).toEqual(['b', 'c'])
+  })
+
+  it('clearGroupBy removes groups', () => {
+    const table = makeTable()
+    table.groupBy('city')
+    expect(table.getGroups().length).toBe(3)
+    table.clearGroupBy()
+    expect(table.getGroups().length).toBe(0)
+    expect(table.getGroupBy()).toBeNull()
+  })
+
+  it('groupBy(null) is equivalent to clearGroupBy', () => {
+    const table = makeTable()
+    table.groupBy('city')
+    table.groupBy(null)
+    expect(table.getGroups().length).toBe(0)
+  })
+
+  it('groups respect active filters', () => {
+    const table = makeTable()
+    table.groupBy('city')
+    table.setColumnFilter('score', { op: 'gte', value: 70 })
+    const groups = table.getGroups()
+    expect(groups.find((g) => g.key === 'Moscow')!.rows).toEqual(['r3'])
+    expect(groups.find((g) => g.key === 'Berlin')!.rows).toEqual(['r2', 'r4'])
+    expect(groups.find((g) => g.key === 'Paris')).toBeUndefined()
+  })
+
+  it('groups recompute after addRow', () => {
+    const table = makeTable()
+    table.groupBy('city')
+    table.addRow('r6', { name: 'Frank', city: 'Moscow', score: 40 })
+    const moscow = table.getGroups().find((g) => g.key === 'Moscow')!
+    expect(moscow.rows).toEqual(['r1', 'r3', 'r6'])
+  })
+
+  it('getTableState exposes groupBy and groupCount', () => {
+    const table = makeTable()
+    table.groupBy('city')
+    const state = table.getTableState()
+    expect(state.groupBy).toBe('city')
+    expect(state.groupCount).toBe(3)
+  })
+
+  it('getGroups returns deep copies', () => {
+    const table = makeTable()
+    table.groupBy('city')
+    const snap = table.getGroups()
+    snap[0].rows.push('zzz')
+    expect(table.getGroups()[0].rows).not.toContain('zzz')
+  })
+})
+
+describe('TableEngine: aggregates', () => {
+  function makeTable() {
+    const core = createCore()
+    const table = createTable(core, { pageSize: 100 })
+    table.addRows([
+      { id: 'r1', data: { city: 'Moscow', score: 50 } },
+      { id: 'r2', data: { city: 'Berlin', score: 80 } },
+      { id: 'r3', data: { city: 'Moscow', score: 70 } },
+      { id: 'r4', data: { city: 'Berlin', score: 100 } },
+    ])
+    return table
+  }
+
+  it('sum aggregate', () => {
+    const table = makeTable()
+    table.groupBy('city', [{ column: 'score', type: 'sum' }])
+    const moscow = table.getGroups().find((g) => g.key === 'Moscow')!
+    const berlin = table.getGroups().find((g) => g.key === 'Berlin')!
+    expect(moscow.aggregates.score).toBe(120)
+    expect(berlin.aggregates.score).toBe(180)
+  })
+
+  it('avg aggregate', () => {
+    const table = makeTable()
+    table.groupBy('city', [{ column: 'score', type: 'avg' }])
+    const moscow = table.getGroups().find((g) => g.key === 'Moscow')!
+    const berlin = table.getGroups().find((g) => g.key === 'Berlin')!
+    expect(moscow.aggregates.score).toBe(60)
+    expect(berlin.aggregates.score).toBe(90)
+  })
+
+  it('min / max aggregates', () => {
+    const table = makeTable()
+    table.groupBy('city', [
+      { column: 'score', type: 'min' },
+    ])
+    expect(
+      table.getGroups().find((g) => g.key === 'Moscow')!.aggregates.score,
+    ).toBe(50)
+
+    table.groupBy('city', [{ column: 'score', type: 'max' }])
+    expect(
+      table.getGroups().find((g) => g.key === 'Berlin')!.aggregates.score,
+    ).toBe(100)
+  })
+
+  it('count aggregate counts all rows in group', () => {
+    const table = makeTable()
+    table.groupBy('city', [{ column: 'score', type: 'count' }])
+    expect(
+      table.getGroups().find((g) => g.key === 'Moscow')!.aggregates.score,
+    ).toBe(2)
+  })
+
+  it('custom aggregate function', () => {
+    const table = makeTable()
+    table.groupBy('city', [
+      {
+        column: 'score',
+        type: (vals) => `range:${Math.min(...(vals as number[]))}-${Math.max(...(vals as number[]))}`,
+      },
+    ])
+    expect(
+      table.getGroups().find((g) => g.key === 'Moscow')!.aggregates.score,
+    ).toBe('range:50-70')
+  })
+
+  it('aggregates recompute after filter change', () => {
+    const table = makeTable()
+    table.groupBy('city', [{ column: 'score', type: 'sum' }])
+    table.setColumnFilter('score', { op: 'gt', value: 50 })
+    const moscow = table.getGroups().find((g) => g.key === 'Moscow')!
+    expect(moscow.aggregates.score).toBe(70)
+  })
+})
+
 describe('TableEngine: scalability', () => {
   it('handles 100k rows', () => {
     const core = createCore()

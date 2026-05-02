@@ -2,7 +2,13 @@ import React from 'react'
 import { Checkbox } from '../../ui/Checkbox'
 import { Input } from '../../ui/Input'
 import { Button } from '../../ui/Button'
-import type { TableColumn, FilterDropdownProps, TableLocale } from './types'
+import type {
+  AdvancedFilter,
+  FilterDropdownProps,
+  FilterOperator,
+  TableColumn,
+  TableLocale,
+} from './types'
 
 /** Column filter UI state from table state hook. */
 interface FilterState {
@@ -12,6 +18,8 @@ interface FilterState {
   filterSearchText: Record<string, string>
   /** Column key with an open filter popover. */
   openFilterDropdown: string | null
+  /** Active advanced filters keyed by column. */
+  advancedFilters: Record<string, AdvancedFilter>
 }
 
 /** Callbacks that mutate filter UI state. */
@@ -32,6 +40,8 @@ interface FilterActions {
   setFilterSearchText: React.Dispatch<React.SetStateAction<Record<string, string>>>
   /** Builds props for custom filter dropdown renderers. */
   getFilterDropdownProps: (col: TableColumn) => FilterDropdownProps
+  /** Sets / clears the advanced filter for a column. */
+  setAdvancedFilter: (colKey: string, filter: AdvancedFilter | null) => void
 }
 
 /** Shared props for filter trigger and dropdown content. */
@@ -44,16 +54,58 @@ interface FilterTriggerProps {
   state: FilterState
   /** Filter state mutators. */
   actions: FilterActions
-  /** Ref on the dropdown for outside-click detection. */
-  filterRef: React.RefObject<HTMLDivElement>
+  /**
+   * Ref on the dropdown for outside-click detection. Typed as nullable so
+   * `useRef<HTMLDivElement>(null)` callers compile under
+   * `strictNullChecks` / `useDefineForClassFields` without `as` casts.
+   */
+  filterRef: React.RefObject<HTMLDivElement | null>
 }
+
+/** Default operators offered for textual columns. */
+const TEXT_OPS: FilterOperator[] = [
+  'eq',
+  'neq',
+  'contains',
+  'startsWith',
+  'endsWith',
+  'in',
+  'notIn',
+  'isEmpty',
+  'isNotEmpty',
+]
+
+/** Default operators offered for numeric columns. */
+const NUMBER_OPS: FilterOperator[] = [
+  'eq',
+  'neq',
+  'lt',
+  'lte',
+  'gt',
+  'gte',
+  'between',
+  'in',
+  'notIn',
+  'isEmpty',
+  'isNotEmpty',
+]
+
+/** Operators that don't need a value input. */
+const NO_VALUE_OPS = new Set<FilterOperator>(['isEmpty', 'isNotEmpty'])
 
 /** Filter icon in the header; toggles the column filter popover. */
 export function FilterTrigger({ col, t, state, actions }: FilterTriggerProps) {
-  const hasFilter = col.filterDropdown || col.filterMode === 'search' || (col.filters && col.filters.length > 0)
+  const hasFilter =
+    col.filterDropdown ||
+    col.filterMode === 'search' ||
+    col.filterMode === 'advanced' ||
+    (col.filters && col.filters.length > 0)
   if (!hasFilter) return null
 
-  const filtered = (state.activeFilters[col.key]?.length ?? 0) > 0
+  const filtered =
+    col.filterMode === 'advanced'
+      ? state.advancedFilters[col.key] != null
+      : (state.activeFilters[col.key]?.length ?? 0) > 0
   const iconNode = col.filterIcon
     ? typeof col.filterIcon === 'function' ? col.filterIcon(filtered) : col.filterIcon
     : col.filterMode === 'search' ? t.searchIcon : t.filterIcon
@@ -71,7 +123,7 @@ export function FilterTrigger({ col, t, state, actions }: FilterTriggerProps) {
   )
 }
 
-/** Filter popover body: custom dropdown, search field, or preset checklist. */
+/** Filter popover body: custom dropdown, search field, advanced builder, or preset checklist. */
 export function FilterDropdownContent({ col, t, state, actions, filterRef }: FilterTriggerProps) {
   if (state.openFilterDropdown !== col.key) return null
 
@@ -83,6 +135,10 @@ export function FilterDropdownContent({ col, t, state, actions, filterRef }: Fil
         {content}
       </div>
     )
+  }
+
+  if (col.filterMode === 'advanced') {
+    return <AdvancedFilterPanel col={col} t={t} state={state} actions={actions} filterRef={filterRef} />
   }
 
   if (col.filterMode === 'search') {
@@ -155,4 +211,157 @@ export function FilterDropdownContent({ col, t, state, actions, filterRef }: Fil
       </div>
     </div>
   )
+}
+
+/**
+ * Расширенный фильтр: пользователь выбирает оператор и значение.
+ * Управляет локальным черновиком (`draftOp`/`draftValue`) и применяет
+ * результат через `actions.setAdvancedFilter` по нажатию на «OK».
+ */
+function AdvancedFilterPanel({ col, t, state, actions, filterRef }: FilterTriggerProps) {
+  const isNumeric = col.advancedFilterType === 'number'
+  const defaultOps = isNumeric ? NUMBER_OPS : TEXT_OPS
+  const ops = col.advancedFilterOperators ?? defaultOps
+
+  const current = state.advancedFilters[col.key]
+  const [draftOp, setDraftOp] = React.useState<FilterOperator>(current?.op ?? ops[0])
+  const [draftValue, setDraftValue] = React.useState<string>(() => formatDraftValue(current?.value))
+  const [draftValue2, setDraftValue2] = React.useState<string>(() => {
+    const v = current?.value
+    if (Array.isArray(v) && v.length === 2) return String(v[1] ?? '')
+    return ''
+  })
+
+  React.useEffect(() => {
+    if (current) {
+      setDraftOp(current.op)
+      setDraftValue(formatDraftValue(current.value))
+      if (Array.isArray(current.value) && current.value.length === 2) {
+        setDraftValue2(String(current.value[1] ?? ''))
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.openFilterDropdown])
+
+  const reset = () => {
+    setDraftOp(ops[0])
+    setDraftValue('')
+    setDraftValue2('')
+    actions.setAdvancedFilter(col.key, null)
+    actions.handleFilterClose(col.key)
+  }
+
+  const confirm = () => {
+    if (NO_VALUE_OPS.has(draftOp)) {
+      actions.setAdvancedFilter(col.key, { op: draftOp })
+    } else if (draftOp === 'between') {
+      const a = parseValue(draftValue, isNumeric)
+      const b = parseValue(draftValue2, isNumeric)
+      actions.setAdvancedFilter(col.key, { op: 'between', value: [a, b] })
+    } else if (draftOp === 'in' || draftOp === 'notIn') {
+      const list = draftValue
+        .split(',')
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0)
+        .map((s) => parseValue(s, isNumeric))
+      actions.setAdvancedFilter(col.key, { op: draftOp, value: list })
+    } else {
+      actions.setAdvancedFilter(col.key, {
+        op: draftOp,
+        value: parseValue(draftValue, isNumeric),
+      })
+    }
+    actions.setOpenFilterDropdown(null)
+  }
+
+  const showValueInput = !NO_VALUE_OPS.has(draftOp)
+  const showSecondInput = draftOp === 'between'
+
+  return (
+    <div
+      className="sg-table-filter-dropdown sg-table-filter-advanced-mode"
+      ref={filterRef}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="sg-table-filter-advanced-row">
+        <select
+          className="sg-table-filter-advanced-op"
+          value={draftOp}
+          onChange={(e) => setDraftOp(e.target.value as FilterOperator)}
+        >
+          {ops.map((op) => (
+            <option key={op} value={op}>
+              {operatorLabel(op, t)}
+            </option>
+          ))}
+        </select>
+      </div>
+      {showValueInput && (
+        <div className="sg-table-filter-advanced-row">
+          <Input
+            size="small"
+            type={isNumeric && draftOp !== 'in' && draftOp !== 'notIn' && draftOp !== 'between' ? 'number' : 'text'}
+            value={draftValue}
+            onChange={setDraftValue}
+            placeholder={
+              draftOp === 'in' || draftOp === 'notIn'
+                ? t.filterAdvancedInPlaceholder
+                : t.filterAdvancedValuePlaceholder
+            }
+          />
+        </div>
+      )}
+      {showSecondInput && (
+        <div className="sg-table-filter-advanced-row">
+          <Input
+            size="small"
+            type={isNumeric ? 'number' : 'text'}
+            value={draftValue2}
+            onChange={setDraftValue2}
+            placeholder={t.filterAdvancedBetweenMaxPlaceholder}
+          />
+        </div>
+      )}
+      <div className="sg-table-filter-actions">
+        <Button size="small" onClick={reset}>{t.filterReset}</Button>
+        <Button size="small" type="primary" onClick={confirm}>{t.filterConfirm}</Button>
+      </div>
+    </div>
+  )
+}
+
+function formatDraftValue(value: unknown): string {
+  if (value == null) return ''
+  if (Array.isArray(value)) return value.map((v) => String(v ?? '')).join(', ')
+  return String(value)
+}
+
+function parseValue(raw: string, numeric: boolean): unknown {
+  const trimmed = raw.trim()
+  if (trimmed === '') return ''
+  if (numeric) {
+    const n = Number(trimmed)
+    return Number.isNaN(n) ? trimmed : n
+  }
+  return trimmed
+}
+
+function operatorLabel(op: FilterOperator, t: Required<TableLocale>): string {
+  const map: Record<FilterOperator, string> = {
+    eq: t.filterOpEq,
+    neq: t.filterOpNeq,
+    lt: t.filterOpLt,
+    lte: t.filterOpLte,
+    gt: t.filterOpGt,
+    gte: t.filterOpGte,
+    between: t.filterOpBetween,
+    in: t.filterOpIn,
+    notIn: t.filterOpNotIn,
+    contains: t.filterOpContains,
+    startsWith: t.filterOpStartsWith,
+    endsWith: t.filterOpEndsWith,
+    isEmpty: t.filterOpIsEmpty,
+    isNotEmpty: t.filterOpIsNotEmpty,
+  }
+  return map[op]
 }

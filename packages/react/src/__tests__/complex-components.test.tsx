@@ -214,6 +214,195 @@ describe('Table', () => {
   })
 })
 
+// ─── Table grouping ─────────────────────────────────────────────────────
+
+const groupedCols = [
+  { key: 'name', title: 'Name' },
+  { key: 'city', title: 'City' },
+  { key: 'score', title: 'Score', aggregate: 'sum' as const },
+]
+
+const groupedData = [
+  { id: '1', data: { name: 'Alice', city: 'Moscow', score: 50 } },
+  { id: '2', data: { name: 'Bob', city: 'Berlin', score: 80 } },
+  { id: '3', data: { name: 'Charlie', city: 'Moscow', score: 70 } },
+  { id: '4', data: { name: 'Dave', city: 'Berlin', score: 100 } },
+]
+
+describe('Table grouping', () => {
+  it('renders group rows when groupBy is set', () => {
+    const { container } = render(
+      <Table
+        columns={groupedCols}
+        data={groupedData}
+        groupBy="city"
+        defaultGroupExpanded
+        showPagination={false}
+      />,
+    )
+    const groupRows = container.querySelectorAll('.sg-table-group-row')
+    expect(groupRows.length).toBe(2)
+  })
+
+  it('shows group title with raw value', () => {
+    const { container } = render(
+      <Table
+        columns={groupedCols}
+        data={groupedData}
+        groupBy="city"
+        defaultGroupExpanded
+        showPagination={false}
+      />,
+    )
+    const titles = Array.from(container.querySelectorAll('.sg-table-group-title strong'))
+      .map((n) => n.textContent)
+    expect(titles).toEqual(['Moscow', 'Berlin'])
+  })
+
+  it('shows row count per group', () => {
+    const { container } = render(
+      <Table
+        columns={groupedCols}
+        data={groupedData}
+        groupBy="city"
+        defaultGroupExpanded
+        showPagination={false}
+      />,
+    )
+    const counts = container.querySelectorAll('.sg-table-group-count')
+    expect(counts.length).toBe(2)
+    expect(counts[0].textContent).toBe('(2)')
+  })
+
+  it('renders aggregate values inside group header', () => {
+    const { container } = render(
+      <Table
+        columns={groupedCols}
+        data={groupedData}
+        groupBy="city"
+        defaultGroupExpanded
+        showPagination={false}
+      />,
+    )
+    const aggs = container.querySelectorAll('.sg-table-group-agg-item')
+    const texts = Array.from(aggs).map((n) => n.textContent ?? '')
+    expect(texts.some((t) => t.includes('score') && t.includes('120'))).toBe(true)
+    expect(texts.some((t) => t.includes('score') && t.includes('180'))).toBe(true)
+  })
+
+  it('groups start collapsed by default', () => {
+    const { container } = render(
+      <Table
+        columns={groupedCols}
+        data={groupedData}
+        groupBy="city"
+        showPagination={false}
+      />,
+    )
+    expect(screen.queryByText('Alice')).toBeNull()
+    expect(screen.queryByText('Bob')).toBeNull()
+    expect(container.querySelectorAll('.sg-table-group-row').length).toBe(2)
+  })
+
+  it('clicking group header expands the group', () => {
+    render(
+      <Table
+        columns={groupedCols}
+        data={groupedData}
+        groupBy="city"
+        showPagination={false}
+      />,
+    )
+    expect(screen.queryByText('Alice')).toBeNull()
+    const moscowHeader = screen.getByText('Moscow').closest('.sg-table-group-cell') as HTMLElement
+    fireEvent.click(moscowHeader)
+    expect(screen.getByText('Alice')).toBeDefined()
+    expect(screen.getByText('Charlie')).toBeDefined()
+    expect(screen.queryByText('Bob')).toBeNull()
+  })
+
+  it('Expand All button reveals all group children', () => {
+    render(
+      <Table
+        columns={groupedCols}
+        data={groupedData}
+        groupBy="city"
+        showPagination={false}
+      />,
+    )
+    expect(screen.queryByText('Alice')).toBeNull()
+    fireEvent.click(screen.getByText('Expand All'))
+    expect(screen.getByText('Alice')).toBeDefined()
+    expect(screen.getByText('Bob')).toBeDefined()
+    expect(screen.getByText('Charlie')).toBeDefined()
+    expect(screen.getByText('Dave')).toBeDefined()
+  })
+
+  it('Collapse All button hides all group children', () => {
+    render(
+      <Table
+        columns={groupedCols}
+        data={groupedData}
+        groupBy="city"
+        defaultGroupExpanded
+        showPagination={false}
+      />,
+    )
+    expect(screen.getByText('Alice')).toBeDefined()
+    fireEvent.click(screen.getByText('Collapse All'))
+    expect(screen.queryByText('Alice')).toBeNull()
+    expect(screen.queryByText('Bob')).toBeNull()
+  })
+
+  it('groupByOptions toolbar dropdown switches grouping field', () => {
+    const onChange = vi.fn()
+    const { container } = render(
+      <Table
+        columns={groupedCols}
+        data={groupedData}
+        groupByOptions={[
+          { key: 'city', label: 'City' },
+          { key: 'name', label: 'Name' },
+        ]}
+        onGroupByChange={onChange}
+        showPagination={false}
+      />,
+    )
+    const trigger = screen.getByText('Group by')
+    fireEvent.click(trigger)
+    const dropdown = container.querySelector('.sg-table-group-by-dropdown')
+    expect(dropdown).toBeTruthy()
+    fireEvent.click(within(dropdown as HTMLElement).getByText('City'))
+    expect(onChange).toHaveBeenCalledWith('city')
+  })
+
+  it('custom aggregate function value is rendered', () => {
+    const cols = [
+      { key: 'name', title: 'Name' },
+      { key: 'city', title: 'City' },
+      {
+        key: 'score',
+        title: 'Score',
+        aggregate: (vals: unknown[]) =>
+          `range:${Math.min(...(vals as number[]))}-${Math.max(...(vals as number[]))}`,
+      },
+    ]
+    const { container } = render(
+      <Table
+        columns={cols}
+        data={groupedData}
+        groupBy="city"
+        defaultGroupExpanded
+        showPagination={false}
+      />,
+    )
+    const aggs = container.querySelectorAll('.sg-table-group-agg-item')
+    const texts = Array.from(aggs).map((n) => n.textContent ?? '')
+    expect(texts.some((t) => t.includes('range:50-70'))).toBe(true)
+    expect(texts.some((t) => t.includes('range:80-100'))).toBe(true)
+  })
+})
+
 // ─── Tree ───────────────────────────────────────────────────────────────
 
 const treeData = [

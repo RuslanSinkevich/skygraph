@@ -2,6 +2,7 @@ import React from 'react'
 import { Checkbox } from '../../ui/Checkbox'
 import { FilterTrigger, FilterDropdownContent } from './FilterDropdown'
 import type {
+  AdvancedFilter,
   TableColumn,
   HeaderCell,
   RowSelectionConfig,
@@ -63,6 +64,8 @@ interface HeaderProps {
     filterSearchText: Record<string, string>
     /** Column key with open filter dropdown, if any. */
     openFilterDropdown: string | null
+    /** Active advanced filters keyed by column. */
+    advancedFilters: Record<string, AdvancedFilter>
   }
   /** Filter dropdown callbacks and helpers. */
   filterActions: {
@@ -82,6 +85,8 @@ interface HeaderProps {
     setFilterSearchText: React.Dispatch<React.SetStateAction<Record<string, string>>>
     /** Builds props for custom `filterDropdown` renderers. */
     getFilterDropdownProps: (col: TableColumn) => FilterDropdownProps
+    /** Sets / clears the advanced filter for a column. */
+    setAdvancedFilter: (colKey: string, filter: AdvancedFilter | null) => void
   }
   /** Ref attached to the open filter panel for outside click. */
   filterRef: React.RefObject<HTMLDivElement | null>

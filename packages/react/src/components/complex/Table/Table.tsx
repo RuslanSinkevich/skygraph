@@ -60,6 +60,8 @@ export function Table(props: TableProps) {
     fullscreenable,
     densityToggle,
     groupBy,
+    groupByOptions,
+    onGroupByChange,
     keyboardNavigation,
     emptyContent,
     printable,
@@ -187,7 +189,8 @@ export function Table(props: TableProps) {
 
   const hasToolbar =
     searchable || columnVisibility || exportable || exportJSON ||
-    fullscreenable || densityToggle || printable || groupBy
+    fullscreenable || densityToggle || printable || groupBy ||
+    (groupByOptions && groupByOptions.length > 0)
 
   const wrapperCls = [
     'sg-table-wrapper',
@@ -237,6 +240,14 @@ export function Table(props: TableProps) {
             />
           )}
           <div className="sg-table-toolbar-right">
+            {groupByOptions && groupByOptions.length > 0 && (
+              <GroupByDropdown
+                value={groupBy ?? null}
+                options={groupByOptions}
+                onChange={onGroupByChange ?? (() => {})}
+                t={state.t}
+              />
+            )}
             {groupBy && (
               <div className="sg-table-toolbar-group">
                 <button className="sg-table-toolbar-btn" onClick={state.expandAllGroups}>
@@ -652,6 +663,61 @@ function ColumnVisibilityDropdown({
               />
               <span>{typeof col.title === 'string' ? col.title : col.key}</span>
             </label>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function GroupByDropdown({
+  value,
+  options,
+  onChange,
+  t,
+}: {
+  value: string | null
+  options: Array<{ key: string; label: React.ReactNode }>
+  onChange: (field: string | null) => void
+  t: { groupByLabel: string; groupByNone: string }
+}) {
+  const [open, setOpen] = React.useState(false)
+  const ref = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (!open) return
+    const h = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', h)
+    return () => document.removeEventListener('mousedown', h)
+  }, [open])
+
+  const current = value ? options.find((o) => o.key === value) : null
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button className="sg-table-toolbar-btn" onClick={() => setOpen(!open)}>
+        {t.groupByLabel}{current ? `: ${typeof current.label === 'string' ? current.label : current.key}` : ''}
+      </button>
+      {open && (
+        <div className="sg-table-group-by-dropdown" role="menu">
+          <button
+            type="button"
+            className={`sg-table-group-by-option${value === null ? ' sg-table-group-by-active' : ''}`}
+            onClick={() => { onChange(null); setOpen(false) }}
+          >
+            {t.groupByNone}
+          </button>
+          {options.map((opt) => (
+            <button
+              key={opt.key}
+              type="button"
+              className={`sg-table-group-by-option${value === opt.key ? ' sg-table-group-by-active' : ''}`}
+              onClick={() => { onChange(opt.key); setOpen(false) }}
+            >
+              {opt.label}
+            </button>
           ))}
         </div>
       )}

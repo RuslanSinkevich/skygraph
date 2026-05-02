@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { Checkbox } from '../../ui/Checkbox'
 import { copyToClipboard } from './export'
+import { TableGroupRow } from './TableGroupRow'
 import type {
   TableColumn,
   RowSelectionConfig,
@@ -229,40 +230,15 @@ export function TableBody(props: BodyProps) {
       {flatRows.map((row, rowIdx) => {
         // Group row rendering
         if (row.__groupRow) {
-          const group = row.__groupRow
           return (
-            <div
+            <TableGroupRow
               key={row.id}
-              className="sg-table-group-row"
-              role="row"
-              style={{ display: 'contents' }}
-            >
-              <div
-                className="sg-table-td sg-table-group-cell"
-                role="cell"
-                style={{ gridColumn: `1 / ${totalCols + 1}` }}
-                onClick={() => onToggleGroup?.(group.groupKey)}
-              >
-                <button
-                  className={`sg-table-expand-btn${group.expanded ? ' sg-table-expand-open' : ''}`}
-                >
-                  {t.expandIcon}
-                </button>
-                <span className="sg-table-group-title">
-                  {groupBy}: <strong>{String(group.groupValue)}</strong>
-                </span>
-                <span className="sg-table-group-count">({group.count})</span>
-                {Object.keys(group.aggregates).length > 0 && (
-                  <span className="sg-table-group-aggregates">
-                    {Object.entries(group.aggregates).map(([key, val]) => (
-                      <span key={key} className="sg-table-group-agg-item">
-                        {key}: {String(val)}
-                      </span>
-                    ))}
-                  </span>
-                )}
-              </div>
-            </div>
+              group={row.__groupRow}
+              groupBy={groupBy}
+              totalCols={totalCols}
+              t={t}
+              onToggle={onToggleGroup ?? (() => {})}
+            />
           )
         }
 

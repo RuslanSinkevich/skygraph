@@ -9,10 +9,81 @@ export interface SortConfig {
 
 export type FilterFn = (row: Record<string, unknown>) => boolean
 
+/**
+ * Расширенный набор операторов фильтрации.
+ *  - `eq`/`neq` — строгое равенство.
+ *  - `lt`/`lte`/`gt`/`gte` — числовое сравнение (string работает по `<`/`>`).
+ *  - `between` — числовой диапазон, `value: [min, max]` (включительно).
+ *  - `in`/`notIn` — `value: unknown[]`.
+ *  - `contains`/`startsWith`/`endsWith` — строковые операторы (case-insensitive).
+ *  - `isEmpty`/`isNotEmpty` — проверка `null` / `undefined` / `''`.
+ */
+export type FilterOperator =
+  | 'eq'
+  | 'neq'
+  | 'lt'
+  | 'lte'
+  | 'gt'
+  | 'gte'
+  | 'between'
+  | 'in'
+  | 'notIn'
+  | 'contains'
+  | 'startsWith'
+  | 'endsWith'
+  | 'isEmpty'
+  | 'isNotEmpty'
+
+/**
+ * Самодостаточный фильтр без привязки к колонке. Используется в новом
+ * `TableEngine.setColumnFilter` рядом со старым `ColumnFilter`.
+ */
+export interface AdvancedFilter {
+  /** Оператор сравнения. */
+  op: FilterOperator
+  /**
+   * Значение для оператора. Семантика зависит от `op`:
+   *  - `between` — кортеж `[min, max]`.
+   *  - `in` / `notIn` — массив значений.
+   *  - `isEmpty` / `isNotEmpty` — игнорируется.
+   *  - остальные — скалярное значение.
+   */
+  value?: unknown
+}
+
+/**
+ * Старая форма фильтра колонки. Сохраняем для backward-compat:
+ *  - если `operator` не задан и `value` — массив, поведение `in`;
+ *  - если `operator` не задан и `value` — скаляр, поведение `eq`.
+ */
 export interface ColumnFilter {
   column: string
+  value?: unknown
+  operator?: FilterOperator
+}
+
+/** Тип встроенной агрегации для группового заголовка / футера таблицы. */
+export type AggregateType = 'sum' | 'avg' | 'min' | 'max' | 'count'
+
+/** Кастомная функция агрегации — получает массив значений колонки в группе. */
+export type AggregateFn = (values: unknown[]) => unknown
+
+/** Описание агрегации одной колонки. */
+export interface ColumnAggregate {
+  column: string
+  type: AggregateType | AggregateFn
+}
+
+/** Запись группы, которую возвращает `TableEngine.getGroups()`. */
+export interface TableGroup {
+  /** Стабильный строковый ключ (stringified `value`). */
+  key: string
+  /** Сырая величина группировочного поля. */
   value: unknown
-  operator?: 'eq' | 'contains' | 'gt' | 'lt' | 'gte' | 'lte'
+  /** Идентификаторы строк внутри группы (после применения фильтров и сортировки). */
+  rows: RowId[]
+  /** Посчитанные агрегаты `columnKey → value`. Пусто, если агрегации не заданы. */
+  aggregates: Record<string, unknown>
 }
 
 export interface ExportOptions {
@@ -31,6 +102,10 @@ export interface TableState {
   filters: ColumnFilter[]
   /** @deprecated Use sorts[0] instead */
   sort: SortConfig | null
+  /** Поле, по которому сейчас группируется таблица, либо `null`. */
+  groupBy: string | null
+  /** Количество групп после применения текущего `groupBy`. */
+  groupCount: number
 }
 
 export interface TableOptions {
@@ -58,6 +133,13 @@ export interface TableEngine {
   removeFilter(column: string): void
   clearFilters(): void
   setFilterFn(fn: FilterFn | null): void
+
+  /**
+   * Устанавливает фильтр для колонки. Принимает как новый
+   * `AdvancedFilter` (только `op` + `value`), так и старый `ColumnFilter`
+   * (с уже заданным `column`). При передаче `null` — снимает фильтр.
+   */
+  setColumnFilter(column: string, filter: AdvancedFilter | ColumnFilter | null): void
 
   setPage(page: number): void
   setPageSize(size: number): void
@@ -91,6 +173,19 @@ export interface TableEngine {
   getExportData(options?: ExportOptions): string[][]
 
   getTableState(): TableState
+
+  /**
+   * Группирует строки по полю. `null` отключает группировку.
+   * Опциональный `aggregates` запоминается до следующего вызова и
+   * пересчитывается при изменениях данных / фильтров.
+   */
+  groupBy(field: string | null, aggregates?: ColumnAggregate[]): void
+  /** Снимает группировку (эквивалент `groupBy(null)`). */
+  clearGroupBy(): void
+  /** Текущее поле группировки или `null`. */
+  getGroupBy(): string | null
+  /** Снимок групп после применения фильтров / сортировки. */
+  getGroups(): TableGroup[]
 
   reset(): void
 }
