@@ -56,6 +56,24 @@
   cursor: not-allowed;
 }
 
+.sg-input-readonly,
+.sg-input[readonly] {
+  --sg-input-bg: var(--sg-color-bg-secondary);
+  --sg-input-color: var(--sg-color-text-secondary);
+  cursor: default;
+}
+
+.sg-input-readonly:hover,
+.sg-input[readonly]:hover {
+  --sg-input-border: var(--sg-color-border);
+}
+
+.sg-input-readonly:focus,
+.sg-input[readonly]:focus {
+  --sg-input-border: var(--sg-color-border);
+  box-shadow: none;
+}
+
 .sg-input-small {
   --sg-input-height: var(--sg-height-sm);
   --sg-input-font-size: var(--sg-font-size-sm);

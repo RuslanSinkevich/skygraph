@@ -74,7 +74,7 @@ export function SessionsTab() {
             notification.success(`Session ${row.id} terminated`)
           }}
         >
-          <Button size="small" style={{ color: 'var(--sg-color-error, #d4380d)' }}>Terminate</Button>
+          <Button size="small" danger>Terminate</Button>
         </Popconfirm>
       ),
     },
@@ -92,7 +92,7 @@ export function SessionsTab() {
               notification.warning('All other sessions terminated')
             }}
           >
-            <Button style={{ color: 'var(--sg-color-error, #d4380d)' }}>Terminate All Others</Button>
+            <Button danger>Terminate All Others</Button>
           </Popconfirm>
         }
       />

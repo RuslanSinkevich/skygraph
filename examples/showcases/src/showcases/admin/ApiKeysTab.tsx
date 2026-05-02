@@ -71,7 +71,7 @@ export function ApiKeysTab() {
               notification.error(`Revoked ${row.name}`)
             }}
           >
-            <Button size="small" style={{ color: 'var(--sg-color-error, #d4380d)' }}>Revoke</Button>
+            <Button size="small" danger>Revoke</Button>
           </Popconfirm>
         </div>
       ),
@@ -113,10 +113,15 @@ export function ApiKeysTab() {
             <Input placeholder="Production Backend" />
           </Field>
           <Field name="scopes" label="Scopes" rules={[{ required: true }]}>
-            <Select
-              options={SCOPE_OPTIONS.map(s => ({ label: s, value: s }))}
-              placeholder="Pick a scope"
-            />
+            {(field) => (
+              <Select
+                multiple
+                value={(field.value as string[]) ?? []}
+                onChange={(vals) => field.onChange(vals)}
+                options={SCOPE_OPTIONS.map(s => ({ label: s, value: s }))}
+                placeholder="Pick scopes"
+              />
+            )}
           </Field>
           <Field name="rateLimit" label="Rate Limit (req/min)">
             <InputNumber min={1} max={10000} placeholder="100" style={{ width: '100%' }} />

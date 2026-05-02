@@ -12,6 +12,13 @@ export interface InputProps extends BaseComponentProps, InteractiveProps, Sizabl
   placeholder?: string
   /** Native HTML input type. @default 'text' */
   type?: 'text' | 'email' | 'password' | 'number'
+  /**
+   * Marks the field as read-only. The value is selectable and submitted
+   * but cannot be edited. Sets the HTML `readonly` attribute,
+   * `aria-readonly="true"`, and adds the `sg-input-readonly` modifier class.
+   * @default false
+   */
+  readOnly?: boolean
   /** DOM id forwarded to the underlying `<input>`. */
   id?: string
   /** Exposes invalid state to assistive technologies. */
@@ -34,6 +41,7 @@ export function Input({
   defaultValue,
   placeholder,
   type = 'text',
+  readOnly = false,
   size: sizeProp,
   disabled: disabledProp,
   loading,
@@ -58,6 +66,7 @@ export function Input({
         'sg-input-wrapper',
         `sg-input-wrapper-${size}`,
         loading ? 'sg-input-wrapper-loading' : '',
+        readOnly ? 'sg-input-wrapper-readonly' : '',
         className,
       ]
         .filter(Boolean)
@@ -65,7 +74,13 @@ export function Input({
 
   const inputClasses = unstyled
     ? ''
-    : ['sg-input', `sg-input-${size}`].filter(Boolean).join(' ')
+    : [
+        'sg-input',
+        `sg-input-${size}`,
+        readOnly ? 'sg-input-readonly' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')
 
   return (
     <span className={wrapperClasses} style={style}>
@@ -77,8 +92,10 @@ export function Input({
         defaultValue={defaultValue}
         placeholder={placeholder}
         disabled={disabled || loading}
+        readOnly={readOnly}
         aria-invalid={ariaInvalid}
         aria-required={ariaRequired}
+        aria-readonly={readOnly || undefined}
         aria-describedby={ariaDescribedBy}
         onChange={(e) => onChange?.(e.target.value)}
         onBlur={onBlur}

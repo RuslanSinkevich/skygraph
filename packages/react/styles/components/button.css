@@ -106,3 +106,76 @@
   opacity: 0.65;
   --sg-spin-color: currentColor;
 }
+
+/* === Danger variant ===
+ * Combines with `type`:
+ *   default → red text + red border
+ *   primary → solid red fill
+ *   dashed  → red dashed border + red text
+ *   text    → red text, transparent bg (red bg on hover)
+ *   link    → red text, no border
+ */
+.sg-button-danger {
+  --sg-btn-color: var(--sg-color-error);
+  --sg-btn-border: var(--sg-color-error);
+}
+.sg-button-danger:hover {
+  --sg-btn-color: var(--sg-red-6);
+  --sg-btn-border: var(--sg-red-6);
+}
+.sg-button-danger:active {
+  --sg-btn-color: var(--sg-red-6);
+  --sg-btn-border: var(--sg-red-6);
+}
+.sg-button-danger:focus-visible {
+  --sg-btn-border: var(--sg-color-error);
+  box-shadow: 0 0 0 2px var(--sg-color-error-bg);
+}
+
+.sg-button-primary.sg-button-danger {
+  --sg-btn-bg: var(--sg-color-error);
+  --sg-btn-color: var(--sg-color-white);
+  --sg-btn-border: var(--sg-color-error);
+}
+.sg-button-primary.sg-button-danger:hover {
+  --sg-btn-bg: var(--sg-red-6);
+  --sg-btn-color: var(--sg-color-white);
+  --sg-btn-border: var(--sg-red-6);
+}
+.sg-button-primary.sg-button-danger:active {
+  --sg-btn-bg: var(--sg-red-6);
+  --sg-btn-color: var(--sg-color-white);
+  --sg-btn-border: var(--sg-red-6);
+}
+
+.sg-button-text.sg-button-danger {
+  --sg-btn-bg: transparent;
+  --sg-btn-border: transparent;
+  --sg-btn-color: var(--sg-color-error);
+}
+.sg-button-text.sg-button-danger:hover {
+  --sg-btn-bg: var(--sg-color-error-bg);
+  --sg-btn-border: transparent;
+  --sg-btn-color: var(--sg-color-error);
+}
+
+.sg-button-link.sg-button-danger {
+  --sg-btn-bg: transparent;
+  --sg-btn-border: transparent;
+  --sg-btn-color: var(--sg-color-error);
+}
+.sg-button-link.sg-button-danger:hover {
+  --sg-btn-color: var(--sg-red-6);
+}
+
+.sg-button-danger:disabled {
+  --sg-btn-color: var(--sg-color-text-disabled);
+  --sg-btn-border: var(--sg-color-border);
+  --sg-btn-bg: var(--sg-color-bg-disabled);
+}
+
+/* === Block: stretch to parent width === */
+.sg-button-block {
+  display: flex;
+  width: 100%;
+}

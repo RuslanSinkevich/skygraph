@@ -307,7 +307,7 @@ export function FileManagerApp() {
           <div style={{ display: 'flex', gap: 8 }}>
             <Input
               value={`https://files.example.io/${shareOpen?.id ?? ''}`}
-              onChange={() => { /* read-only */ }}
+              readOnly
               style={{ flex: 1 }}
             />
             <Button onClick={() => {

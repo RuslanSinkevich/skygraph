@@ -9,6 +9,15 @@ export interface ButtonProps extends BaseComponentProps, InteractiveProps, Sizab
   type?: 'default' | 'primary' | 'dashed' | 'text' | 'link'
   /** Native HTML button type attribute. @default 'button' */
   htmlType?: 'button' | 'submit' | 'reset'
+  /**
+   * Visually flags a destructive action. Combines with `type` (e.g. a
+   * `danger` `primary` button is solid red, a `danger` `text` is red text).
+   * Adds the `sg-button-danger` modifier class.
+   * @default false
+   */
+  danger?: boolean
+  /** Stretches the button to fill its parent container. @default false */
+  block?: boolean
   /** Click event handler. */
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
   /** Button content. */
@@ -22,6 +31,8 @@ export function Button({
   disabled: disabledProp,
   loading,
   htmlType = 'button',
+  danger = false,
+  block = false,
   onClick,
   children,
   className,
@@ -38,6 +49,8 @@ export function Button({
         'sg-button',
         `sg-button-${type}`,
         `sg-button-${size}`,
+        danger ? 'sg-button-danger' : '',
+        block ? 'sg-button-block' : '',
         loading ? 'sg-button-loading' : '',
         className,
       ]
