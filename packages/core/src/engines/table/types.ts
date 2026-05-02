@@ -74,6 +74,20 @@ export interface TableEngine {
   /** Drop all pin assignments. */
   clearPinned(): void
 
+  /**
+   * Persist a column's pixel width. Mirrored into the Core store under
+   * `$table.<id>.state.columnWidths`, so React adapters can react via
+   * `core.subscribe` and so widths survive re-mounts that recreate the
+   * engine from a snapshot.
+   */
+  setColumnWidth(column: string, width: number): void
+  /** Get the persisted width for a column, or `undefined` when unset. */
+  getColumnWidth(column: string): number | undefined
+  /** Snapshot of all persisted column widths (key → px). */
+  getColumnWidths(): Record<string, number>
+  /** Drop all persisted widths. */
+  clearColumnWidths(): void
+
   getExportData(options?: ExportOptions): string[][]
 
   getTableState(): TableState

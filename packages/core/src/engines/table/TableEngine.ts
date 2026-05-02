@@ -35,6 +35,7 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
   let page = 1
   let pinnedLeft: string[] = []
   let pinnedRight: string[] = []
+  let columnWidths: Record<string, number> = {}
 
   function getRowData(id: RowId): Record<string, unknown> | undefined {
     const prefix = `${TABLE_PREFIX}${tableId}.byId.${id}.`
@@ -305,6 +306,24 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       core.set(statePath(tableId, 'pinnedRight'), [])
     },
 
+    setColumnWidth(column: string, width: number): void {
+      columnWidths = { ...columnWidths, [column]: width }
+      core.set(statePath(tableId, 'columnWidths'), { ...columnWidths })
+    },
+
+    getColumnWidth(column: string): number | undefined {
+      return columnWidths[column]
+    },
+
+    getColumnWidths(): Record<string, number> {
+      return { ...columnWidths }
+    },
+
+    clearColumnWidths(): void {
+      columnWidths = {}
+      core.set(statePath(tableId, 'columnWidths'), {})
+    },
+
     moveRows(ids: RowId[], toIndex: number): void {
       const items = ids.map((id) => {
         const idx = order.indexOf(id)
@@ -369,10 +388,15 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       page = 1
       pinnedLeft = []
       pinnedRight = []
+      columnWidths = {}
+      core.set(statePath(tableId, 'columnWidths'), {})
       publishState()
     },
   }
 
+  // Initial publish — emit empty `columnWidths` so subscribers can read a
+  // stable shape from the store without needing to handle `undefined`.
+  core.set(statePath(tableId, 'columnWidths'), {})
   publishState()
   return table
 }

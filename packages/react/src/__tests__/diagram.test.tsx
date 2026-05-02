@@ -51,6 +51,48 @@ describe('useGraph hook', () => {
     expect(result.current.state.nodes.size).toBe(1)
     expect(result.current.state.edges.size).toBe(0)
   })
+
+  it('undo / redo round-trip a node addition through the React snapshot', () => {
+    const { result } = renderHook(() => useGraph())
+    act(() => {
+      result.current.graph.addNode({ id: 'a' })
+    })
+    expect(result.current.state.nodes.size).toBe(1)
+
+    act(() => {
+      result.current.graph.undo()
+    })
+    expect(result.current.state.nodes.size).toBe(0)
+
+    act(() => {
+      result.current.graph.redo()
+    })
+    expect(result.current.state.nodes.size).toBe(1)
+    expect(result.current.state.nodes.get('a')).toBeDefined()
+  })
+
+  it('transaction() groups mutations: a single undo restores the prior empty state', () => {
+    const { result } = renderHook(() => useGraph())
+    act(() => {
+      result.current.graph.transaction(() => {
+        result.current.graph.addNode({ id: 'a' })
+        result.current.graph.addNode({ id: 'b' })
+        result.current.graph.addEdge({
+          id: 'e',
+          from: { node: 'a', anchor: 'nw' },
+          to: { node: 'b', anchor: 'nw' },
+        })
+      })
+    })
+    expect(result.current.state.nodes.size).toBe(2)
+    expect(result.current.state.edges.size).toBe(1)
+
+    act(() => {
+      result.current.graph.undo()
+    })
+    expect(result.current.state.nodes.size).toBe(0)
+    expect(result.current.state.edges.size).toBe(0)
+  })
 })
 
 describe('Diagram component', () => {

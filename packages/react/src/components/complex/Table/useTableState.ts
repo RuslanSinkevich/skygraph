@@ -73,8 +73,17 @@ export function useTableState(props: TableProps) {
    * horizontal scrollbar. Otherwise the table flexes to fit its container. */
   const hasScrollX = scroll?.x != null
 
-  const { visibleRows, tableState, setSort, setSorts, clearSort, setPage, setFilterFn } =
-    useTable(tableOptions)
+  const {
+    visibleRows,
+    tableState,
+    columnWidths: persistedColWidths,
+    setSort,
+    setSorts,
+    clearSort,
+    setPage,
+    setFilterFn,
+    setColumnWidth: persistColumnWidth,
+  } = useTable(tableOptions)
 
   const t = useMemo(() => ({ ...DEFAULT_LOCALE, ...locale }), [locale])
 
@@ -89,13 +98,24 @@ export function useTableState(props: TableProps) {
   const [internalSorts, setInternalSorts] = useState<SortConfig[]>([])
   const sorts = controlledSorts ?? internalSorts
 
+  // Initial widths come from three sources, in order of precedence:
+  //   1. engine-persisted widths (`$table.<id>.state.columnWidths`)
+  //   2. column defaults (`column.width`)
+  //   3. global default (`DEFAULT_COL_WIDTH`)
+  // A column with a persisted width is treated as user-resized so it
+  // keeps its exact px under flex-layout (otherwise it would snap back
+  // to the auto track).
   const [colWidths, setColWidths] = useState<Record<string, number>>(() => {
     const w: Record<string, number> = {}
-    for (const c of leafColumns) w[c.key] = c.width ?? DEFAULT_COL_WIDTH
+    for (const c of leafColumns) {
+      w[c.key] = persistedColWidths[c.key] ?? c.width ?? DEFAULT_COL_WIDTH
+    }
     return w
   })
   /** Columns the user has drag/auto-resized. Pinned to exact px — wins over auto-layout. */
-  const [userResizedCols, setUserResizedCols] = useState<Set<string>>(() => new Set())
+  const [userResizedCols, setUserResizedCols] = useState<Set<string>>(
+    () => new Set(Object.keys(persistedColWidths)),
+  )
 
   const [colOrder, setColOrder] = useState<string[]>(() => leafColumns.map((c) => c.key))
   const [dragCol, setDragCol] = useState<string | null>(null)

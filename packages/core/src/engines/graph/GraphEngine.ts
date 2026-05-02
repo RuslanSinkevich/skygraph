@@ -1,5 +1,6 @@
 import type { Core } from '../../types'
 import { GRAPH_PREFIX } from '../namespaces'
+import { createHistory, HISTORY_LIMIT, type HistoryEntry, type GraphSnapshot } from './history'
 import type {
   AABB,
   Anchor,
@@ -84,6 +85,72 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
 
   publishSnapshot() // initial empty snapshot
 
+  // ─── History (undo/redo) ──────────────────────────────────────────────────
+  //
+  // The engine wraps every mutating public method in `_withHistory`. The
+  // wrapper captures the engine state on the OUTERMOST call (so nested
+  // mutations — e.g. `removeNode` -> `removeEdge` — only contribute one
+  // history entry) and pushes the captured snapshot to the undo stack on
+  // commit. `transaction(fn)` is the public form of the same primitive,
+  // letting callers batch unrelated mutations into a single entry.
+  //
+  // Restoration (`undo`/`redo`) sets `isRestoring = true` to suppress
+  // history capture inside `_restoreState`.
+
+  const history = createHistory(HISTORY_LIMIT)
+  let transactionDepth = 0
+  let pendingEntry: HistoryEntry | null = null
+  let isRestoring = false
+
+  function _captureState(): GraphSnapshot {
+    return {
+      nodes: Array.from(nodes.values()),
+      edges: Array.from(edges.values()),
+      nodeCounter,
+      edgeCounter,
+    }
+  }
+
+  function _restoreState(snapshot: GraphSnapshot): void {
+    nodes.clear()
+    edges.clear()
+    edgesByNode.clear()
+    for (const n of snapshot.nodes) {
+      nodes.set(n.id, n)
+      edgesByNode.set(n.id, new Set())
+    }
+    for (const e of snapshot.edges) {
+      edges.set(e.id, e)
+      ensureBucket(endpointNode(e.from)).add(e.id)
+      ensureBucket(endpointNode(e.to)).add(e.id)
+    }
+    nodeCounter = snapshot.nodeCounter
+    edgeCounter = snapshot.edgeCounter
+  }
+
+  function _withHistory<T>(fn: () => T, label?: string): T {
+    if (isRestoring) return fn()
+    const wasOuter = transactionDepth === 0
+    if (wasOuter) {
+      pendingEntry = { snapshot: _captureState(), label }
+    } else if (label !== undefined && pendingEntry && pendingEntry.label === undefined) {
+      pendingEntry = { snapshot: pendingEntry.snapshot, label }
+    }
+    transactionDepth++
+    try {
+      return fn()
+    } finally {
+      transactionDepth--
+      if (transactionDepth === 0 && wasOuter) {
+        if (pendingEntry !== null) {
+          history.push(pendingEntry)
+          history.clearRedo()
+        }
+        pendingEntry = null
+      }
+    }
+  }
+
   // ─── Helpers ──────────────────────────────────────────────────────────────
 
   function newNodeId(): NodeId {
@@ -112,8 +179,15 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
   }
 
   // ─── Node operations ──────────────────────────────────────────────────────
+  //
+  // The `_impl` functions are the raw mutators. The exported `addNode` /
+  // `removeNode` / ... wrap them in `_withHistory` so the public surface
+  // automatically participates in undo/redo. Internal calls between
+  // mutators (e.g. `removeNode` → `removeEdge`) go through the wrapped
+  // form too, but `_withHistory` recognizes nested transactions and only
+  // commits one entry.
 
-  function addNode(init: NodeInit = {}): NodeId {
+  function _addNodeImpl(init: NodeInit = {}): NodeId {
     const id = init.id ?? newNodeId()
     if (nodes.has(id)) {
       throw new Error(`[skygraph/graph] node id "${id}" already exists`)
@@ -133,7 +207,11 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
     return id
   }
 
-  function removeNode(id: NodeId): void {
+  function addNode(init: NodeInit = {}): NodeId {
+    return _withHistory(() => _addNodeImpl(init))
+  }
+
+  function _removeNodeImpl(id: NodeId): void {
     if (!nodes.has(id)) return
     const incident = edgesByNode.get(id)
     if (incident) {
@@ -150,7 +228,11 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
     publishSnapshot()
   }
 
-  function updateNode(id: NodeId, patch: NodeUpdate): void {
+  function removeNode(id: NodeId): void {
+    _withHistory(() => _removeNodeImpl(id))
+  }
+
+  function _updateNodeImpl(id: NodeId, patch: NodeUpdate): void {
     const node = nodes.get(id)
     if (!node) {
       throw new Error(`[skygraph/graph] node "${id}" not found`)
@@ -170,11 +252,15 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
     publishSnapshot()
   }
 
-  function moveNode(id: NodeId, x: number, y: number): void {
-    updateNode(id, { transform: { x, y } })
+  function updateNode(id: NodeId, patch: NodeUpdate): void {
+    _withHistory(() => _updateNodeImpl(id, patch))
   }
 
-  function setParent(id: NodeId, parentId: NodeId | null): void {
+  function moveNode(id: NodeId, x: number, y: number): void {
+    _withHistory(() => _updateNodeImpl(id, { transform: { x, y } }))
+  }
+
+  function _setParentImpl(id: NodeId, parentId: NodeId | null): void {
     const node = nodes.get(id)
     if (!node) {
       throw new Error(`[skygraph/graph] node "${id}" not found`)
@@ -197,9 +283,13 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
     publishSnapshot()
   }
 
+  function setParent(id: NodeId, parentId: NodeId | null): void {
+    _withHistory(() => _setParentImpl(id, parentId))
+  }
+
   // ─── Edge operations ──────────────────────────────────────────────────────
 
-  function addEdge(init: EdgeInit): EdgeId {
+  function _addEdgeImpl(init: EdgeInit): EdgeId {
     const id = init.id ?? newEdgeId()
     if (edges.has(id)) {
       throw new Error(`[skygraph/graph] edge id "${id}" already exists`)
@@ -227,13 +317,21 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
     return id
   }
 
-  function removeEdge(id: EdgeId): void {
+  function addEdge(init: EdgeInit): EdgeId {
+    return _withHistory(() => _addEdgeImpl(init))
+  }
+
+  function _removeEdgeImpl(id: EdgeId): void {
     const edge = edges.get(id)
     if (!edge) return
     edgesByNode.get(endpointNode(edge.from))?.delete(id)
     edgesByNode.get(endpointNode(edge.to))?.delete(id)
     edges.delete(id)
     publishSnapshot()
+  }
+
+  function removeEdge(id: EdgeId): void {
+    _withHistory(() => _removeEdgeImpl(id))
   }
 
   // ─── Read API ─────────────────────────────────────────────────────────────
@@ -492,7 +590,80 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
     edgesByNode.clear()
     nodeCounter = 0
     edgeCounter = 0
+    history.clear()
+    pendingEntry = null
+    transactionDepth = 0
+    isRestoring = false
     publishSnapshot()
+  }
+
+  // ─── Public history API ──────────────────────────────────────────────────
+
+  function transaction(fn: () => void, label?: string): void {
+    _withHistory(fn, label)
+  }
+
+  function pushHistory(label?: string): void {
+    if (transactionDepth > 0) {
+      // Inside a transaction: commit the current pending entry as a sub-
+      // boundary, then start a fresh capture for the remainder of the
+      // transaction. This lets a single `transaction(fn)` produce more
+      // than one undo entry — useful when a batch operation has natural
+      // sub-steps (`}; { ` between groups).
+      if (pendingEntry !== null) {
+        history.push({ snapshot: pendingEntry.snapshot, label: pendingEntry.label ?? label })
+        history.clearRedo()
+      }
+      pendingEntry = { snapshot: _captureState(), label: undefined }
+      return
+    }
+    // Standalone: re-label the most recent undo entry. We DO NOT push a
+    // duplicate snapshot of the current state — auto-push has already
+    // captured every meaningful boundary, so an extra standalone push
+    // would just clutter the stack with no-op entries that consume undo
+    // slots without changing visible state. Re-labeling is the useful
+    // bit you can't get any other way outside a transaction.
+    history.relabelTop(label)
+  }
+
+  function undo(): boolean {
+    if (!history.canUndo()) return false
+    const entry = history.popUndo()!
+    history.pushRedo({ snapshot: _captureState(), label: entry.label })
+    isRestoring = true
+    try {
+      _restoreState(entry.snapshot)
+    } finally {
+      isRestoring = false
+    }
+    publishSnapshot()
+    return true
+  }
+
+  function redo(): boolean {
+    if (!history.canRedo()) return false
+    const entry = history.popRedo()!
+    history.push({ snapshot: _captureState(), label: entry.label })
+    isRestoring = true
+    try {
+      _restoreState(entry.snapshot)
+    } finally {
+      isRestoring = false
+    }
+    publishSnapshot()
+    return true
+  }
+
+  function canUndo(): boolean {
+    return history.canUndo()
+  }
+
+  function canRedo(): boolean {
+    return history.canRedo()
+  }
+
+  function clearHistory(): void {
+    history.clear()
   }
 
   return {
@@ -511,6 +682,13 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
     anchorsOf,
     boundsOf,
     subscribe: subscribeLocal,
+    transaction,
+    pushHistory,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    clearHistory,
     clear,
   }
 }

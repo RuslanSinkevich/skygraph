@@ -24,6 +24,9 @@ export interface UseTableReturn {
   tableState: TableState
   /** Snapshot of pinned columns; refreshes after `pinColumn` / `clearPinned`. */
   pinnedColumns: { left: string[]; right: string[] }
+  /** Snapshot of persisted column widths; refreshes after `setColumnWidth` /
+   *  `clearColumnWidths`. */
+  columnWidths: Record<string, number>
   setSort: (column: string, direction: SortDirection) => void
   setSorts: (sorts: SortConfig[]) => void
   clearSort: () => void
@@ -36,6 +39,8 @@ export interface UseTableReturn {
   prevPage: () => void
   pinColumn: (column: string, side: 'left' | 'right' | null) => void
   clearPinned: () => void
+  setColumnWidth: (column: string, width: number) => void
+  clearColumnWidths: () => void
   refresh: () => void
 }
 
@@ -52,6 +57,9 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
   const [visibleRows, setVisibleRows] = useState(() => table.getVisibleRows())
   const [tableState, setTableState] = useState(() => table.getTableState())
   const [pinnedColumns, setPinnedColumns] = useState(() => table.getPinnedColumns())
+  const [columnWidths, setColumnWidthsState] = useState<Record<string, number>>(
+    () => table.getColumnWidths(),
+  )
 
   const prevDataRef = useRef(options?.data)
   useEffect(() => {
@@ -71,6 +79,7 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
     setVisibleRows(table.getVisibleRows())
     setTableState(table.getTableState())
     setPinnedColumns(table.getPinnedColumns())
+    setColumnWidthsState(table.getColumnWidths())
   }, [table])
 
   const pinColumn = useCallback(
@@ -84,6 +93,19 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
   const clearPinned = useCallback(() => {
     table.clearPinned()
     setPinnedColumns(table.getPinnedColumns())
+  }, [table])
+
+  const setColumnWidth = useCallback(
+    (column: string, width: number) => {
+      table.setColumnWidth(column, width)
+      setColumnWidthsState(table.getColumnWidths())
+    },
+    [table],
+  )
+
+  const clearColumnWidths = useCallback(() => {
+    table.clearColumnWidths()
+    setColumnWidthsState(table.getColumnWidths())
   }, [table])
 
   const setSort = useCallback(
@@ -161,6 +183,7 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
       visibleRows,
       tableState,
       pinnedColumns,
+      columnWidths,
       setSort,
       setSorts,
       clearSort,
@@ -173,6 +196,8 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
       prevPage,
       pinColumn,
       clearPinned,
+      setColumnWidth,
+      clearColumnWidths,
       refresh,
     }),
     [
@@ -181,6 +206,7 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
       visibleRows,
       tableState,
       pinnedColumns,
+      columnWidths,
       setSort,
       setSorts,
       clearSort,
@@ -193,6 +219,8 @@ export function useTable(options?: UseTableOptions): UseTableReturn {
       prevPage,
       pinColumn,
       clearPinned,
+      setColumnWidth,
+      clearColumnWidths,
       refresh,
     ]
   )

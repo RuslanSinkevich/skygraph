@@ -465,3 +465,166 @@ describe('GraphEngine: store integration', () => {
     expect(graph.getState().edges.size).toBe(0)
   })
 })
+
+describe('GraphEngine: undo / redo', () => {
+  it('addNode then undo() removes the node and brings the engine back', () => {
+    const { graph } = setup()
+    expect(graph.canUndo()).toBe(false)
+    const id = graph.addNode({ id: 'a' })
+    expect(graph.canUndo()).toBe(true)
+    expect(graph.canRedo()).toBe(false)
+
+    expect(graph.undo()).toBe(true)
+    expect(graph.getNode(id)).toBeUndefined()
+    expect(graph.canUndo()).toBe(false)
+    expect(graph.canRedo()).toBe(true)
+  })
+
+  it('redo() re-applies the change and updates the canUndo/canRedo flags', () => {
+    const { graph } = setup()
+    graph.addNode({ id: 'a', transform: { x: 10, y: 20 } })
+    graph.undo()
+    expect(graph.getNode('a')).toBeUndefined()
+
+    expect(graph.redo()).toBe(true)
+    expect(graph.getNode('a')).toBeDefined()
+    expect(graph.getNode('a')!.transform).toEqual({ x: 10, y: 20 })
+    expect(graph.canRedo()).toBe(false)
+    expect(graph.canUndo()).toBe(true)
+  })
+
+  it('undo() / redo() return false when their stacks are empty', () => {
+    const { graph } = setup()
+    expect(graph.undo()).toBe(false)
+    expect(graph.redo()).toBe(false)
+  })
+
+  it('a new mutation after undo() clears the redo stack', () => {
+    const { graph } = setup()
+    graph.addNode({ id: 'a' })
+    graph.addNode({ id: 'b' })
+    graph.undo() // removes b
+    expect(graph.canRedo()).toBe(true)
+
+    graph.addNode({ id: 'c' }) // any new edit forks history
+    expect(graph.canRedo()).toBe(false)
+    expect(graph.getNode('b')).toBeUndefined()
+    expect(graph.getNode('c')).toBeDefined()
+  })
+
+  it('transaction() groups multiple mutations into one history entry', () => {
+    const { graph } = setup()
+    graph.transaction(() => {
+      graph.addNode({ id: 'a' })
+      graph.addNode({ id: 'b' })
+      graph.addEdge({ id: 'e', from: { node: 'a', anchor: 'nw' }, to: { node: 'b', anchor: 'nw' } })
+    })
+    expect(graph.getState().nodes.size).toBe(2)
+    expect(graph.getState().edges.size).toBe(1)
+
+    expect(graph.undo()).toBe(true)
+    expect(graph.getState().nodes.size).toBe(0)
+    expect(graph.getState().edges.size).toBe(0)
+  })
+
+  it('removeNode() with incident edges is one transaction (single undo restores all)', () => {
+    const { graph } = setup()
+    const a = graph.addNode({ id: 'a' })
+    const b = graph.addNode({ id: 'b' })
+    graph.addEdge({ id: 'e', from: { node: a, anchor: 'nw' }, to: { node: b, anchor: 'nw' } })
+    graph.removeNode(a)
+    expect(graph.getState().nodes.size).toBe(1)
+    expect(graph.getState().edges.size).toBe(0)
+
+    // single undo brings the node AND its edge back together
+    expect(graph.undo()).toBe(true)
+    expect(graph.getState().nodes.has('a')).toBe(true)
+    expect(graph.getState().edges.has('e')).toBe(true)
+  })
+
+  it('history stack is capped at 100 entries (oldest dropped)', () => {
+    const { graph } = setup()
+    graph.addNode({ id: 'base' })
+    for (let i = 0; i < 110; i++) {
+      graph.moveNode('base', i, i)
+    }
+    let undone = 0
+    while (graph.undo()) undone++
+    // 100 history entries max, so we can undo at most 100 times.
+    expect(undone).toBe(100)
+    // The remaining state is whatever is left after 100 undos: we never
+    // make it back to the very first addNode, so the node still exists.
+    expect(graph.getNode('base')).toBeDefined()
+  })
+
+  it('pushHistory inside a transaction splits one batch into two undo entries', () => {
+    const { graph } = setup()
+    graph.transaction(() => {
+      graph.addNode({ id: 'a' })
+      graph.pushHistory('after-a') // commits the pending entry, starts a new one
+      graph.addNode({ id: 'b' })
+    })
+    expect(graph.getState().nodes.size).toBe(2)
+
+    // First undo rolls back only the 2nd half (b), not the whole transaction.
+    expect(graph.undo()).toBe(true)
+    expect(graph.getNode('a')).toBeDefined()
+    expect(graph.getNode('b')).toBeUndefined()
+
+    // Second undo rolls back the 1st half (a) too.
+    expect(graph.undo()).toBe(true)
+    expect(graph.getNode('a')).toBeUndefined()
+  })
+
+  it('pushHistory(label) standalone re-labels without adding a duplicate entry', () => {
+    const { graph } = setup()
+    graph.addNode({ id: 'a' })
+    graph.addNode({ id: 'b' })
+
+    // Two mutations → two entries on the undo stack.
+    graph.pushHistory('rename')
+    // Standalone push must NOT add a third entry — exactly two undos still
+    // get us back to the empty starting state.
+    expect(graph.undo()).toBe(true) // removes b
+    expect(graph.getNode('b')).toBeUndefined()
+    expect(graph.getNode('a')).toBeDefined()
+
+    expect(graph.undo()).toBe(true) // removes a
+    expect(graph.getNode('a')).toBeUndefined()
+
+    // No third entry exists, so the next undo is a no-op.
+    expect(graph.undo()).toBe(false)
+  })
+
+  it('clear() also drops the history stacks', () => {
+    const { graph } = setup()
+    graph.addNode({ id: 'a' })
+    graph.addNode({ id: 'b' })
+    expect(graph.canUndo()).toBe(true)
+    graph.clear()
+    expect(graph.canUndo()).toBe(false)
+    expect(graph.canRedo()).toBe(false)
+  })
+
+  it('clearHistory() drops stacks but leaves the current state intact', () => {
+    const { graph } = setup()
+    graph.addNode({ id: 'a' })
+    graph.addNode({ id: 'b' })
+    graph.clearHistory()
+    expect(graph.canUndo()).toBe(false)
+    expect(graph.getState().nodes.size).toBe(2)
+  })
+
+  it('node id counters are restored on undo so freshly-issued ids do not collide', () => {
+    const { graph } = setup()
+    const a = graph.addNode() // engine-generated id
+    graph.addNode() // engine-generated id
+    graph.undo() // pop 2nd node
+    const next = graph.addNode() // should reuse the counter slot, not jump past it
+    // Two distinct ids are still distinct, but we shouldn't see a gap that
+    // suggests counter drift. Concretely: `next` must not collide with `a`.
+    expect(next).not.toBe(a)
+    expect(graph.getNode(next)).toBeDefined()
+    expect(graph.getNode(a)).toBeDefined()
+  })
+})

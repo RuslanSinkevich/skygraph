@@ -311,6 +311,105 @@ describe('TableEngine: state in core', () => {
   })
 })
 
+describe('TableEngine: column widths', () => {
+  it('setColumnWidth + getColumnWidth round-trip', () => {
+    const core = createCore()
+    const table = createTable(core)
+
+    expect(table.getColumnWidth('name')).toBeUndefined()
+    table.setColumnWidth('name', 220)
+    expect(table.getColumnWidth('name')).toBe(220)
+  })
+
+  it('getColumnWidths returns all persisted widths as a snapshot', () => {
+    const core = createCore()
+    const table = createTable(core)
+
+    table.setColumnWidth('a', 100)
+    table.setColumnWidth('b', 250)
+
+    const widths = table.getColumnWidths()
+    expect(widths).toEqual({ a: 100, b: 250 })
+
+    // The returned record is a copy — mutating it must not affect the engine.
+    widths.a = 999
+    expect(table.getColumnWidth('a')).toBe(100)
+  })
+
+  it('clearColumnWidths drops all persisted widths', () => {
+    const core = createCore()
+    const table = createTable(core)
+
+    table.setColumnWidth('a', 100)
+    table.setColumnWidth('b', 250)
+    table.clearColumnWidths()
+
+    expect(table.getColumnWidths()).toEqual({})
+    expect(table.getColumnWidth('a')).toBeUndefined()
+  })
+
+  it('persists widths into the Core store under $table.<id>.state.columnWidths', () => {
+    const core = createCore()
+    const table = createTable(core)
+
+    const observed: Array<Record<string, number>> = []
+    // Find the engine's store path indirectly: the only state path holding a
+    // `columnWidths` record published from the engine is what we want. Use a
+    // wildcard-style subscribe by listening to each path the engine writes.
+    // The engine reserves `$table.` as a prefix, so we scan keys after each
+    // write via `core.snapshot()`.
+    table.setColumnWidth('name', 180)
+    let snap = core.snapshot()
+    let key = Object.keys(snap).find(
+      (k) => k.startsWith('$table.') && k.endsWith('.state.columnWidths'),
+    )
+    expect(key).toBeDefined()
+    expect(snap[key!]).toEqual({ name: 180 })
+
+    table.setColumnWidth('email', 240)
+    snap = core.snapshot()
+    expect(snap[key!]).toEqual({ name: 180, email: 240 })
+
+    void observed
+  })
+
+  it('reset() also clears persisted column widths', () => {
+    const core = createCore()
+    const table = createTable(core)
+
+    table.setColumnWidth('a', 120)
+    expect(table.getColumnWidth('a')).toBe(120)
+
+    table.reset()
+    expect(table.getColumnWidths()).toEqual({})
+    expect(table.getColumnWidth('a')).toBeUndefined()
+  })
+
+  it('subscribers on the columnWidths path are notified after each setColumnWidth', () => {
+    const core = createCore()
+    const table = createTable(core)
+
+    table.setColumnWidth('a', 100) // ensure path exists
+    const snap = core.snapshot()
+    const key = Object.keys(snap).find(
+      (k) => k.startsWith('$table.') && k.endsWith('.state.columnWidths'),
+    )!
+
+    const updates: Array<Record<string, number> | undefined> = []
+    const unsub = core.subscribe(key, (val) => {
+      updates.push(val as Record<string, number>)
+    })
+
+    table.setColumnWidth('a', 150)
+    table.setColumnWidth('b', 80)
+
+    unsub()
+    expect(updates.length).toBe(2)
+    expect(updates[0]).toEqual({ a: 150 })
+    expect(updates[1]).toEqual({ a: 150, b: 80 })
+  })
+})
+
 describe('TableEngine: scalability', () => {
   it('handles 100k rows', () => {
     const core = createCore()

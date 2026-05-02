@@ -252,8 +252,50 @@ export interface GraphEngine {
    */
   subscribe(cb: () => void): () => void
 
+  // ── Undo / redo ─────────────────────────────────────────────────────────
+  //
+  // Each mutating call (`addNode`, `removeNode`, `updateNode`, `moveNode`,
+  // `setParent`, `addEdge`, `removeEdge`) automatically pushes the prior
+  // state onto the undo stack — so by default one command = one history
+  // entry. Use `transaction(fn)` to group multiple mutations into a single
+  // entry. The redo stack is cleared whenever a new mutation happens
+  // outside of an `undo()` / `redo()` call, matching the standard linear
+  // editor history model.
+
+  /** Group multiple mutations into one history entry. Optional `label` is
+   *  attached to the resulting `HistoryEntry`. */
+  transaction(fn: () => void, label?: string): void
+
   /**
-   * Reset the graph (drops all nodes / edges).
+   * Add a label to the history without changing the visible state.
+   *
+   * Behaviour depends on context:
+   *
+   *   - **Inside `transaction(fn)`**: commits the in-progress pending
+   *     entry as a sub-boundary (with `label`) and starts a fresh
+   *     capture for the rest of the transaction. Use this to split one
+   *     batch into multiple undo entries.
+   *
+   *   - **Outside a transaction**: re-labels the most recent undo entry.
+   *     Does NOT push a duplicate snapshot — auto-push has already
+   *     captured every meaningful boundary, so a standalone push would
+   *     only clutter the stack.
+   */
+  pushHistory(label?: string): void
+
+  /** Restore the previous state, returning `true` if anything was undone. */
+  undo(): boolean
+  /** Re-apply the most recently undone state, returning `true` on success. */
+  redo(): boolean
+  /** `true` when there is at least one entry on the undo stack. */
+  canUndo(): boolean
+  /** `true` when there is at least one entry on the redo stack. */
+  canRedo(): boolean
+  /** Drop all undo and redo entries (state itself is not affected). */
+  clearHistory(): void
+
+  /**
+   * Reset the graph (drops all nodes / edges, clears history).
    * @internal Test helper.
    */
   clear(): void
