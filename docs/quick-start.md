@@ -8,12 +8,13 @@ skygraph/
 │   ├── core/          ← @skygraph/core — реактивный движок (0 зависимостей)
 │   └── react/         ← @skygraph/react — React-компоненты + хуки
 ├── examples/
-│   └── demo/          ← Vite-приложение с демками всех компонентов
+│   ├── demo/          ← Vite-приложение с интерактивными демками компонентов
+│   └── showcases/     ← Vite-приложение с full-app showcases (CRM, e-commerce, ...)
 ├── docs/              ← Эта документация
 ├── ARCHITECTURE.md    ← Конституция архитектуры (не менять)
-├── STREAM-PLAN.md     ← План задач для длинных стримов
-├── AUDIT.md           ← Свежий аудит репозитория
-├── CYCLE-LOG.md       ← Журнал работ
+├── AUDIT-POST.md      ← Пост-аудит — финальное состояние после стримов
+├── TODO.md            ← Открытые хвосты
+├── CHANGELOG.md       ← История релизов
 ├── PLAN.md            ← Архивный первоначальный план
 └── tsconfig.base.json
 ```

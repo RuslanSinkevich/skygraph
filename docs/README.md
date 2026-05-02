@@ -12,7 +12,7 @@
 | [Стилевой контракт](./styling-contract.md) | Пользователь библиотеки | Публичные токены, `classNames` / `styles`, `unstyled` |
 | [Стилевые рецепты](./styling-recipes.md) | Пользователь библиотеки | Бренд, dark mode, conditional row/cell styling |
 | [Конвенции](./conventions.md) | Все | Именование, структура файлов, код-стайл |
-| ~~[Текущее состояние](./status.md)~~ | архив | Снимок от 2026-04-06, устарел. Актуальные данные — `AUDIT.md` / `CYCLE-LOG.md` в корне. |
+| [Стилевой план](./styling-plan.md) | Maintainers | Многофазный план приведения CSS к контракту |
 | [Стилевой аудит (auto)](./_audit/styling-audit.md) | DevOps | Автоотчёт `pnpm audit:styles` — токены, классы, hex |
 
 ## Корневые документы
@@ -20,9 +20,6 @@
 - [`README.md`](../README.md) — пользовательский overview, установка, фичи.
 - [`ARCHITECTURE.md`](../ARCHITECTURE.md) — конституция архитектуры (заморозка API).
 - [`CHANGELOG.md`](../CHANGELOG.md) — журнал релизов.
-- [`STREAM-PLAN.md`](../STREAM-PLAN.md) — план задач для длинных стримов.
-- [`AUDIT.md`](../AUDIT.md) — последний аудит репозитория.
-- [`AUDIT-POST.md`](../AUDIT-POST.md) — пост-аудит выполненной работы.
-- [`CYCLE-LOG.md`](../CYCLE-LOG.md) — журнал хода стримов.
-- [`TODO-cycle.md`](../TODO-cycle.md) — отложенные задачи.
-- [`STREAM-CHAT.md`](../STREAM-CHAT.md) — канал общения во время стрима.
+- [`AUDIT-POST.md`](../AUDIT-POST.md) — финальный пост-аудит после серии стримов.
+- [`TODO.md`](../TODO.md) — открытые хвосты (большие задачи, расширения, тех. долг).
+- [`PLAN.md`](../PLAN.md) — архивный первоначальный план (сохранён как исторический контекст).

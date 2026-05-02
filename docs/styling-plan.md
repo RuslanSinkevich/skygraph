@@ -9,7 +9,7 @@
 > - Фаза 2 (zero `!important`) ✅ — `pnpm check:no-important` зелёный.
 > - Фаза 3 (стилевой контракт) ✅ — `docs/styling-contract.md` опубликован, `Table` / `List` имеют `classNames`/`styles` slots.
 > - Фаза 4 (camelCase placement) ⚠ частично — добавлены kebab-aliases для dropdown / notification в CSS, JS-генерация остаётся camelCase.
-> - Оставшиеся хвосты: 53 действительно-dead CSS classes, 111 DOM unstyled. Требуют ручной ревизии — записаны в `TODO-cycle.md`.
+> - Оставшиеся хвосты: 53 действительно-dead CSS classes, 111 DOM unstyled. Требуют ручной ревизии — записаны в `TODO.md`.
 
 ---
 

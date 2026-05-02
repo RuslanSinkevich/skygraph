@@ -129,19 +129,15 @@ export type { UseMyEngineOptions, UseMyEngineReturn } from './hooks/...'
 
 Через `<ConfigProvider locale={...}>` для тех компонентов, что объявлены в `SgLocale` (Empty, Pagination, Modal, Form, Upload, Transfer, Calendar, Popconfirm). Остальные принимают `locale={...}` per-prop.
 
-## Стримы и автономная работа
+## TODO и аудиты
 
-Длинные автономные сессии работы агента организуются через `STREAM-PLAN.md` v1+ в корне репозитория. Главное правило: **в течение стрима агент не задаёт вопросов пользователю** — все сомнения решаются по дефолтам, в `STREAM-CHAT.md` или в `TODO-cycle.md`. Подробности — в `STREAM-PLAN.md`.
+- `TODO.md` — список реальных хвостов в корне репозитория.
+- `AUDIT-POST.md` — финальный пост-аудит после серии стримов.
 
-Артефакты длинных стримов:
-- `CYCLE-LOG.md` — хронологический журнал работ.
-- `AUDIT.md` / `AUDIT-POST.md` — аудитные отчёты.
-- `TODO-cycle.md` — отложенные задачи.
-- `STREAM-CHAT.md` — асинхронный канал общения с пользователем.
+История длинных стримов и решения по развилкам сохранены в `git log`. Эфемерные стрим-артефакты (`STREAM-PLAN.md`, `STREAM-CHAT.md`, `CYCLE-LOG.md`, `AUDIT.md`, `TODO-cycle.md`) удалены после завершения цикла.
 
 ## Git
 
 - Ветка для фич: `feat/описание`. По умолчанию работаем в `master`.
 - Коммиты на русском или английском, без эмодзи.
-- Префиксы коммитов в стримах: `cycle(N): ...`, `task(N): ...`, `audit-fixes: ...`, `chat: ...`, `plan(...): ...`, `chore: ...`, `tests+: ...` — см. `STREAM-PLAN.md` § «Политика коммитов».
 - Не коммитить `dist/`, `node_modules/`, `package-lock.json`, `yarn.lock` (см. `.gitignore`).

@@ -12,8 +12,8 @@ AntD-level components + reactive state management out of the box. Forms, tables,
 ## Features
 
 - **Reactive Core** — path-based store with granular subscriptions, transactions, batching, computed values, cycle detection, middleware pipeline, time-travel debugging
-- **Domain Engines** — FormEngine (validation, dependencies, multiple errors/warnings, preserve), TableEngine (sort, filter, pagination, virtual scroll, **column pinning**), TreeEngine (check cascade, drag & drop, async load), **GraphEngine** (nodes / edges / hierarchy / anchors / **orthogonal routing** for diagrams)
-- **75+ React Components** — Button to DataGrid, Calendar, Tree, Transfer, Mentions, TreeSelect, Cascader, **Diagram** (visual layer of GraphEngine, **draggable nodes**), **Charts** (Line / Bar / Area / Pie + **legend** + **tooltips**), **Dashboard** (CSS-grid widget layout)
+- **Domain Engines** — FormEngine (validation, dependencies, multiple errors/warnings, preserve), TableEngine (sort, filter, pagination, virtual scroll, **column pinning + width persistence**), TreeEngine (check cascade, drag & drop, async load), **GraphEngine** (nodes / edges / hierarchy / anchors / **orthogonal routing** + **undo/redo history** for diagrams)
+- **75+ React Components** — Button (`type` × `danger` × `block`) to DataGrid, Calendar, Tree, Transfer, Mentions, TreeSelect, Cascader, Select (single/**multiple**), Input (**readOnly**), **Diagram** (visual layer of GraphEngine, **draggable nodes**), **Charts** (Line / Bar / Area / Pie + **legend** + **axes** + **tooltips**), **Dashboard** + **DashboardEditor** (drag/resize widgets)
 - **ConfigProvider** — centralized defaults for size, disabled, locale (React Context, not CSS)
 - **Schema Forms** — auto-generate forms from JSON Schema or Zod schemas
 - **Zero-runtime CSS** — 3-layer token system (palette → semantic → component), dark mode via `data-sg-theme`
@@ -90,7 +90,7 @@ function App() {
 │    TreeSelect, Cascader, Calendar,          │
 │    Transfer, VirtualList                    │
 │                                             │
-│  components/ui/ (44 components)             │
+│  components/ui/ (49 components)             │
 │    Button, Input, Select, Modal, Drawer,    │
 │    Tabs, Menu, Notification, Tooltip, ...   │
 │                                             │
@@ -102,7 +102,7 @@ function App() {
 │                                             │
 │  styles/                                    │
 │    tokens, themes, transitions,             │
-│    49 component CSS files                   │
+│    59 component CSS files                   │
 └─────────────────────────────────────────────┘
 ```
 
@@ -144,7 +144,7 @@ SkyGraph treats styling as a public contract. Full reference:
 
 **Data Display (17):** Table, DataGrid, Tree, List, Tabs, Collapse, Descriptions, Badge, Tag, Avatar, Calendar, Carousel, Timeline, Steps, Segmented, Skeleton, **Diagram**
 
-**Visualization (5):** **LineChart**, **BarChart**, **AreaChart**, **PieChart**, **Dashboard**
+**Visualization (6):** **LineChart**, **BarChart**, **AreaChart**, **PieChart**, **Dashboard**, **DashboardEditor**
 
 **Feedback (9):** Modal, Drawer, Notification, Popconfirm, Tooltip, Progress, Spin, Result, Empty
 
@@ -157,23 +157,28 @@ SkyGraph treats styling as a public contract. Full reference:
 ## Tests
 
 ```
-617 tests across core + react packages
-  @skygraph/core:  270 tests (runtime, form, table+pinning, tree, virtual, graph+routing, middleware, history, typed, benchmarks)
-  @skygraph/react: 347 tests (components, hooks, adapters, a11y hooks, styling contract, diagram+drag, charts+legend+tooltip, dashboard)
+695 active tests across core + react packages (+ 1 a11y todo)
+  @skygraph/core:  288 tests (runtime, form, table+pinning+widths, tree, virtual, graph+routing+history, middleware, time-travel, typed, benchmarks)
+  @skygraph/react: 407 tests (components, hooks, adapters, a11y hooks + axe-core smoke, styling contract,
+                              diagram+drag, charts+legend+axes+tooltip, dashboard+editor, ui-extended)
 ```
 
 ## Development
 
 ```bash
-pnpm install           # install deps
+pnpm install           # install all workspace deps (packages/* + examples/*)
 pnpm build             # build all packages
-pnpm test              # run tests (617 tests)
+pnpm test              # run tests (695 across core + react)
 pnpm lint              # eslint
 pnpm format            # prettier
 
 # Demo app (Ant-style interactive docs)
 cd examples/demo
-npm run dev            # → http://localhost:5173/skygraph/
+pnpm dev               # → http://localhost:5173/skygraph/
+
+# Showcases (full-app examples)
+cd examples/showcases
+pnpm dev
 ```
 
 ## Documentation

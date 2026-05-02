@@ -7,15 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Added — parallel-tabs round (Tab A / B / C / D)
 
-- **Dashboard component** — minimal CSS-grid widget layout. `<Dashboard widgets={...} columns={12} rowHeight={80} gap={16}>`. Each widget pins to `(x, y, w, h)` cells; supports `title`, `children`/`render`, `unstyled`. v0 has no drag/resize — that's a follow-up. +9 tests, demo with Charts integration.
+#### Tab A — UI props finalization
+
+- **`Button.danger`** — destructive variant. Combines with `type` (e.g. `danger primary` → solid red, `danger text` → red link). Adds `sg-button-danger` modifier.
+- **`Button.block`** — stretches the button to its container width (`sg-button-block`).
+- **`Input.readOnly`** — explicit read-only mode with HTML `readonly` + `aria-readonly`. Distinct from `disabled` (focusable, copyable). New `sg-input-readonly` modifier.
+- **`Select.multiple`** — multi-select mode. `value: (string | number)[]`, `onChange: (vals: (string | number)[]) => void`, chips inside the trigger, dropdown stays open while picking.
+
+#### Tab B — Charts axes + Dashboard.Editor
+
+- **Charts axes (X / Y)** — opt-in `xAxis` / `yAxis` props on `LineChart`, `BarChart`, `AreaChart`. Configurable: `tickCount`, `tickFormatter`, `label`, `gridLines`. New shared `<ChartAxes>` SVG component renders ticks + labels + gridlines inside the plot area. Off by default (backward-compat).
+- **`<DashboardEditor>`** — editable Dashboard with drag (header) and resize (corner handle) for widgets. `onLayoutChange(widgets)` fires on drop. Snaps to the column / row grid. CSS hooks: `sg-dashboard-editor`, `sg-dashboard-widget-dragging`, `sg-dashboard-widget-resizing`.
+
+#### Tab C — Engine history & persistence
+
+- **`GraphEngine.undo / redo / canUndo / canRedo / pushHistory(label?)`** — full mutation history (add / remove / move / setParent / addEdge / removeEdge). New `transaction(fn)` groups multiple mutations into one history entry. History capped at 100 entries.
+- **`TableEngine.setColumnWidth(key, width)` + `getColumnWidth(key)`** — column-width persistence in the Core store under `$table.<id>.state.columnWidths`. React `useTable()` exposes `columnWidths` (reactive `Record`) and `setColumnWidth`. `Table` resize handles automatically read / write this state, so resized widths survive page reloads when the store is persisted.
+
+#### Tab D — Infra + a11y + locale unification
+
+- **Automated a11y smoke tests** — `packages/react/src/__tests__/a11y-axe.test.tsx`. Covers Button, Input, Checkbox, Switch, RadioGroup, Select(unstyled), Modal, Tabs via `axe-core`. Color-contrast / region-only rules disabled in jsdom. 8 passing + 1 `it.todo` for the styled `Select` aria-name gap (tracked in TODO).
+- **`@vitest/coverage-v8`** dev-dep installed in `@skygraph/core` and `@skygraph/react`. `pnpm -F @skygraph/core test:coverage` and the react equivalent now run end-to-end.
+- **`@axe-core/react` + `axe-core`** dev-deps in `@skygraph/react`.
+- **`pnpm-workspace.yaml`** extended with `examples/*`. `examples/demo` and `examples/showcases` now use `@skygraph/core: workspace:*` and `@skygraph/react: workspace:*` (was `file:../../packages/...`).
+- **Lockfile cleanup** — deleted `examples/demo/package-lock.json` and `examples/showcases/package-lock.json`. Only `pnpm-lock.yaml` remains.
+- **`TableLocale` unified** — single canonical declaration in `packages/react/src/types/locale.ts`. The `complex/Table/types.ts` declaration is now a re-export of the same type. Both import paths still work; previous duplicate-with-different-keys split is gone.
+
+#### Round totals
+
+- **+78 tests** across all four tabs: Tab A `ui-extended.test.tsx` (+30), Tab B `charts.test.tsx` axes (+10) and `dashboard.test.tsx` editor (+10), Tab C `graph.test.ts` undo/redo (+10) and `table.test.ts` widths (+5), Tab D `a11y-axe.test.tsx` (+8 + 1 todo) plus a few smaller additions in `diagram.test.tsx`. Total now **695** active (288 core + 407 react) + 1 todo.
+
+### Added — earlier this cycle (pre-tabs)
+
+- **Dashboard component** — minimal CSS-grid widget layout. `<Dashboard widgets={...} columns={12} rowHeight={80} gap={16}>`. Each widget pins to `(x, y, w, h)` cells; supports `title`, `children`/`render`, `unstyled`. (Tab B added the editable counterpart, see above.) +9 tests, demo with Charts integration.
 - **Diagram draggable nodes** — `<Diagram draggable />` enables click-and-drag to move nodes (calls `graph.moveNode`). Pass a function for custom drag handlers. CSS hooks: `sg-diagram-node-draggable`, `:hover` raises shadow, `:active` switches cursor to grabbing.
 - **Charts native tooltips** — `<title>` elements on Line markers, Bar rects, Pie slices. Tooltip text: `"<series> · <category>: <value>"` (Pie: `"<label>: <value>"`).
-- **`useTable` pinning hook** — exposes `pinColumn(column, side)`, `clearPinned()`, and `pinnedColumns: { left, right }` state from `useTable()`. Reactive bridge over the new `TableEngine.pinColumn` API.
+- **`useTable` pinning hook** — exposes `pinColumn(column, side)`, `clearPinned()`, and `pinnedColumns: { left, right }` state from `useTable()`. Reactive bridge over the `TableEngine.pinColumn` API.
 - **GraphEngine orthogonal routing** — new `routeOrthogonal(start, end)` and `pointsToPath(points)` helpers exported from `@skygraph/core`. `<Diagram>` now renders edges differently based on `edge.routing` (`'straight' | 'orthogonal' | 'manual'`); manual mode uses the edge's `waypoints`.
 - **TableEngine column pinning** — `pinColumn(column, side)`, `getPinnedColumns()`, `clearPinned()`. State mirrored into the Core store under `$table.<id>.state.pinnedLeft|pinnedRight`.
-- **+33 tests** in this round: GraphEngine routing (+9), Diagram routing variants (+3), Diagram drag (+2), TableEngine pinning (+7), Charts tooltips (+3), Dashboard (+9). Total now **617** (270 + 347).
 - **Diagram component** + **useGraph** hook in `@skygraph/react` — visual layer for `GraphEngine` (DOM nodes + SVG-overlay edges, custom renderNode, outline-kind modifier classes).
 - **GraphEngine.subscribe(cb)** — public engine-level subscription used by the React adapter to avoid path-prefix lookups.
 - **AreaChart** — stacked / non-stacked SVG area chart with strokeWidth + fillOpacity props.

@@ -526,7 +526,7 @@ skygraph/
 │       ├── styles/
 │       │   ├── tokens.css, reset.css, index.css
 │       │   ├── transitions.css — fade, slide, zoom, collapse
-│       │   ├── components/     — 49 component CSS files
+│       │   ├── components/     — 59 component CSS files
 │       │   └── themes/         — default.css, dark.css
 │       └── package.json
 │
