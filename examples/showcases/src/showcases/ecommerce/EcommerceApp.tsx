@@ -5,6 +5,8 @@ import { ShowcaseShell, StatsRow, money } from '../_shared'
 import { ProductsTab } from './ProductsTab'
 import { OrdersTab } from './OrdersTab'
 import { CustomersTab } from './CustomersTab'
+import { InventoryTab } from './InventoryTab'
+import { AnalyticsTab } from './AnalyticsTab'
 
 function EcommerceStats() {
   const totalRevenue = orders.reduce((s, o) => s + o.total, 0)
@@ -33,6 +35,8 @@ export function EcommerceApp() {
     { key: 'products', label: 'Products', children: <ProductsTab /> },
     { key: 'orders', label: 'Orders', children: <OrdersTab /> },
     { key: 'customers', label: 'Customers', children: <CustomersTab /> },
+    { key: 'inventory', label: 'Inventory', children: <InventoryTab /> },
+    { key: 'analytics', label: 'Analytics', children: <AnalyticsTab /> },
   ]
 
   return <ShowcaseShell header={<EcommerceStats />} tabs={tabs} activeKey={active} onChange={setActive} />

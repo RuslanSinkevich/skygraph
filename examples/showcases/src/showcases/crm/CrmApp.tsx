@@ -2,7 +2,9 @@ import { useState } from 'react'
 import type { TabItem } from '@skygraph/react'
 import { contacts, deals, pipelineStats } from './data'
 import { ShowcaseShell, StatsRow, money } from '../_shared'
+import { LeadsTab } from './LeadsTab'
 import { ContactsTab } from './ContactsTab'
+import { DealsTab } from './DealsTab'
 import { PipelineTab } from './PipelineTab'
 import { ActivityTab } from './ActivityTab'
 
@@ -49,10 +51,12 @@ function CrmStats() {
 }
 
 export function CrmApp() {
-  const [active, setActive] = useState('contacts')
+  const [active, setActive] = useState('leads')
 
   const tabs: TabItem[] = [
+    { key: 'leads', label: 'Leads', children: <LeadsTab /> },
     { key: 'contacts', label: 'Contacts', children: <ContactsTab /> },
+    { key: 'deals', label: 'Deals', children: <DealsTab /> },
     { key: 'pipeline', label: 'Pipeline (Kanban)', children: <PipelineTab /> },
     { key: 'activity', label: 'Activity', children: <ActivityTab /> },
   ]
