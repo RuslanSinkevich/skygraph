@@ -1,5 +1,10 @@
-import { useMemo, useRef } from 'react'
-import type { CSSProperties, MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import type {
+  CSSProperties,
+  MouseEvent as ReactMouseEvent,
+  ReactNode,
+  WheelEvent as ReactWheelEvent,
+} from 'react'
 import { routeOrthogonal, pointsToPath } from '@skygraph/core'
 import type {
   AABB,
@@ -53,6 +58,55 @@ export interface DiagramProps {
    * @default false
    */
   draggable?: boolean | ((id: NodeId, x: number, y: number) => void)
+  /**
+   * Enable mouse-wheel zoom (`Ctrl + wheel`) and pinch-zoom-style scaling.
+   * The internal canvas is wrapped in a `<g>` / `<div>` whose CSS
+   * transform reflects the current zoom factor.
+   *
+   * @default false
+   */
+  zoomable?: boolean
+  /**
+   * Enable panning. Plain mouse-wheel scrolls the canvas; the middle
+   * mouse button drags it. `Ctrl + wheel` is reserved for zoom (when
+   * `zoomable` is also on), so the two flags compose cleanly.
+   *
+   * @default false
+   */
+  panable?: boolean
+  /**
+   * Snap node coordinates to a grid of this size (world units). When set,
+   * `moveNode` is called with rounded `(x, y)` and the wrapper picks up
+   * the `sg-diagram-grid` class so a CSS background pattern renders.
+   *
+   * Pass `0` or `undefined` to disable.
+   */
+  snapToGrid?: number
+  /**
+   * When `true`, orthogonal edges receive the AABBs of every other node
+   * as obstacles so the A*-based router can avoid them. Off by default to
+   * keep the cheap L-route path the norm; opt in only when the diagram
+   * tends to have crossings worth avoiding.
+   *
+   * Independent of `routing` per edge — edges with `routing !== 'orthogonal'`
+   * ignore this flag.
+   */
+  routeAroundNodes?: boolean
+  /**
+   * Tuning knobs forwarded to the orthogonal router when
+   * `routeAroundNodes` is on. See {@link routeOrthogonal}'s options.
+   */
+  routingOptions?: {
+    gridSize?: number
+    inflate?: number
+    maxNodes?: number
+  }
+}
+
+interface ViewState {
+  zoom: number
+  panX: number
+  panY: number
 }
 
 interface ResolvedAnchor {
@@ -69,7 +123,6 @@ function resolveAnchor(
   if (typeof ref === 'string') {
     anchor = anchors.find((a) => a.id === ref)
   } else {
-    // Pick the anchor whose normalized perimeter param `s` is closest.
     let best: Anchor | undefined
     let bestDiff = Infinity
     for (const a of anchors) {
@@ -94,10 +147,6 @@ function endpointWorldPoint(
   const local = resolveAnchor(graph, ep.node, ep.anchor)
   if (!local) return null
   const bounds = graph.boundsOf(ep.node)
-  // local anchor coords are in outline local space; we approximate world
-  // coordinates as bounds.{x,y} + local. This is correct for AABB-aligned
-  // outlines (rect / polygon / path) and correct for ellipse if the outline
-  // is centred at the local origin (which it is — see GraphEngine.localBounds).
   return [bounds.x + (local.point[0] - localOriginOffset(node).x), bounds.y + (local.point[1] - localOriginOffset(node).y)]
 }
 
@@ -123,10 +172,17 @@ function buildEdgePath(
   edge: GraphEdge,
   start: Point,
   end: Point,
+  obstacles: readonly AABB[] | undefined,
+  routerOpts: DiagramProps['routingOptions'],
 ): string {
   switch (edge.routing) {
     case 'orthogonal': {
-      const points = routeOrthogonal(start, end)
+      const points = routeOrthogonal(start, end, {
+        obstacles,
+        gridSize: routerOpts?.gridSize,
+        inflate: routerOpts?.inflate,
+        maxNodes: routerOpts?.maxNodes,
+      })
       return pointsToPath(points)
     }
     case 'manual': {
@@ -157,9 +213,13 @@ function unionBounds(boxes: AABB[]): AABB {
 /**
  * Reactive diagram view: DOM nodes for shapes + an SVG overlay for edges.
  *
- * This v0 component renders straight edges between resolved anchor points.
- * Orthogonal routing, drag-and-drop, zoom/pan, and selection are intentional
- * follow-ups (see STREAM-PLAN.md task 5 continuation).
+ * Capabilities (Stream 5 v1):
+ *   - Straight / orthogonal / manual edge routing
+ *   - Drag-and-drop (with optional snap-to-grid)
+ *   - Mouse-wheel zoom (`Ctrl+wheel`) and pan (plain wheel / middle-button drag)
+ *   - Obstacle-aware orthogonal routing (opt-in via `routeAroundNodes`)
+ *
+ * Selection / multi-select / lasso are intentional follow-ups.
  */
 export function Diagram({
   graph,
@@ -171,6 +231,11 @@ export function Diagram({
   style,
   unstyled = false,
   draggable = false,
+  zoomable = false,
+  panable = false,
+  snapToGrid,
+  routeAroundNodes = false,
+  routingOptions,
 }: DiagramProps) {
   const nodes = useMemo(() => Array.from(state.nodes.values()), [state])
   const edges = useMemo(() => Array.from(state.edges.values()), [state])
@@ -178,29 +243,69 @@ export function Diagram({
   const allBounds = useMemo(() => nodes.map((n) => graph.boundsOf(n.id)), [nodes, graph])
   const canvasBounds = useMemo(() => unionBounds(allBounds), [allBounds])
 
+  // Pre-index node bounds by id so each edge's obstacle list (which excludes
+  // its own endpoint nodes) can be assembled in O(N) rather than O(N²).
+  const boundsById = useMemo(() => {
+    const m = new Map<NodeId, AABB>()
+    nodes.forEach((n, i) => m.set(n.id, allBounds[i]!))
+    return m
+  }, [nodes, allBounds])
+
+  const [view, setView] = useState<ViewState>({ zoom: 1, panX: 0, panY: 0 })
+
   const wrapperClass = unstyled
     ? className
-    : ['sg-diagram', className].filter(Boolean).join(' ')
+    : [
+        'sg-diagram',
+        snapToGrid ? 'sg-diagram-grid' : '',
+        className,
+      ].filter(Boolean).join(' ')
 
   const wrapperStyle: CSSProperties = {
     position: 'relative',
     width,
     height,
-    overflow: 'auto',
+    overflow: 'hidden',
+    // CSS variables consumed by `.sg-diagram-grid` so the visual grid
+    // matches the snap step and follows the current pan / zoom.
+    ...(snapToGrid
+      ? ({
+          '--sg-grid-size': `${snapToGrid * view.zoom}px`,
+          backgroundPosition: `${view.panX}px ${view.panY}px`,
+        } as CSSProperties)
+      : null),
     ...style,
+  }
+
+  const canvasStyle: CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    transform: `translate(${view.panX}px, ${view.panY}px) scale(${view.zoom})`,
+    transformOrigin: '0 0',
+    width: '100%',
+    height: '100%',
   }
 
   // ─── Drag handler ────────────────────────────────────────────────────────
   const dragRef = useRef<{ id: NodeId; startX: number; startY: number; nodeX: number; nodeY: number } | null>(null)
 
   function applyMove(id: NodeId, x: number, y: number) {
-    if (typeof draggable === 'function') draggable(id, x, y)
-    else graph.moveNode(id, x, y)
+    let nx = x
+    let ny = y
+    if (snapToGrid && snapToGrid > 0) {
+      nx = Math.round(nx / snapToGrid) * snapToGrid
+      ny = Math.round(ny / snapToGrid) * snapToGrid
+    }
+    if (typeof draggable === 'function') draggable(id, nx, ny)
+    else graph.moveNode(id, nx, ny)
   }
 
   function handleNodeMouseDown(id: NodeId) {
     return (e: ReactMouseEvent<HTMLDivElement>) => {
       if (!draggable) return
+      // Left button only — middle button is reserved for pan.
+      if (e.button !== 0) return
       const node = graph.getNode(id)
       if (!node) return
       e.preventDefault()
@@ -212,12 +317,13 @@ export function Diagram({
         nodeX: node.transform.x,
         nodeY: node.transform.y,
       }
+      const startZoom = view.zoom
 
       function onMove(ev: MouseEvent) {
         const d = dragRef.current
         if (!d) return
-        const dx = ev.clientX - d.startX
-        const dy = ev.clientY - d.startY
+        const dx = (ev.clientX - d.startX) / startZoom
+        const dy = (ev.clientY - d.startY) / startZoom
         applyMove(d.id, d.nodeX + dx, d.nodeY + dy)
       }
       function onUp() {
@@ -230,64 +336,141 @@ export function Diagram({
     }
   }
 
+  // ─── Wheel: zoom (Ctrl) / pan (plain) ────────────────────────────────────
+  function handleWheel(e: ReactWheelEvent<HTMLDivElement>) {
+    if (!zoomable && !panable) return
+    if (zoomable && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1
+      setView((v) => ({
+        ...v,
+        zoom: Math.max(0.1, Math.min(10, v.zoom * factor)),
+      }))
+      return
+    }
+    if (panable) {
+      e.preventDefault()
+      setView((v) => ({
+        ...v,
+        panX: v.panX - e.deltaX,
+        panY: v.panY - e.deltaY,
+      }))
+    }
+  }
+
+  // ─── Middle-button drag: pan ─────────────────────────────────────────────
+  function handleWrapperMouseDown(e: ReactMouseEvent<HTMLDivElement>) {
+    if (!panable) return
+    if (e.button !== 1) return
+    e.preventDefault()
+    const start = { x: e.clientX, y: e.clientY, panX: view.panX, panY: view.panY }
+    function onMove(ev: MouseEvent) {
+      setView((v) => ({
+        ...v,
+        panX: start.panX + (ev.clientX - start.x),
+        panY: start.panY + (ev.clientY - start.y),
+      }))
+    }
+    function onUp() {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
+
   return (
-    <div className={wrapperClass} style={wrapperStyle}>
-      <svg
-        className={unstyled ? undefined : 'sg-diagram-edges'}
-        width={Math.max(canvasBounds.w + canvasBounds.x, 0) || '100%'}
-        height={Math.max(canvasBounds.h + canvasBounds.y, 0) || '100%'}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-        }}
-        aria-hidden="true"
+    <div
+      className={wrapperClass}
+      style={wrapperStyle}
+      onWheel={zoomable || panable ? handleWheel : undefined}
+      onMouseDown={panable ? handleWrapperMouseDown : undefined}
+    >
+      <div
+        className={unstyled ? undefined : 'sg-diagram-canvas'}
+        style={canvasStyle}
+        data-zoom={view.zoom}
+        data-pan-x={view.panX}
+        data-pan-y={view.panY}
       >
-        {edges.map((edge) => renderEdge(graph, edge))}
-      </svg>
-      {nodes.map((node) => {
-        const bounds = graph.boundsOf(node.id)
-        const nodeClass = unstyled
-          ? undefined
-          : [
-              'sg-diagram-node',
-              `sg-diagram-node-${node.outline.kind}`,
-              draggable ? 'sg-diagram-node-draggable' : '',
-            ].filter(Boolean).join(' ')
-        return (
-          <div
-            key={node.id}
-            data-node-id={node.id}
-            className={nodeClass}
-            style={{
-              position: 'absolute',
-              left: bounds.x,
-              top: bounds.y,
-              width: bounds.w,
-              height: bounds.h,
-              cursor: draggable ? 'grab' : undefined,
-              userSelect: draggable ? 'none' : undefined,
-            }}
-            onMouseDown={draggable ? handleNodeMouseDown(node.id) : undefined}
-          >
-            {renderNode(node)}
-          </div>
-        )
-      })}
+        <svg
+          className={unstyled ? undefined : 'sg-diagram-edges'}
+          width={Math.max(canvasBounds.w + canvasBounds.x, 0) || '100%'}
+          height={Math.max(canvasBounds.h + canvasBounds.y, 0) || '100%'}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+          }}
+          aria-hidden="true"
+        >
+          {edges.map((edge) =>
+            renderEdge(graph, edge, routeAroundNodes ? boundsById : null, routingOptions),
+          )}
+        </svg>
+        {nodes.map((node) => {
+          const bounds = graph.boundsOf(node.id)
+          const nodeClass = unstyled
+            ? undefined
+            : [
+                'sg-diagram-node',
+                `sg-diagram-node-${node.outline.kind}`,
+                draggable ? 'sg-diagram-node-draggable' : '',
+              ].filter(Boolean).join(' ')
+          return (
+            <div
+              key={node.id}
+              data-node-id={node.id}
+              className={nodeClass}
+              style={{
+                position: 'absolute',
+                left: bounds.x,
+                top: bounds.y,
+                width: bounds.w,
+                height: bounds.h,
+                cursor: draggable ? 'grab' : undefined,
+                userSelect: draggable ? 'none' : undefined,
+              }}
+              onMouseDown={draggable ? handleNodeMouseDown(node.id) : undefined}
+            >
+              {renderNode(node)}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
 
-function renderEdge(graph: GraphEngine, edge: GraphEdge): ReactNode {
+function renderEdge(
+  graph: GraphEngine,
+  edge: GraphEdge,
+  boundsById: ReadonlyMap<NodeId, AABB> | null,
+  routerOpts: DiagramProps['routingOptions'],
+): ReactNode {
   const a = endpointWorldPoint(graph, edge.from)
   const b = endpointWorldPoint(graph, edge.to)
   if (!a || !b) return null
+
+  // Build the obstacle list (every node except this edge's two endpoints).
+  // We only do this for `orthogonal` routing — straight/manual ignore it.
+  let obstacles: AABB[] | undefined
+  if (boundsById && edge.routing === 'orthogonal') {
+    const skip = new Set<NodeId>([edge.from.node, edge.to.node])
+    obstacles = []
+    for (const [id, bb] of boundsById) {
+      if (!skip.has(id)) obstacles.push(bb)
+    }
+  }
+
   return (
     <path
       key={edge.id}
-      d={buildEdgePath(edge, a, b)}
+      d={buildEdgePath(edge, a, b, obstacles, routerOpts)}
       className={`sg-diagram-edge sg-diagram-edge-${edge.routing}`}
       fill="none"
+      data-edge-id={edge.id}
+      data-obstacle-count={obstacles ? obstacles.length : 0}
     />
   )
 }

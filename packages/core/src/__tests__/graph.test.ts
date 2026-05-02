@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { createCore } from '../Core'
 import { createGraph } from '../engines/graph/GraphEngine'
-import { routeOrthogonal, pointsToPath } from '../engines/graph/routing'
-import type { Outline } from '../engines/graph/types'
+import { routeOrthogonal, pointsToPath } from '../engines/graph/router'
+import { aabbFromOBB, obbContainsPoint } from '../engines/graph/obb'
+import type { AABB, Outline } from '../engines/graph/types'
 
 function setup() {
   const core = createCore()
@@ -442,6 +443,176 @@ describe('Orthogonal routing', () => {
 
   it('pointsToPath handles single point (just M)', () => {
     expect(pointsToPath([[3, 4]])).toBe('M 3 4 ')
+  })
+})
+
+describe('GraphEngine: OBB (rotated bounds)', () => {
+  it('axis-aligned node → OBB matches AABB (centre + half extents)', () => {
+    const { graph } = setup()
+    const id = graph.addNode({
+      outline: { kind: 'rect', w: 100, h: 60 },
+      transform: { x: 10, y: 20 },
+    })
+    const obb = graph.getNodeOBB(id)
+    expect(obb.angle).toBe(0)
+    expect(obb.halfWidth).toBe(50)
+    expect(obb.halfHeight).toBe(30)
+    expect(obb.center).toEqual([60, 50])
+  })
+
+  it('rotated node → OBB carries the angle and half-extents stay in local axes', () => {
+    const { graph } = setup()
+    const id = graph.addNode({
+      outline: { kind: 'rect', w: 100, h: 60 },
+      transform: { x: 0, y: 0, rot: Math.PI / 4 },
+    })
+    const obb = graph.getNodeOBB(id)
+    expect(obb.angle).toBe(Math.PI / 4)
+    // halfWidth / halfHeight do NOT swap on rotation — they are local-axis sizes.
+    expect(obb.halfWidth).toBe(50)
+    expect(obb.halfHeight).toBe(30)
+  })
+
+  it('AABB derived from a rotated OBB is strictly larger than the OBB rectangle', () => {
+    const { graph } = setup()
+    const id = graph.addNode({
+      outline: { kind: 'rect', w: 100, h: 60 },
+      transform: { x: 0, y: 0, rot: Math.PI / 4 },
+    })
+    const obb = graph.getNodeOBB(id)
+    const aabbAround = aabbFromOBB(obb)
+    // OBB rectangle area = (2*halfWidth) * (2*halfHeight) = 100 * 60 = 6000.
+    // The axis-aligned cover of a rotated rectangle is strictly larger.
+    const obbArea = obb.halfWidth * 2 * obb.halfHeight * 2
+    expect(aabbAround.w * aabbAround.h).toBeGreaterThan(obbArea)
+    // Sanity: width/height of the AABB are not bigger than the diagonal.
+    const diag = Math.hypot(obb.halfWidth * 2, obb.halfHeight * 2)
+    expect(aabbAround.w).toBeLessThanOrEqual(diag + 1e-9)
+    expect(aabbAround.h).toBeLessThanOrEqual(diag + 1e-9)
+  })
+
+  it('rotated 90° → AABB cover swaps width/height of the original rect', () => {
+    const { graph } = setup()
+    const id = graph.addNode({
+      outline: { kind: 'rect', w: 100, h: 60 },
+      transform: { x: 0, y: 0, rot: Math.PI / 2 },
+    })
+    const obb = graph.getNodeOBB(id)
+    const aabb = aabbFromOBB(obb)
+    expect(aabb.w).toBeCloseTo(60, 6)
+    expect(aabb.h).toBeCloseTo(100, 6)
+  })
+
+  it('obbContainsPoint rejects a point outside the rotated rectangle', () => {
+    const { graph } = setup()
+    const id = graph.addNode({
+      outline: { kind: 'rect', w: 100, h: 60 },
+      transform: { x: 0, y: 0, rot: Math.PI / 4 },
+    })
+    const obb = graph.getNodeOBB(id)
+    // The OBB centre is always inside; a point far outside the AABB is not.
+    expect(obbContainsPoint(obb, obb.center)).toBe(true)
+    expect(obbContainsPoint(obb, [1000, 1000])).toBe(false)
+  })
+
+  it('parent translate composes into OBB centre', () => {
+    const { graph } = setup()
+    const parent = graph.addNode({ transform: { x: 100, y: 50 } })
+    const child = graph.addNode({
+      parentId: parent,
+      transform: { x: 5, y: 5 },
+      outline: { kind: 'rect', w: 20, h: 20 },
+    })
+    const obb = graph.getNodeOBB(child)
+    expect(obb.center).toEqual([115, 65])
+    expect(obb.halfWidth).toBe(10)
+    expect(obb.halfHeight).toBe(10)
+  })
+})
+
+describe('Orthogonal routing — obstacle avoidance (A*)', () => {
+  function pathSegments(path: readonly [number, number][]) {
+    const segs: Array<{ a: [number, number]; b: [number, number] }> = []
+    for (let i = 1; i < path.length; i++) {
+      segs.push({ a: path[i - 1]!, b: path[i]! })
+    }
+    return segs
+  }
+
+  function segmentEntersAabb(
+    a: [number, number],
+    b: [number, number],
+    box: AABB,
+  ): boolean {
+    // strict-interior overlap test for an axis-aligned segment vs AABB
+    const x0 = Math.min(a[0], b[0])
+    const x1 = Math.max(a[0], b[0])
+    const y0 = Math.min(a[1], b[1])
+    const y1 = Math.max(a[1], b[1])
+    return (
+      x1 > box.x &&
+      x0 < box.x + box.w &&
+      y1 > box.y &&
+      y0 < box.y + box.h
+    )
+  }
+
+  it('without obstacles falls back to the L-route', () => {
+    const path = routeOrthogonal([0, 0], [100, 30], { obstacles: [] })
+    expect(path.length).toBe(3)
+  })
+
+  it('routes around a single rectangular obstacle without crossing it', () => {
+    // Wall in the middle. Endpoints are well outside it.
+    const obstacle: AABB = { x: 40, y: -50, w: 40, h: 100 }
+    const path = routeOrthogonal([0, 0], [120, 0], {
+      obstacles: [obstacle],
+      gridSize: 10,
+    }) as readonly [number, number][]
+    // Path has the original endpoints.
+    expect(path[0]).toEqual([0, 0])
+    expect(path[path.length - 1]).toEqual([120, 0])
+    // No segment of the path enters the obstacle's interior.
+    for (const { a, b } of pathSegments(path)) {
+      expect(segmentEntersAabb(a, b, obstacle)).toBe(false)
+    }
+    // And we needed at least one bend.
+    expect(path.length).toBeGreaterThanOrEqual(3)
+  })
+
+  it('routes around several stacked obstacles', () => {
+    const obstacles: AABB[] = [
+      { x: 40, y: -100, w: 20, h: 80 },
+      { x: 80, y: 20, w: 20, h: 80 },
+    ]
+    const path = routeOrthogonal([0, 0], [140, 0], {
+      obstacles,
+      gridSize: 10,
+    }) as readonly [number, number][]
+    for (const { a, b } of pathSegments(path)) {
+      for (const o of obstacles) {
+        expect(segmentEntersAabb(a, b, o)).toBe(false)
+      }
+    }
+  })
+
+  it('falls back to L-route when both endpoints are inside an obstacle (unsolvable)', () => {
+    const obstacle: AABB = { x: -1000, y: -1000, w: 2000, h: 2000 }
+    const path = routeOrthogonal([0, 0], [50, 50], { obstacles: [obstacle] })
+    // Snapped endpoints land inside → A* returns null → fallback engages.
+    // The fallback path is the bare L-route (3 points or 2 if collinear).
+    expect(path.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('respects maxNodes budget — bails out and falls back', () => {
+    // Tiny budget forces an early bail-out. The router should still
+    // return a usable polyline.
+    const path = routeOrthogonal([0, 0], [1000, 1000], {
+      obstacles: [{ x: 100, y: 100, w: 100, h: 100 }],
+      gridSize: 10,
+      maxNodes: 5,
+    })
+    expect(path.length).toBeGreaterThanOrEqual(2)
   })
 })
 

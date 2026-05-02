@@ -6,6 +6,22 @@
   border-radius: var(--sg-border-radius);
 }
 
+/* Snap-to-grid hook — applied when `<Diagram snapToGrid={N}>` is set.
+ * The grid step is exposed via the `--sg-grid-size` CSS variable so the
+ * pattern stays in sync with the snap step (and the current zoom). */
+.sg-diagram-grid {
+  background-image:
+    linear-gradient(to right, var(--sg-color-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--sg-color-border) 1px, transparent 1px);
+  background-size: var(--sg-grid-size, 20px) var(--sg-grid-size, 20px);
+}
+
+.sg-diagram-canvas {
+  /* Inner transform host — `<Diagram>` writes translate/scale here so
+   * pan + zoom are applied to nodes and edges as one unit. */
+  transform-origin: 0 0;
+}
+
 .sg-diagram-node {
   background: var(--sg-color-bg-elevated);
   border: 1px solid var(--sg-color-border);

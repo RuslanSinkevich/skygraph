@@ -18,6 +18,7 @@ import type {
   NodeInit,
   NodeTransform,
   NodeUpdate,
+  OBB,
   Outline,
   Point,
 } from './types'
@@ -584,6 +585,40 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
     }
   }
 
+  /**
+   * Oriented bounding box in world space.
+   *
+   * v0 simplification: rotation is composed by summing `transform.rot`
+   * along the parent chain (treating ancestors as if their rotations
+   * commuted). For a single rotated node this is exact; for nested rotated
+   * groups the centre / angle remain a useful approximation suitable for
+   * selection overlays. Tighter OBB composition (full affine product)
+   * lands when the engine grows a proper world-matrix cache.
+   */
+  function getNodeOBB(id: NodeId): OBB {
+    const node = nodes.get(id)
+    if (!node) return { center: [0, 0], halfWidth: 0, halfHeight: 0, angle: 0 }
+    const lb = localBounds(node)
+    const origin = worldOriginOf(id)
+    const localCx = (lb.x0 + lb.x1) / 2
+    const localCy = (lb.y0 + lb.y1) / 2
+    const halfWidth = Math.abs((lb.x1 - lb.x0) / 2 * origin.scale)
+    const halfHeight = Math.abs((lb.y1 - lb.y0) / 2 * origin.scale)
+    let angle = 0
+    let cursor: NodeId | null = id
+    while (cursor !== null) {
+      const n = nodes.get(cursor)
+      if (!n) break
+      angle += n.transform.rot ?? 0
+      cursor = n.parentId
+    }
+    const center: Point = [
+      origin.x + localCx * origin.scale,
+      origin.y + localCy * origin.scale,
+    ]
+    return { center, halfWidth, halfHeight, angle }
+  }
+
   function clear(): void {
     nodes.clear()
     edges.clear()
@@ -681,6 +716,7 @@ export function createGraph(core: Core, options?: GraphEngineOptions): GraphEngi
     edgesOf,
     anchorsOf,
     boundsOf,
+    getNodeOBB,
     subscribe: subscribeLocal,
     transaction,
     pushHistory,

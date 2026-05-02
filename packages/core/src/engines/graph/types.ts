@@ -40,6 +40,23 @@ export interface AABB {
 }
 
 /**
+ * Oriented bounding box in world space — a rectangle that may be rotated
+ * relative to the world axes. Returned by {@link GraphEngine.getNodeOBB}
+ * and consumed by selection / manipulator overlays that need a tight fit
+ * around a rotated node. See `obb.ts` for the helper module.
+ *
+ * `halfWidth` / `halfHeight` are pre-multiplied by world scale, so an OBB
+ * with `angle === 0` describes the same rectangle as the matching AABB
+ * (modulo the centre-vs-top-left representation).
+ */
+export interface OBB {
+  readonly center: Point
+  readonly halfWidth: number
+  readonly halfHeight: number
+  readonly angle: number
+}
+
+/**
  * Visual outline of a node, expressed in the node's local coordinate space.
  *
  * - `rect` / `ellipse` are parametric primitives; the engine generates anchors
@@ -242,6 +259,15 @@ export interface GraphEngine {
   anchorsOf(id: NodeId): Anchor[]
   /** Compute axis-aligned bounding box of a node in world coordinates. */
   boundsOf(id: NodeId): AABB
+  /**
+   * Compute the oriented bounding box of a node in world coordinates.
+   *
+   * For an axis-aligned node (`transform.rot === 0` everywhere up the
+   * parent chain) the OBB and AABB describe the same rectangle. When any
+   * ancestor has a non-zero rotation, the OBB is the tight fit and
+   * `boundsOf` (AABB) becomes a strict superset.
+   */
+  getNodeOBB(id: NodeId): OBB
 
   /**
    * Subscribe to commits — callback fires after every snapshot publish
