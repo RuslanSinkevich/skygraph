@@ -5,6 +5,7 @@ import {
   normalizePadding,
 } from './types'
 import { ChartLegend } from './ChartLegend'
+import { ChartAxes } from './ChartAxes'
 import type { BaseChartProps } from './types'
 
 export interface AreaChartProps extends BaseChartProps {
@@ -33,6 +34,8 @@ export function AreaChart({
   strokeWidth = 2,
   fillOpacity = 0.25,
   legend = false,
+  xAxis,
+  yAxis,
 }: AreaChartProps) {
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
@@ -90,6 +93,18 @@ export function AreaChart({
       role="img"
       aria-label="Area chart"
     >
+      <ChartAxes
+        plotX={pl}
+        plotY={pt}
+        plotW={plotW}
+        plotH={plotH}
+        min={baseline}
+        max={top}
+        categories={categories}
+        xAxis={xAxis}
+        yAxis={yAxis}
+        unstyled={unstyled}
+      />
       {series.map((s, sIdx) => {
         const color = colorForSeries(s, sIdx)
         const vals = stackedValues[sIdx]!

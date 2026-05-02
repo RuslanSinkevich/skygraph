@@ -5,6 +5,7 @@ import {
   normalizePadding,
 } from './types'
 import { ChartLegend } from './ChartLegend'
+import { ChartAxes } from './ChartAxes'
 import type { BaseChartProps } from './types'
 
 export interface LineChartProps extends BaseChartProps {
@@ -30,6 +31,8 @@ export function LineChart({
   markers = true,
   strokeWidth = 2,
   legend = false,
+  xAxis,
+  yAxis,
 }: LineChartProps) {
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
@@ -65,6 +68,18 @@ export function LineChart({
       role="img"
       aria-label="Line chart"
     >
+      <ChartAxes
+        plotX={pl}
+        plotY={pt}
+        plotW={plotW}
+        plotH={plotH}
+        min={min}
+        max={max}
+        categories={categories}
+        xAxis={xAxis}
+        yAxis={yAxis}
+        unstyled={unstyled}
+      />
       {series.map((s, sIdx) => {
         const stroke = colorForSeries(s, sIdx)
         const segments: { from: [number, number]; to: [number, number] }[] = []

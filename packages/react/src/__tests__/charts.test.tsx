@@ -340,6 +340,150 @@ describe('Chart legend', () => {
   })
 })
 
+describe('Chart axes', () => {
+  it('renders no axes by default (v0 backward-compat)', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+      />,
+    )
+    expect(container.querySelector('.sg-chart-axis')).toBeNull()
+    expect(container.querySelector('[data-sg-chart-axes]')).toBeNull()
+    expect(container.querySelector('[data-sg-axis="x"]')).toBeNull()
+    expect(container.querySelector('[data-sg-axis="y"]')).toBeNull()
+  })
+
+  it('LineChart renders the y-axis when yAxis prop is provided', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [10, 20] }]}
+        yAxis={{ tickCount: 3 }}
+      />,
+    )
+    expect(container.querySelector('[data-sg-axis="y"]')).not.toBeNull()
+    const tickLabels = container.querySelectorAll('[data-sg-axis-tick-label="y"]')
+    expect(tickLabels.length).toBe(3)
+  })
+
+  it('renders horizontal gridlines when yAxis.gridLines = true', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [10, 20] }]}
+        yAxis={{ tickCount: 4, gridLines: true }}
+      />,
+    )
+    const grid = container.querySelectorAll('[data-sg-axis-grid]')
+    expect(grid.length).toBe(4)
+  })
+
+  it('omits gridlines when yAxis.gridLines is falsy (default)', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [10, 20] }]}
+        yAxis={{ tickCount: 5 }}
+      />,
+    )
+    expect(container.querySelectorAll('[data-sg-axis-grid]').length).toBe(0)
+  })
+
+  it('y-axis tickFormatter transforms tick labels', () => {
+    const { container } = render(
+      <BarChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [100] }]}
+        yAxis={{ tickCount: 3, tickFormatter: (v) => `$${v.toFixed(0)}` }}
+      />,
+    )
+    const labels = Array.from(
+      container.querySelectorAll('[data-sg-axis-tick-label="y"]'),
+    ).map((n) => n.textContent)
+    expect(labels.every((l) => l!.startsWith('$'))).toBe(true)
+    // Three ticks across [0, 100] → expect $0 / $50 / $100 in some DOM order.
+    expect(new Set(labels)).toEqual(new Set(['$0', '$50', '$100']))
+  })
+
+  it('x-axis tickFormatter transforms category labels', () => {
+    const { container } = render(
+      <LineChart
+        categories={['2025-01', '2025-02', '2025-03']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+        xAxis={{ tickFormatter: (c) => String(c).slice(5) }}
+      />,
+    )
+    const labels = Array.from(
+      container.querySelectorAll('[data-sg-axis-tick-label="x"]'),
+    ).map((n) => n.textContent)
+    expect(labels).toEqual(['01', '02', '03'])
+  })
+
+  it('renders axis labels when provided', () => {
+    const { container } = render(
+      <AreaChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+        xAxis={{ label: 'Time' }}
+        yAxis={{ label: 'Sales' }}
+      />,
+    )
+    const xLabel = container.querySelector('[data-sg-axis-label="x"]')
+    const yLabel = container.querySelector('[data-sg-axis-label="y"]')
+    expect(xLabel?.textContent).toBe('Time')
+    expect(yLabel?.textContent).toBe('Sales')
+  })
+
+  it('x-axis tickCount picks evenly-spaced categories including endpoints', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c', 'd', 'e', 'f', 'g']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3, 4, 5, 6, 7] }]}
+        xAxis={{ tickCount: 3 }}
+      />,
+    )
+    const labels = Array.from(
+      container.querySelectorAll('[data-sg-axis-tick-label="x"]'),
+    ).map((n) => n.textContent)
+    expect(labels[0]).toBe('a')
+    expect(labels[labels.length - 1]).toBe('g')
+    expect(labels.length).toBeLessThanOrEqual(3)
+  })
+
+  it('BarChart x-ticks align with the centre of each bar group', () => {
+    const { container } = render(
+      <BarChart
+        categories={['Q1', 'Q2']}
+        series={[{ id: 's', label: 'S', values: [10, 20] }]}
+        xAxis={{}}
+        padding={0}
+        height={100}
+      />,
+    )
+    const ticks = Array.from(container.querySelectorAll('[data-sg-axis-tick="x"]'))
+    expect(ticks.length).toBe(2)
+    // viewBox is 600×100 with zero padding → groupWidth = 300, centres at 150 and 450.
+    expect(Number(ticks[0]!.getAttribute('x1'))).toBeCloseTo(150, 0)
+    expect(Number(ticks[1]!.getAttribute('x1'))).toBeCloseTo(450, 0)
+  })
+
+  it('drops axis classes when chart is unstyled', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [1] }]}
+        yAxis={{ tickCount: 3, gridLines: true }}
+        unstyled
+      />,
+    )
+    expect(container.querySelector('.sg-chart-axis')).toBeNull()
+    expect(container.querySelector('.sg-chart-axis-grid')).toBeNull()
+    // The structural data hooks are still in place.
+    expect(container.querySelector('[data-sg-axis="y"]')).not.toBeNull()
+  })
+})
+
 describe('colorForSeries / palette', () => {
   it('uses the explicit color when provided on the series', () => {
     const s: ChartSeries = { id: 'x', label: 'X', values: [1], color: '#ff0000' }

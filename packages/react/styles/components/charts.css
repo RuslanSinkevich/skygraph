@@ -16,3 +16,22 @@
 .sg-chart-bar {
   /* nothing extra in v0 */
 }
+
+/* Axes — opt-in via `xAxis` / `yAxis` props on Line/Bar/Area charts. */
+.sg-chart-axis {
+  pointer-events: none;
+  font-size: 11px;
+}
+
+.sg-chart-axis-grid {
+  /* stroke + dashed pattern set inline so token references resolve in raw SVG. */
+}
+
+.sg-chart-axis-tick-label {
+  fill: var(--sg-color-text-secondary);
+}
+
+.sg-chart-axis-label {
+  fill: var(--sg-color-text);
+  font-weight: 600;
+}

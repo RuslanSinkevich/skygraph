@@ -30,3 +30,41 @@
   color: var(--sg-color-text-secondary);
   overflow: auto;
 }
+
+/* Editor — opt-in interactive layer. The base widget chrome above is reused. */
+.sg-dashboard-editor[data-edit-mode='true'] .sg-dashboard-widget {
+  position: relative;
+}
+
+.sg-dashboard-editor[data-edit-mode='true'] .sg-dashboard-widget-header {
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.sg-dashboard-editor[data-edit-mode='true'] .sg-dashboard-widget-header:active {
+  cursor: grabbing;
+}
+
+.sg-dashboard-editor-resize-handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 50%,
+    var(--sg-color-border) 50%,
+    var(--sg-color-border) 100%
+  );
+  opacity: 0.5;
+  touch-action: none;
+}
+
+.sg-dashboard-editor-resize-handle:hover,
+.sg-dashboard-editor-resize-handle:focus-visible {
+  opacity: 1;
+}

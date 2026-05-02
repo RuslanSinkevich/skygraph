@@ -21,6 +21,38 @@ export interface ChartSeries {
   values: readonly ChartValue[]
 }
 
+/**
+ * X axis configuration. Off by default — when `xAxis` is omitted no axis
+ * elements are rendered (backward-compat with v0).
+ */
+export interface XAxisOptions {
+  /**
+   * Number of category ticks to render. If omitted or larger than the number
+   * of categories, every category is labelled. Otherwise N evenly-spaced
+   * categories are picked (always including the first and last).
+   */
+  tickCount?: number
+  /** Format the visible category label. Default: `String(category)`. */
+  tickFormatter?: (category: ChartCategory, index: number) => string
+  /** Optional axis title rendered below the plot. */
+  label?: string
+}
+
+/**
+ * Y axis configuration. Off by default — when `yAxis` is omitted no axis
+ * elements are rendered (backward-compat with v0).
+ */
+export interface YAxisOptions {
+  /** Number of evenly-spaced ticks (including endpoints). @default 5 */
+  tickCount?: number
+  /** Format the visible numeric tick label. Default: short numeric. */
+  tickFormatter?: (value: number) => string
+  /** Optional axis title rendered to the left of the plot (rotated). */
+  label?: string
+  /** Render horizontal gridlines at each tick. @default false */
+  gridLines?: boolean
+}
+
 /** Common shape for chart props. */
 export interface BaseChartProps {
   /** Categories along the X axis. */
@@ -41,6 +73,17 @@ export interface BaseChartProps {
   padding?: number | readonly [number, number, number, number]
   /** Show a small horizontal legend below the SVG. @default false */
   legend?: boolean
+  /**
+   * Optional X axis configuration. When omitted, no x-axis is rendered
+   * (v0 backward-compat). When provided, ticks / labels / optional title
+   * are drawn inside the SVG via `<ChartAxes>`.
+   */
+  xAxis?: XAxisOptions
+  /**
+   * Optional Y axis configuration. When omitted, no y-axis is rendered.
+   * Set `gridLines: true` to draw horizontal grid lines across the plot.
+   */
+  yAxis?: YAxisOptions
 }
 
 /** Default colour palette — uses tokens so charts re-theme without code changes. */

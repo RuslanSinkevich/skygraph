@@ -5,6 +5,7 @@ import {
   normalizePadding,
 } from './types'
 import { ChartLegend } from './ChartLegend'
+import { ChartAxes } from './ChartAxes'
 import type { BaseChartProps } from './types'
 
 export interface BarChartProps extends BaseChartProps {
@@ -30,6 +31,8 @@ export function BarChart({
   groupGap = 0.2,
   barGap = 0.1,
   legend = false,
+  xAxis,
+  yAxis,
 }: BarChartProps) {
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
@@ -68,6 +71,19 @@ export function BarChart({
       role="img"
       aria-label="Bar chart"
     >
+      <ChartAxes
+        plotX={pl}
+        plotY={pt}
+        plotW={plotW}
+        plotH={plotH}
+        min={baseline}
+        max={top}
+        categories={categories}
+        xPositions={categories.map((_, gi) => pl + gi * groupWidth + groupWidth / 2)}
+        xAxis={xAxis}
+        yAxis={yAxis}
+        unstyled={unstyled}
+      />
       {/* baseline */}
       <line
         x1={pl}
