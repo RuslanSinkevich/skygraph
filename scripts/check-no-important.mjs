@@ -33,6 +33,11 @@ const ALLOWLIST = [
  */
 const MEDIA_ALLOWLIST = [
   { file: 'packages/react/styles/components/table.css', media: /@media\s+print/ },
+  // `prefers-reduced-motion: reduce` is the canonical a11y override —
+  // inline-styled animations (set by JS for crosshair / chart entry-anim)
+  // can only be cancelled with `!important` from a media query, since
+  // inline styles otherwise win specificity.
+  { file: 'packages/react/styles/components/charts.css', media: /prefers-reduced-motion/ },
 ];
 
 const RE = /!important/g;

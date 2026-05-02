@@ -472,9 +472,19 @@ export function useTableState(props: TableProps) {
       )
     }
     const onUp = () => {
+      const ref = resizeRef.current
       resizeRef.current = null
       document.removeEventListener('mousemove', onMove)
       document.removeEventListener('mouseup', onUp)
+      if (!ref) return
+      // Mirror the final user-resized width into the engine so it survives
+      // remounts when the host persists `$table.<id>.state.columnWidths`.
+      // Functional updater is used to avoid stale closure on `colWidths`.
+      setColWidths((prev) => {
+        const w = prev[ref.col]
+        if (typeof w === 'number') persistColumnWidth(ref.col, w)
+        return prev
+      })
     }
     document.addEventListener('mousemove', onMove)
     document.addEventListener('mouseup', onUp)

@@ -418,8 +418,6 @@ describe('Diagram component', () => {
 // ─── Helpers ──────────────────────────────────────────────────────────────
 
 function simpleScene() {
-  let graphRef: ReturnType<typeof renderHook<ReturnType<typeof useGraph>, void>>['result']['current']['graph']
-  let stateRef: ReturnType<typeof renderHook<ReturnType<typeof useGraph>, void>>['result']['current']['state']
   const { result } = renderHook(() => useGraph())
   act(() => {
     const a = result.current.graph.addNode({
@@ -440,7 +438,7 @@ function simpleScene() {
     result.current.graph.addEdge({ from: { node: a, anchor: 'ne' }, to: { node: b, anchor: 'nw' } })
     result.current.graph.addEdge({ from: { node: b, anchor: 'se' }, to: { node: c, anchor: 'nw' } })
   })
-  graphRef = result.current.graph
-  stateRef = result.current.state
-  return { graph: graphRef!, state: stateRef! }
+  // `result.current` is captured here (after act()) so the returned values are
+  // a stable snapshot of the graph engine + reactive state for the test.
+  return { graph: result.current.graph, state: result.current.state }
 }

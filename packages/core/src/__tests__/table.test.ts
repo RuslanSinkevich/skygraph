@@ -360,7 +360,7 @@ describe('TableEngine: column widths', () => {
     // write via `core.snapshot()`.
     table.setColumnWidth('name', 180)
     let snap = core.snapshot()
-    let key = Object.keys(snap).find(
+    const key = Object.keys(snap).find(
       (k) => k.startsWith('$table.') && k.endsWith('.state.columnWidths'),
     )
     expect(key).toBeDefined()

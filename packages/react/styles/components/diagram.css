@@ -1,19 +1,26 @@
 /* Diagram — visual layer for GraphEngine. */
 
 .sg-diagram {
+  /*
+   * Component-local CSS variable. `<Diagram>` overrides it via inline-style
+   * (`style={{ '--sg-grid-size': '20px' }}`) when snap-to-grid is active, so
+   * the background pattern in `.sg-diagram-grid` stays in sync with the
+   * snap step (and the current zoom). Default is declared here so `var()`
+   * always resolves to a real value — required by `check:tokens`.
+   */
+  --sg-grid-size: 20px;
+
   background: var(--sg-color-bg);
   border: 1px solid var(--sg-color-border);
   border-radius: var(--sg-border-radius);
 }
 
-/* Snap-to-grid hook — applied when `<Diagram snapToGrid={N}>` is set.
- * The grid step is exposed via the `--sg-grid-size` CSS variable so the
- * pattern stays in sync with the snap step (and the current zoom). */
+/* Snap-to-grid hook — applied when `<Diagram snapToGrid={N}>` is set. */
 .sg-diagram-grid {
   background-image:
     linear-gradient(to right, var(--sg-color-border) 1px, transparent 1px),
     linear-gradient(to bottom, var(--sg-color-border) 1px, transparent 1px);
-  background-size: var(--sg-grid-size, 20px) var(--sg-grid-size, 20px);
+  background-size: var(--sg-grid-size) var(--sg-grid-size);
 }
 
 .sg-diagram-canvas {

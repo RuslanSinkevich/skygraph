@@ -1,53 +1,48 @@
 # SkyGraph — TODO
 
-> Реальные хвосты, оставшиеся после серии стримов.
+> Реальные хвосты, оставшиеся после серии стримов (round 1..8 + 8.1 regression sweep).
 > Каждая запись — кандидат в будущий стрим или мини-стрим.
+>
+> Финальные числа: **779 active + 2 todo тестов**, `tsc --noEmit` ✅, `eslint` ✅, `check:styles` ✅.
 
 ---
 
 ## 1. Большие задачи (отдельные стримы)
 
-### 1.1 Декомпозиция крупных showcases
-- `examples/showcases/src/showcases/forms/FormsApp.tsx` (1131 строк)
-- `examples/showcases/src/showcases/ecommerce/EcommerceApp.tsx` (1080)
-- `examples/showcases/src/showcases/table-kitchen-sink/TableKitchenSinkApp.tsx` (814)
-- `examples/showcases/src/showcases/crm/CrmApp.tsx` (545)
-
-Файлы работают и компилируются — рефакторинг косметический, разбить на табы по категориям как уже сделано для `analytics` / `project-tracker`.
-
-### 1.2 Gantt / Timeline / Resource Calendar
+### 1.1 Gantt / Timeline / Resource Calendar
 Новые complex-компоненты. Не запускалась.
 
-### 1.3 SchemaForm визуальный редактор
-Drag-drop конструктор форм над `SchemaForm`. Зависит от `GraphEngine` (готов), но сам редактор не сделан.
+### 1.2 SchemaForm визуальный редактор
+Drag-drop конструктор форм над `SchemaForm`. Базовые блоки — `GraphEngine` (готов), `useForm` (готов), `Diagram` (drag/zoom/snap — готовы). Сам редактор не сделан.
 
-### 1.4 Print / PDF
+### 1.3 Print / PDF
 Пользователь явно отложил.
 
 ---
 
 ## 2. Функциональные расширения
 
-### 2.1 GraphEngine
-- **Orthogonal routing с препятствиями** (избегание чужих узлов). Текущий `routeOrthogonal` — простая L-route без коллизий.
-- **OBB** (rotated bounds) — сейчас только AABB.
-- **Zoom / pan** в `<Diagram>`.
-- **Snap-to-grid** при drag.
+### 2.1 TableEngine — оставшиеся пункты pro
+- ✅ ~~Расширенные фильтры~~ (round 8 Tab C).
+- ✅ ~~Группировка строк + агрегации~~ (round 8 Tab C).
+- **Virtualization с динамической высотой** строк (есть с фиксированной).
 
-### 2.2 TableEngine pro
-- **Virtualization с динамической высотой** строк.
-- **Группировка строк + агрегации** (sum/avg/count поверх grouped row).
-- **Расширенные фильтры** — date range, числовые between, множественный select.
+### 2.2 Charts — оставшиеся пункты pro
+- ✅ ~~Animations~~ (round 8 Tab D, pure-CSS, prefers-reduced-motion-aware).
+- ✅ ~~Interactive crosshair~~ (round 8 Tab D, новый `<ChartCrosshair>`).
+- **Brushing** (выбор диапазона по drag для zoom).
 
-### 2.3 Charts
-- Animations (path interpolation).
-- Interactive crosshair / brushing.
+### 2.3 GraphEngine — закрыто, дополнительных пунктов нет
+- ✅ ~~Orthogonal routing с препятствиями~~ (round 8 Tab B, `routeOrthogonal(start, end, { obstacles })` — A* по сетке с fallback на L-route).
+- ✅ ~~OBB (rotated bounds)~~ (round 8 Tab B, `getNodeOBB`, `aabbFromOBB`, `obbCorners`, `obbContainsPoint`).
+- ✅ ~~Zoom / pan~~ в `<Diagram>` (round 8 Tab B, Ctrl+wheel + middle-button drag).
+- ✅ ~~Snap-to-grid~~ при drag (round 8 Tab B).
 
-### 2.4 a11y — полное покрытие axe
-Расширить `a11y-axe.test.tsx` на компоненты, которые сейчас не проверены автоматически: `Carousel`, `Mentions`, `Cascader`, `VirtualList`, `Rate`, `ColorPicker`, `TimePicker`.
+### 2.4 a11y — расширить axe-coverage
+Расширить `a11y-axe.test.tsx` на компоненты, которые сейчас не проверены автоматически: `Carousel`, `Mentions`, `Cascader`, `VirtualList`, `Rate`, `ColorPicker`, `TimePicker`. Один из этих находится в активном `it.todo`.
 
-### 2.5 Select styled — accessible name
-`Select` (styled, не `unstyled`) рендерит `role="combobox"` на `<div>` без `aria-label` / `aria-labelledby`. `<label>` обёртка не помогает. Прокинуть `aria-label` / `aria-labelledby` через `BaseComponentProps` в DOM. Тест `it.todo('Select (styled) — name via aria-label / aria-labelledby')` в `a11y-axe.test.tsx` поднимется автоматически после фикса.
+### 2.5 ✅ Select styled — accessible name
+Закрыто round 8 Tab D: `aria-label?` / `aria-labelledby?` пробрасываются в `role="combobox"`.
 
 ---
 
@@ -58,14 +53,15 @@ Drag-drop конструктор форм над `SchemaForm`. Зависит о
 - `StylingShowcasePage.tsx` (884 строки) — последний `*Page` без локализации.
 
 ### 3.2 CSS audit
-- 53 действительно-dead CSS classes (после allowlist) — требует ручной ревизии.
+- 53 действительно-dead CSS classes (после allowlist) — после round 8 нужно перегенерировать `_audit/styling-audit.md` (`pnpm audit:styles`).
 - 111 DOM unstyled классов — добавить стили или удалить из JSX.
+- Перепроверить новые классы round 8: `sg-chart-*-animate`, `sg-chart-crosshair*`, `sg-diagram-grid`, `sg-table-group-row`, `sg-filter-advanced-*`.
 
 ### 3.3 Удаление deprecated файлов
 - `ui/TreeSelect.tsx` / `ui/Transfer.tsx` помечены `@deprecated`. Физическое удаление требует переписать ~11 тестов под complex API.
 
-### 3.4 TS strictness
-`pnpm --filter @skygraph/react exec tsc --noEmit` показывает pre-existing ошибки в `Table/TableHeader.tsx` (`RefObject<HTMLDivElement | null>` vs `RefObject<HTMLDivElement>` после React 19). Не блокирует билд (`tsup` расслабляет `noUnused*` для DTS), но хорошо бы починить.
+### 3.4 ✅ TS strictness
+Закрыто round 8.1: `tsc --noEmit` для react чисто. Pre-existing ошибки в `Table/TableHeader.tsx` ушли вместе с обновлёнными типами в round 8 Tab C, а `useTableState.ts` починен подключением `persistColumnWidth`.
 
 ---
 
@@ -79,23 +75,24 @@ Drag-drop конструктор форм над `SchemaForm`. Зависит о
 - Coverage step (config готов, dev-deps установлены — нужно подключить в workflow).
 
 ### 4.3 Slow tests
-- `table.test.ts > scalability > 100k rows` (~7 секунд) — кандидат в отдельный slow-set (`*.bench.test.ts` с условным skip / флагом `RUN_BENCH=1`).
+- `table.test.ts > scalability > 100k rows` (~7–13 секунд) — кандидат в отдельный slow-set (`*.bench.test.ts` с условным skip / флагом `RUN_BENCH=1`).
 
 ### 4.4 Subpaths в core
-- `@skygraph/core/table` / `@skygraph/core/tree` / `@skygraph/core/virtual` / `@skygraph/core/graph` — отсутствуют как entrypoints в `core/tsup.config.ts`. Если нужен паритет с `@skygraph/react` subpaths — добавить.
+- `@skygraph/core/table` / `@skygraph/core/tree` / `@skygraph/core/virtual` / `@skygraph/core/graph` — отсутствуют как entrypoints в `core/tsup.config.ts`.
 
 ---
 
-## 5. Mini-fixes (сделать одним коммитом)
+## 5. Mini-fixes — все закрыты
 
-- **`SchemaForm.tsx:75`** — `react-hooks/rules-of-hooks` ошибка: `useConfig` вызван условно (✅ уже починен в Стриме 1, но проверить актуально ли).
-- **`Table/Table.tsx:87`** — warning `react-hooks/exhaustive-deps` про `rowNumConfig`.
-- ✅ **`Tree/Tree.tsx`** — warning про missing deps в `handleKeyDown`. Починено в Tab D: `isNodeEditable` обёрнута в `useCallback`, `scrollToFocused` вынесен выше, добавлены `scrollToFocused` / `isNodeEditable` / `handleEditStart` в deps.
-- ✅ **`DatePicker.tsx:980`** — warning unused eslint-disable directive. Удалена в Tab D.
-- ✅ **`SubmitButton`** в `SchemaForm.tsx` — `sg-btn` → `sg-button` (ранее починено). Tab D: проверка по `rg "sg-btn"` подтвердила, что нигде в `src/` устаревший класс не используется (только CSS-переменные `--sg-btn-*` остались как часть styling-contract).
+- ✅ `SchemaForm.tsx` — `useConfig` вызван условно. Закрыто Стрим 1.
+- ✅ `Table/Table.tsx` — `rowNumConfig` conditional → `useMemo`. Закрыто round 8.1.
+- ✅ `Tree/Tree.tsx` — `handleKeyDown` missing deps. Закрыто Tab D.
+- ✅ `DatePicker.tsx` — unused eslint-disable. Закрыто Tab D.
+- ✅ `useFieldArray.ts` — `genKey` missing in deps двух callbacks. Закрыто round 8.1.
+- ✅ `SubmitButton` — `sg-btn` → `sg-button`. Закрыто ранее.
 
 ---
 
 ## История стрима
 
-Полный лог стримов и решения по развилкам — в git history (`git log --oneline`). Эфемерные стрим-файлы (`STREAM-CHAT.md`, `STREAM-PLAN.md`, `CYCLE-LOG.md`, `AUDIT.md`) удалены после завершения цикла; их содержимое отражено в коммитах + `AUDIT-POST.md`.
+Полный лог стримов и решения по развилкам — в git history (`git log --oneline`). Эфемерные стрим-файлы (`STREAM-CHAT.md`, `STREAM-PLAN.md`, `CYCLE-LOG.md`, `AUDIT.md`, `TODO-cycle.md`) удалены после завершения цикла; их содержимое отражено в коммитах + `AUDIT-POST.md`.

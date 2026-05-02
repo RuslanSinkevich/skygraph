@@ -86,11 +86,14 @@ export function Table(props: TableProps) {
 
   const effectiveSize = densityToggle ? state.density : sizeFromProp
 
-  const rowNumConfig = showRowNumber
-    ? typeof showRowNumber === 'object'
-      ? showRowNumber
-      : {}
-    : null
+  // Memoised so the empty `{}` literal stays referentially stable across
+  // renders — otherwise `useMemo(gridTemplate, [rowNumConfig, ...])` below
+  // would invalidate every render whenever `showRowNumber === true`.
+  const rowNumConfig = useMemo(
+    () =>
+      showRowNumber ? (typeof showRowNumber === 'object' ? showRowNumber : {}) : null,
+    [showRowNumber],
+  )
 
   const getExportData = useCallback(() => {
     const cols = state.columns.map((c) => c.key)

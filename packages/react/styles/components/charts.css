@@ -10,6 +10,14 @@
  */
 
 .sg-chart {
+  /*
+   * Component-local default for the entry-animation duration. JS may
+   * override per-instance via inline style (`{ '--sg-chart-anim-duration':
+   * '400ms' }`). Declared here so `var()` always resolves to a real value
+   * — required by `check:tokens`.
+   */
+  --sg-chart-anim-duration: 600ms;
+
   display: block;
   font-family: inherit;
   font-size: var(--sg-font-size-sm);

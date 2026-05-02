@@ -28,7 +28,7 @@ export function useFieldArray(form: FormEngine, name: string): UseFieldArrayRetu
       form.listAdd(name, defaultValue)
       setKeys((prev) => [...prev, genKey()])
     },
-    [form, name],
+    [form, name, genKey],
   )
 
   const remove = useCallback(
@@ -65,7 +65,7 @@ export function useFieldArray(form: FormEngine, name: string): UseFieldArrayRetu
       }
       setKeys(newKeys)
     },
-    [form, name],
+    [form, name, genKey],
   )
 
   return useMemo(

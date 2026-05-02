@@ -157,10 +157,12 @@ SkyGraph treats styling as a public contract. Full reference:
 ## Tests
 
 ```
-695 active tests across core + react packages (+ 1 a11y todo)
-  @skygraph/core:  288 tests (runtime, form, table+pinning+widths, tree, virtual, graph+routing+history, middleware, time-travel, typed, benchmarks)
-  @skygraph/react: 407 tests (components, hooks, adapters, a11y hooks + axe-core smoke, styling contract,
-                              diagram+drag, charts+legend+axes+tooltip, dashboard+editor, ui-extended)
+779 active tests across core + react packages (+ 2 a11y todo)
+  @skygraph/core:  332 tests (runtime, form, table+pinning+widths+advanced-filters+grouping,
+                              tree, virtual, graph+routing+OBB+history, middleware, time-travel, typed, benchmarks)
+  @skygraph/react: 447 tests (components, hooks, adapters, a11y hooks + axe-core smoke, styling contract,
+                              diagram+drag+zoom+pan+snap, charts+legend+axes+tooltip+animations+crosshair,
+                              dashboard+editor, ui-extended)
 ```
 
 ## Development
@@ -168,7 +170,7 @@ SkyGraph treats styling as a public contract. Full reference:
 ```bash
 pnpm install           # install all workspace deps (packages/* + examples/*)
 pnpm build             # build all packages
-pnpm test              # run tests (695 across core + react)
+pnpm test              # run tests (779 across core + react)
 pnpm lint              # eslint
 pnpm format            # prettier
 

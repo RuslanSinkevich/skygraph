@@ -7,7 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added — parallel-tabs round (Tab A / B / C / D)
+### Added — parallel-tabs round 2 (Tab A / B / C / D) + regression sweep
+
+#### Tab A round 2 — Showcases decomposition
+
+- **`forms/FormsApp.tsx` (1131 lines)** split into `BasicTab`, `ValidationTab`, `LayoutsTab`, `DynamicTab`, `SchemaTab` + shared `styles.ts`. Top-level component is a thin tab container.
+- **`ecommerce/EcommerceApp.tsx` (1080 lines)** split into `ProductsTab`, `OrdersTab`, `CustomersTab`, `InventoryTab`, `AnalyticsTab`.
+- **`table-kitchen-sink/TableKitchenSinkApp.tsx` (814 lines)** split into `BasicTab`, `SortingFilteringTab`, `EditingTab`, `VirtualTab`, `PinnedTab`, `GroupedTab` + `common.tsx`.
+- **`crm/CrmApp.tsx` (545 lines)** split into `LeadsTab`, `DealsTab` (joining the existing `ContactsTab`, `ActivityTab`, `PipelineTab`).
+
+#### Tab B round 2 — GraphEngine pro
+
+- **`routeOrthogonal(start, end, options)`** now accepts `options.obstacles?: AABB[]`. A* over a 5px grid avoids obstacle bounds; falls back to the simple L-route when no path is found within `options.maxNodes` (default 5000).
+- **OBB (oriented bounding box)** — new module `engines/graph/obb.ts`. `getNodeOBB(id)`, `aabbFromOBB(obb)`, `obbCorners(obb)`, `obbContainsPoint(obb, p)`. Used by `Diagram` for hit-testing rotated nodes and by routing to derive obstacle AABBs.
+- **`<Diagram zoomable pannable>`** — Ctrl+wheel zooms (clamped 0.1× — 5×), middle-mouse-button drag pans. The internal `.sg-diagram-canvas` carries the SVG transform so nodes and edges move as one.
+- **`<Diagram snapToGrid={N}>`** — drag positions round to the nearest multiple of `N`. CSS hook `.sg-diagram-grid` shows the corresponding grid pattern; the step is exposed via the `--sg-grid-size` component-local CSS variable.
+- Refactor: routing helpers moved out of `GraphEngine.ts` into `engines/graph/router.ts`. History helpers extracted into `engines/graph/history.ts`. No public-API changes.
+
+#### Tab C round 2 — TableEngine pro
+
+- **Advanced filters** — new `filter.ts` module. `AdvancedFilter = { op, value }` with operators `eq | neq | lt | lte | gt | gte | between | in | notIn | contains | startsWith | endsWith | isEmpty | isNotEmpty`. `TableEngine.setColumnFilter(key, filter)` accepts both legacy plain values and the new `AdvancedFilter` shape. UI: `<FilterDropdown mode="advanced">` with operator picker.
+- **Row grouping + aggregations** — `TableEngine.groupBy(field)`, `getGroups()`. Columns may declare `aggregate: 'sum' | 'avg' | 'min' | 'max' | 'count' | (values, rows) => ReactNode`. New `<TableGroupRow>` component renders the group header with expand / collapse and aggregate cells.
+
+#### Tab D round 2 — Charts pro + a11y
+
+- **Chart animations** — `animate?: boolean | { duration?: number }` on `LineChart`, `BarChart`, `AreaChart`, `PieChart`. Pure-CSS `@keyframes` (no rAF loops). Picks up `--sg-chart-anim-duration` (default 600ms). Honours `prefers-reduced-motion: reduce` (no animation, no transform).
+- **Interactive crosshair** — `<LineChart crosshair />` activates `<ChartCrosshair>`: vertical hover line + per-series value labels at the nearest data X. Pointer-events on a transparent overlay rect.
+- **`Select` accessible name** — `aria-label?` and `aria-labelledby?` props in `SelectPropsBase` are now forwarded to the `role="combobox"` element. Fixes the styled-Select axe gap; `it.todo` was removed and replaced with an active assertion.
+- **`Tree.handleKeyDown`** — `scrollToFocused` and `isNodeEditable` now wrapped in `useCallback`, full deps in the `useCallback` array.
+- **`DatePicker.tsx`** — removed unused `eslint-disable` directive.
+- **`packages/core` and `packages/react`** — public `index.ts` updated to re-export new types: `OBB`, `RouteOrthogonalOptions`, `AdvancedFilter`, `FilterOperator`, `AggregateFn`, `ColumnAggregate`, `TableGroup`, chart `ChartAnimation`, `ChartCrosshairProps`, `DashboardEditor` (carry-over).
+
+#### Round 8.1 — regression sweep after the round 2 commits
+
+- Local CSS variables `--sg-grid-size` (in `.sg-diagram`) and `--sg-chart-anim-duration` (in `.sg-chart`) declared with defaults so `var()` always resolves. Required by `check:tokens`.
+- `MEDIA_ALLOWLIST` in `scripts/check-no-important.mjs` extended for `prefers-reduced-motion` blocks in `charts.css`. Same a11y pattern as `@media print` in `table.css`.
+- `useTableState.ts` — `persistColumnWidth` now actually invoked from `handleResizeStart.onUp`. Fixes the `tsc --noEmit` "declared but never read" error introduced by Tab C round 1.
+- Lint cleanup: `prefer-const` errors in `diagram.test.tsx`, `react-hooks/exhaustive-deps` warnings in `Table/Table.tsx` (`rowNumConfig` → `useMemo`) and `useFieldArray.ts` (`genKey` in deps). `eslint packages/` is now 0 errors / 0 warnings.
+
+#### Round totals
+
+- **+84 tests** in round 2: TableEngine advanced-filter operators (+24), grouping/aggregates (+10), GraphEngine OBB / routing-with-obstacles (+12), Charts crosshair / animations / axes (+8), Diagram zoom/pan/snap/grid (+8), `a11y-axe` Carousel/Cascader/Mentions/Rate/ColorPicker/TimePicker partial (+8 with 2 todo), plus showcase decomposition test fixes. **779** active (332 core + 447 react) + 2 todo.
+- `tsc --noEmit` — clean (was 1 error in `useTableState.ts` after round 1).
+- `eslint packages/` — 0 errors, 0 warnings.
+- `check:tokens` — 91 tokens, 64 files.
+- `check:no-important` — 65 files OK.
+
+### Added — parallel-tabs round 1 (Tab A / B / C / D)
 
 #### Tab A — UI props finalization
 
@@ -35,9 +81,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Lockfile cleanup** — deleted `examples/demo/package-lock.json` and `examples/showcases/package-lock.json`. Only `pnpm-lock.yaml` remains.
 - **`TableLocale` unified** — single canonical declaration in `packages/react/src/types/locale.ts`. The `complex/Table/types.ts` declaration is now a re-export of the same type. Both import paths still work; previous duplicate-with-different-keys split is gone.
 
-#### Round totals
+#### Round totals (round 1)
 
-- **+78 tests** across all four tabs: Tab A `ui-extended.test.tsx` (+30), Tab B `charts.test.tsx` axes (+10) and `dashboard.test.tsx` editor (+10), Tab C `graph.test.ts` undo/redo (+10) and `table.test.ts` widths (+5), Tab D `a11y-axe.test.tsx` (+8 + 1 todo) plus a few smaller additions in `diagram.test.tsx`. Total now **695** active (288 core + 407 react) + 1 todo.
+- **+78 tests** across all four tabs in round 1: Tab A `ui-extended.test.tsx` (+30), Tab B `charts.test.tsx` axes (+10) and `dashboard.test.tsx` editor (+10), Tab C `graph.test.ts` undo/redo (+10) and `table.test.ts` widths (+5), Tab D `a11y-axe.test.tsx` (+8 + 1 todo) plus smaller additions in `diagram.test.tsx`. Total at end of round 1: **695** active (288 core + 407 react) + 1 todo.
 
 ### Added — earlier this cycle (pre-tabs)
 
