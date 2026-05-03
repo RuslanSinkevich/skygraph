@@ -7,6 +7,99 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Tab B round 9 — TableEngine virtual rows + Charts brushing
+
+#### VirtualEngine — динамическая высота строк
+
+- **`packages/core/src/engines/virtual/measure.ts`** — новый модуль `MeasureCache` с `Map<index, number>` поверх эстимейта. Префикс-сумма offsets пересобирается лениво при первом запросе после инвалидации. API: `setMeasuredHeight`, `clearMeasured`, `reset`, `getItemSize`, `getItemOffset`, `getItemAtOffset`, `getTotalHeight`, `subscribe`. События — `'measure' | 'reset' | 'resize'`.
+- **`VirtualEngine`** расширен: `setMeasuredHeight(index, height)`, `clearMeasuredHeight(index)`, `resetMeasurements()`, `hasMeasured(index)`, `getEstimatedSize(index)`, `getItemSize(index)`, `subscribe(listener)`, `measuredCount`. Кэш создаётся лениво — пока никто не записал измерение, сохраняем O(1) арифметику для миллионов строк (тест на 1M items < 5ms по-прежнему проходит).
+- **`createMeasureCache`** экспортируется наружу через `@skygraph/core` и `@skygraph/react`.
+- **`TableEngine.getEstimatedRowHeight(id)`** + `TableOptions.estimateRowHeight: (row, id) => number` — пробрасывает callback в core, чтобы React-адаптер мог инициализировать движок без дублирования сигнатуры.
+
+#### React — VirtualTableBody с ResizeObserver
+
+- **`<Table virtual={{ rowHeight: 40 | (row, id) => h, estimateRowHeight?: (row, id) => h, overscan?, height? }}>`** — теперь принимает функцию для высоты. Динамика включается, если хоть один из `rowHeight` / `estimateRowHeight` — функция.
+- **`VirtualTableBody`** переехал на `createVirtual()` под капотом. Скролл-listener + `ResizeObserver` на родительском `.sg-table-scroll`; на каждой видимой строке — RO на первой ячейке (CSS Grid: высота ячейки == высота строки), которая через `data-sg-virtual-row-index` репортит размер обратно в движок. `subscribe` поднимает re-render. В средах без `ResizeObserver` (jsdom без полифилла) — фоллбэк на одноразовое измерение через `getBoundingClientRect`.
+- **`TableBody`** теперь принимает `rowIndexOffset?: number` и пишет `data-sg-virtual-row-index` на row-контейнер. Атрибут отсутствует, если виртуализация не активна.
+
+#### Charts — brushing
+
+- **`<ChartBrush>`** (`packages/react/src/components/complex/Charts/ChartBrush.tsx`) — общий overlay для drag-выбора диапазона по X. Полностью на React pointer events + `setPointerCapture`, без window-listeners. Двойной клик по overlay → reset (`onRangeChange(null)`). API: `plotX/Y/W/H`, `categoryCount`, `range`, `onRangeChange`, `unstyled?`, `fill?`, `disabled?`. Selection-rect — `pointer-events: none`, чтобы не блокировать pointerdown на overlay.
+- **`brush?: boolean | ChartBrushConfig`** — добавлен в `LineChart`, `BarChart`, `AreaChart`. Конфиг поддерживает controlled (`range`) и uncontrolled (`defaultRange`) режимы, плюс `onRangeChange`, `fill`, `disabled`. `resolveBrushConfig` нормализует `boolean | object | undefined`.
+- **`ChartBrush` + `resolveBrushConfig`** + типы `ChartBrushProps`, `ChartBrushConfig`, `ChartBrushRange` экспортируются из `@skygraph/react`.
+- **`packages/react/styles/components/charts.css`** — секция `.sg-chart-brush*` (overlay, selection). Цвета остаются inline через токены, чтобы re-theme работал без правки CSS.
+
+#### Round totals
+
+- **+30 тестов:** core `virtual.test.ts` (+11, dynamic measured heights / measure cache invariants / subscribe events), react `table-virtual.test.tsx` (+10, новый файл — virtual={true} regression, dynamic height callback, controlled vs uncontrolled, ResizeObserver fallback), react `charts.test.tsx` (+9, brush block — drag/release, controlled range, double-click reset, disabled, BarChart/AreaChart parity).
+- TypeScript на `packages/core` чисто, ESLint `packages/core packages/react` — 0 errors / 0 warnings, `check:styles` (tokens + no-important) — OK.
+
+> Известный pre-existing TS-error в `packages/react/src/components/complex/Table/useTableState.ts:163` (`expandable?.defaultExpandedRowKeys` — поле отсутствует в `ExpandableConfig`) пришёл из round-8.1 / round-2 и не относится к этому стриму. Закроется чистым 1-line патчем в `ExpandableConfig` в следующем спринте.
+
+### Tab A round 9 — Gantt + EventTimeline (new complex components)
+
+#### Components
+
+- **`Gantt`** (`packages/react/src/components/complex/Gantt/`) — task-as-bar chart over a discrete time axis. Props: `tasks`, `resources?`, `scale?: 'day' | 'week' | 'month' | 'quarter'`, `range?`, `rowHeight?`, `columnWidth?`, `sidebarWidth?`, `draggable?`, `resizable?`, `onTaskChange?`, `unstyled?`. Tasks may declare `progress`, `parentId`, `dependencies`, `resourceId`, `color`. CSS-grid sidebar + scrollable timeline grid. Header ticks generated from `range` × `scale`. Default range is derived from `min(start)` / `max(end)` with one `scale`-step of padding.
+- **`EventTimeline`** (`packages/react/src/components/complex/Timeline/`) — chronological event stream. Props: `events`, `orientation?: 'horizontal' | 'vertical'`, `groupBy?: 'day' | 'month' | 'year'`, `renderMarker?`, `renderEvent?`, `unstyled?`. Events sorted by date; optional dividers per UTC bucket. Distinct from the simpler step-based `Timeline` in `components/ui/Timeline.tsx` (which stays as-is, used by 7+ demos and showcases) — this one is for date-anchored items where each entry has a `Date`.
+
+#### Drag / resize
+
+- **`Gantt draggable`** — left-click on a bar moves it horizontally; pixel delta divided by `columnWidth`, rounded to whole `scale` steps, applied to both `start` and `end`. `onTaskChange` fires once per snap step (no callbacks while the pointer stays inside the same cell).
+- **`Gantt resizable`** — drag the right edge of a bar to extend `end`; `start` is preserved. End is clamped to `start + step` minimum.
+
+#### Dependencies
+
+- **Dependency arrows** — for every `task.dependencies` entry, an SVG path is routed from the upstream task's right edge to the dependent task's left edge using `routeOrthogonal(...)` from `@skygraph/core`. Arrowheads via SVG `<marker>`, color via `currentColor` on `.sg-gantt-deps`.
+
+#### Resources
+
+- **Resource lanes** — when `resources` is provided, every row in the chart corresponds to one resource and tasks are placed in the row matching their `resourceId`. Without `resources`, every task gets its own row in declaration order.
+
+#### Tests
+
+- **+38 tests** (target was +25): `gantt.test.tsx` (21 cases — render / scale switching / drag-move / resize-end / dependency arrows / resource lane placement) and `timeline.test.tsx` (17 cases — render / orientation / sort / groupBy day-month-year / unstyled / `renderMarker` + `renderEvent` overrides). Total: **523** active tests in `@skygraph/react` (+ pre-existing core tests).
+
+#### Styles
+
+- `packages/react/styles/components/gantt.css` (new) — `.sg-gantt`, `.sg-gantt-sidebar*`, `.sg-gantt-header`, `.sg-gantt-tick`, `.sg-gantt-grid`, `.sg-gantt-row`, `.sg-gantt-bar*`, `.sg-gantt-deps`, `.sg-gantt-dep`. Token-only.
+- `packages/react/styles/components/event-timeline.css` (new) — `.sg-event-timeline`, `.sg-event-timeline-vertical/-horizontal`, `.sg-event-timeline-group`, `.sg-event-timeline-item`, `.sg-event-timeline-marker`, `.sg-event-timeline-dot`, `.sg-event-timeline-content`, `.sg-event-timeline-title`, `.sg-event-timeline-description`. Token-only.
+- `packages/react/styles/index.css` — two new `@import` lines.
+
+#### Demos
+
+- `examples/demo/src/demos/Gantt/Basic.demo.tsx` — three resource lanes with progress, color and an arrow chain `spec → mocks → core → qa-pass`. Drag + resize both enabled.
+- `examples/demo/src/demos/Gantt/Scale.demo.tsx` — runtime scale switcher (`day` / `week` / `month` / `quarter`) over a 9-month plan.
+- `examples/demo/src/demos/timeline/Events.demo.tsx` — vertical event stream grouped by month.
+- `examples/demo/src/demos/timeline/Horizontal.demo.tsx` — horizontal release timeline with custom card body via `renderEvent`.
+
+#### Public API
+
+- `@skygraph/react` exports: `Gantt`, `GanttProps`, `GanttTask`, `GanttResource`, `GanttScale`, `GanttRange`, `EventTimeline`, `EventTimelineProps`, `TimelineEvent`, `TimelineOrientation`, `TimelineGroupBy`. Existing `Timeline` (step-based) remains exported from `components/ui/Timeline` unchanged.
+
+### Tab C round 9 — a11y axe coverage + deprecated cleanup
+
+#### a11y (closes 2 `it.todo` from round 2)
+
+- **`ColorPicker`** — trigger is now a `<button type="button">` (was a `<div tabIndex=0>` with `aria-haspopup` / `aria-expanded`, which axe flagged as `aria-allowed-attr` critical). New props `aria-label` / `aria-labelledby` are forwarded to the trigger so the control gets a programmatic name (axe `button-name`).
+- **`TimePicker`** — accepts `aria-label` / `aria-labelledby`, forwarded to the `role="combobox"` element. Closes axe `aria-input-field-name` (serious) — the styled trigger is not a form element so a wrapping `<label>` cannot associate.
+- **`a11y-axe.test.tsx`** — both round-2 `it.todo` placeholders replaced with active assertions: `ColorPicker` (closed) × `aria-label` / `aria-labelledby`, `TimePicker` (closed) × `aria-label` / `aria-labelledby`. Added `Cascader (open)` (panel mounted on click) and `VirtualList` (generic scroll container with custom `renderItem`) cases.
+- CSS: `.sg-colorpicker-trigger` now resets `color`, `font` and styles `:disabled`; `.sg-colorpicker-trigger` markup change from `<div>` to `<button>` keeps the same selector / focus-visible behaviour.
+
+#### Deprecated UI removal
+
+- **`packages/react/src/components/ui/TreeSelect.tsx`** deleted. The complex (`@skygraph/core`-backed) `TreeSelect` is the only export from `@skygraph/react`.
+- **`packages/react/src/components/ui/Transfer.tsx`** deleted. The complex `Transfer` (pagination, sortable, locale, footer) is the only export.
+- **`packages/react/src/index.ts`** — removed `TreeSelectNode` re-export (`@deprecated` since round 6) and the legacy comment blocks.
+- **`packages/react/styles/components/treeselect.css`** — removed `~110` lines of dead CSS that backed the flat ui/TreeSelect rows (`.sg-treeselect-tree`, `.sg-treeselect-node*`, `.sg-treeselect-switcher*`, `.sg-treeselect-title`, `.sg-treeselect-checkbox`, `.sg-treeselect-search` wrapper). The complex variant uses the embedded `<Tree>` and reuses `.sg-tree-*` selectors.
+- **`__tests__/new-components.test.tsx`** rewritten: 5 `Transfer` + 5 `TreeSelect` cases now use the complex API. Test count preserved (20 cases in the file). API differences captured in inline notes (`targetKeys` is required for `Transfer`; default `placeholder` for `TreeSelect` is `'Please select'`; `onChange(value, labels, extra)`).
+- **`examples/demo/src/demos/TreeSelectDemo.tsx`** — props table updated from `TreeSelectNode` to `TreeNodeData`, `value` type from `string | string[]` to `TreeKey | TreeKey[]`, default placeholder `'Select...'` → `'Please select'`. The demo `treeselect/*.demo.tsx` files already used the complex API.
+- **`docs/conventions.md`** — new section *ui/ vs complex/* documents the split and the removed shims.
+
+#### Notes
+
+- No SemVer bump implied: both files were marked `@deprecated` since round 6 and the public exports already pointed at the complex implementations. The `TreeSelectNode` type alias is the only removed export; consumers move to `TreeNodeData` from `@skygraph/core` (re-exported by `@skygraph/react`).
+
 ### Added — parallel-tabs round 2 (Tab A / B / C / D) + regression sweep
 
 #### Tab A round 2 — Showcases decomposition

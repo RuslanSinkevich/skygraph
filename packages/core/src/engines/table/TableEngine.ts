@@ -448,6 +448,15 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       }))
     },
 
+    getEstimatedRowHeight(id: RowId): number | null {
+      const fn = options?.estimateRowHeight
+      if (!fn) return null
+      const data = getRowData(id)
+      if (!data) return null
+      const v = fn(data, id)
+      return Number.isFinite(v) ? v : null
+    },
+
     reset(): void {
       order = []
       filteredOrder = []

@@ -1,9 +1,9 @@
 # SkyGraph — TODO
 
-> Реальные хвосты, оставшиеся после серии стримов (round 1..8 + 8.1 regression sweep).
+> Реальные хвосты, оставшиеся после серии стримов (round 1..8 + 8.1 regression sweep, tab C round 9).
 > Каждая запись — кандидат в будущий стрим или мини-стрим.
 >
-> Финальные числа: **779 active + 2 todo тестов**, `tsc --noEmit` ✅, `eslint` ✅, `check:styles` ✅.
+> Tab C round 9 (axe coverage + удаление deprecated): закрыты пункты 2.4 и 3.3. `__tests__/a11y-axe.test.tsx` теперь 20 активных кейсов (было 14 active + 2 todo); ui/TreeSelect.tsx и ui/Transfer.tsx удалены, тесты под complex API.
 
 ---
 
@@ -38,8 +38,8 @@ Drag-drop конструктор форм над `SchemaForm`. Базовые б
 - ✅ ~~Zoom / pan~~ в `<Diagram>` (round 8 Tab B, Ctrl+wheel + middle-button drag).
 - ✅ ~~Snap-to-grid~~ при drag (round 8 Tab B).
 
-### 2.4 a11y — расширить axe-coverage
-Расширить `a11y-axe.test.tsx` на компоненты, которые сейчас не проверены автоматически: `Carousel`, `Mentions`, `Cascader`, `VirtualList`, `Rate`, `ColorPicker`, `TimePicker`. Один из этих находится в активном `it.todo`.
+### 2.4 ✅ a11y — расширить axe-coverage
+Закрыто tab C round 9: оба `it.todo` (`ColorPicker`, `TimePicker`) переведены в активные тесты после добавления `aria-label` / `aria-labelledby` props (в `ColorPicker` триггер дополнительно перешёл с `<div>` на `<button>` ради `aria-allowed-attr`). Добавлены тесты для `Cascader` (open) и `VirtualList`. Все 7 ранее непокрытых компонентов из исходного списка теперь проверяются (`Carousel`, `Mentions`, `Cascader`, `VirtualList`, `Rate`, `ColorPicker`, `TimePicker`).
 
 ### 2.5 ✅ Select styled — accessible name
 Закрыто round 8 Tab D: `aria-label?` / `aria-labelledby?` пробрасываются в `role="combobox"`.
@@ -57,8 +57,8 @@ Drag-drop конструктор форм над `SchemaForm`. Базовые б
 - 111 DOM unstyled классов — добавить стили или удалить из JSX.
 - Перепроверить новые классы round 8: `sg-chart-*-animate`, `sg-chart-crosshair*`, `sg-diagram-grid`, `sg-table-group-row`, `sg-filter-advanced-*`.
 
-### 3.3 Удаление deprecated файлов
-- `ui/TreeSelect.tsx` / `ui/Transfer.tsx` помечены `@deprecated`. Физическое удаление требует переписать ~11 тестов под complex API.
+### 3.3 ✅ Удаление deprecated файлов
+Закрыто tab C round 9: `ui/TreeSelect.tsx` и `ui/Transfer.tsx` физически удалены. Тесты `Transfer` / `TreeSelect` в `__tests__/new-components.test.tsx` (10 кейсов) переписаны под complex API. `TreeSelectNode` re-export убран из `packages/react/src/index.ts`; `examples/demo/src/demos/TreeSelectDemo.tsx` обновлён на `TreeNodeData`. Дохлые CSS-классы (`.sg-treeselect-tree`, `.sg-treeselect-node*`, `.sg-treeselect-switcher*`, `.sg-treeselect-title`, `.sg-treeselect-checkbox`, `.sg-treeselect-search` wrapper) удалены из `treeselect.css`.
 
 ### 3.4 ✅ TS strictness
 Закрыто round 8.1: `tsc --noEmit` для react чисто. Pre-existing ошибки в `Table/TableHeader.tsx` ушли вместе с обновлёнными типами в round 8 Tab C, а `useTableState.ts` починен подключением `persistColumnWidth`.

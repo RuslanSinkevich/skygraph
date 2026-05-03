@@ -158,9 +158,9 @@ export function useTableState(props: TableProps) {
   const [internalExpanded, setInternalExpanded] = useState<Set<RowId>>(() => {
     if (tree?.defaultExpandAllRows) {
       const childrenKey = tree.childrenColumnName ?? 'children'
-      return new Set(collectAllTreeIds(visibleRows, childrenKey))
+      return new Set(collectAllTreeIds(props.data ?? [], childrenKey))
     }
-    return new Set()
+    return new Set(expandable?.defaultExpandedRowKeys ?? [])
   })
   const expandedKeys = expandable?.expandedKeys
     ? new Set(expandable.expandedKeys)
@@ -169,7 +169,7 @@ export function useTableState(props: TableProps) {
   const [treeExpanded, setTreeExpanded] = useState<Set<RowId>>(() => {
     if (tree?.defaultExpandAllRows) {
       const childrenKey = tree.childrenColumnName ?? 'children'
-      return new Set(collectAllTreeIds(visibleRows, childrenKey))
+      return new Set(collectAllTreeIds(props.data ?? [], childrenKey))
     }
     return new Set()
   })

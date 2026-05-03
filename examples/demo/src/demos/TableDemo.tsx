@@ -45,6 +45,8 @@ import { FinanceStyleTable } from './table/FinanceStyle.demo'
 import FinanceStyleSource from './table/FinanceStyle.demo?raw'
 import { UnstyledTable } from './table/Unstyled.demo'
 import UnstyledSource from './table/Unstyled.demo?raw'
+import { VirtualTable } from './table/Virtual.demo'
+import VirtualSource from './table/Virtual.demo?raw'
 import { KitchenSinkTable } from './table/KitchenSink.demo'
 import KitchenSinkSource from './table/KitchenSink.demo?raw'
 
@@ -69,6 +71,7 @@ const tableProps: PropDef[] = [
   { name: 'classNames', description: 'Slot classes (root/toolbar/headerCell/bodyCell/row/...)', type: 'TableClassNames' },
   { name: 'styles', description: 'Slot inline styles (root/toolbar/headerCell/bodyCell/row/...)', type: 'TableStyles' },
   { name: 'locale', description: 'Locale overrides', type: '{ emptyText? }' },
+  { name: 'virtual', description: 'Virtual scroll config', type: "boolean | { rowHeight?, overscan?, height? }" },
   { name: 'unstyled', description: 'Remove all built-in styles', type: 'boolean', default: 'false' },
 ]
 
@@ -324,6 +327,16 @@ export function TableDemo() {
       >
         <div style={{ width: '100%' }}>
           <UnstyledTable />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title="Virtual Scroll"
+        description="Efficiently render thousands of rows by only mounting what is visible in the viewport."
+        code={VirtualSource}
+      >
+        <div style={{ width: '100%' }}>
+          <VirtualTable />
         </div>
       </DemoBox>
 

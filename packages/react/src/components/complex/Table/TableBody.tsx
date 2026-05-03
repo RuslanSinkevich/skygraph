@@ -16,7 +16,7 @@ import type {
 import type { ContextMenuItem, ContextMenuState } from './ContextMenu'
 
 /** Internal props for the non-virtual table body grid. */
-interface BodyProps {
+export interface BodyProps {
   /** Visible columns in render order. */
   columns: TableColumn[]
   /** Flattened rows including group headers. */
@@ -89,6 +89,13 @@ interface BodyProps {
   slotClassNames?: TableClassNames
   /** Публичные стили по слотам Table. */
   slotStyles?: TableStyles
+  /**
+   * Сдвиг локальных индексов до абсолютных. Передаётся `VirtualTableBody`
+   * для виртуализации с динамическими высотами — при наличии оффсета
+   * каждая строка получает атрибут `data-sg-virtual-row-index`, который
+   * читает `ResizeObserver` для отчёта обратно в движок.
+   */
+  rowIndexOffset?: number
 }
 
 /** Renders the main or pinned table body rows, cells, and expand regions. */
@@ -128,6 +135,7 @@ export function TableBody(props: BodyProps) {
     slotClassNames,
     slotStyles,
     isPinnedSection,
+    rowIndexOffset,
   } = props
 
   const sCls = slotClassNames ?? {}
@@ -258,6 +266,9 @@ export function TableBody(props: BodyProps) {
         const isDragOver = dragOverRowIdx === rowIdx && dragRowIdx !== rowIdx
         const isPinned = isPinnedSection
 
+        const virtualIndexAttr =
+          rowIndexOffset !== undefined ? rowIndexOffset + rowIdx : undefined
+
         return (
           <React.Fragment key={row.id}>
             <div
@@ -275,6 +286,7 @@ export function TableBody(props: BodyProps) {
                 .join(' ')}
               role="row"
               style={{ display: 'contents', ...sSty.row }}
+              data-sg-virtual-row-index={virtualIndexAttr}
               draggable={rowDraggable}
               onDragStart={
                 rowDraggable ? (e) => handleRowDragStart(e, rowIdx) : undefined

@@ -176,3 +176,26 @@
 .sg-chart-crosshair-tooltip-value {
   font-family: inherit;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Brushing
+ *
+ * Drag-to-select diapason overlay rendered by <ChartBrush>. The overlay rect
+ * captures pointer events; the selection rect is non-interactive (the parent
+ * controls the diapason via onRangeChange). Colours are token-based so the
+ * brush re-themes via --sg-color-primary.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+.sg-chart-brush {
+  /* Container; selection rect inside is pointer-events: none. */
+}
+
+.sg-chart-brush-overlay {
+  /* fill, stroke, and cursor are inlined per-instance; no extra styling. */
+}
+
+.sg-chart-brush-selection {
+  /* fill / stroke set inline so token references resolve in raw SVG. */
+  pointer-events: none;
+}
+

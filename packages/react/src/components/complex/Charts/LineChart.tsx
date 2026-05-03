@@ -9,6 +9,7 @@ import {
 import { ChartLegend } from './ChartLegend'
 import { ChartAxes } from './ChartAxes'
 import { ChartCrosshair, type ChartCrosshairPoint } from './ChartCrosshair'
+import { ChartBrush, resolveBrushConfig, type ChartBrushConfig, type ChartBrushRange } from './ChartBrush'
 import type { BaseChartProps } from './types'
 
 /**
@@ -32,6 +33,11 @@ export interface LineChartProps extends BaseChartProps {
    * @default false
    */
   crosshair?: LineChartCrosshair
+  /**
+   * Brush для drag-выбора диапазона по X. `true` — uncontrolled с пустым
+   * стартовым значением; объект — `ChartBrushConfig`. См. `ChartBrush`.
+   */
+  brush?: boolean | ChartBrushConfig
 }
 
 /**
@@ -55,6 +61,7 @@ export function LineChart({
   yAxis,
   animate,
   crosshair = false,
+  brush,
 }: LineChartProps) {
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
@@ -93,6 +100,19 @@ export function LineChart({
   const crosshairFmt =
     typeof crosshair === 'object' && crosshair !== null ? crosshair.valueFormatter : undefined
   const [hoverIdx, setHoverIdx] = useState<number | null>(null)
+
+  const brushConfig = resolveBrushConfig(brush)
+  const isBrushControlled = brushConfig != null && 'range' in brushConfig
+  const [internalBrushRange, setInternalBrushRange] = useState<ChartBrushRange | null>(
+    brushConfig?.defaultRange ?? null,
+  )
+  const effectiveBrushRange = isBrushControlled
+    ? brushConfig!.range ?? null
+    : internalBrushRange
+  const handleBrushChange = (next: ChartBrushRange | null) => {
+    if (!isBrushControlled) setInternalBrushRange(next)
+    brushConfig?.onRangeChange?.(next)
+  }
 
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     if (!crosshairEnabled) return
@@ -228,6 +248,20 @@ export function LineChart({
           points={crosshairPoints}
           unstyled={unstyled}
           valueFormatter={crosshairFmt}
+        />
+      )}
+      {brushConfig && (
+        <ChartBrush
+          plotX={pl}
+          plotY={pt}
+          plotW={plotW}
+          plotH={plotH}
+          categoryCount={categories.length}
+          range={effectiveBrushRange}
+          onRangeChange={handleBrushChange}
+          unstyled={unstyled}
+          fill={brushConfig.fill}
+          disabled={brushConfig.disabled}
         />
       )}
     </svg>

@@ -83,6 +83,7 @@ export function Table(props: TableProps) {
 
   const state = useTableState(props)
   const tableRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   const effectiveSize = densityToggle ? state.density : sizeFromProp
 
@@ -151,8 +152,12 @@ export function Table(props: TableProps) {
 
   const virtualConfig = virtualProp
     ? {
-        rowHeight: typeof virtualProp === 'object' ? virtualProp.rowHeight ?? 40 : 40,
+        rowHeight:
+          typeof virtualProp === 'object' ? virtualProp.rowHeight ?? 40 : 40,
+        estimateRowHeight:
+          typeof virtualProp === 'object' ? virtualProp.estimateRowHeight : undefined,
         overscan: typeof virtualProp === 'object' ? virtualProp.overscan ?? 5 : 5,
+        height: typeof virtualProp === 'object' ? virtualProp.height : undefined,
       }
     : null
 
@@ -199,7 +204,7 @@ export function Table(props: TableProps) {
     'sg-table-wrapper',
     `sg-table-${effectiveSize}`,
     bordered ? 'sg-table-bordered' : '',
-    sticky ? 'sg-table-sticky' : '',
+    (sticky || virtualConfig) ? 'sg-table-sticky' : '',
     loading ? 'sg-table-loading' : '',
     striped ? 'sg-table-striped' : '',
     state.isFullscreen ? 'sg-table-fullscreen' : '',
@@ -212,7 +217,12 @@ export function Table(props: TableProps) {
 
   const scrollStyle: React.CSSProperties = {}
   if (scroll?.x) scrollStyle.overflowX = 'auto'
-  if (scroll?.y) {
+  if (virtualConfig) {
+    // Virtualization needs an owned vertical scroll so it can observe the
+    // viewport. `virtual.height` wins over `scroll.y` for the body window.
+    scrollStyle.overflowY = 'auto'
+    scrollStyle.height = virtualConfig.height ?? scroll?.y ?? 400
+  } else if (scroll?.y) {
     scrollStyle.overflowY = 'auto'
     scrollStyle.maxHeight = scroll.y
   }
@@ -337,6 +347,7 @@ export function Table(props: TableProps) {
       )}
 
       <div
+        ref={scrollRef}
         className={slotClass(
           'sg-table-scroll',
           scroll?.x ? 'sg-table-scroll-x' : '',
@@ -435,8 +446,9 @@ export function Table(props: TableProps) {
               columns={state.columns}
               flatRows={state.flatRows}
               rowHeight={virtualConfig.rowHeight}
+              estimateRowHeight={virtualConfig.estimateRowHeight}
               overscan={virtualConfig.overscan}
-              scrollHeight={scroll?.y ?? 400}
+              scrollContainerRef={scrollRef}
               rowSelection={rowSelection}
               expandable={expandable}
               isTreeMode={state.isTreeMode}
@@ -447,7 +459,6 @@ export function Table(props: TableProps) {
               spanMap={state.spanMap}
               hiddenCells={state.hiddenCells}
               t={state.t}
-              gridTemplate={gridTemplate}
               rowClassName={rowClassName}
               fixedStyle={state.fixedStyle}
               onRowClick={onRowClick}
@@ -455,6 +466,19 @@ export function Table(props: TableProps) {
               onSelectRow={state.handleSelectRow}
               onToggleExpand={state.handleToggleExpand}
               onToggleTreeExpand={state.handleToggleTreeExpand}
+              rowDraggable={rowDraggable}
+              showRowNumber={!!rowNumConfig}
+              cellContextMenu={cellContextMenu}
+              onContextMenu={state.setContextMenu}
+              striped={striped}
+              groupBy={groupBy}
+              onToggleGroup={state.toggleGroupExpand}
+              focusedCell={state.focusedCell}
+              onFocusCell={state.setFocusedCell}
+              keyboardNavigation={keyboardNavigation}
+              emptyContent={emptyContent}
+              slotClassNames={sCls}
+              slotStyles={sSty}
             />
           ) : (
             <TableBody

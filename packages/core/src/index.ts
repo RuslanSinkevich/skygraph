@@ -26,12 +26,18 @@ export type {
   HistoryOptions,
 } from './plugins/history'
 
-export { createVirtual } from './engines/virtual/index'
+export { createVirtual, createMeasureCache } from './engines/virtual/index'
 export type {
   VirtualEngine,
   VirtualEngineOptions,
   VirtualRange,
   VirtualItem,
+  VirtualEngineEvent,
+  VirtualEngineListener,
+  MeasureCache,
+  MeasureCacheEvent,
+  MeasureCacheListener,
+  MeasureCacheOptions,
 } from './engines/virtual/index'
 
 export { createTypedCore } from './typed'

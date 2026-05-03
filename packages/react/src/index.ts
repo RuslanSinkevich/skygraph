@@ -191,6 +191,18 @@ export { useVirtualScroll } from './hooks/useVirtualScroll'
 export type { UseVirtualScrollOptions, UseVirtualScrollReturn } from './hooks/useVirtualScroll'
 export { VirtualList } from './components/complex/VirtualList/VirtualList'
 export type { VirtualListProps, VirtualListRef } from './components/complex/VirtualList/VirtualList'
+export type {
+  VirtualEngine,
+  VirtualEngineOptions,
+  VirtualEngineEvent,
+  VirtualEngineListener,
+  VirtualRange,
+  VirtualItem,
+  MeasureCache,
+  MeasureCacheEvent,
+  MeasureCacheListener,
+} from '@skygraph/core'
+export { createVirtual, createMeasureCache } from '@skygraph/core'
 
 // History / DevTools
 export { useHistory } from './hooks/useHistory'
@@ -228,7 +240,7 @@ export type {
   TimelineGroupBy,
 } from './components/complex/Timeline'
 
-// Charts (SVG primitives + animations + crosshair)
+// Charts (SVG primitives + animations + crosshair + brushing)
 export {
   LineChart,
   BarChart,
@@ -236,6 +248,8 @@ export {
   PieChart,
   ChartLegend,
   ChartCrosshair,
+  ChartBrush,
+  resolveBrushConfig,
   DEFAULT_PALETTE,
   DEFAULT_CHART_ANIMATION_MS,
   colorForSeries,
@@ -252,6 +266,9 @@ export type {
   ChartLegendProps,
   ChartCrosshairProps,
   ChartCrosshairPoint,
+  ChartBrushProps,
+  ChartBrushConfig,
+  ChartBrushRange,
   ChartAnimation,
   BaseChartProps,
   ChartCategory,

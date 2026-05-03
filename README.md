@@ -144,7 +144,7 @@ SkyGraph treats styling as a public contract. Full reference:
 
 **Data Display (17):** Table, DataGrid, Tree, List, Tabs, Collapse, Descriptions, Badge, Tag, Avatar, Calendar, Carousel, Timeline, Steps, Segmented, Skeleton, **Diagram**
 
-**Visualization (6):** **LineChart**, **BarChart**, **AreaChart**, **PieChart**, **Dashboard**, **DashboardEditor**
+**Visualization (8):** **LineChart**, **BarChart**, **AreaChart**, **PieChart**, **Dashboard**, **DashboardEditor**, **Gantt**, **EventTimeline**
 
 **Feedback (9):** Modal, Drawer, Notification, Popconfirm, Tooltip, Progress, Spin, Result, Empty
 
@@ -157,12 +157,13 @@ SkyGraph treats styling as a public contract. Full reference:
 ## Tests
 
 ```
-779 active tests across core + react packages (+ 2 a11y todo)
+817 active tests across core + react packages (+ 2 a11y todo)
   @skygraph/core:  332 tests (runtime, form, table+pinning+widths+advanced-filters+grouping,
                               tree, virtual, graph+routing+OBB+history, middleware, time-travel, typed, benchmarks)
-  @skygraph/react: 447 tests (components, hooks, adapters, a11y hooks + axe-core smoke, styling contract,
+  @skygraph/react: 485 tests (components, hooks, adapters, a11y hooks + axe-core smoke, styling contract,
                               diagram+drag+zoom+pan+snap, charts+legend+axes+tooltip+animations+crosshair,
-                              dashboard+editor, ui-extended)
+                              dashboard+editor, gantt+drag+resize+dependencies+resources,
+                              event-timeline+groupBy+orientation+custom-renderers, ui-extended)
 ```
 
 ## Development
@@ -170,7 +171,7 @@ SkyGraph treats styling as a public contract. Full reference:
 ```bash
 pnpm install           # install all workspace deps (packages/* + examples/*)
 pnpm build             # build all packages
-pnpm test              # run tests (779 across core + react)
+pnpm test              # run tests (817 across core + react)
 pnpm lint              # eslint
 pnpm format            # prettier
 

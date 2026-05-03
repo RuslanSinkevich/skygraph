@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { createVirtual } from '../engines/virtual/index'
+import { describe, it, expect, vi } from 'vitest'
+import { createVirtual, createMeasureCache } from '../engines/virtual/index'
 
 describe('VirtualEngine', () => {
   describe('fixed height', () => {
@@ -157,6 +157,127 @@ describe('VirtualEngine', () => {
       expect(elapsed).toBeLessThan(5)
       expect(range.visibleItems.length).toBeGreaterThan(0)
       expect(range.totalHeight).toBe(30_000_000)
+    })
+  })
+
+  describe('dynamic measured heights', () => {
+    it('setMeasuredHeight overrides estimate for the row', () => {
+      const v = createVirtual({ itemCount: 5, itemHeight: 40 })
+      expect(v.getItemSize(2)).toBe(40)
+
+      v.setMeasuredHeight(2, 100)
+      expect(v.getItemSize(2)).toBe(100)
+      expect(v.measuredCount).toBe(1)
+      expect(v.hasMeasured(2)).toBe(true)
+      expect(v.hasMeasured(0)).toBe(false)
+    })
+
+    it('totalHeight reflects measured rows over the estimate', () => {
+      const v = createVirtual({ itemCount: 4, itemHeight: 30 })
+      expect(v.totalHeight).toBe(120)
+
+      v.setMeasuredHeight(0, 60)
+      v.setMeasuredHeight(1, 50)
+      // 60 + 50 + 30 + 30 = 170
+      expect(v.totalHeight).toBe(170)
+    })
+
+    it('getItemOffset uses measured heights as a prefix sum', () => {
+      const v = createVirtual({ itemCount: 4, itemHeight: 30 })
+      v.setMeasuredHeight(0, 60)
+      v.setMeasuredHeight(1, 20)
+
+      expect(v.getItemOffset(0)).toBe(0)
+      expect(v.getItemOffset(1)).toBe(60)
+      expect(v.getItemOffset(2)).toBe(80)
+      expect(v.getItemOffset(3)).toBe(110)
+    })
+
+    it('getRange honours measured heights when picking visible items', () => {
+      const v = createVirtual({ itemCount: 10, itemHeight: 40, overscan: 0 })
+      v.setMeasuredHeight(0, 200) // big first row pushes everything down
+
+      const range = v.getRange(0, 240)
+      expect(range.startIndex).toBe(0)
+      // 0..1 (row 1 estimate is 40) — both fit in 240px viewport.
+      expect(range.endIndex).toBe(1)
+      expect(range.visibleItems[0]!.height).toBe(200)
+    })
+
+    it('clearMeasuredHeight reverts to the estimate', () => {
+      const v = createVirtual({ itemCount: 3, itemHeight: 25 })
+      v.setMeasuredHeight(1, 80)
+      expect(v.getItemSize(1)).toBe(80)
+      v.clearMeasuredHeight(1)
+      expect(v.getItemSize(1)).toBe(25)
+      expect(v.hasMeasured(1)).toBe(false)
+    })
+
+    it('resetMeasurements drops every measured row', () => {
+      const v = createVirtual({ itemCount: 5, itemHeight: 40 })
+      v.setMeasuredHeight(0, 100)
+      v.setMeasuredHeight(2, 200)
+      expect(v.measuredCount).toBe(2)
+
+      v.resetMeasurements()
+      expect(v.measuredCount).toBe(0)
+      expect(v.totalHeight).toBe(200)
+    })
+
+    it('subscribe fires on measure / resize / reset events only', () => {
+      const v = createVirtual({ itemCount: 4, itemHeight: 30 })
+      const events: string[] = []
+      const unsub = v.subscribe((e) => events.push(e))
+
+      v.setMeasuredHeight(0, 50)
+      v.setMeasuredHeight(0, 50) // same value — no event
+      v.setItemCount(5)
+      v.setItemHeight(35)
+      v.resetMeasurements()
+      unsub()
+      v.setMeasuredHeight(1, 90) // ignored after unsubscribe
+
+      expect(events).toEqual(['measure', 'resize', 'reset', 'reset'])
+    })
+
+    it('returns false from setMeasuredHeight on no-op writes', () => {
+      const v = createVirtual({ itemCount: 3, itemHeight: 30 })
+      expect(v.setMeasuredHeight(0, 50)).toBe(true)
+      expect(v.setMeasuredHeight(0, 50)).toBe(false)
+      expect(v.setMeasuredHeight(0, NaN)).toBe(false)
+      expect(v.setMeasuredHeight(99, 50)).toBe(false) // out of range
+    })
+
+    it('getEstimatedSize keeps the original size after a measurement', () => {
+      const v = createVirtual({
+        itemCount: 4,
+        itemHeight: (i) => 20 + i * 10,
+      })
+      v.setMeasuredHeight(2, 999)
+      expect(v.getItemSize(2)).toBe(999)
+      expect(v.getEstimatedSize(2)).toBe(40)
+    })
+
+    it('setItemCount drops measurements that no longer exist', () => {
+      const v = createVirtual({ itemCount: 5, itemHeight: 30 })
+      v.setMeasuredHeight(3, 100)
+      v.setMeasuredHeight(4, 200)
+      v.setItemCount(3)
+      expect(v.measuredCount).toBe(0)
+      expect(v.totalHeight).toBe(90)
+    })
+  })
+
+  describe('createMeasureCache', () => {
+    it('emits no event on equal-value writes', () => {
+      const cache = createMeasureCache({ itemCount: 3, estimate: 30 })
+      const listener = vi.fn()
+      cache.subscribe(listener)
+
+      cache.setMeasuredHeight(0, 50)
+      cache.setMeasuredHeight(0, 50)
+      expect(listener).toHaveBeenCalledTimes(1)
+      expect(listener).toHaveBeenCalledWith('measure')
     })
   })
 })

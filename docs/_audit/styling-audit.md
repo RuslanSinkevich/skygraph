@@ -11,14 +11,14 @@
 
 ## 2. Классы `.sg-*`
 
-- В CSS определено классов: **944**.
+- В CSS определено классов: **947**.
 - В DOM компонентов используется строк-классов: **808**.
 - Совпадают (есть и в CSS, и в DOM): **694**.
 - Только в CSS, runtime-генерируемые (Transition): **41** (исключены из dead-code).
-- Только в CSS, динамически-генерируемые (template literals `sg-X-${...}`): **156** (исключены из dead-code).
+- Только в CSS, динамически-генерируемые (template literals `sg-X-${...}`): **159** (исключены из dead-code).
 - Только в CSS, **возможно мёртвый код**: **53**.
 - Только в DOM (нет стилей): **114**.
-- Найденных в коде template-prefix'ов: **59**.
+- Найденных в коде template-prefix'ов: **60**.
 
 <details><summary>Только в CSS — возможно мёртвый код</summary>
 
@@ -144,6 +144,8 @@
 - `.sg-chart-axis-grid`
 - `.sg-chart-axis-label`
 - `.sg-chart-axis-tick-label`
+- `.sg-chart-brush-overlay`
+- `.sg-chart-brush-selection`
 - `.sg-chart-crosshair-line`
 - `.sg-chart-crosshair-tooltip-bg`
 - `.sg-chart-crosshair-tooltip-label`
@@ -245,6 +247,7 @@
 - `.sg-steps-small`
 - `.sg-steps-vertical`
 - `.sg-switch-small`
+- `.sg-table-cell-drag-handle`
 - `.sg-table-cell-fixed-left`
 - `.sg-table-cell-fixed-right`
 - `.sg-table-density-active`

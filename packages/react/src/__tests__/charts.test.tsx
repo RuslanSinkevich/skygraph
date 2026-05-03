@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { fireEvent, render } from '@testing-library/react'
 import {
   AreaChart,
@@ -718,6 +718,172 @@ describe('LineChart crosshair', () => {
     // Way past the right edge.
     fireEvent.mouseMove(svg, { clientX: 10000, clientY: 100 })
     expect(container.querySelector('[data-sg-chart-crosshair]')).toBeNull()
+  })
+})
+
+describe('Chart brushing', () => {
+  // Helper повторяет patchSvgRect из crosshair-блока, но возвращает SVG.
+  function patchSvgRect(svg: SVGSVGElement, width = 600, height = 200) {
+    Object.defineProperty(svg, 'getBoundingClientRect', {
+      value: () => ({ left: 0, top: 0, right: width, bottom: height, width, height, x: 0, y: 0, toJSON: () => '' }),
+      configurable: true,
+    })
+  }
+
+  it('does not render brush overlay when brush is omitted', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+      />,
+    )
+    expect(container.querySelector('[data-sg-chart-brush]')).toBeNull()
+  })
+
+  it('renders the brush overlay rect when brush=true', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+        brush
+      />,
+    )
+    expect(container.querySelector('[data-sg-chart-brush-overlay]')).not.toBeNull()
+    // Selection rect появляется только после drag — пока его нет.
+    expect(container.querySelector('[data-sg-chart-brush-selection]')).toBeNull()
+  })
+
+  it('drag → release fires onRangeChange with category indices (uncontrolled)', () => {
+    const onRangeChange = vi.fn()
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c', 'd', 'e']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3, 4, 5] }]}
+        brush={{ onRangeChange }}
+      />,
+    )
+    const svg = container.querySelector('svg')! as SVGSVGElement
+    patchSvgRect(svg)
+
+    const overlay = container.querySelector(
+      '[data-sg-chart-brush-overlay]',
+    ) as SVGRectElement
+    // Все pointer-события на overlay — благодаря setPointerCapture даже
+    // глобальный move/up видим внутри overlay.
+    fireEvent.pointerDown(overlay, { clientX: 50, clientY: 100, pointerId: 1 })
+    fireEvent.pointerMove(overlay, { clientX: 400, clientY: 100, pointerId: 1 })
+    fireEvent.pointerUp(overlay, { clientX: 400, clientY: 100, pointerId: 1 })
+
+    expect(onRangeChange).toHaveBeenCalledTimes(1)
+    const arg = onRangeChange.mock.calls[0]![0]
+    expect(arg).not.toBeNull()
+    expect(arg.from).toBeLessThanOrEqual(arg.to)
+    expect(arg.from).toBeGreaterThanOrEqual(0)
+    expect(arg.to).toBeLessThan(5)
+  })
+
+  it('selection rect persists in uncontrolled mode after release', () => {
+    const { container } = render(
+      <BarChart
+        categories={['Q1', 'Q2', 'Q3', 'Q4']}
+        series={[{ id: 's', label: 'S', values: [10, 20, 30, 40] }]}
+        brush
+      />,
+    )
+    const svg = container.querySelector('svg')! as SVGSVGElement
+    patchSvgRect(svg)
+
+    const overlay = container.querySelector('[data-sg-chart-brush-overlay]') as SVGRectElement
+    fireEvent.pointerDown(overlay, { clientX: 100, clientY: 100, pointerId: 1 })
+    fireEvent.pointerMove(overlay, { clientX: 400, clientY: 100, pointerId: 1 })
+    fireEvent.pointerUp(overlay, { clientX: 400, clientY: 100, pointerId: 1 })
+
+    // После release (внутреннее uncontrolled state применилось) selection-rect
+    // отрисован с непустой шириной.
+    const sel = container.querySelector('[data-sg-chart-brush-selection]')
+    expect(sel).not.toBeNull()
+  })
+
+  it('controlled range prop drives the visible selection rect', () => {
+    const { container, rerender } = render(
+      <AreaChart
+        categories={['a', 'b', 'c', 'd']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3, 4] }]}
+        brush={{ range: null, onRangeChange: () => {} }}
+      />,
+    )
+    expect(container.querySelector('[data-sg-chart-brush-selection]')).toBeNull()
+
+    rerender(
+      <AreaChart
+        categories={['a', 'b', 'c', 'd']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3, 4] }]}
+        brush={{ range: { from: 1, to: 2 }, onRangeChange: () => {} }}
+      />,
+    )
+    expect(container.querySelector('[data-sg-chart-brush-selection]')).not.toBeNull()
+  })
+
+  it('double-click on the overlay calls onRangeChange(null) (reset)', () => {
+    const onRangeChange = vi.fn()
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+        brush={{ defaultRange: { from: 0, to: 2 }, onRangeChange }}
+      />,
+    )
+    const svg = container.querySelector('svg')! as SVGSVGElement
+    patchSvgRect(svg)
+
+    const overlay = container.querySelector(
+      '[data-sg-chart-brush-overlay]',
+    ) as SVGRectElement
+    fireEvent.doubleClick(overlay)
+    expect(onRangeChange).toHaveBeenCalledWith(null)
+  })
+
+  it('disabled brush keeps the selection visible but ignores pointerdown', () => {
+    const onRangeChange = vi.fn()
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+        brush={{ range: { from: 0, to: 1 }, onRangeChange, disabled: true }}
+      />,
+    )
+    const svg = container.querySelector('svg')! as SVGSVGElement
+    patchSvgRect(svg)
+
+    expect(container.querySelector('[data-sg-chart-brush-selection]')).not.toBeNull()
+
+    const overlay = container.querySelector(
+      '[data-sg-chart-brush-overlay]',
+    ) as SVGRectElement
+    fireEvent.pointerDown(overlay, { clientX: 100, clientY: 100, pointerId: 1 })
+    fireEvent.pointerUp(overlay, { clientX: 200, clientY: 100, pointerId: 1 })
+
+    // disabled: pointerdown игнорируется → onRangeChange не вызван.
+    expect(onRangeChange).not.toHaveBeenCalled()
+  })
+
+  it('BarChart and AreaChart also support brush', () => {
+    const { container: barC } = render(
+      <BarChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [10, 20] }]}
+        brush
+      />,
+    )
+    const { container: areaC } = render(
+      <AreaChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [10, 20] }]}
+        brush
+      />,
+    )
+    expect(barC.querySelector('[data-sg-chart-brush-overlay]')).not.toBeNull()
+    expect(areaC.querySelector('[data-sg-chart-brush-overlay]')).not.toBeNull()
   })
 })
 

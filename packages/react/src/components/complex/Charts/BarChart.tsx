@@ -1,4 +1,4 @@
-import { useMemo, type CSSProperties } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
 import {
   chartBounds,
   chartDataKey,
@@ -8,6 +8,7 @@ import {
 } from './types'
 import { ChartLegend } from './ChartLegend'
 import { ChartAxes } from './ChartAxes'
+import { ChartBrush, resolveBrushConfig, type ChartBrushConfig, type ChartBrushRange } from './ChartBrush'
 import type { BaseChartProps } from './types'
 
 export interface BarChartProps extends BaseChartProps {
@@ -15,6 +16,11 @@ export interface BarChartProps extends BaseChartProps {
   groupGap?: number
   /** Gap between bars within a group in [0..1] of bar slot. @default 0.1 */
   barGap?: number
+  /**
+   * Brush для drag-выбора диапазона по X. `true` — uncontrolled с пустым
+   * стартовым значением; объект — `ChartBrushConfig`. См. `ChartBrush`.
+   */
+  brush?: boolean | ChartBrushConfig
 }
 
 /**
@@ -36,6 +42,7 @@ export function BarChart({
   xAxis,
   yAxis,
   animate,
+  brush,
 }: BarChartProps) {
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
@@ -69,6 +76,19 @@ export function BarChart({
     [categories, series],
   )
   const animClass = anim.enabled && !unstyled ? 'sg-chart-bar-animate' : undefined
+
+  const brushConfig = resolveBrushConfig(brush)
+  const isBrushControlled = brushConfig != null && 'range' in brushConfig
+  const [internalBrushRange, setInternalBrushRange] = useState<ChartBrushRange | null>(
+    brushConfig?.defaultRange ?? null,
+  )
+  const effectiveBrushRange = isBrushControlled
+    ? brushConfig!.range ?? null
+    : internalBrushRange
+  const handleBrushChange = (next: ChartBrushRange | null) => {
+    if (!isBrushControlled) setInternalBrushRange(next)
+    brushConfig?.onRangeChange?.(next)
+  }
 
   const svg = (
     <svg
@@ -140,6 +160,20 @@ export function BarChart({
           )
         })
       })}
+      {brushConfig && (
+        <ChartBrush
+          plotX={pl}
+          plotY={pt}
+          plotW={plotW}
+          plotH={plotH}
+          categoryCount={categories.length}
+          range={effectiveBrushRange}
+          onRangeChange={handleBrushChange}
+          unstyled={unstyled}
+          fill={brushConfig.fill}
+          disabled={brushConfig.disabled}
+        />
+      )}
     </svg>
   )
 

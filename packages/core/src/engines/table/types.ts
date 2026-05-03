@@ -111,6 +111,13 @@ export interface TableState {
 export interface TableOptions {
   pageSize?: number
   columns?: string[]
+  /**
+   * Эстимейт высоты строки в пикселях для virtual rendering.
+   * Используется React-адаптером как стартовое значение до того, как
+   * `ResizeObserver` сообщит реальную высоту. Принимает данные строки
+   * (после фильтрации) и возвращает число.
+   */
+  estimateRowHeight?: (row: Record<string, unknown>, id: RowId) => number
 }
 
 export interface TableEngine {
@@ -186,6 +193,14 @@ export interface TableEngine {
   getGroupBy(): string | null
   /** Снимок групп после применения фильтров / сортировки. */
   getGroups(): TableGroup[]
+
+  /**
+   * Эстимейт высоты строки, если в `TableOptions.estimateRowHeight` была
+   * передана функция. Возвращает `null`, если функция не задана либо строка
+   * не найдена. Используется React-адаптером для инициализации виртуального
+   * движка с динамическими высотами.
+   */
+  getEstimatedRowHeight(id: RowId): number | null
 
   reset(): void
 }

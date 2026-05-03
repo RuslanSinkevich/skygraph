@@ -175,6 +175,8 @@ export interface ExpandableConfig {
   expandedRowRender: (row: Record<string, unknown>, id: RowId) => React.ReactNode
   /** Controlled expanded row keys. */
   expandedKeys?: RowId[]
+  /** Keys expanded on first mount when `expandedKeys` is not controlled. */
+  defaultExpandedRowKeys?: RowId[]
   /** Fires when a row expand state toggles. */
   onExpand?: (expanded: boolean, id: RowId) => void
   /** Limits which rows show an expand control. */
@@ -381,8 +383,36 @@ export interface TableProps extends Omit<UseTableOptions, 'columns'>, BaseCompon
   /** Fires when a column pin side changes. */
   onColumnPinChange?: (key: string, fixed: 'left' | 'right' | undefined) => void
 
-  /** Virtualizes the body for large row counts. */
-  virtual?: boolean | { rowHeight?: number; overscan?: number }
+  /**
+   * Виртуализирует тело таблицы для больших датасетов.
+   *
+   *  - `true` — фиксированная высота 40px.
+   *  - `{ rowHeight: 60 }` — фиксированная высота 60px.
+   *  - `{ rowHeight: (row, id) => h }` — динамическая высота, переданная
+   *    функция используется как эстимейт до того, как `ResizeObserver`
+   *    отчитается о реальной высоте каждой строки.
+   *  - `{ rowHeight: 40, estimateRowHeight: (row) => h }` — то же самое,
+   *    но с явным разделением "первое значение / эстимейт-callback".
+   */
+  virtual?:
+    | boolean
+    | {
+        /**
+         * Стартовое значение высоты строки. Число — фиксированный фоллбэк
+         * (быстрый путь). Функция — включает динамическое измерение через
+         * ResizeObserver, вызываясь как эстимейт до первого реального
+         * измерения.
+         */
+        rowHeight?: number | ((row: Record<string, unknown>, id: RowId) => number)
+        /**
+         * Дополнительный эстимейт высоты, разрешает динамическое измерение
+         * даже при числовом `rowHeight`. Имеет приоритет над `rowHeight`-
+         * фоллбэком при выборе размера до измерения.
+         */
+        estimateRowHeight?: (row: Record<string, unknown>, id: RowId) => number
+        overscan?: number
+        height?: number | string
+      }
 
   /** Shows CSV export and copy actions in the toolbar. */
   exportable?: boolean
