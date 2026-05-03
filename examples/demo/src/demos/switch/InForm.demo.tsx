@@ -1,4 +1,18 @@
 import { Form, Field, Switch, SubmitButton } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    emailNotifications: 'Email notifications',
+    marketing: 'Marketing updates',
+    save: 'Save',
+  },
+  ru: {
+    emailNotifications: 'Почтовые уведомления',
+    marketing: 'Маркетинговые рассылки',
+    save: 'Сохранить',
+  },
+} as const
 
 /**
  * Bind a Switch to a form field. Use `valuePropName="checked"` so the
@@ -6,6 +20,7 @@ import { Form, Field, Switch, SubmitButton } from '@skygraph/react'
  * `value`.
  */
 export function InFormSwitch() {
+  const t = useDemoStrings(STRINGS)
   return (
     <Form
       layout="vertical"
@@ -13,13 +28,13 @@ export function InFormSwitch() {
       onSubmit={(values) => console.log(values)}
       style={{ maxWidth: 380 }}
     >
-      <Field name="notifications" label="Email notifications" valuePropName="checked">
+      <Field name="notifications" label={t.emailNotifications} valuePropName="checked">
         <Switch />
       </Field>
-      <Field name="marketing" label="Marketing updates" valuePropName="checked">
+      <Field name="marketing" label={t.marketing} valuePropName="checked">
         <Switch />
       </Field>
-      <SubmitButton>Save</SubmitButton>
+      <SubmitButton>{t.save}</SubmitButton>
     </Form>
   )
 }

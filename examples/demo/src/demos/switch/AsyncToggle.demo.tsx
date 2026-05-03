@@ -1,5 +1,19 @@
 import { useState } from 'react'
 import { Switch } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    labelPrefix: 'Notifications:',
+    on: 'on',
+    off: 'off',
+  },
+  ru: {
+    labelPrefix: 'Уведомления:',
+    on: 'вкл',
+    off: 'выкл',
+  },
+} as const
 
 /**
  * Real-world pattern: flip optimistically, show a spinner while the
@@ -7,6 +21,7 @@ import { Switch } from '@skygraph/react'
  * update.
  */
 export function AsyncToggleSwitch() {
+  const t = useDemoStrings(STRINGS)
   const [enabled, setEnabled] = useState(false)
   const [pending, setPending] = useState(false)
 
@@ -27,7 +42,7 @@ export function AsyncToggleSwitch() {
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       <Switch checked={enabled} onChange={onChange} loading={pending} />
       <span style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>
-        Notifications: {enabled ? 'on' : 'off'}
+        {t.labelPrefix} {enabled ? t.on : t.off}
       </span>
     </div>
   )

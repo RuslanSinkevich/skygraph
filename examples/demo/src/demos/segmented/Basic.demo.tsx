@@ -1,4 +1,21 @@
+import { useMemo } from 'react'
 import { Segmented } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    daily: 'Daily',
+    weekly: 'Weekly',
+    monthly: 'Monthly',
+    yearly: 'Yearly',
+  },
+  ru: {
+    daily: 'Ежедневно',
+    weekly: 'Еженедельно',
+    monthly: 'Ежемесячно',
+    yearly: 'Ежегодно',
+  },
+} as const
 
 /**
  * Pass bare strings for the simplest usage — each string becomes
@@ -6,5 +23,7 @@ import { Segmented } from '@skygraph/react'
  * first option.
  */
 export function BasicSegmented() {
-  return <Segmented options={['Daily', 'Weekly', 'Monthly', 'Yearly']} />
+  const t = useDemoStrings(STRINGS)
+  const options = useMemo(() => [t.daily, t.weekly, t.monthly, t.yearly], [t])
+  return <Segmented options={options} />
 }

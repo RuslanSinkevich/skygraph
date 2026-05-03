@@ -1,5 +1,17 @@
 import type { CSSProperties } from 'react'
 import { Switch } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    on: 'ON',
+    off: 'OFF',
+  },
+  ru: {
+    on: 'ВКЛ',
+    off: 'ВЫКЛ',
+  },
+} as const
 
 /**
  * Switch has no component-specific tokens. The track uses
@@ -12,10 +24,11 @@ const scoped: CSSProperties = {
 }
 
 export function TokensOverrideSwitch() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ display: 'flex', gap: 16, alignItems: 'center', ...scoped }}>
       <Switch defaultChecked />
-      <Switch defaultChecked checkedChildren="ON" unCheckedChildren="OFF" />
+      <Switch defaultChecked checkedChildren={t.on} unCheckedChildren={t.off} />
       <Switch />
     </div>
   )

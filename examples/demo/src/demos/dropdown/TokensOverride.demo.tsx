@@ -1,6 +1,25 @@
 import type { CSSProperties } from 'react'
+import { useMemo } from 'react'
 import { Dropdown, Button } from '@skygraph/react'
-import { basicItems } from './data'
+import type { DropdownItem } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    button: 'Warm theme ▾',
+    edit: 'Edit',
+    duplicate: 'Duplicate',
+    archive: 'Archive (soon)',
+    delete: 'Delete…',
+  },
+  ru: {
+    button: 'Тёплая тема ▾',
+    edit: 'Редактировать',
+    duplicate: 'Дублировать',
+    archive: 'В архив (скоро)',
+    delete: 'Удалить…',
+  },
+} as const
 
 /**
  * Dropdown has no component-specific tokens — scope the surface and
@@ -18,10 +37,22 @@ const scoped: CSSProperties = {
 }
 
 export function TokensOverrideDropdown() {
+  const t = useDemoStrings(STRINGS)
+  const items = useMemo<DropdownItem[]>(
+    () => [
+      { key: '1', label: t.edit },
+      { key: '2', label: t.duplicate },
+      { key: '3', label: t.archive, disabled: true },
+      { key: 'd1', label: '', divider: true },
+      { key: '4', label: t.delete, danger: true },
+    ],
+    [t],
+  )
+
   return (
     <div style={scoped}>
-      <Dropdown items={basicItems} trigger="click">
-        <Button>Warm theme ▾</Button>
+      <Dropdown items={items} trigger="click">
+        <Button>{t.button}</Button>
       </Dropdown>
     </div>
   )

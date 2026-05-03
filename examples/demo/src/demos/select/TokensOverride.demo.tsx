@@ -1,11 +1,43 @@
+import { useMemo } from 'react'
 import { Select } from '@skygraph/react'
 import { fruitOptions } from './data'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    tallRounded: 'Tall & rounded',
+    brandedGreen: 'Branded green',
+    darkInput: 'Dark input',
+    apple: 'Apple',
+    pear: 'Pear',
+    mango: 'Mango',
+    kiwi: 'Kiwi',
+  },
+  ru: {
+    tallRounded: 'Выше и с скруглением',
+    brandedGreen: 'Зелёный бренд',
+    darkInput: 'Тёмное поле',
+    apple: 'Яблоко',
+    pear: 'Груша',
+    mango: 'Манго',
+    kiwi: 'Киви',
+  },
+} as const
 
 /**
  * Select shares CSS variables with Input (height / radius / border). Wrap
  * one instance in a scoped style object and only that select changes.
  */
 export function TokensOverrideSelect() {
+  const t = useDemoStrings(STRINGS)
+  const options = useMemo(
+    () => fruitOptions.map((o) => ({
+      ...o,
+      label: t[o.value as 'apple' | 'pear' | 'mango' | 'kiwi'],
+    })),
+    [t],
+  )
+
   return (
     <div
       style={{
@@ -23,7 +55,7 @@ export function TokensOverrideSelect() {
           } as React.CSSProperties
         }
       >
-        <Select placeholder="Tall & rounded" options={fruitOptions} />
+        <Select placeholder={t.tallRounded} options={options} />
       </div>
 
       <div
@@ -35,7 +67,7 @@ export function TokensOverrideSelect() {
           } as React.CSSProperties
         }
       >
-        <Select placeholder="Branded green" options={fruitOptions} />
+        <Select placeholder={t.brandedGreen} options={options} />
       </div>
 
       <div
@@ -48,7 +80,7 @@ export function TokensOverrideSelect() {
           } as React.CSSProperties
         }
       >
-        <Select placeholder="Dark input" options={fruitOptions} />
+        <Select placeholder={t.darkInput} options={options} />
       </div>
     </div>
   )

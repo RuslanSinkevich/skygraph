@@ -1,4 +1,16 @@
 import { Switch } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    on: 'On',
+    off: 'Off',
+  },
+  ru: {
+    on: 'Вкл',
+    off: 'Выкл',
+  },
+} as const
 
 /**
  * `unstyled` drops every SkyGraph class and the visual track. Semantics
@@ -6,13 +18,14 @@ import { Switch } from '@skygraph/react'
  * `checkedChildren` / `unCheckedChildren` for the on/off labels.
  */
 export function UnstyledSwitch() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ display: 'flex', gap: 12 }}>
       <Switch
         unstyled
         defaultChecked
-        checkedChildren="On"
-        unCheckedChildren="Off"
+        checkedChildren={t.on}
+        unCheckedChildren={t.off}
         style={{
           padding: '4px 10px',
           border: '1px solid var(--sg-color-border)',
@@ -22,8 +35,8 @@ export function UnstyledSwitch() {
       />
       <Switch
         unstyled
-        checkedChildren="On"
-        unCheckedChildren="Off"
+        checkedChildren={t.on}
+        unCheckedChildren={t.off}
         style={{
           padding: '4px 10px',
           border: '1px solid var(--sg-color-border)',
