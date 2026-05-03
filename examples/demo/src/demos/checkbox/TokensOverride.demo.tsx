@@ -1,5 +1,19 @@
 import type { CSSProperties } from 'react'
 import { Checkbox } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    magenta: 'Magenta brand',
+    indeterminate: 'Indeterminate',
+    smallMagenta: 'Small + magenta',
+  },
+  ru: {
+    magenta: 'Бренд Magenta',
+    indeterminate: 'Промежуточное',
+    smallMagenta: 'Маленький + magenta',
+  },
+} as const
 
 /**
  * Checkbox has no component-specific tokens — the native `accent-color`
@@ -13,11 +27,12 @@ const scoped: CSSProperties = {
 }
 
 export function TokensOverrideCheckbox() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ ...scoped, display: 'grid', gap: 6 }}>
-      <Checkbox defaultChecked>Magenta brand</Checkbox>
-      <Checkbox indeterminate>Indeterminate</Checkbox>
-      <Checkbox>Small + magenta</Checkbox>
+      <Checkbox defaultChecked>{t.magenta}</Checkbox>
+      <Checkbox indeterminate>{t.indeterminate}</Checkbox>
+      <Checkbox>{t.smallMagenta}</Checkbox>
     </div>
   )
 }

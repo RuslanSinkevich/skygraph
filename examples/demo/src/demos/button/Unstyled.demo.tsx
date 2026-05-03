@@ -1,4 +1,18 @@
 import { Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    customPill: 'Custom pill',
+    disabledPill: 'Disabled pill',
+    loadingPill: 'Loading pill',
+  },
+  ru: {
+    customPill: 'Своя pill-кнопка',
+    disabledPill: 'Отключённая pill',
+    loadingPill: 'Pill в загрузке',
+  },
+} as const
 
 /**
  * `unstyled` keeps the `<button>` element semantics — htmlType,
@@ -7,6 +21,7 @@ import { Button } from '@skygraph/react'
  * Tailwind className.
  */
 export function UnstyledButton() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
       <style>{`
@@ -23,9 +38,9 @@ export function UnstyledButton() {
         .demo-pill-btn:hover { filter: brightness(1.1); }
         .demo-pill-btn:disabled { opacity: 0.5; cursor: not-allowed; }
       `}</style>
-      <Button unstyled className="demo-pill-btn">Custom pill</Button>
-      <Button unstyled className="demo-pill-btn" disabled>Disabled pill</Button>
-      <Button unstyled className="demo-pill-btn" loading>Loading pill</Button>
+      <Button unstyled className="demo-pill-btn">{t.customPill}</Button>
+      <Button unstyled className="demo-pill-btn" disabled>{t.disabledPill}</Button>
+      <Button unstyled className="demo-pill-btn" loading>{t.loadingPill}</Button>
     </div>
   )
 }

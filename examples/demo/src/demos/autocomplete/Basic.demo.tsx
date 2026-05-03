@@ -1,6 +1,20 @@
 import { useState } from 'react'
 import { AutoComplete } from '@skygraph/react'
 import { frameworkOptions } from './data'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    placeholder: 'Type to filter…',
+    currentPrefix: 'Current:',
+    hint: 'Start typing to see suggestions.',
+  },
+  ru: {
+    placeholder: 'Начните вводить для фильтра…',
+    currentPrefix: 'Сейчас:',
+    hint: 'Начните вводить, чтобы увидеть подсказки.',
+  },
+} as const
 
 /**
  * A text field backed by a list of suggestions. The typed value is the
@@ -8,6 +22,7 @@ import { frameworkOptions } from './data'
  * Filtering is case-insensitive and done by label.
  */
 export function BasicAutoComplete() {
+  const t = useDemoStrings(STRINGS)
   const [value, setValue] = useState('')
   return (
     <div style={{ display: 'grid', gap: 8, maxWidth: 320 }}>
@@ -15,10 +30,10 @@ export function BasicAutoComplete() {
         options={frameworkOptions}
         value={value}
         onChange={setValue}
-        placeholder="Type to filter…"
+        placeholder={t.placeholder}
       />
       <span style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>
-        {value ? `Current: "${value}"` : 'Start typing to see suggestions.'}
+        {value ? `${t.currentPrefix} "${value}"` : t.hint}
       </span>
     </div>
   )

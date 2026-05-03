@@ -1,10 +1,27 @@
 import { Tooltip, Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    top: 'Top',
+    bottom: 'Bottom',
+    left: 'Left',
+    right: 'Right',
+  },
+  ru: {
+    top: 'Сверху',
+    bottom: 'Снизу',
+    left: 'Слева',
+    right: 'Справа',
+  },
+} as const
 
 /**
  * Four sides are supported; the arrow anchors to the centre of the
  * trigger. There's no auto-flip — pick a side that fits your layout.
  */
 export function PlacementTooltip() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div
       style={{
@@ -15,17 +32,17 @@ export function PlacementTooltip() {
         justifyContent: 'start',
       }}
     >
-      <Tooltip title="Top" placement="top">
-        <Button>Top</Button>
+      <Tooltip title={t.top} placement="top">
+        <Button>{t.top}</Button>
       </Tooltip>
-      <Tooltip title="Bottom" placement="bottom">
-        <Button>Bottom</Button>
+      <Tooltip title={t.bottom} placement="bottom">
+        <Button>{t.bottom}</Button>
       </Tooltip>
-      <Tooltip title="Left" placement="left">
-        <Button>Left</Button>
+      <Tooltip title={t.left} placement="left">
+        <Button>{t.left}</Button>
       </Tooltip>
-      <Tooltip title="Right" placement="right">
-        <Button>Right</Button>
+      <Tooltip title={t.right} placement="right">
+        <Button>{t.right}</Button>
       </Tooltip>
     </div>
   )

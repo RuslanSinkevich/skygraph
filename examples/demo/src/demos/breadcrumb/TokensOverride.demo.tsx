@@ -1,5 +1,19 @@
 import type { CSSProperties } from 'react'
 import { Breadcrumb } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    home: 'Home',
+    docs: 'Docs',
+    breadcrumb: 'Breadcrumb',
+  },
+  ru: {
+    home: 'Главная',
+    docs: 'Документация',
+    breadcrumb: 'Хлебные крошки',
+  },
+} as const
 
 /**
  * Breadcrumb has no component-specific tokens — override the text
@@ -16,13 +30,14 @@ const scoped: CSSProperties = {
 }
 
 export function TokensOverrideBreadcrumb() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={scoped}>
       <Breadcrumb
         items={[
-          { title: 'Home', href: '#' },
-          { title: 'Docs', href: '#' },
-          { title: 'Breadcrumb' },
+          { title: t.home, href: '#' },
+          { title: t.docs, href: '#' },
+          { title: t.breadcrumb },
         ]}
       />
     </div>

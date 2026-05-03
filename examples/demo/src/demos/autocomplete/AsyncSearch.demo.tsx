@@ -2,6 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import { AutoComplete } from '@skygraph/react'
 import type { AutoCompleteOption } from '@skygraph/react'
 import { cityDatabase } from './data'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    placeholder: 'Search cities…',
+  },
+  ru: {
+    placeholder: 'Поиск городов…',
+  },
+} as const
 
 /**
  * Fire server-side search through `onSearch`, debouncing rapid
@@ -9,6 +19,7 @@ import { cityDatabase } from './data'
  * the user knows the list is being fetched.
  */
 export function AsyncSearchAutoComplete() {
+  const t = useDemoStrings(STRINGS)
   const [value, setValue] = useState('')
   const [options, setOptions] = useState<AutoCompleteOption[]>([])
   const [loading, setLoading] = useState(false)
@@ -43,7 +54,7 @@ export function AsyncSearchAutoComplete() {
       onSearch={onSearch}
       options={options}
       loading={loading}
-      placeholder="Search cities…"
+      placeholder={t.placeholder}
       style={{ maxWidth: 320 }}
     />
   )

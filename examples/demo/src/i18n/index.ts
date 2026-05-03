@@ -1,5 +1,6 @@
 export { I18nProvider, useI18n } from './I18nContext'
 export { LanguageSwitch } from './LanguageSwitch'
+export { useDemoStrings } from './useDemoStrings'
 export { en } from './dict-en'
 export { ru } from './dict-ru'
 export { DEFAULT_LOCALE, SUPPORTED_LOCALES } from './types'

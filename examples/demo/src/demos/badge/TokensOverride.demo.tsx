@@ -1,5 +1,15 @@
 import type { CSSProperties } from 'react'
 import { Badge } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    connecting: 'Connecting…',
+  },
+  ru: {
+    connecting: 'Подключение…',
+  },
+} as const
 
 const box = {
   width: 42,
@@ -23,11 +33,12 @@ const scoped: CSSProperties = {
 }
 
 export function TokensOverrideBadge() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ ...scoped, display: 'flex', gap: 24, padding: 16, background: '#fef3c7' }}>
       <Badge count={5}><div style={box} /></Badge>
       <Badge dot><div style={box} /></Badge>
-      <Badge status="processing" text="Connecting…" />
+      <Badge status="processing" text={t.connecting} />
     </div>
   )
 }

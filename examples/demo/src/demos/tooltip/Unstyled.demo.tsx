@@ -1,4 +1,16 @@
 import { Tooltip, Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    tip: 'Fully custom look',
+    button: 'Hover me',
+  },
+  ru: {
+    tip: 'Полностью свой вид',
+    button: 'Наведите курсор',
+  },
+} as const
 
 /**
  * `unstyled` drops all `sg-tooltip-*` classes. You keep the hover
@@ -6,6 +18,7 @@ import { Tooltip, Button } from '@skygraph/react'
  * own the painting with your own className.
  */
 export function UnstyledTooltip() {
+  const t = useDemoStrings(STRINGS)
   return (
     <Tooltip
       unstyled
@@ -23,11 +36,11 @@ export function UnstyledTooltip() {
             display: 'inline-block',
           }}
         >
-          Fully custom look
+          {t.tip}
         </div>
       }
     >
-      <Button>Hover me</Button>
+      <Button>{t.button}</Button>
     </Tooltip>
   )
 }

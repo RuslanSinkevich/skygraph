@@ -1,5 +1,19 @@
 import type { CSSProperties } from 'react'
 import { Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    primaryGreen: 'Primary (green)',
+    default: 'Default',
+    link: 'Link',
+  },
+  ru: {
+    primaryGreen: 'Основная (зелёная)',
+    default: 'Обычная',
+    link: 'Ссылка',
+  },
+} as const
 
 /**
  * Every variant reads the semantic primary palette. Override
@@ -18,11 +32,12 @@ const greenScope: CSSProperties = {
 }
 
 export function ScopedBrandButton() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={greenScope}>
-      <Button type="primary">Primary (green)</Button>
-      <Button>Default</Button>
-      <Button type="link">Link</Button>
+      <Button type="primary">{t.primaryGreen}</Button>
+      <Button>{t.default}</Button>
+      <Button type="link">{t.link}</Button>
     </div>
   )
 }

@@ -1,4 +1,22 @@
 import { Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    default: 'Default',
+    primary: 'Primary',
+    dashed: 'Dashed',
+    text: 'Text',
+    link: 'Link',
+  },
+  ru: {
+    default: 'Обычная',
+    primary: 'Основная',
+    dashed: 'Пунктирная',
+    text: 'Текстовая',
+    link: 'Ссылка',
+  },
+} as const
 
 /**
  * Five visual variants. `primary` is the CTA, `default` sits next
@@ -7,13 +25,14 @@ import { Button } from '@skygraph/react'
  * button would feel heavy.
  */
 export function TypesButton() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-      <Button>Default</Button>
-      <Button type="primary">Primary</Button>
-      <Button type="dashed">Dashed</Button>
-      <Button type="text">Text</Button>
-      <Button type="link">Link</Button>
+      <Button>{t.default}</Button>
+      <Button type="primary">{t.primary}</Button>
+      <Button type="dashed">{t.dashed}</Button>
+      <Button type="text">{t.text}</Button>
+      <Button type="link">{t.link}</Button>
     </div>
   )
 }

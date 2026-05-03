@@ -1,5 +1,21 @@
 import type { CSSProperties } from 'react'
 import { Tooltip, Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    brandTip: 'Brand-coloured tooltip',
+    brandButton: 'Brand tip',
+    rounderTip: 'Rounder corners here too',
+    bottom: 'Bottom',
+  },
+  ru: {
+    brandTip: 'Подсказка в цветах бренда',
+    brandButton: 'Брендовая подсказка',
+    rounderTip: 'Скруглённые углы и здесь',
+    bottom: 'Снизу',
+  },
+} as const
 
 /**
  * Tooltip ships with dedicated tokens: `--sg-color-tooltip-bg` and
@@ -13,13 +29,14 @@ const scoped: CSSProperties = {
 }
 
 export function TokensOverrideTooltip() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ ...scoped, display: 'flex', gap: 12 }}>
-      <Tooltip title="Brand-coloured tooltip">
-        <Button>Brand tip</Button>
+      <Tooltip title={t.brandTip}>
+        <Button>{t.brandButton}</Button>
       </Tooltip>
-      <Tooltip title="Rounder corners here too" placement="bottom">
-        <Button>Bottom</Button>
+      <Tooltip title={t.rounderTip} placement="bottom">
+        <Button>{t.bottom}</Button>
       </Tooltip>
     </div>
   )

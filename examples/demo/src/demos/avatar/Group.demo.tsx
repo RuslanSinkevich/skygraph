@@ -1,4 +1,14 @@
 import { Avatar } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    morePeople: 'more people',
+  },
+  ru: {
+    morePeople: 'ещё человек',
+  },
+} as const
 
 /**
  * Stacking avatars with negative margin + a matching border creates a
@@ -14,6 +24,7 @@ const people = [
 const extra = 3
 
 export function GroupAvatar() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ display: 'flex' }}>
       {people.map((p, i) => (
@@ -37,7 +48,7 @@ export function GroupAvatar() {
           border: '2px solid var(--sg-color-bg-container)',
           fontSize: 12,
         }}
-        aria-label={`${extra} more people`}
+        aria-label={`${extra} ${t.morePeople}`}
       >
         +{extra}
       </Avatar>

@@ -1,4 +1,14 @@
 import { Tag } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    label: 'Custom gradient',
+  },
+  ru: {
+    label: 'Свой градиент',
+  },
+} as const
 
 /**
  * `unstyled` strips all `sg-tag-*` classes — you get just a `<span>`
@@ -6,6 +16,7 @@ import { Tag } from '@skygraph/react'
  * own classes or utility CSS.
  */
 export function UnstyledTag() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ display: 'flex', gap: 8 }}>
       <Tag
@@ -22,7 +33,7 @@ export function UnstyledTag() {
           fontSize: 12,
         }}
       >
-        Custom gradient
+        {t.label}
       </Tag>
     </div>
   )

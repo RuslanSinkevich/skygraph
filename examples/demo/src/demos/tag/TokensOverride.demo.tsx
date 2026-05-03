@@ -1,5 +1,23 @@
 import type { CSSProperties } from 'react'
 import { Tag } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    default: 'default',
+    success: 'success',
+    warning: 'warning',
+    error: 'error',
+    processing: 'processing',
+  },
+  ru: {
+    default: 'обычный',
+    success: 'успех',
+    warning: 'предупреждение',
+    error: 'ошибка',
+    processing: 'в процессе',
+  },
+} as const
 
 /**
  * Tag has no component-specific tokens — override the globals it
@@ -20,13 +38,14 @@ const scoped: CSSProperties = {
 }
 
 export function TokensOverrideTag() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ ...scoped, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-      <Tag>default</Tag>
-      <Tag color="success">success</Tag>
-      <Tag color="warning">warning</Tag>
-      <Tag color="error">error</Tag>
-      <Tag color="processing">processing</Tag>
+      <Tag>{t.default}</Tag>
+      <Tag color="success">{t.success}</Tag>
+      <Tag color="warning">{t.warning}</Tag>
+      <Tag color="error">{t.error}</Tag>
+      <Tag color="processing">{t.processing}</Tag>
     </div>
   )
 }

@@ -1,4 +1,14 @@
 import { Avatar } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    alt: 'Custom',
+  },
+  ru: {
+    alt: 'Свой стиль',
+  },
+} as const
 
 /**
  * `unstyled` drops the `sg-avatar-*` classes and the inline sizing —
@@ -6,12 +16,13 @@ import { Avatar } from '@skygraph/react'
  * Size and shape are up to your own CSS.
  */
 export function UnstyledAvatar() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ display: 'flex', gap: 12 }}>
       <Avatar
         unstyled
         src="https://api.dicebear.com/7.x/miniavs/svg?seed=24"
-        alt="Custom"
+        alt={t.alt}
         style={{
           display: 'inline-block',
           width: 56,

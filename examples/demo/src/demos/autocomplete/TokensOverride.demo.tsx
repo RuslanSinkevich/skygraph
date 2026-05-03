@@ -1,6 +1,16 @@
 import type { CSSProperties } from 'react'
 import { AutoComplete } from '@skygraph/react'
 import { frameworkOptions } from './data'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    placeholder: 'Scoped amber theme',
+  },
+  ru: {
+    placeholder: 'Янтарная тема в скоупе',
+  },
+} as const
 
 /**
  * AutoComplete reuses `--sg-input-*` for the field and global tokens
@@ -15,9 +25,10 @@ const scoped: CSSProperties = {
 }
 
 export function TokensOverrideAutoComplete() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ ...scoped, maxWidth: 320 }}>
-      <AutoComplete options={frameworkOptions} placeholder="Scoped amber theme" />
+      <AutoComplete options={frameworkOptions} placeholder={t.placeholder} />
     </div>
   )
 }

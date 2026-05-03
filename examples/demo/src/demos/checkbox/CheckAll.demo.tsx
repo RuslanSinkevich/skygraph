@@ -1,7 +1,28 @@
 import { useMemo, useState } from 'react'
 import { Checkbox } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
 
-const options = ['Apple', 'Pear', 'Orange', 'Banana', 'Mango']
+const STRINGS = {
+  en: {
+    apple: 'Apple',
+    pear: 'Pear',
+    orange: 'Orange',
+    banana: 'Banana',
+    mango: 'Mango',
+    checkAll: 'Check all',
+  },
+  ru: {
+    apple: 'Яблоко',
+    pear: 'Груша',
+    orange: 'Апельсин',
+    banana: 'Банан',
+    mango: 'Манго',
+    checkAll: 'Выбрать все',
+  },
+} as const
+
+const KEYS = ['apple', 'pear', 'orange', 'banana', 'mango'] as const
+type FruitKey = (typeof KEYS)[number]
 
 /**
  * Classic "check all" pattern — a parent checkbox with indeterminate
@@ -9,12 +30,13 @@ const options = ['Apple', 'Pear', 'Orange', 'Banana', 'Mango']
  * checked keys for the state.
  */
 export function CheckAllCheckbox() {
-  const [checked, setChecked] = useState<string[]>(['Apple'])
+  const t = useDemoStrings(STRINGS)
+  const [checked, setChecked] = useState<FruitKey[]>(['apple'])
 
   const { allChecked, indeterminate } = useMemo(
     () => ({
-      allChecked: checked.length === options.length,
-      indeterminate: checked.length > 0 && checked.length < options.length,
+      allChecked: checked.length === KEYS.length,
+      indeterminate: checked.length > 0 && checked.length < KEYS.length,
     }),
     [checked],
   )
@@ -24,20 +46,20 @@ export function CheckAllCheckbox() {
       <Checkbox
         checked={allChecked}
         indeterminate={indeterminate}
-        onChange={(c) => setChecked(c ? options : [])}
+        onChange={(c) => setChecked(c ? [...KEYS] : [])}
       >
-        <strong>Check all ({checked.length}/{options.length})</strong>
+        <strong>{t.checkAll} ({checked.length}/{KEYS.length})</strong>
       </Checkbox>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingLeft: 20 }}>
-        {options.map((opt) => (
+        {KEYS.map((key) => (
           <Checkbox
-            key={opt}
-            checked={checked.includes(opt)}
+            key={key}
+            checked={checked.includes(key)}
             onChange={(c) =>
-              setChecked((prev) => (c ? [...prev, opt] : prev.filter((x) => x !== opt)))
+              setChecked((prev) => (c ? [...prev, key] : prev.filter((x) => x !== key)))
             }
           >
-            {opt}
+            {t[key]}
           </Checkbox>
         ))}
       </div>

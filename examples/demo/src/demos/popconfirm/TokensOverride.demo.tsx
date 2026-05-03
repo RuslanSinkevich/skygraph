@@ -1,5 +1,21 @@
 import type { CSSProperties } from 'react'
 import { Popconfirm, Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    title: 'Reset all layout preferences?',
+    description: 'Panels, themes, and font size will go back to defaults.',
+    okText: 'Reset',
+    button: 'Reset preferences',
+  },
+  ru: {
+    title: 'Сбросить все настройки макета?',
+    description: 'Панели, темы и размер шрифта вернутся к значениям по умолчанию.',
+    okText: 'Сбросить',
+    button: 'Сбросить настройки',
+  },
+} as const
 
 /**
  * Popconfirm has no component-specific tokens — tune the surface
@@ -17,14 +33,15 @@ const scoped: CSSProperties = {
 }
 
 export function TokensOverridePopconfirm() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={scoped}>
       <Popconfirm
-        title="Reset all layout preferences?"
-        description="Panels, themes, and font size will go back to defaults."
-        okText="Reset"
+        title={t.title}
+        description={t.description}
+        okText={t.okText}
       >
-        <Button>Reset preferences</Button>
+        <Button>{t.button}</Button>
       </Popconfirm>
     </div>
   )

@@ -1,5 +1,19 @@
 import type { CSSProperties } from 'react'
 import { Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    pillPrimary: 'Pill primary',
+    pillDefault: 'Pill default',
+    pillDashed: 'Pill dashed',
+  },
+  ru: {
+    pillPrimary: 'Pill основная',
+    pillDefault: 'Pill обычная',
+    pillDashed: 'Pill пунктирная',
+  },
+} as const
 
 /**
  * Button exposes a full set of component-local tokens (`--sg-btn-
@@ -18,11 +32,12 @@ const pillScope: CSSProperties = {
 }
 
 export function ComponentTokensButton() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={pillScope}>
-      <Button type="primary">Pill primary</Button>
-      <Button>Pill default</Button>
-      <Button type="dashed">Pill dashed</Button>
+      <Button type="primary">{t.pillPrimary}</Button>
+      <Button>{t.pillDefault}</Button>
+      <Button type="dashed">{t.pillDashed}</Button>
     </div>
   )
 }

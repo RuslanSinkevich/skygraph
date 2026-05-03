@@ -1,10 +1,35 @@
 import { Popconfirm, Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    topTitle: 'Top placement',
+    bottomTitle: 'Bottom placement',
+    leftTitle: 'Left placement',
+    rightTitle: 'Right placement',
+    top: 'Top',
+    bottom: 'Bottom',
+    left: 'Left',
+    right: 'Right',
+  },
+  ru: {
+    topTitle: 'Размещение сверху',
+    bottomTitle: 'Размещение снизу',
+    leftTitle: 'Размещение слева',
+    rightTitle: 'Размещение справа',
+    top: 'Сверху',
+    bottom: 'Снизу',
+    left: 'Слева',
+    right: 'Справа',
+  },
+} as const
 
 /**
  * Four sides, anchored to the centre of the trigger. No auto-flip —
  * choose a placement that has room to open.
  */
 export function PlacementPopconfirm() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div
       style={{
@@ -15,17 +40,17 @@ export function PlacementPopconfirm() {
         justifyContent: 'start',
       }}
     >
-      <Popconfirm title="Top placement" placement="top">
-        <Button>Top</Button>
+      <Popconfirm title={t.topTitle} placement="top">
+        <Button>{t.top}</Button>
       </Popconfirm>
-      <Popconfirm title="Bottom placement" placement="bottom">
-        <Button>Bottom</Button>
+      <Popconfirm title={t.bottomTitle} placement="bottom">
+        <Button>{t.bottom}</Button>
       </Popconfirm>
-      <Popconfirm title="Left placement" placement="left">
-        <Button>Left</Button>
+      <Popconfirm title={t.leftTitle} placement="left">
+        <Button>{t.left}</Button>
       </Popconfirm>
-      <Popconfirm title="Right placement" placement="right">
-        <Button>Right</Button>
+      <Popconfirm title={t.rightTitle} placement="right">
+        <Button>{t.right}</Button>
       </Popconfirm>
     </div>
   )

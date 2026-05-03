@@ -1,4 +1,20 @@
 import { Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    newProject: 'New project',
+    refresh: 'Refresh',
+    remove: 'Remove',
+    search: 'Search',
+  },
+  ru: {
+    newProject: 'Новый проект',
+    refresh: 'Обновить',
+    remove: 'Удалить',
+    search: 'Поиск',
+  },
+} as const
 
 /**
  * Put any icon node as the first child. The button uses flex with
@@ -6,21 +22,22 @@ import { Button } from '@skygraph/react'
  * all three sizes.
  */
 export function WithIconButton() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
       <Button type="primary">
         <span aria-hidden>＋</span>
-        New project
+        {t.newProject}
       </Button>
       <Button>
         <span aria-hidden>⟳</span>
-        Refresh
+        {t.refresh}
       </Button>
       <Button type="text">
         <span aria-hidden>⌫</span>
-        Remove
+        {t.remove}
       </Button>
-      <Button aria-label="Search" size="small">
+      <Button aria-label={t.search} size="small">
         <span aria-hidden>🔍</span>
       </Button>
     </div>

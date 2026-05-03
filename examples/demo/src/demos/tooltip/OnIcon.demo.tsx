@@ -1,4 +1,18 @@
 import { Tooltip } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    label: 'Brand score',
+    tooltip: 'Weighted average of NPS, reviews, and social sentiment (0–100).',
+    aria: 'More info about brand score',
+  },
+  ru: {
+    label: 'Оценка бренда',
+    tooltip: 'Взвешенное среднее NPS, отзывов и социальных сигналов (0–100).',
+    aria: 'Подробнее об оценке бренда',
+  },
+} as const
 
 /**
  * Classic "info icon" pattern: a small glyph with a Tooltip for the
@@ -6,13 +20,14 @@ import { Tooltip } from '@skygraph/react'
  * focus it and read the tip too.
  */
 export function OnIconTooltip() {
+  const t = useDemoStrings(STRINGS)
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <label style={{ fontWeight: 500 }}>Brand score</label>
-      <Tooltip title="Weighted average of NPS, reviews, and social sentiment (0–100).">
+      <label style={{ fontWeight: 500 }}>{t.label}</label>
+      <Tooltip title={t.tooltip}>
         <span
           tabIndex={0}
-          aria-label="More info about brand score"
+          aria-label={t.aria}
           style={{
             display: 'inline-flex',
             alignItems: 'center',

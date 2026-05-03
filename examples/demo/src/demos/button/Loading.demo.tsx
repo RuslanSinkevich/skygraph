@@ -1,5 +1,23 @@
 import { useState } from 'react'
 import { Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: {
+    defaultLoading: 'Default loading',
+    primaryLoading: 'Primary loading',
+    dashedLoading: 'Dashed loading',
+    saving: 'Saving…',
+    clickMe: 'Click me',
+  },
+  ru: {
+    defaultLoading: 'Загрузка',
+    primaryLoading: 'Основная загрузка',
+    dashedLoading: 'Пунктирная загрузка',
+    saving: 'Сохранение…',
+    clickMe: 'Нажмите',
+  },
+} as const
 
 /**
  * `loading` swaps in a Spin and sets `aria-busy`, `disabled` and
@@ -8,13 +26,14 @@ import { Button } from '@skygraph/react'
  * submit → done pattern.
  */
 export function LoadingButton() {
+  const t = useDemoStrings(STRINGS)
   const [saving, setSaving] = useState(false)
 
   return (
     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-      <Button loading>Default loading</Button>
-      <Button type="primary" loading>Primary loading</Button>
-      <Button type="dashed" loading>Dashed loading</Button>
+      <Button loading>{t.defaultLoading}</Button>
+      <Button type="primary" loading>{t.primaryLoading}</Button>
+      <Button type="dashed" loading>{t.dashedLoading}</Button>
       <Button
         type="primary"
         loading={saving}
@@ -23,7 +42,7 @@ export function LoadingButton() {
           setTimeout(() => setSaving(false), 1500)
         }}
       >
-        {saving ? 'Saving…' : 'Click me'}
+        {saving ? t.saving : t.clickMe}
       </Button>
     </div>
   )
