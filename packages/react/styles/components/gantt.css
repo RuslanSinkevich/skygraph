@@ -1,0 +1,129 @@
+/* Gantt — task bars over a discrete time axis. */
+
+.sg-gantt {
+  background: var(--sg-color-bg);
+  border: 1px solid var(--sg-color-border);
+  border-radius: var(--sg-border-radius);
+  font-size: var(--sg-font-size);
+  color: var(--sg-color-text);
+  font-family: inherit;
+}
+
+.sg-gantt-sidebar {
+  background: var(--sg-color-bg-container);
+  border-right: 1px solid var(--sg-color-border);
+  overflow: hidden;
+}
+
+.sg-gantt-sidebar-header {
+  border-bottom: 1px solid var(--sg-color-border);
+  background: var(--sg-color-bg-elevated);
+}
+
+.sg-gantt-sidebar-row {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--sg-padding-md);
+  border-bottom: 1px solid var(--sg-color-border-secondary);
+  color: var(--sg-color-text);
+  font-size: var(--sg-font-size-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sg-gantt-main {
+  background: var(--sg-color-bg);
+  position: relative;
+}
+
+.sg-gantt-header {
+  background: var(--sg-color-bg-elevated);
+  border-bottom: 1px solid var(--sg-color-border);
+}
+
+.sg-gantt-tick {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 var(--sg-padding-xs);
+  font-size: var(--sg-font-size-sm);
+  color: var(--sg-color-text-secondary);
+  border-right: 1px solid var(--sg-color-border-secondary);
+  box-sizing: border-box;
+}
+
+.sg-gantt-grid {
+  /* Background grid of vertical column dividers — repeated linear-gradient
+   * over `--sg-gantt-column-width` (set via inline style by the component). */
+}
+
+.sg-gantt-row {
+  border-bottom: 1px solid var(--sg-color-border-secondary);
+}
+
+.sg-gantt-row:nth-child(even) {
+  background: var(--sg-color-bg-secondary);
+}
+
+.sg-gantt-bar {
+  background: var(--sg-color-primary);
+  color: var(--sg-color-white);
+  border-radius: var(--sg-border-radius-sm);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--sg-padding-xs);
+  font-size: var(--sg-font-size-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  box-shadow: var(--sg-shadow-sm);
+  box-sizing: border-box;
+}
+
+.sg-gantt-bar-draggable {
+  cursor: grab;
+}
+
+.sg-gantt-bar-draggable:active {
+  cursor: grabbing;
+}
+
+.sg-gantt-bar-resizable {
+  /* hover state expands the resize handle visibility */
+}
+
+.sg-gantt-bar-progress {
+  background: var(--sg-color-primary-active);
+  border-radius: inherit;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.sg-gantt-bar-label {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.sg-gantt-bar-resize {
+  background: transparent;
+  border-left: 1px solid var(--sg-color-border-secondary);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.sg-gantt-bar:hover .sg-gantt-bar-resize {
+  opacity: 0.6;
+}
+
+.sg-gantt-bar-resize:hover,
+.sg-gantt-bar-resize:focus-visible {
+  opacity: 1;
+}
+
+.sg-gantt-deps {
+  color: var(--sg-color-text-secondary);
+}
+
+.sg-gantt-dep {
+  /* stroke + marker colour come from `currentColor` set on .sg-gantt-deps */
+}

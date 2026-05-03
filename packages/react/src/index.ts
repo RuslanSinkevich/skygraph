@@ -219,6 +219,26 @@ export type { DiagramProps, DiagramNodeRenderer } from './components/complex/Dia
 export { Dashboard } from './components/complex/Dashboard'
 export type { DashboardProps, DashboardWidget } from './components/complex/Dashboard'
 
+// Gantt (task bars over a discrete time axis)
+export { Gantt } from './components/complex/Gantt'
+export type {
+  GanttProps,
+  GanttTask,
+  GanttResource,
+  GanttScale,
+  GanttRange,
+} from './components/complex/Gantt'
+
+// EventTimeline (chronological event stream — distinct from the simpler
+// step-based `Timeline` in `components/ui/Timeline.tsx`).
+export { EventTimeline } from './components/complex/Timeline'
+export type {
+  EventTimelineProps,
+  TimelineEvent,
+  TimelineOrientation,
+  TimelineGroupBy,
+} from './components/complex/Timeline'
+
 // Charts (SVG primitives + animations + crosshair)
 export {
   LineChart,

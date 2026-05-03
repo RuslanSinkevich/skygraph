@@ -60,4 +60,6 @@
 @import './components/diagram.css';
 @import './components/charts.css';
 @import './components/dashboard.css';
+@import './components/gantt.css';
+@import './components/event-timeline.css';
 @import './transitions.css';
