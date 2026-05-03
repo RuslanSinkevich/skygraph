@@ -134,6 +134,15 @@ export interface TimePickerProps extends BaseComponentProps, InteractiveProps, S
   open?: boolean
   /** Reserved for read-only input behavior (currently unused in markup). */
   inputReadOnly?: boolean
+  /**
+   * Accessible name for the `role="combobox"` trigger. Wrapping the styled
+   * trigger in a `<label>` does not associate (the trigger is not a form
+   * element), so `aria-label` / `aria-labelledby` is the supported way to
+   * give the control a name. Required for axe `aria-input-field-name`.
+   */
+  'aria-label'?: string
+  /** Id(s) of the element(s) that label the trigger. Mirrors `aria-label`. */
+  'aria-labelledby'?: string
 }
 
 /** Props for two side-by-side TimePicker panels as a start/end range. */
@@ -211,6 +220,8 @@ export function TimePicker({
   className,
   style,
   unstyled,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
 }: TimePickerProps) {
   const config = useConfig()
   const size = sizeProp ?? config.size ?? 'middle'
@@ -340,6 +351,8 @@ export function TimePicker({
         aria-haspopup="dialog"
         aria-expanded={isOpen}
         aria-disabled={disabled}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
       >
         <span className={currentValue ? '' : (unstyled ? '' : 'sg-timepicker-placeholder')}>
           {currentValue || placeholder}

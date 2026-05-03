@@ -28,6 +28,15 @@ export interface ColorPickerProps extends BaseComponentProps, InteractiveProps, 
   open?: boolean
   /** Called when the panel opens or closes. */
   onOpenChange?: (open: boolean) => void
+  /**
+   * Accessible name for the trigger button. The trigger only shows a color
+   * swatch (and optional `showText`), so without a programmatic name axe
+   * `button-name` flags the control. Provide either `aria-label` or
+   * `aria-labelledby`; if `showText` renders text, that text is enough.
+   */
+  'aria-label'?: string
+  /** Id(s) of the element(s) that label the trigger. Mirrors `aria-label`. */
+  'aria-labelledby'?: string
 }
 
 /* ---- Color math helpers ---- */
@@ -175,6 +184,8 @@ export function ColorPicker({
   className,
   style,
   unstyled,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
 }: ColorPickerProps) {
   const config = useConfig()
   const size = sizeProp ?? config.size ?? 'middle'
@@ -339,7 +350,12 @@ export function ColorPicker({
     return (
       <div ref={wrapperRef} className={className} style={{ ...style, position: 'relative', display: 'inline-block' }}>
         <button
+          type="button"
           disabled={disabled}
+          aria-haspopup="dialog"
+          aria-expanded={isOpen}
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledBy}
           onClick={handleTriggerClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -397,22 +413,19 @@ export function ColorPicker({
       onMouseLeave={handleMouseLeave}
     >
       {/* Trigger */}
-      <div
+      <button
+        type="button"
         className="sg-colorpicker-trigger"
         onClick={handleTriggerClick}
-        tabIndex={disabled ? -1 : 0}
+        disabled={disabled}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            handleTriggerClick()
-          }
-        }}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
       >
         <span className="sg-colorpicker-swatch" style={{ background: currentHex }} />
         {renderText()}
-      </div>
+      </button>
 
       {/* Dropdown */}
       {isOpen && (

@@ -9,9 +9,23 @@
  * jsdom-only rules that need a real viewport / paint pass are disabled in
  * the runner config (`color-contrast`, `region`, ...), see `runAxe`.
  */
-import { afterEach, describe, it, expect } from 'vitest'
-import { render, cleanup } from '@testing-library/react'
+import { afterEach, beforeAll, describe, it, expect } from 'vitest'
+import { render, cleanup, act } from '@testing-library/react'
 import axe from 'axe-core'
+
+// jsdom does not implement ResizeObserver. `<VirtualList>` (and any other
+// component that uses `useVirtualScroll`) installs an observer on mount, so
+// without a stub the test crashes before axe sees the DOM.
+beforeAll(() => {
+  if (typeof globalThis.ResizeObserver === 'undefined') {
+    class ResizeObserverStub {
+      observe(): void {}
+      unobserve(): void {}
+      disconnect(): void {}
+    }
+    ;(globalThis as unknown as { ResizeObserver: typeof ResizeObserverStub }).ResizeObserver = ResizeObserverStub
+  }
+})
 
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
@@ -25,8 +39,9 @@ import { Carousel } from '../components/ui/Carousel'
 import { Mentions } from '../components/ui/Mentions'
 import { Rate } from '../components/ui/Rate'
 import { Cascader } from '../components/complex/Cascader'
-// `ColorPicker` and `TimePicker` are intentionally not imported — both have
-// known violations captured as `it.todo` below.
+import { ColorPicker } from '../components/ui/ColorPicker'
+import { TimePicker } from '../components/ui/TimePicker'
+import { VirtualList } from '../components/complex/VirtualList/VirtualList'
 
 interface AxeViolation {
   rule: string
@@ -226,22 +241,48 @@ describe('a11y smoke (axe-core)', () => {
     expect(await runAxe(container)).toEqual([])
   })
 
-  // Known gap: the styled `ColorPicker` trigger is a `<div>` (no ARIA role),
-  // but it carries `aria-haspopup` / `aria-expanded` — axe flags this as
-  // `aria-allowed-attr` (critical). Fix: give the trigger `role="button"` or
-  // render it as a `<button>`. Tracked separately from this tab.
-  it.todo(
-    'ColorPicker (closed) — aria-allowed-attr on trigger (needs role=button or <button>)',
-  )
+  // Closed by tab C round 9 — `ColorPicker` trigger is now a `<button>` and
+  // accepts `aria-label` / `aria-labelledby`. The previous gap was that the
+  // trigger was a `<div>` carrying `aria-haspopup` / `aria-expanded` (axe
+  // `aria-allowed-attr`, critical) and had no accessible name (axe
+  // `button-name` once the role was fixed).
+  it('ColorPicker (closed) — name via aria-label — no violations', async () => {
+    const { container } = render(
+      <ColorPicker aria-label="Pick a color" defaultValue="#1677ff" />,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
 
-  // Known gap: the `TimePicker` styled trigger is an `<input>` inside a
-  // `role="combobox"` wrapper but neither has a programmatic accessible name,
-  // so axe `aria-input-field-name` (serious) fires. Wrapping in a `<label>`
-  // does not associate because the trigger nests below the combobox role.
-  // Fix: accept `aria-label` / `aria-labelledby` like the new Select.
-  it.todo(
-    'TimePicker (closed) — aria-input-field-name (needs aria-label / aria-labelledby)',
-  )
+  it('ColorPicker (closed) — name via aria-labelledby — no violations', async () => {
+    const { container } = render(
+      <div>
+        <span id="color-lbl">Brand color</span>
+        <ColorPicker aria-labelledby="color-lbl" defaultValue="#1677ff" />
+      </div>,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  // Closed by tab C round 9 — `TimePicker` accepts `aria-label` /
+  // `aria-labelledby` and forwards them to the `role="combobox"` element.
+  // The previous gap was an unnamed combobox flagged by axe
+  // `aria-input-field-name` (serious).
+  it('TimePicker (closed) — name via aria-label — no violations', async () => {
+    const { container } = render(
+      <TimePicker aria-label="Meeting time" />,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  it('TimePicker (closed) — name via aria-labelledby — no violations', async () => {
+    const { container } = render(
+      <div>
+        <span id="time-lbl">Meeting time</span>
+        <TimePicker aria-labelledby="time-lbl" />
+      </div>,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
 
   it('Cascader (closed) — no violations', async () => {
     const { container } = render(
@@ -258,6 +299,52 @@ describe('a11y smoke (axe-core)', () => {
           { value: 'b', label: 'B' },
         ]}
         onChange={() => {}}
+      />,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  // Open dropdown is a separate axe surface — duplicate-id, missing
+  // accessible names on column items, and `region` rules can fire only
+  // once the panel is mounted. Default expand mode (click) opens the
+  // first column.
+  it('Cascader (open) — no violations', async () => {
+    const { container } = render(
+      <Cascader
+        options={[
+          {
+            value: 'a',
+            label: 'A',
+            children: [
+              { value: 'a1', label: 'A1' },
+              { value: 'a2', label: 'A2' },
+            ],
+          },
+          { value: 'b', label: 'B' },
+        ]}
+        onChange={() => {}}
+      />,
+    )
+    const trigger = container.querySelector('.sg-cascader-selector') as HTMLElement
+    act(() => {
+      trigger.click()
+    })
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  // VirtualList is a generic scroll container; the rendered rows live
+  // inside an absolute-positioned wrapper. Rows must remain landmark-free
+  // and avoid `region` violations even with custom `renderItem` HTML.
+  it('VirtualList — no violations', async () => {
+    const items = Array.from({ length: 20 }, (_, i) => ({ id: i, label: `Item ${i + 1}` }))
+    const { container } = render(
+      <VirtualList
+        data={items}
+        itemHeight={32}
+        style={{ height: 200 }}
+        renderItem={(item, _idx, style) => (
+          <div style={style} key={item.id}>{item.label}</div>
+        )}
       />,
     )
     expect(await runAxe(container)).toEqual([])

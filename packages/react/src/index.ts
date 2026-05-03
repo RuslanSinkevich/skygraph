@@ -78,23 +78,12 @@ export type {
 export { useTree } from './hooks/useTree'
 export type { UseTreeOptions, UseTreeReturn } from './hooks/useTree'
 
-// TreeSelect — main export now points to the complex (core-backed) implementation.
-// The old ui-only TreeSelect is kept under `./components/ui/TreeSelect` for tests
-// and for backwards-compat type aliases (`TreeSelectNode`), but new consumers
-// should use the complex props (`TreeNodeData`).
-//
-// `TreeKey`, `TreeNodeData`, `TreeFieldNames` are already exported above
-// (from `./components/complex/Tree`) — re-exporting them here would produce a
-// duplicate identifier in the rolled-up `.d.ts`.
+// TreeSelect — single export from the complex (core-backed) implementation.
+// The legacy ui-only `TreeSelect` (and its `TreeSelectNode` type alias) was
+// removed in tab C round 9; consumers must use `TreeNodeData` from
+// `@skygraph/core` (re-exported above from `./components/complex/Tree`).
 export { TreeSelect } from './components/complex/TreeSelect'
 export type { TreeSelectProps } from './components/complex/TreeSelect'
-
-/**
- * @deprecated Use {@link TreeNodeData} from `@skygraph/core`-backed TreeSelect.
- * Kept as an alias to avoid breaking existing demos / data sources during the
- * migration window. Will be removed once all callsites move to `TreeNodeData`.
- */
-export type { TreeSelectNode } from './components/ui/TreeSelect'
 export { Cascader } from './components/complex/Cascader'
 export type { CascaderProps, CascaderOption } from './components/complex/Cascader'
 // Calendar lives in components/complex/ (uses core indirectly via state hooks).
@@ -288,9 +277,9 @@ export type {
 // Complex components (additional)
 export { List } from './components/complex/List'
 export type { ListProps, ListItemProps, ListItemMetaProps } from './components/complex/List'
-// Transfer — main export now points to the complex (pagination, sortable,
-// locale, footer, operations) implementation. The simpler ui-only Transfer is
-// kept under `./components/ui/Transfer` for tests and as a fallback.
+// Transfer — single export from the complex (pagination, sortable, locale,
+// footer, operations) implementation. The simpler ui-only Transfer was
+// removed in tab C round 9.
 // `TransferLocale` is already exported above (from `./types`) — avoid a
 // duplicate identifier in the rolled-up `.d.ts`.
 export { Transfer, TransferList } from './components/complex/Transfer'

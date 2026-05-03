@@ -17,15 +17,15 @@ import { TokensOverrideTreeSelect } from './treeselect/TokensOverride.demo'
 import TokensOverrideSource from './treeselect/TokensOverride.demo?raw'
 
 const treeSelectProps: PropDef[] = [
-  { name: 'treeData', description: 'Hierarchical nodes', type: 'TreeSelectNode[]' },
-  { name: 'value', description: 'Selected key(s)', type: 'string | string[]' },
-  { name: 'defaultValue', description: 'Initial selection (uncontrolled)', type: 'string | string[]' },
-  { name: 'onChange', description: 'Selection change callback', type: '(value: string | string[]) => void' },
+  { name: 'treeData', description: 'Hierarchical nodes', type: 'TreeNodeData[]' },
+  { name: 'value', description: 'Selected key(s)', type: 'TreeKey | TreeKey[]' },
+  { name: 'defaultValue', description: 'Initial selection (uncontrolled)', type: 'TreeKey | TreeKey[]' },
+  { name: 'onChange', description: 'Selection change callback', type: '(value, labels, extra) => void' },
   { name: 'multiple', description: 'Enable multi-select (tag-style)', type: 'boolean', default: 'false' },
   { name: 'treeCheckable', description: 'Render checkboxes, cascade-select subtrees', type: 'boolean', default: 'false' },
   { name: 'showSearch', description: 'Show filter input in the dropdown', type: 'boolean', default: 'false' },
   { name: 'allowClear', description: 'Show clear button when there is a value', type: 'boolean', default: 'false' },
-  { name: 'placeholder', description: 'Placeholder shown when empty', type: 'string', default: "'Select...'" },
+  { name: 'placeholder', description: 'Placeholder shown when empty', type: 'string', default: "'Please select'" },
   { name: 'treeDefaultExpandAll', description: 'Expand every parent on mount', type: 'boolean', default: 'false' },
   { name: 'size', description: 'Control size', type: "'small' | 'middle' | 'large'", default: "'middle'" },
   { name: 'disabled', description: 'Disable the whole selector', type: 'boolean', default: 'false' },
@@ -33,9 +33,9 @@ const treeSelectProps: PropDef[] = [
 ]
 
 const nodeProps: PropDef[] = [
-  { name: 'key', description: 'Unique identifier used in `value`', type: 'string' },
+  { name: 'key', description: 'Unique identifier used in `value`', type: 'TreeKey' },
   { name: 'title', description: 'Display label', type: 'ReactNode' },
-  { name: 'children', description: 'Nested child nodes', type: 'TreeSelectNode[]' },
+  { name: 'children', description: 'Nested child nodes', type: 'TreeNodeData[]' },
   { name: 'disabled', description: 'Block selection on this node', type: 'boolean', default: 'false' },
   { name: 'selectable', description: 'Per-node selection enable', type: 'boolean', default: 'true' },
   { name: 'checkable', description: 'Per-node checkbox enable', type: 'boolean', default: 'true' },
@@ -100,7 +100,7 @@ export function TreeSelectDemo() {
       </DemoBox>
 
       <PropsTable title="TreeSelect API" data={treeSelectProps} />
-      <PropsTable title="TreeSelectNode" data={nodeProps} />
+      <PropsTable title="TreeNodeData" data={nodeProps} />
       <CssVarsTable
         title="CSS Variables"
         hint="TreeSelect shares Input's control tokens; the dropdown reuses the same overlay + hover variables as Select."

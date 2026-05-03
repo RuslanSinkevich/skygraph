@@ -129,6 +129,18 @@ export type { UseMyEngineOptions, UseMyEngineReturn } from './hooks/...'
 
 Через `<ConfigProvider locale={...}>` для тех компонентов, что объявлены в `SgLocale` (Empty, Pagination, Modal, Form, Upload, Transfer, Calendar, Popconfirm). Остальные принимают `locale={...}` per-prop.
 
+## ui/ vs complex/
+
+UI-компоненты (`packages/react/src/components/ui/`) — pure React, без зависимостей от `@skygraph/core`. Complex-компоненты (`packages/react/src/components/complex/`) — используют core engines (Table, Tree, Graph) и/или сложную внутреннюю композицию.
+
+При совпадении имён главный экспорт из пакета указывает на complex-версию. Дублирующиеся ui-имплементации (когда complex и ui существовали параллельно для одного компонента) физически удалены:
+
+- `Calendar` — complex (раньше был ui-shim).
+- `TreeSelect` — complex (`TreeNodeData` из `@skygraph/core`). Старый `ui/TreeSelect` с типом `TreeSelectNode` удалён в tab C round 9.
+- `Transfer` — complex (pagination, sortable, locale, footer). Старый `ui/Transfer` удалён в tab C round 9.
+
+Если нужно различать импорт явно — берите `import { Transfer } from '@skygraph/react'` (complex) или прямой путь `from '@skygraph/react/components/complex/Transfer'` (внутри пакета).
+
 ## TODO и аудиты
 
 - `TODO.md` — список реальных хвостов в корне репозитория.

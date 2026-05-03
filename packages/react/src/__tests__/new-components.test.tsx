@@ -3,13 +3,20 @@ import { render, screen, fireEvent } from '@testing-library/react'
 // @ts-expect-error React is needed for JSX
 import React from 'react'
 
-import { Transfer } from '../components/ui/Transfer'
+import { Transfer } from '../components/complex/Transfer'
 import { Calendar } from '../components/complex/Calendar'
-import { TreeSelect } from '../components/ui/TreeSelect'
+import { TreeSelect } from '../components/complex/TreeSelect'
 import { Mentions } from '../components/ui/Mentions'
 
 /* ============================================================
-   Transfer
+   Transfer (complex)
+
+   Tab C round 9: legacy `ui/Transfer` was removed. The complex
+   API differs in two ways relevant to these tests:
+     - `targetKeys` is required (was `defaultTargetKeys`).
+     - styled `Source`/`Target` headers render via
+       `sg-transfer-list-header-title`; default search placeholder
+       is `'Search here'` (locale) instead of `'Search'`.
    ============================================================ */
 
 describe('Transfer', () => {
@@ -20,33 +27,41 @@ describe('Transfer', () => {
   ]
 
   it('renders source and target lists', () => {
-    render(<Transfer dataSource={dataSource} />)
+    render(<Transfer dataSource={dataSource} targetKeys={[]} />)
     expect(screen.getByText('Source')).toBeDefined()
     expect(screen.getByText('Target')).toBeDefined()
   })
 
   it('renders all items in source', () => {
-    render(<Transfer dataSource={dataSource} />)
+    render(<Transfer dataSource={dataSource} targetKeys={[]} />)
     expect(screen.getByText('Item 1')).toBeDefined()
     expect(screen.getByText('Item 2')).toBeDefined()
     expect(screen.getByText('Item 3')).toBeDefined()
   })
 
-  it('moves items with targetKeys', () => {
-    render(<Transfer dataSource={dataSource} targetKeys={['2']} />)
-    const listboxes = screen.getAllByRole('listbox')
-    expect(listboxes.length).toBe(2)
+  it('splits items between lists by targetKeys', () => {
+    const { container } = render(
+      <Transfer dataSource={dataSource} targetKeys={['2']} />,
+    )
+    const lists = container.querySelectorAll('.sg-transfer-list')
+    expect(lists.length).toBe(2)
+    const sourceItems = lists[0].querySelectorAll('.sg-transfer-list-item')
+    const targetItems = lists[1].querySelectorAll('.sg-transfer-list-item')
+    expect(sourceItems.length).toBe(2)
+    expect(targetItems.length).toBe(1)
   })
 
   it('renders custom titles', () => {
-    render(<Transfer dataSource={dataSource} titles={['Left', 'Right']} />)
+    render(
+      <Transfer dataSource={dataSource} targetKeys={[]} titles={['Left', 'Right']} />,
+    )
     expect(screen.getByText('Left')).toBeDefined()
     expect(screen.getByText('Right')).toBeDefined()
   })
 
   it('search filters items', () => {
-    render(<Transfer dataSource={dataSource} showSearch />)
-    const inputs = screen.getAllByPlaceholderText('Search')
+    render(<Transfer dataSource={dataSource} targetKeys={[]} showSearch />)
+    const inputs = screen.getAllByPlaceholderText('Search here')
     fireEvent.change(inputs[0], { target: { value: 'Item 1' } })
     expect(screen.getByText('Item 1')).toBeDefined()
     expect(screen.queryByText('Item 2')).toBeNull()
@@ -95,7 +110,14 @@ describe('Calendar', () => {
 })
 
 /* ============================================================
-   TreeSelect
+   TreeSelect (complex)
+
+   Tab C round 9: legacy `ui/TreeSelect` was removed. The complex
+   API differs in:
+     - default placeholder is `'Please select'` (was `'Select...'`).
+     - `onChange(value, labels, extra)` instead of `onChange(value)`.
+     - tree nodes render as `sg-tree-node`; switcher class is
+       `sg-tree-switcher` (not `sg-treeselect-*`).
    ============================================================ */
 
 describe('TreeSelect', () => {
@@ -113,7 +135,7 @@ describe('TreeSelect', () => {
 
   it('renders with placeholder', () => {
     render(<TreeSelect treeData={treeData} />)
-    expect(screen.getByText('Select...')).toBeDefined()
+    expect(screen.getByText('Please select')).toBeDefined()
   })
 
   it('opens dropdown on click', () => {
@@ -135,7 +157,8 @@ describe('TreeSelect', () => {
     const { container } = render(<TreeSelect treeData={treeData} onChange={fn} />)
     fireEvent.click(container.querySelector('.sg-treeselect-selector')!)
     fireEvent.click(screen.getByText('Leaf'))
-    expect(fn).toHaveBeenCalledWith('leaf')
+    expect(fn).toHaveBeenCalled()
+    expect(fn.mock.calls[0][0]).toBe('leaf')
   })
 
   it('disabled blocks open', () => {

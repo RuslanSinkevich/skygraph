@@ -458,18 +458,23 @@ export function Tree(props: TreeProps) {
 
   const useVirtual = virtual && height !== undefined && flatNodes.length > 50
 
-  const visibleNodes = useMemo(() => {
-    if (!useVirtual || !height) return flatNodes
-    const start = Math.floor(scrollTop / itemHeight)
-    const visibleCount = Math.ceil(height / itemHeight) + 2
-    return flatNodes.slice(Math.max(0, start - 1), start + visibleCount)
+  // Larger overscan keeps rows mounted during fast scroll. `+ overscan*2` so
+  // the visible window has padding both above and below the viewport.
+  const VIRTUAL_OVERSCAN = 5
+
+  const visibleSlice = useMemo(() => {
+    if (!useVirtual || !height) {
+      return { nodes: flatNodes, startIndex: 0 }
+    }
+    const rawStart = Math.floor(scrollTop / itemHeight)
+    const startIndex = Math.max(0, rawStart - VIRTUAL_OVERSCAN)
+    const visibleCount = Math.ceil(height / itemHeight) + VIRTUAL_OVERSCAN * 2
+    const endIndex = Math.min(flatNodes.length, startIndex + visibleCount)
+    return { nodes: flatNodes.slice(startIndex, endIndex), startIndex }
   }, [flatNodes, useVirtual, height, scrollTop, itemHeight])
 
-  const virtualOffset = useMemo(() => {
-    if (!useVirtual || !height) return 0
-    const start = Math.floor(scrollTop / itemHeight)
-    return Math.max(0, start - 1) * itemHeight
-  }, [useVirtual, height, scrollTop, itemHeight])
+  const visibleNodes = visibleSlice.nodes
+  const virtualOffset = visibleSlice.startIndex * itemHeight
 
   const totalHeight = flatNodes.length * itemHeight
 
@@ -721,14 +726,28 @@ export function Tree(props: TreeProps) {
         <div
           ref={containerRef}
           className="sg-tree-virtual-container"
-          style={{ height, overflow: 'auto' }}
+          style={{ height, overflow: 'auto', width: '100%' }}
           onScroll={handleScroll}
           onKeyDown={handleKeyDown}
           role="tree"
           tabIndex={0}
         >
-          <div style={{ height: totalHeight, position: 'relative' }}>
-            <div style={{ position: 'absolute', top: virtualOffset, left: 0, right: 0 }}>
+          <div
+            style={{
+              height: totalHeight,
+              position: 'relative',
+              width: '100%',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: virtualOffset,
+                left: 0,
+                right: 0,
+                width: '100%',
+              }}
+            >
               {renderNodes(visibleNodes)}
             </div>
           </div>
