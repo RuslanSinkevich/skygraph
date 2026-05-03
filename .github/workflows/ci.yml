@@ -29,5 +29,26 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm check:styles
+
+      # Regenerate the audit report and fail if it drifts from what's
+      # committed. Forces contributors to re-run `pnpm audit:styles`
+      # after any CSS / JSX className change so the dead-code report
+      # stays accurate.
+      - name: audit:styles drift check
+        run: |
+          pnpm audit:styles
+          git diff --exit-code docs/_audit/styling-audit.md \
+            || (echo "::error::docs/_audit/styling-audit.md is out of date — run 'pnpm audit:styles' locally and commit the result." && exit 1)
+
       - run: pnpm build
       - run: pnpm test
+
+      # Lightweight coverage step. Non-blocking: a coverage drop should
+      # not red-X the matrix (we don't enforce thresholds yet), but we
+      # still want the artefact for inspection on PRs.
+      - name: coverage (core + react)
+        if: matrix.node-version == 22
+        continue-on-error: true
+        run: |
+          pnpm --filter @skygraph/core test:coverage
+          pnpm --filter @skygraph/react test:coverage

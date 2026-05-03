@@ -60,7 +60,7 @@
 }
 
 .sg-field-required {
-  color: var(--sg-color-error, #ff4d4f);
+  color: var(--sg-color-error);
   margin-left: 2px;
 }
 
@@ -73,8 +73,8 @@
 
 /* Field error */
 .sg-field-error {
-  color: var(--sg-color-error, #ff4d4f);
-  font-size: var(--sg-font-size-sm, 12px);
+  color: var(--sg-color-error);
+  font-size: var(--sg-font-size-sm);
   margin-top: 4px;
   line-height: 1.4;
 }
@@ -83,7 +83,7 @@
 .sg-field-has-error .sg-textarea,
 .sg-field-has-error .sg-select-trigger,
 .sg-field-has-error .sg-input-number-input {
-  border-color: var(--sg-color-error, #ff4d4f);
+  border-color: var(--sg-color-error);
 }
 
 .sg-field-has-error .sg-input:focus,

@@ -95,7 +95,7 @@ function genFilesForFolder(folder: string, sub?: string): FileItem[] {
     }))
   }
 
-  return names.map((n, i) => ({
+  return names.map((n) => ({
     id: `${prefix}/${n.name}`,
     name: n.name,
     type: n.type,

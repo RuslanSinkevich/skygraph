@@ -12,6 +12,7 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "lint": "eslint packages/",
+    "lint:examples": "eslint --config examples-eslint.config.js examples/demo/src examples/showcases/src",
     "format": "prettier --write \"packages/**/*.{ts,tsx,css,json}\"",
     "format:check": "prettier --check \"packages/**/*.{ts,tsx,css,json}\"",
     "clean": "pnpm -r clean",

@@ -712,7 +712,12 @@ describe('TableEngine: aggregates', () => {
   })
 })
 
-describe('TableEngine: scalability', () => {
+// `100k rows` is a benchmark, not a correctness test. It dominates the
+// total `vitest run` time (~7-13s on dev hardware), so we gate it behind
+// the `RUN_BENCH=1` env flag. Default `pnpm -r test` skips the block;
+// `pnpm --filter @skygraph/core test:bench` runs it.
+const runBench = process.env.RUN_BENCH === '1'
+describe.runIf(runBench)('TableEngine: scalability', () => {
   it('handles 100k rows', () => {
     const core = createCore()
     const table = createTable(core, { pageSize: 50 })

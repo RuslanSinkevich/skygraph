@@ -131,14 +131,11 @@ export default tseslint.config(
 // ── Note on examples/ linting ─────────────────────────────────────────────
 //
 // examples/* are kept out of the default lint set on purpose (see ignores
-// above). They contain large amounts of demo code with hardcoded strings,
-// non-canonical patterns and intentionally-impure components. Linting them
-// with the same strictness as packages/ would flood the output and make
-// real signal hard to spot.
+// above). They have a relaxed companion config at `examples-eslint.config.js`
+// and a dedicated npm script:
 //
-// If you want to surface unused vars / console.log in demos, run a
-// targeted eslint command directly, e.g.:
-//   npx eslint examples/demo/src --no-config-lookup --rule '{"no-console":"warn"}'
+//   pnpm lint:examples
 //
-// A proper companion config (`examples-eslint.config.js`) is tracked as a
-// follow-up task in TODO-cycle.md.
+// The companion config relaxes `react-hooks/exhaustive-deps`, allows
+// `console.*` and `any`, and ignores the auto-generated docs index. Use it
+// to catch real regressions in demo code without drowning in noise.

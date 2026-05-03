@@ -11,14 +11,14 @@
 
 ## 2. Классы `.sg-*`
 
-- В CSS определено классов: **894**.
-- В DOM компонентов используется строк-классов: **763**.
-- Совпадают (есть и в CSS, и в DOM): **652**.
+- В CSS определено классов: **944**.
+- В DOM компонентов используется строк-классов: **808**.
+- Совпадают (есть и в CSS, и в DOM): **694**.
 - Только в CSS, runtime-генерируемые (Transition): **41** (исключены из dead-code).
-- Только в CSS, динамически-генерируемые (template literals `sg-X-${...}`): **148** (исключены из dead-code).
+- Только в CSS, динамически-генерируемые (template literals `sg-X-${...}`): **156** (исключены из dead-code).
 - Только в CSS, **возможно мёртвый код**: **53**.
-- Только в DOM (нет стилей): **111**.
-- Найденных в коде template-prefix'ов: **56**.
+- Только в DOM (нет стилей): **114**.
+- Найденных в коде template-prefix'ов: **59**.
 
 <details><summary>Только в CSS — возможно мёртвый код</summary>
 
@@ -141,6 +141,14 @@
 - `.sg-cascader-option-check-active`
 - `.sg-cascader-search-check-active`
 - `.sg-cascader-small`
+- `.sg-chart-axis-grid`
+- `.sg-chart-axis-label`
+- `.sg-chart-axis-tick-label`
+- `.sg-chart-crosshair-line`
+- `.sg-chart-crosshair-tooltip-bg`
+- `.sg-chart-crosshair-tooltip-label`
+- `.sg-chart-crosshair-tooltip-title`
+- `.sg-chart-crosshair-tooltip-value`
 - `.sg-collapse-large`
 - `.sg-collapse-middle`
 - `.sg-collapse-small`
@@ -344,8 +352,10 @@
 - `sg-field-horizontal`
 - `sg-field-label-wrap`
 - `sg-field-warning`
+- `sg-gantt-arrow`
 - `sg-input-number-minus`
 - `sg-input-number-plus`
+- `sg-input-wrapper-readonly`
 - `sg-list-drag-handle`
 - `sg-list-draggable`
 - `sg-list-item-dragging`
@@ -369,19 +379,20 @@
 - `sg-slide-left`
 - `sg-slide-right`
 - `sg-slide-up`
+- `sg-table-filter-advanced-mode`
+- `sg-table-filter-advanced-op`
+- `sg-table-filter-advanced-row`
 - `sg-table-footer-row`
+- `sg-table-group-by-dropdown`
 - `sg-table-group-row`
 - `sg-table-header-row`
 - `sg-table-striped`
 - `sg-table-summary-row`
-- `sg-table-virtual-body`
 - `sg-timepicker-range`
-- `sg-transfer-list-count`
 - `sg-transfer-list-footer`
 - `sg-transfer-list-item-drag-handle`
 - `sg-transfer-list-item-dragging`
 - `sg-transfer-list-item-drop-target`
-- `sg-transfer-operation`
 - `sg-tree-node-block`
 - `sg-tree-node-directory`
 - `sg-tree-node-expanded`
@@ -395,7 +406,7 @@
 
 ## 3. «Магические» цвета
 
-- hex-значений в компонентных CSS: **8** уникальных.
+- hex-значений в компонентных CSS: **7** уникальных.
 
 | Цвет | Файлы |
 |---|---|
@@ -405,6 +416,5 @@
 | `#f00` | `packages/react/styles/components/colorpicker.css` |
 | `#f0f` | `packages/react/styles/components/colorpicker.css` |
 | `#ff0` | `packages/react/styles/components/colorpicker.css` |
-| `#ff4d4f` | `packages/react/styles/components/form.css` |
 | `#fff` | `packages/react/styles/components/avatar.css`<br>`packages/react/styles/components/badge.css`<br>`packages/react/styles/components/colorpicker.css`<br>`packages/react/styles/components/menu.css`<br>`packages/react/styles/components/pagination.css`<br>`packages/react/styles/components/steps.css` |
 
