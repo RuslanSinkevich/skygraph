@@ -189,3 +189,29 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── DistributedComposition.demo — nested component tree ───────────── */
+.demo-distributed-panel {
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: 10px;
+  background: var(--sg-color-bg);
+}
+
+.demo-distributed-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sg-color-text-tertiary);
+  margin: 0 0 4px;
+}
+
+.demo-distributed-panel-sub {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--sg-color-text-secondary);
+  margin: 0 0 12px;
+}
+

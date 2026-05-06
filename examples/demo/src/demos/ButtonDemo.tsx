@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useButtonDocStrings } from './button-doc/useButtonDocStrings'
 
 import { TypesButton } from './button/Types.demo'
 import TypesSource from './button/Types.demo?raw'
@@ -18,118 +21,123 @@ import ScopedBrandSource from './button/ScopedBrand.demo?raw'
 import { UnstyledButton } from './button/Unstyled.demo'
 import UnstyledSource from './button/Unstyled.demo?raw'
 
-const buttonProps: PropDef[] = [
-  { name: 'type', description: 'Visual variant', type: "'default' | 'primary' | 'dashed' | 'text' | 'link'", default: "'default'" },
-  { name: 'size', description: 'Button size (inherits from ConfigProvider)', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'disabled', description: 'Disable the button (also inherits from ConfigProvider)', type: 'boolean', default: 'false' },
-  { name: 'loading', description: 'Show an inline Spin; sets aria-busy and blocks clicks', type: 'boolean', default: 'false' },
-  { name: 'htmlType', description: 'Native HTML button type attribute', type: "'button' | 'submit' | 'reset'", default: "'button'" },
-  { name: 'onClick', description: 'Click handler', type: '(e: MouseEvent<HTMLButtonElement>) => void' },
-  { name: 'children', description: 'Button content — text, icon, or both', type: 'ReactNode' },
-  { name: 'className', description: 'Extra class on the root button element', type: 'string' },
-  { name: 'style', description: 'Inline style on the root button element', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop all sg-button-* classes (keeps aria / disabled / loading semantics)', type: 'boolean', default: 'false' },
-]
-
-const buttonCssVars: CssVarDef[] = [
-  { name: 'sg-btn-height', default: 'var(--sg-height-md)', description: 'Button height (local token — falls back to the global size scale)' },
-  { name: 'sg-btn-padding', default: '0 var(--sg-padding-md)', description: 'Horizontal padding' },
-  { name: 'sg-btn-radius', default: 'var(--sg-border-radius)', description: 'Corner radius — bump to 999px for pill buttons' },
-  { name: 'sg-btn-font-size', default: 'var(--sg-font-size)', description: 'Label font size' },
-  { name: 'sg-btn-bg', default: 'transparent', description: 'Background (primary overrides to `--sg-color-primary`)' },
-  { name: 'sg-btn-color', default: 'var(--sg-color-text)', description: 'Label colour' },
-  { name: 'sg-btn-border', default: 'var(--sg-color-border)', description: 'Border colour' },
-  { name: 'sg-color-primary', default: '#1677ff', description: '`type="primary" | "link"` base colour + focus ring' },
-  { name: 'sg-color-primary-hover', default: '#4096ff', description: 'Hover colour for primary / link / default' },
-  { name: 'sg-color-primary-active', default: '#0958d9', description: 'Active / pressed colour' },
-  { name: 'sg-color-primary-bg', default: '#e6f4ff', description: 'Focus ring glow' },
-  { name: 'sg-color-white', default: '#ffffff', description: 'Label colour on `type="primary"`' },
-  { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: '`type="text"` hover background' },
-  { name: 'sg-color-bg-disabled', default: 'rgba(0, 0, 0, 0.04)', description: 'Disabled background' },
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Disabled label colour' },
-  { name: 'sg-height-sm', default: '24px', description: '`size="small"` height (via `--sg-btn-height`)' },
-  { name: 'sg-height-md', default: '32px', description: '`size="middle"` height' },
-  { name: 'sg-height-lg', default: '40px', description: '`size="large"` height' },
-  { name: 'sg-padding-xs', default: '4px', description: 'Gap between icon and label' },
-  { name: 'sg-padding-sm', default: '8px', description: '`size="small"` horizontal padding' },
-  { name: 'sg-padding-md', default: '12px', description: '`size="middle"` horizontal padding' },
-  { name: 'sg-padding-lg', default: '16px', description: '`size="large"` horizontal padding' },
-  { name: 'sg-transition-duration', default: '180ms', description: 'Hover / focus transition' },
-  { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: 'Shared easing' },
-]
-
 export function ButtonDemo() {
+  const t = useButtonDocStrings()
+
+  const buttonProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'type', description: t.propType, type: "'default' | 'primary' | 'dashed' | 'text' | 'link'", default: "'default'" },
+      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
+      { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
+      { name: 'htmlType', description: t.propHtmlType, type: "'button' | 'submit' | 'reset'", default: "'button'" },
+      { name: 'onClick', description: t.propOnClick, type: '(e: MouseEvent<HTMLButtonElement>) => void' },
+      { name: 'children', description: t.propChildren, type: 'ReactNode' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const buttonCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-btn-height', default: 'var(--sg-height-md)', description: t.cssSgBtnHeight },
+      { name: 'sg-btn-padding', default: '0 var(--sg-padding-md)', description: t.cssSgBtnPadding },
+      { name: 'sg-btn-radius', default: 'var(--sg-border-radius)', description: t.cssSgBtnRadius },
+      { name: 'sg-btn-font-size', default: 'var(--sg-font-size)', description: t.cssSgBtnFontSize },
+      { name: 'sg-btn-bg', default: 'transparent', description: t.cssSgBtnBg },
+      { name: 'sg-btn-color', default: 'var(--sg-color-text)', description: t.cssSgBtnColor },
+      { name: 'sg-btn-border', default: 'var(--sg-color-border)', description: t.cssSgBtnBorder },
+      { name: 'sg-color-primary', default: '#1677ff', description: t.cssSgColorPrimary },
+      { name: 'sg-color-primary-hover', default: '#4096ff', description: t.cssSgColorPrimaryHover },
+      { name: 'sg-color-primary-active', default: '#0958d9', description: t.cssSgColorPrimaryActive },
+      { name: 'sg-color-primary-bg', default: '#e6f4ff', description: t.cssSgColorPrimaryBg },
+      { name: 'sg-color-white', default: '#ffffff', description: t.cssSgColorWhite },
+      { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgHover },
+      { name: 'sg-color-bg-disabled', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgDisabled },
+      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      { name: 'sg-height-sm', default: '24px', description: t.cssSgHeightSm },
+      { name: 'sg-height-md', default: '32px', description: t.cssSgHeightMd },
+      { name: 'sg-height-lg', default: '40px', description: t.cssSgHeightLg },
+      { name: 'sg-padding-xs', default: '4px', description: t.cssSgPaddingXs },
+      { name: 'sg-padding-sm', default: '8px', description: t.cssSgPaddingSm },
+      { name: 'sg-padding-md', default: '12px', description: t.cssSgPaddingMd },
+      { name: 'sg-padding-lg', default: '16px', description: t.cssSgPaddingLg },
+      { name: 'sg-transition-duration', default: '180ms', description: t.cssSgTransitionDuration },
+      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssSgTransitionTiming },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Button"
-      badge="General"
-      crumbs={['General', 'Button']}
-      description="Trigger actions. Five visual types, three sizes, loading / disabled states, headless mode, and a dense set of component-local tokens."
-      whenToUse={[
-        'A button means an operation — clicking it triggers business logic.',
-        'Use primary for the call to action, default for secondary, dashed for "add", text / link for inline toolbars.',
-      ]}
+      title={t.pageTitle}
+      badge={t.pageBadge}
+      crumbs={[t.crumbGeneral, t.crumbButton]}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2]}
     >
-      <DemoBox title="Types" description="Default, primary, dashed, text, link." code={TypesSource}>
+      <DemoBox title={t.demoTypesTitle} description={t.demoTypesDesc} code={TypesSource}>
         <TypesButton />
       </DemoBox>
 
-      <DemoBox title="Sizes" description="Small, middle, large." code={SizesSource}>
+      <DemoBox title={t.demoSizesTitle} description={t.demoSizesDesc} code={SizesSource}>
         <SizesButton />
       </DemoBox>
 
       <DemoBox
-        title="Loading"
-        description="Inline Spin + aria-busy + blocked clicks."
+        title={t.demoLoadingTitle}
+        description={t.demoLoadingDesc}
         code={LoadingSource}
       >
         <LoadingButton />
       </DemoBox>
 
       <DemoBox
-        title="Disabled"
-        description="Dim + aria-disabled across every variant."
+        title={t.demoDisabledTitle}
+        description={t.demoDisabledDesc}
         code={DisabledSource}
       >
         <DisabledButton />
       </DemoBox>
 
       <DemoBox
-        title="With icon"
-        description="Flex gap keeps icon + label aligned at every size."
+        title={t.demoIconTitle}
+        description={t.demoIconDesc}
         code={WithIconSource}
       >
         <WithIconButton />
       </DemoBox>
 
       <DemoBox
-        title="Component tokens"
-        description="Scope --sg-btn-* for a local reshape (pills, chunky, compact)."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={ComponentTokensSource}
       >
         <ComponentTokensButton />
       </DemoBox>
 
       <DemoBox
-        title="Scoped brand"
-        description="Override --sg-color-primary* to rebrand a subtree."
+        title={t.demoBrandTitle}
+        description={t.demoBrandDesc}
         code={ScopedBrandSource}
       >
         <ScopedBrandButton />
       </DemoBox>
 
       <DemoBox
-        title="Unstyled"
-        description="Drop all CSS, keep the button semantics."
+        title={t.demoUnstyledTitle}
+        description={t.demoUnstyledDesc}
         code={UnstyledSource}
       >
         <UnstyledButton />
       </DemoBox>
 
-      <PropsTable title="Button API" data={buttonProps} />
+      <PropsTable title={t.tableButtonApi} data={buttonProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Button defines its own `--sg-btn-*` scope (height / padding / radius / font-size / bg / color / border) — override those on a wrapper for shape changes. The colour palette is pulled from the global `--sg-color-primary*` + `--sg-color-text*` tokens, so rebrand via the primary palette."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={buttonCssVars}
       />
     </ComponentDoc>

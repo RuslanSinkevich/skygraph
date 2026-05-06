@@ -27,6 +27,8 @@ import { FormListDynamic } from './form/FormListDynamic.demo'
 import FormListDynamicSource from './form/FormListDynamic.demo?raw'
 import { NestedFieldsForm } from './form/NestedFields.demo'
 import NestedFieldsSource from './form/NestedFields.demo?raw'
+import { DistributedCompositionForm } from './form/DistributedComposition.demo'
+import DistributedCompositionSource from './form/DistributedComposition.demo?raw'
 import { ProgrammaticControlForm } from './form/ProgrammaticControl.demo'
 import ProgrammaticControlSource from './form/ProgrammaticControl.demo?raw'
 import { LiveWatchForm } from './form/LiveWatch.demo'
@@ -250,6 +252,14 @@ export function FormDemo() {
         code={NestedFieldsSource}
       >
         <NestedFieldsForm />
+      </DemoBox>
+
+      <DemoBox
+        title="Distributed composition"
+        description="Three nested components — root holds `<Form>`, middle adds section chrome, leaf renders `<Field>` nodes. Same form context throughout; no prop-drilling of values."
+        code={DistributedCompositionSource}
+      >
+        <DistributedCompositionForm />
       </DemoBox>
 
       {/* ── Imperative / Observed ──────────────────────────────────── */}
