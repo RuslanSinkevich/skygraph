@@ -12,10 +12,8 @@ skygraph/
 │   └── showcases/     ← Vite-приложение с full-app showcases (CRM, e-commerce, ...)
 ├── docs/              ← Эта документация
 ├── ARCHITECTURE.md    ← Конституция архитектуры (не менять)
-├── AUDIT-POST.md      ← Пост-аудит — финальное состояние после стримов
 ├── TODO.md            ← Открытые хвосты
 ├── CHANGELOG.md       ← История релизов
-├── PLAN.md            ← Архивный первоначальный план
 └── tsconfig.base.json
 ```
 

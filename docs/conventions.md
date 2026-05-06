@@ -144,9 +144,9 @@ UI-компоненты (`packages/react/src/components/ui/`) — pure React, б
 ## TODO и аудиты
 
 - `TODO.md` — список реальных хвостов в корне репозитория.
-- `AUDIT-POST.md` — финальный пост-аудит после серии стримов.
+- `CHANGELOG.md` — журнал релизов в формате Keep a Changelog.
 
-История длинных стримов и решения по развилкам сохранены в `git log`. Эфемерные стрим-артефакты (`STREAM-PLAN.md`, `STREAM-CHAT.md`, `CYCLE-LOG.md`, `AUDIT.md`, `TODO-cycle.md`) удалены после завершения цикла.
+История длинных стримов и решения по развилкам сохранены в `git log`. Эфемерные стрим-артефакты (`STREAM-PLAN.md`, `STREAM-CHAT.md`, `CYCLE-LOG.md`, `AUDIT.md`, `AUDIT-POST.md`, `PLAN.md`, `TODO-cycle.md`) удалены после завершения цикла.
 
 ## Git
 

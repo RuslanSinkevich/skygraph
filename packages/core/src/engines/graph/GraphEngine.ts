@@ -35,7 +35,7 @@ const DEFAULT_ANCHOR_POLICY: AnchorPolicy = { kind: 'perEdge', k: 1 }
  * for cross-engine coordination, but the in-memory maps are the source of
  * truth and the public read API.
  *
- * v0 scope (per STREAM-PLAN.md, Stream 5):
+ * v0 scope (initial Graph engine stream — see CHANGELOG):
  *   - Node / Edge model + parent hierarchy
  *   - addNode / removeNode / updateNode / moveNode / setParent
  *   - addEdge / removeEdge

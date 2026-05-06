@@ -7,6 +7,103 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Round 9.1 — closeout sweep (ESLint type-aware roots, Slider/Rate fixes, doc i18n primer)
+
+After all four round-9 tabs (A/B/C/D) and the i18n batches landed, a small
+follow-up sweep was needed:
+
+#### Infra — ESLint type-aware lint roots
+
+- `eslint.config.js`, `examples-eslint.config.js`,
+  `examples/demo/eslint.config.js` — switched to `defineConfig` from
+  `eslint/config` and pinned `parserOptions.tsconfigRootDir` +
+  `project: './tsconfig.json'` (or `./tsconfig.app.json` for the demo
+  apps) per package / per app. Without this the parser auto-detected
+  the closest `tsconfig.json` and got confused between the repo root
+  and `examples/*/`.
+- Added `**/vitest.config.ts` and `**/tsup.config.ts` to the root
+  `ignores` list — those files live next to `package.json`, not under
+  `src/`, so type-aware parsing was failing on them.
+- Result: `pnpm exec eslint packages/` is 0 errors, `pnpm lint:examples`
+  is 0 errors / 27 warnings (the warnings are the relaxed
+  `no-console` and intentionally-unused vars in demo code).
+
+#### UI fixes
+
+- **`Slider`** — `.sg-slider` now declares `box-sizing: border-box`,
+  `width: 100%` and `min-inline-size: var(--sg-slider-min-inline-size)`
+  (default `calc(8 * var(--sg-font-size))`); the inner
+  `.sg-slider-track` also gets `width: 100%`. Without these the rail
+  collapsed to its intrinsic width inside flex/grid containers. New
+  component-local CSS variable `--sg-slider-min-inline-size`
+  documented in `SliderDemo.tsx`. The `slider/TokensOverride.demo.tsx`
+  no longer caps the wrapper to 360px so the new responsive width is
+  visible by default.
+- **`Rate`** — `.sg-rate` now declares
+  `--sg-rate-symbol-empty-opacity: 0.42` (component-local). Inactive
+  `.sg-rate-star` applies `opacity: var(...)` and
+  `.sg-rate-star-full` resets it to `1`. Rationale: when `character`
+  is a colour emoji (e.g. ❤️), CSS `color` has no visual effect; the
+  opacity signal is the only way to distinguish active from inactive.
+  Override to `1` for monochrome glyphs to get the previous flat look.
+
+#### Demo polish
+
+- **`ButtonDemo`** — first ComponentDoc page migrated off English
+  hardcode. New `examples/demo/src/demos/button-doc/{en,ru}.ts` declare
+  the `ButtonDocStrings` shape, new hook `useButtonDocStrings.ts`
+  returns the active-locale dictionary. `buttonProps` and
+  `buttonCssVars` are derived via `useMemo` from the hook. Sets the
+  pattern for the remaining ComponentDoc pages.
+- **Form** — new `form/DistributedComposition.demo.tsx` showing three
+  nested components composing one form (root holds `<Form>`, middle
+  adds section chrome, leaf only registers `<Field>` nodes — same
+  store throughout, no value prop-drilling). Mounted into `FormDemo`
+  after `NestedFieldsForm`. New `.demo-distributed-panel*` and
+  `.demo-form-grid-2` classes in `form/styles.css` (token-only).
+
+### Tab D round 9 — core subpaths + examples-eslint + slow-tests bench + audit drift CI
+
+Note: Tab D round 9 commit (`a5c72b7`) landed before round 9.1 and
+already documented elsewhere in this file. Summary for completeness:
+
+- `@skygraph/core/{table,tree,virtual,graph}` subpaths advertised in
+  `tsup.config.ts` + `package.json#exports`. New
+  `subpath-exports.test.ts` (9 tests) guards each barrel's factory +
+  helpers can be imported and instantiated.
+- `examples-eslint.config.js` companion with `react-hooks/exhaustive-deps`
+  → warn, `no-console` → warn, `no-unused-vars` → warn-with-`_`-ignore.
+  New `pnpm lint:examples` script.
+- `table.test.ts > scalability > 100k rows` (~7s on dev hw) gated behind
+  `describe.runIf(process.env.RUN_BENCH === '1')`. Default
+  `pnpm --filter @skygraph/core test` now runs in ~2s. New
+  `pnpm --filter @skygraph/core test:bench` via `cross-env`.
+- `pnpm audit:styles` regenerated; magical-color cleanup in `form.css`
+  (three `var(--sg-color-error, #ff4d4f)` fallbacks dropped).
+- `.github/workflows/ci.yml` — `audit:styles drift check` step (fails
+  if `_audit/styling-audit.md` is stale) + opt-in coverage step
+  (`continue-on-error: true`, node 22 matrix slot only).
+
+### i18n batches — per-demo `useDemoStrings` migration
+
+Two commits landed during round 9 to start migrating the ~480 demo
+`Variant.demo.tsx` files off the English hardcode using the
+`useDemoStrings` helper (added in round 8.1):
+
+- `009747f` — first batch, ~37 demos across `autocomplete/`, `badge/`,
+  `breadcrumb/`, `button/`, `radio/`, `tag/` plus the legacy
+  `TableDemo.tsx` / `TreeSelectDemo.tsx`.
+- `e38a678` — second batch covering `dropdown/`, `select/`, `switch/`,
+  `segmented/`, `rate/`.
+- Round 9.1 ButtonDemo migration (above) extends the same pattern to
+  the page-level ComponentDoc strings (props/cssVars descriptions),
+  not just the in-demo English copy.
+
+Roughly 60–70 demos out of ~480 are now bilingual. The remaining bulk
+is mechanical and can be migrated incrementally without coordination
+(each demo is self-contained — copy its `STRINGS` block alongside the
+component code).
+
 ### Tab B round 9 — TableEngine virtual rows + Charts brushing
 
 #### VirtualEngine — динамическая высота строк
