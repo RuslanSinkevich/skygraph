@@ -1,9 +1,15 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import js from '@eslint/js'
+import { defineConfig } from 'eslint/config'
 import tseslint from 'typescript-eslint'
 import reactHooks from 'eslint-plugin-react-hooks'
 import eslintConfigPrettier from 'eslint-config-prettier'
 
-export default tseslint.config(
+const repoRoot = path.dirname(fileURLToPath(import.meta.url))
+
+export default defineConfig(
   {
     // examples/ are intentionally not part of the default lint set — they
     // contain a lot of "wip" demo code with hardcoded English strings,
@@ -12,10 +18,41 @@ export default tseslint.config(
     //
     // Examples have their own minimal block below, attached only when the
     // user explicitly lints them (e.g. via `pnpm lint:examples`).
-    ignores: ['**/dist/', '**/node_modules/', 'examples/'],
+    ignores: [
+      '**/dist/',
+      '**/node_modules/',
+      'examples/',
+      // Config files are plain JS/MJS; type-aware parsing would pick ambiguous
+      // tsconfig roots (repo vs examples/*/).
+      'eslint.config.js',
+      'examples-eslint.config.js',
+      // vitest.config.ts / tsup.config.ts live next to package.json, not
+      // under `src/` — the per-package tsconfig.json includes only `src`,
+      // so type-aware parsing fails. We don't lint bundler/runner configs.
+      '**/vitest.config.ts',
+      '**/tsup.config.ts',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    files: ['packages/core/**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: path.join(repoRoot, 'packages/core'),
+        project: './tsconfig.json',
+      },
+    },
+  },
+  {
+    files: ['packages/react/**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: path.join(repoRoot, 'packages/react'),
+        project: './tsconfig.json',
+      },
+    },
+  },
   {
     plugins: {
       'react-hooks': reactHooks,

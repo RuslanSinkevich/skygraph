@@ -19,12 +19,18 @@
 //   - `@typescript-eslint/no-unused-vars` → 'warn' (with `_`-prefix
 //     ignore): demos often import a symbol just to render its docs box.
 
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import js from '@eslint/js'
+import { defineConfig } from 'eslint/config'
 import tseslint from 'typescript-eslint'
 import reactHooks from 'eslint-plugin-react-hooks'
 import eslintConfigPrettier from 'eslint-config-prettier'
 
-export default tseslint.config(
+const repoRoot = path.dirname(fileURLToPath(import.meta.url))
+
+export default defineConfig(
   {
     ignores: [
       '**/dist/',
@@ -37,6 +43,26 @@ export default tseslint.config(
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  // Cursor / typescript-eslint: when several tsconfig.json parents exist (repo
+  // root vs examples/*/…), the parser must not guess — pin a root per app.
+  {
+    files: ['examples/demo/**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: path.join(repoRoot, 'examples/demo'),
+        project: './tsconfig.app.json',
+      },
+    },
+  },
+  {
+    files: ['examples/showcases/**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: path.join(repoRoot, 'examples/showcases'),
+        project: './tsconfig.app.json',
+      },
+    },
+  },
   {
     files: ['examples/**/*.{ts,tsx,js,jsx}'],
     plugins: {
