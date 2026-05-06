@@ -14,7 +14,7 @@ const scoped: CSSProperties = {
 
 export function TokensOverrideSlider() {
   return (
-    <div style={{ ...scoped, maxWidth: 360 }}>
+    <div style={{ ...scoped }}>
       <Slider defaultValue={60} />
     </div>
   )

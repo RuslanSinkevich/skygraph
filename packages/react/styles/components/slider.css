@@ -1,4 +1,10 @@
 .sg-slider {
+  /* Track children are positioned; intrinsic width collapses inside flex/grid.
+   * Width follows the container; floor scales with the global font-size token. */
+  --sg-slider-min-inline-size: calc(8 * var(--sg-font-size));
+  box-sizing: border-box;
+  width: 100%;
+  min-inline-size: var(--sg-slider-min-inline-size);
   padding: var(--sg-padding-sm) 0;
 }
 
@@ -9,6 +15,8 @@
 
 .sg-slider-track {
   position: relative;
+  box-sizing: border-box;
+  width: 100%;
   height: 4px;
   background: var(--sg-color-border);
   border-radius: 2px;

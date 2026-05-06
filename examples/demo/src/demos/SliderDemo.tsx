@@ -30,6 +30,11 @@ const sliderProps: PropDef[] = [
 ]
 
 const sliderCssVars: CssVarDef[] = [
+  {
+    name: 'sg-slider-min-inline-size',
+    default: 'calc(8 * var(--sg-font-size))',
+    description: 'Minimum width (flex/grid); derived from `--sg-font-size`, override freely',
+  },
   { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Fill color and handle border color' },
   { name: 'sg-color-primary-bg', default: 'rgba(22, 119, 255, 0.1)', description: 'Handle focus ring color' },
   { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: 'Track (rail) color' },
@@ -84,7 +89,7 @@ export function SliderDemo() {
       <PropsTable title="Slider API" data={sliderProps} />
       <CssVarsTable
         title="CSS Variables"
-        hint="Slider uses only global tokens. `--sg-color-primary` paints the fill and handle border; `--sg-color-border` the rail."
+        hint="The root stretches with `width: 100%` and `--sg-slider-min-inline-size`. `--sg-color-primary` paints the fill and handle border; `--sg-color-border` the rail."
         data={sliderCssVars}
       />
     </ComponentDoc>

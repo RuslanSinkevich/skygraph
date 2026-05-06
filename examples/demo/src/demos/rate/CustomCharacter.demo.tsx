@@ -2,8 +2,10 @@ import { Rate } from '@skygraph/react'
 
 /**
  * `character` accepts any ReactNode — emoji, SVG, a lucide icon. It is
- * the exact same node for all stars; filled/half styling is applied
- * by CSS on top.
+ * the exact same node for all stars; filled/half styling uses `color`
+ * (and opacity for inactive slots). Colour emoji ignore `color`, so the
+ * inactive rows rely on `--sg-rate-symbol-empty-opacity`; override with
+ * `1` if you only use monochrome glyphs and want the old flat look.
  */
 export function CustomCharacterRate() {
   return (

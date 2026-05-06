@@ -34,6 +34,12 @@ const rateProps: PropDef[] = [
 const rateCssVars: CssVarDef[] = [
   { name: 'sg-color-star', default: '#fadb14', description: 'Fill colour of a selected / half star' },
   { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: 'Colour of an empty star' },
+  {
+    name: 'sg-rate-symbol-empty-opacity',
+    default: '0.42',
+    description:
+      'Inactive symbols are faded so colour emoji still read as empty vs full (monochrome glyphs can use 1)',
+  },
   { name: 'sg-font-size-xl', default: '20px', description: 'Size of each rating symbol' },
   { name: 'sg-padding-xs', default: '8px', description: 'Gap between stars' },
   { name: 'sg-transition-duration', default: '180ms', description: 'Hover color + scale transition duration' },
@@ -68,7 +74,7 @@ export function RateDemo() {
 
       <DemoBox
         title="Custom character"
-        description="Any ReactNode works — emoji, SVG, icon component."
+        description="Any ReactNode works — emoji, SVG, icon. Colour emoji ignore CSS `color`; inactive slots use opacity instead."
         code={CustomCharacterSource}
       >
         <CustomCharacterRate />
@@ -97,7 +103,7 @@ export function RateDemo() {
       <PropsTable title="Rate API" data={rateProps} />
       <CssVarsTable
         title="CSS Variables"
-        hint="Rate has a single dedicated token — `--sg-color-star` — for the filled colour. The empty star uses the global border colour, and the symbol size is `--sg-font-size-xl`."
+        hint="Filled colour: `--sg-color-star`. Empty: `--sg-color-border` plus `--sg-rate-symbol-empty-opacity` (needed when `character` is a colour emoji). Size: `--sg-font-size-xl`."
         data={rateCssVars}
       />
     </ComponentDoc>
