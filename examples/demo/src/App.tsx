@@ -62,6 +62,7 @@ import { ChartsDemo } from './demos/ChartsDemo'
 import { DashboardDemo } from './demos/DashboardDemo'
 import { GanttDemo } from './demos/GanttDemo'
 import { EventTimelineDemo } from './demos/EventTimelineDemo'
+import { ResourceCalendarDemo } from './demos/ResourceCalendarDemo'
 
 import { useI18n, LanguageSwitch } from './i18n'
 import type { DemoDict } from './i18n'
@@ -120,6 +121,7 @@ function buildMenu(t: DemoDict): MenuSection[] {
         { key: 'components/transfer', label: 'Transfer' },
         { key: 'components/calendar', label: 'Calendar' },
         { key: 'components/form', label: 'Form' },
+        { key: 'components/schema-form-editor', label: 'SchemaFormEditor' },
       ],
     },
     {
@@ -224,6 +226,8 @@ const pages: Record<string, () => React.JSX.Element> = {
   'components/dashboard': DashboardDemo,
   'components/gantt': GanttDemo,
   'components/event-timeline': EventTimelineDemo,
+  'components/resource-calendar': ResourceCalendarDemo,
+  'components/schema-form-editor': SchemaFormEditorDemo,
   'getting-started': GettingStartedPage,
   'styling-showcase': StylingShowcasePage,
   'theming': ThemingPage,
