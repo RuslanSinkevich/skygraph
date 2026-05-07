@@ -21,6 +21,7 @@ import { createTable, matchesOperator, computeAggregate } from '../engines/table
 import { createTree } from '../engines/tree/index'
 import { createVirtual } from '../engines/virtual/index'
 import { createGraph, routeOrthogonal, pointsToPath, aabbFromOBB } from '../engines/graph/index'
+import { createCalendar, detectConflicts, isAvailable } from '../engines/calendar/index'
 
 describe('subpath barrels expose stable factories', () => {
   it('@skygraph/core/form → createForm', () => {
@@ -46,6 +47,12 @@ describe('subpath barrels expose stable factories', () => {
     expect(typeof routeOrthogonal).toBe('function')
     expect(typeof pointsToPath).toBe('function')
     expect(typeof aabbFromOBB).toBe('function')
+  })
+
+  it('@skygraph/core/calendar → createCalendar + helpers', () => {
+    expect(typeof createCalendar).toBe('function')
+    expect(typeof detectConflicts).toBe('function')
+    expect(typeof isAvailable).toBe('function')
   })
 })
 
@@ -73,6 +80,15 @@ describe('subpath barrels: factories actually instantiate', () => {
     g.addNode({ id: 'a', transform: { x: 0, y: 0 } })
     expect(g.getNode('a')).toBeDefined()
     expect(g.getState().nodes.size).toBe(1)
+  })
+
+  it('createCalendar (subpath import) yields a working engine', () => {
+    const core = createCore()
+    const cal = createCalendar(core)
+    cal.addResource({ id: 'r1', name: 'R1' })
+    cal.addAssignment({ id: 'a1', resourceId: 'r1', start: 0, end: 100, title: 'A' })
+    expect(cal.getAssignments().length).toBe(1)
+    expect(cal.getConflicts()).toEqual([])
   })
 
   it('routeOrthogonal (subpath import) returns a valid L-route fallback', () => {

@@ -67,6 +67,7 @@ export {
   TABLE_PREFIX,
   TREE_PREFIX,
   GRAPH_PREFIX,
+  CALENDAR_PREFIX,
 } from './engines/namespaces'
 
 export {
@@ -133,3 +134,23 @@ export type {
   TreeNodeData,
   TreeFieldNames,
 } from './engines/tree/index'
+
+export {
+  createCalendar,
+  detectConflicts,
+  isAvailable,
+} from './engines/calendar/index'
+export type {
+  Assignment as CalendarAssignment,
+  AssignmentStatus as CalendarAssignmentStatus,
+  AvailabilityRule as CalendarAvailabilityRule,
+  CalendarEngine,
+  CalendarEngineOptions,
+  CalendarScale,
+  CalendarState,
+  Conflict as CalendarConflict,
+  ConflictReason as CalendarConflictReason,
+  DayOfWeek as CalendarDayOfWeek,
+  DetectConflictsOptions as CalendarDetectConflictsOptions,
+  Resource as CalendarResource,
+} from './engines/calendar/index'

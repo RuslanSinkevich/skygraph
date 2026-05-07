@@ -12,6 +12,7 @@ export default defineConfig({
     tree: 'src/engines/tree/index.ts',
     virtual: 'src/engines/virtual/index.ts',
     graph: 'src/engines/graph/index.ts',
+    calendar: 'src/engines/calendar/index.ts',
     // Runtime adapter surface for `@skygraph/react` only — not for app code.
     'runtime-internal': 'src/runtime-internal.ts',
   },

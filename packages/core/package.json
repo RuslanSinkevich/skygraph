@@ -38,6 +38,11 @@
       "import": "./dist/graph.js",
       "require": "./dist/graph.cjs"
     },
+    "./calendar": {
+      "types": "./dist/calendar.d.ts",
+      "import": "./dist/calendar.js",
+      "require": "./dist/calendar.cjs"
+    },
     "./runtime-internal": {
       "types": "./dist/runtime-internal.d.ts",
       "import": "./dist/runtime-internal.js",
