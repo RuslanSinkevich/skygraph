@@ -60,6 +60,8 @@ import { ConfigProviderDemo } from './demos/ConfigProviderDemo'
 import { DiagramDemo } from './demos/DiagramDemo'
 import { ChartsDemo } from './demos/ChartsDemo'
 import { DashboardDemo } from './demos/DashboardDemo'
+import { GanttDemo } from './demos/GanttDemo'
+import { EventTimelineDemo } from './demos/EventTimelineDemo'
 
 import { useI18n, LanguageSwitch } from './i18n'
 import type { DemoDict } from './i18n'
@@ -129,6 +131,9 @@ function buildMenu(t: DemoDict): MenuSection[] {
         { key: 'components/diagram', label: 'Diagram' },
         { key: 'components/charts', label: 'Charts' },
         { key: 'components/dashboard', label: 'Dashboard' },
+        { key: 'components/resource-calendar', label: 'ResourceCalendar' },
+        { key: 'components/gantt', label: 'Gantt' },
+        { key: 'components/event-timeline', label: 'EventTimeline' },
         { key: 'components/descriptions', label: 'Descriptions' },
         { key: 'components/collapse', label: 'Collapse' },
         { key: 'components/carousel', label: 'Carousel' },
@@ -217,6 +222,8 @@ const pages: Record<string, () => React.JSX.Element> = {
   'components/diagram': DiagramDemo,
   'components/charts': ChartsDemo,
   'components/dashboard': DashboardDemo,
+  'components/gantt': GanttDemo,
+  'components/event-timeline': EventTimelineDemo,
   'getting-started': GettingStartedPage,
   'styling-showcase': StylingShowcasePage,
   'theming': ThemingPage,

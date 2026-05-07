@@ -13,6 +13,7 @@ import {
 } from '@skygraph/react'
 import type { TableColumn } from '@skygraph/react'
 import { ComponentDoc, DemoBox } from '../components'
+import { useStylingShowcaseDocStrings } from './styling-showcase-doc/useStylingShowcaseDocStrings'
 
 // ──────────────────────────────────────────────────────────────────────────
 // Shared fixtures
@@ -32,13 +33,6 @@ const tableData = [
   { id: '4', data: { name: 'Diana', city: 'Paris', status: 'pending', score: 55 } },
   { id: '5', data: { name: 'Eve', city: 'London', status: 'active', score: 88 } },
 ] satisfies Array<{ id: string; data: RowData }>
-
-const listData = [
-  'Override tokens globally or per instance.',
-  'Use slot classNames/styles for complex components.',
-  'Use unstyled for full control.',
-  'rowClassName, cellClassName, headerClassName — conditional styling without !important.',
-]
 
 // ──────────────────────────────────────────────────────────────────────────
 // Token palettes
@@ -73,21 +67,21 @@ const semanticTokens = [
 // ──────────────────────────────────────────────────────────────────────────
 
 export function StylingShowcasePage() {
+  const t = useStylingShowcaseDocStrings()
   return (
     <ComponentDoc
-      title="Styling Showcase"
-      badge="Contract"
-      crumbs={['Guide', 'Styling Showcase']}
-      description="Concentrated tour of SkyGraph styling. Everything here is a public, stable API — tokens, root classes, slot keys, classNames/styles props, and unstyled mode."
-      whenToUse={[
-        'Learn the three levels of styling: tokens → classNames/styles → unstyled.',
-        'Copy recipes into real apps. They all work without !important and without deep selectors.',
-        'Verify the styling contract visually before shipping.',
-      ]}
+      title={t.pageTitle}
+      badge={t.pageBadge}
+      crumbs={[t.crumbGuide, t.crumbStylingShowcase]}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
       notes={
         <>
-          Full reference: <code>docs/styling-contract.md</code>, practical recipes:{' '}
-          <code>docs/styling-recipes.md</code>. Every slot shown here is enumerated in §4 of the contract.
+          {t.notesPart1}
+          <code>docs/styling-contract.md</code>
+          {t.notesPart2}
+          <code>docs/styling-recipes.md</code>
+          {t.notesPart3}
         </>
       }
     >
@@ -115,6 +109,7 @@ export function StylingShowcasePage() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function PaletteSwatches() {
+  const t = useStylingShowcaseDocStrings()
   const code = `/* Every palette token is stable. */
 var(--sg-blue-1) … var(--sg-blue-10)
 var(--sg-gray-1) … var(--sg-gray-10)
@@ -124,8 +119,8 @@ var(--sg-orange-1) … var(--sg-orange-10)`
 
   return (
     <DemoBox
-      title="Palette tokens"
-      description="Stable numeric scales for each accent colour. Safe to read from any CSS."
+      title={t.recipePaletteTitle}
+      description={t.recipePaletteDesc}
       code={code}
     >
       <div className="demo-swatches">
@@ -153,6 +148,7 @@ var(--sg-orange-1) … var(--sg-orange-10)`
 // ──────────────────────────────────────────────────────────────────────────
 
 function SemanticSwatches() {
+  const t = useStylingShowcaseDocStrings()
   const code = `/* Semantic tokens follow data-sg-theme="dark|light".
    Override them to re-skin without touching components. */
 var(--sg-color-bg)
@@ -162,8 +158,8 @@ var(--sg-color-success) | --sg-color-error | --sg-color-warning`
 
   return (
     <DemoBox
-      title="Semantic tokens"
-      description="These tokens switch automatically with data-sg-theme. Override them on a scope to re-skin everything inside."
+      title={t.recipeSemanticTitle}
+      description={t.recipeSemanticDesc}
       code={code}
     >
       <div className="demo-swatches">
@@ -172,7 +168,7 @@ var(--sg-color-success) | --sg-color-error | --sg-color-warning`
             <div className="demo-swatch-box" style={{ background: `var(${token})` }} />
             <div className="demo-swatch-meta">
               <strong>{token}</strong>
-              semantic
+              {t.swatchSemanticBadge}
             </div>
           </div>
         ))}
@@ -186,6 +182,7 @@ var(--sg-color-success) | --sg-color-error | --sg-color-warning`
 // ──────────────────────────────────────────────────────────────────────────
 
 function TokenOverride() {
+  const t = useStylingShowcaseDocStrings()
   const code = `<div
   style={{
     ['--sg-color-primary' as any]: '#e91e63',
@@ -203,8 +200,8 @@ function TokenOverride() {
 
   return (
     <DemoBox
-      title="Scoped brand via tokens"
-      description="Wrap any subtree and override semantic tokens. Everything inside picks them up — buttons, inputs, switches, progress, anything that reads the tokens."
+      title={t.recipeScopedBrandTitle}
+      description={t.recipeScopedBrandDesc}
       code={code}
     >
       <div
@@ -218,11 +215,11 @@ function TokenOverride() {
           ['--sg-font-size' as never]: '15px',
         }}
       >
-        <h4>Scoped brand card</h4>
+        <h4>{t.recipeScopedBrandHeading}</h4>
         <div className="demo-scope-row">
-          <Button type="primary">Primary</Button>
-          <Button>Default</Button>
-          <Input style={{ width: 240 }} placeholder="Inherits tokens" />
+          <Button type="primary">{t.scopedBrandPrimary}</Button>
+          <Button>{t.scopedBrandDefault}</Button>
+          <Input style={{ width: 240 }} placeholder={t.scopedBrandInputPlaceholder} />
           <Switch defaultChecked />
         </div>
         <Progress percent={60} />
@@ -236,6 +233,7 @@ function TokenOverride() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function DarkScope() {
+  const t = useStylingShowcaseDocStrings()
   const code = `<div data-sg-theme="dark" style={{ padding: 16, borderRadius: 8, background: '#0d1117' }}>
   <Button type="primary">Primary</Button>
   <Input placeholder="Dark input" />
@@ -244,15 +242,15 @@ function DarkScope() {
 
   return (
     <DemoBox
-      title='Dark theme scope (data-sg-theme="dark")'
-      description="Put the attribute on ANY container — all semantic tokens inside switch to dark. Layout and palette are unchanged."
+      title={t.recipeDarkTitle}
+      description={t.recipeDarkDesc}
       code={code}
     >
       <div data-sg-theme="dark" className="demo-dark-scope" style={{ width: '100%' }}>
         <div className="demo-scope-row" style={{ gap: 12 }}>
-          <Button type="primary">Primary</Button>
-          <Button>Default</Button>
-          <Input style={{ width: 220 }} placeholder="Dark input" />
+          <Button type="primary">{t.darkPrimary}</Button>
+          <Button>{t.darkDefault}</Button>
+          <Input style={{ width: 220 }} placeholder={t.darkInputPlaceholder} />
           <Tag color="success">active</Tag>
           <Tag color="error">error</Tag>
           <Badge count={5} />
@@ -267,6 +265,7 @@ function DarkScope() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function ComponentTokensButton() {
+  const t = useStylingShowcaseDocStrings()
   const code = `<div
   style={{
     ['--sg-btn-height' as any]: '40px',
@@ -281,8 +280,8 @@ function ComponentTokensButton() {
 
   return (
     <DemoBox
-      title="Component tokens — Button"
-      description="Override --sg-btn-* on a local scope. Only these buttons become pills, the rest of the app stays intact."
+      title={t.recipeBtnTokensTitle}
+      description={t.recipeBtnTokensDesc}
       code={code}
     >
       <div
@@ -294,9 +293,9 @@ function ComponentTokensButton() {
           ['--sg-btn-padding' as never]: '0 20px',
         }}
       >
-        <Button type="primary">Pill primary</Button>
-        <Button>Pill default</Button>
-        <Button type="dashed">Pill dashed</Button>
+        <Button type="primary">{t.pillPrimary}</Button>
+        <Button>{t.pillDefault}</Button>
+        <Button type="dashed">{t.pillDashed}</Button>
       </div>
     </DemoBox>
   )
@@ -307,6 +306,7 @@ function ComponentTokensButton() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function ComponentTokensInput() {
+  const t = useStylingShowcaseDocStrings()
   const code = `<div
   style={{
     ['--sg-input-height' as any]: '44px',
@@ -323,8 +323,8 @@ function ComponentTokensInput() {
 
   return (
     <DemoBox
-      title="Component tokens — Input / Select"
-      description="Same trick for inputs. Tokens are per-component and documented in the contract."
+      title={t.recipeInputTokensTitle}
+      description={t.recipeInputTokensDesc}
       code={code}
     >
       <div
@@ -335,14 +335,14 @@ function ComponentTokensInput() {
           ['--sg-input-font-size' as never]: '16px',
         }}
       >
-        <Input placeholder="Rounded soft input" style={{ width: 260 }} />
+        <Input placeholder={t.roundedInputPlaceholder} style={{ width: 260 }} />
         <Select
           options={[
             { value: 'a', label: 'Alpha' },
             { value: 'b', label: 'Beta' },
             { value: 'c', label: 'Gamma' },
           ]}
-          placeholder="Matching select"
+          placeholder={t.matchingSelectPlaceholder}
           style={{ width: 220 }}
         />
       </div>
@@ -355,6 +355,7 @@ function ComponentTokensInput() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function ComponentTokensTable() {
+  const t = useStylingShowcaseDocStrings()
   const columns: TableColumn[] = [
     { key: 'name', title: 'Name', width: 160 },
     { key: 'city', title: 'City', width: 140 },
@@ -379,8 +380,8 @@ function ComponentTokensTable() {
 
   return (
     <DemoBox
-      title="Component tokens — Table"
-      description="Change density, header background, hover colour via --sg-table-* without redeclaring classes."
+      title={t.recipeTableTokensTitle}
+      description={t.recipeTableTokensDesc}
       code={code}
       flush
     >
@@ -404,6 +405,7 @@ function ComponentTokensTable() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function SlotsTable() {
+  const t = useStylingShowcaseDocStrings()
   const columns: TableColumn[] = [
     { key: 'name', title: 'Name', width: 160, sortable: true },
     { key: 'city', title: 'City', width: 120 },
@@ -434,8 +436,8 @@ function SlotsTable() {
 
   return (
     <DemoBox
-      title="Slots — Table (classNames + styles)"
-      description="Target stable DOM nodes by slot key. No deep selectors, no !important. Every slot key is documented in §4 of the contract."
+      title={t.recipeSlotsTableTitle}
+      description={t.recipeSlotsTableDesc}
       code={code}
       flush
     >
@@ -474,6 +476,7 @@ function SlotsTable() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function SlotsHeaderColumn() {
+  const t = useStylingShowcaseDocStrings()
   const columns: TableColumn[] = [
     {
       key: 'name',
@@ -508,8 +511,8 @@ function SlotsHeaderColumn() {
 
   return (
     <DemoBox
-      title="Per-column headerClassName"
-      description="Parity with column.cellClassName. Style a single header cell without touching the others."
+      title={t.recipeHeaderColTitle}
+      description={t.recipeHeaderColDesc}
       code={code}
       flush
     >
@@ -530,6 +533,7 @@ function SlotsHeaderColumn() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function ConditionalRowsTable() {
+  const t = useStylingShowcaseDocStrings()
   const columns: TableColumn[] = [
     { key: 'name', title: 'Name', width: 160 },
     { key: 'city', title: 'City', width: 140 },
@@ -552,8 +556,8 @@ function ConditionalRowsTable() {
 
   return (
     <DemoBox
-      title="Conditional rows (rowClassName)"
-      description="High-scorers get a featured background. Pure CSS class, zero !important."
+      title={t.recipeCondRowsTitle}
+      description={t.recipeCondRowsDesc}
       code={code}
       flush
     >
@@ -577,6 +581,7 @@ function ConditionalRowsTable() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function ConditionalCellsTable() {
+  const t = useStylingShowcaseDocStrings()
   const columns: TableColumn[] = [
     { key: 'name', title: 'Name', width: 160 },
     { key: 'city', title: 'City', width: 140 },
@@ -616,8 +621,8 @@ function ConditionalCellsTable() {
 
   return (
     <DemoBox
-      title="Conditional cells (column.cellClassName)"
-      description="Per-column hook runs for every body cell and returns a class name."
+      title={t.recipeCondCellsTitle}
+      description={t.recipeCondCellsDesc}
       code={code}
       flush
     >
@@ -633,6 +638,8 @@ function ConditionalCellsTable() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function SlotsList() {
+  const t = useStylingShowcaseDocStrings()
+  const listData = [t.listItem1, t.listItem2, t.listItem3, t.listItem4]
   const code = `<List
   header="Styling principles"
   footer="All three levels compose."
@@ -644,8 +651,8 @@ function SlotsList() {
 
   return (
     <DemoBox
-      title="Slots — List (classNames + styles)"
-      description="Same API as Table. Every slot key is declared in the contract: root / header / footer / items / item / empty / pagination."
+      title={t.recipeSlotsListTitle}
+      description={t.recipeSlotsListDesc}
       code={code}
       flush
     >
@@ -659,17 +666,17 @@ function SlotsList() {
         />
         <List
           bordered
-          header="Styling principles"
-          footer="All three levels compose."
+          header={t.slotsListHeader}
+          footer={t.slotsListFooter}
           dataSource={listData}
           classNames={{
             header: 'demo-list-header',
             item: 'demo-list-item',
           }}
           styles={{ item: { borderRadius: 10 } }}
-          renderItem={(t: string, i: number) => (
+          renderItem={(text: string, i: number) => (
             <div style={{ padding: '8px 0' }}>
-              {i + 1}. {t}
+              {i + 1}. {text}
             </div>
           )}
         />
@@ -683,11 +690,12 @@ function SlotsList() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function ConditionalList() {
+  const t = useStylingShowcaseDocStrings()
   const items = [
-    { id: 1, title: 'Override tokens', featured: false },
-    { id: 2, title: 'Slot classNames/styles', featured: true },
-    { id: 3, title: 'Unstyled', featured: false },
-    { id: 4, title: 'Dark theme via data-sg-theme', featured: false },
+    { id: 1, title: t.condListItem1, featured: false },
+    { id: 2, title: t.condListItem2, featured: true },
+    { id: 3, title: t.condListItem3, featured: false },
+    { id: 4, title: t.condListItem4, featured: false },
   ]
 
   const code = `<List
@@ -702,8 +710,8 @@ function ConditionalList() {
 
   return (
     <DemoBox
-      title="Conditional List items (rowClassName)"
-      description="Pick items dynamically — pinned, featured, read, unread — with one function."
+      title={t.recipeCondListTitle}
+      description={t.recipeCondListDesc}
       code={code}
       flush
     >
@@ -729,6 +737,7 @@ function ConditionalList() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function UnstyledMix() {
+  const t = useStylingShowcaseDocStrings()
   const [open, setOpen] = useState(false)
 
   const code = `<Button unstyled className="demo-unstyled-btn">Custom button</Button>
@@ -737,32 +746,29 @@ function UnstyledMix() {
 
   return (
     <DemoBox
-      title="Unstyled: full visual control"
-      description="Each component rendered with unstyled keeps semantics (roles, aria-*, focus trap) but ships zero default CSS."
+      title={t.recipeUnstyledTitle}
+      description={t.recipeUnstyledDesc}
       code={code}
     >
       <div className="demo-unstyled-card" style={{ width: '100%' }}>
-        <div className="demo-unstyled-card-title">Unstyled wrapper</div>
+        <div className="demo-unstyled-card-title">{t.unstyledWrapperTitle}</div>
         <div className="demo-unstyled-card-row">
           <Button unstyled className="demo-unstyled-btn" onClick={() => setOpen(true)}>
-            Open custom modal
+            {t.unstyledOpenButton}
           </Button>
-          <Input unstyled className="demo-unstyled-input" placeholder="Bring your own CSS" />
+          <Input unstyled className="demo-unstyled-input" placeholder={t.unstyledInputPlaceholder} />
         </div>
         <Modal
           unstyled
           open={open}
           onClose={() => setOpen(false)}
-          title="Custom modal"
+          title={t.unstyledModalTitle}
           className="demo-unstyled-card"
         >
-          <div style={{ padding: 12, fontSize: 14 }}>
-            This modal shipped with no CSS from the library. Semantics (role, aria-modal, focus trap)
-            are still wired up.
-          </div>
+          <div style={{ padding: 12, fontSize: 14 }}>{t.unstyledModalBody}</div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: 8 }}>
             <Button unstyled className="demo-unstyled-btn" onClick={() => setOpen(false)}>
-              Close
+              {t.unstyledModalClose}
             </Button>
           </div>
         </Modal>
@@ -776,6 +782,7 @@ function UnstyledMix() {
 // ──────────────────────────────────────────────────────────────────────────
 
 function PerFeatureBrand() {
+  const t = useStylingShowcaseDocStrings()
   const [radius, setRadius] = useState(10)
   const [primary, setPrimary] = useState('#7c3aed')
 
@@ -817,8 +824,8 @@ function PerFeatureBrand() {
 
   return (
     <DemoBox
-      title="Per-feature brand (composed)"
-      description="Interactive: move the slider, pick a colour. One scope restyles a whole feature — buttons, inputs, table header, row hover — with no rebuild."
+      title={t.recipePerFeatureTitle}
+      description={t.recipePerFeatureDesc}
       code={code}
       flush
     >
@@ -834,7 +841,7 @@ function PerFeatureBrand() {
           }}
         >
           <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13 }}>
-            Primary
+            {t.perFeatureLabelPrimary}
             <input
               type="color"
               value={primary}
@@ -843,7 +850,7 @@ function PerFeatureBrand() {
             />
           </label>
           <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13 }}>
-            Radius
+            {t.perFeatureLabelRadius}
             <input
               type="range"
               min={0}
@@ -856,9 +863,9 @@ function PerFeatureBrand() {
         </div>
         <div style={scopeStyle}>
           <div style={{ padding: '16px 24px', display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <Button type="primary">Primary</Button>
-            <Button>Default</Button>
-            <Input style={{ width: 220 }} placeholder="Scoped input" />
+            <Button type="primary">{t.perFeaturePrimary}</Button>
+            <Button>{t.perFeatureDefault}</Button>
+            <Input style={{ width: 220 }} placeholder={t.perFeatureInputPlaceholder} />
           </div>
           <Table columns={columns} data={tableData} showPagination={false} />
         </div>
