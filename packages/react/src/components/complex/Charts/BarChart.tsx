@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useState, type CSSProperties, type ForwardedRef } from 'react'
+import { forwardRef, useMemo, useRef, useState, type CSSProperties, type ForwardedRef } from 'react'
 import {
   chartBounds,
   chartDataKey,
@@ -11,6 +11,12 @@ import { ChartAxes } from './ChartAxes'
 import { ChartBrush, resolveBrushConfig, type ChartBrushConfig, type ChartBrushRange } from './ChartBrush'
 import type { BaseChartProps } from './types'
 import { useChartPrint, type ChartRef } from './chartRef'
+import { useChartSize } from './useChartSize'
+import { ChartHoverToolbar, resolveChartActions } from './ChartHoverToolbar'
+import {
+  makeChartContextMenuHandler,
+  makeSeriesContextMenuHandler,
+} from './chartContextMenu'
 
 export interface BarChartProps extends BaseChartProps {
   /** Gap between groups in [0..1] of category step. @default 0.2 */
@@ -27,6 +33,9 @@ export interface BarChartProps extends BaseChartProps {
 /**
  * Minimal SVG bar chart. v0 — grouped bars per category (one bar per series),
  * no axes, no tooltip. Theming via `--sg-color-*` tokens.
+ *
+ * Responsive: viewBox = реальные пиксели контейнера (через
+ * `useChartSize`), без `preserveAspectRatio` — bars не растягиваются.
  */
 function BarChartInner(
   {
@@ -46,15 +55,24 @@ function BarChartInner(
     animate,
     brush,
     printable,
+    actions,
+    fileName,
+    onSeriesContextMenu,
+    onChartContextMenu,
   }: BarChartProps,
   forwardedRef: ForwardedRef<ChartRef>,
 ) {
   const { rootRef } = useChartPrint<Element>(forwardedRef, printable)
+  const svgRef = useRef<SVGSVGElement | null>(null)
   const [pt, pr, pb, pl] = normalizePadding(padding)
-  const viewW = 600
-  const viewH = height
-  const plotW = viewW - pl - pr
-  const plotH = viewH - pt - pb
+
+  const fallbackW = typeof width === 'number' && Number.isFinite(width) ? width : 600
+  const fallbackH = typeof height === 'number' && Number.isFinite(height) ? height : 200
+  const measured = useChartSize<SVGSVGElement>(svgRef, { width: fallbackW, height: fallbackH })
+  const viewW = measured.width
+  const viewH = measured.height
+  const plotW = Math.max(0, viewW - pl - pr)
+  const plotH = Math.max(0, viewH - pt - pb)
 
   const { min, max } = useMemo(
     () => chartBounds(series.map((s) => s.values)),
@@ -96,17 +114,32 @@ function BarChartInner(
     brushConfig?.onRangeChange?.(next)
   }
 
+  const brushReset = brushConfig
+    ? () => {
+        if (!isBrushControlled) setInternalBrushRange(null)
+        brushConfig.onRangeChange?.(null)
+      }
+    : undefined
+  const resolvedActions = resolveChartActions(actions, { fileName, brushReset })
+  const [toolbarVisible, setToolbarVisible] = useState(false)
+  const handleSvgContextMenu = makeChartContextMenuHandler(onChartContextMenu)
+
+  const setSvgRef = (el: SVGSVGElement | null) => {
+    svgRef.current = el
+    if (!legend) (rootRef as React.MutableRefObject<Element | null>).current = el
+  }
+
   const svg = (
     <svg
-      ref={legend ? undefined : (rootRef as React.RefObject<SVGSVGElement>)}
+      ref={setSvgRef}
       className={wrapperClass}
-      style={legend ? undefined : style}
+      style={legend || resolvedActions ? undefined : style}
       width={width}
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
-      preserveAspectRatio="none"
       role="img"
       aria-label="Bar chart"
+      onContextMenu={handleSvgContextMenu}
     >
       <ChartAxes
         plotX={pl}
@@ -129,6 +162,7 @@ function BarChartInner(
         y2={yZero}
         stroke="var(--sg-color-border)"
         strokeWidth={1}
+        vectorEffect="non-scaling-stroke"
       />
       {categories.map((_, gi) => {
         const groupStart = pl + gi * groupWidth + (groupWidth - groupInner) / 2
@@ -161,6 +195,12 @@ function BarChartInner(
               fill={colorForSeries(s, si)}
               rx={2}
               style={animStyle}
+              onContextMenu={makeSeriesContextMenuHandler(onSeriesContextMenu, {
+                seriesId: s.id,
+                seriesIndex: si,
+                valueIndex: gi,
+                value: v,
+              })}
             >
               <title>{`${s.label} · ${categories[gi]}: ${v}`}</title>
             </rect>
@@ -184,15 +224,31 @@ function BarChartInner(
     </svg>
   )
 
-  if (!legend) return svg
+  const needsWrapper = legend || !!resolvedActions
+  if (!needsWrapper) return svg
+
   return (
     <div
-      ref={rootRef as React.RefObject<HTMLDivElement>}
+      ref={legend ? (rootRef as React.RefObject<HTMLDivElement>) : undefined}
       className={unstyled ? undefined : 'sg-chart-wrapper'}
       style={style}
+      onMouseEnter={resolvedActions ? () => setToolbarVisible(true) : undefined}
+      onMouseLeave={resolvedActions ? () => setToolbarVisible(false) : undefined}
+      onFocus={resolvedActions ? () => setToolbarVisible(true) : undefined}
+      onBlur={resolvedActions ? () => setToolbarVisible(false) : undefined}
     >
+      {resolvedActions && (
+        <ChartHoverToolbar
+          visible={toolbarVisible}
+          actions={resolvedActions}
+          fileName={fileName}
+          getSvg={() => svgRef.current}
+          brushReset={brushReset}
+          unstyled={unstyled}
+        />
+      )}
       {svg}
-      <ChartLegend series={series} />
+      {legend && <ChartLegend series={series} />}
     </div>
   )
 }

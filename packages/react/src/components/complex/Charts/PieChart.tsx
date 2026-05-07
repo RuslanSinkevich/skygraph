@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, type CSSProperties, type ForwardedRef } from 'react'
+import { forwardRef, useMemo, useRef, useState, type CSSProperties, type ForwardedRef } from 'react'
 import {
   chartDataKey,
   colorForSeries,
@@ -8,6 +8,18 @@ import {
 import type { ChartSeries } from './types'
 import type { PrintableProp } from '../../../utils/print'
 import { useChartPrint, type ChartRef } from './chartRef'
+import { useChartSize } from './useChartSize'
+import {
+  ChartHoverToolbar,
+  resolveChartActions,
+  type ChartActionsProp,
+} from './ChartHoverToolbar'
+import {
+  makeChartContextMenuHandler,
+  makeSeriesContextMenuHandler,
+  type ChartContextMenuHandler,
+  type ChartSeriesContextMenuHandler,
+} from './chartContextMenu'
 
 export interface PieChartSlice {
   /** Stable id for keying / legend. */
@@ -45,11 +57,25 @@ export interface PieChartProps {
    * @default false
    */
   printable?: PrintableProp
+  /**
+   * Hover-toolbar в правом верхнем углу — print + SVG + PNG.
+   */
+  actions?: ChartActionsProp
+  /** Базовое имя файла для экспортов. @default 'chart' */
+  fileName?: string
+  /**
+   * Контекстное меню по slice-у (правая кнопка). Payload содержит
+   * `seriesId` (равен `slice.id`), `seriesIndex` и `value`.
+   */
+  onSeriesContextMenu?: ChartSeriesContextMenuHandler
+  /** Контекстное меню по фону pie chart (вне slice-ов). */
+  onChartContextMenu?: ChartContextMenuHandler
 }
 
 /**
- * Minimal SVG pie / donut chart. v0 — clockwise from 12 o'clock, no labels,
- * no legend, no animation. Theming via per-slice `color` or default palette.
+ * Minimal SVG pie / donut chart. Clockwise from 12 o'clock. Responsive
+ * viewBox через `useChartSize`: при `width|height='100%'` радиусы пересчи-
+ * тываются от реальных пикселей контейнера, чтобы pie не растягивался.
  */
 function PieChartInner(
   {
@@ -63,17 +89,32 @@ function PieChartInner(
     style,
     animate,
     printable,
+    actions,
+    fileName,
+    onSeriesContextMenu,
+    onChartContextMenu,
   }: PieChartProps,
   forwardedRef: ForwardedRef<ChartRef>,
 ) {
-  const { rootRef } = useChartPrint<SVGSVGElement>(forwardedRef, printable)
+  const { rootRef } = useChartPrint<Element>(forwardedRef, printable)
+  const svgRef = useRef<SVGSVGElement | null>(null)
+
+  // Pie использует width / height и для viewBox, и для центрирования.
+  // ResizeObserver — на случай width|height = '100%' или CSS-зависимого
+  // размера; в остальных случаях возвращает сразу пиксельные значения.
+  const fallbackW = typeof width === 'number' && Number.isFinite(width) ? width : 200
+  const fallbackH = typeof height === 'number' && Number.isFinite(height) ? height : 200
+  const measured = useChartSize<SVGSVGElement>(svgRef, { width: fallbackW, height: fallbackH })
+  const viewW = measured.width
+  const viewH = measured.height
+
   const total = useMemo(
     () => data.reduce((sum, d) => sum + Math.max(0, d.value), 0),
     [data],
   )
 
-  const cx = typeof width === 'number' ? width / 2 : 100
-  const cy = typeof height === 'number' ? height / 2 : 100
+  const cx = viewW / 2
+  const cy = viewH / 2
 
   const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-pie', className].filter(Boolean).join(' ')
 
@@ -87,33 +128,41 @@ function PieChartInner(
       }
     : undefined
 
-  if (total === 0 || data.length === 0) {
-    return (
-      <svg
-        ref={rootRef}
-        className={wrapperClass}
-        style={style}
-        width={width}
-        height={height}
-        viewBox={`0 0 ${cx * 2} ${cy * 2}`}
-        role="img"
-        aria-label="Pie chart (empty)"
-      />
-    )
+  const resolvedActions = resolveChartActions(actions, { fileName })
+  const [toolbarVisible, setToolbarVisible] = useState(false)
+  const handleSvgContextMenu = makeChartContextMenuHandler(onChartContextMenu)
+
+  const setSvgRef = (el: SVGSVGElement | null) => {
+    svgRef.current = el
+    if (!resolvedActions) (rootRef as React.MutableRefObject<Element | null>).current = el
   }
 
+  const isEmpty = total === 0 || data.length === 0
   let cursor = -Math.PI / 2 // start at 12 o'clock
 
-  return (
+  const svg = isEmpty ? (
     <svg
-      ref={rootRef}
+      ref={setSvgRef}
       className={wrapperClass}
-      style={style}
+      style={resolvedActions ? undefined : style}
       width={width}
       height={height}
-      viewBox={`0 0 ${cx * 2} ${cy * 2}`}
+      viewBox={`0 0 ${viewW} ${viewH}`}
+      role="img"
+      aria-label="Pie chart (empty)"
+      onContextMenu={handleSvgContextMenu}
+    />
+  ) : (
+    <svg
+      ref={setSvgRef}
+      className={wrapperClass}
+      style={resolvedActions ? undefined : style}
+      width={width}
+      height={height}
+      viewBox={`0 0 ${viewW} ${viewH}`}
       role="img"
       aria-label="Pie chart"
+      onContextMenu={handleSvgContextMenu}
     >
       {data.map((slice, i) => {
         const value = Math.max(0, slice.value)
@@ -165,12 +214,40 @@ function PieChartInner(
             fill={colorForSeries(fakeSeries, i)}
             data-slice-id={slice.id}
             style={sliceStyle}
+            onContextMenu={makeSeriesContextMenuHandler(onSeriesContextMenu, {
+              seriesId: slice.id,
+              seriesIndex: i,
+              value: slice.value,
+            })}
           >
             <title>{`${slice.label}: ${slice.value}`}</title>
           </path>
         )
       })}
     </svg>
+  )
+
+  if (!resolvedActions) return svg
+
+  return (
+    <div
+      ref={rootRef as React.RefObject<HTMLDivElement>}
+      className={unstyled ? undefined : 'sg-chart-wrapper'}
+      style={style}
+      onMouseEnter={() => setToolbarVisible(true)}
+      onMouseLeave={() => setToolbarVisible(false)}
+      onFocus={() => setToolbarVisible(true)}
+      onBlur={() => setToolbarVisible(false)}
+    >
+      <ChartHoverToolbar
+        visible={toolbarVisible}
+        actions={resolvedActions}
+        fileName={fileName}
+        getSvg={() => svgRef.current}
+        unstyled={unstyled}
+      />
+      {svg}
+    </div>
   )
 }
 

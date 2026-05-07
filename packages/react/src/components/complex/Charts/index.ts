@@ -13,6 +13,37 @@ export { AreaChart } from './AreaChart'
 export type { AreaChartProps } from './AreaChart'
 export { PieChart } from './PieChart'
 export type { PieChartProps, PieChartSlice } from './PieChart'
+export { useChartSize } from './useChartSize'
+export type { ChartSize } from './useChartSize'
+export {
+  ChartHoverToolbar,
+  resolveChartActions,
+  defaultChartActions,
+} from './ChartHoverToolbar'
+export type {
+  ChartAction,
+  ChartActionContext,
+  ChartActionsProp,
+  ChartHoverToolbarProps,
+} from './ChartHoverToolbar'
+export {
+  downloadSvg,
+  downloadSvgAsPng,
+  serializeSvg,
+  measureSvg,
+  triggerDownload,
+} from './chartExport'
+export type { DownloadPngOptions, PngSize } from './chartExport'
+export {
+  makeChartContextMenuHandler,
+  makeSeriesContextMenuHandler,
+} from './chartContextMenu'
+export type {
+  ChartContextMenuPayload,
+  ChartContextMenuHandler,
+  ChartSeriesContextMenuPayload,
+  ChartSeriesContextMenuHandler,
+} from './chartContextMenu'
 export type {
   BaseChartProps,
   ChartAnimation,

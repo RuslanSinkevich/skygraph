@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useState, type CSSProperties, type ForwardedRef } from 'react'
+import { forwardRef, useMemo, useRef, useState, type CSSProperties, type ForwardedRef } from 'react'
 import {
   chartBounds,
   chartDataKey,
@@ -11,6 +11,12 @@ import { ChartAxes } from './ChartAxes'
 import { ChartBrush, resolveBrushConfig, type ChartBrushConfig, type ChartBrushRange } from './ChartBrush'
 import type { BaseChartProps } from './types'
 import { useChartPrint, type ChartRef } from './chartRef'
+import { useChartSize } from './useChartSize'
+import { ChartHoverToolbar, resolveChartActions } from './ChartHoverToolbar'
+import {
+  makeChartContextMenuHandler,
+  makeSeriesContextMenuHandler,
+} from './chartContextMenu'
 
 export interface AreaChartProps extends BaseChartProps {
   /** Stack series on top of each other (cumulative). @default false */
@@ -28,7 +34,7 @@ export interface AreaChartProps extends BaseChartProps {
 
 /**
  * Minimal SVG area chart. v0 — straight segments between points, optional
- * stacking, no axes / tooltip / animation.
+ * stacking. Responsive viewBox через `useChartSize`.
  */
 function AreaChartInner(
   {
@@ -49,15 +55,24 @@ function AreaChartInner(
     animate,
     brush,
     printable,
+    actions,
+    fileName,
+    onSeriesContextMenu,
+    onChartContextMenu,
   }: AreaChartProps,
   forwardedRef: ForwardedRef<ChartRef>,
 ) {
   const { rootRef } = useChartPrint<Element>(forwardedRef, printable)
+  const svgRef = useRef<SVGSVGElement | null>(null)
   const [pt, pr, pb, pl] = normalizePadding(padding)
-  const viewW = 600
-  const viewH = height
-  const plotW = viewW - pl - pr
-  const plotH = viewH - pt - pb
+
+  const fallbackW = typeof width === 'number' && Number.isFinite(width) ? width : 600
+  const fallbackH = typeof height === 'number' && Number.isFinite(height) ? height : 200
+  const measured = useChartSize<SVGSVGElement>(svgRef, { width: fallbackW, height: fallbackH })
+  const viewW = measured.width
+  const viewH = measured.height
+  const plotW = Math.max(0, viewW - pl - pr)
+  const plotH = Math.max(0, viewH - pt - pb)
 
   // Effective values per series — for stacked, each series adds to the
   // running total (treating null as 0 for the stack base).
@@ -121,17 +136,32 @@ function AreaChartInner(
     brushConfig?.onRangeChange?.(next)
   }
 
+  const brushReset = brushConfig
+    ? () => {
+        if (!isBrushControlled) setInternalBrushRange(null)
+        brushConfig.onRangeChange?.(null)
+      }
+    : undefined
+  const resolvedActions = resolveChartActions(actions, { fileName, brushReset })
+  const [toolbarVisible, setToolbarVisible] = useState(false)
+  const handleSvgContextMenu = makeChartContextMenuHandler(onChartContextMenu)
+
+  const setSvgRef = (el: SVGSVGElement | null) => {
+    svgRef.current = el
+    if (!legend) (rootRef as React.MutableRefObject<Element | null>).current = el
+  }
+
   const svg = (
     <svg
-      ref={legend ? undefined : (rootRef as React.RefObject<SVGSVGElement>)}
+      ref={setSvgRef}
       className={wrapperClass}
-      style={legend ? undefined : style}
+      style={legend || resolvedActions ? undefined : style}
       width={width}
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
-      preserveAspectRatio="none"
       role="img"
       aria-label="Area chart"
+      onContextMenu={handleSvgContextMenu}
     >
       <ChartAxes
         plotX={pl}
@@ -166,10 +196,29 @@ function AreaChartInner(
         const linePath = topPoints
           .map((p, i) => (i === 0 ? `M ${p[0]} ${p[1]}` : `L ${p[0]} ${p[1]}`))
           .join(' ')
+        const onSeriesCtx = makeSeriesContextMenuHandler(onSeriesContextMenu, {
+          seriesId: s.id,
+          seriesIndex: sIdx,
+        })
         return (
           <g key={`${s.id}-${animKey}`} className={animClass} style={animStyle}>
-            <path d={areaPath} fill={color} fillOpacity={fillOpacity} stroke="none" />
-            <path d={linePath} fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d={areaPath}
+              fill={color}
+              fillOpacity={fillOpacity}
+              stroke="none"
+              onContextMenu={onSeriesCtx}
+            />
+            <path
+              d={linePath}
+              fill="none"
+              stroke={color}
+              strokeWidth={strokeWidth}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+              onContextMenu={onSeriesCtx}
+            />
           </g>
         )
       })}
@@ -190,15 +239,31 @@ function AreaChartInner(
     </svg>
   )
 
-  if (!legend) return svg
+  const needsWrapper = legend || !!resolvedActions
+  if (!needsWrapper) return svg
+
   return (
     <div
-      ref={rootRef as React.RefObject<HTMLDivElement>}
+      ref={legend ? (rootRef as React.RefObject<HTMLDivElement>) : undefined}
       className={unstyled ? undefined : 'sg-chart-wrapper'}
       style={style}
+      onMouseEnter={resolvedActions ? () => setToolbarVisible(true) : undefined}
+      onMouseLeave={resolvedActions ? () => setToolbarVisible(false) : undefined}
+      onFocus={resolvedActions ? () => setToolbarVisible(true) : undefined}
+      onBlur={resolvedActions ? () => setToolbarVisible(false) : undefined}
     >
+      {resolvedActions && (
+        <ChartHoverToolbar
+          visible={toolbarVisible}
+          actions={resolvedActions}
+          fileName={fileName}
+          getSvg={() => svgRef.current}
+          brushReset={brushReset}
+          unstyled={unstyled}
+        />
+      )}
       {svg}
-      <ChartLegend series={series} />
+      {legend && <ChartLegend series={series} />}
     </div>
   )
 }

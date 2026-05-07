@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
-import { fireEvent, render } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { act, fireEvent, render } from '@testing-library/react'
 import {
   AreaChart,
   BarChart,
@@ -9,8 +9,10 @@ import {
   DEFAULT_CHART_ANIMATION_MS,
   colorForSeries,
   resolveChartAnimation,
+  serializeSvg,
+  measureSvg,
 } from '../index'
-import type { ChartSeries } from '../index'
+import type { ChartSeries, ChartAction } from '../index'
 
 describe('LineChart', () => {
   it('renders one polyline per series (as multiple <line> segments)', () => {
@@ -884,6 +886,542 @@ describe('Chart brushing', () => {
     )
     expect(barC.querySelector('[data-sg-chart-brush-overlay]')).not.toBeNull()
     expect(areaC.querySelector('[data-sg-chart-brush-overlay]')).not.toBeNull()
+  })
+})
+
+// ─── ResizeObserver mock (jsdom не имплементит RO) ─────────────────────
+//
+// Создаём минимальный мок, который умеет триггерить callback на disconnect/
+// connect и вручную через `triggerResize(...)`. Активный observer хранится
+// глобально, чтобы тест мог симулировать resize без доступа к instance.
+type RoEntry = { contentRect: { width: number; height: number } }
+type RoCb = (entries: RoEntry[]) => void
+const __ros: { cb: RoCb; targets: Element[] }[] = []
+class MockResizeObserver {
+  cb: RoCb
+  targets: Element[] = []
+  constructor(cb: RoCb) {
+    this.cb = cb
+    __ros.push(this)
+  }
+  observe(t: Element) {
+    this.targets.push(t)
+  }
+  disconnect() {
+    this.targets = []
+    const i = __ros.indexOf(this)
+    if (i >= 0) __ros.splice(i, 1)
+  }
+  unobserve(t: Element) {
+    this.targets = this.targets.filter((x) => x !== t)
+  }
+}
+function triggerAllResize(width: number, height: number) {
+  for (const ro of __ros) {
+    act(() => {
+      ro.cb(ro.targets.map(() => ({ contentRect: { width, height } })))
+    })
+  }
+}
+
+describe('useChartSize / responsive viewBox', () => {
+  let originalRO: typeof globalThis.ResizeObserver | undefined
+  beforeEach(() => {
+    originalRO = globalThis.ResizeObserver
+    __ros.length = 0
+    ;(globalThis as unknown as { ResizeObserver: typeof MockResizeObserver }).ResizeObserver =
+      MockResizeObserver
+  })
+  afterEach(() => {
+    if (originalRO) globalThis.ResizeObserver = originalRO
+    else delete (globalThis as { ResizeObserver?: unknown }).ResizeObserver
+    __ros.length = 0
+  })
+
+  it('LineChart viewBox falls back to 600 × height before any RO event', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+        height={150}
+      />,
+    )
+    const svg = container.querySelector('svg')!
+    expect(svg.getAttribute('viewBox')).toBe('0 0 600 150')
+  })
+
+  it('LineChart viewBox updates after ResizeObserver triggers a new size', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+        height={200}
+      />,
+    )
+    const svg = container.querySelector('svg')!
+    expect(svg.getAttribute('viewBox')).toBe('0 0 600 200')
+    triggerAllResize(800, 250)
+    expect(svg.getAttribute('viewBox')).toBe('0 0 800 250')
+  })
+
+  it('LineChart removes preserveAspectRatio (responsive without stretch)', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+      />,
+    )
+    const svg = container.querySelector('svg')!
+    expect(svg.getAttribute('preserveAspectRatio')).toBeNull()
+  })
+
+  it('LineChart segments use vector-effect="non-scaling-stroke"', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+      />,
+    )
+    const seg = container.querySelector('line')!
+    expect(seg.getAttribute('vector-effect')).toBe('non-scaling-stroke')
+  })
+
+  it('LineChart marker cx is recomputed when container width changes', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+        padding={0}
+      />,
+    )
+    const firstCx0 = Number(container.querySelectorAll('circle')[0]!.getAttribute('cx'))
+    const lastCx0 = Number(container.querySelectorAll('circle')[2]!.getAttribute('cx'))
+    expect(firstCx0).toBe(0)
+    expect(lastCx0).toBe(600)
+    triggerAllResize(800, 200)
+    const lastCx1 = Number(container.querySelectorAll('circle')[2]!.getAttribute('cx'))
+    expect(lastCx1).toBe(800)
+  })
+
+  it('BarChart and AreaChart also re-measure via ResizeObserver', () => {
+    const { container: barC } = render(
+      <BarChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [10] }]}
+      />,
+    )
+    const { container: areaC } = render(
+      <AreaChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+      />,
+    )
+    triggerAllResize(900, 300)
+    expect(barC.querySelector('svg')!.getAttribute('viewBox')).toBe('0 0 900 300')
+    expect(areaC.querySelector('svg')!.getAttribute('viewBox')).toBe('0 0 900 300')
+  })
+
+  it('PieChart cx/cy follows measured size on resize', () => {
+    const { container } = render(
+      <PieChart
+        data={[
+          { id: 'a', label: 'A', value: 50 },
+          { id: 'b', label: 'B', value: 50 },
+        ]}
+        outerRadius={50}
+      />,
+    )
+    expect(container.querySelector('svg')!.getAttribute('viewBox')).toBe('0 0 200 200')
+    triggerAllResize(400, 400)
+    expect(container.querySelector('svg')!.getAttribute('viewBox')).toBe('0 0 400 400')
+  })
+})
+
+describe('Chart hover toolbar', () => {
+  let originalRO: typeof globalThis.ResizeObserver | undefined
+  beforeEach(() => {
+    originalRO = globalThis.ResizeObserver
+    ;(globalThis as unknown as { ResizeObserver: typeof MockResizeObserver }).ResizeObserver =
+      MockResizeObserver
+  })
+  afterEach(() => {
+    if (originalRO) globalThis.ResizeObserver = originalRO
+    else delete (globalThis as { ResizeObserver?: unknown }).ResizeObserver
+    __ros.length = 0
+  })
+
+  it('actions=undefined → toolbar is not rendered, no wrapper added', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [1] }]}
+      />,
+    )
+    expect(container.querySelector('[data-sg-chart-toolbar]')).toBeNull()
+    expect(container.querySelector('.sg-chart-wrapper')).toBeNull()
+    // SVG is the root.
+    expect(container.firstChild?.nodeName.toLowerCase()).toBe('svg')
+  })
+
+  it('actions=true wraps SVG into .sg-chart-wrapper and renders 3 default buttons', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [1] }]}
+        actions
+      />,
+    )
+    expect(container.querySelector('.sg-chart-wrapper')).not.toBeNull()
+    const toolbar = container.querySelector('[data-sg-chart-toolbar]')
+    expect(toolbar).not.toBeNull()
+    expect(toolbar!.querySelectorAll('button').length).toBe(3)
+    // Default actions: print, downloadSvg, downloadPng.
+    expect(container.querySelector('[data-sg-action="print"]')).not.toBeNull()
+    expect(container.querySelector('[data-sg-action="downloadSvg"]')).not.toBeNull()
+    expect(container.querySelector('[data-sg-action="downloadPng"]')).not.toBeNull()
+  })
+
+  it('toolbar starts hidden and flips to visible on wrapper mouseenter', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [1] }]}
+        actions
+      />,
+    )
+    const toolbar = container.querySelector('[data-sg-chart-toolbar]')!
+    expect(toolbar.getAttribute('data-sg-toolbar')).toBe('hidden')
+    const wrapper = container.querySelector('.sg-chart-wrapper')!
+    fireEvent.mouseEnter(wrapper)
+    expect(toolbar.getAttribute('data-sg-toolbar')).toBe('visible')
+    fireEvent.mouseLeave(wrapper)
+    expect(toolbar.getAttribute('data-sg-toolbar')).toBe('hidden')
+  })
+
+  it('default print action calls window.open', () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+    const { container } = render(
+      <LineChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [1] }]}
+        actions
+      />,
+    )
+    const printBtn = container.querySelector('[data-sg-action="print"]') as HTMLButtonElement
+    fireEvent.click(printBtn)
+    expect(openSpy).toHaveBeenCalled()
+    openSpy.mockRestore()
+  })
+
+  it('default downloadSvg triggers an <a download> click with .svg extension', () => {
+    const clicks: HTMLAnchorElement[] = []
+    const realCreate = document.createElement.bind(document)
+    const createSpy = vi
+      .spyOn(document, 'createElement')
+      .mockImplementation((tag: string) => {
+        const el = realCreate(tag)
+        if (tag === 'a') {
+          ;(el as HTMLAnchorElement).click = () => clicks.push(el as HTMLAnchorElement)
+        }
+        return el
+      })
+    // jsdom does not implement createObjectURL — patch the URL object
+    // directly (spyOn fails on a missing method).
+    const urlObj = URL as unknown as {
+      createObjectURL?: (b: Blob) => string
+      revokeObjectURL?: (u: string) => void
+    }
+    const prevCreate = urlObj.createObjectURL
+    const prevRevoke = urlObj.revokeObjectURL
+    urlObj.createObjectURL = () => 'blob://test'
+    urlObj.revokeObjectURL = () => {}
+
+    const { container } = render(
+      <BarChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [1] }]}
+        actions
+        fileName="my-bar"
+      />,
+    )
+    const svgBtn = container.querySelector('[data-sg-action="downloadSvg"]') as HTMLButtonElement
+    fireEvent.click(svgBtn)
+
+    expect(clicks.length).toBe(1)
+    expect(clicks[0]!.download).toBe('my-bar.svg')
+
+    createSpy.mockRestore()
+    urlObj.createObjectURL = prevCreate
+    urlObj.revokeObjectURL = prevRevoke
+  })
+
+  it('actions=true with brush=true adds the resetBrush button', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+        actions
+        brush
+      />,
+    )
+    expect(container.querySelector('[data-sg-action="resetBrush"]')).not.toBeNull()
+  })
+
+  it('resetBrush button calls onRangeChange(null)', () => {
+    const onRangeChange = vi.fn()
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+        actions
+        brush={{ defaultRange: { from: 0, to: 2 }, onRangeChange }}
+      />,
+    )
+    const btn = container.querySelector('[data-sg-action="resetBrush"]') as HTMLButtonElement
+    fireEvent.click(btn)
+    expect(onRangeChange).toHaveBeenCalledWith(null)
+  })
+
+  it('custom actions array renders only provided buttons', () => {
+    const onClick = vi.fn()
+    const custom: ChartAction[] = [
+      { id: 'foo', label: 'Foo', icon: <span>F</span>, onClick },
+      { id: 'bar', label: 'Bar', icon: <span>B</span>, onClick, hidden: true },
+    ]
+    const { container } = render(
+      <AreaChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [1] }]}
+        actions={custom}
+      />,
+    )
+    expect(container.querySelector('[data-sg-action="foo"]')).not.toBeNull()
+    // hidden:true → not rendered.
+    expect(container.querySelector('[data-sg-action="bar"]')).toBeNull()
+  })
+
+  it('custom action onClick receives ChartActionContext with svg', () => {
+    let captured: { svg?: SVGSVGElement; fileName?: string } = {}
+    const action: ChartAction = {
+      id: 'capture',
+      label: 'Capture',
+      icon: <span>C</span>,
+      onClick: (ctx) => {
+        captured = { svg: ctx.svg, fileName: ctx.fileName }
+      },
+    }
+    const { container } = render(
+      <PieChart
+        data={[{ id: 'a', label: 'A', value: 50 }]}
+        actions={[action]}
+        fileName="pie"
+      />,
+    )
+    const btn = container.querySelector('[data-sg-action="capture"]') as HTMLButtonElement
+    fireEvent.click(btn)
+    expect(captured.svg?.tagName.toLowerCase()).toBe('svg')
+    expect(captured.fileName).toBe('pie')
+  })
+
+  it('toolbar wrapper has pointer-events: none on wrapper, auto on buttons (CSS class)', () => {
+    const { container } = render(
+      <BarChart
+        categories={['a']}
+        series={[{ id: 's', label: 'S', values: [1] }]}
+        actions
+      />,
+    )
+    const toolbar = container.querySelector('.sg-chart-toolbar')
+    const button = container.querySelector('.sg-chart-toolbar-button')
+    expect(toolbar).not.toBeNull()
+    expect(button).not.toBeNull()
+  })
+})
+
+describe('Chart context menu', () => {
+  let originalRO: typeof globalThis.ResizeObserver | undefined
+  beforeEach(() => {
+    originalRO = globalThis.ResizeObserver
+    ;(globalThis as unknown as { ResizeObserver: typeof MockResizeObserver }).ResizeObserver =
+      MockResizeObserver
+  })
+  afterEach(() => {
+    if (originalRO) globalThis.ResizeObserver = originalRO
+    else delete (globalThis as { ResizeObserver?: unknown }).ResizeObserver
+    __ros.length = 0
+  })
+
+  it('without handlers: SVG has no onContextMenu (default browser menu allowed)', () => {
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+      />,
+    )
+    const svg = container.querySelector('svg')!
+    // contextmenu prevented? — no handler, so React does not attach anything;
+    // dispatch a contextmenu event and verify defaultPrevented stays false.
+    const ev = new Event('contextmenu', { bubbles: true, cancelable: true })
+    svg.dispatchEvent(ev)
+    expect(ev.defaultPrevented).toBe(false)
+  })
+
+  it('LineChart: right-click on a marker fires onSeriesContextMenu with payload', () => {
+    const onSeriesContextMenu = vi.fn()
+    const { container } = render(
+      <LineChart
+        categories={['Mon', 'Tue', 'Wed']}
+        series={[{ id: 'visits', label: 'Visits', values: [10, 20, 30] }]}
+        onSeriesContextMenu={onSeriesContextMenu}
+      />,
+    )
+    const marker = container.querySelectorAll('circle')[1]!
+    fireEvent.contextMenu(marker)
+    expect(onSeriesContextMenu).toHaveBeenCalledTimes(1)
+    const payload = onSeriesContextMenu.mock.calls[0]![1]
+    expect(payload.seriesId).toBe('visits')
+    expect(payload.seriesIndex).toBe(0)
+    expect(payload.valueIndex).toBe(1)
+    expect(payload.value).toBe(20)
+  })
+
+  it('LineChart: right-click on a segment fires onSeriesContextMenu', () => {
+    const onSeriesContextMenu = vi.fn()
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b', 'c']}
+        series={[{ id: 's', label: 'S', values: [1, 2, 3] }]}
+        markers={false}
+        onSeriesContextMenu={onSeriesContextMenu}
+      />,
+    )
+    const seg = container.querySelector('line')!
+    fireEvent.contextMenu(seg)
+    expect(onSeriesContextMenu).toHaveBeenCalled()
+  })
+
+  it('BarChart: right-click on a bar fires onSeriesContextMenu with category index', () => {
+    const onSeriesContextMenu = vi.fn()
+    const { container } = render(
+      <BarChart
+        categories={['Q1', 'Q2']}
+        series={[{ id: 'rev', label: 'Revenue', values: [100, 200] }]}
+        onSeriesContextMenu={onSeriesContextMenu}
+      />,
+    )
+    const bar = container.querySelectorAll('rect')[1]!
+    fireEvent.contextMenu(bar)
+    const payload = onSeriesContextMenu.mock.calls[0]![1]
+    expect(payload.seriesId).toBe('rev')
+    expect(payload.seriesIndex).toBe(0)
+    expect(payload.valueIndex).toBe(1)
+    expect(payload.value).toBe(200)
+  })
+
+  it('PieChart: right-click on a slice fires onSeriesContextMenu', () => {
+    const onSeriesContextMenu = vi.fn()
+    const { container } = render(
+      <PieChart
+        data={[
+          { id: 'a', label: 'A', value: 30 },
+          { id: 'b', label: 'B', value: 70 },
+        ]}
+        onSeriesContextMenu={onSeriesContextMenu}
+      />,
+    )
+    const slice = container.querySelectorAll('path')[1]!
+    fireEvent.contextMenu(slice)
+    const payload = onSeriesContextMenu.mock.calls[0]![1]
+    expect(payload.seriesId).toBe('b')
+    expect(payload.value).toBe(70)
+  })
+
+  it('AreaChart: right-click on area path fires onSeriesContextMenu', () => {
+    const onSeriesContextMenu = vi.fn()
+    const { container } = render(
+      <AreaChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+        onSeriesContextMenu={onSeriesContextMenu}
+      />,
+    )
+    const path = container.querySelector('path')!
+    fireEvent.contextMenu(path)
+    expect(onSeriesContextMenu).toHaveBeenCalled()
+  })
+
+  it('onChartContextMenu fires when right-clicking on the SVG plot', () => {
+    const onChartContextMenu = vi.fn()
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+        onChartContextMenu={onChartContextMenu}
+      />,
+    )
+    const svg = container.querySelector('svg')! as SVGSVGElement
+    Object.defineProperty(svg, 'getBoundingClientRect', {
+      value: () => ({ left: 0, top: 0, right: 600, bottom: 200, width: 600, height: 200, x: 0, y: 0, toJSON: () => '' }),
+      configurable: true,
+    })
+    fireEvent.contextMenu(svg, { clientX: 150, clientY: 75 })
+    expect(onChartContextMenu).toHaveBeenCalledTimes(1)
+    const payload = onChartContextMenu.mock.calls[0]![1]
+    expect(payload.x).toBe(150)
+    expect(payload.y).toBe(75)
+  })
+
+  it('series context menu stops propagation: onChartContextMenu is NOT called', () => {
+    const onChartContextMenu = vi.fn()
+    const onSeriesContextMenu = vi.fn()
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+        onChartContextMenu={onChartContextMenu}
+        onSeriesContextMenu={onSeriesContextMenu}
+      />,
+    )
+    const marker = container.querySelector('circle')!
+    fireEvent.contextMenu(marker)
+    expect(onSeriesContextMenu).toHaveBeenCalled()
+    expect(onChartContextMenu).not.toHaveBeenCalled()
+  })
+
+  it('series context menu calls preventDefault on the event', () => {
+    const onSeriesContextMenu = vi.fn()
+    const { container } = render(
+      <LineChart
+        categories={['a', 'b']}
+        series={[{ id: 's', label: 'S', values: [1, 2] }]}
+        onSeriesContextMenu={onSeriesContextMenu}
+      />,
+    )
+    const marker = container.querySelector('circle')!
+    const fired = fireEvent.contextMenu(marker)
+    expect(fired).toBe(false)
+  })
+})
+
+describe('Chart export utilities', () => {
+  it('serializeSvg adds xmlns + width/height attributes', () => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    const xml = serializeSvg(svg, { width: 320, height: 200 })
+    expect(xml).toContain('xmlns="http://www.w3.org/2000/svg"')
+    expect(xml).toContain('width="320"')
+    expect(xml).toContain('height="200"')
+  })
+
+  it('measureSvg falls back to viewBox attribute when getBoundingClientRect is empty', () => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as SVGSVGElement
+    svg.setAttribute('viewBox', '0 0 480 360')
+    Object.defineProperty(svg, 'getBoundingClientRect', {
+      value: () => ({ width: 0, height: 0, left: 0, top: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON: () => '' }),
+      configurable: true,
+    })
+    const size = measureSvg(svg)
+    expect(size.width).toBe(480)
+    expect(size.height).toBe(360)
   })
 })
 

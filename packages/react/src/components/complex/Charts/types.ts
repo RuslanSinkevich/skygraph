@@ -1,5 +1,15 @@
 import type { CSSProperties } from 'react'
 import type { PrintableProp } from '../../../utils/print'
+import type { ChartActionsProp } from './ChartHoverToolbar'
+import type {
+  ChartContextMenuHandler,
+  ChartSeriesContextMenuHandler,
+} from './chartContextMenu'
+import type { ChartActionsProp } from './ChartHoverToolbar'
+import type {
+  ChartContextMenuHandler,
+  ChartSeriesContextMenuHandler,
+} from './chartContextMenu'
 
 /** A single category along the X axis. */
 export type ChartCategory = string | number
@@ -146,6 +156,28 @@ export interface BaseChartProps {
    * @default false
    */
   printable?: PrintableProp
+  /**
+   * Hover-toolbar в правом верхнем углу чарта с действиями (print, export
+   * SVG/PNG, сброс brush). `true` — дефолтный набор; `ChartAction[]` —
+   * кастомный. По умолчанию выключено.
+   */
+  actions?: ChartActionsProp
+  /**
+   * Базовое имя файла без расширения для экспортов SVG / PNG / print.
+   * @default 'chart'
+   */
+  fileName?: string
+  /**
+   * Контекстное меню (правая кнопка) по элементу серии: line-segment,
+   * marker, bar, area-path. Если задано — браузерное меню блокируется
+   * `event.preventDefault()`.
+   */
+  onSeriesContextMenu?: ChartSeriesContextMenuHandler
+  /**
+   * Контекстное меню (правая кнопка) по плот-области чарта (вне серий).
+   * Если задано — браузерное меню блокируется `event.preventDefault()`.
+   */
+  onChartContextMenu?: ChartContextMenuHandler
 }
 
 /** Default colour palette — uses tokens so charts re-theme without code changes. */

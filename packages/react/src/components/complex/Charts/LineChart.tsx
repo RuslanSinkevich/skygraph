@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useState, type CSSProperties, type ForwardedRef } from 'react'
+import { forwardRef, useMemo, useRef, useState, type CSSProperties, type ForwardedRef } from 'react'
 import {
   chartBounds,
   chartDataKey,
@@ -12,6 +12,12 @@ import { ChartCrosshair, type ChartCrosshairPoint } from './ChartCrosshair'
 import { ChartBrush, resolveBrushConfig, type ChartBrushConfig, type ChartBrushRange } from './ChartBrush'
 import type { BaseChartProps } from './types'
 import { useChartPrint, type ChartRef } from './chartRef'
+import { useChartSize } from './useChartSize'
+import { ChartHoverToolbar, resolveChartActions } from './ChartHoverToolbar'
+import {
+  makeChartContextMenuHandler,
+  makeSeriesContextMenuHandler,
+} from './chartContextMenu'
 
 /**
  * Crosshair behaviour toggle for {@link LineChart}. When `true`, a vertical
@@ -45,6 +51,12 @@ export interface LineChartProps extends BaseChartProps {
  * SVG line chart with optional axes, legend, hover crosshair, and CSS
  * mount / data-change animation. Theming via `--sg-color-*` tokens; line
  * "draw-in" effect uses pure-CSS `stroke-dashoffset` per segment (no rAF).
+ *
+ * Responsive: SVG `viewBox` пересчитывается в реальные пиксели контейнера
+ * через `useChartSize` (ResizeObserver). `preserveAspectRatio` не задан —
+ * один CSS-пиксель = один user-space-unit, без растягивания. На stroke-
+ * элементах включён `vector-effect="non-scaling-stroke"` — толщина линии
+ * стабильна при печати / zoom.
  */
 function LineChartInner(
   {
@@ -65,15 +77,24 @@ function LineChartInner(
     crosshair = false,
     brush,
     printable,
+    actions,
+    fileName,
+    onSeriesContextMenu,
+    onChartContextMenu,
   }: LineChartProps,
   forwardedRef: ForwardedRef<ChartRef>,
 ) {
   const { rootRef } = useChartPrint<Element>(forwardedRef, printable)
+  const svgRef = useRef<SVGSVGElement | null>(null)
   const [pt, pr, pb, pl] = normalizePadding(padding)
-  const viewW = 600
-  const viewH = height
-  const plotW = viewW - pl - pr
-  const plotH = viewH - pt - pb
+
+  const fallbackW = typeof width === 'number' && Number.isFinite(width) ? width : 600
+  const fallbackH = typeof height === 'number' && Number.isFinite(height) ? height : 200
+  const measured = useChartSize<SVGSVGElement>(svgRef, { width: fallbackW, height: fallbackH })
+  const viewW = measured.width
+  const viewH = measured.height
+  const plotW = Math.max(0, viewW - pl - pr)
+  const plotH = Math.max(0, viewH - pt - pb)
 
   const { min, max } = useMemo(
     () => chartBounds(series.map((s) => s.values)),
@@ -158,19 +179,35 @@ function LineChartInner(
     return out
   }, [hoverIdx, series, pt, plotH, min, range])
 
+  // ─── toolbar / context menu wiring ──────────────────────────────────
+  const brushReset = brushConfig
+    ? () => {
+        if (!isBrushControlled) setInternalBrushRange(null)
+        brushConfig.onRangeChange?.(null)
+      }
+    : undefined
+  const resolvedActions = resolveChartActions(actions, { fileName, brushReset })
+  const [toolbarVisible, setToolbarVisible] = useState(false)
+  const handleSvgContextMenu = makeChartContextMenuHandler(onChartContextMenu)
+
+  const setSvgRef = (el: SVGSVGElement | null) => {
+    svgRef.current = el
+    if (!legend) (rootRef as React.MutableRefObject<Element | null>).current = el
+  }
+
   const svg = (
     <svg
-      ref={legend ? undefined : (rootRef as React.RefObject<SVGSVGElement>)}
+      ref={setSvgRef}
       className={wrapperClass}
-      style={legend ? undefined : style}
+      style={legend || resolvedActions ? undefined : style}
       width={width}
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
-      preserveAspectRatio="none"
       role="img"
       aria-label="Line chart"
       onMouseMove={crosshairEnabled ? handleMouseMove : undefined}
       onMouseLeave={crosshairEnabled ? handleMouseLeave : undefined}
+      onContextMenu={handleSvgContextMenu}
     >
       <ChartAxes
         plotX={pl}
@@ -186,16 +223,16 @@ function LineChartInner(
       />
       {series.map((s, sIdx) => {
         const stroke = colorForSeries(s, sIdx)
-        const segments: { from: [number, number]; to: [number, number] }[] = []
-        let prev: [number, number] | null = null
+        const segments: { from: [number, number]; to: [number, number]; valueIndex: number }[] = []
+        let prev: { pt: [number, number]; idx: number } | null = null
         s.values.forEach((v, i) => {
           if (v === null || v === undefined) {
             prev = null
             return
           }
           const point: [number, number] = [xFor(i), yFor(v)]
-          if (prev) segments.push({ from: prev, to: point })
-          prev = point
+          if (prev) segments.push({ from: prev.pt, to: point, valueIndex: i })
+          prev = { pt: point, idx: i }
         })
         const segCount = segments.length
         return (
@@ -223,7 +260,14 @@ function LineChartInner(
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   fill="none"
+                  vectorEffect="non-scaling-stroke"
                   style={segStyle}
+                  onContextMenu={makeSeriesContextMenuHandler(onSeriesContextMenu, {
+                    seriesId: s.id,
+                    seriesIndex: sIdx,
+                    valueIndex: seg.valueIndex,
+                    value: s.values[seg.valueIndex] ?? undefined,
+                  })}
                 />
               )
             })}
@@ -236,6 +280,12 @@ function LineChartInner(
                   cy={yFor(v)}
                   r={Math.max(2, strokeWidth)}
                   fill={stroke}
+                  onContextMenu={makeSeriesContextMenuHandler(onSeriesContextMenu, {
+                    seriesId: s.id,
+                    seriesIndex: sIdx,
+                    valueIndex: i,
+                    value: v,
+                  })}
                 >
                   <title>{`${s.label} · ${categories[i]}: ${v}`}</title>
                 </circle>
@@ -274,15 +324,31 @@ function LineChartInner(
     </svg>
   )
 
-  if (!legend) return svg
+  const needsWrapper = legend || !!resolvedActions
+  if (!needsWrapper) return svg
+
   return (
     <div
-      ref={rootRef as React.RefObject<HTMLDivElement>}
+      ref={legend ? (rootRef as React.RefObject<HTMLDivElement>) : undefined}
       className={unstyled ? undefined : 'sg-chart-wrapper'}
       style={style}
+      onMouseEnter={resolvedActions ? () => setToolbarVisible(true) : undefined}
+      onMouseLeave={resolvedActions ? () => setToolbarVisible(false) : undefined}
+      onFocus={resolvedActions ? () => setToolbarVisible(true) : undefined}
+      onBlur={resolvedActions ? () => setToolbarVisible(false) : undefined}
     >
+      {resolvedActions && (
+        <ChartHoverToolbar
+          visible={toolbarVisible}
+          actions={resolvedActions}
+          fileName={fileName}
+          getSvg={() => svgRef.current}
+          brushReset={brushReset}
+          unstyled={unstyled}
+        />
+      )}
       {svg}
-      <ChartLegend series={series} />
+      {legend && <ChartLegend series={series} />}
     </div>
   )
 }
