@@ -11,14 +11,14 @@
 
 ## 2. Классы `.sg-*`
 
-- В CSS определено классов: **947**.
-- В DOM компонентов используется строк-классов: **808**.
-- Совпадают (есть и в CSS, и в DOM): **694**.
+- В CSS определено классов: **1018**.
+- В DOM компонентов используется строк-классов: **875**.
+- Совпадают (есть и в CSS, и в DOM): **758**.
 - Только в CSS, runtime-генерируемые (Transition): **41** (исключены из dead-code).
-- Только в CSS, динамически-генерируемые (template literals `sg-X-${...}`): **159** (исключены из dead-code).
-- Только в CSS, **возможно мёртвый код**: **53**.
-- Только в DOM (нет стилей): **114**.
-- Найденных в коде template-prefix'ов: **60**.
+- Только в CSS, динамически-генерируемые (template literals `sg-X-${...}`): **162** (исключены из dead-code).
+- Только в CSS, **возможно мёртвый код**: **57**.
+- Только в DOM (нет стилей): **117**.
+- Найденных в коде template-prefix'ов: **61**.
 
 <details><summary>Только в CSS — возможно мёртвый код</summary>
 
@@ -27,6 +27,9 @@
 - `.sg-badge-status-processing`
 - `.sg-badge-status-success`
 - `.sg-badge-status-warning`
+- `.sg-diagram-controls`
+- `.sg-diagram-minimap`
+- `.sg-diagram-toolbar`
 - `.sg-dp-footer-link`
 - `.sg-dp-time-cell`
 - `.sg-dp-time-cell-active`
@@ -39,6 +42,7 @@
 - `.sg-dropdown-topLeft`
 - `.sg-dropdown-topRight`
 - `.sg-modal-body-loading`
+- `.sg-no-print`
 - `.sg-notification-bottom-left`
 - `.sg-notification-bottom-right`
 - `.sg-notification-bottomLeft`
@@ -227,6 +231,8 @@
 - `.sg-progress-error`
 - `.sg-progress-success`
 - `.sg-radio-group-vertical`
+- `.sg-rcal-assignment-confirmed`
+- `.sg-rcal-assignment-tentative`
 - `.sg-search-input-large`
 - `.sg-search-input-small`
 - `.sg-segmented-large`
@@ -264,6 +270,7 @@
 - `.sg-table-sort-arrows`
 - `.sg-table-sort-asc`
 - `.sg-table-sort-desc`
+- `.sg-table-tr`
 - `.sg-tag-default`
 - `.sg-tag-error`
 - `.sg-tag-input-large`
@@ -312,7 +319,6 @@
 - `sg-chart-legend-item`
 - `sg-chart-legend-swatch`
 - `sg-chart-pie`
-- `sg-chart-wrapper`
 - `sg-collapse-panel-active`
 - `sg-context-menu`
 - `sg-context-menu-divider`
@@ -374,9 +380,12 @@
 - `sg-pagination-prev`
 - `sg-progress`
 - `sg-radio-checked`
+- `sg-rcal-assignment-resizable`
+- `sg-rcal-grid`
 - `sg-search-input-loading`
 - `sg-segmented-item-label`
 - `sg-select-option-focused`
+- `sg-sfe-inspector-row-control`
 - `sg-skeleton-with-avatar`
 - `sg-slide-down`
 - `sg-slide-left`
@@ -391,6 +400,7 @@
 - `sg-table-header-row`
 - `sg-table-striped`
 - `sg-table-summary-row`
+- `sg-target`
 - `sg-timepicker-range`
 - `sg-transfer-list-footer`
 - `sg-transfer-list-item-drag-handle`
@@ -409,15 +419,16 @@
 
 ## 3. «Магические» цвета
 
-- hex-значений в компонентных CSS: **7** уникальных.
+- hex-значений в компонентных CSS: **8** уникальных.
 
 | Цвет | Файлы |
 |---|---|
+| `#000` | `packages/react/styles/print.css` |
 | `#00f` | `packages/react/styles/components/colorpicker.css` |
 | `#0f0` | `packages/react/styles/components/colorpicker.css` |
 | `#0ff` | `packages/react/styles/components/colorpicker.css` |
 | `#f00` | `packages/react/styles/components/colorpicker.css` |
 | `#f0f` | `packages/react/styles/components/colorpicker.css` |
 | `#ff0` | `packages/react/styles/components/colorpicker.css` |
-| `#fff` | `packages/react/styles/components/avatar.css`<br>`packages/react/styles/components/badge.css`<br>`packages/react/styles/components/colorpicker.css`<br>`packages/react/styles/components/menu.css`<br>`packages/react/styles/components/pagination.css`<br>`packages/react/styles/components/steps.css` |
+| `#fff` | `packages/react/styles/components/avatar.css`<br>`packages/react/styles/components/badge.css`<br>`packages/react/styles/components/colorpicker.css`<br>`packages/react/styles/components/menu.css`<br>`packages/react/styles/components/pagination.css`<br>`packages/react/styles/components/steps.css`<br>`packages/react/styles/print.css` |
 

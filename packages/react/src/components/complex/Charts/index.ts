@@ -1,5 +1,6 @@
 export { ChartLegend } from './ChartLegend'
 export type { ChartLegendProps } from './ChartLegend'
+export type { ChartRef } from './chartRef'
 export { ChartCrosshair } from './ChartCrosshair'
 export type { ChartCrosshairProps, ChartCrosshairPoint } from './ChartCrosshair'
 export { ChartBrush, resolveBrushConfig } from './ChartBrush'

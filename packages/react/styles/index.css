@@ -61,5 +61,8 @@
 @import './components/charts.css';
 @import './components/dashboard.css';
 @import './components/gantt.css';
+@import './components/resource-calendar.css';
 @import './components/event-timeline.css';
+@import './components/schema-form-editor.css';
 @import './transitions.css';
+@import './print.css';

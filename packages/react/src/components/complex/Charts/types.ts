@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import type { PrintableProp } from '../../../utils/print'
 
 /** A single category along the X axis. */
 export type ChartCategory = string | number
@@ -139,6 +140,12 @@ export interface BaseChartProps {
    * Set `gridLines: true` to draw horizontal grid lines across the plot.
    */
   yAxis?: YAxisOptions
+  /**
+   * Включает поддержку `ref.print()`. Сама печать триггерится императивно
+   * через ref. `{ fileName }` задаёт имя popup-окна.
+   * @default false
+   */
+  printable?: PrintableProp
 }
 
 /** Default colour palette — uses tokens so charts re-theme without code changes. */

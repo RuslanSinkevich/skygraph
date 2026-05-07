@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from 'react'
+import { forwardRef, useMemo, useState, type CSSProperties, type ForwardedRef } from 'react'
 import {
   chartBounds,
   chartDataKey,
@@ -10,6 +10,7 @@ import { ChartLegend } from './ChartLegend'
 import { ChartAxes } from './ChartAxes'
 import { ChartBrush, resolveBrushConfig, type ChartBrushConfig, type ChartBrushRange } from './ChartBrush'
 import type { BaseChartProps } from './types'
+import { useChartPrint, type ChartRef } from './chartRef'
 
 export interface AreaChartProps extends BaseChartProps {
   /** Stack series on top of each other (cumulative). @default false */
@@ -29,24 +30,29 @@ export interface AreaChartProps extends BaseChartProps {
  * Minimal SVG area chart. v0 — straight segments between points, optional
  * stacking, no axes / tooltip / animation.
  */
-export function AreaChart({
-  categories,
-  series,
-  width = '100%',
-  height = 200,
-  className,
-  style,
-  unstyled = false,
-  padding,
-  stacked = false,
-  strokeWidth = 2,
-  fillOpacity = 0.25,
-  legend = false,
-  xAxis,
-  yAxis,
-  animate,
-  brush,
-}: AreaChartProps) {
+function AreaChartInner(
+  {
+    categories,
+    series,
+    width = '100%',
+    height = 200,
+    className,
+    style,
+    unstyled = false,
+    padding,
+    stacked = false,
+    strokeWidth = 2,
+    fillOpacity = 0.25,
+    legend = false,
+    xAxis,
+    yAxis,
+    animate,
+    brush,
+    printable,
+  }: AreaChartProps,
+  forwardedRef: ForwardedRef<ChartRef>,
+) {
+  const { rootRef } = useChartPrint<Element>(forwardedRef, printable)
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
   const viewH = height
@@ -117,6 +123,7 @@ export function AreaChart({
 
   const svg = (
     <svg
+      ref={legend ? undefined : (rootRef as React.RefObject<SVGSVGElement>)}
       className={wrapperClass}
       style={legend ? undefined : style}
       width={width}
@@ -185,9 +192,16 @@ export function AreaChart({
 
   if (!legend) return svg
   return (
-    <div className={unstyled ? undefined : 'sg-chart-wrapper'} style={style}>
+    <div
+      ref={rootRef as React.RefObject<HTMLDivElement>}
+      className={unstyled ? undefined : 'sg-chart-wrapper'}
+      style={style}
+    >
       {svg}
       <ChartLegend series={series} />
     </div>
   )
 }
+
+export const AreaChart = forwardRef<ChartRef, AreaChartProps>(AreaChartInner)
+AreaChart.displayName = 'AreaChart'

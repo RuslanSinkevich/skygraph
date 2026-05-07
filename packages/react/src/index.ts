@@ -40,6 +40,7 @@ export { Table } from './components/complex/Table'
 export type {
   TableProps,
   TableColumn,
+  TableRef,
   RowSelectionConfig,
   ExpandableConfig,
   TreeConfig,
@@ -186,6 +187,36 @@ export type { FormProviderProps } from './components/complex/FormProvider'
 export { SchemaForm } from './components/complex/SchemaForm'
 export type { SchemaFormProps } from './components/complex/SchemaForm'
 
+// SchemaFormEditor — visual builder over SchemaForm.
+export {
+  SchemaFormEditor,
+  SchemaFormEditorPalette,
+  SchemaFormEditorCanvas,
+  SchemaFormEditorInspector,
+  SchemaFormEditorSchemaView,
+  useSchemaEditor,
+  jsonSchemaToEditorSchema,
+  editorSchemaToJsonSchema,
+  createEmptyEditorSchema,
+  createFieldFromPaletteType,
+  DEFAULT_PALETTE_ITEMS,
+  PALETTE_DATA_TYPE,
+} from './components/complex/SchemaFormEditor'
+export type {
+  SchemaFormEditorProps,
+  SchemaFormEditorPaletteProps,
+  SchemaFormEditorCanvasProps,
+  SchemaFormEditorInspectorProps,
+  SchemaFormEditorSchemaViewProps,
+  SchemaEditorStore,
+  UseSchemaEditorOptions,
+  PaletteItem,
+  EditorSchema,
+  EditorField,
+  EditorAction,
+  EditorState,
+} from './components/complex/SchemaFormEditor'
+
 // Virtual Scroll
 export { useVirtualScroll } from './hooks/useVirtualScroll'
 export type { UseVirtualScrollOptions, UseVirtualScrollReturn } from './hooks/useVirtualScroll'
@@ -214,7 +245,11 @@ export type { HistoryPanelProps } from './components/devtools/HistoryPanel'
 export { useGraph } from './hooks/useGraph'
 export type { UseGraphOptions, UseGraphReturn } from './hooks/useGraph'
 export { Diagram } from './components/complex/Diagram'
-export type { DiagramProps, DiagramNodeRenderer } from './components/complex/Diagram'
+export type { DiagramProps, DiagramNodeRenderer, DiagramRef } from './components/complex/Diagram'
+
+// Print (Tab L1 — @media print + popup-window helper, no runtime deps)
+export { printElement, buildPrintHtml, buildPageRule } from './utils/print'
+export type { PrintOptions, PrintableProp } from './utils/print'
 
 // Dashboard (static-layout grid for widgets)
 export { Dashboard } from './components/complex/Dashboard'
@@ -229,6 +264,17 @@ export type {
   GanttScale,
   GanttRange,
 } from './components/complex/Gantt'
+
+// ResourceCalendar (shifts / bookings per resource lane with conflict detection)
+export { ResourceCalendar } from './components/complex/ResourceCalendar'
+export type {
+  ResourceCalendarProps,
+  Resource,
+  Assignment,
+  AvailabilityRule,
+  CalendarScale,
+  Conflict,
+} from './components/complex/ResourceCalendar'
 
 // EventTimeline (chronological event stream — distinct from the simpler
 // step-based `Timeline` in `components/ui/Timeline.tsx`).
@@ -274,6 +320,7 @@ export type {
   ChartCategory,
   ChartSeries,
   ChartValue,
+  ChartRef,
 } from './components/complex/Charts'
 
 // DataGrid

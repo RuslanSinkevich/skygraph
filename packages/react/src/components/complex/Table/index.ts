@@ -1,4 +1,5 @@
 export { Table } from './Table'
+export type { TableRef } from './Table'
 export { TableGroupRow } from './TableGroupRow'
 export type { TableGroupRowProps } from './TableGroupRow'
 export { ContextMenu } from './ContextMenu'

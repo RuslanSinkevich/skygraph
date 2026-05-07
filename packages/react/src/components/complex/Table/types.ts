@@ -13,6 +13,7 @@ import type {
 import type { BaseComponentProps, InteractiveProps, SizableProps, SlotClassNames, SlotStyles } from '../../../types'
 import type { TableLocale } from '../../../types/locale'
 import type { ContextMenuItem } from './ContextMenu'
+import type { PrintableProp } from '../../../utils/print'
 
 /**
  * Re-exports the canonical TableLocale from `types/locale.ts`. The two
@@ -474,8 +475,15 @@ export interface TableProps extends Omit<UseTableOptions, 'columns'>, BaseCompon
   /** Replaces default empty state content. */
   emptyContent?: React.ReactNode
 
-  /** Print action in the toolbar. */
-  printable?: boolean
+  /**
+   * Print action in the toolbar и/или включение `ref.print()`.
+   *
+   * `true` — стандартная кнопка в тулбаре.
+   * `{ fileName?: string }` — кнопка + имя popup-окна (используется браузером
+   *   как заголовок и дефолтное имя файла в "Save as PDF").
+   * `false` / `undefined` — кнопки нет; `ref.print()` всё равно работает.
+   */
+  printable?: PrintableProp
 
   /** JSON export action in the toolbar. */
   exportJSON?: boolean

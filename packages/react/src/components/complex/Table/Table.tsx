@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react'
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef } from 'react'
 import { Input } from '../../ui/Input'
 import { Pagination } from '../../ui/Pagination'
 import { Spin } from '../../ui/Spin'
@@ -9,9 +9,23 @@ import { VirtualTableBody } from './VirtualTableBody'
 import { ContextMenu } from './ContextMenu'
 import { useTableState } from './useTableState'
 import { useConfig } from '../../ConfigProvider'
-import { toCSVString, downloadCSV, toTSVString, toJSONString, downloadJSON, copyToClipboard, printTable } from './export'
+import { toCSVString, downloadCSV, toTSVString, toJSONString, downloadJSON, copyToClipboard } from './export'
+import { printElement } from '../../../utils/print'
+import type { PrintOptions } from '../../../utils/print'
 import { slotClass, slotStyle } from '../../../types'
 import type { TableProps, TableClassNames, TableStyles } from './types'
+
+/**
+ * Императивный API таблицы для ref.print() и других ref-методов.
+ */
+export interface TableRef {
+  /**
+   * Открыть popup и вызвать window.print() для текущей DOM-области таблицы.
+   * Опции мерджатся с теми, что заданы через prop `printable`
+   * (на уровне prop приоритетен `fileName`).
+   */
+  print: (opts?: PrintOptions) => void
+}
 
 const DRAG_HANDLE_WIDTH = '32px'
 const ROW_NUMBER_WIDTH = '48px'
@@ -20,7 +34,7 @@ const ROW_NUMBER_WIDTH = '48px'
  * Data table with sorting, filtering, selection, grouping, virtualization, and export tools.
  * Layout and behavior are driven by `TableProps` and internal `useTableState`.
  */
-export function Table(props: TableProps) {
+function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef>) {
   const {
     rowSelection,
     expandable,
@@ -132,9 +146,25 @@ export function Table(props: TableProps) {
     await copyToClipboard(toTSVString([headers, ...rows]))
   }, [getExportData])
 
+  const printOptionsFromProp: PrintOptions = useMemo(() => {
+    if (typeof printable === 'object' && printable !== null) {
+      return { fileName: printable.fileName }
+    }
+    return {}
+  }, [printable])
+
+  const doPrint = useCallback(
+    (opts?: PrintOptions) => {
+      printElement(tableRef.current, { ...printOptionsFromProp, ...(opts ?? {}) })
+    },
+    [printOptionsFromProp],
+  )
+
   const handlePrint = useCallback(() => {
-    printTable(tableRef.current)
-  }, [])
+    doPrint()
+  }, [doPrint])
+
+  useImperativeHandle(forwardedRef, () => ({ print: doPrint }), [doPrint])
 
   // Grid template
   const gridTemplate = useMemo(() => {
@@ -651,6 +681,13 @@ export function Table(props: TableProps) {
     </div>
   )
 }
+
+/**
+ * Data table — основная экспортная функция (forwardRef-обёртка над `TableInner`).
+ * Ref-методы — см. `TableRef`.
+ */
+export const Table = forwardRef<TableRef, TableProps>(TableInner)
+Table.displayName = 'Table'
 
 function ColumnVisibilityDropdown({
   leafColumns,

@@ -1,6 +1,7 @@
-import { useMemo, useRef, useState } from 'react'
+import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import type {
   CSSProperties,
+  ForwardedRef,
   MouseEvent as ReactMouseEvent,
   ReactNode,
   WheelEvent as ReactWheelEvent,
@@ -18,6 +19,18 @@ import type {
   NodeId,
   Point,
 } from '@skygraph/core'
+import { printElement } from '../../../utils/print'
+import type { PrintOptions, PrintableProp } from '../../../utils/print'
+
+/** Imperative API of {@link Diagram}. */
+export interface DiagramRef {
+  /**
+   * Открыть popup и вызвать window.print() на DOM-области диаграммы. Объекты
+   * `customStyles` / `pageSize` / `orientation` мерджатся с тем, что пришло
+   * через prop `printable`.
+   */
+  print: (opts?: PrintOptions) => void
+}
 
 /**
  * Per-node renderer. Receives the engine node and returns the React content
@@ -101,6 +114,15 @@ export interface DiagramProps {
     inflate?: number
     maxNodes?: number
   }
+  /**
+   * Включает поддержку печати через `ref.print()`. Если `true` — без
+   * визуальных изменений; объект `{ fileName }` задаёт имя popup-окна
+   * (используется как title и дефолт для "Save as PDF").
+   *
+   * Сама печать триггерится императивно через `ref.print()`.
+   * @default false
+   */
+  printable?: PrintableProp
 }
 
 interface ViewState {
@@ -221,22 +243,26 @@ function unionBounds(boxes: AABB[]): AABB {
  *
  * Selection / multi-select / lasso are intentional follow-ups.
  */
-export function Diagram({
-  graph,
-  state,
-  width = '100%',
-  height = 400,
-  renderNode = defaultRenderNode,
-  className,
-  style,
-  unstyled = false,
-  draggable = false,
-  zoomable = false,
-  panable = false,
-  snapToGrid,
-  routeAroundNodes = false,
-  routingOptions,
-}: DiagramProps) {
+function DiagramInner(
+  {
+    graph,
+    state,
+    width = '100%',
+    height = 400,
+    renderNode = defaultRenderNode,
+    className,
+    style,
+    unstyled = false,
+    draggable = false,
+    zoomable = false,
+    panable = false,
+    snapToGrid,
+    routeAroundNodes = false,
+    routingOptions,
+    printable,
+  }: DiagramProps,
+  forwardedRef: ForwardedRef<DiagramRef>,
+) {
   const nodes = useMemo(() => Array.from(state.nodes.values()), [state])
   const edges = useMemo(() => Array.from(state.edges.values()), [state])
 
@@ -252,6 +278,24 @@ export function Diagram({
   }, [nodes, allBounds])
 
   const [view, setView] = useState<ViewState>({ zoom: 1, panX: 0, panY: 0 })
+
+  const wrapperRef = useRef<HTMLDivElement>(null)
+
+  const printOptionsFromProp = useMemo(() => {
+    if (typeof printable === 'object' && printable !== null) {
+      return { fileName: printable.fileName }
+    }
+    return {}
+  }, [printable])
+
+  const doPrint = useCallback(
+    (opts?: PrintOptions) => {
+      printElement(wrapperRef.current, { ...printOptionsFromProp, ...(opts ?? {}) })
+    },
+    [printOptionsFromProp],
+  )
+
+  useImperativeHandle(forwardedRef, () => ({ print: doPrint }), [doPrint])
 
   const wrapperClass = unstyled
     ? className
@@ -381,6 +425,7 @@ export function Diagram({
 
   return (
     <div
+      ref={wrapperRef}
       className={wrapperClass}
       style={wrapperStyle}
       onWheel={zoomable || panable ? handleWheel : undefined}
@@ -474,3 +519,10 @@ function renderEdge(
     />
   )
 }
+
+/**
+ * Reactive diagram view (forwardRef-обёртка над `DiagramInner`). Обновлять
+ * данные нужно через `graph` / `state`; для печати — `ref.print()`.
+ */
+export const Diagram = forwardRef<DiagramRef, DiagramProps>(DiagramInner)
+Diagram.displayName = 'Diagram'

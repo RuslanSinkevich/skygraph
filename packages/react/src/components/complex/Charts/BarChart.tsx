@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from 'react'
+import { forwardRef, useMemo, useState, type CSSProperties, type ForwardedRef } from 'react'
 import {
   chartBounds,
   chartDataKey,
@@ -10,6 +10,7 @@ import { ChartLegend } from './ChartLegend'
 import { ChartAxes } from './ChartAxes'
 import { ChartBrush, resolveBrushConfig, type ChartBrushConfig, type ChartBrushRange } from './ChartBrush'
 import type { BaseChartProps } from './types'
+import { useChartPrint, type ChartRef } from './chartRef'
 
 export interface BarChartProps extends BaseChartProps {
   /** Gap between groups in [0..1] of category step. @default 0.2 */
@@ -27,23 +28,28 @@ export interface BarChartProps extends BaseChartProps {
  * Minimal SVG bar chart. v0 — grouped bars per category (one bar per series),
  * no axes, no tooltip. Theming via `--sg-color-*` tokens.
  */
-export function BarChart({
-  categories,
-  series,
-  width = '100%',
-  height = 200,
-  className,
-  style,
-  unstyled = false,
-  padding,
-  groupGap = 0.2,
-  barGap = 0.1,
-  legend = false,
-  xAxis,
-  yAxis,
-  animate,
-  brush,
-}: BarChartProps) {
+function BarChartInner(
+  {
+    categories,
+    series,
+    width = '100%',
+    height = 200,
+    className,
+    style,
+    unstyled = false,
+    padding,
+    groupGap = 0.2,
+    barGap = 0.1,
+    legend = false,
+    xAxis,
+    yAxis,
+    animate,
+    brush,
+    printable,
+  }: BarChartProps,
+  forwardedRef: ForwardedRef<ChartRef>,
+) {
+  const { rootRef } = useChartPrint<Element>(forwardedRef, printable)
   const [pt, pr, pb, pl] = normalizePadding(padding)
   const viewW = 600
   const viewH = height
@@ -92,6 +98,7 @@ export function BarChart({
 
   const svg = (
     <svg
+      ref={legend ? undefined : (rootRef as React.RefObject<SVGSVGElement>)}
       className={wrapperClass}
       style={legend ? undefined : style}
       width={width}
@@ -179,9 +186,16 @@ export function BarChart({
 
   if (!legend) return svg
   return (
-    <div className={unstyled ? undefined : 'sg-chart-wrapper'} style={style}>
+    <div
+      ref={rootRef as React.RefObject<HTMLDivElement>}
+      className={unstyled ? undefined : 'sg-chart-wrapper'}
+      style={style}
+    >
       {svg}
       <ChartLegend series={series} />
     </div>
   )
 }
+
+export const BarChart = forwardRef<ChartRef, BarChartProps>(BarChartInner)
+BarChart.displayName = 'BarChart'

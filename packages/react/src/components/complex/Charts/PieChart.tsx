@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { forwardRef, useMemo, type CSSProperties, type ForwardedRef } from 'react'
 import {
   chartDataKey,
   colorForSeries,
@@ -6,7 +6,8 @@ import {
   type ChartAnimation,
 } from './types'
 import type { ChartSeries } from './types'
-import type { CSSProperties } from 'react'
+import type { PrintableProp } from '../../../utils/print'
+import { useChartPrint, type ChartRef } from './chartRef'
 
 export interface PieChartSlice {
   /** Stable id for keying / legend. */
@@ -39,23 +40,33 @@ export interface PieChartProps {
    * @default true
    */
   animate?: ChartAnimation
+  /**
+   * Включает поддержку `ref.print()`. `{ fileName }` — имя popup-окна.
+   * @default false
+   */
+  printable?: PrintableProp
 }
 
 /**
  * Minimal SVG pie / donut chart. v0 — clockwise from 12 o'clock, no labels,
  * no legend, no animation. Theming via per-slice `color` or default palette.
  */
-export function PieChart({
-  data,
-  width = 200,
-  height = 200,
-  innerRadius = 0,
-  outerRadius = 80,
-  unstyled = false,
-  className,
-  style,
-  animate,
-}: PieChartProps) {
+function PieChartInner(
+  {
+    data,
+    width = 200,
+    height = 200,
+    innerRadius = 0,
+    outerRadius = 80,
+    unstyled = false,
+    className,
+    style,
+    animate,
+    printable,
+  }: PieChartProps,
+  forwardedRef: ForwardedRef<ChartRef>,
+) {
+  const { rootRef } = useChartPrint<SVGSVGElement>(forwardedRef, printable)
   const total = useMemo(
     () => data.reduce((sum, d) => sum + Math.max(0, d.value), 0),
     [data],
@@ -79,6 +90,7 @@ export function PieChart({
   if (total === 0 || data.length === 0) {
     return (
       <svg
+        ref={rootRef}
         className={wrapperClass}
         style={style}
         width={width}
@@ -94,6 +106,7 @@ export function PieChart({
 
   return (
     <svg
+      ref={rootRef}
       className={wrapperClass}
       style={style}
       width={width}
@@ -160,3 +173,6 @@ export function PieChart({
     </svg>
   )
 }
+
+export const PieChart = forwardRef<ChartRef, PieChartProps>(PieChartInner)
+PieChart.displayName = 'PieChart'

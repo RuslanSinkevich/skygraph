@@ -38,6 +38,11 @@ const MEDIA_ALLOWLIST = [
   // can only be cancelled with `!important` from a media query, since
   // inline styles otherwise win specificity.
   { file: 'packages/react/styles/components/charts.css', media: /prefers-reduced-motion/ },
+  // Общие правила @media print (Tab L1: print export для Table / Diagram /
+  // Charts). Inline-стили компонентов (transform для pan/zoom, overflow
+  // для скрол-контейнеров, тени) можно перебить только !important из
+  // media-блока — это стандартный print-CSS паттерн.
+  { file: 'packages/react/styles/print.css', media: /@media\s+print/ },
 ];
 
 const RE = /!important/g;
