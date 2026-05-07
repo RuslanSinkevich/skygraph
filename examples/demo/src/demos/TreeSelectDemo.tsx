@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useTreeSelectDocStrings } from './treeselect-doc/useTreeSelectDocStrings'
 
 import { BasicTreeSelect } from './treeselect/Basic.demo'
 import BasicSource from './treeselect/Basic.demo?raw'
@@ -16,94 +19,97 @@ import SizesSource from './treeselect/Sizes.demo?raw'
 import { TokensOverrideTreeSelect } from './treeselect/TokensOverride.demo'
 import TokensOverrideSource from './treeselect/TokensOverride.demo?raw'
 
-const treeSelectProps: PropDef[] = [
-  { name: 'treeData', description: 'Hierarchical nodes', type: 'TreeNodeData[]' },
-  { name: 'value', description: 'Selected key(s)', type: 'TreeKey | TreeKey[]' },
-  { name: 'defaultValue', description: 'Initial selection (uncontrolled)', type: 'TreeKey | TreeKey[]' },
-  { name: 'onChange', description: 'Selection change callback', type: '(value, labels, extra) => void' },
-  { name: 'multiple', description: 'Enable multi-select (tag-style)', type: 'boolean', default: 'false' },
-  { name: 'treeCheckable', description: 'Render checkboxes, cascade-select subtrees', type: 'boolean', default: 'false' },
-  { name: 'showSearch', description: 'Show filter input in the dropdown', type: 'boolean', default: 'false' },
-  { name: 'allowClear', description: 'Show clear button when there is a value', type: 'boolean', default: 'false' },
-  { name: 'placeholder', description: 'Placeholder shown when empty', type: 'string', default: "'Please select'" },
-  { name: 'treeDefaultExpandAll', description: 'Expand every parent on mount', type: 'boolean', default: 'false' },
-  { name: 'size', description: 'Control size', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'disabled', description: 'Disable the whole selector', type: 'boolean', default: 'false' },
-  { name: 'unstyled', description: 'Render without SkyGraph styles', type: 'boolean', default: 'false' },
-]
-
-const nodeProps: PropDef[] = [
-  { name: 'key', description: 'Unique identifier used in `value`', type: 'TreeKey' },
-  { name: 'title', description: 'Display label', type: 'ReactNode' },
-  { name: 'children', description: 'Nested child nodes', type: 'TreeNodeData[]' },
-  { name: 'disabled', description: 'Block selection on this node', type: 'boolean', default: 'false' },
-  { name: 'selectable', description: 'Per-node selection enable', type: 'boolean', default: 'true' },
-  { name: 'checkable', description: 'Per-node checkbox enable', type: 'boolean', default: 'true' },
-]
-
-const treeSelectCssVars: CssVarDef[] = [
-  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Focused/active node + selected pill fill' },
-  { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: 'Focus ring around the control' },
-  { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: 'Hover border of the control' },
-  { name: 'sg-input-bg', default: 'var(--sg-color-bg-container)', description: 'Control background (shared with Input)' },
-  { name: 'sg-input-border', default: 'var(--sg-color-border)', description: 'Control border color' },
-  { name: 'sg-input-radius', default: 'var(--sg-border-radius)', description: 'Control radius' },
-  { name: 'sg-input-height', default: 'var(--sg-height-md)', description: 'Control min-height' },
-  { name: 'sg-color-bg-elevated', default: 'var(--sg-gray-1)', description: 'Dropdown panel background' },
-  { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0, 0, 0, 0.12)', description: 'Dropdown panel shadow' },
-  { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: 'Row hover background in the dropdown' },
-  { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: 'Tag border in multi-select mode' },
-  { name: 'sg-border-radius-sm', default: '4px', description: 'Selected-tag radius' },
-]
-
 export function TreeSelectDemo() {
+  const t = useTreeSelectDocStrings()
+
+  const treeSelectProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'treeData', description: t.propTreeData, type: 'TreeNodeData[]' },
+      { name: 'value', description: t.propValue, type: 'TreeKey | TreeKey[]' },
+      { name: 'defaultValue', description: t.propDefaultValue, type: 'TreeKey | TreeKey[]' },
+      { name: 'onChange', description: t.propOnChange, type: '(value, labels, extra) => void' },
+      { name: 'multiple', description: t.propMultiple, type: 'boolean', default: 'false' },
+      { name: 'treeCheckable', description: t.propTreeCheckable, type: 'boolean', default: 'false' },
+      { name: 'showSearch', description: t.propShowSearch, type: 'boolean', default: 'false' },
+      { name: 'allowClear', description: t.propAllowClear, type: 'boolean', default: 'false' },
+      { name: 'placeholder', description: t.propPlaceholder, type: 'string', default: "'Please select'" },
+      { name: 'treeDefaultExpandAll', description: t.propTreeDefaultExpandAll, type: 'boolean', default: 'false' },
+      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const nodeProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'key', description: t.nodeKey, type: 'TreeKey' },
+      { name: 'title', description: t.nodeTitle, type: 'ReactNode' },
+      { name: 'children', description: t.nodeChildren, type: 'TreeNodeData[]' },
+      { name: 'disabled', description: t.nodeDisabled, type: 'boolean', default: 'false' },
+      { name: 'selectable', description: t.nodeSelectable, type: 'boolean', default: 'true' },
+      { name: 'checkable', description: t.nodeCheckable, type: 'boolean', default: 'true' },
+    ],
+    [t],
+  )
+
+  const treeSelectCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
+      { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: t.cssSgColorPrimaryBg },
+      { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: t.cssSgColorPrimaryHover },
+      { name: 'sg-input-bg', default: 'var(--sg-color-bg-container)', description: t.cssSgInputBg },
+      { name: 'sg-input-border', default: 'var(--sg-color-border)', description: t.cssSgInputBorder },
+      { name: 'sg-input-radius', default: 'var(--sg-border-radius)', description: t.cssSgInputRadius },
+      { name: 'sg-input-height', default: 'var(--sg-height-md)', description: t.cssSgInputHeight },
+      { name: 'sg-color-bg-elevated', default: 'var(--sg-gray-1)', description: t.cssSgColorBgElevated },
+      { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0, 0, 0, 0.12)', description: t.cssSgShadowLg },
+      { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: t.cssSgColorBgHover },
+      { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: t.cssSgColorBorderSecondary },
+      { name: 'sg-border-radius-sm', default: '4px', description: t.cssSgBorderRadiusSm },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="TreeSelect"
-      description="Dropdown selector backed by a tree. Pick one leaf, many leaves, or cascade whole subtrees."
-      whenToUse={[
-        'When options have a hierarchy (org charts, regions, taxonomies).',
-        'When you want multi-select with parent/child cascading (`treeCheckable`).',
-        'Inside forms — wrap with <Field> to capture validation.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Single-value picker." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicTreeSelect />
       </DemoBox>
 
-      <DemoBox title="Multiple" description="Pick multiple leaves — selections render as tags." code={MultipleSource}>
+      <DemoBox title={t.demoMultipleTitle} description={t.demoMultipleDesc} code={MultipleSource}>
         <MultipleTreeSelect />
       </DemoBox>
 
-      <DemoBox title="Checkable" description="Checkboxes with subtree cascade." code={CheckableSource}>
+      <DemoBox title={t.demoCheckableTitle} description={t.demoCheckableDesc} code={CheckableSource}>
         <CheckableTreeSelect />
       </DemoBox>
 
-      <DemoBox title="Search" description="Filter nodes by typing." code={SearchSource}>
+      <DemoBox title={t.demoSearchTitle} description={t.demoSearchDesc} code={SearchSource}>
         <SearchTreeSelect />
       </DemoBox>
 
-      <DemoBox title="Disabled nodes" description="Per-node `disabled` greys out specific rows." code={DisabledNodesSource}>
+      <DemoBox title={t.demoDisabledNodesTitle} description={t.demoDisabledNodesDesc} code={DisabledNodesSource}>
         <DisabledNodesTreeSelect />
       </DemoBox>
 
-      <DemoBox title="Sizes" description="Three sizes, same structure." code={SizesSource}>
+      <DemoBox title={t.demoSizesTitle} description={t.demoSizesDesc} code={SizesSource}>
         <SizesTreeSelect />
       </DemoBox>
 
-      <DemoBox
-        title="Tokens override"
-        description="Scope tokens to theme one TreeSelect without touching the rest of the page."
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensOverrideTitle} description={t.demoTokensOverrideDesc} code={TokensOverrideSource}>
         <TokensOverrideTreeSelect />
       </DemoBox>
 
-      <PropsTable title="TreeSelect API" data={treeSelectProps} />
-      <PropsTable title="TreeNodeData" data={nodeProps} />
+      <PropsTable title={t.tableTreeSelectApi} data={treeSelectProps} />
+      <PropsTable title={t.tableTreeNodeData} data={nodeProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="TreeSelect shares Input's control tokens; the dropdown reuses the same overlay + hover variables as Select."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={treeSelectCssVars}
       />
     </ComponentDoc>

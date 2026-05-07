@@ -1,0 +1,78 @@
+import { transferDocEn } from './en'
+
+/**
+ * Russian copy. TypeScript enforces: every key from `transferDocEn`, no extras.
+ */
+export const transferDocRu: { [K in keyof typeof transferDocEn]: string } = {
+  pageTitle: 'Transfer',
+  pageBadge: 'Ввод данных',
+  crumbDataEntry: 'Ввод данных',
+  crumbTransfer: 'Transfer',
+  pageLead:
+    'Двух-списочный шаттл для выбора подмножества элементов. Встроенный поиск, select-all, отключённые строки, режим one-way и кастомный renderer строки.',
+  pageWhen1:
+    'Когда нужно разделить набор на «доступные» и «выбранные» — например, права роли, выбор тегов, таргетинг аудитории.',
+  pageWhen2: 'Когда multi-Select слишком тесный, а порядок элементов не важен.',
+
+  demoBasicTitle: 'Базовый',
+  demoBasicDesc: 'Контролируется через `targetKeys`.',
+  demoSearchTitle: 'С поиском',
+  demoSearchDesc: 'Фильтрация каждого списка по подстроке title.',
+  demoOneWayTitle: 'One-way',
+  demoOneWayDesc: 'Скрыть кнопку перемещения влево.',
+  demoTitlesTitle: 'Заголовки',
+  demoTitlesDesc: 'Кастомные заголовки колонок.',
+  demoCustomRenderTitle: 'Кастомный render',
+  demoCustomRenderDesc: 'Title + description через prop `render`.',
+  demoDisabledTitle: 'Отключено',
+  demoDisabledDesc: 'Весь контрол + per-row `disabled`.',
+  demoTokensOverrideTitle: 'Переопределение токенов',
+  demoTokensOverrideDesc: 'Ребрендинг панелей через глобальную палитру.',
+
+  tableTransferApi: 'API Transfer',
+  tableTransferItem: 'TransferItem',
+  tableCssVars: 'CSS-переменные',
+
+  propDataSource: 'Все элементы — разбиение между source / target через `targetKeys`',
+  propTargetKeys: 'Контролируемые ключи правого списка',
+  propDefaultTargetKeys: 'Начальные target keys в неконтролируемом режиме',
+  propOnChange: 'Срабатывает после перемещения',
+  propOnSelectChange: 'Срабатывает при изменении выбора чекбоксов в любом списке',
+  propShowSearch: 'Показывать input поиска над каждым списком (фильтр по `title`)',
+  propTitles: 'Заголовки колонок [source, target]',
+  propRender: 'Кастомный renderer подписи (внутри per-row Checkbox)',
+  propListStyle: 'Inline-стиль для каждой колонки списка',
+  propOneWay: 'Скрыть кнопку move-left — элементы только в target',
+  propDisabled: 'Отключить оба списка (также наследуется от ConfigProvider)',
+  propClassName: 'Дополнительный class корня',
+  propStyle: 'Inline-стиль корня',
+  propUnstyled: 'Убрать все классы sg-transfer-*',
+
+  itemKey: 'Стабильный идентификатор — наличие в `targetKeys` определяет сторону',
+  itemTitle: 'Основная подпись + текст для поиска по умолчанию',
+  itemDescription: 'Вторичная строка — отрисовывается только через кастомный `render`',
+  itemDisabled: 'Исключить из выбора / bulk-перемещения',
+
+  cssHint:
+    'У Transfer нет собственных локальных токенов. Ребрендинг через глобальную палитру — панель использует `--sg-color-border`, `--sg-color-bg-secondary` (header), `--sg-color-bg-hover` (row) и `--sg-color-primary-bg` (выбранная строка).',
+
+  cssSgColorBgContainer: 'Фон панели списка',
+  cssSgColorBgSecondary: 'Фон заголовка списка',
+  cssSgColorBgHover: 'Фон строки при наведении',
+  cssSgColorPrimaryBg: 'Фон выбранной строки',
+  cssSgColorBorder: 'Контур панели',
+  cssSgColorBorderSecondary: 'Разделители header / поиска / пагинации',
+  cssSgColorText: 'Текст тела',
+  cssSgColorTextSecondary: 'Цвет meta заголовка / счётчика',
+  cssSgColorTextTertiary: 'Текст empty-состояния «No data»',
+  cssSgColorTextDisabled: 'Текст отключённой строки',
+  cssSgBorderRadius: 'Внешний радиус панели',
+  cssSgFontSize: 'Размер шрифта строки',
+  cssSgFontSizeSm: 'Размер счётчика заголовка и empty-текста',
+  cssSgPaddingXs: 'Вертикальные отступы строки',
+  cssSgPaddingSm: 'Вертикальные отступы header + зазор кнопок операций',
+  cssSgPaddingMd: 'Зазор между панелями + горизонтальные отступы',
+  cssSgPaddingXl: 'Отступы empty-состояния',
+  cssSgHeightMd: 'Минимальная ширина кнопки move',
+  cssSgTransitionDuration: 'Переход hover на строке',
+}

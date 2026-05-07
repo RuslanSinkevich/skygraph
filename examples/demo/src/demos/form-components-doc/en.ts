@@ -1,0 +1,88 @@
+/**
+ * English source of truth for FormComponents doc page strings.
+ * Other locales must provide the same keys (see `ru.ts`).
+ */
+export const formComponentsDocEn = {
+  pageTitle: 'Form Components',
+  pageLead: 'All form input components working together in various combinations.',
+  pageWhen1: 'When you need to build complex forms with various input types.',
+  pageWhen2: 'When you want to see all input components side by side.',
+
+  demoInputNumberTitle: 'InputNumber',
+  demoInputNumberDesc: 'Numeric input field with step controls.',
+  demoSliderTitle: 'Slider',
+  demoSliderDesc: 'A slider for selecting a value from a range.',
+  demoRateTitle: 'Rate',
+  demoRateDesc: 'Star rating component.',
+  demoUploadTitle: 'Upload',
+  demoUploadDesc: 'File upload component.',
+  demoInputNumberStepTitle: 'InputNumber — step & disabled',
+  demoInputNumberStepDesc: 'Fine-grained step value and disabled state.',
+  demoSliderRangeTitle: 'Slider — range & step',
+  demoSliderRangeDesc: 'Discrete steps and a disabled slider. Values snap to multiples of step.',
+  demoRateHalfTitle: 'Rate — half, custom count, disabled',
+  demoRateHalfDesc: 'Half-star precision, 10-star scale, or read-only display.',
+  demoUploadMultipleTitle: 'Upload — multiple',
+  demoUploadMultipleDesc: 'Allow users to pick several files at once.',
+  demoScopedBrandTitle: 'Scoped brand',
+  demoScopedBrandDesc: 'Slider/Rate/Switch all follow --sg-color-primary on a scope.',
+  demoFullFormTitle: 'Full Form',
+  demoFullFormDesc: 'All form input components combined in a single form layout.',
+
+  tableInputNumberApi: 'InputNumber API',
+  tableSliderApi: 'Slider API',
+  tableRateApi: 'Rate API',
+  tableUploadApi: 'Upload API',
+
+  inLabelName: 'Name',
+  inLabelBio: 'Bio',
+  inLabelAge: 'Age',
+  inLabelCity: 'City',
+  inLabelBirthDate: 'Birth Date',
+  inLabelMeetingTime: 'Meeting Time',
+  inLabelSkill: 'Skill',
+  inLabelGender: 'Gender',
+  inLabelExperience: 'Experience',
+  inLabelRating: 'Rating',
+  inLabelDarkMode: 'Dark mode',
+  inLabelNewsletter: 'Subscribe to newsletter',
+  inPlaceholderName: 'Your name',
+  inPlaceholderBio: 'Tell about yourself',
+  inPlaceholderCity: 'Select city',
+  inPlaceholderSkill: 'Type to search...',
+  inSliderValue: 'Value',
+  inGenderMale: 'Male',
+  inGenderFemale: 'Female',
+  inGenderOther: 'Other',
+
+  inputNumberValue: 'Current value',
+  inputNumberOnChange: 'Callback when value changes',
+  inputNumberMin: 'Minimum value',
+  inputNumberMax: 'Maximum value',
+  inputNumberStep: 'Step increment',
+  inputNumberDisabled: 'Disable the input',
+  inputNumberPlaceholder: 'Placeholder text',
+
+  sliderValue: 'Current value',
+  sliderOnChange: 'Callback when value changes',
+  sliderMin: 'Minimum value',
+  sliderMax: 'Maximum value',
+  sliderStep: 'Step increment',
+  sliderDisabled: 'Disable the slider',
+
+  rateValue: 'Current value',
+  rateOnChange: 'Callback when value changes',
+  rateCount: 'Total star count',
+  rateAllowHalf: 'Allow half-star selection',
+  rateDisabled: 'Disable the rate',
+
+  uploadFileList: 'List of uploaded files',
+  uploadOnUpload: 'Callback when files are selected',
+  uploadOnRemove: 'Callback when a file is removed',
+  uploadAccept: 'Accepted file types',
+  uploadMultiple: 'Allow multiple file selection',
+  uploadDisabled: 'Disable the uploader',
+} as const
+
+/** Writable string map — use for props / table builders (same keys as `formComponentsDocEn`). */
+export type FormComponentsDocStrings = { -readonly [K in keyof typeof formComponentsDocEn]: string }

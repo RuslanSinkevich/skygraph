@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useRateDocStrings } from './rate-doc/useRateDocStrings'
 
 import { BasicRate } from './rate/Basic.demo'
 import BasicSource from './rate/Basic.demo?raw'
@@ -18,92 +21,83 @@ import TokensOverrideSource from './rate/TokensOverride.demo?raw'
 import { UnstyledRate } from './rate/Unstyled.demo'
 import UnstyledSource from './rate/Unstyled.demo?raw'
 
-const rateProps: PropDef[] = [
-  { name: 'value', description: 'Controlled rating value', type: 'number' },
-  { name: 'defaultValue', description: 'Initial rating when uncontrolled', type: 'number', default: '0' },
-  { name: 'count', description: 'Number of rating symbols', type: 'number', default: '5' },
-  { name: 'allowHalf', description: 'Enable 0.5 steps (clicking the left half of a star)', type: 'boolean', default: 'false' },
-  { name: 'character', description: 'Custom symbol for each star (ReactNode)', type: 'ReactNode', default: "'★'" },
-  { name: 'onChange', description: 'Fires with the next rating', type: '(value: number) => void' },
-  { name: 'disabled', description: 'Lock the control (read-only)', type: 'boolean', default: 'false' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop SkyGraph classes (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const rateCssVars: CssVarDef[] = [
-  { name: 'sg-color-star', default: '#fadb14', description: 'Fill colour of a selected / half star' },
-  { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: 'Colour of an empty star' },
-  {
-    name: 'sg-rate-symbol-empty-opacity',
-    default: '0.42',
-    description:
-      'Inactive symbols are faded so colour emoji still read as empty vs full (monochrome glyphs can use 1)',
-  },
-  { name: 'sg-font-size-xl', default: '20px', description: 'Size of each rating symbol' },
-  { name: 'sg-padding-xs', default: '8px', description: 'Gap between stars' },
-  { name: 'sg-transition-duration', default: '180ms', description: 'Hover color + scale transition duration' },
-]
-
 export function RateDemo() {
+  const t = useRateDocStrings()
+
+  const rateProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'value', description: t.propValue, type: 'number' },
+      { name: 'defaultValue', description: t.propDefaultValue, type: 'number', default: '0' },
+      { name: 'count', description: t.propCount, type: 'number', default: '5' },
+      { name: 'allowHalf', description: t.propAllowHalf, type: 'boolean', default: 'false' },
+      { name: 'character', description: t.propCharacter, type: 'ReactNode', default: "'★'" },
+      { name: 'onChange', description: t.propOnChange, type: '(value: number) => void' },
+      { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const rateCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-star', default: '#fadb14', description: t.cssSgColorStar },
+      { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: t.cssSgColorBorder },
+      {
+        name: 'sg-rate-symbol-empty-opacity',
+        default: '0.42',
+        description: t.cssSgRateSymbolEmptyOpacity,
+      },
+      { name: 'sg-font-size-xl', default: '20px', description: t.cssSgFontSizeXl },
+      { name: 'sg-padding-xs', default: '8px', description: t.cssSgPaddingXs },
+      { name: 'sg-transition-duration', default: '180ms', description: t.cssSgTransitionDuration },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Rate"
-      description="Star-rating control with hover preview, optional half-steps and any ReactNode as the symbol. Clicking the already-selected value clears it back to 0."
-      whenToUse={[
-        'Collect quick sentiment on reviews, surveys, or products.',
-        'Read-only "social proof" display next to an author or place.',
-        'Anywhere a slider would feel heavier than "pick a discrete 1–5".',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Controlled 5-star rating, click to clear." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicRate />
       </DemoBox>
 
-      <DemoBox
-        title="Half-steps"
-        description="allowHalf uses pointer position to pick N − 0.5 vs N."
-        code={AllowHalfSource}
-      >
+      <DemoBox title={t.demoAllowHalfTitle} description={t.demoAllowHalfDesc} code={AllowHalfSource}>
         <AllowHalfRate />
       </DemoBox>
 
-      <DemoBox title="Custom count" description="3 for sentiment, 10 for NPS-like scales." code={CountSource}>
+      <DemoBox title={t.demoCountTitle} description={t.demoCountDesc} code={CountSource}>
         <CountRate />
       </DemoBox>
 
-      <DemoBox
-        title="Custom character"
-        description="Any ReactNode works — emoji, SVG, icon. Colour emoji ignore CSS `color`; inactive slots use opacity instead."
-        code={CustomCharacterSource}
-      >
+      <DemoBox title={t.demoCustomCharacterTitle} description={t.demoCustomCharacterDesc} code={CustomCharacterSource}>
         <CustomCharacterRate />
       </DemoBox>
 
-      <DemoBox title="Disabled" description="Read-only display mode." code={DisabledSource}>
+      <DemoBox title={t.demoDisabledTitle} description={t.demoDisabledDesc} code={DisabledSource}>
         <DisabledRate />
       </DemoBox>
 
-      <DemoBox title="Inside a Form" description="Validator for 'must rate'." code={InFormSource}>
+      <DemoBox title={t.demoInFormTitle} description={t.demoInFormDesc} code={InFormSource}>
         <InFormRate />
       </DemoBox>
 
-      <DemoBox
-        title="Tokens override"
-        description="Swap --sg-color-star to rebrand, or widen --sg-font-size-xl for bigger stars."
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensOverrideTitle} description={t.demoTokensOverrideDesc} code={TokensOverrideSource}>
         <TokensOverrideRate />
       </DemoBox>
 
-      <DemoBox title="Unstyled" description="ARIA stays; you own the painting." code={UnstyledSource}>
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledRate />
       </DemoBox>
 
-      <PropsTable title="Rate API" data={rateProps} />
+      <PropsTable title={t.tableRateApi} data={rateProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Filled colour: `--sg-color-star`. Empty: `--sg-color-border` plus `--sg-rate-symbol-empty-opacity` (needed when `character` is a colour emoji). Size: `--sg-font-size-xl`."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={rateCssVars}
       />
     </ComponentDoc>

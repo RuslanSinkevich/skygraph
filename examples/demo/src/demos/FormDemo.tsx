@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useFormDocStrings } from './form-doc/useFormDocStrings'
 
 import { BasicForm } from './form/BasicForm.demo'
 import BasicFormSource from './form/BasicForm.demo?raw'
@@ -46,288 +49,212 @@ import SchemaFormBasicSource from './form/SchemaFormBasic.demo?raw'
 import { SchemaFormLayout } from './form/SchemaFormLayout.demo'
 import SchemaFormLayoutSource from './form/SchemaFormLayout.demo?raw'
 
-const formProps: PropDef[] = [
-  { name: 'layout', description: 'Form layout', type: "'horizontal' | 'vertical' | 'inline'", default: "'vertical'" },
-  { name: 'defaultValues', description: 'Initial form values', type: 'Record<string, any>' },
-  { name: 'onSubmit', description: 'Submit handler', type: '(values) => void | Promise<void>' },
-  { name: 'onSubmitInvalid', description: 'Called if validation fails on submit', type: '(errors) => void' },
-  { name: 'onValuesChange', description: 'Callback when any value changes', type: '(changed, all) => void' },
-  { name: 'validateTrigger', description: 'When to validate', type: "'onChange' | 'onBlur' | 'onSubmit'", default: "'onChange'" },
-  { name: 'scrollToFirstError', description: 'Scroll to first error on submit', type: 'boolean | ScrollIntoViewOptions', default: 'false' },
-  { name: 'preserve', description: 'Preserve values of unmounted fields', type: 'boolean', default: 'true' },
-  { name: 'disabled', description: 'Disable all form controls', type: 'boolean', default: 'false' },
-  { name: 'size', description: 'Form controls size', type: "'small' | 'middle' | 'large'" },
-  { name: 'requiredMark', description: 'How required fields are marked', type: "boolean | 'optional'", default: 'true' },
-  { name: 'colon', description: 'Append colon after labels', type: 'boolean', default: 'true' },
-  { name: 'labelCol', description: 'Label grid (horizontal layout)', type: '{ span?: number; offset?: number }' },
-  { name: 'wrapperCol', description: 'Control grid (horizontal layout)', type: '{ span?: number; offset?: number }' },
-  { name: 'labelAlign', description: 'Label alignment (horizontal layout)', type: "'left' | 'right'" },
-  { name: 'feedbackIcons', description: 'Custom icons per validation state', type: '{ success?, warning?, error?, validating? }' },
-  { name: 'form', description: 'External useForm instance (for imperative control)', type: 'UseFormReturn' },
-]
-
-const fieldProps: PropDef[] = [
-  { name: 'name', description: 'Field name (path in form values)', type: 'string' },
-  { name: 'label', description: 'Field label', type: 'string' },
-  { name: 'required', description: 'Shorthand for `{ required: true }` rule', type: 'boolean' },
-  { name: 'rules', description: 'Validation rules array', type: 'Rule[]' },
-  { name: 'warningRules', description: 'Rules that produce warnings (non-blocking)', type: 'Rule[]' },
-  { name: 'dependencies', description: 'Fields to watch for re-validation', type: 'string[]' },
-  { name: 'type', description: 'Built-in input type when no children are passed', type: "'text' | 'email' | 'password' | 'number' | 'textarea'" },
-  { name: 'placeholder', description: 'Placeholder text', type: 'string' },
-  { name: 'disabled', description: 'Disables this field (overrides form-level)', type: 'boolean' },
-  { name: 'hidden', description: 'Hides the field but keeps its value registered', type: 'boolean' },
-  { name: 'tooltip', description: 'Help tooltip next to label', type: 'string' },
-  { name: 'help', description: 'Help text below the control', type: 'ReactNode' },
-  { name: 'extra', description: 'Extra supplementary content below', type: 'ReactNode' },
-  { name: 'validateStatus', description: 'Manual validation state badge', type: "'success' | 'warning' | 'error' | 'validating'" },
-  { name: 'hasFeedback', description: 'Show status icon inside the control', type: 'boolean' },
-  { name: 'normalize', description: 'Maps raw change values before committing', type: '(value, prevValue) => unknown' },
-  { name: 'valuePropName', description: 'Prop name holding the value on child control', type: 'string', default: "'value'" },
-  { name: 'validateFirst', description: 'Stop after the first failing rule', type: 'boolean', default: 'false' },
-  { name: 'preserve', description: 'Keep value on unregister (overrides form)', type: 'boolean' },
-  { name: 'labelCol', description: 'Overrides form labelCol for this field', type: '{ span?: number; offset?: number }' },
-  { name: 'wrapperCol', description: 'Overrides form wrapperCol for this field', type: '{ span?: number; offset?: number }' },
-  { name: 'children', description: 'Render prop for custom controls', type: '(field: UseFieldReturn) => ReactNode' },
-]
-
-const formListProps: PropDef[] = [
-  { name: 'name', description: 'Array field name in form values', type: 'string' },
-  { name: 'initialValue', description: 'Seed value if path is empty on mount', type: 'unknown[]' },
-  { name: 'draggable', description: 'Provide dragProps on each row for HTML5 DnD', type: 'boolean', default: 'false' },
-  { name: 'children', description: '(fields, { add, remove, move, replace }, meta) => ReactNode', type: 'Function' },
-]
-
-const schemaFormProps: PropDef[] = [
-  { name: 'schema', description: 'JSON Schema object or a Zod schema (`_def` present) — converted to JSON Schema internally', type: 'JSONSchema | ZodSchema' },
-  { name: 'onSubmit', description: 'Receives all values after a successful submit', type: '(values) => void | Promise<void>' },
-  { name: 'layout', description: 'Passed through to the inner Form', type: "'horizontal' | 'vertical' | 'inline'" },
-  { name: 'size', description: 'Controls size for all generated fields', type: "'small' | 'middle' | 'large'" },
-  { name: 'disabled', description: 'Disables every generated control + inner Form', type: 'boolean', default: 'false' },
-  { name: 'labelCol', description: '24-column span for labels (horizontal layout)', type: '{ span?: number; offset?: number }' },
-  { name: 'wrapperCol', description: '24-column span for controls (horizontal layout)', type: '{ span?: number; offset?: number }' },
-  { name: 'form', description: 'External `useForm()` instance (skip the internal one created from schema defaults)', type: 'UseFormReturn' },
-  { name: 'submitText', description: 'Label of the default submit button when `children` is omitted', type: 'string', default: "'Submit'" },
-  { name: 'children', description: 'Custom submit button / footer (replaces the default `<button type="submit">`)', type: 'ReactNode' },
-]
-
-const formCssVars: CssVarDef[] = [
-  { name: 'sg-color-error', default: 'var(--sg-red-5)', description: 'Error text + border on invalid fields' },
-  { name: 'sg-color-error-bg', default: 'var(--sg-red-1)', description: 'Focus ring tint on invalid fields' },
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Label + input text color' },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Help / extra hint text' },
-  { name: 'sg-font-size', default: '14px', description: 'Field text size' },
-  { name: 'sg-font-size-sm', default: '12px', description: 'Help / error message size' },
-  { name: 'sg-margin-xs', default: '4px', description: 'Gap between label and control' },
-  { name: 'sg-margin-md', default: '16px', description: 'Bottom spacing between fields' },
-  { name: 'sg-padding-md', default: '12px', description: 'Horizontal gap in horizontal layout' },
-  { name: 'sg-padding-sm', default: '8px', description: 'Inline-layout gap between controls' },
-  { name: 'sg-line-height', default: '1.5714', description: 'Label / help line height' },
-  { name: 'sg-input-border', default: 'var(--sg-color-border)', description: 'Overridden to --sg-color-error on invalid field (via Input tokens)' },
-]
-
 export function FormDemo() {
+  const t = useFormDocStrings()
+
+  const formProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'layout', description: t.formLayout, type: "'horizontal' | 'vertical' | 'inline'", default: "'vertical'" },
+      { name: 'defaultValues', description: t.formDefaultValues, type: 'Record<string, any>' },
+      { name: 'onSubmit', description: t.formOnSubmit, type: '(values) => void | Promise<void>' },
+      { name: 'onSubmitInvalid', description: t.formOnSubmitInvalid, type: '(errors) => void' },
+      { name: 'onValuesChange', description: t.formOnValuesChange, type: '(changed, all) => void' },
+      { name: 'validateTrigger', description: t.formValidateTrigger, type: "'onChange' | 'onBlur' | 'onSubmit'", default: "'onChange'" },
+      { name: 'scrollToFirstError', description: t.formScrollToFirstError, type: 'boolean | ScrollIntoViewOptions', default: 'false' },
+      { name: 'preserve', description: t.formPreserve, type: 'boolean', default: 'true' },
+      { name: 'disabled', description: t.formDisabled, type: 'boolean', default: 'false' },
+      { name: 'size', description: t.formSize, type: "'small' | 'middle' | 'large'" },
+      { name: 'requiredMark', description: t.formRequiredMark, type: "boolean | 'optional'", default: 'true' },
+      { name: 'colon', description: t.formColon, type: 'boolean', default: 'true' },
+      { name: 'labelCol', description: t.formLabelCol, type: '{ span?: number; offset?: number }' },
+      { name: 'wrapperCol', description: t.formWrapperCol, type: '{ span?: number; offset?: number }' },
+      { name: 'labelAlign', description: t.formLabelAlign, type: "'left' | 'right'" },
+      { name: 'feedbackIcons', description: t.formFeedbackIcons, type: '{ success?, warning?, error?, validating? }' },
+      { name: 'form', description: t.formFormProp, type: 'UseFormReturn' },
+    ],
+    [t],
+  )
+
+  const fieldProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'name', description: t.fieldName, type: 'string' },
+      { name: 'label', description: t.fieldLabel, type: 'string' },
+      { name: 'required', description: t.fieldRequired, type: 'boolean' },
+      { name: 'rules', description: t.fieldRules, type: 'Rule[]' },
+      { name: 'warningRules', description: t.fieldWarningRules, type: 'Rule[]' },
+      { name: 'dependencies', description: t.fieldDependencies, type: 'string[]' },
+      { name: 'type', description: t.fieldType, type: "'text' | 'email' | 'password' | 'number' | 'textarea'" },
+      { name: 'placeholder', description: t.fieldPlaceholder, type: 'string' },
+      { name: 'disabled', description: t.fieldDisabled, type: 'boolean' },
+      { name: 'hidden', description: t.fieldHidden, type: 'boolean' },
+      { name: 'tooltip', description: t.fieldTooltip, type: 'string' },
+      { name: 'help', description: t.fieldHelp, type: 'ReactNode' },
+      { name: 'extra', description: t.fieldExtra, type: 'ReactNode' },
+      { name: 'validateStatus', description: t.fieldValidateStatus, type: "'success' | 'warning' | 'error' | 'validating'" },
+      { name: 'hasFeedback', description: t.fieldHasFeedback, type: 'boolean' },
+      { name: 'normalize', description: t.fieldNormalize, type: '(value, prevValue) => unknown' },
+      { name: 'valuePropName', description: t.fieldValuePropName, type: 'string', default: "'value'" },
+      { name: 'validateFirst', description: t.fieldValidateFirst, type: 'boolean', default: 'false' },
+      { name: 'preserve', description: t.fieldPreserve, type: 'boolean' },
+      { name: 'labelCol', description: t.fieldLabelCol, type: '{ span?: number; offset?: number }' },
+      { name: 'wrapperCol', description: t.fieldWrapperCol, type: '{ span?: number; offset?: number }' },
+      { name: 'children', description: t.fieldChildren, type: '(field: UseFieldReturn) => ReactNode' },
+    ],
+    [t],
+  )
+
+  const formListProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'name', description: t.formListName, type: 'string' },
+      { name: 'initialValue', description: t.formListInitialValue, type: 'unknown[]' },
+      { name: 'draggable', description: t.formListDraggable, type: 'boolean', default: 'false' },
+      { name: 'children', description: t.formListChildren, type: 'Function' },
+    ],
+    [t],
+  )
+
+  const schemaFormProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'schema', description: t.schemaFormSchema, type: 'JSONSchema | ZodSchema' },
+      { name: 'onSubmit', description: t.schemaFormOnSubmit, type: '(values) => void | Promise<void>' },
+      { name: 'layout', description: t.schemaFormLayout, type: "'horizontal' | 'vertical' | 'inline'" },
+      { name: 'size', description: t.schemaFormSize, type: "'small' | 'middle' | 'large'" },
+      { name: 'disabled', description: t.schemaFormDisabled, type: 'boolean', default: 'false' },
+      { name: 'labelCol', description: t.schemaFormLabelCol, type: '{ span?: number; offset?: number }' },
+      { name: 'wrapperCol', description: t.schemaFormWrapperCol, type: '{ span?: number; offset?: number }' },
+      { name: 'form', description: t.schemaFormForm, type: 'UseFormReturn' },
+      { name: 'submitText', description: t.schemaFormSubmitText, type: 'string', default: "'Submit'" },
+      { name: 'children', description: t.schemaFormChildren, type: 'ReactNode' },
+    ],
+    [t],
+  )
+
+  const formCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-error', default: 'var(--sg-red-5)', description: t.cssSgColorError },
+      { name: 'sg-color-error-bg', default: 'var(--sg-red-1)', description: t.cssSgColorErrorBg },
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
+      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
+      { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
+      { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
+      { name: 'sg-margin-xs', default: '4px', description: t.cssSgMarginXs },
+      { name: 'sg-margin-md', default: '16px', description: t.cssSgMarginMd },
+      { name: 'sg-padding-md', default: '12px', description: t.cssSgPaddingMd },
+      { name: 'sg-padding-sm', default: '8px', description: t.cssSgPaddingSm },
+      { name: 'sg-line-height', default: '1.5714', description: t.cssSgLineHeight },
+      { name: 'sg-input-border', default: 'var(--sg-color-border)', description: t.cssSgInputBorder },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Form"
-      description="High-performance form with field-level validation, dependencies, dynamic arrays, and imperative control."
-      whenToUse={[
-        'When you need to create or edit data with validation.',
-        'When the form has dependent fields (e.g. confirm password).',
-        'For dynamic arrays — phones, tags, addresses.',
-        'For search/filter bars using `layout="inline"`.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3, t.pageWhen4]}
     >
       {/* ── Basics ──────────────────────────────────────────────────── */}
-      <DemoBox
-        title="Basic"
-        description="Minimal form: two fields with rules and a submit button."
-        code={BasicFormSource}
-      >
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicFormSource}>
         <BasicForm />
       </DemoBox>
 
-      <DemoBox
-        title="Validation rules"
-        description="Required, length, regex, builtin types (`email`, `url`), and custom validators — each with its own message."
-        code={ValidationRulesSource}
-      >
+      <DemoBox title={t.demoValidationRulesTitle} description={t.demoValidationRulesDesc} code={ValidationRulesSource}>
         <ValidationRulesForm />
       </DemoBox>
 
-      <DemoBox
-        title="Dependent fields"
-        description="`dependencies` triggers re-validation when the linked field changes. Classic password / confirm pattern."
-        code={DependentFieldsSource}
-      >
+      <DemoBox title={t.demoDependentFieldsTitle} description={t.demoDependentFieldsDesc} code={DependentFieldsSource}>
         <DependentFieldsForm />
       </DemoBox>
 
-      <DemoBox
-        title="Async validation"
-        description="Validators may return a Promise. The field shows a spinner while the check runs."
-        code={AsyncValidationSource}
-      >
+      <DemoBox title={t.demoAsyncValidationTitle} description={t.demoAsyncValidationDesc} code={AsyncValidationSource}>
         <AsyncValidationForm />
       </DemoBox>
 
       {/* ── Layout ─────────────────────────────────────────────────── */}
-      <DemoBox
-        title="Layout — vertical"
-        description="Labels above controls. Default and recommended for signup / profile forms."
-        code={LayoutVerticalSource}
-      >
+      <DemoBox title={t.demoLayoutVerticalTitle} description={t.demoLayoutVerticalDesc} code={LayoutVerticalSource}>
         <LayoutVerticalForm />
       </DemoBox>
 
-      <DemoBox
-        title="Layout — horizontal"
-        description="24-column grid via `labelCol` / `wrapperCol`. Great for admin settings."
-        code={LayoutHorizontalSource}
-      >
+      <DemoBox title={t.demoLayoutHorizontalTitle} description={t.demoLayoutHorizontalDesc} code={LayoutHorizontalSource}>
         <LayoutHorizontalForm />
       </DemoBox>
 
-      <DemoBox
-        title="Layout — inline"
-        description="Everything in a single row — perfect for search / filter bars."
-        code={LayoutInlineSource}
-      >
+      <DemoBox title={t.demoLayoutInlineTitle} description={t.demoLayoutInlineDesc} code={LayoutInlineSource}>
         <LayoutInlineForm />
       </DemoBox>
 
-      <DemoBox
-        title="Required mark"
-        description="Choose how required fields are highlighted: asterisk, nothing, or the inverted 'optional' convention."
-        code={RequiredMarkSource}
-      >
+      <DemoBox title={t.demoRequiredMarkTitle} description={t.demoRequiredMarkDesc} code={RequiredMarkSource}>
         <RequiredMarkForm />
       </DemoBox>
 
-      <DemoBox
-        title="Sizes"
-        description="`size` on the form propagates to every control inside."
-        code={FormSizesSource}
-      >
+      <DemoBox title={t.demoSizesTitle} description={t.demoSizesDesc} code={FormSizesSource}>
         <FormSizes />
       </DemoBox>
 
-      <DemoBox
-        title="Disabled"
-        description="Form-level disable turns off every control in one go; individual fields can opt in or out."
-        code={DisabledFormSource}
-      >
+      <DemoBox title={t.demoDisabledTitle} description={t.demoDisabledDesc} code={DisabledFormSource}>
         <DisabledForm />
       </DemoBox>
 
       {/* ── Controls ───────────────────────────────────────────────── */}
-      <DemoBox
-        title="Controls gallery"
-        description="One form wired to every supported control — Select, Checkbox, RadioGroup, Switch, InputNumber, DatePicker, TimePicker, AutoComplete, Slider, Rate."
-        code={FormControlsSource}
-      >
+      <DemoBox title={t.demoControlsTitle} description={t.demoControlsDesc} code={FormControlsSource}>
         <FormControlsShowcase />
       </DemoBox>
 
-      <DemoBox
-        title="Field status & feedback"
-        description="`validateStatus` + `hasFeedback` for manual status (success / warning / error / validating)."
-        code={FieldStatusSource}
-      >
+      <DemoBox title={t.demoFieldStatusTitle} description={t.demoFieldStatusDesc} code={FieldStatusSource}>
         <FieldStatusForm />
       </DemoBox>
 
       {/* ── Dynamic / Nested ───────────────────────────────────────── */}
-      <DemoBox
-        title="Dynamic list (FormList)"
-        description="Add / remove / reorder array items. Each row is an independent `<Field>` and validates on its own."
-        code={FormListDynamicSource}
-      >
+      <DemoBox title={t.demoFormListTitle} description={t.demoFormListDesc} code={FormListDynamicSource}>
         <FormListDynamic />
       </DemoBox>
 
-      <DemoBox
-        title="Nested fields"
-        description="Dotted names (`address.city`) auto-store into nested objects."
-        code={NestedFieldsSource}
-      >
+      <DemoBox title={t.demoNestedFieldsTitle} description={t.demoNestedFieldsDesc} code={NestedFieldsSource}>
         <NestedFieldsForm />
       </DemoBox>
 
-      <DemoBox
-        title="Distributed composition"
-        description="Three nested components — root holds `<Form>`, middle adds section chrome, leaf renders `<Field>` nodes. Same form context throughout; no prop-drilling of values."
-        code={DistributedCompositionSource}
-      >
+      <DemoBox title={t.demoDistributedTitle} description={t.demoDistributedDesc} code={DistributedCompositionSource}>
         <DistributedCompositionForm />
       </DemoBox>
 
       {/* ── Imperative / Observed ──────────────────────────────────── */}
-      <DemoBox
-        title="Programmatic control"
-        description="`useForm()` exposes `reset`, `setFieldsValue`, `validate`, `submit`. Share the instance via the `form` prop."
-        code={ProgrammaticControlSource}
-      >
+      <DemoBox title={t.demoProgrammaticTitle} description={t.demoProgrammaticDesc} code={ProgrammaticControlSource}>
         <ProgrammaticControlForm />
       </DemoBox>
 
-      <DemoBox
-        title="Live values (useWatch)"
-        description="`useWatch(core, path)` re-renders only when that field changes — ideal for live previews."
-        code={LiveWatchSource}
-      >
+      <DemoBox title={t.demoLiveWatchTitle} description={t.demoLiveWatchDesc} code={LiveWatchSource}>
         <LiveWatchForm />
       </DemoBox>
 
       {/* ── Styling patterns ───────────────────────────────────────── */}
-      <DemoBox
-        title="Login card"
-        description="A real-world styled container — the form itself stays semantic, all look-and-feel lives in `.demo-login-card`."
-        code={LoginCardSource}
-      >
+      <DemoBox title={t.demoLoginCardTitle} description={t.demoLoginCardDesc} code={LoginCardSource}>
         <LoginCardForm />
       </DemoBox>
 
-      <DemoBox
-        title="Search bar"
-        description="Inline layout wrapped in a styled card. The panel collects `q`, role, status, and a date filter."
-        code={SearchBarSource}
-      >
+      <DemoBox title={t.demoSearchBarTitle} description={t.demoSearchBarDesc} code={SearchBarSource}>
         <SearchBarForm />
       </DemoBox>
 
-      <DemoBox
-        title="Profile settings"
-        description="Sectioned multi-column form: personal info, notifications (Switches), and avatar upload."
-        code={ProfileSettingsSource}
-      >
+      <DemoBox title={t.demoProfileSettingsTitle} description={t.demoProfileSettingsDesc} code={ProfileSettingsSource}>
         <ProfileSettingsForm />
       </DemoBox>
 
       {/* ── Schema-driven ──────────────────────────────────────────── */}
-      <DemoBox
-        title="SchemaForm — JSON Schema"
-        description="`<SchemaForm schema={...}/>` derives fields, rules and default values from a JSON Schema. Pass a Zod schema instead — it is converted via `zodToJsonSchema` before rendering."
-        code={SchemaFormBasicSource}
-      >
+      <DemoBox title={t.demoSchemaFormBasicTitle} description={t.demoSchemaFormBasicDesc} code={SchemaFormBasicSource}>
         <SchemaFormBasic />
       </DemoBox>
 
-      <DemoBox
-        title="SchemaForm — layout & size"
-        description="`layout`, `size`, `disabled`, `labelCol`, `wrapperCol` are passed through to the underlying Form — no wrapper needed."
-        code={SchemaFormLayoutSource}
-      >
+      <DemoBox title={t.demoSchemaFormLayoutTitle} description={t.demoSchemaFormLayoutDesc} code={SchemaFormLayoutSource}>
         <SchemaFormLayout />
       </DemoBox>
 
-      <PropsTable title="Form API" data={formProps} />
-      <PropsTable title="Field API" data={fieldProps} />
-      <PropsTable title="FormList API" data={formListProps} />
-      <PropsTable title="SchemaForm API" data={schemaFormProps} />
+      <PropsTable title={t.tableFormApi} data={formProps} />
+      <PropsTable title={t.tableFieldApi} data={fieldProps} />
+      <PropsTable title={t.tableFormListApi} data={formListProps} />
+      <PropsTable title={t.tableSchemaFormApi} data={schemaFormProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Form inherits most styling from its inner Input. Override these to retune errors, spacing, or typography just for this form."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={formCssVars}
       />
     </ComponentDoc>
