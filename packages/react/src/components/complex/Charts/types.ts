@@ -5,11 +5,6 @@ import type {
   ChartContextMenuHandler,
   ChartSeriesContextMenuHandler,
 } from './chartContextMenu'
-import type { ChartActionsProp } from './ChartHoverToolbar'
-import type {
-  ChartContextMenuHandler,
-  ChartSeriesContextMenuHandler,
-} from './chartContextMenu'
 
 /** A single category along the X axis. */
 export type ChartCategory = string | number
