@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useStepsDocStrings } from './steps-doc/useStepsDocStrings'
 
 import { BasicSteps } from './steps/Basic.demo'
 import BasicSource from './steps/Basic.demo?raw'
@@ -20,126 +23,134 @@ import TokensOverrideSource from './steps/TokensOverride.demo?raw'
 import { UnstyledSteps } from './steps/Unstyled.demo'
 import UnstyledSource from './steps/Unstyled.demo?raw'
 
-const stepsProps: PropDef[] = [
-  { name: 'current', description: 'Zero-based index of the active step', type: 'number' },
-  { name: 'items', description: 'Ordered steps', type: 'StepItem[]' },
-  { name: 'direction', description: 'Layout direction', type: "'horizontal' | 'vertical'", default: "'horizontal'" },
-  { name: 'onChange', description: 'Fires when a step is clicked. Presence of the prop also marks steps as clickable', type: '(current: number) => void' },
-  { name: 'type', description: 'Visual variant — default (numbered) or navigation (tab-like underline)', type: "'default' | 'navigation'", default: "'default'" },
-  { name: 'size', description: 'Icon / font preset — inherits from ConfigProvider', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'className', description: 'Extra class on the root', type: 'string' },
-  { name: 'style', description: 'Inline style on the root', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop all sg-steps-* styling; keep `data-status` on each row', type: 'boolean', default: 'false' },
-]
-
-const stepItemProps: PropDef[] = [
-  { name: 'title', description: 'Primary step title', type: 'ReactNode' },
-  { name: 'description', description: 'Secondary line below the title', type: 'ReactNode' },
-  { name: 'icon', description: 'Custom icon (replaces number / check)', type: 'ReactNode' },
-  { name: 'status', description: 'Force a status (overrides the one derived from `current`)', type: "'wait' | 'process' | 'finish' | 'error'" },
-]
-
-const stepsCssVars: CssVarDef[] = [
-  { name: 'sg-color-primary', default: '#1677ff', description: 'Fill for the current step + finished tail / ring colour' },
-  { name: 'sg-color-error', default: '#ff4d4f', description: '`status="error"` ring, label, and navigation underline' },
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Default title colour' },
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: '`status="wait"` title + icon text' },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Description text colour' },
-  { name: 'sg-color-border', default: '#d9d9d9', description: 'Icon ring for `wait` / default step' },
-  { name: 'sg-color-border-secondary', default: '#f0f0f0', description: 'Tail connector between steps' },
-  { name: 'sg-color-white', default: '#ffffff', description: 'Label colour inside the filled `process` ring' },
-  { name: 'sg-font-size', default: '14px', description: 'Title font size' },
-  { name: 'sg-font-size-sm', default: '12px', description: 'Description + `size="small"` title size' },
-  { name: 'sg-font-size-lg', default: '16px', description: 'Custom-icon font size inside the ring' },
-  { name: 'sg-padding-sm', default: '8px', description: 'Gap between icon and content' },
-  { name: 'sg-padding-lg', default: '16px', description: 'Padding for vertical items + navigation-mode items' },
-  { name: 'sg-margin-xs', default: '4px', description: 'Gap between title and description' },
-  { name: 'sg-margin-sm', default: '8px', description: 'Horizontal tail outer margin' },
-  { name: 'sg-transition-duration', default: '180ms', description: 'Status transitions' },
-  { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: 'Shared easing' },
-]
-
 export function StepsDemo() {
+  const t = useStepsDocStrings()
+
+  const stepsProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'current', description: t.propCurrent, type: 'number' },
+      { name: 'items', description: t.propItems, type: 'StepItem[]' },
+      { name: 'direction', description: t.propDirection, type: "'horizontal' | 'vertical'", default: "'horizontal'" },
+      { name: 'onChange', description: t.propOnChange, type: '(current: number) => void' },
+      { name: 'type', description: t.propType, type: "'default' | 'navigation'", default: "'default'" },
+      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const stepItemProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'title', description: t.itemTitle, type: 'ReactNode' },
+      { name: 'description', description: t.itemDescription, type: 'ReactNode' },
+      { name: 'icon', description: t.itemIcon, type: 'ReactNode' },
+      { name: 'status', description: t.itemStatus, type: "'wait' | 'process' | 'finish' | 'error'" },
+    ],
+    [t],
+  )
+
+  const stepsCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
+      { name: 'sg-color-error', default: '#ff4d4f', description: t.cssError },
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
+      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssTextDisabled },
+      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssTextTertiary },
+      { name: 'sg-color-border', default: '#d9d9d9', description: t.cssBorder },
+      { name: 'sg-color-border-secondary', default: '#f0f0f0', description: t.cssBorderSecondary },
+      { name: 'sg-color-white', default: '#ffffff', description: t.cssWhite },
+      { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
+      { name: 'sg-font-size-sm', default: '12px', description: t.cssFontSizeSm },
+      { name: 'sg-font-size-lg', default: '16px', description: t.cssFontSizeLg },
+      { name: 'sg-padding-sm', default: '8px', description: t.cssPaddingSm },
+      { name: 'sg-padding-lg', default: '16px', description: t.cssPaddingLg },
+      { name: 'sg-margin-xs', default: '4px', description: t.cssMarginXs },
+      { name: 'sg-margin-sm', default: '8px', description: t.cssMarginSm },
+      { name: 'sg-transition-duration', default: '180ms', description: t.cssTransitionDuration },
+      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Steps"
-      badge="Navigation"
-      crumbs={['Navigation', 'Steps']}
-      description="Guide the user through a linear sequence. Auto-derives `finish / process / wait` from the `current` index; each item can override with its own `status`."
-      whenToUse={[
-        'When a task is complex and breaks into ordered subtasks.',
-        'When a long form should be split into navigable stages.',
-      ]}
+      title={t.pageTitle}
+      badge={t.pageBadge}
+      crumbs={[t.crumbNavigation, t.crumbSteps]}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2]}
     >
-      <DemoBox title="Basic" description="Horizontal steps with auto-derived statuses." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicSteps />
       </DemoBox>
 
       <DemoBox
-        title="Clickable"
-        description="Passing `onChange` turns steps into buttons."
+        title={t.demoClickableTitle}
+        description={t.demoClickableDesc}
         code={ClickableSource}
       >
         <ClickableSteps />
       </DemoBox>
 
       <DemoBox
-        title="Vertical"
-        description="Stack for sidebars and tall wizards."
+        title={t.demoVerticalTitle}
+        description={t.demoVerticalDesc}
         code={VerticalSource}
       >
         <VerticalSteps />
       </DemoBox>
 
       <DemoBox
-        title="Error status"
-        description="Per-item `status` overrides `current`."
+        title={t.demoErrorTitle}
+        description={t.demoErrorDesc}
         code={ErrorStatusSource}
       >
         <ErrorStatusSteps />
       </DemoBox>
 
       <DemoBox
-        title="Custom icon"
-        description="Drop in any node; colour still follows the step status."
+        title={t.demoCustomIconTitle}
+        description={t.demoCustomIconDesc}
         code={CustomIconSource}
       >
         <CustomIconSteps />
       </DemoBox>
 
-      <DemoBox title="Sizes" description="`small` and default icon rings." code={SizesSource}>
+      <DemoBox title={t.demoSizesTitle} description={t.demoSizesDesc} code={SizesSource}>
         <SizesSteps />
       </DemoBox>
 
       <DemoBox
-        title="Navigation"
-        description="Underlined-tab variant without icons."
+        title={t.demoNavigationTitle}
+        description={t.demoNavigationDesc}
         code={NavigationSource}
       >
         <NavigationSteps />
       </DemoBox>
 
       <DemoBox
-        title="Tokens override"
-        description="Finished / process colour follows `--sg-color-primary`."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={TokensOverrideSource}
       >
         <TokensOverrideSteps />
       </DemoBox>
 
       <DemoBox
-        title="Unstyled"
-        description="No classes — only `data-status` + the items you provide."
+        title={t.demoUnstyledTitle}
+        description={t.demoUnstyledDesc}
         code={UnstyledSource}
       >
         <UnstyledSteps />
       </DemoBox>
 
-      <PropsTable title="Steps API" data={stepsProps} />
-      <PropsTable title="StepItem" data={stepItemProps} />
+      <PropsTable title={t.tableStepsApi} data={stepsProps} />
+      <PropsTable title={t.tableStepItem} data={stepItemProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Steps has no component-local tokens — everything is sourced from the global palette. Rebrand by scoping `--sg-color-primary` (finish / process) and `--sg-color-error` on a wrapper."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={stepsCssVars}
       />
     </ComponentDoc>

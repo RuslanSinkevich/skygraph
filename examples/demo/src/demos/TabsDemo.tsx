@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useTabsDocStrings } from './tabs-doc/useTabsDocStrings'
 
 import { BasicTabs } from './tabs/Basic.demo'
 import BasicSource from './tabs/Basic.demo?raw'
@@ -16,104 +19,102 @@ import TokensOverrideSource from './tabs/TokensOverride.demo?raw'
 import { LineTabs } from './tabs/Line.demo'
 import LineSource from './tabs/Line.demo?raw'
 
-const tabsProps: PropDef[] = [
-  { name: 'items', description: 'Tab definitions', type: 'TabItem[]' },
-  { name: 'activeKey', description: 'Controlled active key', type: 'string' },
-  { name: 'defaultActiveKey', description: 'Initial active key (uncontrolled)', type: 'string' },
-  { name: 'onChange', description: 'Fires after user interaction changes the active tab', type: '(key: string) => void' },
-  {
-    name: 'type',
-    description: 'Visual style: `card` — bordered tabs attached to the panel; `line` — underline indicator only',
-    type: "'card' | 'line'",
-    default: "'card'",
-  },
-  { name: 'size', description: 'Tab list size (inherits from ConfigProvider)', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'className', description: 'Extra class on the root', type: 'string' },
-  { name: 'style', description: 'Inline styles on the root', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Opt out of SkyGraph styling', type: 'boolean', default: 'false' },
-]
-
-const tabItemProps: PropDef[] = [
-  { name: 'key', description: 'Unique identifier — used for active state and ARIA', type: 'string' },
-  { name: 'label', description: 'Tab label (ReactNode — icons, badges allowed)', type: 'ReactNode' },
-  { name: 'children', description: 'Panel body shown when this tab is active', type: 'ReactNode' },
-  { name: 'disabled', description: 'Grey out and block activation', type: 'boolean', default: 'false' },
-  { name: 'loading', description: 'Show spinner, block activation', type: 'boolean', default: 'false' },
-]
-
-const tabsCssVars: CssVarDef[] = [
-  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Active tab label; underline (`line`) or accent on `card`' },
-  { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: 'Hovered (inactive) tab label' },
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Panel body text' },
-  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: 'Inactive tab label' },
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Disabled tab label' },
-  {
-    name: 'sg-color-border-secondary',
-    default: 'var(--sg-gray-4)',
-    description: '`line`: nav bottom rule; `card`: outer box + tab seams + panel top',
-  },
-  { name: 'sg-color-bg', default: 'var(--sg-gray-1)', description: '`card`: active tab + panel surface' },
-  { name: 'sg-color-bg-secondary', default: 'var(--sg-gray-2)', description: '`card`: inactive tab strip background' },
-  { name: 'sg-font-size', default: '14px', description: 'Tab label font size (sm/lg variants override)' },
-  { name: 'sg-padding-sm', default: '8px', description: 'Vertical tab padding' },
-  { name: 'sg-padding-lg', default: '16px', description: 'Horizontal tab padding' },
-  { name: 'sg-padding-xs', default: '4px', description: 'Gap between label text and loading spinner' },
-  { name: 'sg-margin-md', default: '16px', description: 'Space between tab list and panel body' },
-  { name: 'sg-spin-color', default: 'var(--sg-color-primary) on active tab', description: 'Loading indicator color' },
-]
-
 export function TabsDemo() {
+  const t = useTabsDocStrings()
+
+  const tabsProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'items', description: t.propItems, type: 'TabItem[]' },
+      { name: 'activeKey', description: t.propActiveKey, type: 'string' },
+      { name: 'defaultActiveKey', description: t.propDefaultActiveKey, type: 'string' },
+      { name: 'onChange', description: t.propOnChange, type: '(key: string) => void' },
+      { name: 'type', description: t.propType, type: "'card' | 'line'", default: "'card'" },
+      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const tabItemProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'key', description: t.itemKey, type: 'string' },
+      { name: 'label', description: t.itemLabel, type: 'ReactNode' },
+      { name: 'children', description: t.itemChildren, type: 'ReactNode' },
+      { name: 'disabled', description: t.itemDisabled, type: 'boolean', default: 'false' },
+      { name: 'loading', description: t.itemLoading, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const tabsCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssPrimary },
+      { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: t.cssPrimaryHover },
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
+      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssTextSecondary },
+      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssTextDisabled },
+      { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: t.cssBorderSecondary },
+      { name: 'sg-color-bg', default: 'var(--sg-gray-1)', description: t.cssBg },
+      { name: 'sg-color-bg-secondary', default: 'var(--sg-gray-2)', description: t.cssBgSecondary },
+      { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
+      { name: 'sg-padding-sm', default: '8px', description: t.cssPaddingSm },
+      { name: 'sg-padding-lg', default: '16px', description: t.cssPaddingLg },
+      { name: 'sg-padding-xs', default: '4px', description: t.cssPaddingXs },
+      { name: 'sg-margin-md', default: '16px', description: t.cssMarginMd },
+      { name: 'sg-spin-color', default: 'var(--sg-color-primary) on active tab', description: t.cssSpinColor },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Tabs"
-      description="Switch between related views without leaving the page."
-      whenToUse={[
-        'When a single resource has multiple views that share context (details / activity / settings).',
-        'When you want lightweight navigation that keeps the user on the current screen.',
-        'For stepwise flows consider <Steps> instead — Tabs does not imply order.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Default tabs with three panels." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicTabs />
       </DemoBox>
 
       <DemoBox
-        title="Line"
-        description='Underline-only strip — pass type="line" for the flatter look.'
+        title={t.demoLineTitle}
+        description={t.demoLineDesc}
         code={LineSource}
       >
         <LineTabs />
       </DemoBox>
 
-      <DemoBox title="Controlled" description="Drive active key from outside (deep links, wizards)." code={ControlledSource}>
+      <DemoBox title={t.demoControlledTitle} description={t.demoControlledDesc} code={ControlledSource}>
         <ControlledTabs />
       </DemoBox>
 
-      <DemoBox title="Sizes" description="Three sizes for different densities." code={SizesSource}>
+      <DemoBox title={t.demoSizesTitle} description={t.demoSizesDesc} code={SizesSource}>
         <SizesTabs />
       </DemoBox>
 
-      <DemoBox title="Rich labels" description="Mix badges, icons, and status dots into the label." code={RichLabelsSource}>
+      <DemoBox title={t.demoRichLabelsTitle} description={t.demoRichLabelsDesc} code={RichLabelsSource}>
         <RichLabelsTabs />
       </DemoBox>
 
-      <DemoBox title="Loading & disabled" description="Per-item flags gate activation." code={StatesSource}>
+      <DemoBox title={t.demoStatesTitle} description={t.demoStatesDesc} code={StatesSource}>
         <StatesTabs />
       </DemoBox>
 
       <DemoBox
-        title="Tokens override"
-        description='Scoped --sg-color-primary re-skins the active tab + card seams (default type="card").'
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={TokensOverrideSource}
       >
         <TokensOverrideTabs />
       </DemoBox>
 
-      <PropsTable title="Tabs API" data={tabsProps} />
-      <PropsTable title="TabItem" data={tabItemProps} />
+      <PropsTable title={t.tableTabsApi} data={tabsProps} />
+      <PropsTable title={t.tableTabItem} data={tabItemProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Default `card` uses primary + surface tokens; `line` leans on primary for the underline and text tokens for labels."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={tabsCssVars}
       />
     </ComponentDoc>

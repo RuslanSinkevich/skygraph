@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable } from '../components'
 import type { PropDef } from '../components'
+
+import { useChartsDocStrings } from './charts-doc/useChartsDocStrings'
 
 import { BasicLineChart } from './charts/BasicLine.demo'
 import BasicLineSource from './charts/BasicLine.demo?raw'
@@ -10,73 +13,80 @@ import BasicAreaSource from './charts/BasicArea.demo?raw'
 import { BasicPieChart } from './charts/BasicPie.demo'
 import BasicPieSource from './charts/BasicPie.demo?raw'
 
-const baseProps: PropDef[] = [
-  { name: 'categories', description: 'X-axis categories (string[] or number[])', type: 'ChartCategory[]', required: true },
-  { name: 'series', description: 'Data series (id, label, values, optional color)', type: 'ChartSeries[]', required: true },
-  { name: 'width', description: 'CSS width', type: 'number | string', default: "'100%'" },
-  { name: 'height', description: 'Pixel height', type: 'number', default: '200' },
-  { name: 'padding', description: 'Plot padding (single number or [t,r,b,l])', type: 'number | [number, number, number, number]', default: '[16,16,24,32]' },
-  { name: 'unstyled', description: 'Drop sg-chart classes', type: 'boolean', default: 'false' },
-  { name: 'className', description: 'Root SVG className', type: 'string' },
-  { name: 'style', description: 'Root SVG inline style', type: 'CSSProperties' },
-]
-
-const lineExtraProps: PropDef[] = [
-  { name: 'markers', description: 'Show dot markers at each point', type: 'boolean', default: 'true' },
-  { name: 'strokeWidth', description: 'Line stroke width in pixels', type: 'number', default: '2' },
-]
-
-const barExtraProps: PropDef[] = [
-  { name: 'groupGap', description: 'Gap between groups (0..1 of category step)', type: 'number', default: '0.2' },
-  { name: 'barGap', description: 'Gap between bars within a group (0..1 of slot)', type: 'number', default: '0.1' },
-]
-
 export function ChartsDemo() {
+  const t = useChartsDocStrings()
+
+  const baseProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'categories', description: t.propCategories, type: 'ChartCategory[]', required: true },
+      { name: 'series', description: t.propSeries, type: 'ChartSeries[]', required: true },
+      { name: 'width', description: t.propWidth, type: 'number | string', default: "'100%'" },
+      { name: 'height', description: t.propHeight, type: 'number', default: '200' },
+      { name: 'padding', description: t.propPadding, type: 'number | [number, number, number, number]', default: '[16,16,24,32]' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+    ],
+    [t],
+  )
+
+  const lineExtraProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'markers', description: t.propMarkers, type: 'boolean', default: 'true' },
+      { name: 'strokeWidth', description: t.propStrokeWidth, type: 'number', default: '2' },
+    ],
+    [t],
+  )
+
+  const barExtraProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'groupGap', description: t.propGroupGap, type: 'number', default: '0.2' },
+      { name: 'barGap', description: t.propBarGap, type: 'number', default: '0.1' },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Charts"
-      description="Minimal SVG charts (v0): LineChart and BarChart. No axes, tooltip, animation in this version — just clean primitives that respect SkyGraph CSS tokens."
-      whenToUse={[
-        'Render light data visualisations (KPIs, sparklines, simple comparisons) without pulling in a third-party charting library.',
-        'Build the visual layer of a dashboard where richer interactivity (selection, drill-down) lives in your app.',
-        'Theme charts together with the rest of the UI by overriding `--sg-color-primary`, `--sg-color-success`, etc.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
       <DemoBox
-        title="Line chart"
-        description="Two series of weekly traffic. Series colours follow the default SkyGraph palette."
+        title={t.demoLineTitle}
+        description={t.demoLineDesc}
         code={BasicLineSource}
       >
         <BasicLineChart />
       </DemoBox>
 
       <DemoBox
-        title="Bar chart"
-        description="Grouped bars per quarter. Bars rest on a zero baseline so negative values would extend below."
+        title={t.demoBarTitle}
+        description={t.demoBarDesc}
         code={BasicBarSource}
       >
         <BasicBarChart />
       </DemoBox>
 
       <DemoBox
-        title="Area chart (stacked)"
-        description="Stacked daily traffic by device. Top stroke + filled body share the series colour at 25% opacity."
+        title={t.demoAreaTitle}
+        description={t.demoAreaDesc}
         code={BasicAreaSource}
       >
         <BasicAreaChart />
       </DemoBox>
 
       <DemoBox
-        title="Pie / donut chart"
-        description="Slices clockwise from 12 o'clock. Set innerRadius > 0 for a donut (right). Negative values are clamped to zero."
+        title={t.demoPieTitle}
+        description={t.demoPieDesc}
         code={BasicPieSource}
       >
         <BasicPieChart />
       </DemoBox>
 
-      <PropsTable title="Common Chart API" data={baseProps} />
-      <PropsTable title="LineChart Extras" data={lineExtraProps} />
-      <PropsTable title="BarChart Extras" data={barExtraProps} />
+      <PropsTable title={t.tableCommonApi} data={baseProps} />
+      <PropsTable title={t.tableLineExtras} data={lineExtraProps} />
+      <PropsTable title={t.tableBarExtras} data={barExtraProps} />
     </ComponentDoc>
   )
 }

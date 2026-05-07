@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable } from '../components'
 import type { PropDef } from '../components'
+
+import { useConfigProviderDocStrings } from './config-provider-doc/useConfigProviderDocStrings'
 
 import { SizeConfigProvider } from './config-provider/Size.demo'
 import SizeSource from './config-provider/Size.demo?raw'
@@ -16,108 +19,122 @@ import UseConfigHookSource from './config-provider/UseConfigHook.demo?raw'
 import { ThemeScopeConfigProvider } from './config-provider/ThemeScope.demo'
 import ThemeScopeSource from './config-provider/ThemeScope.demo?raw'
 
-const providerProps: PropDef[] = [
-  { name: 'size', description: 'Default `size` for descendants. Per-component props still win.', type: "'small' | 'middle' | 'large'" },
-  { name: 'disabled', description: 'Disables every descendant control that reads the context (Input, Button, Select, Switch, Checkbox, etc.).', type: 'boolean' },
-  { name: 'bordered', description: 'Default bordered flag. Currently consumed by Table; other components keep their own defaults.', type: 'boolean' },
-  { name: 'locale', description: 'Shallow-merged into the parent locale. Consumed by Empty, Pagination, Popconfirm, Upload, Form field markers, SchemaForm submit, Transfer and Calendar. Presets available: `en_US`, `ru_RU`.', type: 'SgLocale' },
-  { name: 'children', description: 'Subtree that reads the merged config via `useConfig()`.', type: 'ReactNode' },
-]
-
-const localeProps: PropDef[] = [
-  { name: 'table', description: 'Table strings (empty state, filter reset/confirm, search placeholder, sort indicators, row count formatters, column actions).', type: 'TableLocale' },
-  { name: 'pagination', description: 'Pagination labels — total prefix, page-size label, jump input.', type: 'PaginationLocale' },
-  { name: 'dataGrid', description: 'DataGrid empty text and "Select all" label.', type: 'DataGridLocale' },
-  { name: 'modal', description: 'Modal OK / Cancel button labels.', type: 'ModalLocale' },
-  { name: 'popconfirm', description: 'Popconfirm OK / Cancel button labels.', type: 'PopconfirmLocale' },
-  { name: 'empty', description: 'Default Empty description.', type: 'EmptyLocale' },
-  { name: 'form', description: 'Required / optional markers + submit/reset button labels.', type: 'FormLocale' },
-  { name: 'upload', description: 'Upload trigger, remove, preview, and error strings.', type: 'UploadLocale' },
-  { name: 'transfer', description: 'Transfer list titles, search placeholder, empty content, unit labels.', type: 'TransferLocale' },
-  { name: 'calendar', description: 'Month / weekday names and "Today" button label.', type: 'CalendarLocale' },
-]
-
-const hookProps: PropDef[] = [
-  { name: 'useConfig()', description: 'Returns the merged SgConfig from the nearest ancestor ConfigProvider. Components use it to resolve `size` / `disabled` / `locale`.', type: '() => SgConfig' },
-  { name: 'useConfigWithDefaults(props, defaults)', description: 'Resolves effective `size` and `disabled` from props → context → defaults. Returns the original props plus `resolvedSize` and `resolvedDisabled`.', type: '(props, defaults) => props & { resolvedSize, resolvedDisabled }' },
-]
-
-const presetProps: PropDef[] = [
-  { name: 'en_US', description: 'English (US) locale preset. Covers all components currently consuming locale.', type: 'SgLocale' },
-  { name: 'ru_RU', description: 'Russian (RU) locale preset. Covers all components currently consuming locale.', type: 'SgLocale' },
-]
-
 export function ConfigProviderDemo() {
+  const t = useConfigProviderDocStrings()
+
+  const providerProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'" },
+      { name: 'disabled', description: t.propDisabled, type: 'boolean' },
+      { name: 'bordered', description: t.propBordered, type: 'boolean' },
+      { name: 'locale', description: t.propLocale, type: 'SgLocale' },
+      { name: 'children', description: t.propChildren, type: 'ReactNode' },
+    ],
+    [t],
+  )
+
+  const localeProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'table', description: t.localeTable, type: 'TableLocale' },
+      { name: 'pagination', description: t.localePagination, type: 'PaginationLocale' },
+      { name: 'dataGrid', description: t.localeDataGrid, type: 'DataGridLocale' },
+      { name: 'modal', description: t.localeModal, type: 'ModalLocale' },
+      { name: 'popconfirm', description: t.localePopconfirm, type: 'PopconfirmLocale' },
+      { name: 'empty', description: t.localeEmpty, type: 'EmptyLocale' },
+      { name: 'form', description: t.localeForm, type: 'FormLocale' },
+      { name: 'upload', description: t.localeUpload, type: 'UploadLocale' },
+      { name: 'transfer', description: t.localeTransfer, type: 'TransferLocale' },
+      { name: 'calendar', description: t.localeCalendar, type: 'CalendarLocale' },
+    ],
+    [t],
+  )
+
+  const hookProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'useConfig()', description: t.hookUseConfig, type: '() => SgConfig' },
+      {
+        name: 'useConfigWithDefaults(props, defaults)',
+        description: t.hookUseConfigWithDefaults,
+        type: '(props, defaults) => props & { resolvedSize, resolvedDisabled }',
+      },
+    ],
+    [t],
+  )
+
+  const presetProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'en_US', description: t.presetEnUs, type: 'SgLocale' },
+      { name: 'ru_RU', description: t.presetRuRu, type: 'SgLocale' },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="ConfigProvider"
-      description="Root configuration for nested Skygraph components. Sets default `size`, `disabled`, `bordered`, and `locale` without passing props through every level."
-      whenToUse={[
-        'Apply a consistent `size` (or disable everything) across a whole page or dialog.',
-        'Ship locale strings once at the app root instead of per-component.',
-        'Nest providers to scope defaults to a form, a drawer, or a specific feature flag.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
       <DemoBox
-        title="Size"
-        description="A single provider propagates `size` to every descendant control. Input, Button, Select, Switch, Checkbox and more read it via `useConfig()`."
+        title={t.demoSizeTitle}
+        description={t.demoSizeDesc}
         code={SizeSource}
       >
         <SizeConfigProvider />
       </DemoBox>
 
       <DemoBox
-        title="Disabled"
-        description="Flip the whole subtree to a read-only state in one line — useful for preview panes, inactive tabs, or permission-gated UIs."
+        title={t.demoDisabledTitle}
+        description={t.demoDisabledDesc}
         code={DisabledSource}
       >
         <DisabledConfigProvider />
       </DemoBox>
 
       <DemoBox
-        title="Nested providers + explicit props"
-        description="Inner providers shallow-override the outer ones. Per-component props always win over both."
+        title={t.demoNestedTitle}
+        description={t.demoNestedDesc}
         code={NestedSource}
       >
         <NestedConfigProvider />
       </DemoBox>
 
       <DemoBox
-        title="Bordered (Table)"
-        description="`bordered` is plumbed for Table today — hosting that on the provider keeps every table aligned without touching individual instances."
+        title={t.demoBorderedTitle}
+        description={t.demoBorderedDesc}
         code={BorderedSource}
       >
         <BorderedConfigProvider />
       </DemoBox>
 
       <DemoBox
-        title="Locale presets (en_US / ru_RU)"
-        description="Flip the provider between the bundled `en_US` and `ru_RU` presets and watch Empty, Pagination, Popconfirm, Upload, and SchemaForm swap their strings. Override individual keys by passing your own `SgLocale`."
+        title={t.demoLocaleTitle}
+        description={t.demoLocaleDesc}
         code={LocaleSource}
       >
         <LocaleConfigProvider />
       </DemoBox>
 
       <DemoBox
-        title="Theme + behaviour scope"
-        description="`ConfigProvider` owns behaviour (size / disabled / locale). CSS tokens own visuals. Combine them on the same wrapper to ship self-contained micro-themes."
+        title={t.demoThemeTitle}
+        description={t.demoThemeDesc}
         code={ThemeScopeSource}
       >
         <ThemeScopeConfigProvider />
       </DemoBox>
 
       <DemoBox
-        title="useConfig() hook"
-        description="Custom components can read the merged config just like built-ins do. Handy for third-party controls that want to follow the same size / disabled contract."
+        title={t.demoHookTitle}
+        description={t.demoHookDesc}
         code={UseConfigHookSource}
       >
         <UseConfigHookDemo />
       </DemoBox>
 
-      <PropsTable title="ConfigProvider API" data={providerProps} />
-      <PropsTable title="SgLocale shape" data={localeProps} />
-      <PropsTable title="Locale presets" data={presetProps} />
-      <PropsTable title="Hooks" data={hookProps} />
+      <PropsTable title={t.tableProviderApi} data={providerProps} />
+      <PropsTable title={t.tableLocaleShape} data={localeProps} />
+      <PropsTable title={t.tablePresets} data={presetProps} />
+      <PropsTable title={t.tableHooks} data={hookProps} />
     </ComponentDoc>
   )
 }

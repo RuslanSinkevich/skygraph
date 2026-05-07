@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { usePaginationDocStrings } from './pagination-doc/usePaginationDocStrings'
 
 import { BasicPagination } from './pagination/Basic.demo'
 import BasicSource from './pagination/Basic.demo?raw'
@@ -18,121 +21,121 @@ import TokensOverrideSource from './pagination/TokensOverride.demo?raw'
 import { UnstyledPagination } from './pagination/Unstyled.demo'
 import UnstyledSource from './pagination/Unstyled.demo?raw'
 
-const paginationProps: PropDef[] = [
-  { name: 'current', description: 'Current page (1-based). Clamped to [1, totalPages]', type: 'number' },
-  { name: 'total', description: 'Total number of records', type: 'number' },
-  { name: 'pageSize', description: 'Rows per page', type: 'number', default: '10' },
-  { name: 'onChange', description: 'Fires when the user picks a different page', type: '(page: number) => void' },
-  { name: 'onPageSizeChange', description: 'Fires when the user picks a new page size', type: '(size: number) => void' },
-  { name: 'showTotal', description: 'Show "Total N" (boolean) or a custom (total, range) ⇒ ReactNode function', type: 'boolean | ((total, range: [number, number]) => ReactNode)' },
-  { name: 'disabled', description: 'Disable all controls', type: 'boolean', default: 'false' },
-  { name: 'simple', description: 'Compact "current / total" mode, hides numbered buttons', type: 'boolean', default: 'false' },
-  { name: 'showSizeChanger', description: 'Show a <select> for page size', type: 'boolean', default: 'false' },
-  { name: 'pageSizeOptions', description: 'Options in the size-changer <select>', type: 'number[]', default: '[10, 20, 50, 100]' },
-  { name: 'showQuickJumper', description: 'Show a "Go to page" input', type: 'boolean', default: 'false' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop every sg-pagination-* class (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const paginationCssVars: CssVarDef[] = [
-  { name: 'sg-color-bg', default: '#ffffff', description: 'Idle chip background' },
-  { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: 'Chip + disabled border' },
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Chip text colour + simple pager' },
-  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: '"Total N" label colour' },
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Disabled chip + ellipsis colour' },
-  { name: 'sg-color-primary', default: '#1677ff', description: 'Hover border + active chip background' },
-  { name: 'sg-color-primary-hover', default: '#4096ff', description: 'Active chip hover background' },
-  { name: 'sg-color-white', default: '#ffffff', description: 'Active chip foreground colour' },
-  { name: 'sg-height-md', default: '32px', description: 'Chip height + ellipsis box height' },
-  {
-    name: 'sg-padding-sm',
-    default: '8px',
-    description: 'Chip horizontal padding, simple mode gap, wrapped row gap, jumper/select padding',
-  },
-  { name: 'sg-margin-xs', default: '4px', description: 'Gap between pager controls' },
-  { name: 'sg-font-size-sm', default: '12px', description: 'Total label, size changer, quick jumper text' },
-  { name: 'sg-border-radius', default: '6px', description: 'Chip corner radius' },
-  { name: 'sg-font-size', default: '14px', description: 'Pager text size' },
-  { name: 'sg-transition-duration', default: '180ms', description: 'Chip hover transition' },
-  { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: 'Shared easing' },
-]
-
 export function PaginationDemo() {
+  const t = usePaginationDocStrings()
+
+  const paginationProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'current', description: t.propCurrent, type: 'number' },
+      { name: 'total', description: t.propTotal, type: 'number' },
+      { name: 'pageSize', description: t.propPageSize, type: 'number', default: '10' },
+      { name: 'onChange', description: t.propOnChange, type: '(page: number) => void' },
+      { name: 'onPageSizeChange', description: t.propOnPageSizeChange, type: '(size: number) => void' },
+      { name: 'showTotal', description: t.propShowTotal, type: 'boolean | ((total, range: [number, number]) => ReactNode)' },
+      { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
+      { name: 'simple', description: t.propSimple, type: 'boolean', default: 'false' },
+      { name: 'showSizeChanger', description: t.propShowSizeChanger, type: 'boolean', default: 'false' },
+      { name: 'pageSizeOptions', description: t.propPageSizeOptions, type: 'number[]', default: '[10, 20, 50, 100]' },
+      { name: 'showQuickJumper', description: t.propShowQuickJumper, type: 'boolean', default: 'false' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const paginationCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-bg', default: '#ffffff', description: t.cssBg },
+      { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: t.cssBorder },
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
+      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssTextSecondary },
+      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssTextDisabled },
+      { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
+      { name: 'sg-color-primary-hover', default: '#4096ff', description: t.cssPrimaryHover },
+      { name: 'sg-color-white', default: '#ffffff', description: t.cssWhite },
+      { name: 'sg-height-md', default: '32px', description: t.cssHeightMd },
+      { name: 'sg-padding-sm', default: '8px', description: t.cssPaddingSm },
+      { name: 'sg-margin-xs', default: '4px', description: t.cssMarginXs },
+      { name: 'sg-font-size-sm', default: '12px', description: t.cssFontSizeSm },
+      { name: 'sg-border-radius', default: '6px', description: t.cssBorderRadius },
+      { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
+      { name: 'sg-transition-duration', default: '180ms', description: t.cssTransitionDuration },
+      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Pagination"
-      description="Page navigation with ellipsis folding, optional size changer / quick jumper / total label, and a compact simple mode."
-      whenToUse={[
-        'Long tables or lists — 50+ rows is the usual threshold.',
-        'Paged API responses where the full set would be too heavy to stream.',
-        'Search-results grids that need deep-link page numbers in the URL.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Prev / next + numbered chips." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicPagination />
       </DemoBox>
 
       <DemoBox
-        title="Many pages"
-        description="Ellipsis folding once total > 7 pages."
+        title={t.demoManyPagesTitle}
+        description={t.demoManyPagesDesc}
         code={ManyPagesSource}
       >
         <ManyPagesPagination />
       </DemoBox>
 
       <DemoBox
-        title="Simple"
-        description="Compact 'current / total' flanked by prev / next."
+        title={t.demoSimpleTitle}
+        description={t.demoSimpleDesc}
         code={SimpleSource}
       >
         <SimplePagination />
       </DemoBox>
 
       <DemoBox
-        title="Show total"
-        description="Boolean for 'Total N', or a function for a custom range label."
+        title={t.demoShowTotalTitle}
+        description={t.demoShowTotalDesc}
         code={ShowTotalSource}
       >
         <ShowTotalPagination />
       </DemoBox>
 
       <DemoBox
-        title="Size changer + quick jumper"
-        description="Full enterprise chrome: total, size, and jump-to-page."
+        title={t.demoSizeChangerTitle}
+        description={t.demoSizeChangerDesc}
         code={SizeChangerSource}
       >
         <SizeChangerPagination />
       </DemoBox>
 
       <DemoBox
-        title="Disabled"
-        description="Fade + pointer-events: none while the table is loading."
+        title={t.demoDisabledTitle}
+        description={t.demoDisabledDesc}
         code={DisabledSource}
       >
         <DisabledPagination />
       </DemoBox>
 
       <DemoBox
-        title="Tokens override"
-        description="Tint --sg-color-primary for the active chip, bump --sg-border-radius for pills."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={TokensOverrideSource}
       >
         <TokensOverridePagination />
       </DemoBox>
 
       <DemoBox
-        title="Unstyled"
-        description="Keep clamping + a11y; paint the buttons yourself."
+        title={t.demoUnstyledTitle}
+        description={t.demoUnstyledDesc}
         code={UnstyledSource}
       >
         <UnstyledPagination />
       </DemoBox>
 
-      <PropsTable title="Pagination API" data={paginationProps} />
+      <PropsTable title={t.tablePaginationApi} data={paginationProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Pagination has no dedicated tokens — the active chip uses `--sg-color-primary`, idle chips follow the form chip palette. Bump `--sg-border-radius` to 999px for pill shapes; retint `--sg-color-primary` to rebrand."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={paginationCssVars}
       />
     </ComponentDoc>
