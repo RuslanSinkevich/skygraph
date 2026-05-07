@@ -477,6 +477,7 @@ export function Tree(props: TreeProps) {
   const virtualOffset = visibleSlice.startIndex * itemHeight
 
   const totalHeight = flatNodes.length * itemHeight
+  const virtualBottomPad = Math.max(0, totalHeight - virtualOffset - visibleNodes.length * itemHeight)
 
   // scrollToKey prop
   useEffect(() => {
@@ -726,7 +727,7 @@ export function Tree(props: TreeProps) {
         <div
           ref={containerRef}
           className="sg-tree-virtual-container"
-          style={{ height, overflow: 'auto', width: '100%' }}
+          style={{ height, overflow: 'auto' }}
           onScroll={handleScroll}
           onKeyDown={handleKeyDown}
           role="tree"
@@ -734,22 +735,12 @@ export function Tree(props: TreeProps) {
         >
           <div
             style={{
-              height: totalHeight,
-              position: 'relative',
-              width: '100%',
+              paddingTop: virtualOffset,
+              paddingBottom: virtualBottomPad,
+              boxSizing: 'border-box',
             }}
           >
-            <div
-              style={{
-                position: 'absolute',
-                top: virtualOffset,
-                left: 0,
-                right: 0,
-                width: '100%',
-              }}
-            >
-              {renderNodes(visibleNodes)}
-            </div>
+            {renderNodes(visibleNodes)}
           </div>
         </div>
       </div>
