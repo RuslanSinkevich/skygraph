@@ -1,5 +1,17 @@
-import { useRef, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
-import type { DashboardWidget } from './Dashboard'
+import {
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+} from 'react'
+import { DashboardWidgetView } from './Dashboard'
+import type {
+  DashboardCommonProps,
+  DashboardWidget,
+  WidgetAction,
+} from './types'
 
 /**
  * Patch describing a layout change for one widget. Only the changed fields
@@ -11,17 +23,13 @@ export type DashboardLayoutPatch = Partial<Pick<DashboardWidget, 'x' | 'y' | 'w'
  * Callback signature: receives the full updated widgets array (already
  * patched with the new `(x, y, w, h)` for the affected widget). Designed
  * for `onLayoutChange={setWidgets}`.
- *
- * The second argument is metadata describing what just changed — useful
- * if the caller needs to log / audit / persist a single widget without
- * diffing the whole array.
  */
 export type DashboardLayoutChange = (
   next: DashboardWidget[],
   meta: { widgetId: string; patch: DashboardLayoutPatch },
 ) => void
 
-export interface DashboardEditorProps {
+export interface DashboardEditorProps extends DashboardCommonProps {
   /** Widgets pinned to grid cells. */
   widgets: readonly DashboardWidget[]
   /**
@@ -47,6 +55,24 @@ export interface DashboardEditorProps {
   className?: string
   /** Root wrapper inline style. */
   style?: CSSProperties
+  /**
+   * Optional Refresh handler. When provided, the default action set
+   * (used when a widget doesn't declare its own `actions`) gains a
+   * `Refresh` entry that calls this with the widget data.
+   */
+  onWidgetRefresh?: (widget: DashboardWidget) => void
+  /**
+   * Optional Settings handler. Same default-action wiring as
+   * `onWidgetRefresh`.
+   */
+  onWidgetSettings?: (widget: DashboardWidget) => void
+  /**
+   * Optional Remove handler. When omitted, the default `Remove` action
+   * removes the widget from the layout via `onLayoutChange` (passing
+   * the same array minus the widget — `meta.patch` is empty in that
+   * case so consumers can detect a removal).
+   */
+  onWidgetRemove?: (widget: DashboardWidget) => void
 }
 
 const MIN_W = 1
@@ -86,10 +112,11 @@ function clamp(v: number, lo: number, hi: number) {
  *     wheel-blocking, no React state during drag — we only `onLayoutChange`
  *     when the snapped cell actually changes).
  *   - Cell width is computed from `gridRef.getBoundingClientRect()` at drag
- *     start. This means responsive containers stay accurate even when the
- *     parent re-flows between drags.
+ *     start so responsive containers stay accurate between drags.
  *   - Movement uses `Math.round(delta / cell)` so the widget snaps to the
- *     nearest cell while the pointer is moving (predictable, no overshoot).
+ *     nearest cell while the pointer is moving.
+ *   - Per-widget `actions` (the `⋯` menu) and right-click `onWidgetContextMenu`
+ *     work the same way as in the read-only `Dashboard`.
  */
 export function DashboardEditor({
   widgets,
@@ -101,9 +128,15 @@ export function DashboardEditor({
   unstyled = false,
   className,
   style,
+  onWidgetContextMenu,
+  onDashboardContextMenu,
+  onWidgetRefresh,
+  onWidgetSettings,
+  onWidgetRemove,
 }: DashboardEditorProps) {
   const gridRef = useRef<HTMLDivElement | null>(null)
   const dragRef = useRef<DragState | null>(null)
+  const [maximizedId, setMaximizedId] = useState<string | null>(null)
   // Latest widgets are read inside drag handlers via this ref so that
   // re-renders during drag don't break stale-closure equality checks.
   const widgetsRef = useRef(widgets)
@@ -117,6 +150,14 @@ export function DashboardEditor({
     const list = widgetsRef.current
     const next = list.map((w) => (w.id === widgetId ? { ...w, ...patch } : w))
     cb(next, { widgetId, patch })
+  }
+
+  function emitRemove(widgetId: string) {
+    const cb = onChangeRef.current
+    if (!cb) return
+    const list = widgetsRef.current
+    const next = list.filter((w) => w.id !== widgetId)
+    cb(next, { widgetId, patch: {} })
   }
 
   function startDrag(
@@ -202,6 +243,52 @@ export function DashboardEditor({
     window.addEventListener('pointercancel', onUp)
   }
 
+  // Default action set used when a widget doesn't declare its own
+  // `actions`. Synthesised once per render — the underlying callbacks
+  // are read from props on every invocation, so memoising further
+  // doesn't buy us anything.
+  const defaultActions = useMemo<readonly WidgetAction[]>(() => {
+    if (!onLayoutChange) return []
+    const list: WidgetAction[] = []
+    if (onWidgetRefresh) {
+      list.push({
+        id: '__refresh__',
+        label: 'Refresh',
+        onClick: (w) => onWidgetRefresh(w),
+      })
+    }
+    list.push({
+      id: '__maximize__',
+      label: 'Maximize',
+      onClick: () => {
+        // Real toggle handled by `WidgetActionsMenu` via
+        // `onActivateMaximize` — this onClick is only here to satisfy
+        // the `WidgetAction` type. The id sentinel `__maximize__`
+        // routes execution through the parent toggle.
+      },
+    })
+    if (onWidgetSettings) {
+      list.push({
+        id: '__settings__',
+        label: 'Settings',
+        onClick: (w) => onWidgetSettings(w),
+      })
+    }
+    list.push({
+      id: '__remove__',
+      label: 'Remove',
+      variant: 'danger',
+      onClick: (w) => {
+        if (onWidgetRemove) {
+          onWidgetRemove(w)
+          return
+        }
+        emitRemove(w.id)
+      },
+    })
+    return list
+  }, [onLayoutChange, onWidgetRefresh, onWidgetSettings, onWidgetRemove])
+
   const wrapperClass = unstyled
     ? className
     : ['sg-dashboard', 'sg-dashboard-editor', className].filter(Boolean).join(' ')
@@ -214,7 +301,12 @@ export function DashboardEditor({
     ...style,
   }
 
-  const headerCursor = editable ? 'grab' : undefined
+  const handleRootContextMenu = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (!onDashboardContextMenu) return
+    if (e.target !== e.currentTarget) return
+    e.preventDefault()
+    onDashboardContextMenu(e)
+  }
 
   return (
     <div
@@ -224,54 +316,28 @@ export function DashboardEditor({
       role="region"
       aria-label="Dashboard editor"
       data-edit-mode={editable ? 'true' : 'false'}
+      onContextMenu={onDashboardContextMenu ? handleRootContextMenu : undefined}
     >
-      {widgets.map((w) => {
-        const widgetClass = unstyled
-          ? w.className
-          : ['sg-dashboard-widget', w.className].filter(Boolean).join(' ')
-        const widgetStyle: CSSProperties = {
-          gridColumn: `${w.x} / span ${w.w ?? 1}`,
-          gridRow: `${w.y} / span ${w.h ?? 1}`,
-          position: 'relative',
-          ...w.style,
-        }
-        const content = w.children ?? w.render?.() ?? null
-        return (
-          <div
-            key={w.id}
-            className={widgetClass}
-            style={widgetStyle}
-            data-widget-id={w.id}
-          >
-            <div
-              className={unstyled ? undefined : 'sg-dashboard-widget-header'}
-              data-role="drag-handle"
-              onPointerDown={editable ? (e) => startDrag(e, w, 'move') : undefined}
-              style={{
-                touchAction: editable ? 'none' : undefined,
-                cursor: headerCursor,
-                userSelect: editable ? 'none' : undefined,
-              }}
-            >
-              {w.title ?? null}
-            </div>
-            <div className={unstyled ? undefined : 'sg-dashboard-widget-body'}>
-              {content}
-            </div>
-            {editable && (
-              <div
-                className={unstyled ? undefined : 'sg-dashboard-editor-resize-handle'}
-                data-role="resize-handle"
-                role="button"
-                aria-label="Resize widget"
-                tabIndex={-1}
-                onPointerDown={(e) => startDrag(e, w, 'resize')}
-                style={{ touchAction: 'none' }}
-              />
-            )}
-          </div>
-        )
-      })}
+      {widgets.map((w) => (
+        <DashboardWidgetView
+          key={w.id}
+          widget={w}
+          unstyled={unstyled}
+          isMaximized={maximizedId === w.id}
+          totalColumns={columns}
+          onWidgetContextMenu={onWidgetContextMenu}
+          onToggleMaximize={() =>
+            setMaximizedId((cur) => (cur === w.id ? null : w.id))
+          }
+          editor={{
+            editable,
+            showResizeHandle: editable,
+            onPointerDownDragHandle: (e, widget) => startDrag(e, widget, 'move'),
+            onPointerDownResizeHandle: (e, widget) => startDrag(e, widget, 'resize'),
+          }}
+          defaultActions={defaultActions}
+        />
+      ))}
     </div>
   )
 }

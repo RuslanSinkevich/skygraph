@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { Dashboard } from '../index'
-import type { DashboardWidget } from '../index'
+import type { DashboardWidget, WidgetAction } from '../index'
 import { DashboardEditor } from '../components/complex/Dashboard'
 
 const sampleWidgets: DashboardWidget[] = [
@@ -293,5 +293,176 @@ describe('DashboardEditor', () => {
     expect(root.style.gridTemplateColumns).toBe('repeat(6, 1fr)')
     expect(root.style.gridAutoRows).toBe('120px')
     expect(root.style.gap).toBe('24px')
+  })
+})
+
+// ─── Hover actions + context menu (Tab C) ───────────────────────────────────
+
+describe('Dashboard — widget actions menu', () => {
+  function actionWidgets(actions: readonly WidgetAction[]): DashboardWidget[] {
+    return [{ id: 'kpi', title: 'KPI', x: 1, y: 1, w: 2, h: 2, actions, children: <span>kpi</span> }]
+  }
+
+  it('omits the more button when the widget declares no actions', () => {
+    const { container } = render(<Dashboard widgets={[
+      { id: 'a', title: 'A', x: 1, y: 1, children: <span>a</span> },
+    ]} />)
+    expect(container.querySelector('[data-role="widget-more-button"]')).toBeNull()
+    expect(container.querySelector('[data-sg-actions]')).toBeNull()
+  })
+
+  it('flips data-sg-actions to "visible" on widget hover', () => {
+    const onClick = vi.fn()
+    const { container } = render(
+      <Dashboard widgets={actionWidgets([{ id: 'r', label: 'Refresh', onClick }])} />,
+    )
+    const widget = container.querySelector('[data-widget-id="kpi"]') as HTMLElement
+    expect(widget.getAttribute('data-sg-actions')).toBe('hidden')
+    fireEvent.mouseEnter(widget)
+    expect(widget.getAttribute('data-sg-actions')).toBe('visible')
+    fireEvent.mouseLeave(widget)
+    expect(widget.getAttribute('data-sg-actions')).toBe('hidden')
+  })
+
+  it('opens the actions menu when the more button is clicked', () => {
+    const { container } = render(
+      <Dashboard widgets={actionWidgets([{ id: 'r', label: 'Refresh', onClick: () => {} }])} />,
+    )
+    expect(container.querySelector('[data-role="widget-actions-menu"]')).toBeNull()
+    const trigger = container.querySelector('[data-role="widget-more-button"]') as HTMLButtonElement
+    fireEvent.click(trigger)
+    const menu = container.querySelector('[data-role="widget-actions-menu"]')
+    expect(menu).not.toBeNull()
+    expect(menu!.querySelector('[data-action-id="r"]')).not.toBeNull()
+  })
+
+  it('clicking an action invokes onClick with the widget and closes the menu', () => {
+    const onClick = vi.fn()
+    const { container } = render(
+      <Dashboard widgets={actionWidgets([{ id: 'r', label: 'Refresh', onClick }])} />,
+    )
+    fireEvent.click(container.querySelector('[data-role="widget-more-button"]') as HTMLElement)
+    fireEvent.click(container.querySelector('[data-action-id="r"]') as HTMLElement)
+    expect(onClick).toHaveBeenCalledTimes(1)
+    const arg = onClick.mock.calls[0]![0] as DashboardWidget
+    expect(arg.id).toBe('kpi')
+    // Menu closes after activation.
+    expect(container.querySelector('[data-role="widget-actions-menu"]')).toBeNull()
+  })
+
+  it('hidden() predicate filters out per-widget actions', () => {
+    const onClick = vi.fn()
+    const { container } = render(
+      <Dashboard
+        widgets={actionWidgets([
+          { id: 'visible', label: 'Visible', onClick },
+          { id: 'gone', label: 'Gone', onClick, hidden: () => true },
+        ])}
+      />,
+    )
+    fireEvent.click(container.querySelector('[data-role="widget-more-button"]') as HTMLElement)
+    expect(container.querySelector('[data-action-id="visible"]')).not.toBeNull()
+    expect(container.querySelector('[data-action-id="gone"]')).toBeNull()
+  })
+})
+
+describe('Dashboard — context menu', () => {
+  const widgets: DashboardWidget[] = [
+    { id: 'kpi', title: 'KPI', x: 1, y: 1, children: <span>kpi</span> },
+  ]
+
+  it('calls onWidgetContextMenu with preventDefault on right click', () => {
+    const onWidgetContextMenu = vi.fn()
+    const { container } = render(
+      <Dashboard widgets={widgets} onWidgetContextMenu={onWidgetContextMenu} />,
+    )
+    const widget = container.querySelector('[data-widget-id="kpi"]') as HTMLElement
+    const ev = fireEvent.contextMenu(widget)
+    expect(onWidgetContextMenu).toHaveBeenCalledTimes(1)
+    const [event, w] = onWidgetContextMenu.mock.calls[0]!
+    expect((w as DashboardWidget).id).toBe('kpi')
+    expect((event as { defaultPrevented: boolean }).defaultPrevented).toBe(true)
+    expect(ev).toBe(false) // contextMenu returns false when default was prevented
+  })
+
+  it('calls onDashboardContextMenu when the background is right-clicked', () => {
+    const onDashboardContextMenu = vi.fn()
+    const { container } = render(
+      <Dashboard widgets={widgets} onDashboardContextMenu={onDashboardContextMenu} />,
+    )
+    const root = container.querySelector('.sg-dashboard') as HTMLElement
+    fireEvent.contextMenu(root)
+    expect(onDashboardContextMenu).toHaveBeenCalledTimes(1)
+  })
+
+  it('does NOT preventDefault when no context menu handler is provided', () => {
+    // The default browser menu must keep working when the consumer
+    // hasn't opted in. We assert this by checking the React onContextMenu
+    // attribute isn't wired (no handler → no preventDefault).
+    const { container } = render(<Dashboard widgets={widgets} />)
+    const widget = container.querySelector('[data-widget-id="kpi"]') as HTMLElement
+    const result = fireEvent.contextMenu(widget)
+    // fireEvent returns true when the event was NOT preventDefault'd.
+    expect(result).toBe(true)
+  })
+})
+
+describe('DashboardEditor — defaults & actions', () => {
+  const baseWidgets: DashboardWidget[] = [
+    { id: 'kpi', title: 'KPI', x: 1, y: 1, w: 2, h: 2, children: <span>kpi</span> },
+  ]
+
+  it('synthesises a default actions menu when widget has no actions and onLayoutChange is set', () => {
+    const onLayoutChange = vi.fn()
+    const { container } = render(
+      <DashboardEditor widgets={baseWidgets} onLayoutChange={onLayoutChange} />,
+    )
+    fireEvent.click(container.querySelector('[data-role="widget-more-button"]') as HTMLElement)
+    expect(container.querySelector('[data-action-id="__maximize__"]')).not.toBeNull()
+    expect(container.querySelector('[data-action-id="__remove__"]')).not.toBeNull()
+    // Refresh / Settings only when their callbacks are wired.
+    expect(container.querySelector('[data-action-id="__refresh__"]')).toBeNull()
+    expect(container.querySelector('[data-action-id="__settings__"]')).toBeNull()
+  })
+
+  it('does NOT render default actions when onLayoutChange is missing', () => {
+    const { container } = render(<DashboardEditor widgets={baseWidgets} />)
+    expect(container.querySelector('[data-role="widget-more-button"]')).toBeNull()
+  })
+
+  it('default Remove action drops the widget via onLayoutChange', () => {
+    const onLayoutChange = vi.fn()
+    const { container } = render(
+      <DashboardEditor
+        widgets={[
+          { id: 'a', title: 'A', x: 1, y: 1, children: <span>a</span> },
+          { id: 'b', title: 'B', x: 3, y: 1, children: <span>b</span> },
+        ]}
+        onLayoutChange={onLayoutChange}
+      />,
+    )
+    const widgetA = container.querySelector('[data-widget-id="a"]') as HTMLElement
+    fireEvent.click(widgetA.querySelector('[data-role="widget-more-button"]') as HTMLElement)
+    fireEvent.click(widgetA.querySelector('[data-action-id="__remove__"]') as HTMLElement)
+    expect(onLayoutChange).toHaveBeenCalledTimes(1)
+    const [next, meta] = onLayoutChange.mock.calls[0]!
+    expect((next as DashboardWidget[]).map((w) => w.id)).toEqual(['b'])
+    expect(meta).toEqual({ widgetId: 'a', patch: {} })
+  })
+
+  it('Maximize action toggles data-sg-maximized on the widget', () => {
+    const onLayoutChange = vi.fn()
+    const { container } = render(
+      <DashboardEditor widgets={baseWidgets} onLayoutChange={onLayoutChange} />,
+    )
+    const widget = container.querySelector('[data-widget-id="kpi"]') as HTMLElement
+    expect(widget.getAttribute('data-sg-maximized')).toBeNull()
+    fireEvent.click(widget.querySelector('[data-role="widget-more-button"]') as HTMLElement)
+    fireEvent.click(widget.querySelector('[data-action-id="__maximize__"]') as HTMLElement)
+    expect(widget.getAttribute('data-sg-maximized')).toBe('true')
+    // Click again — label is now "Restore", id is still __maximize__.
+    fireEvent.click(widget.querySelector('[data-role="widget-more-button"]') as HTMLElement)
+    fireEvent.click(widget.querySelector('[data-action-id="__maximize__"]') as HTMLElement)
+    expect(widget.getAttribute('data-sg-maximized')).toBeNull()
   })
 })

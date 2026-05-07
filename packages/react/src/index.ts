@@ -260,8 +260,17 @@ export { printElement, buildPrintHtml, buildPageRule } from './utils/print'
 export type { PrintOptions, PrintableProp } from './utils/print'
 
 // Dashboard (static-layout grid for widgets)
-export { Dashboard } from './components/complex/Dashboard'
-export type { DashboardProps, DashboardWidget } from './components/complex/Dashboard'
+export { Dashboard, DashboardEditor } from './components/complex/Dashboard'
+export type {
+  DashboardProps,
+  DashboardWidget,
+  WidgetAction,
+  DashboardEditorProps,
+  DashboardLayoutChange,
+  DashboardLayoutPatch,
+  DashboardContextMenuHandler,
+  DashboardWidgetContextMenuHandler,
+} from './components/complex/Dashboard'
 
 // Gantt (task bars over a discrete time axis)
 export { Gantt } from './components/complex/Gantt'
