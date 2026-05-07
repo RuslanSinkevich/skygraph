@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useSliderDocStrings } from './slider-doc/useSliderDocStrings'
 
 import { BasicSlider } from './slider/Basic.demo'
 import BasicSource from './slider/Basic.demo?raw'
@@ -16,80 +19,84 @@ import TokensOverrideSource from './slider/TokensOverride.demo?raw'
 import { UnstyledSlider } from './slider/Unstyled.demo'
 import UnstyledSource from './slider/Unstyled.demo?raw'
 
-const sliderProps: PropDef[] = [
-  { name: 'value', description: 'Controlled numeric value', type: 'number' },
-  { name: 'defaultValue', description: 'Initial value when uncontrolled', type: 'number', default: '0' },
-  { name: 'min', description: 'Lower bound', type: 'number', default: '0' },
-  { name: 'max', description: 'Upper bound', type: 'number', default: '100' },
-  { name: 'step', description: 'Increment between valid values (pointer + keyboard)', type: 'number', default: '1' },
-  { name: 'onChange', description: 'Fires on every committed value change', type: '(value: number) => void' },
-  { name: 'disabled', description: 'Block pointer and keyboard input', type: 'boolean', default: 'false' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop SkyGraph classes (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const sliderCssVars: CssVarDef[] = [
-  {
-    name: 'sg-slider-min-inline-size',
-    default: 'calc(8 * var(--sg-font-size))',
-    description: 'Minimum width (flex/grid); derived from `--sg-font-size`, override freely',
-  },
-  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Fill color and handle border color' },
-  { name: 'sg-color-primary-bg', default: 'rgba(22, 119, 255, 0.1)', description: 'Handle focus ring color' },
-  { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: 'Track (rail) color' },
-  { name: 'sg-color-white', default: '#ffffff', description: 'Handle background color' },
-  { name: 'sg-padding-sm', default: '12px', description: 'Vertical padding above/below the rail (clickable area)' },
-  { name: 'sg-transition-duration', default: '180ms', description: 'Handle box-shadow transition on hover' },
-]
-
 export function SliderDemo() {
+  const t = useSliderDocStrings()
+
+  const sliderProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'value', description: t.propValue, type: 'number' },
+      { name: 'defaultValue', description: t.propDefaultValue, type: 'number', default: '0' },
+      { name: 'min', description: t.propMin, type: 'number', default: '0' },
+      { name: 'max', description: t.propMax, type: 'number', default: '100' },
+      { name: 'step', description: t.propStep, type: 'number', default: '1' },
+      { name: 'onChange', description: t.propOnChange, type: '(value: number) => void' },
+      { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const sliderCssVars = useMemo<CssVarDef[]>(
+    () => [
+      {
+        name: 'sg-slider-min-inline-size',
+        default: 'calc(8 * var(--sg-font-size))',
+        description: t.cssSgSliderMinInlineSize,
+      },
+      { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
+      { name: 'sg-color-primary-bg', default: 'rgba(22, 119, 255, 0.1)', description: t.cssSgColorPrimaryBg },
+      { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: t.cssSgColorBorder },
+      { name: 'sg-color-white', default: '#ffffff', description: t.cssSgColorWhite },
+      { name: 'sg-padding-sm', default: '12px', description: t.cssSgPaddingSm },
+      { name: 'sg-transition-duration', default: '180ms', description: t.cssSgTransitionDuration },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Slider"
-      description="Horizontal numeric slider with full keyboard support (arrow keys respect `step`). Emits a `number`, always within `[min, max]`."
-      whenToUse={[
-        'Pick a number where approximate is fine: volume, brightness, opacity.',
-        'Any bounded setting with a visual "fill" that helps users feel the scale.',
-        'Paired with an `InputNumber` when precise typing matters.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Controlled slider with live readout." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicSlider />
       </DemoBox>
 
-      <DemoBox title="Min / Max / Step" description="Custom ranges and step sizes." code={MinMaxStepSource}>
+      <DemoBox title={t.demoMinMaxStepTitle} description={t.demoMinMaxStepDesc} code={MinMaxStepSource}>
         <MinMaxStepSlider />
       </DemoBox>
 
-      <DemoBox title="Slider + number input" description="Two controls sharing one state." code={WithValueSource}>
+      <DemoBox title={t.demoWithValueTitle} description={t.demoWithValueDesc} code={WithValueSource}>
         <WithValueSlider />
       </DemoBox>
 
-      <DemoBox title="Disabled" description="Greyed out, no interaction." code={DisabledSource}>
+      <DemoBox title={t.demoDisabledTitle} description={t.demoDisabledDesc} code={DisabledSource}>
         <DisabledSlider />
       </DemoBox>
 
-      <DemoBox title="Inside a Form" description="Slider plugged into `<Field>`." code={InFormSource}>
+      <DemoBox title={t.demoInFormTitle} description={t.demoInFormDesc} code={InFormSource}>
         <InFormSlider />
       </DemoBox>
 
       <DemoBox
-        title="Tokens override"
-        description="Scope global tokens on a wrapper to rebrand."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={TokensOverrideSource}
       >
         <TokensOverrideSlider />
       </DemoBox>
 
-      <DemoBox title="Unstyled" description="DOM & ARIA stay; classes drop." code={UnstyledSource}>
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledSlider />
       </DemoBox>
 
-      <PropsTable title="Slider API" data={sliderProps} />
+      <PropsTable title={t.tableSliderApi} data={sliderProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="The root stretches with `width: 100%` and `--sg-slider-min-inline-size`. `--sg-color-primary` paints the fill and handle border; `--sg-color-border` the rail."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={sliderCssVars}
       />
     </ComponentDoc>

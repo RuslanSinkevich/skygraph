@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useAutoCompleteDocStrings } from './autocomplete-doc/useAutoCompleteDocStrings'
 
 import { BasicAutoComplete } from './autocomplete/Basic.demo'
 import BasicSource from './autocomplete/Basic.demo?raw'
@@ -16,97 +19,104 @@ import TokensOverrideSource from './autocomplete/TokensOverride.demo?raw'
 import { UnstyledAutoComplete } from './autocomplete/Unstyled.demo'
 import UnstyledSource from './autocomplete/Unstyled.demo?raw'
 
-const autoCompleteProps: PropDef[] = [
-  { name: 'value', description: 'Controlled text value', type: 'string' },
-  { name: 'defaultValue', description: 'Initial value when uncontrolled', type: 'string' },
-  { name: 'options', description: 'Suggestion rows (filtered by label)', type: 'AutoCompleteOption[]' },
-  { name: 'placeholder', description: 'Input placeholder', type: 'string' },
-  { name: 'onChange', description: 'Fires whenever the text changes (typing or pick)', type: '(value: string) => void' },
-  { name: 'onSearch', description: 'Fires on every keystroke — use for async lookups', type: '(query: string) => void' },
-  { name: 'onSelect', description: 'Fires when a suggestion row is clicked', type: '(value, option) => void' },
-  { name: 'onBlur', description: 'Fires when the input loses focus', type: '() => void' },
-  { name: 'size', description: 'Height preset (matches Input)', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'disabled', description: 'Block interaction', type: 'boolean', default: 'false' },
-  { name: 'loading', description: 'Show inline spinner and block interaction', type: 'boolean', default: 'false' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop SkyGraph classes (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const optionProps: PropDef[] = [
-  { name: 'value', description: 'String written to the input on pick', type: 'string' },
-  { name: 'label', description: 'Text shown in the list + used for filtering', type: 'string' },
-]
-
-const autoCompleteCssVars: CssVarDef[] = [
-  { name: 'sg-input-*', default: '—', description: 'AutoComplete reuses the full --sg-input-* group for the field itself — see Input for the list.' },
-  { name: 'sg-color-bg-elevated', default: '#ffffff', description: 'Dropdown background' },
-  { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: 'Highlight on suggestion hover' },
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Suggestion text color' },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Inline spinner color during loading' },
-  { name: 'sg-border-radius', default: '6px', description: 'Dropdown radius' },
-  { name: 'sg-shadow-lg', default: '0 10px 30px rgba(0, 0, 0, 0.12)', description: 'Dropdown elevation' },
-  { name: 'sg-padding-xs', default: '8px', description: 'Vertical dropdown padding & option padding-top/bottom' },
-  { name: 'sg-padding-md', default: '16px', description: 'Option horizontal padding' },
-  { name: 'sg-transition-duration', default: '180ms', description: 'Option hover background transition' },
-]
-
 export function AutoCompleteDemo() {
+  const t = useAutoCompleteDocStrings()
+
+  const autoCompleteProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'value', description: t.propValue, type: 'string' },
+      { name: 'defaultValue', description: t.propDefaultValue, type: 'string' },
+      { name: 'options', description: t.propOptions, type: 'AutoCompleteOption[]' },
+      { name: 'placeholder', description: t.propPlaceholder, type: 'string' },
+      { name: 'onChange', description: t.propOnChange, type: '(value: string) => void' },
+      { name: 'onSearch', description: t.propOnSearch, type: '(query: string) => void' },
+      { name: 'onSelect', description: t.propOnSelect, type: '(value, option) => void' },
+      { name: 'onBlur', description: t.propOnBlur, type: '() => void' },
+      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
+      { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const optionProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'value', description: t.propOptionValue, type: 'string' },
+      { name: 'label', description: t.propOptionLabel, type: 'string' },
+    ],
+    [t],
+  )
+
+  const autoCompleteCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-input-*', default: '—', description: t.cssSgInputAll },
+      { name: 'sg-color-bg-elevated', default: '#ffffff', description: t.cssSgColorBgElevated },
+      { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgHover },
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
+      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
+      { name: 'sg-border-radius', default: '6px', description: t.cssSgBorderRadius },
+      { name: 'sg-shadow-lg', default: '0 10px 30px rgba(0, 0, 0, 0.12)', description: t.cssSgShadowLg },
+      { name: 'sg-padding-xs', default: '8px', description: t.cssSgPaddingXs },
+      { name: 'sg-padding-md', default: '16px', description: t.cssSgPaddingMd },
+      { name: 'sg-transition-duration', default: '180ms', description: t.cssSgTransitionDuration },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="AutoComplete"
-      description="Text input with a dropdown of filtered suggestions. The typed string is the committed value — selecting a row just writes it back."
-      whenToUse={[
-        'Free-form text where a few known values are likely (cities, emails, tags).',
-        'Email prefixes: auto-append known domains after the user types a local part.',
-        'Async lookup from a server — use `onSearch` + `loading` to show progress.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Static suggestions filtered client-side by label." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicAutoComplete />
       </DemoBox>
 
       <DemoBox
-        title="Email domain suggestions"
-        description="Derive the list from the current input — classic mail-client behaviour."
+        title={t.demoEmailTitle}
+        description={t.demoEmailDesc}
         code={EmailDomainsSource}
       >
         <EmailDomainsAutoComplete />
       </DemoBox>
 
       <DemoBox
-        title="Async search"
-        description="Debounced onSearch + loading state for server lookups."
+        title={t.demoAsyncTitle}
+        description={t.demoAsyncDesc}
         code={AsyncSearchSource}
       >
         <AsyncSearchAutoComplete />
       </DemoBox>
 
-      <DemoBox title="Sizes" description="Small / default / large, aligned with Input." code={SizesSource}>
+      <DemoBox title={t.demoSizesTitle} description={t.demoSizesDesc} code={SizesSource}>
         <SizesAutoComplete />
       </DemoBox>
 
-      <DemoBox title="States" description="Disabled and loading." code={StatesSource}>
+      <DemoBox title={t.demoStatesTitle} description={t.demoStatesDesc} code={StatesSource}>
         <StatesAutoComplete />
       </DemoBox>
 
       <DemoBox
-        title="Tokens override"
-        description="Scope --sg-input-* and global tokens to rebrand one instance."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={TokensOverrideSource}
       >
         <TokensOverrideAutoComplete />
       </DemoBox>
 
-      <DemoBox title="Unstyled" description="Headless mode — semantics only, no SkyGraph classes." code={UnstyledSource}>
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledAutoComplete />
       </DemoBox>
 
-      <PropsTable title="AutoComplete API" data={autoCompleteProps} />
-      <PropsTable title="AutoCompleteOption" data={optionProps} />
+      <PropsTable title={t.tableAutoCompleteApi} data={autoCompleteProps} />
+      <PropsTable title={t.tableOptionApi} data={optionProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="AutoComplete reuses the full `--sg-input-*` group for the field itself; the dropdown uses the same globals as Select (bg-elevated, bg-hover, shadow-lg, border-radius)."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={autoCompleteCssVars}
       />
     </ComponentDoc>

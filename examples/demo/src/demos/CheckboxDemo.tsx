@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useCheckboxDocStrings } from './checkbox-doc/useCheckboxDocStrings'
 
 import { BasicCheckbox } from './checkbox/Basic.demo'
 import BasicSource from './checkbox/Basic.demo?raw'
@@ -16,76 +19,80 @@ import TokensOverrideSource from './checkbox/TokensOverride.demo?raw'
 import { UnstyledCheckbox } from './checkbox/Unstyled.demo'
 import UnstyledSource from './checkbox/Unstyled.demo?raw'
 
-const checkboxProps: PropDef[] = [
-  { name: 'checked', description: 'Controlled checked state', type: 'boolean' },
-  { name: 'defaultChecked', description: 'Initial state when uncontrolled', type: 'boolean', default: 'false' },
-  { name: 'indeterminate', description: 'Native indeterminate visual', type: 'boolean', default: 'false' },
-  { name: 'onChange', description: 'Fires with the new boolean', type: '(checked: boolean) => void' },
-  { name: 'disabled', description: 'Block interaction (inherits ConfigProvider)', type: 'boolean', default: 'false' },
-  { name: 'loading', description: 'Swap the input for an inline spinner', type: 'boolean', default: 'false' },
-  { name: 'children', description: 'Label content (ReactNode)', type: 'ReactNode' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop SkyGraph classes — keep semantics', type: 'boolean', default: 'false' },
-]
-
-const checkboxCssVars: CssVarDef[] = [
-  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Native accent-color (checked + indeterminate fill)' },
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Default label text color' },
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Label text color when disabled/loading' },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Inline spinner color during loading' },
-  { name: 'sg-font-size', default: '14px', description: 'Label font size' },
-  { name: 'sg-line-height', default: '1.5714', description: 'Label line-height' },
-  { name: 'sg-padding-sm', default: '12px', description: 'Gap between input and label' },
-]
-
 export function CheckboxDemo() {
+  const t = useCheckboxDocStrings()
+
+  const checkboxProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'checked', description: t.propChecked, type: 'boolean' },
+      { name: 'defaultChecked', description: t.propDefaultChecked, type: 'boolean', default: 'false' },
+      { name: 'indeterminate', description: t.propIndeterminate, type: 'boolean', default: 'false' },
+      { name: 'onChange', description: t.propOnChange, type: '(checked: boolean) => void' },
+      { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
+      { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
+      { name: 'children', description: t.propChildren, type: 'ReactNode' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const checkboxCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
+      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
+      { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
+      { name: 'sg-line-height', default: '1.5714', description: t.cssSgLineHeight },
+      { name: 'sg-padding-sm', default: '12px', description: t.cssSgPaddingSm },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Checkbox"
-      description="Binary toggle with optional indeterminate, disabled, loading states and rich labels. Works standalone or inside Form."
-      whenToUse={[
-        'Select one or more values from a list (news → release notes, beta flags).',
-        'As a parent "check all" for bulk-select scenarios.',
-        'For terms/privacy confirmations with validation.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Controlled checkbox with a label." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicCheckbox />
       </DemoBox>
 
-      <DemoBox title="States" description="All visual states in one column." code={StatesSource}>
+      <DemoBox title={t.demoStatesTitle} description={t.demoStatesDesc} code={StatesSource}>
         <StatesCheckbox />
       </DemoBox>
 
-      <DemoBox title="Check all" description="Parent + children with indeterminate." code={CheckAllSource}>
+      <DemoBox title={t.demoCheckAllTitle} description={t.demoCheckAllDesc} code={CheckAllSource}>
         <CheckAllCheckbox />
       </DemoBox>
 
-      <DemoBox title="Rich labels" description="ReactNode children — descriptions, links." code={RichLabelSource}>
+      <DemoBox title={t.demoRichLabelTitle} description={t.demoRichLabelDesc} code={RichLabelSource}>
         <RichLabelCheckbox />
       </DemoBox>
 
-      <DemoBox title="Inside a Form" description="Wrap with Field + valuePropName='checked'." code={InFormSource}>
+      <DemoBox title={t.demoInFormTitle} description={t.demoInFormDesc} code={InFormSource}>
         <InFormCheckbox />
       </DemoBox>
 
       <DemoBox
-        title="Tokens override"
-        description="Scope global tokens on a wrapper to re-skin."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={TokensOverrideSource}
       >
         <TokensOverrideCheckbox />
       </DemoBox>
 
-      <DemoBox title="Unstyled" description="Native input + label wrapper, no SkyGraph classes." code={UnstyledSource}>
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledCheckbox />
       </DemoBox>
 
       <PropsTable data={checkboxProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Checkbox has no component-specific tokens. The checkmark colour is driven by the native `accent-color` which inherits `--sg-color-primary`. Override globals on a scoped wrapper to re-skin."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={checkboxCssVars}
       />
     </ComponentDoc>

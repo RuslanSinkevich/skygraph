@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useRadioDocStrings } from './radio-doc/useRadioDocStrings'
 
 import { BasicRadio } from './radio/Basic.demo'
 import BasicSource from './radio/Basic.demo?raw'
@@ -14,79 +17,86 @@ import TokensOverrideSource from './radio/TokensOverride.demo?raw'
 import { UnstyledRadio } from './radio/Unstyled.demo'
 import UnstyledSource from './radio/Unstyled.demo?raw'
 
-const radioGroupProps: PropDef[] = [
-  { name: 'value', description: 'Controlled selected value', type: 'string | number' },
-  { name: 'defaultValue', description: 'Initial value when uncontrolled', type: 'string | number' },
-  { name: 'options', description: 'Radio options to render', type: 'RadioOption[]' },
-  { name: 'direction', description: 'Layout direction', type: "'horizontal' | 'vertical'", default: "'horizontal'" },
-  { name: 'onChange', description: 'Fires when the selected value changes', type: '(value) => void' },
-  { name: 'disabled', description: 'Disable the whole group', type: 'boolean', default: 'false' },
-  { name: 'loading', description: 'Show inline spinner next to the group', type: 'boolean', default: 'false' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop SkyGraph classes — native radios only', type: 'boolean', default: 'false' },
-]
-
-const radioOptionProps: PropDef[] = [
-  { name: 'value', description: 'Value committed to onChange', type: 'string | number' },
-  { name: 'label', description: 'Display label (ReactNode)', type: 'ReactNode' },
-  { name: 'disabled', description: 'Disable this specific option', type: 'boolean' },
-]
-
-const radioCssVars: CssVarDef[] = [
-  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Native accent-color (checked dot)' },
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Default label color' },
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Label color when option is disabled/loading' },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Inline spinner color during loading' },
-  { name: 'sg-font-size', default: '14px', description: 'Label font size' },
-  { name: 'sg-padding-md', default: '16px', description: 'Gap between options in the group' },
-  { name: 'sg-padding-xs', default: '8px', description: 'Gap between input and label' },
-]
-
 export function RadioDemo() {
+  const t = useRadioDocStrings()
+
+  const radioGroupProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'value', description: t.propValue, type: 'string | number' },
+      { name: 'defaultValue', description: t.propDefaultValue, type: 'string | number' },
+      { name: 'options', description: t.propOptions, type: 'RadioOption[]' },
+      { name: 'direction', description: t.propDirection, type: "'horizontal' | 'vertical'", default: "'horizontal'" },
+      { name: 'onChange', description: t.propOnChange, type: '(value) => void' },
+      { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
+      { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const radioOptionProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'value', description: t.propOptionValue, type: 'string | number' },
+      { name: 'label', description: t.propOptionLabel, type: 'ReactNode' },
+      { name: 'disabled', description: t.propOptionDisabled, type: 'boolean' },
+    ],
+    [t],
+  )
+
+  const radioCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
+      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
+      { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
+      { name: 'sg-padding-md', default: '16px', description: t.cssSgPaddingMd },
+      { name: 'sg-padding-xs', default: '8px', description: t.cssSgPaddingXs },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Radio"
-      description="Single-choice group. Comes as `RadioGroup` that owns the selection; individual radios are not meant to be used outside of it."
-      whenToUse={[
-        'Select exactly one value from 2–6 choices (plan tier, delivery method).',
-        'Inside a form where the radio is the primary answer.',
-        'When users benefit from seeing every option at once (unlike Select).',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Controlled RadioGroup with live value readout." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicRadio />
       </DemoBox>
 
-      <DemoBox title="Vertical" description="direction='vertical' for longer labels." code={VerticalSource}>
+      <DemoBox title={t.demoVerticalTitle} description={t.demoVerticalDesc} code={VerticalSource}>
         <VerticalRadio />
       </DemoBox>
 
-      <DemoBox title="States" description="Per-option disabled + group-level disabled / loading." code={DisabledStatesSource}>
+      <DemoBox title={t.demoStatesTitle} description={t.demoStatesDesc} code={DisabledStatesSource}>
         <DisabledStatesRadio />
       </DemoBox>
 
-      <DemoBox title="Inside a Form" description="RadioGroup wrapped in Field with validation." code={InFormSource}>
+      <DemoBox title={t.demoInFormTitle} description={t.demoInFormDesc} code={InFormSource}>
         <InFormRadio />
       </DemoBox>
 
       <DemoBox
-        title="Tokens override"
-        description="Scope global tokens to rebrand a single group."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={TokensOverrideSource}
       >
         <TokensOverrideRadio />
       </DemoBox>
 
-      <DemoBox title="Unstyled" description="Native radiogroup + inputs, no SkyGraph classes." code={UnstyledSource}>
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledRadio />
       </DemoBox>
 
-      <PropsTable title="RadioGroup API" data={radioGroupProps} />
-      <PropsTable title="RadioOption" data={radioOptionProps} />
+      <PropsTable title={t.tableRadioGroupApi} data={radioGroupProps} />
+      <PropsTable title={t.tableRadioOptionApi} data={radioOptionProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Radio has no component-specific tokens. The checked dot is driven by `accent-color: var(--sg-color-primary)`. Override globals on a scoped wrapper to re-skin."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={radioCssVars}
       />
     </ComponentDoc>

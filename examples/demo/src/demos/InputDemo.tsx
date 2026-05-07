@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useInputDocStrings } from './input-doc/useInputDocStrings'
 
 import { BasicInput } from './input/Basic.demo'
 import BasicSource from './input/Basic.demo?raw'
@@ -24,135 +27,142 @@ import InFormSource from './input/InForm.demo?raw'
 import { UnstyledInput } from './input/Unstyled.demo'
 import UnstyledSource from './input/Unstyled.demo?raw'
 
-const inputProps: PropDef[] = [
-  { name: 'value', description: 'Controlled text value', type: 'string' },
-  { name: 'defaultValue', description: 'Initial value when uncontrolled', type: 'string' },
-  { name: 'onChange', description: 'Fires with the next string on each keystroke', type: '(value: string) => void' },
-  { name: 'onBlur', description: 'Fires when the input loses focus', type: '() => void' },
-  { name: 'onFocus', description: 'Fires when the input gains focus', type: '() => void' },
-  { name: 'placeholder', description: 'Placeholder when empty', type: 'string' },
-  { name: 'type', description: 'Native HTML input type', type: "'text' | 'email' | 'password' | 'number'", default: "'text'" },
-  { name: 'size', description: 'Height / font-size preset', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'disabled', description: 'Block interaction', type: 'boolean', default: 'false' },
-  { name: 'loading', description: 'Show inline spinner and block interaction', type: 'boolean', default: 'false' },
-  { name: 'aria-invalid', description: 'Flip error styling + announce to AT', type: "boolean | 'false' | 'true' | 'grammar' | 'spelling'" },
-  { name: 'aria-required', description: 'Announce required state to AT', type: "boolean | 'false' | 'true'" },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop SkyGraph classes (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const textareaProps: PropDef[] = [
-  { name: 'value', description: 'Controlled text value', type: 'string' },
-  { name: 'defaultValue', description: 'Initial value when uncontrolled', type: 'string' },
-  { name: 'onChange', description: 'Fires with the next string on each keystroke', type: '(value: string) => void' },
-  { name: 'onBlur', description: 'Fires when the textarea loses focus', type: '() => void' },
-  { name: 'onFocus', description: 'Fires when the textarea gains focus', type: '() => void' },
-  { name: 'rows', description: 'Initial visible row count', type: 'number', default: '4' },
-  { name: 'maxLength', description: 'Hard character limit (enforced, not just visual)', type: 'number' },
-  { name: 'showCount', description: 'Render "length / maxLength" counter below the field', type: 'boolean', default: 'false' },
-  { name: 'placeholder', description: 'Placeholder when empty', type: 'string' },
-  { name: 'size', description: 'Size preset', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'disabled', description: 'Block interaction', type: 'boolean', default: 'false' },
-  { name: 'loading', description: 'Show spinner in the top-right corner', type: 'boolean', default: 'false' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop SkyGraph classes (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const inputCssVars: CssVarDef[] = [
-  { name: 'sg-input-height', default: 'var(--sg-height-md)', description: 'Input height (overridden per size class)' },
-  { name: 'sg-input-padding', default: 'var(--sg-padding-xs) var(--sg-padding-md)', description: 'Input padding (overridden per size class)' },
-  { name: 'sg-input-font-size', default: 'var(--sg-font-size)', description: 'Input font size (overridden per size class)' },
-  { name: 'sg-input-color', default: 'var(--sg-color-text)', description: 'Typed text color' },
-  { name: 'sg-input-bg', default: 'var(--sg-color-bg-container)', description: 'Background color' },
-  { name: 'sg-input-border', default: 'var(--sg-color-border)', description: 'Border color (also hover / focus)' },
-  { name: 'sg-input-radius', default: 'var(--sg-border-radius)', description: 'Border radius' },
-  { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: 'Focus border color' },
-  { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: 'Hover border color' },
-  { name: 'sg-color-primary-bg', default: 'rgba(22, 119, 255, 0.1)', description: 'Focus ring color' },
-  { name: 'sg-color-bg-disabled', default: 'rgba(0, 0, 0, 0.04)', description: 'Background when disabled' },
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Text color when disabled' },
-  { name: 'sg-color-text-placeholder', default: 'rgba(0, 0, 0, 0.25)', description: 'Placeholder color' },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Inline spinner color and textarea counter color' },
-  { name: 'sg-font-size-sm', default: '12px', description: 'Counter font size (textarea)' },
-  { name: 'sg-margin-xs', default: '4px', description: 'Gap between textarea and its counter' },
-  { name: 'sg-transition-duration', default: '180ms', description: 'Color, border and box-shadow transitions' },
-  { name: 'sg-transition-timing', default: 'cubic-bezier(.4,0,.2,1)', description: 'Transition easing' },
-]
-
 export function InputDemo() {
+  const t = useInputDocStrings()
+
+  const inputProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'value', description: t.propValue, type: 'string' },
+      { name: 'defaultValue', description: t.propDefaultValue, type: 'string' },
+      { name: 'onChange', description: t.propOnChange, type: '(value: string) => void' },
+      { name: 'onBlur', description: t.propOnBlur, type: '() => void' },
+      { name: 'onFocus', description: t.propOnFocus, type: '() => void' },
+      { name: 'placeholder', description: t.propPlaceholder, type: 'string' },
+      { name: 'type', description: t.propType, type: "'text' | 'email' | 'password' | 'number'", default: "'text'" },
+      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
+      { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
+      { name: 'aria-invalid', description: t.propAriaInvalid, type: "boolean | 'false' | 'true' | 'grammar' | 'spelling'" },
+      { name: 'aria-required', description: t.propAriaRequired, type: "boolean | 'false' | 'true'" },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const textareaProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'value', description: t.propTextareaValue, type: 'string' },
+      { name: 'defaultValue', description: t.propTextareaDefaultValue, type: 'string' },
+      { name: 'onChange', description: t.propTextareaOnChange, type: '(value: string) => void' },
+      { name: 'onBlur', description: t.propTextareaOnBlur, type: '() => void' },
+      { name: 'onFocus', description: t.propTextareaOnFocus, type: '() => void' },
+      { name: 'rows', description: t.propTextareaRows, type: 'number', default: '4' },
+      { name: 'maxLength', description: t.propTextareaMaxLength, type: 'number' },
+      { name: 'showCount', description: t.propTextareaShowCount, type: 'boolean', default: 'false' },
+      { name: 'placeholder', description: t.propTextareaPlaceholder, type: 'string' },
+      { name: 'size', description: t.propTextareaSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      { name: 'disabled', description: t.propTextareaDisabled, type: 'boolean', default: 'false' },
+      { name: 'loading', description: t.propTextareaLoading, type: 'boolean', default: 'false' },
+      { name: 'className', description: t.propTextareaClassName, type: 'string' },
+      { name: 'style', description: t.propTextareaStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propTextareaUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const inputCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-input-height', default: 'var(--sg-height-md)', description: t.cssSgInputHeight },
+      { name: 'sg-input-padding', default: 'var(--sg-padding-xs) var(--sg-padding-md)', description: t.cssSgInputPadding },
+      { name: 'sg-input-font-size', default: 'var(--sg-font-size)', description: t.cssSgInputFontSize },
+      { name: 'sg-input-color', default: 'var(--sg-color-text)', description: t.cssSgInputColor },
+      { name: 'sg-input-bg', default: 'var(--sg-color-bg-container)', description: t.cssSgInputBg },
+      { name: 'sg-input-border', default: 'var(--sg-color-border)', description: t.cssSgInputBorder },
+      { name: 'sg-input-radius', default: 'var(--sg-border-radius)', description: t.cssSgInputRadius },
+      { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
+      { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: t.cssSgColorPrimaryHover },
+      { name: 'sg-color-primary-bg', default: 'rgba(22, 119, 255, 0.1)', description: t.cssSgColorPrimaryBg },
+      { name: 'sg-color-bg-disabled', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgDisabled },
+      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      { name: 'sg-color-text-placeholder', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextPlaceholder },
+      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
+      { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
+      { name: 'sg-margin-xs', default: '4px', description: t.cssSgMarginXs },
+      { name: 'sg-transition-duration', default: '180ms', description: t.cssSgTransitionDuration },
+      { name: 'sg-transition-timing', default: 'cubic-bezier(.4,0,.2,1)', description: t.cssSgTransitionTiming },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Input"
-      description="Text input (single-line) and Textarea (multi-line) share the same sizing, focus ring and `--sg-input-*` tokens."
-      whenToUse={[
-        'Any free-form text entry in a form or search bar.',
-        'Numeric inputs where the stepper of InputNumber would be overkill.',
-        'Multi-line fields with `<Textarea>` when a single line is too cramped.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Controlled text input with live readout." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicInput />
       </DemoBox>
 
-      <DemoBox title="Sizes" description="small / middle / large presets." code={SizesSource}>
+      <DemoBox title={t.demoSizesTitle} description={t.demoSizesDesc} code={SizesSource}>
         <SizesInput />
       </DemoBox>
 
-      <DemoBox title="Types" description="Native HTML input types — text, email, password, number." code={TypesSource}>
+      <DemoBox title={t.demoTypesTitle} description={t.demoTypesDesc} code={TypesSource}>
         <TypesInput />
       </DemoBox>
 
-      <DemoBox title="States" description="Disabled and inline loading spinner." code={StatesSource}>
+      <DemoBox title={t.demoStatesTitle} description={t.demoStatesDesc} code={StatesSource}>
         <StatesInput />
       </DemoBox>
 
       <DemoBox
-        title="Validation"
-        description="aria-invalid flips the error styling without !important."
+        title={t.demoValidationTitle}
+        description={t.demoValidationDesc}
         code={ValidationSource}
       >
         <ValidationInput />
       </DemoBox>
 
       <DemoBox
-        title="Component tokens"
-        description="Scope --sg-input-* to reshape only these inputs."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={ComponentTokensSource}
       >
         <ComponentTokensInput />
       </DemoBox>
 
-      <DemoBox title="Textarea — basic" description="Multi-line sibling with shared styling." code={TextareaBasicSource}>
+      <DemoBox title={t.demoTextareaBasicTitle} description={t.demoTextareaBasicDesc} code={TextareaBasicSource}>
         <TextareaBasic />
       </DemoBox>
 
       <DemoBox
-        title="Textarea — character count"
-        description="maxLength + showCount render a live counter."
+        title={t.demoTextareaCountTitle}
+        description={t.demoTextareaCountDesc}
         code={TextareaCountSource}
       >
         <TextareaCount />
       </DemoBox>
 
-      <DemoBox title="Textarea — states" description="Disabled and loading variants." code={TextareaStatesSource}>
+      <DemoBox title={t.demoTextareaStatesTitle} description={t.demoTextareaStatesDesc} code={TextareaStatesSource}>
         <TextareaStates />
       </DemoBox>
 
-      <DemoBox title="Inside a Form" description="Input + Textarea wired up via `<Field>`." code={InFormSource}>
+      <DemoBox title={t.demoInFormTitle} description={t.demoInFormDesc} code={InFormSource}>
         <InFormInput />
       </DemoBox>
 
-      <DemoBox title="Unstyled" description="Headless mode with your own CSS class." code={UnstyledSource}>
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledInput />
       </DemoBox>
 
-      <PropsTable title="Input API" data={inputProps} />
-      <PropsTable title="Textarea API" data={textareaProps} />
+      <PropsTable title={t.tableInputApi} data={inputProps} />
+      <PropsTable title={t.tableTextareaApi} data={textareaProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Input exposes its own --sg-input-* tokens (height, padding, font-size, color, bg, border, radius). They default to globals but can be scoped per input. Textarea reuses `.sg-input` so every --sg-input-* works there too."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={inputCssVars}
       />
     </ComponentDoc>
