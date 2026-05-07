@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useResultDocStrings } from './result-doc/useResultDocStrings'
 
 import { SuccessResult } from './result/Success.demo'
 import SuccessSource from './result/Success.demo?raw'
@@ -18,115 +21,87 @@ import TokensOverrideSource from './result/TokensOverride.demo?raw'
 import { UnstyledResult } from './result/Unstyled.demo'
 import UnstyledSource from './result/Unstyled.demo?raw'
 
-const resultProps: PropDef[] = [
-  { name: 'status', description: 'Outcome preset — decides default icon and tint', type: "'success' | 'error' | 'info' | 'warning' | '404' | '403' | '500'", required: true },
-  { name: 'title', description: 'Primary heading', type: 'ReactNode', required: true },
-  { name: 'subTitle', description: 'Explanatory text under the title', type: 'ReactNode' },
-  { name: 'icon', description: 'Override the preset icon — emoji / SVG / any node', type: 'ReactNode' },
-  { name: 'extra', description: 'Action buttons row, centred under the subtitle', type: 'ReactNode' },
-  { name: 'children', description: 'Optional content panel rendered below `extra`', type: 'ReactNode' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop every sg-result-* class (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const resultCssVars: CssVarDef[] = [
-  { name: 'sg-color-success', default: '#52c41a', description: 'Icon colour for `status="success"`' },
-  { name: 'sg-color-error', default: '#ff4d4f', description: 'Icon colour for `status="error"`' },
-  { name: 'sg-color-warning', default: '#faad14', description: 'Icon colour for `status="warning"`' },
-  { name: 'sg-color-primary', default: '#1677ff', description: 'Icon colour for `status="info"`' },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Icon colour for 404 / 403 / 500 and faded text' },
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Title colour' },
-  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: 'Subtitle colour' },
-  { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.02)', description: 'Background for the `children` content panel' },
-  { name: 'sg-font-size', default: '14px', description: 'Subtitle size' },
-  { name: 'sg-font-size-xl', default: '20px', description: 'Title size' },
-  { name: 'sg-line-height', default: '1.5714', description: 'Paragraph line-height' },
-  { name: 'sg-padding-lg', default: '16px', description: 'Wrapper h-padding + `children` panel padding' },
-  { name: 'sg-padding-xl', default: '20px', description: 'Wrapper v-padding' },
-  { name: 'sg-padding-sm', default: '8px', description: 'Gap between `extra` buttons' },
-  { name: 'sg-margin-sm', default: '8px', description: 'Gap title → subtitle' },
-  { name: 'sg-margin-lg', default: '16px', description: 'Gap icon / subtitle / extra blocks' },
-  { name: 'sg-border-radius', default: '6px', description: '`children` panel corner radius' },
-]
-
 export function ResultDemo() {
+  const t = useResultDocStrings()
+
+  const resultProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'status', description: t.propStatus, type: "'success' | 'error' | 'info' | 'warning' | '404' | '403' | '500'", required: true },
+      { name: 'title', description: t.propTitle, type: 'ReactNode', required: true },
+      { name: 'subTitle', description: t.propSubTitle, type: 'ReactNode' },
+      { name: 'icon', description: t.propIcon, type: 'ReactNode' },
+      { name: 'extra', description: t.propExtra, type: 'ReactNode' },
+      { name: 'children', description: t.propChildren, type: 'ReactNode' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const resultCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-success', default: '#52c41a', description: t.cssSuccess },
+      { name: 'sg-color-error', default: '#ff4d4f', description: t.cssError },
+      { name: 'sg-color-warning', default: '#faad14', description: t.cssWarning },
+      { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
+      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssTextTertiary },
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
+      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssTextSecondary },
+      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.02)', description: t.cssBgSecondary },
+      { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
+      { name: 'sg-font-size-xl', default: '20px', description: t.cssFontSizeXl },
+      { name: 'sg-line-height', default: '1.5714', description: t.cssLineHeight },
+      { name: 'sg-padding-lg', default: '16px', description: t.cssPaddingLg },
+      { name: 'sg-padding-xl', default: '20px', description: t.cssPaddingXl },
+      { name: 'sg-padding-sm', default: '8px', description: t.cssPaddingSm },
+      { name: 'sg-margin-sm', default: '8px', description: t.cssMarginSm },
+      { name: 'sg-margin-lg', default: '16px', description: t.cssMarginLg },
+      { name: 'sg-border-radius', default: '6px', description: t.cssRadius },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Result"
-      description="Feedback page layout with preset icons for success / error / info / warning and the classic 404 / 403 / 500 screens."
-      whenToUse={[
-        'After a destructive or long-running action, when a toast is not enough.',
-        'Full-screen error pages (404 / 403 / 500 etc.).',
-        'Guided flows (checkout, onboarding) that finish with a confirmation screen.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Success" description="The happy path with a primary CTA." code={SuccessSource}>
+      <DemoBox title={t.demoSuccessTitle} description={t.demoSuccessDesc} code={SuccessSource}>
         <SuccessResult />
       </DemoBox>
 
-      <DemoBox
-        title="Error"
-        description="Negative outcome with a recovery CTA."
-        code={ErrorSource}
-      >
+      <DemoBox title={t.demoErrorTitle} description={t.demoErrorDesc} code={ErrorSource}>
         <ErrorResult />
       </DemoBox>
 
-      <DemoBox
-        title="Info & warning"
-        description="Softer variants for neutral or attention-needed states."
-        code={InfoWarningSource}
-      >
+      <DemoBox title={t.demoInfoTitle} description={t.demoInfoDesc} code={InfoWarningSource}>
         <InfoWarningResult />
       </DemoBox>
 
-      <DemoBox
-        title="HTTP errors"
-        description="Built-in 404 / 403 / 500 artwork."
-        code={HttpSource}
-      >
+      <DemoBox title={t.demoHttpTitle} description={t.demoHttpDesc} code={HttpSource}>
         <HttpResult />
       </DemoBox>
 
-      <DemoBox
-        title="Custom icon"
-        description="Swap the preset artwork for emoji / SVG / library icon."
-        code={CustomIconSource}
-      >
+      <DemoBox title={t.demoIconTitle} description={t.demoIconDesc} code={CustomIconSource}>
         <CustomIconResult />
       </DemoBox>
 
-      <DemoBox
-        title="With content"
-        description="`children` render inside a soft panel for diagnostics."
-        code={WithContentSource}
-      >
+      <DemoBox title={t.demoContentTitle} description={t.demoContentDesc} code={WithContentSource}>
         <WithContentResult />
       </DemoBox>
 
-      <DemoBox
-        title="Tokens override"
-        description="Rebrand via CSS variables — status tints + content panel."
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideResult />
       </DemoBox>
 
-      <DemoBox
-        title="Unstyled"
-        description="Keep aria + structure, bring your own paint."
-        code={UnstyledSource}
-      >
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledResult />
       </DemoBox>
 
-      <PropsTable title="Result API" data={resultProps} />
-      <CssVarsTable
-        title="CSS Variables"
-        hint="Result has no component-private tokens — it reads the global status palette (`--sg-color-success/error/warning/primary`) for icon tints and the standard text + spacing tokens for the layout. Scope those on a wrapper to rebrand locally."
-        data={resultCssVars}
-      />
+      <PropsTable title={t.tableResultApi} data={resultProps} />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={resultCssVars} />
     </ComponentDoc>
   )
 }

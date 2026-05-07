@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useSpinDocStrings } from './spin-doc/useSpinDocStrings'
 
 import { BasicSpin } from './spin/Basic.demo'
 import BasicSource from './spin/Basic.demo?raw'
@@ -22,119 +25,87 @@ import TokensOverrideSource from './spin/TokensOverride.demo?raw'
 import { UnstyledSpin } from './spin/Unstyled.demo'
 import UnstyledSource from './spin/Unstyled.demo?raw'
 
-const spinProps: PropDef[] = [
-  { name: 'spinning', description: 'Whether the spinner is visible', type: 'boolean', default: 'true' },
-  { name: 'size', description: 'Ring size — 12 / 24 / 36px for small / middle / large', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'delay', description: 'Defer showing the spinner by N ms (prevents flicker)', type: 'number' },
-  { name: 'tip', description: 'Caption rendered below the spinner', type: 'string' },
-  { name: 'fullscreen', description: 'Cover the viewport with a dimmed backdrop at z-modal', type: 'boolean', default: 'false' },
-  { name: 'indicator', description: 'Replace the ring with a custom node', type: 'ReactNode' },
-  { name: 'children', description: 'Content to overlay with the spinner', type: 'ReactNode' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop every sg-spin-* class (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const spinCssVars: CssVarDef[] = [
-  { name: 'sg-spin-color', default: 'var(--sg-color-primary)', description: 'Ring colour — Spin-local, defaults to the global primary' },
-  { name: 'sg-spin-overlay-bg', default: 'rgba(255, 255, 255, 0.65)', description: 'Backdrop colour for container / fullscreen overlay' },
-  { name: 'sg-color-primary', default: '#1677ff', description: 'Default ring colour (read through `--sg-spin-color`) + tip text' },
-  { name: 'sg-font-size-sm', default: '12px', description: 'Tip text size' },
-  { name: 'sg-margin-sm', default: '8px', description: 'Gap between spinner and tip (standalone / overlay / fullscreen)' },
-  { name: 'sg-border-radius', default: '6px', description: 'Overlay corner radius (matches the wrapped block)' },
-  { name: 'sg-z-loading', default: '900', description: 'z-index of the container overlay' },
-  { name: 'sg-z-modal', default: '1000', description: 'z-index of the fullscreen backdrop' },
-]
-
 export function SpinDemo() {
+  const t = useSpinDocStrings()
+
+  const spinProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'spinning', description: t.propSpinning, type: 'boolean', default: 'true' },
+      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      { name: 'delay', description: t.propDelay, type: 'number' },
+      { name: 'tip', description: t.propTip, type: 'string' },
+      { name: 'fullscreen', description: t.propFullscreen, type: 'boolean', default: 'false' },
+      { name: 'indicator', description: t.propIndicator, type: 'ReactNode' },
+      { name: 'children', description: t.propChildren, type: 'ReactNode' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const spinCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-spin-color', default: 'var(--sg-color-primary)', description: t.cssSpinColor },
+      { name: 'sg-spin-overlay-bg', default: 'rgba(255, 255, 255, 0.65)', description: t.cssSpinOverlayBg },
+      { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
+      { name: 'sg-font-size-sm', default: '12px', description: t.cssFontSizeSm },
+      { name: 'sg-margin-sm', default: '8px', description: t.cssMarginSm },
+      { name: 'sg-border-radius', default: '6px', description: t.cssRadius },
+      { name: 'sg-z-loading', default: '900', description: t.cssZLoading },
+      { name: 'sg-z-modal', default: '1000', description: t.cssZModal },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Spin"
-      description="Loading indicator — inline, inside a container (with overlay), or fullscreen. Supports delay, custom indicators, and a single-token color override."
-      whenToUse={[
-        'Async sections that will render real content shortly.',
-        'Buttons + forms that need a loading mask to block duplicate submits.',
-        'Route / page transitions — paired with `fullscreen`.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="A standalone spinner." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicSpin />
       </DemoBox>
 
-      <DemoBox title="Sizes" description="Small / middle / large." code={SizesSource}>
+      <DemoBox title={t.demoSizesTitle} description={t.demoSizesDesc} code={SizesSource}>
         <SizesSpin />
       </DemoBox>
 
-      <DemoBox
-        title="Wrapping children"
-        description="Blur + mask the wrapped content while `spinning`."
-        code={ContainerSource}
-      >
+      <DemoBox title={t.demoContainerTitle} description={t.demoContainerDesc} code={ContainerSource}>
         <ContainerSpin />
       </DemoBox>
 
-      <DemoBox
-        title="Tip"
-        description="Short status line under the spinner."
-        code={TipSource}
-      >
+      <DemoBox title={t.demoTipTitle} description={t.demoTipDesc} code={TipSource}>
         <TipSpin />
       </DemoBox>
 
-      <DemoBox
-        title="Delay"
-        description="Skip the spinner entirely for fast requests."
-        code={DelaySource}
-      >
+      <DemoBox title={t.demoDelayTitle} description={t.demoDelayDesc} code={DelaySource}>
         <DelaySpin />
       </DemoBox>
 
-      <DemoBox
-        title="Custom color"
-        description="Override `--sg-spin-color` per scope — no class wrangling."
-        code={CustomColorSource}
-      >
+      <DemoBox title={t.demoCustomColorTitle} description={t.demoCustomColorDesc} code={CustomColorSource}>
         <CustomColorSpin />
       </DemoBox>
 
-      <DemoBox
-        title="Custom indicator"
-        description="Swap the ring for any ReactNode."
-        code={CustomIndicatorSource}
-      >
+      <DemoBox title={t.demoCustomIndicatorTitle} description={t.demoCustomIndicatorDesc} code={CustomIndicatorSource}>
         <CustomIndicatorSpin />
       </DemoBox>
 
-      <DemoBox
-        title="Fullscreen"
-        description="Viewport-level overlay at z-modal."
-        code={FullscreenSource}
-      >
+      <DemoBox title={t.demoFullscreenTitle} description={t.demoFullscreenDesc} code={FullscreenSource}>
         <FullscreenSpin />
       </DemoBox>
 
-      <DemoBox
-        title="Tokens override"
-        description="Tune ring + overlay background via CSS vars."
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideSpin />
       </DemoBox>
 
-      <DemoBox
-        title="Unstyled"
-        description="Keep the delay + overlay logic, ship your own visuals."
-        code={UnstyledSource}
-      >
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledSpin />
       </DemoBox>
 
-      <PropsTable title="Spin API" data={spinProps} />
-      <CssVarsTable
-        title="CSS Variables"
-        hint="Spin exposes two component-local tokens: `--sg-spin-color` for the ring and `--sg-spin-overlay-bg` for the container / fullscreen backdrop. Scope them on a wrapper to tint a single section without touching the global primary."
-        data={spinCssVars}
-      />
+      <PropsTable title={t.tableSpinApi} data={spinProps} />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={spinCssVars} />
     </ComponentDoc>
   )
 }

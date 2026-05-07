@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useCarouselDocStrings } from './carousel-doc/useCarouselDocStrings'
 
 import { BasicCarousel } from './carousel/Basic.demo'
 import BasicSource from './carousel/Basic.demo?raw'
@@ -16,99 +19,76 @@ import TokensOverrideSource from './carousel/TokensOverride.demo?raw'
 import { UnstyledCarousel } from './carousel/Unstyled.demo'
 import UnstyledSource from './carousel/Unstyled.demo?raw'
 
-const carouselProps: PropDef[] = [
-  { name: 'autoplay', description: 'Advance to the next slide on an interval', type: 'boolean', default: 'false' },
-  { name: 'autoplaySpeed', description: 'Interval between autoplay steps (ms)', type: 'number', default: '3000' },
-  { name: 'dots', description: 'Render the dot navigation strip', type: 'boolean', default: 'true' },
-  { name: 'dotPosition', description: 'Where to dock the dots (left / right flip the layout to vertical)', type: "'top' | 'bottom' | 'left' | 'right'", default: "'bottom'" },
-  { name: 'effect', description: 'Transition style — horizontal slide or crossfade', type: "'slide' | 'fade'", default: "'slide'" },
-  { name: 'children', description: 'Each direct child is one slide', type: 'ReactNode' },
-  { name: 'className', description: 'Extra class on the root', type: 'string' },
-  { name: 'style', description: 'Inline style on the root', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop sg-carousel-* styles — only the active slide and numbered buttons render', type: 'boolean', default: 'false' },
-]
-
-const carouselCssVars: CssVarDef[] = [
-  { name: 'sg-color-primary', default: '#1677ff', description: 'Active dot colour (wider "pill")' },
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Idle dot colour' },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: 'Hovered dot colour' },
-  { name: 'sg-font-size', default: '14px', description: 'Inherited font size inside the track' },
-  { name: 'sg-padding-xs', default: '4px', description: 'Gap between dots' },
-  { name: 'sg-padding-sm', default: '8px', description: 'Padding around the dot strip' },
-  { name: 'sg-transition-duration', default: '180ms', description: 'Slide / fade duration + dot colour transition' },
-  { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: 'Shared easing for transitions' },
-]
-
 export function CarouselDemo() {
+  const t = useCarouselDocStrings()
+
+  const carouselProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'autoplay', description: t.propAutoplay, type: 'boolean', default: 'false' },
+      { name: 'autoplaySpeed', description: t.propAutoplaySpeed, type: 'number', default: '3000' },
+      { name: 'dots', description: t.propDots, type: 'boolean', default: 'true' },
+      { name: 'dotPosition', description: t.propDotPosition, type: "'top' | 'bottom' | 'left' | 'right'", default: "'bottom'" },
+      { name: 'effect', description: t.propEffect, type: "'slide' | 'fade'", default: "'slide'" },
+      { name: 'children', description: t.propChildren, type: 'ReactNode' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const carouselCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
+      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssTextDisabled },
+      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssTextTertiary },
+      { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
+      { name: 'sg-padding-xs', default: '4px', description: t.cssPaddingXs },
+      { name: 'sg-padding-sm', default: '8px', description: t.cssPaddingSm },
+      { name: 'sg-transition-duration', default: '180ms', description: t.cssTransitionDuration },
+      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Carousel"
-      badge="Data Display"
-      crumbs={['Data Display', 'Carousel']}
-      description="Rotating slide container with dot navigation, four dot positions, and slide / fade transitions."
-      whenToUse={[
-        'When a group of content on the same level needs to rotate through a single viewport — hero banners, testimonials.',
-        'When limited horizontal space must cycle through a few items rather than scroll.',
-      ]}
+      title={t.pageTitle}
+      badge={t.pageBadge}
+      crumbs={[t.crumbDataDisplay, t.crumbCarousel]}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2]}
     >
-      <DemoBox title="Basic" description="Default slide transition, dots bottom-centre." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicCarousel />
       </DemoBox>
 
-      <DemoBox
-        title="Autoplay"
-        description="Auto-advance every `autoplaySpeed` ms."
-        code={AutoplaySource}
-      >
+      <DemoBox title={t.demoAutoplayTitle} description={t.demoAutoplayDesc} code={AutoplaySource}>
         <AutoplayCarousel />
       </DemoBox>
 
-      <DemoBox
-        title="Fade"
-        description="Cross-fade slides via opacity."
-        code={FadeSource}
-      >
+      <DemoBox title={t.demoFadeTitle} description={t.demoFadeDesc} code={FadeSource}>
         <FadeCarousel />
       </DemoBox>
 
-      <DemoBox
-        title="Dot position"
-        description="Top, bottom (default), left or right — left / right go vertical."
-        code={DotPositionSource}
-      >
+      <DemoBox title={t.demoDotPositionTitle} description={t.demoDotPositionDesc} code={DotPositionSource}>
         <DotPositionCarousel />
       </DemoBox>
 
-      <DemoBox
-        title="Hidden dots"
-        description="`dots={false}` for decorative carousels."
-        code={HiddenDotsSource}
-      >
+      <DemoBox title={t.demoHiddenDotsTitle} description={t.demoHiddenDotsDesc} code={HiddenDotsSource}>
         <HiddenDotsCarousel />
       </DemoBox>
 
-      <DemoBox
-        title="Tokens override"
-        description="Scope the dot colours to rebrand."
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideCarousel />
       </DemoBox>
 
-      <DemoBox
-        title="Unstyled"
-        description="Active slide + numbered buttons, zero built-in CSS."
-        code={UnstyledSource}
-      >
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledCarousel />
       </DemoBox>
 
-      <PropsTable title="Carousel API" data={carouselProps} />
-      <CssVarsTable
-        title="CSS Variables"
-        hint="Carousel has no component-local tokens. The dot colours come from the global palette — rebrand by scoping `--sg-color-primary` + `--sg-color-text-disabled` + `--sg-color-text-tertiary`."
-        data={carouselCssVars}
-      />
+      <PropsTable title={t.tableCarouselApi} data={carouselProps} />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={carouselCssVars} />
     </ComponentDoc>
   )
 }

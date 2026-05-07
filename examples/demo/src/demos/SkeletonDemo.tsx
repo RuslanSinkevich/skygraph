@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useSkeletonDocStrings } from './skeleton-doc/useSkeletonDocStrings'
 
 import { BasicSkeleton } from './skeleton/Basic.demo'
 import BasicSource from './skeleton/Basic.demo?raw'
@@ -20,113 +23,81 @@ import TokensOverrideSource from './skeleton/TokensOverride.demo?raw'
 import { UnstyledSkeleton } from './skeleton/Unstyled.demo'
 import UnstyledSource from './skeleton/Unstyled.demo?raw'
 
-const skeletonProps: PropDef[] = [
-  { name: 'active', description: 'Turn on the shimmer animation', type: 'boolean', default: 'false' },
-  { name: 'avatar', description: 'Show an avatar placeholder; object form tunes `size` and `shape`', type: 'boolean | { size?: number; shape?: "circle" | "square" }', default: 'false' },
-  { name: 'title', description: 'Show the heading bar; object form tunes `width`', type: 'boolean | { width?: number | string }', default: 'true' },
-  { name: 'paragraph', description: 'Show paragraph lines; object form tunes `rows` and per-line `width`', type: 'boolean | { rows?: number; width?: Array<number | string> }', default: 'true' },
-  { name: 'loading', description: 'When `false`, render `children` instead of the skeleton', type: 'boolean', default: 'true' },
-  { name: 'children', description: 'Real content rendered when `loading` is `false`', type: 'ReactNode' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop every sg-skeleton-* class (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const skeletonCssVars: CssVarDef[] = [
-  { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: 'Placeholder fill colour (avatar / title / rows)' },
-  { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.02)', description: 'Highlight colour in the shimmer gradient (`active`)' },
-  { name: 'sg-border-radius', default: '6px', description: 'Square avatar corner radius' },
-  { name: 'sg-border-radius-sm', default: '4px', description: 'Title + paragraph line corner radius' },
-  { name: 'sg-padding-lg', default: '16px', description: 'Gap between avatar and content block' },
-  { name: 'sg-margin-sm', default: '8px', description: 'Gap between paragraph lines' },
-  { name: 'sg-margin-md', default: '12px', description: 'Gap from title to paragraph block' },
-]
-
 export function SkeletonDemo() {
+  const t = useSkeletonDocStrings()
+
+  const skeletonProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'active', description: t.propActive, type: 'boolean', default: 'false' },
+      { name: 'avatar', description: t.propAvatar, type: 'boolean | { size?: number; shape?: "circle" | "square" }', default: 'false' },
+      { name: 'title', description: t.propTitle, type: 'boolean | { width?: number | string }', default: 'true' },
+      { name: 'paragraph', description: t.propParagraph, type: 'boolean | { rows?: number; width?: Array<number | string> }', default: 'true' },
+      { name: 'loading', description: t.propLoading, type: 'boolean', default: 'true' },
+      { name: 'children', description: t.propChildren, type: 'ReactNode' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const skeletonCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssBgHover },
+      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.02)', description: t.cssBgSecondary },
+      { name: 'sg-border-radius', default: '6px', description: t.cssRadius },
+      { name: 'sg-border-radius-sm', default: '4px', description: t.cssRadiusSm },
+      { name: 'sg-padding-lg', default: '16px', description: t.cssPaddingLg },
+      { name: 'sg-margin-sm', default: '8px', description: t.cssMarginSm },
+      { name: 'sg-margin-md', default: '12px', description: t.cssMarginMd },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Skeleton"
-      description="Layout-aware placeholder while content loads — avatar, title, and paragraph blocks, with an optional shimmer animation."
-      whenToUse={[
-        'Feed / list items that rely on a network request.',
-        'Cards and dashboard widgets that hydrate after mount.',
-        'Any screen where swapping from placeholder to content shouldn\'t jump the layout.',
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Title + 3 lines, no animation." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicSkeleton />
       </DemoBox>
 
-      <DemoBox
-        title="Active animation"
-        description="Turn on the shimmer for long-lived placeholders."
-        code={ActiveSource}
-      >
+      <DemoBox title={t.demoActiveTitle} description={t.demoActiveDesc} code={ActiveSource}>
         <ActiveSkeleton />
       </DemoBox>
 
-      <DemoBox
-        title="With avatar"
-        description="Profile / feed item shape."
-        code={WithAvatarSource}
-      >
+      <DemoBox title={t.demoAvatarTitle} description={t.demoAvatarDesc} code={WithAvatarSource}>
         <WithAvatarSkeleton />
       </DemoBox>
 
-      <DemoBox
-        title="Paragraph rows & widths"
-        description="Match the line count + widths to the real content."
-        code={RowsSource}
-      >
+      <DemoBox title={t.demoRowsTitle} description={t.demoRowsDesc} code={RowsSource}>
         <RowsSkeleton />
       </DemoBox>
 
-      <DemoBox
-        title="Drop blocks"
-        description="Hide title / paragraph / avatar selectively."
-        code={NoTitleSource}
-      >
+      <DemoBox title={t.demoNoTitleTitle} description={t.demoNoTitleDesc} code={NoTitleSource}>
         <NoTitleSkeleton />
       </DemoBox>
 
-      <DemoBox
-        title="Loading → content swap"
-        description="Flip `loading` to swap the skeleton for `children` in place."
-        code={LoadingSource}
-      >
+      <DemoBox title={t.demoLoadingTitle} description={t.demoLoadingDesc} code={LoadingSource}>
         <LoadingSkeleton />
       </DemoBox>
 
-      <DemoBox
-        title="Card composition"
-        description="Compose several Skeletons to mirror a card grid."
-        code={CardSource}
-      >
+      <DemoBox title={t.demoCardTitle} description={t.demoCardDesc} code={CardSource}>
         <CardSkeleton />
       </DemoBox>
 
-      <DemoBox
-        title="Tokens override"
-        description="Scope the two bg tokens for a bespoke skeleton palette."
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideSkeleton />
       </DemoBox>
 
-      <DemoBox
-        title="Unstyled"
-        description="Keep aria + structure, bring your own styling."
-        code={UnstyledSource}
-      >
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledSkeleton />
       </DemoBox>
 
-      <PropsTable title="Skeleton API" data={skeletonProps} />
-      <CssVarsTable
-        title="CSS Variables"
-        hint="Skeleton has no component-private tokens — it reads `--sg-color-bg-hover` (fill) and `--sg-color-bg-secondary` (shimmer highlight). Swap both on a wrapper for a dark-mode or branded placeholder."
-        data={skeletonCssVars}
-      />
+      <PropsTable title={t.tableSkeletonApi} data={skeletonProps} />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={skeletonCssVars} />
     </ComponentDoc>
   )
 }

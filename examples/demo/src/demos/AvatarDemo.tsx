@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useAvatarDocStrings } from './avatar-doc/useAvatarDocStrings'
 
 import { SizesAvatar } from './avatar/Sizes.demo'
 import SizesSource from './avatar/Sizes.demo?raw'
@@ -18,97 +21,103 @@ import TokensOverrideSource from './avatar/TokensOverride.demo?raw'
 import { UnstyledAvatar } from './avatar/Unstyled.demo'
 import UnstyledSource from './avatar/Unstyled.demo?raw'
 
-const avatarProps: PropDef[] = [
-  { name: 'src', description: 'Image URL (photo avatar)', type: 'string' },
-  { name: 'alt', description: 'Alt text for the image', type: 'string' },
-  { name: 'aria-label', description: 'Accessible name when there is no visible text', type: 'string' },
-  { name: 'size', description: 'Preset size token or explicit px number', type: "'small' | 'middle' | 'large' | number", default: "'middle'" },
-  { name: 'shape', description: 'Circle or rounded square', type: "'circle' | 'square'", default: "'circle'" },
-  { name: 'icon', description: 'Icon shown when src is missing', type: 'ReactNode' },
-  { name: 'children', description: 'Initials / text fallback when src and icon are missing', type: 'ReactNode' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style (overrides background etc.)', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop sg-avatar-* classes (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const avatarCssVars: CssVarDef[] = [
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'Fallback background when src / icon / children are absent' },
-  { name: 'sg-color-white', default: '#ffffff', description: 'Foreground colour on the tinted background' },
-  { name: 'sg-border-radius', default: '6px', description: 'Corner radius for shape="square"' },
-  { name: 'sg-color-bg-container', default: '#ffffff', description: 'Recommended border colour when stacking avatars in a group' },
-]
-
 export function AvatarDemo() {
+  const t = useAvatarDocStrings()
+
+  const avatarProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'src', description: t.propSrc, type: 'string' },
+      { name: 'alt', description: t.propAlt, type: 'string' },
+      { name: 'aria-label', description: t.propAriaLabel, type: 'string' },
+      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large' | number", default: "'middle'" },
+      { name: 'shape', description: t.propShape, type: "'circle' | 'square'", default: "'circle'" },
+      { name: 'icon', description: t.propIcon, type: 'ReactNode' },
+      { name: 'children', description: t.propChildren, type: 'ReactNode' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const avatarCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      { name: 'sg-color-white', default: '#ffffff', description: t.cssSgColorWhite },
+      { name: 'sg-border-radius', default: '6px', description: t.cssSgBorderRadius },
+      { name: 'sg-color-bg-container', default: '#ffffff', description: t.cssSgColorBgContainer },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Avatar"
-      description="Image, icon, or text avatar with three preset sizes and circle / square shapes. Degrades gracefully: photo → icon → initials."
-      whenToUse={[
-        'Profile picture in a menu or header.',
-        'Compact "who is involved" list on a card, with a stacked group + overflow counter.',
-        'Fallback chip when a photo URL is missing and you have a name.',
-      ]}
+      title={t.pageTitle}
+      badge={t.pageBadge}
+      crumbs={[t.crumbDataDisplay, t.crumbAvatar]}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Sizes" description="Preset tokens + any px number." code={SizesSource}>
+      <DemoBox title={t.demoSizesTitle} description={t.demoSizesDesc} code={SizesSource}>
         <SizesAvatar />
       </DemoBox>
 
-      <DemoBox title="Shapes" description="Circle vs. rounded square." code={ShapesSource}>
+      <DemoBox title={t.demoShapesTitle} description={t.demoShapesDesc} code={ShapesSource}>
         <ShapesAvatar />
       </DemoBox>
 
       <DemoBox
-        title="Fallback order"
-        description="src → icon → children."
+        title={t.demoFallbackTitle}
+        description={t.demoFallbackDesc}
         code={FallbackSource}
       >
         <FallbackAvatar />
       </DemoBox>
 
       <DemoBox
-        title="Coloured initials"
-        description="Hash the name into a palette for deterministic tints."
+        title={t.demoColoredTitle}
+        description={t.demoColoredDesc}
         code={ColoredInitialsSource}
       >
         <ColoredInitialsAvatar />
       </DemoBox>
 
       <DemoBox
-        title="Avatar group"
-        description="Stacked avatars with a +N overflow slot."
+        title={t.demoGroupTitle}
+        description={t.demoGroupDesc}
         code={GroupSource}
       >
         <GroupAvatar />
       </DemoBox>
 
       <DemoBox
-        title="With Badge"
-        description="Wrap the avatar in a Badge for presence / count."
+        title={t.demoWithBadgeTitle}
+        description={t.demoWithBadgeDesc}
         code={WithBadgeSource}
       >
         <WithBadgeAvatar />
       </DemoBox>
 
       <DemoBox
-        title="Tokens override"
-        description="Bump --sg-border-radius for softer squares, swap --sg-color-text-disabled for a branded fallback."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={TokensOverrideSource}
       >
         <TokensOverrideAvatar />
       </DemoBox>
 
       <DemoBox
-        title="Unstyled"
-        description="Drop every sg-avatar class — you own the painting."
+        title={t.demoUnstyledTitle}
+        description={t.demoUnstyledDesc}
         code={UnstyledSource}
       >
         <UnstyledAvatar />
       </DemoBox>
 
-      <PropsTable title="Avatar API" data={avatarProps} />
+      <PropsTable title={t.tableAvatarApi} data={avatarProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Avatar has no dedicated tokens. The fallback background is `--sg-color-text-disabled`, the square radius is `--sg-border-radius`, and text is `--sg-color-white`. For per-instance colours, inline style={{ background, color }} is the simplest override."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={avatarCssVars}
       />
     </ComponentDoc>

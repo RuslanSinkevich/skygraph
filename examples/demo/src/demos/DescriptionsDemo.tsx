@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useDescriptionsDocStrings } from './descriptions-doc/useDescriptionsDocStrings'
 
 import { BasicDescriptions } from './descriptions/Basic.demo'
 import BasicSource from './descriptions/Basic.demo?raw'
@@ -20,125 +23,133 @@ import TokensOverrideSource from './descriptions/TokensOverride.demo?raw'
 import { UnstyledDescriptions } from './descriptions/Unstyled.demo'
 import UnstyledSource from './descriptions/Unstyled.demo?raw'
 
-const descriptionsProps: PropDef[] = [
-  { name: 'title', description: 'Optional heading rendered above the table', type: 'ReactNode' },
-  { name: 'items', description: 'Label / value pairs rendered according to `column` + per-item `span`', type: 'DescriptionsItem[]' },
-  { name: 'bordered', description: 'Wraps the table in a border + tints the label column', type: 'boolean', default: 'false' },
-  { name: 'column', description: 'Number of label / value pairs per row', type: 'number', default: '3' },
-  { name: 'layout', description: 'Stack labels above values (`vertical`) or side-by-side (`horizontal`)', type: "'horizontal' | 'vertical'", default: "'horizontal'" },
-  { name: 'colon', description: 'Append a `:` after every label', type: 'boolean', default: 'true' },
-  { name: 'size', description: 'Padding / font preset — inherits from ConfigProvider', type: "'small' | 'middle' | 'large'", default: "'middle'" },
-  { name: 'className', description: 'Extra class on the root', type: 'string' },
-  { name: 'style', description: 'Inline style on the root', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop every sg-descriptions-* class; render a bare `<table>`', type: 'boolean', default: 'false' },
-]
-
-const itemProps: PropDef[] = [
-  { name: 'key', description: 'Stable key for reconciliation', type: 'string' },
-  { name: 'label', description: 'First-cell / header row label', type: 'ReactNode' },
-  { name: 'children', description: 'Value content', type: 'ReactNode' },
-  { name: 'span', description: 'Column span (capped at the `column` prop)', type: 'number', default: '1' },
-]
-
-const descCssVars: CssVarDef[] = [
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Value colour + title colour' },
-  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: 'Label colour' },
-  { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.04)', description: 'Label column background in `bordered` mode' },
-  { name: 'sg-color-border-secondary', default: '#f0f0f0', description: 'Table border + row dividers in `bordered` mode' },
-  { name: 'sg-border-radius', default: '6px', description: 'Outer corners of the bordered table' },
-  { name: 'sg-font-size', default: '14px', description: 'Base cell font size' },
-  { name: 'sg-font-size-sm', default: '12px', description: '`size="small"` font size' },
-  { name: 'sg-font-size-lg', default: '16px', description: 'Title font size' },
-  { name: 'sg-line-height', default: '1.57', description: 'Line-height for labels / values / title' },
-  { name: 'sg-padding-xs', default: '4px', description: '`size="small"` vertical padding' },
-  { name: 'sg-padding-sm', default: '8px', description: 'Default vertical padding / horizontal padding in small-bordered' },
-  { name: 'sg-padding-md', default: '12px', description: 'Default horizontal padding between label and value' },
-  { name: 'sg-padding-lg', default: '16px', description: 'Horizontal padding in bordered mode' },
-  { name: 'sg-margin-sm', default: '8px', description: 'Right margin of the colon' },
-  { name: 'sg-margin-md', default: '12px', description: 'Space between title and table' },
-]
-
 export function DescriptionsDemo() {
+  const t = useDescriptionsDocStrings()
+
+  const descriptionsProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'title', description: t.propTitle, type: 'ReactNode' },
+      { name: 'items', description: t.propItems, type: 'DescriptionsItem[]' },
+      { name: 'bordered', description: t.propBordered, type: 'boolean', default: 'false' },
+      { name: 'column', description: t.propColumn, type: 'number', default: '3' },
+      { name: 'layout', description: t.propLayout, type: "'horizontal' | 'vertical'", default: "'horizontal'" },
+      { name: 'colon', description: t.propColon, type: 'boolean', default: 'true' },
+      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const itemProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'key', description: t.itemKey, type: 'string' },
+      { name: 'label', description: t.itemLabel, type: 'ReactNode' },
+      { name: 'children', description: t.itemChildren, type: 'ReactNode' },
+      { name: 'span', description: t.itemSpan, type: 'number', default: '1' },
+    ],
+    [t],
+  )
+
+  const descCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
+      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssSgColorTextSecondary },
+      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgSecondary },
+      { name: 'sg-color-border-secondary', default: '#f0f0f0', description: t.cssSgColorBorderSecondary },
+      { name: 'sg-border-radius', default: '6px', description: t.cssSgBorderRadius },
+      { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
+      { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
+      { name: 'sg-font-size-lg', default: '16px', description: t.cssSgFontSizeLg },
+      { name: 'sg-line-height', default: '1.57', description: t.cssSgLineHeight },
+      { name: 'sg-padding-xs', default: '4px', description: t.cssSgPaddingXs },
+      { name: 'sg-padding-sm', default: '8px', description: t.cssSgPaddingSm },
+      { name: 'sg-padding-md', default: '12px', description: t.cssSgPaddingMd },
+      { name: 'sg-padding-lg', default: '16px', description: t.cssSgPaddingLg },
+      { name: 'sg-margin-sm', default: '8px', description: t.cssSgMarginSm },
+      { name: 'sg-margin-md', default: '12px', description: t.cssSgMarginMd },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Descriptions"
-      badge="Data Display"
-      crumbs={['Data Display', 'Descriptions']}
-      description="Read-only key / value table for detail pages. Supports horizontal + vertical layouts, a bordered variant, variable column count and per-item `span`."
-      whenToUse={[
-        'Showing a block of read-only fields — invoices, profile summaries, incident details.',
-        'When a data table feels too heavy but a plain `<dl>` would be too minimal.',
-      ]}
+      title={t.pageTitle}
+      badge={t.pageBadge}
+      crumbs={[t.crumbDataDisplay, t.crumbDescriptions]}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2]}
     >
-      <DemoBox title="Basic" description="Default 3-column, horizontal layout." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicDescriptions />
       </DemoBox>
 
       <DemoBox
-        title="Bordered"
-        description="Bordered frame + tinted label column."
+        title={t.demoBorderedTitle}
+        description={t.demoBorderedDesc}
         code={BorderedSource}
       >
         <BorderedDescriptions />
       </DemoBox>
 
       <DemoBox
-        title="Vertical layout"
-        description="Labels above values — good for long cell content."
+        title={t.demoVerticalTitle}
+        description={t.demoVerticalDesc}
         code={VerticalSource}
       >
         <VerticalDescriptions />
       </DemoBox>
 
       <DemoBox
-        title="Columns"
-        description="Change column density; `span` widens items."
+        title={t.demoColumnsTitle}
+        description={t.demoColumnsDesc}
         code={ColumnsSource}
       >
         <ColumnsDescriptions />
       </DemoBox>
 
       <DemoBox
-        title="No colon"
-        description="Drop the trailing colon after labels."
+        title={t.demoNoColonTitle}
+        description={t.demoNoColonDesc}
         code={NoColonSource}
       >
         <NoColonDescriptions />
       </DemoBox>
 
-      <DemoBox title="Sizes" description="Small and middle padding / font presets." code={SizesSource}>
+      <DemoBox title={t.demoSizesTitle} description={t.demoSizesDesc} code={SizesSource}>
         <SizesDescriptions />
       </DemoBox>
 
       <DemoBox
-        title="Rich content"
-        description="Labels and values accept any ReactNode — Badge, Tag, links…"
+        title={t.demoRichContentTitle}
+        description={t.demoRichContentDesc}
         code={RichContentSource}
       >
         <RichContentDescriptions />
       </DemoBox>
 
       <DemoBox
-        title="Tokens override"
-        description="Scope the label-bg / border tokens to rebrand the frame."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={TokensOverrideSource}
       >
         <TokensOverrideDescriptions />
       </DemoBox>
 
       <DemoBox
-        title="Unstyled"
-        description="Bare `<table>` — bring your own CSS."
+        title={t.demoUnstyledTitle}
+        description={t.demoUnstyledDesc}
         code={UnstyledSource}
       >
         <UnstyledDescriptions />
       </DemoBox>
 
-      <PropsTable title="Descriptions API" data={descriptionsProps} />
-      <PropsTable title="DescriptionsItem" data={itemProps} />
+      <PropsTable title={t.tableDescriptionsApi} data={descriptionsProps} />
+      <PropsTable title={t.tableDescriptionsItem} data={itemProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Descriptions has no component-local tokens. Rebrand via the global palette — especially `--sg-color-bg-secondary` (label column in bordered mode) and `--sg-color-border-secondary` (dividers)."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={descCssVars}
       />
     </ComponentDoc>

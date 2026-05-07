@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useBadgeDocStrings } from './badge-doc/useBadgeDocStrings'
 
 import { BasicBadge } from './badge/Basic.demo'
 import BasicSource from './badge/Basic.demo?raw'
@@ -18,108 +21,114 @@ import TokensOverrideSource from './badge/TokensOverride.demo?raw'
 import { UnstyledBadge } from './badge/Unstyled.demo'
 import UnstyledSource from './badge/Unstyled.demo?raw'
 
-const badgeProps: PropDef[] = [
-  { name: 'count', description: 'Number to show; hidden when 0 unless showZero is set', type: 'number' },
-  { name: 'dot', description: 'Render a pill-less dot instead of the count', type: 'boolean', default: 'false' },
-  { name: 'overflowCount', description: 'Cap at which count becomes "{N}+"', type: 'number', default: '99' },
-  { name: 'showZero', description: 'Keep the badge visible when count is 0', type: 'boolean', default: 'false' },
-  { name: 'color', description: 'Custom background for the count / dot (any CSS colour)', type: 'string' },
-  { name: 'status', description: 'Renders a standalone status dot + text row', type: "'success' | 'error' | 'warning' | 'processing' | 'default'" },
-  { name: 'text', description: 'Label shown next to the status dot', type: 'ReactNode' },
-  { name: 'offset', description: 'Pixel offset [right, top] applied as right + marginTop', type: '[number, number]' },
-  { name: 'children', description: 'Element to pin the badge onto', type: 'ReactNode' },
-  { name: 'className', description: 'Wrapper className', type: 'string' },
-  { name: 'style', description: 'Wrapper inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop sg-badge classes (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const badgeCssVars: CssVarDef[] = [
-  { name: 'sg-color-error', default: '#ff4d4f', description: 'Default count + dot background' },
-  { name: 'sg-color-white', default: '#ffffff', description: 'Count text colour' },
-  { name: 'sg-color-bg', default: '#ffffff', description: 'Tiny outline around the pinned count / dot' },
-  { name: 'sg-color-success', default: '#52c41a', description: 'status="success" dot colour' },
-  { name: 'sg-color-warning', default: '#faad14', description: 'status="warning" dot colour' },
-  { name: 'sg-color-primary', default: '#1677ff', description: 'status="processing" dot colour (pulses)' },
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: 'status="default" dot colour' },
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Status text colour' },
-  { name: 'sg-font-size', default: '14px', description: 'Status text size' },
-  { name: 'sg-font-size-sm', default: '12px', description: 'Count number size' },
-  { name: 'sg-padding-sm', default: '8px', description: 'Gap between status dot and text' },
-  { name: 'sg-line-height', default: '1.5714', description: 'Status row line-height' },
-  { name: 'sg-z-base', default: '1', description: 'Stacking layer of the pinned count / dot' },
-]
-
 export function BadgeDemo() {
+  const t = useBadgeDocStrings()
+
+  const badgeProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'count', description: t.propCount, type: 'number' },
+      { name: 'dot', description: t.propDot, type: 'boolean', default: 'false' },
+      { name: 'overflowCount', description: t.propOverflowCount, type: 'number', default: '99' },
+      { name: 'showZero', description: t.propShowZero, type: 'boolean', default: 'false' },
+      { name: 'color', description: t.propColor, type: 'string' },
+      { name: 'status', description: t.propStatus, type: "'success' | 'error' | 'warning' | 'processing' | 'default'" },
+      { name: 'text', description: t.propText, type: 'ReactNode' },
+      { name: 'offset', description: t.propOffset, type: '[number, number]' },
+      { name: 'children', description: t.propChildren, type: 'ReactNode' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const badgeCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-error', default: '#ff4d4f', description: t.cssSgColorError },
+      { name: 'sg-color-white', default: '#ffffff', description: t.cssSgColorWhite },
+      { name: 'sg-color-bg', default: '#ffffff', description: t.cssSgColorBg },
+      { name: 'sg-color-success', default: '#52c41a', description: t.cssSgColorSuccess },
+      { name: 'sg-color-warning', default: '#faad14', description: t.cssSgColorWarning },
+      { name: 'sg-color-primary', default: '#1677ff', description: t.cssSgColorPrimary },
+      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
+      { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
+      { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
+      { name: 'sg-padding-sm', default: '8px', description: t.cssSgPaddingSm },
+      { name: 'sg-line-height', default: '1.5714', description: t.cssSgLineHeight },
+      { name: 'sg-z-base', default: '1', description: t.cssSgZBase },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Badge"
-      description="Small numerical counter or status indicator. Pins to a child, or renders as a standalone status row."
-      whenToUse={[
-        'Show unread / new / pending counts on icons, avatars, menu items.',
-        'Display a live process status (connecting, syncing, failed) in a compact row.',
-        'Signal "has activity" with a tiny dot when the exact number is not important.',
-      ]}
+      title={t.pageTitle}
+      badge={t.pageBadge}
+      crumbs={[t.crumbDataDisplay, t.crumbBadge]}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Pin a count onto any element; 0 is hidden unless showZero." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicBadge />
       </DemoBox>
 
       <DemoBox
-        title="Overflow"
-        description="Numbers above overflowCount collapse to '{N}+'."
+        title={t.demoOverflowTitle}
+        description={t.demoOverflowDesc}
         code={OverflowSource}
       >
         <OverflowBadge />
       </DemoBox>
 
-      <DemoBox title="Dot" description="Pill-less indicator for 'has activity' signals." code={DotSource}>
+      <DemoBox title={t.demoDotTitle} description={t.demoDotDesc} code={DotSource}>
         <DotBadge />
       </DemoBox>
 
       <DemoBox
-        title="Status row"
-        description="Standalone dot + label; processing pulses."
+        title={t.demoStatusTitle}
+        description={t.demoStatusDesc}
         code={StatusSource}
       >
         <StatusBadge />
       </DemoBox>
 
       <DemoBox
-        title="Custom colour"
-        description="Pass a token reference to stay theme-aware, or a raw hex."
+        title={t.demoCustomColorTitle}
+        description={t.demoCustomColorDesc}
         code={CustomColorSource}
       >
         <CustomColorBadge />
       </DemoBox>
 
       <DemoBox
-        title="Offset"
-        description="Nudge the pinned count by [right, top] pixels."
+        title={t.demoOffsetTitle}
+        description={t.demoOffsetDesc}
         code={OffsetSource}
       >
         <OffsetBadge />
       </DemoBox>
 
       <DemoBox
-        title="Tokens override"
-        description="Swap --sg-color-error to rebrand every count and dot at once."
+        title={t.demoTokensTitle}
+        description={t.demoTokensDesc}
         code={TokensOverrideSource}
       >
         <TokensOverrideBadge />
       </DemoBox>
 
       <DemoBox
-        title="Unstyled"
-        description="Drop every sg-badge class — you own the painting."
+        title={t.demoUnstyledTitle}
+        description={t.demoUnstyledDesc}
         code={UnstyledSource}
       >
         <UnstyledBadge />
       </DemoBox>
 
-      <PropsTable title="Badge API" data={badgeProps} />
+      <PropsTable title={t.tableBadgeApi} data={badgeProps} />
       <CssVarsTable
-        title="CSS Variables"
-        hint="Badge composes palette tokens — the count background is `--sg-color-error` by default, status dots follow `--sg-color-{preset}`. Override `color` prop for per-instance colours, or scope the palette tokens on a wrapper for a theme-wide change."
+        title={t.tableCssVars}
+        hint={t.cssHint}
         data={badgeCssVars}
       />
     </ComponentDoc>

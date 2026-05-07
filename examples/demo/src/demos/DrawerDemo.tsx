@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { ComponentDoc, DemoBox, PropsTable, CssVarsTable } from '../components'
 import type { PropDef, CssVarDef } from '../components'
+
+import { useDrawerDocStrings } from './drawer-doc/useDrawerDocStrings'
 
 import { BasicDrawer } from './drawer/Basic.demo'
 import BasicSource from './drawer/Basic.demo?raw'
@@ -16,108 +19,84 @@ import TokensOverrideSource from './drawer/TokensOverride.demo?raw'
 import { UnstyledDrawer } from './drawer/Unstyled.demo'
 import UnstyledSource from './drawer/Unstyled.demo?raw'
 
-const drawerProps: PropDef[] = [
-  { name: 'open', description: 'Whether the Drawer is visible', type: 'boolean' },
-  { name: 'onClose', description: 'Called on ESC, mask click, or × button', type: '() => void' },
-  { name: 'title', description: 'Header content next to the close control', type: 'ReactNode' },
-  { name: 'children', description: 'Scrollable body content', type: 'ReactNode' },
-  { name: 'footer', description: 'Sticky footer row for actions', type: 'ReactNode' },
-  { name: 'placement', description: 'Edge the panel slides in from', type: "'left' | 'right' | 'top' | 'bottom'", default: "'right'" },
-  { name: 'width', description: 'Panel width (horizontal placement)', type: 'number | string', default: '378' },
-  { name: 'height', description: 'Panel height (vertical placement)', type: 'number | string', default: '378' },
-  { name: 'closable', description: 'Show the × header button', type: 'boolean', default: 'true' },
-  { name: 'mask', description: 'Render the dimmed backdrop', type: 'boolean', default: 'true' },
-  { name: 'maskClosable', description: 'Clicking the mask calls onClose', type: 'boolean', default: 'true' },
-  { name: 'className', description: 'Panel className', type: 'string' },
-  { name: 'style', description: 'Panel inline style', type: 'CSSProperties' },
-  { name: 'unstyled', description: 'Drop every sg-drawer-* class (headless mode)', type: 'boolean', default: 'false' },
-]
-
-const drawerCssVars: CssVarDef[] = [
-  { name: 'sg-color-bg-elevated', default: '#ffffff', description: 'Panel background' },
-  { name: 'sg-color-overlay', default: 'rgba(0, 0, 0, 0.45)', description: 'Mask colour + opacity' },
-  { name: 'sg-color-border-secondary', default: 'rgba(5, 5, 5, 0.04)', description: 'Header / footer divider' },
-  { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: 'Title colour' },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: '× close button colour' },
-  { name: 'sg-font-size-lg', default: '16px', description: 'Title font size' },
-  { name: 'sg-font-size-xl', default: '20px', description: '× close glyph size' },
-  { name: 'sg-padding-md', default: '12px', description: 'Header / footer vertical padding' },
-  { name: 'sg-padding-xl', default: '24px', description: 'Body padding + header / footer horizontal padding' },
-  { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0,0,0,0.08)', description: 'Panel elevation' },
-  { name: 'sg-transition-duration', default: '180ms', description: 'Slide-in / fade-in speed' },
-  { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: 'Shared easing' },
-  { name: 'sg-z-modal', default: '1000', description: 'Stacking layer for the drawer root' },
-]
-
 export function DrawerDemo() {
+  const t = useDrawerDocStrings()
+
+  const drawerProps = useMemo<PropDef[]>(
+    () => [
+      { name: 'open', description: t.propOpen, type: 'boolean' },
+      { name: 'onClose', description: t.propOnClose, type: '() => void' },
+      { name: 'title', description: t.propTitle, type: 'ReactNode' },
+      { name: 'children', description: t.propChildren, type: 'ReactNode' },
+      { name: 'footer', description: t.propFooter, type: 'ReactNode' },
+      { name: 'placement', description: t.propPlacement, type: "'left' | 'right' | 'top' | 'bottom'", default: "'right'" },
+      { name: 'width', description: t.propWidth, type: 'number | string', default: '378' },
+      { name: 'height', description: t.propHeight, type: 'number | string', default: '378' },
+      { name: 'closable', description: t.propClosable, type: 'boolean', default: 'true' },
+      { name: 'mask', description: t.propMask, type: 'boolean', default: 'true' },
+      { name: 'maskClosable', description: t.propMaskClosable, type: 'boolean', default: 'true' },
+      { name: 'className', description: t.propClassName, type: 'string' },
+      { name: 'style', description: t.propStyle, type: 'CSSProperties' },
+      { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+    ],
+    [t],
+  )
+
+  const drawerCssVars = useMemo<CssVarDef[]>(
+    () => [
+      { name: 'sg-color-bg-elevated', default: '#ffffff', description: t.cssBgElevated },
+      { name: 'sg-color-overlay', default: 'rgba(0, 0, 0, 0.45)', description: t.cssOverlay },
+      { name: 'sg-color-border-secondary', default: 'rgba(5, 5, 5, 0.04)', description: t.cssBorderSecondary },
+      { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
+      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssTextTertiary },
+      { name: 'sg-font-size-lg', default: '16px', description: t.cssFontSizeLg },
+      { name: 'sg-font-size-xl', default: '20px', description: t.cssFontSizeXl },
+      { name: 'sg-padding-md', default: '12px', description: t.cssPaddingMd },
+      { name: 'sg-padding-xl', default: '24px', description: t.cssPaddingXl },
+      { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0,0,0,0.08)', description: t.cssShadowLg },
+      { name: 'sg-transition-duration', default: '180ms', description: t.cssTransitionDuration },
+      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+      { name: 'sg-z-modal', default: '1000', description: t.cssZModal },
+    ],
+    [t],
+  )
+
   return (
     <ComponentDoc
-      title="Drawer"
-      description="Edge-anchored panel that slides in from any side. Uses a focus trap, ESC-to-close, and an optional mask. Body scrolls while header / footer stay pinned."
-      whenToUse={[
-        'Edit a record or filter a list without losing page context.',
-        'Show supplementary navigation / notifications tray.',
-        "Reveal a side form that's too heavy for a Popover and too light for a Modal.",
-      ]}
+      title={t.pageTitle}
+      description={t.pageLead}
+      whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox title="Basic" description="Right-side drawer with focus trap + ESC support." code={BasicSource}>
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicSource}>
         <BasicDrawer />
       </DemoBox>
 
-      <DemoBox
-        title="Placement"
-        description="Slide in from any edge; width / height switch automatically."
-        code={PlacementSource}
-      >
+      <DemoBox title={t.demoPlacementTitle} description={t.demoPlacementDesc} code={PlacementSource}>
         <PlacementDrawer />
       </DemoBox>
 
-      <DemoBox
-        title="Custom size"
-        description="Any CSS length works — px, %, vw. Use % for mobile-friendly drawers."
-        code={SizesSource}
-      >
+      <DemoBox title={t.demoSizeTitle} description={t.demoSizeDesc} code={SizesSource}>
         <SizesDrawer />
       </DemoBox>
 
-      <DemoBox
-        title="Sticky footer"
-        description="Body scrolls, footer stays pinned."
-        code={FooterSource}
-      >
+      <DemoBox title={t.demoFooterTitle} description={t.demoFooterDesc} code={FooterSource}>
         <FooterDrawer />
       </DemoBox>
 
-      <DemoBox
-        title="Mask options"
-        description="Turn off the mask, or keep it but force the × / ESC."
-        code={NoMaskSource}
-      >
+      <DemoBox title={t.demoNoMaskTitle} description={t.demoNoMaskDesc} code={NoMaskSource}>
         <NoMaskDrawer />
       </DemoBox>
 
-      <DemoBox
-        title="Tokens override"
-        description="Scope surface tokens on a wrapper for a dark-mode drawer."
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideDrawer />
       </DemoBox>
 
-      <DemoBox
-        title="Unstyled"
-        description="Keep a11y + ESC / trap; do your own painting."
-        code={UnstyledSource}
-      >
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledDrawer />
       </DemoBox>
 
-      <PropsTable title="Drawer API" data={drawerProps} />
-      <CssVarsTable
-        title="CSS Variables"
-        hint="Drawer has no dedicated tokens — the panel is `--sg-color-bg-elevated`, the mask is `--sg-color-overlay`, and the lift is `--sg-shadow-lg`. Override them on a wrapper to restyle without editing the global theme."
-        data={drawerCssVars}
-      />
+      <PropsTable title={t.tableDrawerApi} data={drawerProps} />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={drawerCssVars} />
     </ComponentDoc>
   )
 }
