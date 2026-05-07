@@ -52,6 +52,16 @@ import { VirtualTable } from './table/Virtual.demo'
 import VirtualSource from './table/Virtual.demo?raw'
 import { KitchenSinkTable } from './table/KitchenSink.demo'
 import KitchenSinkSource from './table/KitchenSink.demo?raw'
+import { AdvancedFiltersTable } from './table/AdvancedFilters.demo'
+import AdvancedFiltersSource from './table/AdvancedFilters.demo?raw'
+import { GroupingTable } from './table/Grouping.demo'
+import GroupingSource from './table/Grouping.demo?raw'
+import { VirtualDynamicTable } from './table/VirtualDynamic.demo'
+import VirtualDynamicSource from './table/VirtualDynamic.demo?raw'
+import { LargeDatasetTable } from './table/LargeDataset.demo'
+import LargeDatasetSource from './table/LargeDataset.demo?raw'
+import { RealtimeTable } from './table/Realtime.demo'
+import RealtimeSource from './table/Realtime.demo?raw'
 
 export function TableDemo() {
   const t = useTableDocStrings()
@@ -370,6 +380,56 @@ export function TableDemo() {
       >
         <div style={{ width: '100%' }}>
           <KitchenSinkTable />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title={t.demoAdvancedFiltersTitle}
+        description={t.demoAdvancedFiltersDesc}
+        code={AdvancedFiltersSource}
+      >
+        <div style={{ width: '100%' }}>
+          <AdvancedFiltersTable />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title={t.demoGroupingTitle}
+        description={t.demoGroupingDesc}
+        code={GroupingSource}
+      >
+        <div style={{ width: '100%' }}>
+          <GroupingTable />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title={t.demoVirtualDynamicTitle}
+        description={t.demoVirtualDynamicDesc}
+        code={VirtualDynamicSource}
+      >
+        <div style={{ width: '100%' }}>
+          <VirtualDynamicTable />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title={t.demoLargeDatasetTitle}
+        description={t.demoLargeDatasetDesc}
+        code={LargeDatasetSource}
+      >
+        <div style={{ width: '100%' }}>
+          <LargeDatasetTable />
+        </div>
+      </DemoBox>
+
+      <DemoBox
+        title={t.demoRealtimeTitle}
+        description={t.demoRealtimeDesc}
+        code={RealtimeSource}
+      >
+        <div style={{ width: '100%' }}>
+          <RealtimeTable />
         </div>
       </DemoBox>
 

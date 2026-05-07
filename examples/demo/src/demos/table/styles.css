@@ -81,6 +81,32 @@
   font-size: 0.8em;
 }
 
+/* ── Realtime.demo ──────────────────────────────────────────────────── */
+@keyframes demo-rt-flash-up {
+  0%   { background: color-mix(in srgb, var(--sg-color-success-bg) 90%, transparent); }
+  100% { background: transparent; }
+}
+@keyframes demo-rt-flash-down {
+  0%   { background: color-mix(in srgb, var(--sg-color-error-bg) 90%, transparent); }
+  100% { background: transparent; }
+}
+.demo-rt-price {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.demo-rt-price-up {
+  animation: demo-rt-flash-up 900ms ease-out;
+  color: var(--sg-color-success);
+  font-weight: 600;
+}
+.demo-rt-price-down {
+  animation: demo-rt-flash-down 900ms ease-out;
+  color: var(--sg-color-error);
+  font-weight: 600;
+}
+
 /* ── Unstyled.demo ──────────────────────────────────────────────────── */
 .demo-unstyled-card {
   padding: 16px;

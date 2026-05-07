@@ -73,6 +73,21 @@ export const tableDocEn = {
   demoKitchenSinkTitle: 'Kitchen Sink',
   demoKitchenSinkDesc:
     'All features combined: selection, expand, sort, filter, search, resize, fixed columns, editable, summary.',
+  demoAdvancedFiltersTitle: 'Advanced Filters',
+  demoAdvancedFiltersDesc:
+    "filterMode='advanced' wires per-column operators: numeric eq/lt/gt/between, string contains/startsWith, enum in/notIn, date range, and a custom array `contains/notContains` dropdown. Footer shows the live filtered count and a global reset.",
+  demoGroupingTitle: 'Grouping',
+  demoGroupingDesc:
+    'groupBy with switchable field plus column.aggregate (sum / sum / max-by-custom-reducer). Group rows expand/collapse; footer renders dataset totals.',
+  demoVirtualDynamicTitle: 'Virtual Scroll: dynamic row heights',
+  demoVirtualDynamicDesc:
+    'rowHeight as a function reports a different height per row (long messages = 120px, short = 48px). estimateRowHeight covers off-screen rows. Load more keeps the mounted DOM flat past 4 000 rows.',
+  demoLargeDatasetTitle: 'Large Dataset (stress test)',
+  demoLargeDatasetDesc:
+    '10 000 rows with virtual + sort + filter + groupBy + column pinning + selection on at the same time. Smoke test for layout / scroll smoothness on real-world volumes.',
+  demoRealtimeTitle: 'Realtime Updates',
+  demoRealtimeDesc:
+    '100 ticker rows mutated every 1.5s. Price cells flash green/red on change via a CSS keyframe; sorts and filters survive each tick because rows are keyed by id.',
 
   tableTableApi: 'Table API',
   tableColumnApi: 'Column API',

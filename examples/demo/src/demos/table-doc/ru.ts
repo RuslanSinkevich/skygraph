@@ -76,6 +76,21 @@ export const tableDocRu: { [K in keyof typeof tableDocEn]: string } = {
   demoKitchenSinkTitle: 'Kitchen Sink',
   demoKitchenSinkDesc:
     'Все возможности вместе: selection, expand, sort, filter, search, resize, фиксированные колонки, editable, summary.',
+  demoAdvancedFiltersTitle: 'Расширенные фильтры',
+  demoAdvancedFiltersDesc:
+    "filterMode='advanced' с операторами по типу колонки: числовые eq/lt/gt/between, строковые contains/startsWith, enum in/notIn, диапазон дат и кастомный dropdown `contains/notContains` для массива тегов. В футере — счётчик отфильтрованных и глобальный reset.",
+  demoGroupingTitle: 'Группировка',
+  demoGroupingDesc:
+    'groupBy с переключаемым полем + column.aggregate (sum / sum / max через свой reducer). Группы раскрываются / сворачиваются; футер считает общие итоги по датасету.',
+  demoVirtualDynamicTitle: 'Virtual scroll: динамические высоты строк',
+  demoVirtualDynamicDesc:
+    'rowHeight как функция: длинные сообщения — 120px, короткие — 48px. estimateRowHeight покрывает строки вне viewport. Load more увеличивает датасет за 4000 строк, в DOM при этом — только видимое + overscan.',
+  demoLargeDatasetTitle: 'Большой датасет (стресс-тест)',
+  demoLargeDatasetDesc:
+    '10 000 строк с virtual + sort + filter + groupBy + pinning колонок + selection одновременно. Smoke-тест на плавность скролла и интерактивность на реалистичных объёмах.',
+  demoRealtimeTitle: 'Realtime-обновления',
+  demoRealtimeDesc:
+    '100 ticker-строк, обновляются раз в 1.5с. Ячейка price моргает зелёным / красным на изменение (CSS keyframe); сортировка и фильтры не сбрасываются — строки ключуются по id.',
 
   tableTableApi: 'API Table',
   tableColumnApi: 'API Column',
