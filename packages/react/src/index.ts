@@ -245,7 +245,15 @@ export type { HistoryPanelProps } from './components/devtools/HistoryPanel'
 export { useGraph } from './hooks/useGraph'
 export type { UseGraphOptions, UseGraphReturn } from './hooks/useGraph'
 export { Diagram } from './components/complex/Diagram'
-export type { DiagramProps, DiagramNodeRenderer, DiagramRef } from './components/complex/Diagram'
+export type {
+  DiagramProps,
+  DiagramNodeRenderer,
+  DiagramRef,
+  DiagramSelectionMode,
+  DiagramCanvasContextPoint,
+  NodeAction as DiagramNodeAction,
+  EdgeAction as DiagramEdgeAction,
+} from './components/complex/Diagram'
 
 // Print (Tab L1 — @media print + popup-window helper, no runtime deps)
 export { printElement, buildPrintHtml, buildPageRule } from './utils/print'

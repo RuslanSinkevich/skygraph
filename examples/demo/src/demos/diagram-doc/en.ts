@@ -8,7 +8,7 @@ export const diagramDocEn = {
   crumbDataDisplay: 'Data Display',
   crumbDiagram: 'Diagram',
   pageLead:
-    'Visual layer for GraphEngine — DOM nodes + SVG-overlay edges. v0: straight edges only; orthogonal routing, drag-and-drop, and zoom/pan are follow-ups.',
+    'Visual layer for GraphEngine — DOM nodes + SVG-overlay edges. Supports drag-and-drop, zoom / pan, snap-to-grid, orthogonal routing with obstacle avoidance, multi-select with lasso, hover mini-toolbars and custom context menus.',
   pageWhen1: 'Render a flowchart / org chart / dependency graph backed by reactive state.',
   pageWhen2:
     'Build a Visio-like editor where the topology lives in `@skygraph/core` and the visual layer is just a thin React projection.',
@@ -18,6 +18,46 @@ export const diagramDocEn = {
   demoBasicTitle: 'Basic',
   demoBasicDesc:
     'Three rect nodes with two straight edges. Edges resolve to outline anchors via stable IDs (`nw`, `ne`, `se`, `sw`).',
+
+  demoDraggableTitle: 'Draggable',
+  demoDraggableDesc:
+    'Click and drag any node. Hover lifts the shadow, dragging stamps `[data-sg-dragging="true"]` for an even stronger visual cue.',
+
+  demoZoomableTitle: 'Zoomable',
+  demoZoomableDesc:
+    'Hold `Ctrl` (or `⌘` on macOS) and scroll the wheel to zoom in / out around the cursor. Scale is clamped to a sensible range.',
+
+  demoPannableTitle: 'Pannable',
+  demoPannableDesc:
+    'Middle-button drag pans the canvas. Plain wheel scrolls; combined with `zoomable` it leaves `Ctrl + wheel` for zoom and the rest for pan.',
+
+  demoSnapToGridTitle: 'Snap to grid',
+  demoSnapToGridDesc:
+    '`snapToGrid={20}` rounds every drag-end to multiples of 20 world units and turns on the matching CSS background grid.',
+
+  demoOrthogonalTitle: 'Orthogonal routing',
+  demoOrthogonalDesc:
+    'A*-based router with obstacle avoidance — edges detour around every other node rather than cutting through them.',
+
+  demoUndoRedoTitle: 'Undo / Redo',
+  demoUndoRedoDesc:
+    'Built-in history. Drag the nodes, then `Ctrl+Z` / `Ctrl+Shift+Z` (or use the buttons) to walk the timeline.',
+
+  demoContextMenuTitle: 'Context menu',
+  demoContextMenuDesc:
+    'Right-click a node, an edge, or empty canvas — three callbacks (`onNodeContextMenu`, `onEdgeContextMenu`, `onCanvasContextMenu`) suppress the native menu and let you render your own.',
+
+  demoMultiSelectTitle: 'Multi-select & lasso',
+  demoMultiSelectDesc:
+    '`Ctrl+click` toggles individual nodes; dragging on empty canvas opens a rubber-band that picks every node whose AABB intersects it. Dragging any selected node moves the whole group.',
+
+  demoOBBTitle: 'Rotated nodes (OBB)',
+  demoOBBDesc:
+    'Each node carries a non-zero `transform.rot`. The engine projects the OBB to a tight axis-aligned box so layout, anchors and obstacle-aware routing keep working.',
+
+  demoLargeTitle: 'Large graph (200 / 400)',
+  demoLargeDesc:
+    'Stress test: 200 nodes and 400 random straight edges with drag, zoom and pan all enabled. A reproducible seed keeps the layout stable across renders.',
 
   tableDiagramApi: 'Diagram API',
   tableUseGraphApi: 'useGraph(options) Options',
@@ -30,6 +70,19 @@ export const diagramDocEn = {
   propClassName: 'Root className',
   propStyle: 'Root inline style',
   propUnstyled: 'Drop default sg-diagram classes',
+  propDraggable: 'Enable drag (true / false / custom handler)',
+  propZoomable: '`Ctrl + wheel` zoom on the canvas',
+  propPanable: 'Middle-button drag + plain wheel pan',
+  propSnapToGrid: 'Snap drag results to a world-units grid',
+  propRouteAroundNodes: 'A*-based obstacle avoidance for orthogonal edges',
+  propSelection: 'Controlled selection: array of node ids',
+  propSelectionMode: '`single` (legacy) / `multi` (Ctrl+click) / `lasso`',
+  propOnSelectionChange: 'Fired when the selection set changes',
+  propNodeActions: 'Mini-toolbar shown above a hovered node',
+  propEdgeActions: 'Mini-toolbar shown above a hovered edge',
+  propOnNodeContextMenu: 'Right-click on a node → custom callback',
+  propOnEdgeContextMenu: 'Right-click on an edge → custom callback',
+  propOnCanvasContextMenu: 'Right-click on empty canvas → custom callback',
 
   propUseGraphCore: 'Bring your own Core instance (cross-engine coordination)',
   propUseGraphName: 'Optional debug name for the engine',

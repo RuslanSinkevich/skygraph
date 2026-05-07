@@ -2,13 +2,18 @@
 
 .sg-diagram {
   /*
-   * Component-local CSS variable. `<Diagram>` overrides it via inline-style
-   * (`style={{ '--sg-grid-size': '20px' }}`) when snap-to-grid is active, so
-   * the background pattern in `.sg-diagram-grid` stays in sync with the
-   * snap step (and the current zoom). Default is declared here so `var()`
-   * always resolves to a real value — required by `check:tokens`.
+   * Component-local CSS variables. `<Diagram>` overrides `--sg-grid-size`
+   * via inline-style (`style={{ '--sg-grid-size': '20px' }}`) when
+   * snap-to-grid is active so the background pattern stays in sync with
+   * the snap step (and the current zoom). Defaults are declared here so
+   * `var()` always resolves to a real value — required by `check:tokens`.
    */
   --sg-grid-size: 20px;
+  --sg-diagram-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --sg-diagram-edge-hover-stroke: var(--sg-color-text-secondary);
+  --sg-diagram-selected-ring: var(--sg-color-primary);
+  --sg-diagram-lasso-bg: var(--sg-color-primary-bg);
+  --sg-diagram-lasso-border: var(--sg-color-primary);
 
   background: var(--sg-color-bg);
   border: 1px solid var(--sg-color-border);
@@ -40,6 +45,25 @@
   color: var(--sg-color-text);
   box-shadow: var(--sg-shadow-sm);
   user-select: none;
+  transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
+}
+
+.sg-diagram-node:hover {
+  box-shadow: var(--sg-diagram-shadow-md);
+  border-color: var(--sg-color-text-secondary);
+}
+
+.sg-diagram-node[data-sg-dragging='true'] {
+  box-shadow: var(--sg-shadow-lg);
+  cursor: grabbing;
+  transform: scale(1.02);
+}
+
+.sg-diagram-node-selected {
+  border-color: var(--sg-diagram-selected-ring);
+  box-shadow:
+    0 0 0 2px var(--sg-color-primary-bg),
+    var(--sg-diagram-shadow-md);
 }
 
 .sg-diagram-node-rect {
@@ -66,11 +90,9 @@
 }
 
 .sg-diagram-node-draggable {
-  transition: box-shadow 120ms ease;
-}
-
-.sg-diagram-node-draggable:hover {
-  box-shadow: var(--sg-shadow);
+  /* legacy hook kept for tests + back-compat — visual transitions live on
+   * `.sg-diagram-node` itself now so they apply equally to non-draggable
+   * nodes that still get hover / selected feedback. */
 }
 
 .sg-diagram-node-draggable:active {
@@ -78,10 +100,67 @@
 }
 
 .sg-diagram-edges {
-  /* sits behind nodes; no pointer events */
+  /* sits behind nodes; per-edge groups override pointer-events when
+   * interactivity is enabled. */
 }
 
 .sg-diagram-edge {
   stroke: var(--sg-color-border);
   stroke-width: 1.5;
+  transition: stroke 120ms ease, stroke-width 120ms ease;
+}
+
+.sg-diagram-edge-hit:hover + .sg-diagram-edge,
+g[data-edge-id]:hover .sg-diagram-edge {
+  stroke: var(--sg-diagram-edge-hover-stroke);
+  stroke-width: 2;
+}
+
+/* ─── Hover mini-toolbar ─────────────────────────────────────────────── */
+
+.sg-diagram-hover-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sg-padding-sm);
+  padding: var(--sg-padding-xs) var(--sg-padding-sm);
+  background: var(--sg-color-bg-elevated);
+  border: 1px solid var(--sg-color-border);
+  border-radius: var(--sg-border-radius);
+  box-shadow: var(--sg-shadow);
+  font-size: var(--sg-font-size-sm);
+  white-space: nowrap;
+}
+
+.sg-diagram-hover-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 var(--sg-padding-xs);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--sg-border-radius);
+  color: var(--sg-color-text);
+  font: inherit;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.sg-diagram-hover-action:hover {
+  background: var(--sg-color-bg-hover);
+  border-color: var(--sg-color-border);
+}
+
+.sg-diagram-hover-action:focus-visible {
+  outline: 2px solid var(--sg-color-primary);
+  outline-offset: 1px;
+}
+
+/* ─── Lasso rubber-band ──────────────────────────────────────────────── */
+
+.sg-diagram-lasso {
+  background: var(--sg-diagram-lasso-bg);
+  border: 1px dashed var(--sg-diagram-lasso-border);
+  border-radius: 2px;
 }

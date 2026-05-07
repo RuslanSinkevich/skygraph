@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, act, renderHook, fireEvent } from '@testing-library/react'
 import { Diagram, useGraph } from '../index'
 
@@ -412,6 +412,291 @@ describe('Diagram component', () => {
     expect(path).not.toBeNull()
     const d = path.getAttribute('d')!
     expect((d.match(/L /g) ?? []).length).toBe(1)
+  })
+})
+
+describe('Diagram — context menu', () => {
+  it('onNodeContextMenu fires with the right node and preventDefault is called', () => {
+    const { graph, state } = simpleScene()
+    const onNodeContextMenu = vi.fn()
+    const { container } = render(
+      <Diagram graph={graph} state={state} onNodeContextMenu={onNodeContextMenu} />,
+    )
+    const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
+    const ev = new MouseEvent('contextmenu', { bubbles: true, cancelable: true })
+    nodeA.dispatchEvent(ev)
+    expect(onNodeContextMenu).toHaveBeenCalledTimes(1)
+    const passedNode = onNodeContextMenu.mock.calls[0]![1]
+    expect(passedNode.id).toBe('a')
+    expect(ev.defaultPrevented).toBe(true)
+  })
+
+  it('onEdgeContextMenu fires when right-clicking an edge hit-area', () => {
+    const { graph, state } = simpleScene()
+    const onEdgeContextMenu = vi.fn()
+    const { container } = render(
+      <Diagram graph={graph} state={state} onEdgeContextMenu={onEdgeContextMenu} />,
+    )
+    const hit = container.querySelector('.sg-diagram-edge-hit') as SVGPathElement
+    expect(hit).not.toBeNull()
+    fireEvent.contextMenu(hit)
+    expect(onEdgeContextMenu).toHaveBeenCalledTimes(1)
+    const passedEdge = onEdgeContextMenu.mock.calls[0]![1]
+    expect(passedEdge.from.node).toBe('a')
+  })
+
+  it('onCanvasContextMenu fires with world + screen coords on empty area', () => {
+    const { graph, state } = simpleScene()
+    const onCanvasContextMenu = vi.fn()
+    const { container } = render(
+      <Diagram graph={graph} state={state} onCanvasContextMenu={onCanvasContextMenu} />,
+    )
+    const wrapper = container.querySelector('.sg-diagram') as HTMLElement
+    fireEvent.contextMenu(wrapper, { clientX: 50, clientY: 80 })
+    expect(onCanvasContextMenu).toHaveBeenCalledTimes(1)
+    const point = onCanvasContextMenu.mock.calls[0]![1]
+    expect(point).toMatchObject({ screenX: 50, screenY: 80 })
+    expect(typeof point.x).toBe('number')
+    expect(typeof point.y).toBe('number')
+  })
+
+  it('without callbacks the native menu fires (no preventDefault)', () => {
+    const { graph, state } = simpleScene()
+    const { container } = render(<Diagram graph={graph} state={state} />)
+    const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
+    const ev = new MouseEvent('contextmenu', { bubbles: true, cancelable: true })
+    nodeA.dispatchEvent(ev)
+    expect(ev.defaultPrevented).toBe(false)
+  })
+
+  it('node context menu does NOT bubble to canvas handler', () => {
+    const { graph, state } = simpleScene()
+    const onNodeContextMenu = vi.fn()
+    const onCanvasContextMenu = vi.fn()
+    const { container } = render(
+      <Diagram
+        graph={graph}
+        state={state}
+        onNodeContextMenu={onNodeContextMenu}
+        onCanvasContextMenu={onCanvasContextMenu}
+      />,
+    )
+    const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
+    fireEvent.contextMenu(nodeA)
+    expect(onNodeContextMenu).toHaveBeenCalledTimes(1)
+    expect(onCanvasContextMenu).not.toHaveBeenCalled()
+  })
+})
+
+describe('Diagram — selection / multi-select', () => {
+  it('Ctrl+click adds a node to the selection (multi mode)', () => {
+    const { graph, state } = simpleScene()
+    const onSelectionChange = vi.fn()
+    const { container } = render(
+      <Diagram
+        graph={graph}
+        state={state}
+        selectionMode="multi"
+        onSelectionChange={onSelectionChange}
+      />,
+    )
+    const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
+    fireEvent.mouseDown(nodeA, { button: 0, ctrlKey: true })
+    expect(onSelectionChange).toHaveBeenCalledWith(['a'])
+
+    const nodeB = container.querySelector('[data-node-id="b"]') as HTMLElement
+    fireEvent.mouseDown(nodeB, { button: 0, ctrlKey: true })
+    expect(onSelectionChange).toHaveBeenLastCalledWith(['a', 'b'])
+  })
+
+  it('Ctrl+click on selected node toggles it OFF', () => {
+    const { graph, state } = simpleScene()
+    const onSelectionChange = vi.fn()
+    const { container } = render(
+      <Diagram
+        graph={graph}
+        state={state}
+        selectionMode="multi"
+        defaultSelection={['a', 'b']}
+        onSelectionChange={onSelectionChange}
+      />,
+    )
+    const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
+    fireEvent.mouseDown(nodeA, { button: 0, ctrlKey: true })
+    expect(onSelectionChange).toHaveBeenLastCalledWith(['b'])
+  })
+
+  it('controlled selection prop applies sg-diagram-node-selected class', () => {
+    const { graph, state } = simpleScene()
+    const { container } = render(
+      <Diagram graph={graph} state={state} selection={['a', 'c']} />,
+    )
+    const selected = container.querySelectorAll('.sg-diagram-node-selected')
+    expect(selected.length).toBe(2)
+    const ids = Array.from(selected).map((el) => el.getAttribute('data-node-id'))
+    expect(ids.sort()).toEqual(['a', 'c'])
+  })
+
+  it('lasso drag on empty canvas selects nodes whose AABB intersects', () => {
+    const { graph, state } = simpleScene()
+    // simpleScene: a@(0,0) 80x40, b@(200,0) 80x40, c@(200,200) 80x40.
+    const onSelectionChange = vi.fn()
+    const { container } = render(
+      <Diagram
+        graph={graph}
+        state={state}
+        selectionMode="lasso"
+        onSelectionChange={onSelectionChange}
+      />,
+    )
+    const wrapper = container.querySelector('.sg-diagram') as HTMLElement
+    // jsdom returns zeroed getBoundingClientRect; treat clientX/Y as
+    // wrapper-local coords. Pan/zoom are 0/1 by default.
+    fireEvent.mouseDown(wrapper, { button: 0, clientX: -10, clientY: -10 })
+    // Drag to (300, 50) — should cover a and b but not c.
+    fireEvent.mouseMove(window, { clientX: 300, clientY: 50 })
+    fireEvent.mouseUp(window)
+
+    expect(onSelectionChange).toHaveBeenCalled()
+    const last = onSelectionChange.mock.calls.at(-1)![0] as string[]
+    expect(last.sort()).toEqual(['a', 'b'])
+  })
+
+  it('multi-drag moves every selected node by the same delta', () => {
+    const { result } = renderHook(() => useGraph())
+    act(() => {
+      result.current.graph.addNode({
+        id: 'a',
+        transform: { x: 0, y: 0 },
+        outline: { kind: 'rect', w: 40, h: 40 },
+      })
+      result.current.graph.addNode({
+        id: 'b',
+        transform: { x: 100, y: 50 },
+        outline: { kind: 'rect', w: 40, h: 40 },
+      })
+    })
+    const { container } = render(
+      <Diagram
+        graph={result.current.graph}
+        state={result.current.state}
+        draggable
+        selectionMode="multi"
+        defaultSelection={['a', 'b']}
+      />,
+    )
+    const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
+    fireEvent.mouseDown(nodeA, { button: 0, clientX: 0, clientY: 0 })
+    fireEvent.mouseMove(window, { clientX: 30, clientY: 20 })
+    fireEvent.mouseUp(window)
+
+    const a = result.current.graph.getNode('a')!
+    const b = result.current.graph.getNode('b')!
+    expect(a.transform.x).toBe(30)
+    expect(a.transform.y).toBe(20)
+    expect(b.transform.x).toBe(130)
+    expect(b.transform.y).toBe(70)
+  })
+
+  it('plain click on empty canvas clears selection (multi mode)', () => {
+    const { graph, state } = simpleScene()
+    const onSelectionChange = vi.fn()
+    const { container } = render(
+      <Diagram
+        graph={graph}
+        state={state}
+        selectionMode="multi"
+        defaultSelection={['a', 'b']}
+        onSelectionChange={onSelectionChange}
+      />,
+    )
+    const wrapper = container.querySelector('.sg-diagram') as HTMLElement
+    fireEvent.mouseDown(wrapper, { button: 0, clientX: 5, clientY: 5 })
+    expect(onSelectionChange).toHaveBeenLastCalledWith([])
+  })
+
+  it('selectionMode="single" preserves legacy drag behaviour with no selection mgmt', () => {
+    const { result } = renderHook(() => useGraph())
+    act(() => {
+      result.current.graph.addNode({
+        id: 'a',
+        transform: { x: 0, y: 0 },
+        outline: { kind: 'rect', w: 40, h: 40 },
+      })
+    })
+    const onSelectionChange = vi.fn()
+    const { container } = render(
+      <Diagram
+        graph={result.current.graph}
+        state={result.current.state}
+        draggable
+        onSelectionChange={onSelectionChange}
+      />,
+    )
+    const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
+    // Ctrl+click in single mode: does not change selection.
+    fireEvent.mouseDown(nodeA, { button: 0, ctrlKey: true, clientX: 0, clientY: 0 })
+    fireEvent.mouseUp(window)
+    expect(onSelectionChange).not.toHaveBeenCalled()
+    // Drag still works.
+    fireEvent.mouseDown(nodeA, { button: 0, clientX: 0, clientY: 0 })
+    fireEvent.mouseMove(window, { clientX: 17, clientY: 9 })
+    fireEvent.mouseUp(window)
+    expect(result.current.graph.getNode('a')!.transform.x).toBe(17)
+  })
+})
+
+describe('Diagram — hover actions', () => {
+  it('renders nothing until the hover delay elapses', () => {
+    vi.useFakeTimers()
+    try {
+      const { graph, state } = simpleScene()
+      const { container } = render(
+        <Diagram
+          graph={graph}
+          state={state}
+          nodeActions={[{ id: 'edit', label: 'Edit', onClick: () => {} }]}
+        />,
+      )
+      const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
+      fireEvent.mouseEnter(nodeA)
+      expect(container.querySelector('.sg-diagram-hover-actions')).toBeNull()
+      act(() => {
+        vi.advanceTimersByTime(220)
+      })
+      const overlay = container.querySelector('.sg-diagram-hover-actions')
+      expect(overlay).not.toBeNull()
+      expect(overlay!.getAttribute('data-node-id')).toBe('a')
+      expect(overlay!.querySelectorAll('[data-action-id="edit"]').length).toBe(1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('hidden() filters actions out before render', () => {
+    vi.useFakeTimers()
+    try {
+      const { graph, state } = simpleScene()
+      const { container } = render(
+        <Diagram
+          graph={graph}
+          state={state}
+          nodeActions={[
+            { id: 'edit', label: 'Edit', onClick: () => {} },
+            { id: 'remove', label: 'Remove', onClick: () => {}, hidden: () => true },
+          ]}
+        />,
+      )
+      const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
+      fireEvent.mouseEnter(nodeA)
+      act(() => {
+        vi.advanceTimersByTime(220)
+      })
+      expect(container.querySelector('[data-action-id="edit"]')).not.toBeNull()
+      expect(container.querySelector('[data-action-id="remove"]')).toBeNull()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
 
