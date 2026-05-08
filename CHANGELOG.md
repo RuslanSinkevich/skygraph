@@ -7,6 +7,239 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Round 11 — UX полишинг + demo expansion + 3 новых фичи + i18n batch
+
+После round 9.1 (`c89c6ea`) на master приехали 15 коммитов двумя волнами:
+сначала три больших отложенных пункта из `TODO.md` (Print/PDF, Resource
+Calendar, SchemaForm визуальный редактор) + Tree fix + i18n-batch на
+page-level `ComponentDoc`, затем пять параллельных табов (A/B/C/D/F) с
+UX-полишингом Charts / Diagram / Dashboard и demo-expansion для Charts /
+Table.
+
+#### Charts UX (`6bad1f9`, `cee9b9a`) — таб A
+
+- **`useChartSize`** (`packages/react/src/components/complex/Charts/useChartSize.ts`)
+  — измеряет контейнер через `ResizeObserver`. `viewBox` строится из
+  реальных пикселей вместо хардкоженных `600 × height`,
+  `preserveAspectRatio` убран, чтобы линии / бары не растягивались.
+  `vector-effect="non-scaling-stroke"` на `line` / `path` / baseline —
+  стабильная толщина при печати и зуме.
+- **`ChartHoverToolbar`** (`ChartHoverToolbar.tsx`) — floating-панель в
+  правом верхнем углу с действиями `print` / `downloadSvg` /
+  `downloadPng` / `resetBrush` и custom `actions: ChartAction[]`. Иконки
+  inline-SVG 16×16 (без runtime-deps типа lucide-react). `pointer-events`
+  на overlay — `none`, на кнопках — `auto`, чтобы не блокировать pointerdown
+  на брашинге / hover-line.
+- **`chartExport`** (`chartExport.ts`) — `downloadSvg` +
+  `downloadSvgAsPng` (XMLSerializer + Image + `canvas.toBlob`, без
+  внешних зависимостей), хелперы `serializeSvg` / `measureSvg` /
+  `triggerDownload`.
+- **`chartContextMenu`** (`chartContextMenu.ts`) —
+  `onSeriesContextMenu(series, point, ev)` (вешается на line / marker /
+  bar / area-path / pie-slice) + `onChartContextMenu(plot, ev)` (плот в
+  целом). Если коллбэки не заданы — `preventDefault` не вызывается,
+  нативное меню работает.
+- **Public API** — `actions` / `fileName` / `onSeriesContextMenu` /
+  `onChartContextMenu` добавлены в `BaseChartProps`; `PieChart` получил
+  аналогичные props индивидуально (вне Base, потому что у него нет
+  series-axis).
+- **`charts.css`** — `.sg-chart-toolbar*`, `.sg-chart-wrapper`, локальные
+  `--sg-chart-toolbar-*` токены через глобальные `--sg-color-*`.
+- **+28 тестов** в `charts.test.tsx` (resize, toolbar visibility / print /
+  svg / png / resetBrush / custom actions, context menu series / chart /
+  stopPropagation, export utils). Итого **91** в файле (было 63).
+- `cee9b9a` — fix дублирующих type-импортов в `Charts/types.ts`
+  (последствия параллельного редактирования с табом B).
+
+#### Diagram UX (`ef617a6`) — таб B
+
+- **Context menu** — `onNodeContextMenu(node, ev)` /
+  `onEdgeContextMenu(edge, ev)` / `onCanvasContextMenu(point, ev)`.
+  `preventDefault` подавляется только если зарегистрирован коллбэк, без
+  него нативное меню работает.
+- **Hover actions** — `nodeActions: DiagramAction[]` /
+  `edgeActions: DiagramAction[]` рендерят mini-toolbar при наведении
+  (`200ms enter / 150ms grace`). Toolbar в screen-space: не уезжает с
+  zoom / pan, всегда читаемый. Иконки inline-SVG.
+- **Multi-select** — `selection` / `defaultSelection` /
+  `onSelectionChange` / `selectionMode: 'single' | 'multi' | 'lasso'`.
+  - `'single'` сохраняет legacy drag поведение.
+  - `'multi'`: Ctrl+click toggle, plain click clears.
+  - `'lasso'`: rubber-band прямоугольником, выбор по AABB-intersection.
+  - Multi-drag выделенных нод коммитится в одной `transaction()` — undo
+    откатит все одним шагом.
+- **`HoverActions.tsx`** + **`selection.ts`** — новые модули в `Diagram/`.
+- **`diagram.css` polish** — тени, transitions, `.sg-diagram-node-selected`
+  ring, `[data-sg-dragging="true"]` grab cursor, lasso & hover-toolbar
+  токены.
+- **+14 тестов** в `diagram.test.tsx` (40 total, было 26).
+- **10 новых demos** в `examples/demo/src/demos/diagram/` (Draggable,
+  Zoomable, Pannable, SnapToGrid, OrthogonalRouting, UndoRedo,
+  ContextMenu, MultiSelect, OBB, LargeGraph) + полная en/ru локализация
+  через `diagram-doc/`.
+
+#### Dashboard UX (`6e0c15f`) — таб D
+
+- **Widget hover actions** — `widget.actions?: DashboardAction[]` (или
+  глобальные `widgetActions` на `<Dashboard>`). Mini-toolbar в правом
+  верхнем углу карточки с timeout-grace, такой же паттерн как в Charts /
+  Diagram.
+- **Context menu** — `onWidgetContextMenu(widget, ev)` /
+  `onDashboardContextMenu(point, ev)`. Совместимо с DashboardEditor
+  (drag / resize не блокируется).
+- **Visual polish** — тени, transitions, hover-state, новые локальные
+  токены `--sg-dashboard-*` в `dashboard.css` (+160 строк).
+- **`Dashboard/types.ts`** — публичные `DashboardAction`, `DashboardWidget`
+  расширены, ref-тип `DashboardRef` (для будущего `print()` на дашборде).
+- **+12 тестов** в `dashboard.test.tsx` (31 total, было 19).
+- **6 новых demos** в `examples/demo/src/demos/dashboard/` (Editor,
+  WithActions, Mixed, LargeGrid, Realtime, Responsive).
+
+#### Charts demo expansion (`8e7b8ad`) — таб F
+
+- **11 новых demo-файлов** в `examples/demo/src/demos/charts/`:
+  `WithAxes`, `WithLegend`, `Animations`, `Crosshair`, `Brush`, `Stacked`,
+  `Realtime`, `HoverActions`, `ContextMenu`, `Responsive`, `MultiSeries`.
+- **`charts/_data/index.ts`** — общие фикстуры (sales / users / revenue
+  series), переиспользуются между демо для консистентности.
+- **`ChartsDemo.tsx`** + `charts-doc/{en,ru}.ts` — все pro-фичи теперь
+  визуально показаны в demo-app, en/ru локализация добавлена для каждого
+  блока.
+
+#### Table demo (`9289acc`)
+
+- **5 новых demo-файлов** в `examples/demo/src/demos/table/`:
+  `AdvancedFilters` (operator picker), `Grouping` (groupBy + aggregates
+  sum/avg/min/max/count), `VirtualDynamic` (dynamic row height с
+  ResizeObserver), `LargeDataset` (10k rows + virtualization), `Realtime`
+  (push-обновления через store).
+- **`table/_data/generators.ts`** — фабрики данных (orders / users /
+  products) с reproducible random seed.
+- **`TableDemo.tsx`** + `table-doc/{en,ru}.ts` обновлены, `table/styles.css`
+  получил локальные классы для каждой demo (`.demo-table-*`, токенами).
+
+#### Print pipeline (`158da10`) — закрывает TODO 1.3
+
+- **`packages/react/src/utils/print/`** — `printElement(node, opts?)`
+  открывает popup, инжектит текущие SkyGraph stylesheets + `node.outerHTML`,
+  дёргает `window.print()`. Сохранение в PDF выполняет нативный диалог
+  браузера. Без рантайм-зависимостей.
+- **`packages/react/styles/print.css`** — общий `@media print` слой:
+  скрывает `.sg-no-print`, разворачивает скролл-контейнеры
+  (`.sg-table-scroll`, `.sg-diagram`, `.sg-chart-wrapper`), сбрасывает
+  `transform` на `.sg-diagram-canvas`, скрывает `.sg-chart-crosshair` /
+  `.sg-chart-brush-overlay` / `.sg-diagram-toolbar`, держит строки таблицы
+  вместе через `page-break-inside: avoid`.
+  `data-sg-page-break` / `data-sg-page-break-before` — атрибутный API.
+- **`Table` / `Diagram` / `LineChart` / `BarChart` / `AreaChart` / `PieChart`**
+  переписаны на `forwardRef + useImperativeHandle`. Каждый принимает
+  `printable?: boolean | { fileName? }` и экспортирует ref-тип
+  (`TableRef`, `DiagramRef`, `LineChartRef` и т.д.) с методом
+  `print(opts?: PrintOptions)`. Опции `PrintOptions = { fileName?,
+  orientation?, pageSize?, customStyles? }`.
+- **`scripts/check-no-important.mjs`** — `MEDIA_ALLOWLIST` расширен на
+  `@media print`.
+- **+17 тестов** в `print.test.tsx`.
+
+#### ResourceCalendar — шестой движок (`f9b7af2`) — закрывает TODO 1.1 хвост
+
+- **`packages/core/src/engines/calendar/`** — новый движок в семействе
+  `form / table / tree / virtual / graph / calendar`. State зеркалится в
+  core-store под `$calendar.<id>.*`, `CALENDAR_PREFIX = '$calendar.'`
+  зарезервирован в `engines/namespaces.ts`. Subpath
+  `@skygraph/core/calendar`.
+  - `types.ts` — `Resource` / `Assignment` / `Conflict` /
+    `AvailabilityRule` / `CalendarScale`. Внутреннее представление в
+    epoch-ms — snapshots round-trip-ятся без `Date`.
+  - `availability.ts` — `isAvailable(resource, range, rules)` —
+    посуточный UTC-sweep, мерджит overlapping HH:MM окна.
+  - `conflicts.ts` — `detectConflicts(state, opts)` — три независимых
+    прохода (overlap sweep / capacity counter / availability check),
+    de-duplicated по `(reason, sorted-ids)`. Capacity — простой bucket
+    по слотам (interval-tree избыточен для входа ≤10⁵ assignments).
+  - `CalendarEngine.ts` — `addResource` / `updateResource` /
+    `removeResource`, `addAssignment` / `updateAssignment` /
+    `removeAssignment`, `moveAssignment(deltaMs)`,
+    `resizeAssignment(side, deltaMs)` (min-1ms clamp), `setRules` /
+    `setScale`, `subscribe()`, `clear()`. Status задействованных
+    assignments авто-промоутится в `'conflict'`.
+- **`packages/react/src/components/complex/ResourceCalendar/`** —
+  тонкий React-адаптер: sidebar ресурсов, header tick row по `scale`,
+  lane-grid с slot-разделителями, блоки assignments со status-модификаторами
+  (`-tentative` / `-confirmed` / `-conflict`), полосы `availability-off`.
+  `draggable` / `resizable` / keyboard nudge стрелками.
+  `onAssignmentChange` — на каждом snapped tick, `onConflict` — только
+  при реальном изменении `Conflict[]` (stable key dedup). `unstyled`
+  сбрасывает `sg-rcal-*`. ARIA `role="region"` / `role="row"` / `role="button"`.
+- **`resource-calendar.css`** — глобальные `--sg-color-*`, локальные
+  `--sg-rcal-*` на `.sg-rcal`.
+- **+35 core / +2 subpath / +18 react тестов**.
+- 2 demos: `Basic.demo.tsx` (overlap → conflict overlay) и
+  `WithCapacity.demo.tsx` (capacity=2, three concurrent).
+
+#### SchemaFormEditor — визуальный редактор форм (`111dfe8`) — закрывает TODO 1.2
+
+- **`packages/react/src/components/complex/SchemaFormEditor/`** —
+  palette + canvas + inspector + Preview/Schema toggle поверх `SchemaForm`.
+- **`useSchemaEditor()`** — hook-store на `@skygraph/core` с bounded
+  undo/redo (`HISTORY_LIMIT = 100`), `onChange(schema)` callback,
+  imperative `addField` / `updateField` / `moveField` / `duplicateField` /
+  `setSchema`. Используется внутри редактора и снаружи.
+- **Round-trip адаптеры** `jsonSchemaToEditorSchema` /
+  `editorSchemaToJsonSchema` + per-type `createFieldFromPaletteType`.
+  Публичные типы: `EditorSchema`, `EditorField`, `EditorAction`,
+  `EditorState`, `PaletteItem`.
+- **Drag-and-drop** — native HTML5, custom MIME
+  `application/x-sg-sfe-palette-type` (внешние file-drop не конфликтуют).
+- **`schema-form-editor.css`** — `.sg-sfe-*`, локальные `--sg-sfe-*` →
+  глобальные токены.
+- **+27 тестов** (palette, store + undo/redo, JSON-Schema round-trip,
+  click-to-select, inspector → canvas, toolbar, drop-from-palette via
+  `DataTransfer`, schema-view, external `setSchema`).
+- 2 demos: `Builder.demo.tsx` (пустой canvas) и `Prefilled.demo.tsx`
+  (5-field стартовая схема + Reset).
+
+#### Tree virtualization fix (`668c45b`)
+
+- **`Tree/Tree.tsx`** — top/bottom inserts при виртуализации переехали
+  с `position: absolute` на `padding-top` / `padding-bottom` родителя.
+  Без этого scrollbar показывал диапазон только видимых строк, а не
+  полной высоты дерева. Заодно убрана избыточная декларация `width: 100%`.
+
+#### Demo i18n — page-level ComponentDoc batch
+
+После round 9.1 (`ButtonDemo` — первая локализованная ComponentDoc-страница)
+паттерн прокатан по основной массе:
+
+- `b655c4a` — form controls × 10: `Input`, `InputNumber`, `Select`,
+  `Checkbox`, `Radio`, `Switch`, `Slider`, `DatePicker`, `TimePicker`,
+  `AutoComplete`.
+- `ceea720` — data display × 10: `Table`, `Tree`, `List`, `Tabs`,
+  `Collapse`, `Descriptions`, `Badge`, `Tag`, `Avatar`, `Calendar`.
+- `9008db1` — form helpers × 10: `Form`, `FormComponents`, `Cascader`,
+  `TreeSelect`, `Transfer`, `Mentions`, `ColorPicker`, `Rate`, `Upload`,
+  `Segmented`.
+- `0d10478` — `Diagram`, `Gantt`, `EventTimeline`, `StylingShowcasePage`.
+- `4b71626` — `Breadcrumb`, `Tabs`, `SchemaFormEditor` (+ навигация
+  редактора в demo App).
+
+Каждой странице добавлена пара `<comp>-doc/{en,ru}.ts` + хук
+`use<Comp>DocStrings.ts`. На `*Page.tsx` уровне теперь **~46 ComponentDoc-страниц**
+локализованы (была 1).
+
+#### Round 11 totals
+
+- **+153 теста**: core 351 → 388 (+37: calendar 35, subpath +2),
+  react 509 → 625 (+116: print 17, resource-calendar 18,
+  schema-form-editor 27, charts +28 (63→91), diagram +14 (26→40),
+  dashboard +12 (19→31)). Skipped — 1 (bench-gated).
+- **`pnpm exec eslint packages/`** — 0 errors / 0 warnings.
+- **`pnpm lint:examples`** — 0 errors / 27 warnings (без изменений,
+  это relaxed `no-console` + `_`-prefixed unused).
+- **`pnpm check:styles`** — OK (91 tokens, 69 файлов; 70 файлов без
+  unjustified `!important`).
+- **`pnpm -r build`** — все пакеты + demo + showcases собираются.
+
 ### Round 9.1 — closeout sweep (ESLint type-aware roots, Slider/Rate fixes, doc i18n primer)
 
 After all four round-9 tabs (A/B/C/D) and the i18n batches landed, a small

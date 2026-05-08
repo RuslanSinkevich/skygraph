@@ -12,14 +12,20 @@ AntD-level components + reactive state management out of the box. Forms, tables,
 ## Features
 
 - **Reactive Core** — path-based store with granular subscriptions, transactions, batching, computed values, cycle detection, middleware pipeline, time-travel debugging
-- **Domain Engines** — FormEngine (validation, dependencies, multiple errors/warnings, preserve), TableEngine (sort, filter, pagination, virtual scroll, **column pinning + width persistence**), TreeEngine (check cascade, drag & drop, async load), **GraphEngine** (nodes / edges / hierarchy / anchors / **orthogonal routing** + **undo/redo history** for diagrams)
-- **75+ React Components** — Button (`type` × `danger` × `block`) to DataGrid, Calendar, Tree, Transfer, Mentions, TreeSelect, Cascader, Select (single/**multiple**), Input (**readOnly**), **Diagram** (visual layer of GraphEngine, **draggable nodes**), **Charts** (Line / Bar / Area / Pie + **legend** + **axes** + **tooltips**), **Dashboard** + **DashboardEditor** (drag/resize widgets)
+- **Six Domain Engines** in one family `form / table / tree / virtual / graph / calendar`:
+  FormEngine (validation, dependencies, multiple errors/warnings, preserve),
+  TableEngine (sort, filter, pagination, virtual scroll, **column pinning + width persistence**, advanced filters, grouping + aggregates),
+  TreeEngine (check cascade, drag & drop, async load),
+  **GraphEngine** (nodes / edges / hierarchy / anchors / **orthogonal routing with obstacle avoidance** + OBB + **undo/redo**),
+  **CalendarEngine** (`packages/core/calendar`: resources, assignments, **availability rules + conflict detection + capacity**)
+- **78+ React Components** — Button (`type` × `danger` × `block`) to DataGrid, Calendar, Tree, Transfer, Mentions, TreeSelect, Cascader, Select (single/**multiple**), Input (**readOnly**), **Diagram** (visual layer of GraphEngine, **draggable nodes**, **zoom/pan**, **snap-to-grid**, **context menu**, **hover actions**, **multi-select / lasso**), **responsive interactive Charts** (Line / Bar / Area / Pie + **ResizeObserver-based SVG sizing** + **axes** + **legend** + **tooltips** + **brush** + **crosshair** + **animations** + **hover toolbar** with print / SVG / PNG export + **context menu**), **Dashboard** + **DashboardEditor** (drag/resize widgets + **widget hover actions** + **context menu**), **ResourceCalendar** (lane planner with drag/resize/conflict overlay), **SchemaFormEditor** (visual form builder with palette + inspector + undo/redo)
+- **Print / PDF** — `printable` prop + `ref.print()` on Table / Diagram / all Charts (popup + native browser print dialog, no runtime deps), `@media print` global layer, `data-sg-page-break` attribute API
 - **ConfigProvider** — centralized defaults for size, disabled, locale (React Context, not CSS)
-- **Schema Forms** — auto-generate forms from JSON Schema or Zod schemas
+- **Schema Forms** — auto-generate forms from JSON Schema or Zod schemas; **visual builder** via `SchemaFormEditor`
 - **Zero-runtime CSS** — 3-layer token system (palette → semantic → component), dark mode via `data-sg-theme`
-- **Accessible** — ARIA roles/attributes on all components, keyboard navigation, focus traps, roving tabindex
+- **Accessible** — ARIA roles/attributes on all components, keyboard navigation, focus traps, roving tabindex, axe-core smoke tests
 - **Animations** — `Transition` component with CSS-class transitions (fade, slide, zoom, collapse)
-- **Ant-style Documentation** — interactive demos with live preview, code toggle, and API prop tables
+- **Ant-style Documentation** — interactive bilingual (en/ru) demos with live preview, code toggle, and API prop tables. 27+ pro-feature demos for Charts / Diagram / Dashboard / Table.
 - **Type-safe** — TypedCore wrapper for compile-time path validation
 
 ## Quick Start
@@ -52,8 +58,8 @@ function App() {
 
 | Package | Description | Size |
 |---------|------------|------|
-| `@skygraph/core` | Reactive runtime + form/table/tree engines | ~28 KB (ESM) |
-| `@skygraph/react` | React hooks, 75+ components, CSS styles | ~260 KB (ESM) |
+| `@skygraph/core` | Reactive runtime + 6 engines (form/table/tree/virtual/graph/calendar) | ~32 KB (ESM) |
+| `@skygraph/react` | React hooks, 78+ components, CSS styles | ~280 KB (ESM) |
 
 ## Architecture
 
@@ -65,10 +71,12 @@ function App() {
 │    Computed, Scheduler, Middleware           │
 │                                             │
 │  engines/                                   │
-│    FormEngine    — validation, deps, lists  │
-│    TableEngine   — sort, filter, pagination │
-│    TreeEngine    — check, expand, drag, DnD │
-│    VirtualScroll — windowed rendering       │
+│    FormEngine     — validation, deps, lists │
+│    TableEngine    — sort, filter, group     │
+│    TreeEngine     — check, expand, drag     │
+│    VirtualScroll  — windowed rendering      │
+│    GraphEngine    — nodes, edges, routing   │
+│    CalendarEngine — assignments, conflicts  │
 └─────────────────────────────────────────────┘
           ▲ public API only
           │
@@ -85,10 +93,14 @@ function App() {
 │                                             │
 │  components/complex/                        │
 │    Form, Field, FormList, FormProvider,     │
-│    SchemaForm, AutoField, SubmitButton,     │
+│    SchemaForm, SchemaFormEditor,            │
+│    AutoField, SubmitButton,                 │
 │    Table, DataGrid, Tree, List,             │
 │    TreeSelect, Cascader, Calendar,          │
-│    Transfer, VirtualList                    │
+│    Transfer, VirtualList,                   │
+│    Diagram, LineChart, BarChart, AreaChart, │
+│    PieChart, Dashboard, DashboardEditor,    │
+│    Gantt, EventTimeline, ResourceCalendar   │
 │                                             │
 │  components/ui/ (49 components)             │
 │    Button, Input, Select, Modal, Drawer,    │
@@ -144,26 +156,34 @@ SkyGraph treats styling as a public contract. Full reference:
 
 **Data Display (17):** Table, DataGrid, Tree, List, Tabs, Collapse, Descriptions, Badge, Tag, Avatar, Calendar, Carousel, Timeline, Steps, Segmented, Skeleton, **Diagram**
 
-**Visualization (8):** **LineChart**, **BarChart**, **AreaChart**, **PieChart**, **Dashboard**, **DashboardEditor**, **Gantt**, **EventTimeline**
+**Visualization (9):** **LineChart**, **BarChart**, **AreaChart**, **PieChart**, **Dashboard**, **DashboardEditor**, **Gantt**, **EventTimeline**, **ResourceCalendar**
 
 **Feedback (9):** Modal, Drawer, Notification, Popconfirm, Tooltip, Progress, Spin, Result, Empty
 
 **Navigation (5):** Menu, Breadcrumb, Dropdown, Pagination, Transfer
 
-**Form (7):** Form, Field, FormList, FormProvider, SchemaForm, AutoField, SubmitButton
+**Form (8):** Form, Field, FormList, FormProvider, SchemaForm, **SchemaFormEditor**, AutoField, SubmitButton
 
 **Utility (1):** Transition (CSS-class-based animations)
 
 ## Tests
 
 ```
-817 active tests across core + react packages (+ 2 a11y todo)
-  @skygraph/core:  332 tests (runtime, form, table+pinning+widths+advanced-filters+grouping,
-                              tree, virtual, graph+routing+OBB+history, middleware, time-travel, typed, benchmarks)
-  @skygraph/react: 485 tests (components, hooks, adapters, a11y hooks + axe-core smoke, styling contract,
-                              diagram+drag+zoom+pan+snap, charts+legend+axes+tooltip+animations+crosshair,
-                              dashboard+editor, gantt+drag+resize+dependencies+resources,
-                              event-timeline+groupBy+orientation+custom-renderers, ui-extended)
+1013 active tests across core + react packages (+ 1 bench-gated skipped)
+  @skygraph/core:  388 tests (runtime, form, table+pinning+widths+advanced-filters+grouping,
+                              tree, virtual, graph+routing+OBB+history,
+                              calendar+availability+conflicts+capacity,
+                              middleware, time-travel, typed, subpath-exports, benchmarks)
+  @skygraph/react: 625 tests (components, hooks, adapters, a11y hooks + axe-core smoke, styling contract,
+                              diagram+drag+zoom+pan+snap+context-menu+hover-actions+multi-select+lasso,
+                              charts+legend+axes+tooltip+animations+crosshair+brush+responsive+toolbar+export+context-menu,
+                              dashboard+editor+hover-actions+context-menu,
+                              gantt+drag+resize+dependencies+resources,
+                              event-timeline+groupBy+orientation+custom-renderers,
+                              resource-calendar+drag+resize+conflicts+capacity,
+                              schema-form-editor+palette+inspector+undo-redo,
+                              print+ref.print()+@media print, table-virtual+dynamic-height,
+                              ui-extended)
 ```
 
 ## Development
@@ -171,7 +191,7 @@ SkyGraph treats styling as a public contract. Full reference:
 ```bash
 pnpm install           # install all workspace deps (packages/* + examples/*)
 pnpm build             # build all packages
-pnpm test              # run tests (817 across core + react)
+pnpm test              # run tests (1013 across core + react)
 pnpm lint              # eslint
 pnpm format            # prettier
 

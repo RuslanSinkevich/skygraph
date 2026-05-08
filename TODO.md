@@ -1,33 +1,62 @@
 # SkyGraph — TODO
 
-> Реальные хвосты, оставшиеся после серии стримов (round 1..9 + 9.1 closeout sweep).
+> Реальные хвосты после round 1..9 + 9.1 closeout + round 11.
 > Каждая запись — кандидат в будущий стрим или мини-стрим.
 >
-> Статус на 2026-05-06: 4 параллельных таба round 9 (A/B/C/D) закоммичены, плюс:
->  - две волны i18n-миграции demo (`009747f`, `e38a678`),
->  - round 9.1 closeout (`cecf266` infra eslint, `3a4a342` Slider/Rate fixes, `95d4aea` ButtonDemo i18n + DistributedComposition).
+> Статус на 2026-05-08: round 11 закрыт 15 коммитами на master (две волны):
+>  - первая волна (3 больших фичи + Tree fix + i18n batch):
+>    `158da10` print pipeline → закрыл 1.3,
+>    `f9b7af2` `ResourceCalendar` (шестой движок) → закрыл хвост 1.1,
+>    `111dfe8` visual `SchemaFormEditor` → закрыл 1.2,
+>    `668c45b` Tree virtualization fix,
+>    `b655c4a`/`ceea720`/`0d10478`/`9008db1`/`4b71626` — i18n на page-level
+>    `ComponentDoc` (~46 страниц).
+>  - вторая волна (5 параллельных табов A/B/C/D/F UX-полишинг + demo expansion):
+>    `6bad1f9` Charts UX (responsive `useChartSize`, `ChartHoverToolbar`,
+>    `chartExport`, `chartContextMenu`),
+>    `cee9b9a` чистка дублирующих type-импортов,
+>    `ef617a6` Diagram UX (context menu, hover actions, multi-select / lasso,
+>    +10 demos),
+>    `6e0c15f` Dashboard UX (widget hover actions, context menu, +6 demos),
+>    `8e7b8ad` Charts demo expansion (11 demos),
+>    `9289acc` Table demo (5 pro-feature демо).
 >
-> Все гейты зелёные: `pnpm exec eslint packages/` 0 errors, `pnpm lint:examples` 0 errors,
-> `pnpm check:styles` OK, `pnpm -r test` — 351 + 1 skipped (core, bench-gated) +
-> 509 (react) = **860 active**, `pnpm -r build` — все пакеты + demo + showcases
-> собираются.
+> Все гейты зелёные: `pnpm exec eslint packages/` 0 errors / 0 warnings,
+> `pnpm lint:examples` 0 errors / 27 warnings, `pnpm check:styles` OK
+> (91 tokens, 69 файлов; 70 файлов без unjustified `!important`),
+> `pnpm -r test` — 388 + 1 skipped (core, bench-gated) + 625 (react) =
+> **1013 active**, `pnpm -r build` — все пакеты + demo + showcases собираются.
 
 ---
 
 ## 1. Большие задачи (отдельные стримы)
 
-### 1.1 ✅ Gantt / EventTimeline
-Закрыто tab A round 9: `Gantt` (drag/resize/dependencies/resources) и `EventTimeline` (groupBy day/month/year, horizontal/vertical) — новые complex-компоненты в `packages/react/src/components/complex/{Gantt,Timeline}/`. +38 тестов, 4 demo.
+### 1.1 ✅ Gantt / EventTimeline / ResourceCalendar
+- Tab A round 9: `Gantt` (drag/resize/dependencies/resources) и `EventTimeline`
+  (groupBy day/month/year, horizontal/vertical). +38 тестов, 4 demo.
+- Round 11 (`f9b7af2`): `ResourceCalendar` — шестой движок в семействе
+  `form/table/tree/virtual/graph/calendar`. Engine
+  `packages/core/src/engines/calendar/` (availability + conflicts +
+  capacity, subpath `@skygraph/core/calendar`) + React-адаптер
+  `packages/react/src/components/complex/ResourceCalendar/` (lane-grid,
+  drag/resize/keyboard nudge, conflict overlay). +35 core / +2 subpath /
+  +18 react тестов, 2 demo.
 
-> Resource Calendar (отдельный конструктор смен/расписаний) — отдельный
-> кандидат, требует своей доменной модели (assignments, shifts, conflicts).
-> Не запускалась.
+### 1.2 ✅ SchemaForm визуальный редактор
+Закрыто round 11 (`111dfe8`): `SchemaFormEditor` — palette + canvas +
+inspector + Preview/Schema toggle поверх `SchemaForm`. `useSchemaEditor()`
+hook-store с bounded undo/redo (HISTORY_LIMIT=100), round-trip адаптеры
+`jsonSchemaToEditorSchema` / `editorSchemaToJsonSchema`. Native HTML5 DnD
+с custom MIME (no external libs). +27 тестов, 2 demo.
 
-### 1.2 SchemaForm визуальный редактор
-Drag-drop конструктор форм над `SchemaForm`. Базовые блоки готовы: `GraphEngine`, `useForm`, `Diagram` (drag/zoom/snap). Сам редактор не сделан.
-
-### 1.3 Print / PDF
-Пользователь явно отложил.
+### 1.3 ✅ Print / PDF
+Закрыто round 11 (`158da10`): `printElement(node, opts?)` (popup + native
+print dialog, без runtime-deps), `styles/print.css` (`@media print` слой),
+`printable?` prop + `ref.print()` на `Table` / `Diagram` / `LineChart` /
+`BarChart` / `AreaChart` / `PieChart` через `forwardRef +
+useImperativeHandle`. Опции `PrintOptions = { fileName?, orientation?,
+pageSize?, customStyles? }`. Атрибутный API `data-sg-page-break` /
+`data-sg-page-break-before`. +17 тестов.
 
 ---
 
@@ -42,13 +71,28 @@ Drag-drop конструктор форм над `SchemaForm`. Базовые б
 - ✅ ~~Animations~~ (round 8 Tab D).
 - ✅ ~~Interactive crosshair~~ (round 8 Tab D).
 - ✅ ~~Brushing~~ (Tab B round 9, новый `<ChartBrush>` overlay + `brush?` props на Line/Bar/Area).
+- ✅ ~~Responsive SVG~~ (round 11 Tab A, `useChartSize` + `ResizeObserver`,
+  `vector-effect="non-scaling-stroke"`).
+- ✅ ~~Hover toolbar (print / SVG / PNG / reset brush + custom actions)~~
+  (round 11 Tab A, `ChartHoverToolbar` + `chartExport`).
+- ✅ ~~Context menu (per-series + plot)~~ (round 11 Tab A,
+  `chartContextMenu`).
 
-### 2.3 GraphEngine — закрыто, дополнительных pro-пунктов нет
+### 2.3 ✅ GraphEngine / Diagram — pro закрыт
 - ✅ Orthogonal routing с препятствиями (round 8 Tab B).
 - ✅ OBB / rotated bounds (round 8 Tab B).
 - ✅ Zoom / pan в `<Diagram>` (round 8 Tab B).
 - ✅ Snap-to-grid при drag (round 8 Tab B).
 - ✅ Undo/redo (round 7 Tab C).
+- ✅ ~~Context menu (node / edge / canvas)~~ (round 11 Tab B).
+- ✅ ~~Hover actions (node / edge mini-toolbars в screen-space)~~
+  (round 11 Tab B).
+- ✅ ~~Multi-select / lasso~~ (round 11 Tab B, `selectionMode: 'single' |
+  'multi' | 'lasso'`, multi-drag в одной transaction).
+
+### 2.6 ✅ Dashboard — pro закрыт
+- ✅ ~~Drag/resize widgets~~ (round 8 Tab B, `<DashboardEditor>`).
+- ✅ ~~Hover actions + context menu~~ (round 11 Tab D).
 
 ### 2.4 ✅ a11y axe-coverage
 Закрыто tab C round 9: оба `it.todo` (`ColorPicker`, `TimePicker`) переведены в активные тесты после добавления `aria-label` / `aria-labelledby` (в `ColorPicker` триггер дополнительно перешёл с `<div>` на `<button>` ради `aria-allowed-attr`). Добавлены тесты для `Cascader (open)` и `VirtualList`. Все 7 ранее непокрытых компонентов из исходного списка теперь проверяются (`Carousel`, `Mentions`, `Cascader`, `VirtualList`, `Rate`, `ColorPicker`, `TimePicker`).
@@ -60,18 +104,26 @@ Drag-drop конструктор форм над `SchemaForm`. Базовые б
 
 ## 3. Технический долг
 
-### 3.1 Локализация demo (в работе, ~85% осталось)
+### 3.1 Локализация demo (в работе)
 - Шаблон: `examples/demo/src/i18n/useDemoStrings.ts` (батч-1) и
   `examples/demo/src/demos/<comp>-doc/{en,ru}.ts` + `use<Comp>DocStrings.ts`
   (round 9.1 ButtonDemo — для page-level ComponentDoc).
-- Сделано:
-  - Round 9 — 37 файлов `<comp>/Variant.demo.tsx` через `useDemoStrings` (`009747f`).
-  - Round 9 — ещё ~25 файлов (dropdown/select/switch/segmented/rate, `e38a678`).
-  - Round 9.1 — `ButtonDemo.tsx` page (props + cssVars descriptions, `95d4aea`).
+- Сделано на уровне in-demo строк:
+  - Round 9 — 37 файлов `<comp>/Variant.demo.tsx` (`009747f`).
+  - Round 9 — ещё ~25 файлов (`e38a678`).
+  - Round 11 Tab F (`8e7b8ad`) — 11 charts demo с en/ru.
+  - Round 11 Tab B (`ef617a6`) — 10 diagram demo с en/ru.
+- Сделано на уровне page-level `ComponentDoc` (props + cssVars descriptions):
+  - Round 9.1 — `ButtonDemo.tsx` (`95d4aea`) — паттерн.
+  - Round 11 — form controls × 10 (`b655c4a`), data display × 10
+    (`ceea720`), form helpers × 10 (`9008db1`), Diagram + Gantt +
+    EventTimeline + `StylingShowcasePage` (`0d10478`), Breadcrumb + Tabs +
+    SchemaFormEditor (`4b71626`). Итого ~46 страниц.
 - Осталось:
-  - ~400 файлов `examples/demo/src/demos/<comp>/Variant.demo.tsx` с английским хардкодом.
-  - Page-level ComponentDoc для остальных компонентов: повторить паттерн `button-doc/`.
-  - `StylingShowcasePage.tsx` (884 строки) — последний `*Page` без локализации.
+  - ~400 файлов `examples/demo/src/demos/<comp>/Variant.demo.tsx` с
+    английским хардкодом — мигрируется батчами через `useDemoStrings`.
+  - Несколько `*Page.tsx` без локализации (Dashboard, ResourceCalendar,
+    Print) — по паттерну `<comp>-doc/{en,ru}.ts`.
 
 ### 3.2 CSS audit
 - `pnpm audit:styles` теперь часть CI (Tab D round 9): фейлится если
@@ -107,7 +159,8 @@ Drag-drop конструктор форм над `SchemaForm`. Базовые б
 Закрыто Tab D round 9: `@skygraph/core/{table,tree,virtual,graph}` —
 entrypoints в `core/tsup.config.ts` + `package.json#exports`. Smoke-test
 `subpath-exports.test.ts` (9 кейсов) гарантирует, что каждая фабрика
-импортируется и инстанциируется через subpath.
+импортируется и инстанциируется через subpath. Round 11 (`f9b7af2`)
+добавил `@skygraph/core/calendar` (+2 кейса → итого 11).
 
 ---
 
@@ -124,6 +177,11 @@ entrypoints в `core/tsup.config.ts` + `package.json#exports`. Smoke-test
   (новый `--sg-rate-symbol-empty-opacity`).
 - ✅ `ExpandableConfig.defaultExpandedRowKeys` — pre-existing TS-error из
   round 8 вылечен Tab B round 9.
+- ✅ `Tree.tsx` — virtualization показывала scrollbar только для видимого
+  диапазона. Закрыто round 11 (`668c45b`): top/bottom inserts перешли с
+  `position: absolute` на `padding-*` родителя.
+- ✅ `Charts/types.ts` — дублирующиеся type-импорты после параллельного
+  редактирования табов A/F. Закрыто round 11 (`cee9b9a`).
 
 ---
 
@@ -147,3 +205,30 @@ Round 9 — 7 коммитов (A, B, C, D + 2× i18n batch + closeout):
 | `cecf266` | infra | eslint type-aware roots + ignore vitest/tsup configs (round 9.1) |
 | `3a4a342` | fix   | Slider stretches in flex/grid; Rate dims inactive symbols (round 9.1) |
 | `95d4aea` | demo  | ButtonDemo i18n + DistributedComposition (round 9.1) |
+
+Round 11 — 15 коммитов в две волны:
+
+Волна 1 — фичи + i18n batch:
+
+| sha7 | scope | summary |
+|------|-------|---------|
+| `b655c4a` | i18n  | page-level ComponentDoc — form controls (10 страниц) |
+| `158da10` | feat  | print pipeline (printElement + ref.print() на Table/Diagram/Charts) |
+| `ceea720` | i18n  | page-level ComponentDoc — data display (10 страниц) |
+| `0d10478` | i18n  | Diagram + Gantt + EventTimeline + StylingShowcasePage |
+| `9008db1` | i18n  | page-level ComponentDoc — form helpers (10 страниц) |
+| `111dfe8` | feat  | visual SchemaFormEditor (palette + canvas + inspector + undo/redo) |
+| `f9b7af2` | feat  | ResourceCalendar engine + React component + conflict detection |
+| `4b71626` | i18n  | Breadcrumb + Tabs + подключение SchemaFormEditorDemo в App |
+| `668c45b` | fix   | Tree virtualization padding-based inserts (вместо absolute) |
+
+Волна 2 — параллельные табы UX-полишинг + demo expansion:
+
+| sha7 | scope | summary |
+|------|-------|---------|
+| `8e7b8ad` | tab F | Charts demo expansion (11 demos: axes/legend/animations/crosshair/brush/stacked/realtime/hover/context/responsive) |
+| `9289acc` | demo  | Table demo (5 pro-feature: AdvancedFilters/Grouping/VirtualDynamic/LargeDataset/Realtime) |
+| `ef617a6` | tab B | Diagram UX (context menu + hover actions + multi-select/lasso + 10 demos, +14 тестов) |
+| `6bad1f9` | tab A | Charts UX (responsive useChartSize + ChartHoverToolbar + chartExport + chartContextMenu, +28 тестов) |
+| `6e0c15f` | tab D | Dashboard UX (widget hover actions + context menu + 6 demos, +12 тестов) |
+| `cee9b9a` | fix   | Charts/types.ts duplicate imports (parallel-merge артефакт) |
