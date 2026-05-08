@@ -3,18 +3,32 @@
 > Реальные хвосты после round 1..9 + 9.1 closeout + round 11 + round 12.
 > Каждая запись — кандидат в будущий стрим или мини-стрим.
 >
-> Статус на 2026-05-08: round 12 (single-commit) — extract `@skygraph/styles`
-> как отдельный workspace-пакет. CSS вынесен из `packages/react/styles/` →
-> `packages/styles/` (`git mv` сохраняет историю), `@skygraph/react` теперь
-> зависит от `@skygraph/styles` через `dependencies`, examples переключены
-> на `import '@skygraph/styles'`, scripts (`audit-styles` / `check-tokens` /
-> `check-no-important`) обновлены под новый путь, legacy
-> `'@skygraph/react/styles*'` пути продолжают работать через shim-файлы
-> (`@import '@skygraph/styles/...'`). Mini-fix в этом же коммите —
-> `packages/react/tsconfig.json` `lib` поднят с ES2020 → ES2022, чтобы
-> `Array.prototype.at` в тестах перестал падать на `tsc --noEmit`.
-> Foundation для будущих `@skygraph/vue` и `@skygraph/angular` адаптеров
-> без дублирования CSS.
+> Статус на 2026-05-08: round 12 — `13a695e` extract `@skygraph/styles` как
+> отдельный workspace-пакет (single-commit foundation) + этот docs-sync
+> коммит. CSS вынесен из `packages/react/styles/` → `packages/styles/`
+> (`git mv` сохранил историю для 69 из 70 файлов; `index.css` потерян как
+> rename, потому что на старом пути остался 2-строчный shim ради
+> backward-compat). `@skygraph/react` теперь зависит от `@skygraph/styles`
+> через `dependencies` (не peer — установка одного пакета тащит CSS
+> транзитивно), examples переключены на `import '@skygraph/styles'`,
+> scripts (`audit-styles` / `check-tokens` / `check-no-important`)
+> обновлены под новый путь. Legacy `'@skygraph/react/styles'` (только
+> главный entrypoint) продолжает работать через shim
+> `@import '@skygraph/styles/index.css'`; per-component subpaths под
+> `@skygraph/react/styles/<...>` удалены из `package.json#exports` —
+> внутри репо они жили только в доках, все обновлены вместе со стримом.
+> Mini-fix в этом же коммите — `packages/react/tsconfig.json` `lib` поднят
+> с ES2020 → ES2022 (target тоже), чтобы `Array.prototype.at` в тестах
+> `diagram.test.tsx` / `resource-calendar.test.tsx` перестал падать на
+> `tsc --noEmit`. Foundation для будущих `@skygraph/vue` и
+> `@skygraph/angular` адаптеров без дублирования CSS.
+>
+> Запланированный TAB B (multi-framework стратегия + Vue scaffold + hard
+> remove `packages/react/styles/` + CI typecheck gate + shared examples
+> workspaces + demo i18n expansion) на момент round-12 closeout не
+> закоммичен — лежит в working tree как WIP. Развернётся отдельным
+> стримом, когда Vue typecheck (vue-tsc) встанет в `pnpm -r exec
+> tsc --noEmit` корректно.
 >
 > Статус до round 12: round 11 закрыт 15 коммитами на master (две волны):
 >  - первая волна (3 больших фичи + Tree fix + i18n batch):
@@ -177,6 +191,39 @@ entrypoints в `core/tsup.config.ts` + `package.json#exports`. Smoke-test
 импортируется и инстанциируется через subpath. Round 11 (`f9b7af2`)
 добавил `@skygraph/core/calendar` (+2 кейса → итого 11).
 
+### 4.5 ✅ Multi-framework foundation — `@skygraph/styles`
+Закрыто round 12 (`13a695e`): CSS вынесен в отдельный workspace-пакет
+`@skygraph/styles` (`packages/styles/`, 70 файлов, ≈234 KB raw / ≈25 KB
+gzip), `git mv` сохранил историю для 69 из 70 файлов. `@skygraph/react`
+теперь зависит от `@skygraph/styles` через `dependencies` (транзитивно
+тащится при установке). Тонкий 2-строчный shim
+`packages/react/styles/index.css` оставлен ради backward-compat для
+главного entrypoint `import '@skygraph/react/styles'` — per-component
+subpaths под `@skygraph/react/styles/<...>` удалены из
+`package.json#exports` (мигрируют на `@skygraph/styles/<...>`).
+`scripts/{audit-styles,check-tokens,check-no-important}.mjs` обновлены
+под новый путь.
+
+### 4.6 Multi-framework — следующие шаги (хвост round 12)
+- `@skygraph/vue` adapter (composables `useForm` / `useTable` / `useTree` /
+  `useGraph` / `useField` поверх `@skygraph/core` + `.vue` SFCs для
+  `Form`, `Field`, `Input`, `Button`). Scaffold лежит в working tree
+  TAB B (uncommitted) — не закрылся, потому что `pnpm typecheck`
+  (`pnpm -r exec tsc --noEmit`) падает на `.vue` файлах: они требуют
+  `vue-tsc`, не plain `tsc`. Развязка — переключить root `typecheck`
+  на per-package script (`pnpm -r run typecheck`) или явно исключить
+  `packages/vue` из recursive `tsc` команды.
+- Hard remove shim `packages/react/styles/` после migration window.
+  Сейчас shim — 2 строки и весь legacy path работает; план — выпустить
+  его как `@deprecated` в одном минор-релизе, удалить в следующем
+  major. Без TAB B closure не делаем.
+- `docs/multi-framework.md` — стратегия "контракт адаптеров +
+  CSS-контракт + версионирование". Готов в working tree TAB B
+  (uncommitted), задеплоится отдельным стримом.
+- Shared examples workspaces (`examples/_shared/`,
+  `examples/_shared-react/`) для переиспользования fixture-данных
+  между demo / showcases / будущим vue-demo. Тоже WIP в TAB B.
+
 ---
 
 ## 5. Mini-fixes — все закрыты
@@ -197,6 +244,10 @@ entrypoints в `core/tsup.config.ts` + `package.json#exports`. Smoke-test
   `position: absolute` на `padding-*` родителя.
 - ✅ `Charts/types.ts` — дублирующиеся type-импорты после параллельного
   редактирования табов A/F. Закрыто round 11 (`cee9b9a`).
+- ✅ `packages/react/tsconfig.json` `target` / `lib` — ES2020 → ES2022.
+  `Array.prototype.at(-1)` падал на `tsc --noEmit` в
+  `diagram.test.tsx` / `resource-calendar.test.tsx`. Закрыто round 12
+  (`13a695e`) одним коммитом со styles extraction.
 
 ---
 
@@ -221,11 +272,12 @@ Round 9 — 7 коммитов (A, B, C, D + 2× i18n batch + closeout):
 | `3a4a342` | fix   | Slider stretches in flex/grid; Rate dims inactive symbols (round 9.1) |
 | `95d4aea` | demo  | ButtonDemo i18n + DistributedComposition (round 9.1) |
 
-Round 12 — 1 single-commit:
+Round 12 — 1 single-commit + docs sync:
 
 | sha7 | scope | summary |
 |------|-------|---------|
-| (this commit) | infra | extract `@skygraph/styles` package + tsconfig.lib bump ES2022 |
+| `13a695e` | infra | extract `@skygraph/styles` package + tsconfig.lib bump ES2022 |
+| (this commit) | docs  | round-12 sync — TODO/CHANGELOG/README backfill + sha7 |
 
 Round 11 — 15 коммитов в две волны:
 
