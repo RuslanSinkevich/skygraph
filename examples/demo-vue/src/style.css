@@ -1,0 +1,50 @@
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: var(--sg-font-family, system-ui, -apple-system, sans-serif);
+  color: var(--sg-color-text);
+  background: var(--sg-color-bg-base);
+}
+
+.demo-container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.demo-container h1 {
+  margin-top: 0;
+}
+
+.demo-section {
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid var(--sg-color-border);
+  border-radius: var(--sg-radius);
+  background: var(--sg-color-bg-elevated);
+}
+
+.demo-section h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.demo-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.demo-row + .demo-row {
+  margin-top: 12px;
+}
+
+.demo-meta {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--sg-color-text-secondary);
+}

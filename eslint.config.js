@@ -31,6 +31,12 @@ export default defineConfig(
       // so type-aware parsing fails. We don't lint bundler/runner configs.
       '**/vitest.config.ts',
       '**/tsup.config.ts',
+      '**/vite.config.ts',
+      // @skygraph/vue ships .vue SFCs which need vue-eslint-parser to lint
+      // properly. The current root config is type-aware TS-only. Vue gates
+      // are covered by `vue-tsc --noEmit` (typecheck) + vitest. Adding a
+      // proper Vue eslint setup is a follow-up stream.
+      'packages/vue/',
     ],
   },
   js.configs.recommended,
