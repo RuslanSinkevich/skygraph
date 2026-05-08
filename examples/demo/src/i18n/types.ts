@@ -196,4 +196,101 @@ export interface DemoDict {
     cardComponentsTitle: string
     cardComponentsDesc: string
   }
+
+  header: {
+    navComponents: string
+    navShowcases: string
+    navGuide: string
+    navRoadmap: string
+    navAbout: string
+    navGithub: string
+    burgerAria: string
+    themeAria: string
+  }
+
+  footer: {
+    columnDocs: string
+    columnResources: string
+    columnCommunity: string
+    columnProject: string
+    linkGettingStarted: string
+    linkComponents: string
+    linkTheming: string
+    linkCoreApi: string
+    linkChangelog: string
+    linkShowcases: string
+    linkArchitecture: string
+    linkContributing: string
+    linkGithub: string
+    linkIssues: string
+    linkAbout: string
+    linkRoadmap: string
+    linkLicense: string
+    copyright: string
+  }
+
+  landing: {
+    statComponents: string
+    statTests: string
+    statEngines: string
+    statShowcases: string
+    statRuntimeCss: string
+    statRuntimeCssValue: string
+    ctaPrimary: string
+    ctaSecondary: string
+    quickInstallTitle: string
+    quickInstallSub: string
+    minimalExampleTitle: string
+    minimalExampleSub: string
+    featureReactiveCoreTitle: string
+    featureReactiveCoreDesc: string
+    featureEnginesTitle: string
+    featureEnginesDesc: string
+    featurePrintTitle: string
+    featurePrintDesc: string
+    featureChartsTitle: string
+    featureChartsDesc: string
+    featureDiagramTitle: string
+    featureDiagramDesc: string
+    featureStylingTitle: string
+    featureStylingDesc: string
+    whatsNewTitle: string
+    whatsNewLink: string
+    showcasesTitle: string
+    showcasesSub: string
+    showcasesLink: string
+  }
+
+  roadmap: {
+    title: string
+    lead: string
+    statClosed: string
+    statOpen: string
+    statTotal: string
+    sourceLabel: string
+    emptyLabel: string
+  }
+
+  about: {
+    title: string
+    lead1: string
+    lead2: string
+    lead3: string
+    versionLabel: string
+    licenseLabel: string
+    licenseValue: string
+    architectureLink: string
+    skyPlatformTitle: string
+    skyPlatformLead: string
+    skycodeTitle: string
+    skycodeDesc: string
+    skyforkTitle: string
+    skyforkDesc: string
+    skygraphTitle: string
+    skygraphDesc: string
+    multiFrameworkTitle: string
+    multiFrameworkLead: string
+    multiFrameworkVue: string
+    multiFrameworkAngular: string
+  }
 }

@@ -1,4 +1,17 @@
 import { useState, useEffect, useMemo } from 'react'
+import {
+  AppShell,
+  Footer,
+  Header,
+  ThemeSwitcher,
+} from '@skygraph-examples/shared-react/layout'
+import type { NavItem } from '@skygraph-examples/shared-react/layout'
+import {
+  DEMO_URL,
+  GITHUB_URL,
+  SHOWCASES_URL,
+} from '@skygraph-examples/shared'
+
 import { CrmApp } from './showcases/crm/CrmApp'
 import { EcommerceApp } from './showcases/ecommerce/EcommerceApp'
 import { ProjectTrackerApp } from './showcases/project-tracker/ProjectTrackerApp'
@@ -31,8 +44,20 @@ const showcases: ShowcaseDef[] = [
     key: 'table-kitchen-sink',
     icon: '🍳',
     title: 'Table — Kitchen Sink',
-    description: 'Every table feature in one demo: sorting, filtering, grouping, tree data, virtual scroll, drag & drop, inline editing, export, print, keyboard navigation, aggregation, pinned rows, and more.',
-    tags: ['Table', 'Sort', 'Filter', 'Group', 'Tree', 'Virtual', 'DnD', 'Export', 'Print', 'Aggregate'],
+    description:
+      'Every table feature in one demo: sorting, filtering, grouping, tree data, virtual scroll, drag & drop, inline editing, export, print, keyboard navigation, aggregation, pinned rows, and more.',
+    tags: [
+      'Table',
+      'Sort',
+      'Filter',
+      'Group',
+      'Tree',
+      'Virtual',
+      'DnD',
+      'Export',
+      'Print',
+      'Aggregate',
+    ],
     category: 'data',
     component: TableKitchenSinkApp,
   },
@@ -40,8 +65,19 @@ const showcases: ShowcaseDef[] = [
     key: 'dashboard',
     icon: '📈',
     title: 'Operations Dashboard',
-    description: 'Live KPI dashboard with widget grid, mixed charts (line/bar/area/pie), service health and activity feed.',
-    tags: ['Dashboard', 'Widgets', 'LineChart', 'BarChart', 'AreaChart', 'PieChart', 'RangePicker', 'StatsRow', 'Progress'],
+    description:
+      'Live KPI dashboard with widget grid, mixed charts (line/bar/area/pie), service health and activity feed.',
+    tags: [
+      'Dashboard',
+      'Widgets',
+      'LineChart',
+      'BarChart',
+      'AreaChart',
+      'PieChart',
+      'RangePicker',
+      'StatsRow',
+      'Progress',
+    ],
     category: 'data',
     component: DashboardApp,
   },
@@ -49,7 +85,8 @@ const showcases: ShowcaseDef[] = [
     key: 'analytics',
     icon: '📊',
     title: 'Analytics Workbench',
-    description: 'Drill into KPI tables, channels, products and alerts. Period segmented controls and chart drill-downs.',
+    description:
+      'Drill into KPI tables, channels, products and alerts. Period segmented controls and chart drill-downs.',
     tags: ['Tabs', 'Charts', 'Table', 'Drawer', 'Segmented', 'Progress'],
     category: 'data',
     component: AnalyticsApp,
@@ -58,7 +95,8 @@ const showcases: ShowcaseDef[] = [
     key: 'crm',
     icon: '👥',
     title: 'CRM Dashboard',
-    description: 'Contacts table + drag-and-drop deal pipeline + activity timeline. Bulk actions and contact drawer.',
+    description:
+      'Contacts table + drag-and-drop deal pipeline + activity timeline. Bulk actions and contact drawer.',
     tags: ['Table', 'Kanban', 'Timeline', 'Drawer', 'Modal', 'Form', 'Avatar'],
     category: 'productivity',
     component: CrmApp,
@@ -67,7 +105,8 @@ const showcases: ShowcaseDef[] = [
     key: 'project-tracker',
     icon: '📋',
     title: 'Project Tracker',
-    description: 'Tasks list, drag-and-drop sprint board, project hierarchy and calendar of deadlines.',
+    description:
+      'Tasks list, drag-and-drop sprint board, project hierarchy and calendar of deadlines.',
     tags: ['Table', 'Kanban', 'Tree', 'Calendar', 'DatePicker', 'Form'],
     category: 'productivity',
     component: ProjectTrackerApp,
@@ -76,7 +115,8 @@ const showcases: ShowcaseDef[] = [
     key: 'helpdesk',
     icon: '🎫',
     title: 'Help Desk Tickets',
-    description: 'Ticketing queue with status segmentation, queue view, conversation timeline, customer replies and ticket creation.',
+    description:
+      'Ticketing queue with status segmentation, queue view, conversation timeline, customer replies and ticket creation.',
     tags: ['Table', 'Drawer', 'Form', 'Timeline', 'Tag', 'Segmented', 'Popconfirm'],
     category: 'comms',
     component: HelpDeskApp,
@@ -85,7 +125,8 @@ const showcases: ShowcaseDef[] = [
     key: 'chat',
     icon: '💬',
     title: 'Team Messenger',
-    description: 'Channel + DM list, message bubbles with reactions and attachments, @-mentions composer and member drawer.',
+    description:
+      'Channel + DM list, message bubbles with reactions and attachments, @-mentions composer and member drawer.',
     tags: ['List', 'Avatar', 'Mentions', 'Timeline', 'Drawer', 'Badge'],
     category: 'comms',
     component: ChatApp,
@@ -94,7 +135,8 @@ const showcases: ShowcaseDef[] = [
     key: 'inbox',
     icon: '📬',
     title: 'Email Inbox',
-    description: 'Threaded email client with folders, labels, bulk actions, full-thread reading drawer and compose modal.',
+    description:
+      'Threaded email client with folders, labels, bulk actions, full-thread reading drawer and compose modal.',
     tags: ['Folders', 'Threading', 'Drawer', 'Modal', 'Form', 'Tag', 'Badge'],
     category: 'comms',
     component: InboxApp,
@@ -103,7 +145,8 @@ const showcases: ShowcaseDef[] = [
     key: 'ecommerce',
     icon: '🛒',
     title: 'E-Commerce Admin',
-    description: 'Product gallery with grid/list views, image carousel, order management, customers, refunds.',
+    description:
+      'Product gallery with grid/list views, image carousel, order management, customers, refunds.',
     tags: ['Gallery', 'Carousel', 'Modal', 'Drawer', 'Steps', 'Form'],
     category: 'productivity',
     component: EcommerceApp,
@@ -112,7 +155,8 @@ const showcases: ShowcaseDef[] = [
     key: 'hr-portal',
     icon: '🏢',
     title: 'HR Portal',
-    description: 'Employee directory, org tree, leave calendar, onboarding flow, performance reviews and team assignment.',
+    description:
+      'Employee directory, org tree, leave calendar, onboarding flow, performance reviews and team assignment.',
     tags: ['Tree', 'Table', 'Calendar', 'Steps', 'Transfer', 'Collapse'],
     category: 'productivity',
     component: HrPortalApp,
@@ -121,7 +165,8 @@ const showcases: ShowcaseDef[] = [
     key: 'file-manager',
     icon: '📁',
     title: 'File Manager',
-    description: 'Tree-driven file browser with grid/list views, breadcrumb, upload, preview drawer, share and rename modals.',
+    description:
+      'Tree-driven file browser with grid/list views, breadcrumb, upload, preview drawer, share and rename modals.',
     tags: ['Tree', 'VirtualList', 'Breadcrumb', 'Upload', 'Drawer', 'Modal'],
     category: 'productivity',
     component: FileManagerApp,
@@ -130,7 +175,8 @@ const showcases: ShowcaseDef[] = [
     key: 'admin',
     icon: '🔐',
     title: 'Permissions & Roles',
-    description: 'Users, audit log, role transfer, API keys, sessions and system settings across one admin panel.',
+    description:
+      'Users, audit log, role transfer, API keys, sessions and system settings across one admin panel.',
     tags: ['Transfer', 'Table', 'Drawer', 'Collapse', 'Switch', 'Popconfirm', 'Tabs'],
     category: 'admin',
     component: AdminApp,
@@ -139,7 +185,8 @@ const showcases: ShowcaseDef[] = [
     key: 'workflow-editor',
     icon: '🔀',
     title: 'Workflow Editor',
-    description: 'Visio-like flowchart built on GraphEngine — drag nodes, switch routing, add nodes/edges, inspect topology.',
+    description:
+      'Visio-like flowchart built on GraphEngine — drag nodes, switch routing, add nodes/edges, inspect topology.',
     tags: ['Diagram', 'GraphEngine', 'Drag', 'Orthogonal', 'Inspector'],
     category: 'design',
     component: WorkflowEditorApp,
@@ -148,8 +195,17 @@ const showcases: ShowcaseDef[] = [
     key: 'forms',
     icon: '📝',
     title: 'Forms Playground',
-    description: 'All form controls in one place: validation, wizard, dynamic field arrays, real-world layouts.',
-    tags: ['Form', 'Field', 'Wizard', 'TagInput', 'PinInput', 'InlineEdit', 'Validation'],
+    description:
+      'All form controls in one place: validation, wizard, dynamic field arrays, real-world layouts.',
+    tags: [
+      'Form',
+      'Field',
+      'Wizard',
+      'TagInput',
+      'PinInput',
+      'InlineEdit',
+      'Validation',
+    ],
     category: 'design',
     component: FormsApp,
   },
@@ -173,14 +229,14 @@ function Hub({ onNavigate }: { onNavigate: (key: string) => void }) {
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
-    return showcases.filter(s => {
+    return showcases.filter((s) => {
       if (category !== 'all' && s.category !== category) return false
       if (!query.trim()) return true
       const q = query.toLowerCase()
       return (
         s.title.toLowerCase().includes(q) ||
         s.description.toLowerCase().includes(q) ||
-        s.tags.some(t => t.toLowerCase().includes(q))
+        s.tags.some((t) => t.toLowerCase().includes(q))
       )
     })
   }, [category, query])
@@ -189,7 +245,9 @@ function Hub({ onNavigate }: { onNavigate: (key: string) => void }) {
     <div className="hub">
       <h1>SkyGraph Showcases</h1>
       <p className="hub-sub">
-        Real-world mini-apps built with @skygraph/react — fake data, real components. {showcases.length} demos across {CATEGORIES.length - 1} categories.
+        Real-world mini-apps built with @skygraph/react — fake data, real
+        components. {showcases.length} demos across {CATEGORIES.length - 1}{' '}
+        categories.
       </p>
 
       <div className="hub-controls">
@@ -200,7 +258,7 @@ function Hub({ onNavigate }: { onNavigate: (key: string) => void }) {
           onChange={(e) => setQuery(e.target.value)}
         />
         <div className="hub-cats">
-          {CATEGORIES.map(c => (
+          {CATEGORIES.map((c) => (
             <button
               key={c.key}
               className={`hub-cat${category === c.key ? ' hub-cat--active' : ''}`}
@@ -208,7 +266,9 @@ function Hub({ onNavigate }: { onNavigate: (key: string) => void }) {
             >
               {c.label}
               <span className="hub-cat-count">
-                {c.key === 'all' ? showcases.length : showcases.filter(s => s.category === c.key).length}
+                {c.key === 'all'
+                  ? showcases.length
+                  : showcases.filter((s) => s.category === c.key).length}
               </span>
             </button>
           ))}
@@ -219,17 +279,24 @@ function Hub({ onNavigate }: { onNavigate: (key: string) => void }) {
         <div className="hub-empty">No demos match your filters.</div>
       ) : (
         <div className="hub-grid">
-          {filtered.map(s => (
-            <div key={s.key} className="hub-card" onClick={() => onNavigate(s.key)}>
+          {filtered.map((s) => (
+            <button
+              key={s.key}
+              className="hub-card"
+              onClick={() => onNavigate(s.key)}
+              type="button"
+            >
               <div className="hub-card-icon">{s.icon}</div>
               <h3>{s.title}</h3>
               <p>{s.description}</p>
               <div className="hub-card-tags">
-                {s.tags.map(t => (
-                  <span key={t} className="hub-card-tag">{t}</span>
+                {s.tags.map((t) => (
+                  <span key={t} className="hub-card-tag">
+                    {t}
+                  </span>
                 ))}
               </div>
-            </div>
+            </button>
           ))}
         </div>
       )}
@@ -248,23 +315,104 @@ export default function App() {
 
   const navigate = (key: string) => {
     window.location.hash = key ? '#/' + key : '#'
+    window.scrollTo({ top: 0 })
   }
 
-  const showcase = showcases.find(s => s.key === route)
-  if (!showcase) return <Hub onNavigate={navigate} />
+  const showcase = showcases.find((s) => s.key === route)
+  const navItems = useMemo<NavItem[]>(
+    () => [
+      { key: 'docs', label: '← Docs', href: DEMO_URL, external: true },
+      { key: 'showcases', label: 'Showcases', href: '#' },
+      { key: 'github', label: 'GitHub', href: GITHUB_URL, external: true },
+    ],
+    [],
+  )
+
+  const header = (
+    <Header
+      brand="SkyGraph"
+      items={navItems}
+      active={showcase ? null : 'showcases'}
+      onBrandClick={() => navigate('')}
+      onSelect={(key) => {
+        if (key === 'showcases') navigate('')
+      }}
+      extras={<ThemeSwitcher />}
+    />
+  )
+
+  const footer = (
+    <Footer
+      copyright="© 2026 SkyGraph contributors"
+      version="v0.5.0"
+      onSelect={(href) => {
+        if (href === DEMO_URL) {
+          window.location.href = DEMO_URL
+        }
+      }}
+      columns={[
+        {
+          title: 'Showcases',
+          links: [
+            { label: 'All demos', href: '#' },
+            { label: 'Source on GitHub', href: SHOWCASES_URL, external: true },
+          ],
+        },
+        {
+          title: 'Documentation',
+          links: [
+            { label: 'Demo site', href: DEMO_URL, external: true },
+            { label: 'Components', href: `${DEMO_URL}#/components/button`, external: true },
+            { label: 'Guide', href: `${DEMO_URL}#/guide/getting-started`, external: true },
+          ],
+        },
+        {
+          title: 'Community',
+          links: [
+            { label: 'GitHub', href: GITHUB_URL, external: true },
+            { label: 'Issues', href: `${GITHUB_URL}/issues`, external: true },
+          ],
+        },
+        {
+          title: 'Project',
+          links: [
+            { label: 'Changelog', href: `${GITHUB_URL}/blob/master/CHANGELOG.md`, external: true },
+            { label: 'License', href: `${GITHUB_URL}/blob/master/LICENSE`, external: true },
+          ],
+        },
+      ]}
+      extras={<ThemeSwitcher />}
+    />
+  )
+
+  if (!showcase) {
+    return (
+      <AppShell section="showcases" header={header} footer={footer}>
+        <Hub onNavigate={navigate} />
+      </AppShell>
+    )
+  }
 
   const Comp = showcase.component
   return (
-    <div className="showcase-shell">
-      <div className="showcase-topbar">
-        <button className="showcase-back" onClick={() => navigate('')}>
-          ← Back
-        </button>
-        <span className="showcase-topbar-title">{showcase.icon} {showcase.title}</span>
+    <AppShell section={null} header={header} footer={null} flush>
+      <div className="showcase-shell">
+        <div className="showcase-topbar">
+          <button
+            type="button"
+            className="showcase-back"
+            onClick={() => navigate('')}
+          >
+            ← Back to hub
+          </button>
+          <span className="showcase-topbar-title">
+            {showcase.icon} {showcase.title}
+          </span>
+        </div>
+        <div className="showcase-body">
+          <Comp />
+        </div>
       </div>
-      <div className="showcase-body">
-        <Comp />
-      </div>
-    </div>
+    </AppShell>
   )
 }

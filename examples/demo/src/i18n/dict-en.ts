@@ -198,4 +198,116 @@ export const en: DemoDict = {
     cardComponentsTitle: 'Components',
     cardComponentsDesc: 'Browse 65+ ready-made UI components',
   },
+
+  header: {
+    navComponents: 'Components',
+    navShowcases: 'Showcases',
+    navGuide: 'Guide',
+    navRoadmap: 'Roadmap',
+    navAbout: 'About',
+    navGithub: 'GitHub',
+    burgerAria: 'Open navigation',
+    themeAria: 'Toggle theme',
+  },
+
+  footer: {
+    columnDocs: 'Documentation',
+    columnResources: 'Resources',
+    columnCommunity: 'Community',
+    columnProject: 'Project',
+    linkGettingStarted: 'Getting started',
+    linkComponents: 'Components',
+    linkTheming: 'Theming',
+    linkCoreApi: 'Core API',
+    linkChangelog: 'Changelog',
+    linkShowcases: 'Showcases',
+    linkArchitecture: 'Architecture',
+    linkContributing: 'Contributing',
+    linkGithub: 'GitHub',
+    linkIssues: 'Report an issue',
+    linkAbout: 'About',
+    linkRoadmap: 'Roadmap',
+    linkLicense: 'License',
+    copyright: '© 2026 SkyGraph contributors',
+  },
+
+  landing: {
+    statComponents: 'Components',
+    statTests: 'Tests',
+    statEngines: 'Engines',
+    statShowcases: 'Showcases',
+    statRuntimeCss: 'Runtime CSS',
+    statRuntimeCssValue: '0 KB',
+    ctaPrimary: 'Get started',
+    ctaSecondary: 'Browse showcases',
+    quickInstallTitle: 'Quick install',
+    quickInstallSub: 'Three packages — core engine, React adapter and styles.',
+    minimalExampleTitle: 'Minimal example',
+    minimalExampleSub: 'Reactive form, no providers, no boilerplate.',
+    featureReactiveCoreTitle: 'Reactive core',
+    featureReactiveCoreDesc:
+      'Path-based store, transactions, batched notifies, computed values with cycle detection.',
+    featureEnginesTitle: 'Domain engines',
+    featureEnginesDesc:
+      'Form, Table, Tree, Virtual, Graph, Calendar — six engines on one store.',
+    featurePrintTitle: 'Print & export',
+    featurePrintDesc:
+      'ref.print() + SVG/PNG export for Charts, Diagram and Table.',
+    featureChartsTitle: 'Charts UX',
+    featureChartsDesc:
+      'Responsive SVG, brushing, crosshair, animations, hover toolbar, context menu.',
+    featureDiagramTitle: 'Diagram UX',
+    featureDiagramDesc:
+      'Multi-select, lasso, hover actions, orthogonal routing, undo/redo.',
+    featureStylingTitle: 'Styling contract',
+    featureStylingDesc:
+      'Three-layer tokens, slots API, dark mode, zero runtime CSS-in-JS.',
+    whatsNewTitle: "What's new",
+    whatsNewLink: 'View full changelog →',
+    showcasesTitle: 'Real-world apps',
+    showcasesSub:
+      'Mini-applications composed from @skygraph/react — fake data, real components.',
+    showcasesLink: 'View all 14 showcases →',
+  },
+
+  roadmap: {
+    title: 'Roadmap',
+    lead:
+      'Live snapshot of TODO.md. Closed items are tagged with the round that landed them; open items are candidates for upcoming streams.',
+    statClosed: 'closed',
+    statOpen: 'open',
+    statTotal: 'total',
+    sourceLabel: 'Source: TODO.md',
+    emptyLabel: 'No items.',
+  },
+
+  about: {
+    title: 'About SkyGraph',
+    lead1:
+      'SkyGraph is a TypeScript-first reactive UI library — a path-based core, six domain engines and 78+ styled components, all driven by CSS variables with zero runtime cost.',
+    lead2:
+      'It is the UI substrate for the Sky platform, designed to feed the same component contract into multiple framework adapters: React today, Vue and Angular next.',
+    lead3:
+      'No styled-components, no CSS-in-JS runtime, no proprietary build steps — only standards: TypeScript, CSS variables, native DOM events.',
+    versionLabel: 'Version',
+    licenseLabel: 'License',
+    licenseValue: 'MIT',
+    architectureLink: 'Architecture →',
+    skyPlatformTitle: 'Sky platform',
+    skyPlatformLead:
+      'Three coupled projects sharing one design system and one data model.',
+    skycodeTitle: 'Skycode',
+    skycodeDesc: 'AI-augmented IDE — VS Code fork with the Skycode assistant.',
+    skyforkTitle: 'SkyFork',
+    skyforkDesc: 'Codebase orchestration — branch hub, agent runner, automation.',
+    skygraphTitle: 'SkyGraph',
+    skygraphDesc:
+      'This library — the UI / data foundation underneath every Sky surface.',
+    multiFrameworkTitle: 'Multi-framework — coming soon',
+    multiFrameworkLead:
+      'The core engine and the styling contract are framework-agnostic. Adapters in flight:',
+    multiFrameworkVue: 'Vue 3 — Composition-API bindings on top of the core store.',
+    multiFrameworkAngular:
+      'Angular — signals-based store integration, same components.',
+  },
 }

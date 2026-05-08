@@ -200,4 +200,117 @@ export const ru: DemoDict = {
     cardComponentsTitle: 'Компоненты',
     cardComponentsDesc: 'Более 65 готовых UI-компонентов',
   },
+
+  header: {
+    navComponents: 'Компоненты',
+    navShowcases: 'Кейсы',
+    navGuide: 'Руководство',
+    navRoadmap: 'Roadmap',
+    navAbout: 'О проекте',
+    navGithub: 'GitHub',
+    burgerAria: 'Открыть навигацию',
+    themeAria: 'Переключить тему',
+  },
+
+  footer: {
+    columnDocs: 'Документация',
+    columnResources: 'Ресурсы',
+    columnCommunity: 'Сообщество',
+    columnProject: 'Проект',
+    linkGettingStarted: 'Быстрый старт',
+    linkComponents: 'Компоненты',
+    linkTheming: 'Темизация',
+    linkCoreApi: 'API ядра',
+    linkChangelog: 'Changelog',
+    linkShowcases: 'Кейсы',
+    linkArchitecture: 'Архитектура',
+    linkContributing: 'Контрибьютинг',
+    linkGithub: 'GitHub',
+    linkIssues: 'Сообщить о проблеме',
+    linkAbout: 'О проекте',
+    linkRoadmap: 'Roadmap',
+    linkLicense: 'Лицензия',
+    copyright: '© 2026 контрибьюторы SkyGraph',
+  },
+
+  landing: {
+    statComponents: 'Компонентов',
+    statTests: 'Тестов',
+    statEngines: 'Движков',
+    statShowcases: 'Кейсов',
+    statRuntimeCss: 'Runtime CSS',
+    statRuntimeCssValue: '0 КБ',
+    ctaPrimary: 'Быстрый старт',
+    ctaSecondary: 'Смотреть кейсы',
+    quickInstallTitle: 'Быстрая установка',
+    quickInstallSub: 'Три пакета — ядро, React-адаптер и стили.',
+    minimalExampleTitle: 'Минимальный пример',
+    minimalExampleSub: 'Реактивная форма без провайдеров и шаблонного кода.',
+    featureReactiveCoreTitle: 'Реактивное ядро',
+    featureReactiveCoreDesc:
+      'Path-based store, транзакции, batched notifications, computed-значения с детектом циклов.',
+    featureEnginesTitle: 'Предметные движки',
+    featureEnginesDesc:
+      'Form, Table, Tree, Virtual, Graph, Calendar — шесть движков поверх одного store.',
+    featurePrintTitle: 'Печать и экспорт',
+    featurePrintDesc:
+      'ref.print() + SVG/PNG-экспорт для Charts, Diagram и Table.',
+    featureChartsTitle: 'Charts UX',
+    featureChartsDesc:
+      'Responsive SVG, brushing, crosshair, анимации, hover-тулбар, контекстное меню.',
+    featureDiagramTitle: 'Diagram UX',
+    featureDiagramDesc:
+      'Множественный выбор, lasso, hover-actions, orthogonal routing, undo/redo.',
+    featureStylingTitle: 'Стилевой контракт',
+    featureStylingDesc:
+      'Трёхслойные токены, slots API, тёмная тема, zero runtime CSS-in-JS.',
+    whatsNewTitle: 'Что нового',
+    whatsNewLink: 'Полный changelog →',
+    showcasesTitle: 'Реальные приложения',
+    showcasesSub:
+      'Мини-приложения, собранные на @skygraph/react — фейковые данные, настоящие компоненты.',
+    showcasesLink: 'Смотреть все 14 кейсов →',
+  },
+
+  roadmap: {
+    title: 'Roadmap',
+    lead:
+      'Живой срез TODO.md. Закрытые пункты помечены раундом, в котором приехали; открытые — кандидаты в ближайшие стримы.',
+    statClosed: 'закрыто',
+    statOpen: 'открыто',
+    statTotal: 'всего',
+    sourceLabel: 'Источник: TODO.md',
+    emptyLabel: 'Список пуст.',
+  },
+
+  about: {
+    title: 'О проекте',
+    lead1:
+      'SkyGraph — TypeScript-first реактивная UI-библиотека: path-based ядро, шесть предметных движков и 78+ стилизованных компонентов на чистых CSS-переменных без рантайма.',
+    lead2:
+      'Это UI-фундамент платформы Sky: один и тот же компонентный контракт прокатывается через адаптеры под разные фреймворки — сегодня React, далее Vue и Angular.',
+    lead3:
+      'Никакого styled-components, никакого CSS-in-JS рантайма, никаких проприетарных шагов сборки — только стандарты: TypeScript, CSS-переменные, нативные DOM-события.',
+    versionLabel: 'Версия',
+    licenseLabel: 'Лицензия',
+    licenseValue: 'MIT',
+    architectureLink: 'Архитектура →',
+    skyPlatformTitle: 'Платформа Sky',
+    skyPlatformLead:
+      'Три связанных проекта на одной дизайн-системе и одной модели данных.',
+    skycodeTitle: 'Skycode',
+    skycodeDesc: 'AI-IDE — форк VS Code со встроенным ассистентом Skycode.',
+    skyforkTitle: 'SkyFork',
+    skyforkDesc:
+      'Оркестрация кодовой базы — branch-хаб, agent runner, автоматизация.',
+    skygraphTitle: 'SkyGraph',
+    skygraphDesc: 'Эта библиотека — UI/data-основа любого Sky-интерфейса.',
+    multiFrameworkTitle: 'Multi-framework — скоро',
+    multiFrameworkLead:
+      'Ядро и стилевой контракт фреймворк-независимы. Адаптеры в работе:',
+    multiFrameworkVue:
+      'Vue 3 — биндинги Composition API поверх того же ядра.',
+    multiFrameworkAngular:
+      'Angular — интеграция через signals, те же компоненты.',
+  },
 }

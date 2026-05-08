@@ -1,7 +1,18 @@
 import type React from 'react'
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import '@skygraph/styles'
 import './app.css'
+import '@skygraph-examples/shared-react/layout/styles.css'
+import {
+  AppShell,
+  Footer,
+  Header,
+  LanguageSwitcher,
+  Sidebar,
+  ThemeSwitcher,
+} from '@skygraph-examples/shared-react/layout'
+import type { AppShellSection, NavItem, SidebarSection } from '@skygraph-examples/shared-react/layout'
+import { GITHUB_URL, SHOWCASES_URL } from '@skygraph-examples/shared'
 import { NotificationContainer } from '@skygraph/react'
 
 import { SpinDemo } from './demos/SpinDemo'
@@ -51,7 +62,6 @@ import { CalendarDemo } from './demos/CalendarDemo'
 import { DatePickerDemo } from './demos/DatePickerDemo'
 import { TimePickerDemo } from './demos/TimePickerDemo'
 import { UploadDemo } from './demos/UploadDemo'
-import { ThemeToggle } from './demos/ThemeToggle'
 import { GettingStartedPage } from './demos/GettingStartedPage'
 import { ThemingPage } from './demos/ThemingPage'
 import { CoreApiPage } from './demos/CoreApiPage'
@@ -65,35 +75,102 @@ import { GanttDemo } from './demos/GanttDemo'
 import { EventTimelineDemo } from './demos/EventTimelineDemo'
 import { ResourceCalendarDemo } from './demos/ResourceCalendarDemo'
 
-import { useI18n, LanguageSwitch } from './i18n'
-import type { DemoDict } from './i18n'
+import { Landing } from './pages/Landing/Landing'
+import { Roadmap } from './pages/Roadmap/Roadmap'
+import { About } from './pages/About/About'
+
+import { useI18n, SUPPORTED_LOCALES } from './i18n'
+import type { DemoDict, Locale } from './i18n'
 
 // ---------------------------------------------------------------------------
+// Component pages — same registry as before, just kept in one map.
+// ---------------------------------------------------------------------------
 
-type MenuItem = { key: string; label: string; disabled?: boolean }
-type MenuSection = { title: string; items: MenuItem[] }
+const componentPages: Record<string, () => React.JSX.Element> = {
+  'components/spin': SpinDemo,
+  'components/button': ButtonDemo,
+  'components/input': InputDemo,
+  'components/inputnumber': InputNumberDemo,
+  'components/slider': SliderDemo,
+  'components/rate': RateDemo,
+  'components/checkbox': CheckboxDemo,
+  'components/radio': RadioDemo,
+  'components/switch': SwitchDemo,
+  'components/select': SelectDemo,
+  'components/autocomplete': AutoCompleteDemo,
+  'components/tabs': TabsDemo,
+  'components/tooltip': TooltipDemo,
+  'components/modal': ModalDemo,
+  'components/form': FormDemo,
+  'components/table': TableDemo,
+  'components/notification': NotificationDemo,
+  'components/drawer': DrawerDemo,
+  'components/popconfirm': PopconfirmDemo,
+  'components/badge': BadgeDemo,
+  'components/tag': TagDemo,
+  'components/avatar': AvatarDemo,
+  'components/breadcrumb': BreadcrumbDemo,
+  'components/pagination': PaginationDemo,
+  'components/dropdown': DropdownDemo,
+  'components/progress': ProgressDemo,
+  'components/tree': TreeDemo,
+  'components/treeselect': TreeSelectDemo,
+  'components/cascader': CascaderDemo,
+  'components/list': ListDemo,
+  'components/transfer': TransferDemo,
+  'components/calendar': CalendarDemo,
+  'components/datepicker': DatePickerDemo,
+  'components/timepicker': TimePickerDemo,
+  'components/upload': UploadDemo,
+  'components/menu': MenuDemo,
+  'components/collapse': CollapseDemo,
+  'components/colorpicker': ColorPickerDemo,
+  'components/empty': EmptyDemo,
+  'components/result': ResultDemo,
+  'components/skeleton': SkeletonDemo,
+  'components/segmented': SegmentedDemo,
+  'components/steps': StepsDemo,
+  'components/timeline': TimelineDemo,
+  'components/carousel': CarouselDemo,
+  'components/descriptions': DescriptionsDemo,
+  'components/diagram': DiagramDemo,
+  'components/charts': ChartsDemo,
+  'components/dashboard': DashboardDemo,
+  'components/gantt': GanttDemo,
+  'components/event-timeline': EventTimelineDemo,
+  'components/resource-calendar': ResourceCalendarDemo,
+  'components/schema-form-editor': SchemaFormEditorDemo,
+}
 
-/**
- * Build the sidebar menu for the current locale.
- *
- * Component names ("Button", "Input", "Modal", ...) are technical terms and
- * stay the same in both languages — only group titles and Guide entries are
- * localized.
- */
-function buildMenu(t: DemoDict): MenuSection[] {
+const guidePages: Record<string, () => React.JSX.Element> = {
+  'guide/getting-started': GettingStartedPage,
+  'guide/styling-showcase': StylingShowcasePage,
+  'guide/theming': ThemingPage,
+  'guide/design-tokens': DesignTokensPage,
+  'guide/core-api': CoreApiPage,
+  'guide/config-provider': ConfigProviderDemo,
+}
+
+// Legacy hash routes ("getting-started" without the "guide/" prefix) keep
+// working by resolving through this lookup before falling back to Landing.
+const LEGACY_GUIDE_KEYS: Record<string, string> = {
+  'getting-started': 'guide/getting-started',
+  'styling-showcase': 'guide/styling-showcase',
+  theming: 'guide/theming',
+  'design-tokens': 'guide/design-tokens',
+  'core-api': 'guide/core-api',
+  'config-provider': 'guide/config-provider',
+  tokens: 'guide/design-tokens',
+  changelog: 'guide/changelog',
+}
+
+// ---------------------------------------------------------------------------
+// Sidebars — components nav and guide nav. About / Roadmap / Landing
+// render full-width (no sidebar).
+// ---------------------------------------------------------------------------
+
+function buildComponentsSidebar(t: DemoDict): SidebarSection[] {
   return [
-    {
-      title: t.menuSections.guide,
-      items: [
-        { key: 'overview', label: t.menuItems.overview },
-        { key: 'getting-started', label: t.menuItems.gettingStarted },
-        { key: 'styling-showcase', label: t.menuItems.stylingShowcase },
-        { key: 'theming', label: t.menuItems.theming },
-        { key: 'design-tokens', label: t.menuItems.designTokens },
-        { key: 'core-api', label: t.menuItems.coreApi },
-        { key: 'config-provider', label: t.menuItems.configProvider },
-      ],
-    },
     {
       title: t.menuSections.general,
       items: [
@@ -175,248 +252,243 @@ function buildMenu(t: DemoDict): MenuSection[] {
   ]
 }
 
-const pages: Record<string, () => React.JSX.Element> = {
-  'components/spin': SpinDemo,
-  'components/button': ButtonDemo,
-  'components/input': InputDemo,
-  'components/inputnumber': InputNumberDemo,
-  'components/slider': SliderDemo,
-  'components/rate': RateDemo,
-  'components/checkbox': CheckboxDemo,
-  'components/radio': RadioDemo,
-  'components/switch': SwitchDemo,
-  'components/select': SelectDemo,
-  'components/autocomplete': AutoCompleteDemo,
-  'components/tabs': TabsDemo,
-  'components/tooltip': TooltipDemo,
-  'components/modal': ModalDemo,
-  'components/form': FormDemo,
-  'components/table': TableDemo,
-  'components/notification': NotificationDemo,
-  'components/drawer': DrawerDemo,
-  'components/popconfirm': PopconfirmDemo,
-  'components/badge': BadgeDemo,
-  'components/tag': TagDemo,
-  'components/avatar': AvatarDemo,
-  'components/breadcrumb': BreadcrumbDemo,
-  'components/pagination': PaginationDemo,
-  'components/dropdown': DropdownDemo,
-  'components/progress': ProgressDemo,
-  'components/tree': TreeDemo,
-  'components/treeselect': TreeSelectDemo,
-  'components/cascader': CascaderDemo,
-  'components/list': ListDemo,
-  'components/transfer': TransferDemo,
-  'components/calendar': CalendarDemo,
-  'components/datepicker': DatePickerDemo,
-  'components/timepicker': TimePickerDemo,
-  'components/upload': UploadDemo,
-  'components/menu': MenuDemo,
-  'components/collapse': CollapseDemo,
-  'components/colorpicker': ColorPickerDemo,
-  'components/empty': EmptyDemo,
-  'components/result': ResultDemo,
-  'components/skeleton': SkeletonDemo,
-  'components/segmented': SegmentedDemo,
-  'components/steps': StepsDemo,
-  'components/timeline': TimelineDemo,
-  'components/carousel': CarouselDemo,
-  'components/descriptions': DescriptionsDemo,
-  'components/diagram': DiagramDemo,
-  'components/charts': ChartsDemo,
-  'components/dashboard': DashboardDemo,
-  'components/gantt': GanttDemo,
-  'components/event-timeline': EventTimelineDemo,
-  'components/resource-calendar': ResourceCalendarDemo,
-  'components/schema-form-editor': SchemaFormEditorDemo,
-  'getting-started': GettingStartedPage,
-  'styling-showcase': StylingShowcasePage,
-  'theming': ThemingPage,
-  'design-tokens': DesignTokensPage,
-  'core-api': CoreApiPage,
-  'config-provider': ConfigProviderDemo,
+function buildGuideSidebar(t: DemoDict): SidebarSection[] {
+  return [
+    {
+      title: t.menuSections.guide,
+      items: [
+        { key: 'guide/getting-started', label: t.menuItems.gettingStarted },
+        { key: 'guide/styling-showcase', label: t.menuItems.stylingShowcase },
+        { key: 'guide/theming', label: t.menuItems.theming },
+        { key: 'guide/design-tokens', label: t.menuItems.designTokens },
+        { key: 'guide/core-api', label: t.menuItems.coreApi },
+        { key: 'guide/config-provider', label: t.menuItems.configProvider },
+      ],
+    },
+  ]
 }
 
+// ---------------------------------------------------------------------------
+// Hash routing.
 // ---------------------------------------------------------------------------
 
 function getHashRoute(): string {
   const h = window.location.hash.replace(/^#\/?/, '')
-  return h || 'overview'
+  if (!h) return 'landing'
+  if (h === 'overview') return 'landing'
+  if (LEGACY_GUIDE_KEYS[h]) return LEGACY_GUIDE_KEYS[h]
+  return h
 }
 
 function navigate(key: string) {
+  if (key === 'landing') {
+    window.location.hash = ''
+    return
+  }
   window.location.hash = '#/' + key
 }
 
-// ---------------------------------------------------------------------------
-
-const COMPONENT_COUNT = Object.keys(pages).filter(k => k.startsWith('components/')).length
-
-function Overview() {
-  const { t } = useI18n()
-  const menu = useMemo(() => buildMenu(t), [t])
-
-  return (
-    <section className="doc-page">
-      <div className="doc-hero">
-        <h1>{t.app.appTitle}</h1>
-        <p className="doc-hero-tagline">{t.app.tagline}</p>
-        <p className="doc-hero-sub">{t.app.heroSub}</p>
-        <pre className="doc-code doc-hero-install"><code>npm install @skygraph/core @skygraph/react</code></pre>
-      </div>
-
-      <div className="doc-features">
-        <div className="doc-feature-card">
-          <div className="doc-feature-icon">⚡</div>
-          <strong>{t.features.reactiveCoreTitle}</strong>
-          <span>{t.features.reactiveCoreDesc}</span>
-        </div>
-        <div className="doc-feature-card">
-          <div className="doc-feature-icon">🧩</div>
-          <strong>{COMPONENT_COUNT}{t.app.componentsBadgeSuffix}</strong>
-          <span>{t.features.componentsDesc}</span>
-        </div>
-        <div className="doc-feature-card">
-          <div className="doc-feature-icon">🎨</div>
-          <strong>{t.features.zeroRuntimeTitle}</strong>
-          <span>{t.features.zeroRuntimeDesc}</span>
-        </div>
-      </div>
-
-      <h2>{t.overview.browseHeading}</h2>
-      <div className="demo-overview-grid">
-        {menu
-          .filter(s => s.title !== t.menuSections.guide)
-          .map(section => (
-            section.items
-              .filter(m => !m.disabled)
-              .map(m => (
-                <div
-                  key={m.key}
-                  className="demo-overview-card"
-                  onClick={() => navigate(m.key)}
-                >
-                  <strong>{m.label}</strong>
-                  <span className="demo-overview-card-section">{section.title}</span>
-                </div>
-              ))
-          ))}
-      </div>
-    </section>
-  )
+function sectionForRoute(route: string): AppShellSection {
+  if (route === 'landing') return 'landing'
+  if (route === 'roadmap') return 'roadmap'
+  if (route === 'about') return 'about'
+  if (route.startsWith('components/')) return 'components'
+  if (route.startsWith('guide/')) return 'guide'
+  if (route === 'tokens') return 'tokens'
+  return null
 }
 
 // ---------------------------------------------------------------------------
 
 export default function App() {
-  const { t } = useI18n()
+  const { t, locale, setLocale } = useI18n()
   const [route, setRoute] = useState(getHashRoute)
-  const [query, setQuery] = useState('')
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
-    const onHash = () => setRoute(getHashRoute())
+    const onHash = () => {
+      setRoute(getHashRoute())
+      setSearch('')
+      window.scrollTo({ top: 0 })
+    }
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
-  const menu = useMemo(() => buildMenu(t), [t])
+  const section = sectionForRoute(route)
 
-  const Page = useMemo(() => {
-    if (route === 'overview') return Overview
-    return pages[route] ?? Overview
-  }, [route])
+  const navItems = useMemo<NavItem[]>(
+    () => [
+      { key: 'components', label: t.header.navComponents, href: '#/components/button' },
+      { key: 'guide', label: t.header.navGuide, href: '#/guide/getting-started' },
+      { key: 'showcases', label: t.header.navShowcases, href: SHOWCASES_URL, external: true },
+      { key: 'roadmap', label: t.header.navRoadmap, href: '#/roadmap' },
+      { key: 'about', label: t.header.navAbout, href: '#/about' },
+      { key: 'github', label: t.header.navGithub, href: GITHUB_URL, external: true },
+    ],
+    [t],
+  )
 
-  const filteredMenu = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return menu
-    return menu
-      .map(s => ({
+  const componentsSidebar = useMemo(() => buildComponentsSidebar(t), [t])
+  const guideSidebar = useMemo(() => buildGuideSidebar(t), [t])
+
+  const sidebarSections = section === 'components'
+    ? componentsSidebar
+    : section === 'guide'
+      ? guideSidebar
+      : null
+
+  const filteredSidebar = useMemo(() => {
+    if (!sidebarSections) return null
+    const q = search.trim().toLowerCase()
+    if (!q) return sidebarSections
+    return sidebarSections
+      .map((s) => ({
         ...s,
-        items: s.items.filter(i => i.label.toLowerCase().includes(q)),
+        items: s.items.filter((i) => i.label.toLowerCase().includes(q)),
       }))
-      .filter(s => s.items.length > 0)
-  }, [query, menu])
+      .filter((s) => s.items.length > 0)
+  }, [sidebarSections, search])
+
+  const sidebarNode = filteredSidebar && (
+    <Sidebar
+      sections={filteredSidebar}
+      active={route}
+      onSelect={navigate}
+      emptyLabel={t.search.noMatches}
+    />
+  )
+
+  const showSearch = section === 'components' || section === 'guide'
+
+  const header = (
+    <Header
+      brand="SkyGraph"
+      items={navItems}
+      active={section}
+      onBrandClick={() => navigate('landing')}
+      onSelect={(key) => {
+        const item = navItems.find((it) => it.key === key)
+        if (!item || item.external) return
+        if (item.href?.startsWith('#/')) {
+          navigate(item.href.slice(2))
+        }
+      }}
+      searchValue={showSearch ? search : undefined}
+      onSearchChange={showSearch ? setSearch : undefined}
+      searchPlaceholder={t.search.placeholder}
+      searchAriaLabel={t.search.ariaLabel}
+      burgerAriaLabel={t.header.burgerAria}
+      extras={<ThemeSwitcher ariaLabel={t.header.themeAria} />}
+    />
+  )
+
+  const footer = (
+    <Footer
+      onSelect={(href) => {
+        if (href.startsWith('#/')) navigate(href.slice(2))
+      }}
+      copyright={t.footer.copyright}
+      version={`v0.5.0`}
+      columns={[
+        {
+          title: t.footer.columnDocs,
+          links: [
+            { label: t.footer.linkGettingStarted, href: '#/guide/getting-started' },
+            { label: t.footer.linkComponents, href: '#/components/button' },
+            { label: t.footer.linkTheming, href: '#/guide/theming' },
+            { label: t.footer.linkCoreApi, href: '#/guide/core-api' },
+          ],
+        },
+        {
+          title: t.footer.columnResources,
+          links: [
+            {
+              label: t.footer.linkChangelog,
+              href: `${GITHUB_URL}/blob/master/CHANGELOG.md`,
+              external: true,
+            },
+            { label: t.footer.linkShowcases, href: SHOWCASES_URL, external: true },
+            {
+              label: t.footer.linkArchitecture,
+              href: `${GITHUB_URL}/blob/master/ARCHITECTURE.md`,
+              external: true,
+            },
+            {
+              label: t.footer.linkContributing,
+              href: `${GITHUB_URL}/blob/master/CONTRIBUTING.md`,
+              external: true,
+            },
+          ],
+        },
+        {
+          title: t.footer.columnCommunity,
+          links: [
+            { label: t.footer.linkGithub, href: GITHUB_URL, external: true },
+            {
+              label: t.footer.linkIssues,
+              href: `${GITHUB_URL}/issues`,
+              external: true,
+            },
+          ],
+        },
+        {
+          title: t.footer.columnProject,
+          links: [
+            { label: t.footer.linkAbout, href: '#/about' },
+            { label: t.footer.linkRoadmap, href: '#/roadmap' },
+            {
+              label: t.footer.linkLicense,
+              href: `${GITHUB_URL}/blob/master/LICENSE`,
+              external: true,
+            },
+          ],
+        },
+      ]}
+      extras={
+        <>
+          <LanguageSwitcher
+            options={SUPPORTED_LOCALES.map((code) => ({
+              code,
+              label: code.toUpperCase(),
+              fullName: code === 'en' ? t.language.en : t.language.ru,
+            }))}
+            active={locale}
+            onChange={(code) => setLocale(code as Locale)}
+            groupLabel={t.language.switcherLabel}
+          />
+          <ThemeSwitcher ariaLabel={t.header.themeAria} />
+        </>
+      }
+    />
+  )
+
+  const Page = renderPage(route)
 
   return (
-    <div className="demo-layout">
-      <aside className="demo-sidebar">
-        <div
-          className="demo-logo"
-          onClick={() => navigate('overview')}
-          style={{ cursor: 'pointer' }}
-        >
-          <span className="demo-logo-dot" />
-          {t.app.appTitle}
-        </div>
-        <div className="demo-search">
-          <input
-            placeholder={t.search.placeholder}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label={t.search.ariaLabel}
-          />
-        </div>
-        <nav className="demo-nav">
-          {filteredMenu.length === 0 && (
-            <div style={{ padding: '16px 20px', fontSize: 12, opacity: 0.6 }}>
-              {t.search.noMatches}
-            </div>
-          )}
-          {filteredMenu.map(section => (
-            <div key={section.title} className="demo-nav-section">
-              <div className="demo-nav-section-title">{section.title}</div>
-              {section.items.map(item => (
-                <div
-                  key={item.key}
-                  className={[
-                    'demo-nav-item',
-                    route === item.key ? 'demo-nav-item-active' : '',
-                    item.disabled ? 'demo-nav-item-disabled' : '',
-                  ].filter(Boolean).join(' ')}
-                  onClick={() => {
-                    if (!item.disabled) navigate(item.key)
-                  }}
-                >
-                  {item.label}
-                </div>
-              ))}
-            </div>
-          ))}
-        </nav>
-        <div className="demo-sidebar-footer">
-          <ThemeToggle />
-          <LanguageSwitch />
-          <span style={{ fontSize: 11, color: 'var(--sg-color-text-tertiary)' }}>
-            v0.3
-          </span>
-        </div>
-      </aside>
-      <main className="demo-main">
-        <div className="demo-topbar">
-          <a href="#/styling-showcase" onClick={(e) => { e.preventDefault(); navigate('styling-showcase') }}>
-            {t.topbar.stylingShowcase}
-          </a>
-          <a href="#/theming" onClick={(e) => { e.preventDefault(); navigate('theming') }}>
-            {t.topbar.theming}
-          </a>
-          <a href="#/getting-started" onClick={(e) => { e.preventDefault(); navigate('getting-started') }}>
-            {t.topbar.gettingStarted}
-          </a>
-          <a
-            href="https://github.com/skygraph/skygraph"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            {t.topbar.github}
-          </a>
-          <span style={{ flex: 1 }} />
-          <ThemeToggle />
-        </div>
-        <Page />
-      </main>
+    <>
+      <AppShell
+        section={section}
+        header={header}
+        sidebar={sidebarNode}
+        footer={footer}
+      >
+        <Page onNavigate={navigate} />
+      </AppShell>
       <NotificationContainer placement="topRight" />
       <NotificationContainer placement="topLeft" />
       <NotificationContainer placement="bottomRight" />
-    </div>
+    </>
   )
+}
+
+function renderPage(route: string): (props: { onNavigate: (key: string) => void }) => React.JSX.Element {
+  if (route === 'landing') return Landing
+  if (route === 'roadmap') return Roadmap
+  if (route === 'about') return About
+  const componentPage = componentPages[route]
+  if (componentPage) return () => componentPage()
+  const guidePage = guidePages[route]
+  if (guidePage) return () => guidePage()
+  return Landing
 }

@@ -1,3 +1,13 @@
+/*
+ * Demo app shared CSS.
+ *
+ * Layout classes (`.demo-layout`, `.demo-sidebar`, `.demo-topbar`, ...)
+ * have been replaced by `@skygraph-examples/shared-react/layout` (which
+ * uses `.xshell-*` tokens). The remainder of this file is the
+ * documentation-page chrome — `.doc-*`, `.demo-box-*`, `.demo-table-*`
+ * and friends — still consumed by 78+ component pages.
+ */
+
 * {
   margin: 0;
   padding: 0;
@@ -13,208 +23,16 @@ body,
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     sans-serif;
-  /* Page canvas: same tone as the sidebar so wide monitors don't show a
-     bright white gutter right of the 1440px main column. */
-  background: var(--sg-color-bg-secondary);
+  background: var(--sg-color-bg);
   color: var(--sg-color-text);
   -webkit-font-smoothing: antialiased;
-}
-
-/* ── Layout ───────────────────────────────────────────────────────────── */
-
-.demo-layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.demo-sidebar {
-  width: 260px;
-  flex-shrink: 0;
-  background: var(--sg-color-bg-secondary);
-  border-right: 1px solid var(--sg-color-border-secondary);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  overflow-y: auto;
-  z-index: 100;
-}
-
-.demo-logo {
-  padding: 18px 20px;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--sg-color-primary);
-  border-bottom: 1px solid var(--sg-color-border-secondary);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.demo-logo-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  background: linear-gradient(135deg, var(--sg-color-primary), var(--sg-color-primary-hover));
-}
-
-.demo-search {
-  padding: 10px 12px 4px;
-}
-
-.demo-search input {
-  width: 100%;
-  height: 30px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid var(--sg-color-border-secondary);
-  background: var(--sg-color-bg);
-  color: var(--sg-color-text);
-  font-size: 13px;
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.demo-search input:focus {
-  border-color: var(--sg-color-primary);
-}
-
-.demo-nav {
-  flex: 1;
-  padding: 8px 0 20px;
-}
-
-.demo-nav-section {
-  margin-bottom: 2px;
-}
-
-.demo-nav-section-title {
-  padding: 14px 20px 4px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
-  user-select: none;
-}
-
-.demo-nav-item {
-  padding: 6px 20px 6px 24px;
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--sg-color-text-secondary);
-  transition: all 0.15s;
-  border-left: 3px solid transparent;
-  user-select: none;
-}
-
-.demo-nav-item:hover {
-  color: var(--sg-color-text);
-  background: var(--sg-color-bg-hover);
-}
-
-.demo-nav-item-active {
-  color: var(--sg-color-primary);
-  background: var(--sg-color-primary-bg);
-  border-left-color: var(--sg-color-primary);
-  font-weight: 500;
-}
-
-.demo-nav-item-disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.demo-sidebar-footer {
-  padding: 14px 16px;
-  border-top: 1px solid var(--sg-color-border-secondary);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.demo-main {
-  flex: 1;
-  margin-left: 260px;
-  padding: 28px 48px 80px;
-  max-width: 1440px;
-  width: 100%;
-  min-width: 0;
-  /* Keep the content column on the bright surface while the page canvas
-     (body) stays neutral. */
-  background: var(--sg-color-bg);
-}
-
-/* ── Top bar above content (theme, contract links) ────────────────────── */
-
-.demo-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 14px;
-  margin-bottom: 18px;
-  padding-bottom: 10px;
-  border-bottom: 1px dashed var(--sg-color-border-secondary);
-}
-
-.demo-topbar a {
-  font-size: 12px;
-  color: var(--sg-color-text-secondary);
-  text-decoration: none;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--sg-color-border-secondary);
-  transition: all 0.15s;
-}
-
-.demo-topbar a:hover {
-  color: var(--sg-color-primary);
-  border-color: var(--sg-color-primary);
-  background: var(--sg-color-primary-bg);
-}
-
-/* ── Overview grid ────────────────────────────────────────────────────── */
-
-.demo-overview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px;
-}
-
-.demo-overview-card {
-  padding: 16px 14px;
-  border: 1px solid var(--sg-color-border-secondary);
-  border-radius: var(--sg-border-radius);
-  text-align: left;
-  font-size: 14px;
-  color: var(--sg-color-text);
-  transition: all 0.15s;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  background: var(--sg-color-bg);
-}
-
-.demo-overview-card:hover {
-  border-color: var(--sg-color-primary);
-  box-shadow: var(--sg-shadow-sm);
-  transform: translateY(-1px);
-}
-
-.demo-overview-card-section {
-  font-size: 11px;
-  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
 }
 
 /* ── Doc page base ────────────────────────────────────────────────────── */
 
 .doc-page {
   max-width: 1120px;
+  padding-top: 24px;
 }
 
 .doc-page h1 {
@@ -394,40 +212,7 @@ body {
   color: var(--sg-color-text-secondary);
 }
 
-/* ── Hero (Overview) ──────────────────────────────────────────────────── */
-
-.doc-hero {
-  text-align: center;
-  padding: 56px 0 36px;
-  border-bottom: 1px solid var(--sg-color-border-secondary);
-  margin-bottom: 28px;
-}
-
-.doc-hero h1 {
-  font-size: 44px;
-  margin-bottom: 6px;
-  letter-spacing: -0.5px;
-}
-
-.doc-hero-tagline {
-  font-size: 20px !important;
-  font-weight: 500;
-  color: var(--sg-color-primary) !important;
-  margin-bottom: 8px !important;
-}
-
-.doc-hero-sub {
-  max-width: 560px;
-  margin: 0 auto 20px !important;
-  font-size: 15px;
-}
-
-.doc-hero-install {
-  display: inline-block;
-  margin: 0 auto;
-}
-
-/* ── Feature cards ────────────────────────────────────────────────────── */
+/* ── Feature cards (legacy Overview — kept for future reuse) ─────────── */
 
 .doc-features {
   display: grid;
@@ -689,7 +474,6 @@ body {
 
 /* ── Styling showcase helpers ────────────────────────────────────────── */
 
-/* Token swatches */
 .demo-swatches {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -728,7 +512,6 @@ body {
   font-family: inherit;
 }
 
-/* Inline theme demo ("card" with an isolated token scope) */
 .demo-scope-card {
   padding: 16px;
   border: 1px solid var(--sg-color-border-secondary);
@@ -753,7 +536,6 @@ body {
   align-items: center;
 }
 
-/* Inline dark-scope preview */
 .demo-dark-scope {
   padding: 16px;
   border-radius: 8px;
@@ -761,7 +543,7 @@ body {
   color: #c9d1d9;
 }
 
-/* ── Slot-highlight demo (interactive table with outlined slots) ─────── */
+/* ── Slot-highlight demo ─────────────────────────────────────────────── */
 
 .demo-slot-legend {
   display: flex;
@@ -790,7 +572,6 @@ body {
   opacity: 0.6;
 }
 
-/* Table-specific demo classes referenced by StylingShowcasePage */
 .demo-table-root {
   border: 2px dashed transparent;
   border-radius: var(--sg-border-radius, 6px);
@@ -825,7 +606,6 @@ body {
   font-weight: 600;
 }
 
-/* List-specific demo classes */
 .demo-list-item {
   border-radius: 10px;
 }
@@ -888,17 +668,4 @@ body {
   border-radius: 4px;
   background: var(--sg-color-bg-secondary);
   color: var(--sg-color-text);
-}
-
-@media (max-width: 960px) {
-  .demo-sidebar {
-    width: 220px;
-  }
-  .demo-main {
-    margin-left: 220px;
-    padding: 20px 20px 60px;
-  }
-  .doc-features {
-    grid-template-columns: 1fr;
-  }
 }

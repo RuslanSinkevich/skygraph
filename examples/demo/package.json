@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@skygraph-examples/shared": "workspace:*",
+    "@skygraph-examples/shared-react": "workspace:*",
     "@skygraph/core": "workspace:*",
     "@skygraph/react": "workspace:*",
     "@skygraph/styles": "workspace:*",
