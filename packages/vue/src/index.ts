@@ -14,10 +14,9 @@ export type { UseTreeOptions, UseTreeReturn } from './composables/useTree'
 export { useGraph } from './composables/useGraph'
 export type { UseGraphOptions, UseGraphReturn } from './composables/useGraph'
 
-// Components (Sg* prefix to avoid clashing with React names and global Vue tags)
-export { SgButton } from './components/Button'
-export type { ButtonProps } from './components/Button'
+export { useFocusTrap } from './composables/useFocusTrap'
 
+// Components (Sg* prefix to avoid clashing with React names and global Vue tags)
 export { SgInput } from './components/Input'
 export type { InputProps } from './components/Input'
 
@@ -26,6 +25,86 @@ export type { FormProps, FormContextValue } from './components/Form'
 
 export { SgField } from './components/Field'
 export type { FieldProps } from './components/Field'
+
+// UI primitives (Feedback / Navigation / Display / Misc)
+export {
+  SgConfigProvider,
+  SgTransition,
+  SgSpin,
+  SgModal,
+  SgDrawer,
+  SgNotificationContainer,
+  SgPopconfirm,
+  SgTooltip,
+  SgProgress,
+  SgResult,
+  SgEmpty,
+  SgSkeleton,
+  SgTabs,
+  SgMenu,
+  SgBreadcrumb,
+  SgDropdown,
+  SgPagination,
+  SgSteps,
+  SgSegmented,
+  SgBadge,
+  SgTag,
+  SgAvatar,
+  SgCarousel,
+  SgTimeline,
+  SgDescriptions,
+  SgCollapse,
+  SgButton,
+  notification,
+  useNotification,
+  useConfig,
+  useConfigWithDefaults,
+  sgConfigKey,
+} from './components/ui'
+
+export type {
+  ConfigProviderProps,
+  SgConfig,
+  TransitionProps,
+  SpinProps,
+  ModalProps,
+  DrawerProps,
+  NotificationConfig,
+  NotificationContainerProps,
+  NotificationType,
+  PopconfirmProps,
+  TooltipProps,
+  ProgressProps,
+  ResultProps,
+  EmptyProps,
+  SkeletonProps,
+  TabsProps,
+  TabItem,
+  MenuItem,
+  BreadcrumbProps,
+  BreadcrumbItem,
+  DropdownProps,
+  DropdownItem,
+  PaginationProps,
+  StepsProps,
+  StepItem,
+  SegmentedProps,
+  SegmentedOption,
+  BadgeProps,
+  TagProps,
+  AvatarProps,
+  CarouselProps,
+  TimelineProps,
+  TimelineItem,
+  DescriptionsProps,
+  DescriptionsItem,
+  CollapseProps,
+  CollapseItem,
+  ButtonProps,
+} from './components/ui'
+
+// Shared types
+export type { SizeType, BaseComponentProps, SgLocale } from './types'
 
 // Re-export key types from core (mirrors what @skygraph/react does)
 export type {
