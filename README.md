@@ -35,7 +35,7 @@ npm install @skygraph/core @skygraph/react
 ```
 
 ```tsx
-import '@skygraph/styles' // (or the legacy '@skygraph/react/styles' — still works)
+import '@skygraph/styles'
 import { Form, Field, SubmitButton } from '@skygraph/react'
 
 function App() {
@@ -62,7 +62,7 @@ function App() {
 | `@skygraph/react` | React hooks, 78+ components | ~440 KB (ESM main, before tree-shake) |
 | `@skygraph/styles` | Framework-agnostic CSS — tokens, themes, transitions, print, 60+ component stylesheets | ~234 KB raw / ~25 KB gzip |
 
-`@skygraph/styles` is shared across every adapter (React today, Vue / Angular planned). `@skygraph/react` keeps a tiny re-export shim at `'@skygraph/react/styles'` for the main bundle so existing apps don't need to change their entry-point import. Per-component / per-token subpaths now live exclusively under `@skygraph/styles/...`.
+`@skygraph/styles` is shared across every adapter (`@skygraph/react` today, `@skygraph/vue` ✅ MVP, Angular planned later) and pulled in transitively by `@skygraph/react` (declared in `dependencies`, not `peerDependencies` — installing the React adapter is enough). The single import path is `'@skygraph/styles'`; per-component / per-token subpaths live under `@skygraph/styles/...`.
 
 ## Architecture
 

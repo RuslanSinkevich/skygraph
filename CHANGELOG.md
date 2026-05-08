@@ -7,13 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Round 12 — `@skygraph/styles` extraction (single-commit)
+### Round 12 — `@skygraph/styles` extraction + Vue MVP + Foundation finalisation
 
-CSS вынесен из `packages/react/styles/` в отдельный workspace-пакет
-`@skygraph/styles` (новый `packages/styles/`). Foundation для будущих
-адаптеров `@skygraph/vue` и `@skygraph/angular` — теперь они смогут
-переиспользовать тот же набор tokens / themes / component-CSS без
-дублирования.
+Round 12 закрылся тремя коммитами на master: `13a695e` (CSS extraction),
+`c3489b4` (Vue MVP-адаптер), `e9888e1` (Foundation finalisation).
+Описание ниже сводное — сначала суть extraction'а, затем что добавлено
+в Vue-стрим, затем какие хвосты закрыл финальный коммит.
 
 #### Что переехало
 
@@ -45,29 +44,21 @@ CSS вынесен из `packages/react/styles/` в отдельный workspace
   ставит один пакет, не возится с manual install. (Плюсы: меньше
   пользовательской боли. Минусы: чуть больше strict peer-dep шуму у
   адепта монорепо, но это исключение.)
-- `exports."./styles"` оставлен и указывает на `./styles/index.css` —
-  это тонкий shim из двух строк (`@import '@skygraph/styles/index.css'`).
-  Любой апп, который писал `import '@skygraph/react/styles'`,
-  продолжает работать без изменений (Vite / webpack-5 / esbuild / Parcel
-  умеют resolve bare specifier в CSS `@import`).
-- Subpath-пути (`@skygraph/react/styles/components/*`,
-  `/styles/tokens.css`, `/styles/themes/*` и т.д.) **удалены** из
-  `exports` и из `packages/react/styles/`. Этот компромисс выбран ради
-  сохранения git-history при `git mv`: shim-файл по тому же пути, что и
-  оригинал, ломает rename-detection (similarity ~1%, оригинал ~5 КБ,
-  shim ~115 байт). Без shims на subpath'ах git видит чистый
-  delete + add, similarity 100%, и `git log --follow` корректно
-  показывает историю каждого CSS-файла. Плата: пользователи, которые
-  раньше писали `import '@skygraph/react/styles/components/button.css'`,
-  должны мигрировать на `import '@skygraph/styles/components/button'`
-  (или `/components/button.css` — оба пути экспортируются). Смягчение:
-  во всём этом репо subpath-импорты `@skygraph/react/styles/...` живут
-  только в доках и были обновлены вместе со стримом.
-- `tsconfig.json` `lib` поднят с `ES2020` → `ES2022` (а `target` —
-  `ES2022`) — mini-fix накопившейся регрессии: `Array.prototype.at` в
-  тестах `diagram.test.tsx` / `resource-calendar.test.tsx` падал на
-  `tsc --noEmit` под старым lib. К стилям отношения не имеет, но идёт
-  одним коммитом ради цельности.
+- В extraction-коммите `13a695e` `exports."./styles*"` оставались как
+  shim `@import '@skygraph/styles/...'` — для сохранения rename-
+  detection при `git mv` и плавной миграции апп. В finalisation-
+  коммите `e9888e1` shim удалён целиком: папка
+  `packages/react/styles/` снесена, `exports."./styles"` и
+  `"styles"` из `files` убраны. Единственный публичный путь CSS
+  теперь `@skygraph/styles` / `@skygraph/styles/<subpath>`.
+- Subpath-пути под `@skygraph/react/styles/<...>` (любые) больше не
+  работают. Миграция строго механическая (см. секцию **API break**
+  ниже).
+- В finalisation-коммите `e9888e1` `tsconfig.base.json` `target` и
+  `lib` подняты до `ES2022` + `DOM` + `DOM.Iterable` (раньше каждый
+  пакет переопределял свой lib индивидуально, теперь всё унифицировано
+  через base). `Array.prototype.at` в тестах `diagram.test.tsx` /
+  `resource-calendar.test.tsx` перестал падать на `tsc --noEmit`.
 
 #### Examples
 
@@ -79,9 +70,9 @@ CSS вынесен из `packages/react/styles/` в отдельный workspace
 - `vite.config.ts` обоих apps: `@skygraph/styles` резолвится через
   pnpm-workspace symlink + package.json `exports` (alias не нужен и был
   бы вреден — сломал бы subpath-импорты типа
-  `@skygraph/styles/components/button`). `@skygraph/react/styles`
-  legacy-alias остался для backward-compat, но указывает уже на новый
-  путь `packages/styles/index.css`.
+  `@skygraph/styles/components/button`). Legacy-alias
+  `@skygraph/react/styles` тоже удалён в `e9888e1` — путь больше не
+  публичный.
 - `examples/demo/src/demos/GettingStartedPage.tsx`: рекомендованный в
   доках import path в "Quick Start" блоке обновлён на
   `'@skygraph/styles'`.
@@ -96,8 +87,17 @@ CSS вынесен из `packages/react/styles/` в отдельный workspace
   `packages/styles/print.css`).
 - `docs/_audit/styling-audit.md` regenerated (только пути сменились —
   unknown tokens, dead-code classes и magic colors остались те же).
-- `.github/workflows/ci.yml` не менялся — `pnpm check:styles` /
-  `pnpm audit:styles` пути не хардкодит, всё подхватилось автоматом.
+- `.github/workflows/ci.yml` в extraction-коммите не менялся; в
+  finalisation-коммите `e9888e1` добавлен step `pnpm typecheck`
+  (alias for `pnpm -r exec tsc --noEmit`) после `pnpm lint` и до
+  `pnpm check:styles`. Корневой `package.json` получил соответствующий
+  script.
+- `scripts/audit-styles.mjs` в `e9888e1` пропатчен: `TEMPLATE_PREFIX_RE`
+  использует negative-lookbehind вместо привязки к открывающему
+  бэктику, поэтому распознаёт template prefix внутри multi-class
+  literal (`\`sg-foo-container sg-foo-${placement}\``). «Возможно
+  мёртвый код» снизился `57 → 20`. Ни одного класса не удалено —
+  это чистый false-positive fix.
 
 #### Тесты / Build
 
@@ -123,19 +123,59 @@ CSS вынесен из `packages/react/styles/` в отдельный workspace
   showcases-bundle ≈25 KB. `index.css` сам по себе мал — он только
   `@import`-цепочка; реальные килобайты идут из `components/*`.
 
+#### `@skygraph/vue` MVP (`c3489b4`)
+
+- Новый workspace-пакет `packages/vue/` — Vue 3 адаптер,
+  `peer: @skygraph/core + vue^3.4`, `dep: @skygraph/styles`.
+- 5 composables (`useForm`, `useField`, `useTable`, `useTree`,
+  `useGraph`) поверх `@skygraph/core`, API симметрично React-хукам.
+- 4 SFC-компонента (`SgButton`, `SgInput`, `SgForm`, `SgField`),
+  выдают идентичные `.sg-*` классы — общий CSS-контракт через
+  `@skygraph/styles`.
+- `examples/demo-vue/` — минимальный showcase (forms + buttons).
+- Vite library build, `vue-tsc --noEmit`, 48 vitest тестов.
+
+#### Foundation finalisation (`e9888e1`)
+
+- `docs/multi-framework.md` — публичная стратегия React → Vue →
+  Angular: контракт адаптеров (peer:core, dep:styles, symmetric
+  API surface, identical `.sg-*` classes + DOM), demo strategy,
+  shared-content через `examples/_shared/`, CSS contract как hard
+  public API, monorepo-wide semver, чек-лист для нового адаптера.
+- `ARCHITECTURE.md` §7 (cross-framework) и §8 (структура) обновлены:
+  `@skygraph/styles` указан как 100%-shared между фреймворками,
+  ссылка на `multi-framework.md` объявлена обязательным prerequisite.
+- `docs/README.md` — новая ссылка в навигации.
+- `packages/styles/components/context-menu.css` — новый файл,
+  закрывает Round-11 hole: `.sg-context-menu*` и
+  `.sg-datagrid-context-menu*` лежали в TSX без CSS, визуал держался
+  на inline `style={...}` с hard-coded hex и неверными именами
+  CSS-vars (`--sg-bg-elevated`, `--sg-border` — таких токенов нет в
+  `tokens.css`). Через `:is()`-группировку покрывает обе namespace'ы,
+  читает только реальные токены.
+- `Table/ContextMenu.tsx` и `DataGrid/DataGrid.tsx` — inline-стили
+  вырезаны (кроме координат `top`/`left` — runtime). Добавлены
+  классы-модификаторы `--{danger,disabled}` вместо style props.
+- Audit: 13 классов переехали из «только в DOM» в «совпадают»;
+  «возможно мёртвый код» 57 → 20 (cm. секцию **Скрипты / CI** выше).
+
 #### API break / migration
 
-- Главный путь стилей сохранён: `import '@skygraph/react/styles'`
-  продолжает работать через shim, `import '@skygraph/styles'` — новый
-  рекомендованный путь, идентичный по содержимому.
-- Subpath'ы под `@skygraph/react/styles/<...>` (например
-  `/styles/tokens.css`, `/styles/components/button.css`,
-  `/styles/themes/dark.css`) — **минимальный break**: мигрируют на
-  `@skygraph/styles/tokens` / `/components/button` / `/themes/dark`
-  соответственно. Этот путь и так был внутренним и в публичных доках
-  фигурировал только как пример — обновлён вместе со стримом.
+- `import '@skygraph/react/styles'` (и любые subpath под этим
+  префиксом) **больше не работают**. Миграция строго механическая:
+  `@skygraph/react/styles` → `@skygraph/styles`,
+  `@skygraph/react/styles/tokens.css` → `@skygraph/styles/tokens`,
+  `@skygraph/react/styles/components/button.css` →
+  `@skygraph/styles/components/button` и т.д. Контент идентичный —
+  тот же CSS, просто из соседнего пакета.
+- `@skygraph/styles` объявлен в `dependencies` `@skygraph/react`,
+  поэтому `pnpm add @skygraph/react` тащит его транзитивно;
+  отдельная установка не нужна (но возможна, если хочется
+  cherry-pick subpaths без React-адаптера).
 - Имена `.sg-*` классов и `--sg-*` токенов не менялись.
 - DOM-разметка React-компонентов не менялась.
+- Vue-адаптер (`@skygraph/vue`) идёт MVP — публичные API могут
+  меняться до `1.0`. CSS-контракт стабилен.
 
 ### Round 11 — UX полишинг + demo expansion + 3 новых фичи + i18n batch
 

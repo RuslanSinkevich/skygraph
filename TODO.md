@@ -3,32 +3,44 @@
 > Реальные хвосты после round 1..9 + 9.1 closeout + round 11 + round 12.
 > Каждая запись — кандидат в будущий стрим или мини-стрим.
 >
-> Статус на 2026-05-08: round 12 — `13a695e` extract `@skygraph/styles` как
-> отдельный workspace-пакет (single-commit foundation) + этот docs-sync
-> коммит. CSS вынесен из `packages/react/styles/` → `packages/styles/`
-> (`git mv` сохранил историю для 69 из 70 файлов; `index.css` потерян как
-> rename, потому что на старом пути остался 2-строчный shim ради
-> backward-compat). `@skygraph/react` теперь зависит от `@skygraph/styles`
-> через `dependencies` (не peer — установка одного пакета тащит CSS
-> транзитивно), examples переключены на `import '@skygraph/styles'`,
-> scripts (`audit-styles` / `check-tokens` / `check-no-important`)
-> обновлены под новый путь. Legacy `'@skygraph/react/styles'` (только
-> главный entrypoint) продолжает работать через shim
-> `@import '@skygraph/styles/index.css'`; per-component subpaths под
-> `@skygraph/react/styles/<...>` удалены из `package.json#exports` —
-> внутри репо они жили только в доках, все обновлены вместе со стримом.
-> Mini-fix в этом же коммите — `packages/react/tsconfig.json` `lib` поднят
-> с ES2020 → ES2022 (target тоже), чтобы `Array.prototype.at` в тестах
-> `diagram.test.tsx` / `resource-calendar.test.tsx` перестал падать на
-> `tsc --noEmit`. Foundation для будущих `@skygraph/vue` и
-> `@skygraph/angular` адаптеров без дублирования CSS.
+> Статус на 2026-05-08: round 12 — три коммита на master:
+> 1) `13a695e` infra(css): extract `@skygraph/styles` package — CSS
+>    вынесен из `packages/react/styles/` → `packages/styles/` через
+>    `git mv` (history сохранена). `@skygraph/react` тянет CSS через
+>    `dependencies`, examples переключены на `import '@skygraph/styles'`,
+>    scripts (audit/check-tokens/check-no-important) обновлены.
+> 2) `c3489b4` feat(vue): `@skygraph/vue` MVP adapter — 5 composables,
+>    4 components, examples/demo-vue. Класс-имена `.sg-*` идентичны
+>    React-адаптеру, общий CSS-контракт через `@skygraph/styles`.
+> 3) `e9888e1` infra(round-12 tab-A): finalisation + multi-framework
+>    arch + TS lib bump + dead CSS cleanup —
+>    `packages/react/styles/` удалена целиком (без shim);
+>    `packages/react/package.json` exports/files почищены от
+>    `./styles*`. `tsconfig.base.json` `target/lib` подняты до ES2022 +
+>    DOM/DOM.Iterable; `packages/{core,styles}/tsconfig.json`
+>    синхронизированы. Корневой script `pnpm typecheck`
+>    (`pnpm -r exec tsc --noEmit`) и step `pnpm typecheck` в CI после
+>    `pnpm lint` — добавлены. `docs/multi-framework.md` фиксирует
+>    стратегию React → Vue → Angular (контракт адаптеров, CSS
+>    contract, demo strategy, semver). `ARCHITECTURE.md` §7 + §8 +
+>    `docs/README.md` обновлены под новую реальность. Dead-CSS audit
+>    снижен 57 → 20 через фикс false-positive в `audit-styles.mjs`
+>    regex (camelCase placement classes сохранены — они
+>    runtime-генерируются через `sg-${placement}` template literal).
+>    Round-11 наплодил `.sg-context-menu*` / `.sg-datagrid-context-menu*`
+>    в TSX без CSS — создан `packages/styles/components/context-menu.css`
+>    через токены, inline `style={...}` вырезаны (кроме
+>    runtime-координат `top`/`left`).
 >
-> Запланированный TAB B (multi-framework стратегия + Vue scaffold + hard
-> remove `packages/react/styles/` + CI typecheck gate + shared examples
-> workspaces + demo i18n expansion) на момент round-12 closeout не
-> закоммичен — лежит в working tree как WIP. Развернётся отдельным
-> стримом, когда Vue typecheck (vue-tsc) встанет в `pnpm -r exec
-> tsc --noEmit` корректно.
+> Migration / breaking: `import '@skygraph/react/styles'` и любые его
+> subpath'ы больше не работают. Замена строго механическая —
+> `@skygraph/styles` (или `@skygraph/styles/components/<name>`,
+> `@skygraph/styles/themes/dark`, …). `@skygraph/styles` сам идёт
+> транзитивно через `dependencies` `@skygraph/react`, ставить
+> отдельно не нужно.
+>
+> Foundation для `@skygraph/angular` (опциональный позже) — ничего
+> в core / styles делать не надо, всё уже framework-agnostic.
 >
 > Статус до round 12: round 11 закрыт 15 коммитами на master (две волны):
 >  - первая волна (3 больших фичи + Tree fix + i18n batch):
