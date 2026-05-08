@@ -36,6 +36,9 @@ Thumbs.db
 # Vite (demo)
 examples/demo/dist/
 
+# Local static site bundle (regenerate with `node deploy/build-all.mjs`)
+deploy/output/
+
 # Local scratch (commit message bodies for HEREDOC-style commits, etc.)
 .git-commit-msg.tmp
 *.tmp

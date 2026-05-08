@@ -12,9 +12,9 @@
 
 1. **React stays the canonical adapter** — `@skygraph/react` keeps shipping
    today's API and demos as-is. No regressions for existing users.
-2. **Vue is the next adapter** (stream X+2). It must reuse `@skygraph/core`
-   and `@skygraph/styles` 1:1 — no per-framework CSS, no per-framework
-   engine implementations.
+2. **Vue is the next adapter** ✅ (MVP shipped, alpha). It reuses
+   `@skygraph/core` and `@skygraph/styles` 1:1 — no per-framework CSS,
+   no per-framework engine implementations.
 3. **Angular is optional later**. Same contract.
 4. **Shared documentation** — public docs (component pages, recipes) show
    `React | Vue | Angular` tabs once an adapter exists. Source of truth
@@ -39,7 +39,7 @@
 | Package              | Status      | Wraps                             | Distribution             |
 | -------------------- | ----------- | --------------------------------- | ------------------------ |
 | `@skygraph/react`    | ✅ shipping  | core engines via `useX` hooks     | `dependencies: styles`   |
-| `@skygraph/vue`      | 🟡 stream X+2 | core engines via `useX` composables | `dependencies: styles` |
+| `@skygraph/vue`      | ✅ MVP (alpha) | core engines via `useX` composables | `dependencies: styles` |
 | `@skygraph/angular`  | ⚪ later     | core engines via `XService` (DI)  | `dependencies: styles`   |
 
 ### Adapter contract
@@ -55,14 +55,16 @@ Every adapter:
 3. **Mirrors the same API surface** under idiomatic framework names.
    Symmetric examples:
 
-   | Capability       | React              | Vue (planned)      | Angular (planned)        |
-   | ---------------- | ------------------ | ------------------ | ------------------------ |
-   | Form binding     | `useForm`          | `useForm`          | `FormService`            |
-   | Single field     | `useField`         | `useField`         | `FieldDirective`         |
-   | Table data       | `useTable`         | `useTable`         | `TableService`           |
-   | Validation       | `useValidation`    | `useValidation`    | `ValidationService`      |
-   | History          | `useHistory`       | `useHistory`       | `HistoryService`         |
-   | Computed         | `useComputed`      | `useComputed`      | `ComputedService`        |
+   | Capability       | React              | Vue                       | Angular (planned)        |
+   | ---------------- | ------------------ | ------------------------- | ------------------------ |
+   | Form binding     | `useForm`          | `useForm` ✅              | `FormService`            |
+   | Single field     | `useField`         | `useField` ✅             | `FieldDirective`         |
+   | Table data       | `useTable`         | `useTable` ✅             | `TableService`           |
+   | Tree data        | `useTree`          | `useTree` ✅              | `TreeService`            |
+   | Graph engine     | `useGraph`         | `useGraph` ✅             | `GraphService`           |
+   | Validation       | `useValidation`    | `useValidation` (planned) | `ValidationService`      |
+   | History          | `useHistory`       | `useHistory` ✅            | `HistoryService`         |
+   | Computed         | `useComputed`      | `useComputed` (planned)   | `ComputedService`        |
 
 4. **Emits the exact same `.sg-*` class names** on rendered DOM as
    `@skygraph/react`. This is a hard contract — see
@@ -81,8 +83,8 @@ remains framework-free forever.
 ## Demo strategy
 
 - **`examples/demo`** stays React. It is the canonical demo package.
-- **`examples/demo-vue`** (when Vue ships) is a separate workspace
-  package, also Vite-powered, mounting the same showcases against
+- **`examples/demo-vue`** ✅ exists today as a separate workspace
+  package, also Vite-powered, mounting showcases against
   `@skygraph/vue`. URL paths and component slugs are kept identical so
   cross-linking works (e.g. `/components/form` exists in both).
 - **`examples/demo-angular`** (later) follows the same pattern.

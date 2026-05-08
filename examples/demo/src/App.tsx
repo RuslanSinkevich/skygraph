@@ -79,6 +79,8 @@ import { Landing } from './pages/Landing/Landing'
 import { Roadmap } from './pages/Roadmap/Roadmap'
 import { About } from './pages/About/About'
 
+import { FrameworkSwitcher } from './components/FrameworkSwitcher'
+
 import { useI18n, SUPPORTED_LOCALES } from './i18n'
 import type { DemoDict, Locale } from './i18n'
 
@@ -379,7 +381,12 @@ export default function App() {
       searchPlaceholder={t.search.placeholder}
       searchAriaLabel={t.search.ariaLabel}
       burgerAriaLabel={t.header.burgerAria}
-      extras={<ThemeSwitcher ariaLabel={t.header.themeAria} />}
+      extras={
+        <>
+          <FrameworkSwitcher active="react" />
+          <ThemeSwitcher ariaLabel={t.header.themeAria} />
+        </>
+      }
     />
   )
 

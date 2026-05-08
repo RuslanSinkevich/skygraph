@@ -60,9 +60,10 @@ function App() {
 |---------|------------|------|
 | `@skygraph/core` | Reactive runtime + 6 engines (form/table/tree/virtual/graph/calendar) | ~32 KB (ESM) |
 | `@skygraph/react` | React hooks, 78+ components | ~440 KB (ESM main, before tree-shake) |
+| `@skygraph/vue` | Vue 3 adapter — 5 composables (`useForm` / `useField` / `useTable` / `useTree` / `useGraph`) + 4 components (`SgButton` / `SgInput` / `SgForm` / `SgField`) | ~16 KB (ESM) |
 | `@skygraph/styles` | Framework-agnostic CSS — tokens, themes, transitions, print, 60+ component stylesheets | ~234 KB raw / ~25 KB gzip |
 
-`@skygraph/styles` is shared across every adapter (`@skygraph/react` today, `@skygraph/vue` ✅ MVP, Angular planned later) and pulled in transitively by `@skygraph/react` (declared in `dependencies`, not `peerDependencies` — installing the React adapter is enough). The single import path is `'@skygraph/styles'`; per-component / per-token subpaths live under `@skygraph/styles/...`.
+`@skygraph/styles` is shared across every adapter (`@skygraph/react` today, `@skygraph/vue` ✅ MVP, Angular planned later) and pulled in transitively by both `@skygraph/react` and `@skygraph/vue` (declared in `dependencies`, not `peerDependencies` — installing the adapter is enough). The single import path is `'@skygraph/styles'`; per-component / per-token subpaths live under `@skygraph/styles/...`.
 
 ## Architecture
 
