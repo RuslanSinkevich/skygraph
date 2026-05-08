@@ -6,6 +6,7 @@
 |---|---|---|
 | [Быстрый старт](./quick-start.md) | Новый разработчик | Как поднять проект, запустить, начать работать |
 | [Архитектура](./architecture.md) | Все | Слои, пакеты, правила, как всё связано |
+| [Multi-framework стратегия](./multi-framework.md) | Maintainers | React → Vue → Angular: контракт адаптеров, CSS-контракт, версионирование |
 | [Core Engine](./core-engine.md) | Разработчик ядра | Runtime, Store, engines (form/table/tree/virtual/graph) |
 | [Компоненты](./components.md) | Разработчик UI | Как устроены компоненты, паттерны, как добавить новый |
 | [Стили и темы](./styling.md) | Разработчик UI | Токены, CSS, темы, как стилизовать |

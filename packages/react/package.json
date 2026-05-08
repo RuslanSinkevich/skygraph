@@ -42,12 +42,10 @@
       "types": "./dist/devtools.d.ts",
       "import": "./dist/devtools.js",
       "require": "./dist/devtools.cjs"
-    },
-    "./styles": "./styles/index.css"
+    }
   },
   "files": [
-    "dist",
-    "styles"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"

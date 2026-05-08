@@ -70,54 +70,43 @@ export function ContextMenu({ state, onClose }: ContextMenuProps) {
 
   if (!state) return null
 
-  const menuStyle: React.CSSProperties = {
+  // Runtime-only positioning: coordinates come from the click event and the
+  // submenu hangs off the parent's right edge. Every other visual property
+  // lives in `packages/styles/components/context-menu.css`.
+  const rootStyle: React.CSSProperties = {
     position: 'fixed',
     top: state.y,
     left: state.x,
-    zIndex: 1050,
-    minWidth: 160,
-    background: 'var(--sg-bg-elevated, #fff)',
-    border: '1px solid var(--sg-border, #d9d9d9)',
-    borderRadius: 'var(--sg-radius, 6px)',
-    boxShadow: '0 6px 16px rgba(0,0,0,0.08)',
-    padding: '4px 0',
-    fontSize: 14,
+  }
+  const submenuStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: '100%',
+  }
+
+  const itemClass = (item: ContextMenuItem) => {
+    const classes = ['sg-context-menu-item']
+    if (item.danger) classes.push('sg-context-menu-item--danger')
+    if (item.disabled) classes.push('sg-context-menu-item--disabled')
+    return classes.join(' ')
   }
 
   const renderItems = (items: ContextMenuItem[], isSubmenu = false) => (
     <div
       ref={isSubmenu ? undefined : ref}
       className="sg-context-menu"
-      style={isSubmenu ? { ...menuStyle, position: 'absolute', top: 0, left: '100%' } : menuStyle}
+      style={isSubmenu ? submenuStyle : rootStyle}
       role="menu"
     >
       {items.map((item) => {
         if (item.divider) {
-          return (
-            <div
-              key={item.key}
-              className="sg-context-menu-divider"
-              style={{ height: 1, margin: '4px 0', background: 'var(--sg-border-light, #f0f0f0)' }}
-            />
-          )
-        }
-
-        const itemStyle: React.CSSProperties = {
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '5px 12px',
-          cursor: item.disabled ? 'not-allowed' : 'pointer',
-          opacity: item.disabled ? 0.4 : 1,
-          color: item.danger ? 'var(--sg-error, #ff4d4f)' : 'inherit',
-          position: 'relative',
+          return <div key={item.key} className="sg-context-menu-divider" />
         }
 
         return (
           <div
             key={item.key}
-            className="sg-context-menu-item"
-            style={itemStyle}
+            className={itemClass(item)}
             role="menuitem"
             onClick={() => {
               if (item.disabled) return
@@ -134,8 +123,8 @@ export function ContextMenu({ state, onClose }: ContextMenuProps) {
             }}
           >
             {item.icon && <span className="sg-context-menu-icon">{item.icon}</span>}
-            <span style={{ flex: 1 }}>{item.label}</span>
-            {item.children && <span style={{ marginLeft: 8, opacity: 0.5 }}>›</span>}
+            <span className="sg-context-menu-label">{item.label}</span>
+            {item.children && <span className="sg-context-menu-submenu-arrow">›</span>}
             {subMenu?.key === item.key && item.children && renderItems(item.children, true)}
           </div>
         )

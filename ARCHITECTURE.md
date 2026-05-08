@@ -456,8 +456,8 @@ SET → STAGE → RESOLVE → PROPAGATE → COMMIT → NOTIFY
 ### Переиспользуется между фреймворками (100%)
 
 - `@skygraph/core` целиком (runtime + engines) — чистый TS, без DOM
-- `styles/tokens.css` — CSS Variables
-- `styles/components/*.css` — CSS классы `.sg-*`
+- `@skygraph/styles` целиком (tokens, themes, transitions, print, 60+
+  компонент-CSS) — нет JS, framework-agnostic из коробки
 
 ### Пишется под каждый фреймворк
 
@@ -467,6 +467,13 @@ SET → STAGE → RESOLVE → PROPAGATE → COMMIT → NOTIFY
 ### Правило
 
 Если что-то зависит от `React.useState`, `Vue.ref()`, `BehaviorSubject` — оно в адаптере, **не в core**.
+
+### Подробнее
+
+Полная стратегия (контракт адаптеров, demo, версионирование, не-цели) —
+в [`docs/multi-framework.md`](./docs/multi-framework.md). Этот документ
+обязателен к прочтению перед добавлением нового адаптера
+(`@skygraph/vue`, `@skygraph/angular`).
 
 ---
 
@@ -523,11 +530,14 @@ skygraph/
 │       │   ├── types/          — shared types (BaseComponentProps, SgLocale, etc.)
 │       │   ├── __tests__/      — 282 component/hook/adapter tests
 │       │   └── index.ts
-│       ├── styles/
-│       │   ├── tokens.css, reset.css, index.css
-│       │   ├── transitions.css — fade, slide, zoom, collapse
-│       │   ├── components/     — 59 component CSS files
-│       │   └── themes/         — default.css, dark.css
+│       └── package.json
+│   │
+│   └── styles/                 — @skygraph/styles (framework-agnostic CSS)
+│       ├── tokens.css, reset.css, index.css
+│       ├── transitions.css     — fade, slide, zoom, collapse
+│       ├── print.css           — @media print layer
+│       ├── components/         — 60+ component CSS files
+│       ├── themes/             — default.css, dark.css
 │       └── package.json
 │
 ├── examples/

@@ -102,11 +102,15 @@ function ContextMenuPopup({
     return () => document.removeEventListener('mousedown', handler)
   }, [onClose])
 
+  // Only the coordinates are runtime-computed; visuals (z-index, padding,
+  // colours, hover, danger/disabled state) live in
+  // `packages/styles/components/context-menu.css` under
+  // `.sg-datagrid-context-menu*`.
   return (
     <div
       ref={ref}
       className={cls.contextMenu}
-      style={{ position: 'fixed', top: position.y, left: position.x, zIndex: 1000 }}
+      style={{ position: 'fixed', top: position.y, left: position.x }}
     >
       {items.map((item) =>
         item.divider ? (

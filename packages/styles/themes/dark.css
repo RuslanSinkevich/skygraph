@@ -9,7 +9,7 @@
  * give you a "dark-only" stylesheet — the selector decides which set wins.
  *
  * Example:
- *   import '@skygraph/react/styles/themes/dark.css'
+ *   import '@skygraph/styles/themes/dark'
  *
  *   <html data-sg-theme="dark"> ... </html>
  */

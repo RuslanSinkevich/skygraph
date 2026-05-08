@@ -11,69 +11,32 @@
 
 ## 2. Классы `.sg-*`
 
-- В CSS определено классов: **1033**.
-- В DOM компонентов используется строк-классов: **890**.
-- Совпадают (есть и в CSS, и в DOM): **773**.
+- В CSS определено классов: **1046**.
+- В DOM компонентов используется строк-классов: **894**.
+- Совпадают (есть и в CSS, и в DOM): **786**.
 - Только в CSS, runtime-генерируемые (Transition): **41** (исключены из dead-code).
-- Только в CSS, динамически-генерируемые (template literals `sg-X-${...}`): **162** (исключены из dead-code).
-- Только в CSS, **возможно мёртвый код**: **57**.
-- Только в DOM (нет стилей): **117**.
-- Найденных в коде template-prefix'ов: **61**.
+- Только в CSS, динамически-генерируемые (template literals `sg-X-${...}`): **199** (исключены из dead-code).
+- Только в CSS, **возможно мёртвый код**: **20**.
+- Только в DOM (нет стилей): **108**.
+- Найденных в коде template-prefix'ов: **70**.
 
 <details><summary>Только в CSS — возможно мёртвый код</summary>
 
-- `.sg-badge-status-default`
-- `.sg-badge-status-error`
-- `.sg-badge-status-processing`
-- `.sg-badge-status-success`
-- `.sg-badge-status-warning`
 - `.sg-diagram-controls`
 - `.sg-diagram-minimap`
 - `.sg-diagram-toolbar`
 - `.sg-dp-footer-link`
 - `.sg-dp-time-cell`
 - `.sg-dp-time-cell-active`
-- `.sg-dropdown-bottom-left`
-- `.sg-dropdown-bottom-right`
-- `.sg-dropdown-bottomLeft`
-- `.sg-dropdown-bottomRight`
-- `.sg-dropdown-top-left`
-- `.sg-dropdown-top-right`
-- `.sg-dropdown-topLeft`
-- `.sg-dropdown-topRight`
 - `.sg-modal-body-loading`
 - `.sg-no-print`
-- `.sg-notification-bottom-left`
-- `.sg-notification-bottom-right`
-- `.sg-notification-bottomLeft`
-- `.sg-notification-bottomRight`
-- `.sg-notification-error`
-- `.sg-notification-info`
-- `.sg-notification-success`
-- `.sg-notification-top-left`
-- `.sg-notification-top-right`
-- `.sg-notification-topLeft`
-- `.sg-notification-topRight`
-- `.sg-notification-warning`
 - `.sg-pagination-item-active`
-- `.sg-popconfirm-bottom`
-- `.sg-popconfirm-left`
-- `.sg-popconfirm-right`
-- `.sg-popconfirm-top`
-- `.sg-tooltip-bottom`
-- `.sg-tooltip-left`
-- `.sg-tooltip-right`
-- `.sg-tooltip-top`
 - `.sg-tree-action-btn`
 - `.sg-tree-action-danger`
 - `.sg-tree-indent-branch`
 - `.sg-tree-indent-branch-last`
 - `.sg-tree-indent-line`
 - `.sg-tree-indent-line-hidden`
-- `.sg-tree-status-error`
-- `.sg-tree-status-info`
-- `.sg-tree-status-success`
-- `.sg-tree-status-warning`
 - `.sg-tree-switcher-arrow`
 - `.sg-tree-switcher-arrow-open`
 - `.sg-tree-switcher-open`
@@ -132,6 +95,11 @@
 
 - `.sg-avatar-circle`
 - `.sg-avatar-square`
+- `.sg-badge-status-default`
+- `.sg-badge-status-error`
+- `.sg-badge-status-processing`
+- `.sg-badge-status-success`
+- `.sg-badge-status-warning`
 - `.sg-button-dashed`
 - `.sg-button-large`
 - `.sg-button-link`
@@ -179,6 +147,14 @@
 - `.sg-drawer-left`
 - `.sg-drawer-right`
 - `.sg-drawer-top`
+- `.sg-dropdown-bottom-left`
+- `.sg-dropdown-bottom-right`
+- `.sg-dropdown-bottomLeft`
+- `.sg-dropdown-bottomRight`
+- `.sg-dropdown-top-left`
+- `.sg-dropdown-top-right`
+- `.sg-dropdown-topLeft`
+- `.sg-dropdown-topRight`
 - `.sg-form-horizontal`
 - `.sg-form-inline`
 - `.sg-form-large`
@@ -223,10 +199,26 @@
 - `.sg-menu-horizontal`
 - `.sg-menu-inline`
 - `.sg-menu-vertical`
+- `.sg-notification-bottom-left`
+- `.sg-notification-bottom-right`
+- `.sg-notification-bottomLeft`
+- `.sg-notification-bottomRight`
+- `.sg-notification-error`
+- `.sg-notification-info`
+- `.sg-notification-success`
+- `.sg-notification-top-left`
+- `.sg-notification-top-right`
+- `.sg-notification-topLeft`
+- `.sg-notification-topRight`
+- `.sg-notification-warning`
 - `.sg-pin-input-cell-large`
 - `.sg-pin-input-cell-small`
 - `.sg-pin-input-large`
 - `.sg-pin-input-small`
+- `.sg-popconfirm-bottom`
+- `.sg-popconfirm-left`
+- `.sg-popconfirm-right`
+- `.sg-popconfirm-top`
 - `.sg-progress-active`
 - `.sg-progress-error`
 - `.sg-progress-success`
@@ -285,10 +277,18 @@
 - `.sg-timeline-right`
 - `.sg-timepicker-large`
 - `.sg-timepicker-small`
+- `.sg-tooltip-bottom`
+- `.sg-tooltip-left`
+- `.sg-tooltip-right`
+- `.sg-tooltip-top`
 - `.sg-tree-node-status-error`
 - `.sg-tree-node-status-info`
 - `.sg-tree-node-status-success`
 - `.sg-tree-node-status-warning`
+- `.sg-tree-status-error`
+- `.sg-tree-status-info`
+- `.sg-tree-status-success`
+- `.sg-tree-status-warning`
 - `.sg-treeselect-large`
 - `.sg-treeselect-small`
 - `.sg-upload-item-error`
@@ -320,18 +320,9 @@
 - `sg-chart-legend-swatch`
 - `sg-chart-pie`
 - `sg-collapse-panel-active`
-- `sg-context-menu`
-- `sg-context-menu-divider`
-- `sg-context-menu-icon`
-- `sg-context-menu-item`
 - `sg-datagrid--loading`
 - `sg-datagrid--striped`
 - `sg-datagrid-body`
-- `sg-datagrid-context-menu`
-- `sg-datagrid-context-menu-divider`
-- `sg-datagrid-context-menu-item`
-- `sg-datagrid-context-menu-item--danger`
-- `sg-datagrid-context-menu-item--disabled`
 - `sg-datagrid-header-cell--asc`
 - `sg-datagrid-header-cell--desc`
 - `sg-datagrid-header-cell--drag-over`

@@ -40,6 +40,7 @@
 @import './components/list.css';
 @import './components/transfer.css';
 @import './components/menu.css';
+@import './components/context-menu.css';
 @import './components/collapse.css';
 @import './components/colorpicker.css';
 @import './components/empty.css';

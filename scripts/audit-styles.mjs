@@ -35,7 +35,14 @@ const CLASS_IN_TSX_RE = /['"`]([^'"`]*sg-[a-zA-Z0-9_-][^'"`]*)['"`]/g;
 // the prefix is dynamic-suffixed so we can't enumerate the actual classes from
 // source. We instead capture the prefix and treat any class with that prefix
 // as "used at runtime" (not dead).
-const TEMPLATE_PREFIX_RE = /`(sg-[a-zA-Z0-9_-]*?)-\$\{/g;
+//
+// The `(?<![a-zA-Z0-9_-])` lookbehind makes sure we don't grab the tail of a
+// longer identifier (e.g. `my-sg-X-${y}` should not register `my-sg-X` as a
+// prefix). It also means the prefix can sit *anywhere* inside a template
+// literal (after a space or after another class), not just immediately after
+// the opening backtick — so multi-class strings like
+// `sg-foo-container sg-foo-${placement}` are recognised correctly.
+const TEMPLATE_PREFIX_RE = /(?<![a-zA-Z0-9_-])(sg-[a-zA-Z0-9_-]*?)-\$\{/g;
 
 // ── Runtime-generated class allowlist ────────────────────────────────────
 //

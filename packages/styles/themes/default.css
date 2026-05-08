@@ -8,7 +8,7 @@
  * the `data-sg-theme` attribute on a parent element.
  *
  * Import:
- *   import '@skygraph/react/styles/themes/default.css'
+ *   import '@skygraph/styles/themes/default'
  */
 
 @import '../tokens.css';
