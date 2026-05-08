@@ -17,7 +17,7 @@ export function GettingStartedPage() {
 
       <h2 id="import-styles">{g.importStyles}</h2>
       <p>{g.importStylesLead}</p>
-      <pre className="doc-code"><code>{`import '@skygraph/react/styles'`}</code></pre>
+      <pre className="doc-code"><code>{`import '@skygraph/styles'`}</code></pre>
       <p>
         {g.importStylesNote1}
         <a href="#/theming" className="doc-link">{g.importStylesNote2Theming}</a>

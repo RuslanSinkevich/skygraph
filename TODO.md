@@ -1,9 +1,22 @@
 # SkyGraph — TODO
 
-> Реальные хвосты после round 1..9 + 9.1 closeout + round 11.
+> Реальные хвосты после round 1..9 + 9.1 closeout + round 11 + round 12.
 > Каждая запись — кандидат в будущий стрим или мини-стрим.
 >
-> Статус на 2026-05-08: round 11 закрыт 15 коммитами на master (две волны):
+> Статус на 2026-05-08: round 12 (single-commit) — extract `@skygraph/styles`
+> как отдельный workspace-пакет. CSS вынесен из `packages/react/styles/` →
+> `packages/styles/` (`git mv` сохраняет историю), `@skygraph/react` теперь
+> зависит от `@skygraph/styles` через `dependencies`, examples переключены
+> на `import '@skygraph/styles'`, scripts (`audit-styles` / `check-tokens` /
+> `check-no-important`) обновлены под новый путь, legacy
+> `'@skygraph/react/styles*'` пути продолжают работать через shim-файлы
+> (`@import '@skygraph/styles/...'`). Mini-fix в этом же коммите —
+> `packages/react/tsconfig.json` `lib` поднят с ES2020 → ES2022, чтобы
+> `Array.prototype.at` в тестах перестал падать на `tsc --noEmit`.
+> Foundation для будущих `@skygraph/vue` и `@skygraph/angular` адаптеров
+> без дублирования CSS.
+>
+> Статус до round 12: round 11 закрыт 15 коммитами на master (две волны):
 >  - первая волна (3 больших фичи + Tree fix + i18n batch):
 >    `158da10` print pipeline → закрыл 1.3,
 >    `f9b7af2` `ResourceCalendar` (шестой движок) → закрыл хвост 1.1,
@@ -23,9 +36,11 @@
 >
 > Все гейты зелёные: `pnpm exec eslint packages/` 0 errors / 0 warnings,
 > `pnpm lint:examples` 0 errors / 27 warnings, `pnpm check:styles` OK
-> (91 tokens, 69 файлов; 70 файлов без unjustified `!important`),
-> `pnpm -r test` — 388 + 1 skipped (core, bench-gated) + 625 (react) =
-> **1013 active**, `pnpm -r build` — все пакеты + demo + showcases собираются.
+> (91 tokens, 69 файлов; 70 файлов без unjustified `!important`, теперь
+> относительно `packages/styles/`), `pnpm -r test` — 388 + 1 skipped
+> (core, bench-gated) + 625 (react) = **1013 active**, `pnpm -r build` —
+> все пакеты (`core`, `react`, `styles`) + demo + showcases собираются,
+> `pnpm exec tsc --noEmit` clean в `core` / `react` / `styles`.
 
 ---
 
@@ -205,6 +220,12 @@ Round 9 — 7 коммитов (A, B, C, D + 2× i18n batch + closeout):
 | `cecf266` | infra | eslint type-aware roots + ignore vitest/tsup configs (round 9.1) |
 | `3a4a342` | fix   | Slider stretches in flex/grid; Rate dims inactive symbols (round 9.1) |
 | `95d4aea` | demo  | ButtonDemo i18n + DistributedComposition (round 9.1) |
+
+Round 12 — 1 single-commit:
+
+| sha7 | scope | summary |
+|------|-------|---------|
+| (this commit) | infra | extract `@skygraph/styles` package + tsconfig.lib bump ES2022 |
 
 Round 11 — 15 коммитов в две волны:
 

@@ -1,6 +1,6 @@
 import type React from 'react'
 import { useState, useEffect, useMemo } from 'react'
-import '../../../packages/react/styles/index.css'
+import '@skygraph/styles'
 import './app.css'
 import { NotificationContainer } from '@skygraph/react'
 

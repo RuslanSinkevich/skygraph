@@ -3,7 +3,7 @@
  *
  * This is the single source of truth for the /tokens page and the per-
  * component `CSS Variables` tables. When a new token is added to
- * `packages/react/styles/**`, add a line here so it stays discoverable.
+ * `packages/styles/**`, add a line here so it stays discoverable.
  *
  * Categories:
  *   • `global`    — base palette + semantic tokens, theme-driven

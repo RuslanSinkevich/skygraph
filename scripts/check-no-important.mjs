@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // scripts/check-no-important.mjs
 //
-// В packages/react/styles/**/*.css запрещён !important.
+// В packages/styles/**/*.css запрещён !important.
 // Исключения (при острой необходимости) — через ALLOWLIST ниже.
 //
 // Падает (exit 1) при любом находке вне allowlist.
@@ -12,7 +12,7 @@ import url from 'node:url';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
-const stylesDir = path.resolve(repoRoot, 'packages/react/styles');
+const stylesDir = path.resolve(repoRoot, 'packages/styles');
 
 /**
  * Относительные пути файлов (с прямыми слэшами), где !important осознанно разрешён.
@@ -22,7 +22,7 @@ const ALLOWLIST = [
   // prefers-reduced-motion + @media print перекрывают inline-стили анимаций,
   // а inline-style имеет наивысшую специфичность кроме !important. Это стандартный
   // a11y-паттерн, а не хак стилизации компонентов.
-  'packages/react/styles/transitions.css',
+  'packages/styles/transitions.css',
 ];
 
 /**
@@ -32,17 +32,17 @@ const ALLOWLIST = [
  * ли линия внутри соответствующего @media-блока.
  */
 const MEDIA_ALLOWLIST = [
-  { file: 'packages/react/styles/components/table.css', media: /@media\s+print/ },
+  { file: 'packages/styles/components/table.css', media: /@media\s+print/ },
   // `prefers-reduced-motion: reduce` is the canonical a11y override —
   // inline-styled animations (set by JS for crosshair / chart entry-anim)
   // can only be cancelled with `!important` from a media query, since
   // inline styles otherwise win specificity.
-  { file: 'packages/react/styles/components/charts.css', media: /prefers-reduced-motion/ },
+  { file: 'packages/styles/components/charts.css', media: /prefers-reduced-motion/ },
   // Общие правила @media print (Tab L1: print export для Table / Diagram /
   // Charts). Inline-стили компонентов (transform для pan/zoom, overflow
   // для скрол-контейнеров, тени) можно перебить только !important из
   // media-блока — это стандартный print-CSS паттерн.
-  { file: 'packages/react/styles/print.css', media: /@media\s+print/ },
+  { file: 'packages/styles/print.css', media: /@media\s+print/ },
 ];
 
 const RE = /!important/g;

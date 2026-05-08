@@ -4,7 +4,7 @@
 
 ## Дизайн-токены
 
-Все токены определены в `packages/react/styles/tokens.css` через CSS-переменные.
+Все токены определены в `packages/styles/tokens.css` через CSS-переменные. Пакет `@skygraph/styles` фреймворк-агностичный — те же токены подхватят будущие `@skygraph/vue` / `@skygraph/angular` адаптеры без дублирования.
 
 ### Палитра (не зависит от темы)
 
@@ -132,7 +132,7 @@ document.documentElement.setAttribute('data-sg-theme', 'dark')
 ## Структура файлов стилей
 
 ```
-packages/react/styles/
+packages/styles/             ← workspace-пакет @skygraph/styles
 ├── tokens.css              ← дизайн-токены
 ├── reset.css               ← базовый сброс
 ├── index.css               ← импортирует всё

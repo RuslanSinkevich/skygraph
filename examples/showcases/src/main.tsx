@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import '../../../packages/react/styles/index.css'
+import '@skygraph/styles'
 import './app.css'
 import App from './App'
 

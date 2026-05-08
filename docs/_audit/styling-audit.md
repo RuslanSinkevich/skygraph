@@ -423,12 +423,12 @@
 
 | Цвет | Файлы |
 |---|---|
-| `#000` | `packages/react/styles/print.css` |
-| `#00f` | `packages/react/styles/components/colorpicker.css` |
-| `#0f0` | `packages/react/styles/components/colorpicker.css` |
-| `#0ff` | `packages/react/styles/components/colorpicker.css` |
-| `#f00` | `packages/react/styles/components/colorpicker.css` |
-| `#f0f` | `packages/react/styles/components/colorpicker.css` |
-| `#ff0` | `packages/react/styles/components/colorpicker.css` |
-| `#fff` | `packages/react/styles/components/avatar.css`<br>`packages/react/styles/components/badge.css`<br>`packages/react/styles/components/colorpicker.css`<br>`packages/react/styles/components/menu.css`<br>`packages/react/styles/components/pagination.css`<br>`packages/react/styles/components/steps.css`<br>`packages/react/styles/print.css` |
+| `#000` | `packages/styles/print.css` |
+| `#00f` | `packages/styles/components/colorpicker.css` |
+| `#0f0` | `packages/styles/components/colorpicker.css` |
+| `#0ff` | `packages/styles/components/colorpicker.css` |
+| `#f00` | `packages/styles/components/colorpicker.css` |
+| `#f0f` | `packages/styles/components/colorpicker.css` |
+| `#ff0` | `packages/styles/components/colorpicker.css` |
+| `#fff` | `packages/styles/components/avatar.css`<br>`packages/styles/components/badge.css`<br>`packages/styles/components/colorpicker.css`<br>`packages/styles/components/menu.css`<br>`packages/styles/components/pagination.css`<br>`packages/styles/components/steps.css`<br>`packages/styles/print.css` |
 

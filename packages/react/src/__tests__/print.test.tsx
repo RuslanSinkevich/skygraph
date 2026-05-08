@@ -157,7 +157,7 @@ describe('printElement', () => {
 })
 
 describe('@media print snapshot — print.css', () => {
-  const cssPath = path.resolve(__dirname, '../../styles/print.css')
+  const cssPath = path.resolve(__dirname, '../../../styles/print.css')
   const css = fs.readFileSync(cssPath, 'utf8')
 
   it('hides .sg-no-print elements', () => {

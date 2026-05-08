@@ -4,11 +4,11 @@
 // Инвентаризация стилей (фаза 0 из docs/styling-plan.md).
 //
 // Что делает:
-// 1. Парсит все `var(--sg-...)` по packages/react/styles/**/*.css
+// 1. Парсит все `var(--sg-...)` по packages/styles/**/*.css
 //    и сверяет с объявлениями в tokens.css + локальными объявлениями
 //    в самих компонентных CSS. Пишет списки known/unknown.
 // 2. Собирает все CSS-классы (селекторы `.sg-*`) из тех же файлов и
-//    из src/components/**/*.{ts,tsx} — классы из DOM разметки
+//    из packages/react/src/components/**/*.{ts,tsx} — классы из DOM разметки
 //    (на базе className / clsx-лик строк).
 // 3. Ищет «магические» hex-цвета (и rgba()) в компонентных CSS.
 // 4. Пишет результат в docs/_audit/styling-audit.md.
@@ -21,7 +21,7 @@ import url from 'node:url';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
-const stylesDir = path.resolve(repoRoot, 'packages/react/styles');
+const stylesDir = path.resolve(repoRoot, 'packages/styles');
 const srcDir = path.resolve(repoRoot, 'packages/react/src');
 const outFile = path.resolve(repoRoot, 'docs/_audit/styling-audit.md');
 

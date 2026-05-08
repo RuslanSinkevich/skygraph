@@ -25,7 +25,7 @@
 
 Цель: знать масштаб, прежде чем двигать классы.
 
-- [ ] Собрать список **всех** `var(--sg-...)` по `packages/react/styles/**/*.css`. Сверить с `tokens.css`. Выписать «чужие» имена (пример из аудита: `--sg-bg-elevated`, `--sg-border-color`, `--sg-box-shadow`, `--sg-item-hover-bg` в `mentions.css`).
+- [ ] Собрать список **всех** `var(--sg-...)` по `packages/styles/**/*.css`. Сверить с `tokens.css`. Выписать «чужие» имена (пример из аудита: `--sg-bg-elevated`, `--sg-border-color`, `--sg-box-shadow`, `--sg-item-hover-bg` в `mentions.css`).
 - [ ] Собрать список **всех CSS-классов**, встречающихся в DOM компонентов (grep по `className=`). Разделить на:
   - кандидаты в «публичные» (корни, очевидные слоты);
   - кандидаты в «внутренние» (вспомогательные обёртки, модификаторы).
@@ -46,8 +46,8 @@
 
 **CI-проверка (ввести в этой фазе):**
 
-- [ ] Скрипт `scripts/check-tokens.mjs`: парсит все `var(--sg-...)` по `packages/react/styles`, сверяет с набором из `tokens.css`. Падает на неизвестных.
-- [ ] Скрипт `scripts/check-no-important.mjs`: ищет `!important` в `packages/react/styles`. Падает при находке (с белым списком-исключений, если нужно).
+- [ ] Скрипт `scripts/check-tokens.mjs`: парсит все `var(--sg-...)` по `packages/styles`, сверяет с набором из `tokens.css`. Падает на неизвестных.
+- [ ] Скрипт `scripts/check-no-important.mjs`: ищет `!important` в `packages/styles`. Падает при находке (с белым списком-исключений, если нужно).
 
 ---
 

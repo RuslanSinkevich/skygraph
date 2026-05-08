@@ -35,7 +35,7 @@ npm install @skygraph/core @skygraph/react
 ```
 
 ```tsx
-import '@skygraph/react/styles'
+import '@skygraph/styles' // (or the legacy '@skygraph/react/styles' — still works)
 import { Form, Field, SubmitButton } from '@skygraph/react'
 
 function App() {
@@ -59,7 +59,10 @@ function App() {
 | Package | Description | Size |
 |---------|------------|------|
 | `@skygraph/core` | Reactive runtime + 6 engines (form/table/tree/virtual/graph/calendar) | ~32 KB (ESM) |
-| `@skygraph/react` | React hooks, 78+ components, CSS styles | ~280 KB (ESM) |
+| `@skygraph/react` | React hooks, 78+ components | ~440 KB (ESM main, before tree-shake) |
+| `@skygraph/styles` | Framework-agnostic CSS — tokens, themes, transitions, print, 60+ component stylesheets | ~234 KB raw / ~25 KB gzip |
+
+`@skygraph/styles` is shared across every adapter (React today, Vue / Angular planned). `@skygraph/react` keeps a tiny re-export shim at `'@skygraph/react/styles'` for the main bundle so existing apps don't need to change their entry-point import. Per-component / per-token subpaths now live exclusively under `@skygraph/styles/...`.
 
 ## Architecture
 
@@ -112,9 +115,18 @@ function App() {
 │  adapters/                                  │
 │    zodAdapter, jsonSchemaAdapter            │
 │                                             │
-│  styles/                                    │
-│    tokens, themes, transitions,             │
-│    59 component CSS files                   │
+└─────────────────────────────────────────────┘
+          ▲ side-effect import only
+          │
+@skygraph/styles (framework-agnostic CSS, 0 deps)
+┌─────────────────────────────────────────────┐
+│  index.css   — full bundle                  │
+│  tokens.css  — 91 design tokens             │
+│  reset.css                                  │
+│  transitions.css                            │
+│  print.css                                  │
+│  themes/    — light + dark presets          │
+│  components/ — 63 component stylesheets     │
 └─────────────────────────────────────────────┘
 ```
 

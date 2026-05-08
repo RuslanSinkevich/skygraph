@@ -58,7 +58,7 @@ export function MyComponent({
 ### 3. Добавить стили
 
 ```
-packages/react/styles/components/mycomponent.css
+packages/styles/components/mycomponent.css
 ```
 
 Правила:

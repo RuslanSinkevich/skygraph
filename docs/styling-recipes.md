@@ -6,7 +6,7 @@
 
 Все рецепты используют публичные механизмы:
 
-1. **Токены** — CSS custom properties из `@skygraph/react/styles/tokens.css`.
+1. **Токены** — CSS custom properties из `@skygraph/styles/tokens.css`.
 2. **Слоты** — `classNames` / `styles` по заявленным ключам.
 3. **`unstyled`** — полный отказ от дефолтного CSS.
 
@@ -17,7 +17,7 @@
 Достаточно переопределить несколько токенов в любом CSS поверх библиотеки:
 
 ```css
-@import '@skygraph/react/styles/index.css';
+@import '@skygraph/styles';
 
 :root {
   --sg-color-primary: #e91e63;

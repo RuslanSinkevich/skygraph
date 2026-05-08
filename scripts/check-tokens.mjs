@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // scripts/check-tokens.mjs
 //
-// Проверяет, что все использованные в packages/react/styles/**/*.css
+// Проверяет, что все использованные в packages/styles/**/*.css
 // CSS-переменные вида var(--sg-...) объявлены либо в tokens.css (глобально),
 // либо в CSS самого компонента (локальная компонентная переменная).
 //
@@ -13,7 +13,7 @@ import url from 'node:url';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
-const stylesDir = path.resolve(repoRoot, 'packages/react/styles');
+const stylesDir = path.resolve(repoRoot, 'packages/styles');
 
 const TOKENS_FILE = path.join(stylesDir, 'tokens.css');
 const VAR_RE = /var\(\s*(--sg-[a-zA-Z0-9-]+)/g;
