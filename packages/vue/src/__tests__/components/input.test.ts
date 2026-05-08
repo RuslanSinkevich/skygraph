@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { SgInput } from '../../components/Input'
+import SgInput from '../../components/ui/Input.vue'
 
 describe('SgInput', () => {
   it('renders sg-input* classes by default', () => {

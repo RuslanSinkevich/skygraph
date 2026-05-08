@@ -1,9 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 import { defineComponent, nextTick } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
-import { SgForm } from '../../components/Form'
-import { SgField } from '../../components/Field'
-import { SgInput } from '../../components/Input'
+import { SgForm, SgField } from '../../components/complex/Form'
+import SgInput from '../../components/ui/Input.vue'
 
 describe('SgForm + SgField integration', () => {
   it('renders a form with sg-form classes', () => {
