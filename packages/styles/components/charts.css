@@ -19,10 +19,13 @@
   --sg-chart-anim-duration: 600ms;
 
   /* Локальные токены hover-toolbar чарта. Все цвета приходят из глобальных
-   * `--sg-color-*` — toolbar пере-темится автоматически. */
+   * `--sg-color-*` — toolbar пере-темится автоматически. Тень / подсветка
+   * проксируются через семантические `--sg-chart-tooltip-shadow` /
+   * `--sg-chart-legend-hover-bg`, чтобы тёмная тема не требовала
+   * правки этого файла. */
   --sg-chart-toolbar-bg: var(--sg-color-bg-elevated);
   --sg-chart-toolbar-border: var(--sg-color-border);
-  --sg-chart-toolbar-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --sg-chart-toolbar-shadow: var(--sg-chart-tooltip-shadow);
   --sg-chart-toolbar-icon: var(--sg-color-text-secondary);
   --sg-chart-toolbar-icon-hover: var(--sg-color-text);
   --sg-chart-toolbar-bg-hover: var(--sg-color-bg-hover);
@@ -47,10 +50,12 @@
   /* nothing extra */
 }
 
-/* Axes — opt-in via `xAxis` / `yAxis` props on Line/Bar/Area charts. */
+/* Axes — opt-in via `xAxis` / `yAxis` props on Line/Bar/Area charts.
+ * Font-size now follows the global `--sg-font-size-sm` (was hard-coded
+ * 11px), so axis labels respect a user's font-size override. */
 .sg-chart-axis {
   pointer-events: none;
-  font-size: 11px;
+  font-size: var(--sg-font-size-sm);
 }
 
 .sg-chart-axis-grid {
@@ -63,7 +68,11 @@
 
 .sg-chart-axis-label {
   fill: var(--sg-color-text);
+  font-size: var(--sg-font-size-sm);
   font-weight: 600;
+  /* Tighten the label tracking a hair so axis titles don't wash out
+   * against busy series. */
+  letter-spacing: 0.01em;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -182,11 +191,33 @@
 }
 
 .sg-chart-crosshair-line {
-  /* stroke set inline so token references resolve outside CSS. */
+  /* stroke set inline so token references resolve outside SVG; here we
+   * only refine the blend so the line stays legible over both light and
+   * dark series fills. `mix-blend-mode: multiply` darkens against light
+   * backgrounds, while remaining inert on dark themes (where the
+   * crosshair token already provides enough contrast). */
+  mix-blend-mode: multiply;
+}
+
+[data-sg-theme='dark'] .sg-chart-crosshair-line {
+  /* Dark theme: switch to `screen` blend so the bright crosshair token
+   * lifts against dark series instead of getting absorbed. */
+  mix-blend-mode: screen;
 }
 
 .sg-chart-crosshair-tooltip-bg {
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+  /* Real elevation instead of the previous flat 0 1px 2px shadow.
+   * `drop-shadow` is preferred over `box-shadow` here — the SVG <rect>
+   * shape is what we're shadowing, not a CSS box. */
+  filter:
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.18))
+    drop-shadow(0 1px 3px rgba(0, 0, 0, 0.10));
+}
+
+[data-sg-theme='dark'] .sg-chart-crosshair-tooltip-bg {
+  filter:
+    drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
 }
 
 .sg-chart-crosshair-tooltip-title,
@@ -213,8 +244,16 @@
 }
 
 .sg-chart-brush-selection {
-  /* fill / stroke set inline so token references resolve in raw SVG. */
+  /* fill / stroke set inline so token references resolve in raw SVG.
+   * The drop-shadow gives the selection a faint outer halo so it pops
+   * against the chart series even when the inline fill is set very
+   * low alpha. */
   pointer-events: none;
+  filter: drop-shadow(0 1px 3px rgba(22, 119, 255, 0.20));
+}
+
+[data-sg-theme='dark'] .sg-chart-brush-selection {
+  filter: drop-shadow(0 1px 4px rgba(64, 150, 255, 0.35));
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -229,20 +268,25 @@
 
 .sg-chart-toolbar {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: var(--sg-padding-sm);
+  right: var(--sg-padding-sm);
   z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 2px;
   padding: 2px;
-  border-radius: 6px;
+  border-radius: var(--sg-border-radius);
   background: var(--sg-chart-toolbar-bg);
   border: 1px solid var(--sg-chart-toolbar-border);
   box-shadow: var(--sg-chart-toolbar-shadow);
   opacity: 0;
-  transform: translateY(-2px);
-  transition: opacity 180ms ease, transform 180ms ease;
+  /* Lift slightly higher (was -2px) so the entrance reads as a "fade
+   * down" rather than a near-instant pop. Both opacity and transform
+   * share the same easing window so the motion stays cohesive. */
+  transform: translateY(-4px);
+  transition:
+    opacity var(--sg-transition-medium),
+    transform var(--sg-transition-medium);
   pointer-events: none;
 }
 
@@ -259,12 +303,14 @@
   height: 24px;
   padding: 0;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--sg-border-radius-sm);
   background: transparent;
   color: var(--sg-chart-toolbar-icon);
   cursor: pointer;
   pointer-events: auto;
-  transition: background-color 120ms ease, color 120ms ease;
+  transition:
+    background-color var(--sg-transition-fast),
+    color var(--sg-transition-fast);
 }
 
 .sg-chart-toolbar-button:hover {
@@ -292,4 +338,51 @@
     transition: none;
     transform: none;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Legend
+ *
+ * `<ChartLegend>` renders inline-styled `display`, `gap`, swatch size etc.
+ * (so the layout stays predictable in headless mode). What we add here is
+ * purely interactivity polish: a hover affordance on each item, a soft
+ * rounded background, and a focus ring so keyboard nav lands somewhere.
+ * No layout properties to avoid fighting the inline styles.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+.sg-chart-legend {
+  /* Tiny breathing room so a hover background doesn't collide with the
+   * chart's bottom edge. */
+  padding-top: var(--sg-padding-xs);
+}
+
+.sg-chart-legend-item {
+  /* Hover surface — purely additive (does not override inline display:
+   * inline-flex emitted by the React component). */
+  padding: 2px var(--sg-padding-xs);
+  border-radius: var(--sg-border-radius-sm);
+  cursor: default;
+  transition:
+    background-color var(--sg-transition-fast),
+    color var(--sg-transition-fast);
+}
+
+.sg-chart-legend-item:hover {
+  background: var(--sg-chart-legend-hover-bg);
+  color: var(--sg-color-text);
+}
+
+.sg-chart-legend-item:focus-visible {
+  outline: 2px solid var(--sg-color-primary);
+  outline-offset: 1px;
+}
+
+.sg-chart-legend-swatch {
+  /* Subtle inner ring so the swatch reads as a chip rather than a flat
+   * square — useful when the series colour is close to the background. */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.10);
+}
+
+[data-sg-theme='dark'] .sg-chart-legend-swatch {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
