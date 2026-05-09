@@ -387,6 +387,16 @@ export default function App() {
       extras={
         <>
           <FrameworkSwitcher active="react" />
+          <LanguageSwitcher
+            options={SUPPORTED_LOCALES.map((code) => ({
+              code,
+              label: code.toUpperCase(),
+              fullName: code === 'en' ? t.language.en : t.language.ru,
+            }))}
+            active={locale}
+            onChange={(code) => setLocale(code as Locale)}
+            groupLabel={t.language.switcherLabel}
+          />
           <ThemeSwitcher ariaLabel={t.header.themeAria} />
         </>
       }
@@ -455,21 +465,6 @@ export default function App() {
           ],
         },
       ]}
-      extras={
-        <>
-          <LanguageSwitcher
-            options={SUPPORTED_LOCALES.map((code) => ({
-              code,
-              label: code.toUpperCase(),
-              fullName: code === 'en' ? t.language.en : t.language.ru,
-            }))}
-            active={locale}
-            onChange={(code) => setLocale(code as Locale)}
-            groupLabel={t.language.switcherLabel}
-          />
-          <ThemeSwitcher ariaLabel={t.header.themeAria} />
-        </>
-      }
     />
   )
 

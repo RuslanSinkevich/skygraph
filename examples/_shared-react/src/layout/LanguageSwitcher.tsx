@@ -19,8 +19,8 @@ export interface LanguageSwitcherProps {
 }
 
 /**
- * Inline pill group — each language gets a 4-character button. Active
- * code is filled; others are subtle. Used in the footer bottom strip.
+ * Inline pill group — each language gets a short button. Active code is
+ * filled; others are subtle. Intended for header extras or footer strip.
  */
 export function LanguageSwitcher({
   options,

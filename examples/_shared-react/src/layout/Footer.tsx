@@ -18,7 +18,7 @@ export interface FooterProps {
   copyright: string
   /** Bottom-strip version badge ("v0.5.0"). */
   version?: string
-  /** Bottom-strip extras (theme switcher, language switcher). */
+  /** Bottom-strip extras (optional secondary controls). */
   extras?: ReactNode
   /** Click handler for non-external links (intra-app navigation). */
   onSelect?: (href: string) => void
@@ -26,8 +26,7 @@ export interface FooterProps {
 
 /**
  * Bottom site footer — four-column link grid plus a 40px-tall bottom
- * strip with copyright, version badge and bottom-strip extras
- * (typically <ThemeSwitcher /> + <LanguageSwitcher />).
+ * strip with copyright, version badge and optional bottom-strip extras.
  *
  * Internal links (those whose `href` starts with `#/`) fire the
  * `onSelect(href)` callback so the host app can intercept hash-based
