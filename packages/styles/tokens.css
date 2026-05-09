@@ -66,6 +66,15 @@
   --sg-transition-duration: 0.2s;
   --sg-transition-timing: cubic-bezier(0.645, 0.045, 0.355, 1);
 
+  /* Curated transition shorthands.
+   * `*-fast` (~120ms) — micro-interactions: button hovers, tiny color swaps,
+   *                     toolbar fades, edge hover stroke widens.
+   * `*-medium` (~180ms) — primary interactions: card lift on hover,
+   *                       node selection ring, dashboard widget elevation.
+   * Use them in `transition: <prop> var(--sg-transition-*)`. */
+  --sg-transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --sg-transition-medium: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+
   /* === Z-index scale === */
   --sg-z-base: 1;
   --sg-z-sticky: 3;
@@ -120,6 +129,79 @@
   --sg-color-overlay: rgba(0, 0, 0, 0.45);
   --sg-color-tooltip-bg: rgba(0, 0, 0, 0.85);
   --sg-color-tooltip-text: #ffffff;
+
+  /* === Visualization layer (light) ===
+   * Re-mappable per theme. Components use these via `var(--sg-*)` so
+   * dark theme overrides cascade automatically. */
+
+  /* Diagram — canvas, grid, nodes, edges, lasso */
+  --sg-diagram-canvas-bg: var(--sg-color-bg);
+  --sg-diagram-grid-line-color: rgba(0, 0, 0, 0.04);
+  --sg-diagram-grid-line-color-strong: rgba(0, 0, 0, 0.08);
+  --sg-diagram-node-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+  --sg-diagram-node-shadow-hover:
+    0 4px 12px rgba(0, 0, 0, 0.10),
+    0 1px 3px rgba(0, 0, 0, 0.06);
+  --sg-diagram-node-shadow-selected:
+    0 0 0 2px var(--sg-color-primary-bg),
+    0 6px 16px rgba(22, 119, 255, 0.18),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+  --sg-diagram-node-shadow-dragging:
+    0 12px 28px rgba(0, 0, 0, 0.20),
+    0 2px 6px rgba(0, 0, 0, 0.10);
+  --sg-diagram-edge-color: var(--sg-gray-6);
+  --sg-diagram-edge-color-hover: var(--sg-color-text-secondary);
+  --sg-diagram-edge-color-selected: var(--sg-color-primary);
+  --sg-diagram-lasso-stroke: var(--sg-color-primary);
+  --sg-diagram-lasso-fill: rgba(22, 119, 255, 0.08);
+
+  /* Charts — tooltip, crosshair, brush, legend */
+  --sg-chart-tooltip-bg: var(--sg-color-bg-elevated);
+  --sg-chart-tooltip-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.06);
+  --sg-chart-crosshair-color: rgba(0, 0, 0, 0.32);
+  --sg-chart-brush-fill: rgba(22, 119, 255, 0.10);
+  --sg-chart-brush-stroke: var(--sg-color-primary);
+  --sg-chart-legend-hover-bg: var(--sg-color-bg-hover);
+
+  /* Dashboard — widget elevation, editor affordances */
+  --sg-dashboard-widget-shadow: var(--sg-shadow-sm);
+  --sg-dashboard-widget-shadow-hover:
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+  --sg-dashboard-editor-grid-color: rgba(22, 119, 255, 0.06);
+  --sg-dashboard-editor-widget-border: var(--sg-color-primary);
+  --sg-dashboard-editor-drop-zone-bg: rgba(22, 119, 255, 0.06);
+  --sg-dashboard-editor-drop-zone-border: var(--sg-color-primary);
+
+  /* Gantt — bars, today marker, dependency arrows */
+  --sg-gantt-bar-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  --sg-gantt-bar-shadow-hover:
+    0 3px 8px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  --sg-gantt-today-marker-color: var(--sg-color-error);
+  --sg-gantt-today-marker-bg: rgba(245, 34, 45, 0.06);
+  --sg-gantt-dep-color: var(--sg-color-text-tertiary);
+
+  /* Timeline / EventTimeline — connector + event dot */
+  --sg-timeline-tail-color: var(--sg-color-border-secondary);
+  --sg-event-timeline-dot-shadow:
+    0 0 0 3px var(--sg-color-bg),
+    0 1px 3px rgba(22, 119, 255, 0.30);
+  --sg-event-timeline-dot-shadow-hover:
+    0 0 0 3px var(--sg-color-bg),
+    0 2px 8px rgba(22, 119, 255, 0.45);
+
+  /* ResourceCalendar — today, lane separators, conflict overlay */
+  --sg-rcal-today-bg: rgba(22, 119, 255, 0.05);
+  --sg-rcal-today-marker-color: var(--sg-color-primary);
+  --sg-rcal-lane-divider: var(--sg-color-border-secondary);
+  --sg-rcal-conflict-overlay-bg: rgba(245, 34, 45, 0.10);
 }
 
 /* === Semantic tokens — Dark theme === */
@@ -160,4 +242,71 @@
   --sg-color-overlay: rgba(0, 0, 0, 0.65);
   --sg-color-tooltip-bg: #434343;
   --sg-color-tooltip-text: #ffffff;
+
+  /* === Visualization layer (dark) ===
+   * Shadows are stronger and use lower-alpha bright tints; canvas grid
+   * lines use white-alpha so they read against dark bg. */
+
+  --sg-diagram-canvas-bg: var(--sg-color-bg);
+  --sg-diagram-grid-line-color: rgba(255, 255, 255, 0.04);
+  --sg-diagram-grid-line-color-strong: rgba(255, 255, 255, 0.08);
+  --sg-diagram-node-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.40),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  --sg-diagram-node-shadow-hover:
+    0 4px 12px rgba(0, 0, 0, 0.50),
+    0 1px 3px rgba(0, 0, 0, 0.40);
+  --sg-diagram-node-shadow-selected:
+    0 0 0 2px var(--sg-color-primary-bg),
+    0 6px 16px rgba(64, 150, 255, 0.30),
+    0 1px 3px rgba(0, 0, 0, 0.40);
+  --sg-diagram-node-shadow-dragging:
+    0 12px 28px rgba(0, 0, 0, 0.60),
+    0 2px 6px rgba(0, 0, 0, 0.40);
+  --sg-diagram-edge-color: var(--sg-gray-7);
+  --sg-diagram-edge-color-hover: var(--sg-color-text-secondary);
+  --sg-diagram-edge-color-selected: var(--sg-color-primary);
+  --sg-diagram-lasso-stroke: var(--sg-color-primary);
+  --sg-diagram-lasso-fill: rgba(64, 150, 255, 0.12);
+
+  --sg-chart-tooltip-bg: var(--sg-color-bg-elevated);
+  --sg-chart-tooltip-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.50),
+    0 1px 3px rgba(0, 0, 0, 0.30);
+  --sg-chart-crosshair-color: rgba(255, 255, 255, 0.40);
+  --sg-chart-brush-fill: rgba(64, 150, 255, 0.16);
+  --sg-chart-brush-stroke: var(--sg-color-primary);
+  --sg-chart-legend-hover-bg: var(--sg-color-bg-hover);
+
+  --sg-dashboard-widget-shadow: var(--sg-shadow-sm);
+  --sg-dashboard-widget-shadow-hover:
+    0 4px 12px rgba(0, 0, 0, 0.40),
+    0 1px 3px rgba(0, 0, 0, 0.30);
+  --sg-dashboard-editor-grid-color: rgba(64, 150, 255, 0.08);
+  --sg-dashboard-editor-widget-border: var(--sg-color-primary);
+  --sg-dashboard-editor-drop-zone-bg: rgba(64, 150, 255, 0.10);
+  --sg-dashboard-editor-drop-zone-border: var(--sg-color-primary);
+
+  --sg-gantt-bar-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.40),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --sg-gantt-bar-shadow-hover:
+    0 3px 8px rgba(0, 0, 0, 0.50),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --sg-gantt-today-marker-color: var(--sg-color-error);
+  --sg-gantt-today-marker-bg: rgba(220, 68, 70, 0.10);
+  --sg-gantt-dep-color: var(--sg-color-text-tertiary);
+
+  --sg-timeline-tail-color: var(--sg-color-border-secondary);
+  --sg-event-timeline-dot-shadow:
+    0 0 0 3px var(--sg-color-bg),
+    0 1px 3px rgba(64, 150, 255, 0.45);
+  --sg-event-timeline-dot-shadow-hover:
+    0 0 0 3px var(--sg-color-bg),
+    0 2px 10px rgba(64, 150, 255, 0.65);
+
+  --sg-rcal-today-bg: rgba(64, 150, 255, 0.08);
+  --sg-rcal-today-marker-color: var(--sg-color-primary);
+  --sg-rcal-lane-divider: var(--sg-color-border-secondary);
+  --sg-rcal-conflict-overlay-bg: rgba(220, 68, 70, 0.16);
 }
