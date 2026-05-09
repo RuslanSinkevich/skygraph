@@ -76,8 +76,24 @@
   font-size: var(--sg-font-size-sm);
   white-space: nowrap;
   overflow: hidden;
-  box-shadow: var(--sg-shadow-sm);
+  /* The shadow token includes both an outer drop and an inner highlight,
+   * giving each bar a tiny 3D feel without any borders. Keeps a dense
+   * gantt looking organised even when bars overlap rows. */
+  box-shadow: var(--sg-gantt-bar-shadow);
   box-sizing: border-box;
+  transition:
+    box-shadow var(--sg-transition-medium),
+    transform var(--sg-transition-medium),
+    filter var(--sg-transition-fast);
+}
+
+.sg-gantt-bar:hover {
+  box-shadow: var(--sg-gantt-bar-shadow-hover);
+  /* `filter: brightness(1.05)` lifts saturated bars without needing a
+   * dedicated "primary-hover" colour for every status. Negligible cost
+   * on modern compositors. */
+  filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
 .sg-gantt-bar-draggable {
@@ -86,6 +102,8 @@
 
 .sg-gantt-bar-draggable:active {
   cursor: grabbing;
+  transform: translateY(0);
+  filter: brightness(1.08);
 }
 
 .sg-gantt-bar-resizable {
@@ -102,13 +120,17 @@
 .sg-gantt-bar-label {
   text-overflow: ellipsis;
   overflow: hidden;
+  /* Drop-shadow on the text increases legibility on saturated bar
+   * fills (esp. the bright primary blue). Cheap, single-line filter
+   * that doesn't disturb the bar background. */
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.20);
 }
 
 .sg-gantt-bar-resize {
   background: transparent;
   border-left: 1px solid var(--sg-color-border-secondary);
   opacity: 0;
-  transition: opacity 120ms ease;
+  transition: opacity var(--sg-transition-fast);
 }
 
 .sg-gantt-bar:hover .sg-gantt-bar-resize {
@@ -121,9 +143,19 @@
 }
 
 .sg-gantt-deps {
-  color: var(--sg-color-text-secondary);
+  color: var(--sg-gantt-dep-color);
 }
 
 .sg-gantt-dep {
-  /* stroke + marker colour come from `currentColor` set on .sg-gantt-deps */
+  /* stroke + marker colour come from `currentColor` set on .sg-gantt-deps.
+   * `stroke-linecap: round` + a slightly thicker stroke give dependency
+   * lines a hand-drawn feel that distinguishes them from grid lines. */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.25;
+  transition: stroke var(--sg-transition-fast);
+}
+
+.sg-gantt-dep:hover {
+  stroke: var(--sg-color-primary);
 }

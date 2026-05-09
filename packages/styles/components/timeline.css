@@ -34,6 +34,19 @@
   background: var(--sg-color-bg);
   flex-shrink: 0;
   z-index: 1;
+  /* Drop-shadow on the head doubles as a focus halo + visual weight,
+   * so timeline items have a sense of being "pinned" rather than
+   * floating against an empty rail. Reuses the event-timeline token
+   * for visual consistency. */
+  box-shadow: var(--sg-event-timeline-dot-shadow);
+  transition:
+    box-shadow var(--sg-transition-medium),
+    transform var(--sg-transition-medium);
+}
+
+.sg-timeline-item:hover .sg-timeline-item-head {
+  box-shadow: var(--sg-event-timeline-dot-shadow-hover);
+  transform: scale(1.15);
 }
 
 .sg-timeline-item-head-custom {
@@ -45,14 +58,32 @@
   align-items: center;
   justify-content: center;
   font-size: var(--sg-font-size-lg);
+  /* Custom-icon heads don't need the dot halo; the user-supplied
+   * graphic carries its own weight. */
+  box-shadow: none;
+}
+
+.sg-timeline-item:hover .sg-timeline-item-head-custom {
+  box-shadow: none;
+  transform: none;
 }
 
 .sg-timeline-item-tail {
   flex: 1;
   width: 2px;
-  background: var(--sg-color-border-secondary);
+  /* Gradient tail — the rail fades from `--sg-timeline-tail-color` at
+   * the dot down to a slightly more transparent version, giving the
+   * timeline a sense of motion. The two stops use the same token so a
+   * theme override re-tints the entire rail. */
+  background: linear-gradient(
+    to bottom,
+    var(--sg-timeline-tail-color) 0%,
+    var(--sg-timeline-tail-color) 60%,
+    var(--sg-color-border-secondary) 100%
+  );
   margin-top: var(--sg-margin-xs);
   min-height: 16px;
+  border-radius: 1px;
 }
 
 /* Content */

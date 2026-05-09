@@ -90,7 +90,11 @@
 }
 
 .sg-rcal-row {
-  border-bottom: 1px solid var(--sg-color-border-secondary);
+  /* Lane separators are rendered via the new `--sg-rcal-lane-divider`
+   * token, which is currently aliased to `--sg-color-border-secondary`
+   * but lets a theme dial it down independently when bookings get
+   * dense. */
+  border-bottom: 1px solid var(--sg-rcal-lane-divider);
 }
 
 .sg-rcal-row:nth-child(even) {
@@ -98,7 +102,9 @@
 }
 
 .sg-rcal-slot {
-  border-right: 1px solid var(--sg-color-border-secondary);
+  /* Vertical divider — kept softer than the row separator so the
+   * grid feels horizontal-first (booking rows read left-to-right). */
+  border-right: 1px solid var(--sg-rcal-lane-divider);
   box-sizing: border-box;
 }
 
@@ -125,8 +131,20 @@
   font-size: var(--sg-font-size-sm);
   white-space: nowrap;
   overflow: hidden;
-  box-shadow: var(--sg-shadow-sm);
+  /* Reuse the gantt-bar shadow so resource bookings and gantt task bars
+   * feel like the same primitive rendered in two contexts. */
+  box-shadow: var(--sg-gantt-bar-shadow);
   box-sizing: border-box;
+  transition:
+    box-shadow var(--sg-transition-medium),
+    transform var(--sg-transition-medium),
+    filter var(--sg-transition-fast);
+}
+
+.sg-rcal-assignment:hover {
+  box-shadow: var(--sg-gantt-bar-shadow-hover);
+  transform: translateY(-1px);
+  filter: brightness(1.04);
 }
 
 .sg-rcal-assignment-tentative {
@@ -142,7 +160,10 @@
 }
 
 .sg-rcal-assignment-conflict {
-  background-color: var(--sg-rcal-conflict-bg);
+  /* The conflict overlay now layers a flat tint underneath the diagonal
+   * stripes (via `--sg-rcal-conflict-overlay-bg`) so the warning reads
+   * even on small bookings where the stripe pattern barely shows. */
+  background-color: var(--sg-rcal-conflict-overlay-bg);
   background-image: repeating-linear-gradient(
     45deg,
     transparent,
@@ -152,6 +173,17 @@
   );
   border: 2px solid var(--sg-rcal-conflict-color);
   color: var(--sg-color-text);
+  /* Conflict bookings should never feel "promoted" by hover lift,
+   * so we suppress the parent transform. The brightness boost still
+   * communicates interactivity. */
+  box-shadow: 0 0 0 1px var(--sg-rcal-conflict-color);
+}
+
+.sg-rcal-assignment-conflict:hover {
+  transform: none;
+  box-shadow:
+    0 0 0 1px var(--sg-rcal-conflict-color),
+    0 2px 6px rgba(245, 34, 45, 0.20);
 }
 
 .sg-rcal-assignment-draggable {
