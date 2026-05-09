@@ -127,6 +127,27 @@ template syntax forces a different DOM), the resolution is to update
 `@skygraph/styles` and **all** adapters together — never to fork CSS
 per framework.
 
+### Documented DOM-contract exceptions (Vue adapter)
+
+The Vue adapter is verified against the React adapter by
+`packages/vue/src/__tests__/styling-contract.parity.test.ts`. The
+following minor host-element differences are accepted:
+
+1. **Input `status` modifier classes (Vue super-set).** Vue
+   `<SgInput status="error">` adds `sg-input-wrapper-status-error` /
+   `sg-input-status-error` on top of the React contract. The React
+   adapter encodes the same state via `aria-invalid` only. Both adapters
+   honour `aria-invalid="true"` and `aria-readonly="true"`.
+2. **Textarea root tag.** React renders `<span class="sg-textarea-wrapper">`,
+   Vue renders `<div class="sg-textarea-wrapper">` with the same children.
+   Visual styling is identical because the wrapper is `display: block` on
+   both adapters. The class set is identical.
+3. **Tooltip wrapper tag.** React renders `<div class="sg-tooltip-wrapper">`,
+   Vue keeps `<span class="sg-tooltip-wrapper">` to preserve inline flow
+   under default browser CSS. The wrapper class, ARIA wiring (`role="tooltip"`
+   on the popover, `aria-describedby` linkage) and CSS variables are
+   identical.
+
 ## Versioning
 
 - Monorepo-wide semver. Every release advances `@skygraph/core`,
