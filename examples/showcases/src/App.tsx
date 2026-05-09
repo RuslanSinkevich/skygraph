@@ -14,10 +14,8 @@ import {
 
 import { CrmApp } from './showcases/crm/CrmApp'
 import { EcommerceApp } from './showcases/ecommerce/EcommerceApp'
-import { ProjectTrackerApp } from './showcases/project-tracker/ProjectTrackerApp'
 import { HrPortalApp } from './showcases/hr-portal/HrPortalApp'
 import { FileManagerApp } from './showcases/file-manager/FileManagerApp'
-import { AnalyticsApp } from './showcases/analytics/AnalyticsApp'
 import { AdminApp } from './showcases/admin/AdminApp'
 import { FormsApp } from './showcases/forms/FormsApp'
 import { TableKitchenSinkApp } from './showcases/table-kitchen-sink/TableKitchenSinkApp'
@@ -35,7 +33,7 @@ interface ShowcaseDef {
   title: string
   description: string
   tags: string[]
-  category: 'data' | 'comms' | 'productivity' | 'admin' | 'design'
+  category: 'data' | 'comms' | 'productivity' | 'design'
   component: ComponentLike
 }
 
@@ -66,50 +64,30 @@ const showcases: ShowcaseDef[] = [
     icon: '📈',
     title: 'Operations Dashboard',
     description:
-      'Live KPI dashboard with widget grid, mixed charts (line/bar/area/pie), service health and activity feed.',
+      'Live KPI dashboard with widget grid + drill-down tables and a layout editor mode. Hover toolbars on charts, widget actions, right-click context.',
     tags: [
       'Dashboard',
+      'DashboardEditor',
       'Widgets',
       'LineChart',
       'BarChart',
       'AreaChart',
       'PieChart',
-      'RangePicker',
-      'StatsRow',
-      'Progress',
+      'Drill-down',
+      'Print',
     ],
     category: 'data',
     component: DashboardApp,
-  },
-  {
-    key: 'analytics',
-    icon: '📊',
-    title: 'Analytics Workbench',
-    description:
-      'Drill into KPI tables, channels, products and alerts. Period segmented controls and chart drill-downs.',
-    tags: ['Tabs', 'Charts', 'Table', 'Drawer', 'Segmented', 'Progress'],
-    category: 'data',
-    component: AnalyticsApp,
   },
   {
     key: 'crm',
     icon: '👥',
     title: 'CRM Dashboard',
     description:
-      'Contacts table + drag-and-drop deal pipeline + activity timeline. Bulk actions and contact drawer.',
-    tags: ['Table', 'Kanban', 'Timeline', 'Drawer', 'Modal', 'Form', 'Avatar'],
+      'Contacts/deals tables, drag-and-drop pipeline, account hierarchy tree and a ResourceCalendar of deal deadlines with conflict overlay.',
+    tags: ['Table', 'Kanban', 'Tree', 'ResourceCalendar', 'Drawer', 'Modal', 'Form', 'Timeline'],
     category: 'productivity',
     component: CrmApp,
-  },
-  {
-    key: 'project-tracker',
-    icon: '📋',
-    title: 'Project Tracker',
-    description:
-      'Tasks list, drag-and-drop sprint board, project hierarchy and calendar of deadlines.',
-    tags: ['Table', 'Kanban', 'Tree', 'Calendar', 'DatePicker', 'Form'],
-    category: 'productivity',
-    component: ProjectTrackerApp,
   },
   {
     key: 'helpdesk',
@@ -178,7 +156,7 @@ const showcases: ShowcaseDef[] = [
     description:
       'Users, audit log, role transfer, API keys, sessions and system settings across one admin panel.',
     tags: ['Transfer', 'Table', 'Drawer', 'Collapse', 'Switch', 'Popconfirm', 'Tabs'],
-    category: 'admin',
+    category: 'productivity',
     component: AdminApp,
   },
   {
@@ -215,8 +193,7 @@ const CATEGORIES: Array<{ key: ShowcaseDef['category'] | 'all'; label: string }>
   { key: 'all', label: 'All' },
   { key: 'data', label: 'Data & Tables' },
   { key: 'comms', label: 'Communication' },
-  { key: 'productivity', label: 'Productivity' },
-  { key: 'admin', label: 'Admin' },
+  { key: 'productivity', label: 'Productivity & Admin' },
   { key: 'design', label: 'Design & Forms' },
 ]
 

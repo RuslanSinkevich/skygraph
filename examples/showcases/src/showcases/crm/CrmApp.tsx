@@ -7,6 +7,8 @@ import { ContactsTab } from './ContactsTab'
 import { DealsTab } from './DealsTab'
 import { PipelineTab } from './PipelineTab'
 import { ActivityTab } from './ActivityTab'
+import { HierarchyTab } from './HierarchyTab'
+import { DeadlinesTab } from './DeadlinesTab'
 
 function CrmStats() {
   const totalRevenue = contacts.reduce((s, c) => s + c.revenue, 0)
@@ -58,6 +60,8 @@ export function CrmApp() {
     { key: 'contacts', label: 'Contacts', children: <ContactsTab /> },
     { key: 'deals', label: 'Deals', children: <DealsTab /> },
     { key: 'pipeline', label: 'Pipeline (Kanban)', children: <PipelineTab /> },
+    { key: 'hierarchy', label: 'Hierarchy', children: <HierarchyTab /> },
+    { key: 'deadlines', label: 'Deadlines', children: <DeadlinesTab /> },
     { key: 'activity', label: 'Activity', children: <ActivityTab /> },
   ]
 
