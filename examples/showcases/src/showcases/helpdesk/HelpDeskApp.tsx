@@ -68,11 +68,13 @@ export function HelpDeskApp() {
 
   const columns: TableColumn[] = [
     {
-      key: 'id', title: 'ID', width: 100, sortable: true,
+      key: 'id', title: 'ID', width: 100, sortable: true, fixed: 'left' as const,
       render: (v) => <code style={{ fontSize: 12 }}>{String(v)}</code>,
     },
     {
       key: 'subject', title: 'Subject', sortable: true,
+      filterMode: 'search' as const,
+      onFilter: (v, row) => String(row.subject).toLowerCase().includes(String(v).toLowerCase()),
       render: (v, row) => (
         <div>
           <div style={{ fontWeight: 500 }}>{String(v)}</div>
@@ -93,13 +95,23 @@ export function HelpDeskApp() {
         </div>
       ),
     },
-    { key: 'assigneeName', title: 'Assignee', width: 140, sortable: true },
+    {
+      key: 'assigneeName', title: 'Assignee', width: 140, sortable: true,
+      filters: ['Alex Kim', 'Maria Sanchez', 'James Lee', 'Sophie Wu', 'Liam Novak', 'Emma Tang']
+        .map((n) => ({ text: n, value: n })),
+      onFilter: (v, row) => row.assigneeName === v,
+      filterMultiple: true,
+    },
     {
       key: 'priority', title: 'Priority', width: 100, sortable: true,
+      filters: ['low', 'medium', 'high', 'urgent'].map((v) => ({ text: v, value: v })),
+      onFilter: (v, row) => row.priority === v,
       render: (v) => <Tag color={PRIORITY_COLOR[v as TicketPriority]}>{String(v)}</Tag>,
     },
     {
       key: 'status', title: 'Status', width: 100, sortable: true,
+      filters: ['new', 'open', 'pending', 'resolved', 'closed'].map((v) => ({ text: v, value: v })),
+      onFilter: (v, row) => row.status === v,
       render: (v) => <Tag color={STATUS_COLOR[v as TicketStatus]}>{String(v)}</Tag>,
     },
     {
@@ -213,6 +225,16 @@ export function HelpDeskApp() {
               data={tableRows}
               size="small"
               pageSize={10}
+              bordered
+              sticky
+              columnPinning
+              densityToggle
+              groupByOptions={[
+                { key: 'status', label: 'Status' },
+                { key: 'priority', label: 'Priority' },
+                { key: 'assigneeName', label: 'Assignee' },
+                { key: 'product', label: 'Product' },
+              ]}
             />
           )
       ) : (

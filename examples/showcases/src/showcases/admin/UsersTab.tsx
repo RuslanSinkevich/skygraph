@@ -22,7 +22,7 @@ export function UsersTab() {
 
   const columns: TableColumn[] = [
     {
-      key: 'name', title: 'User', width: 240, sortable: true,
+      key: 'name', title: 'User', width: 240, sortable: true, fixed: 'left' as const,
       render: (_, row) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Avatar size="small">{String(row.avatar)}</Avatar>
@@ -54,8 +54,12 @@ export function UsersTab() {
     },
     { key: 'lastLogin', title: 'Last Login', width: 150, sortable: true },
     {
-      key: 'loginCount', title: 'Logins', width: 70, sortable: true, align: 'center',
+      key: 'loginCount', title: 'Logins', width: 90, sortable: true, align: 'center',
+      filterMode: 'advanced' as const,
+      advancedFilterType: 'number' as const,
+      onFilter: (value, row) => Number(row.loginCount) >= Number(value),
       render: (val) => num(Number(val)),
+      aggregate: 'sum' as const,
     },
     {
       key: 'actions', title: '', width: 100,
@@ -114,6 +118,15 @@ export function UsersTab() {
         data={tableData}
         pageSize={10}
         size="small"
+        bordered
+        sticky
+        columnPinning
+        densityToggle
+        groupByOptions={[
+          { key: 'role', label: 'Role' },
+          { key: 'department', label: 'Department' },
+          { key: 'status', label: 'Status' },
+        ]}
         rowSelection={{ selectedKeys: selected, onChange: (keys) => setSelected(keys as string[]) }}
       />
 

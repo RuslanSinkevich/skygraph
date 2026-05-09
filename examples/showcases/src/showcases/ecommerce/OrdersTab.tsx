@@ -17,13 +17,17 @@ export function OrdersTab() {
 
   const columns: TableColumn[] = [
     {
-      key: 'id', title: 'Order', width: 120,
+      key: 'id', title: 'Order', width: 120, fixed: 'left' as const,
       render: (val) => <span style={{ fontWeight: 500, fontFamily: 'monospace' }}>{String(val)}</span>,
     },
     { key: 'customer', title: 'Customer', width: 140, sortable: true },
     {
-      key: 'total', title: 'Total', width: 100, sortable: true, align: 'right',
+      key: 'total', title: 'Total', width: 110, sortable: true, align: 'right',
+      filterMode: 'advanced' as const,
+      advancedFilterType: 'number' as const,
+      onFilter: (value, row) => Number(row.total) >= Number(value),
       render: (val) => money(Number(val)),
+      aggregate: 'sum' as const,
     },
     {
       key: 'status', title: 'Status', width: 110,
@@ -69,6 +73,13 @@ export function OrdersTab() {
         bordered
         striped
         highlightOnHover
+        sticky
+        columnPinning
+        densityToggle
+        groupByOptions={[
+          { key: 'status', label: 'Status' },
+          { key: 'customer', label: 'Customer' },
+        ]}
         expandable={{
           expandedRowRender: (row) => {
             const o = orders.find(x => x.id === String(row.id))

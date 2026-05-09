@@ -678,6 +678,41 @@ body {
   outline-offset: 2px;
 }
 
+.we-node-multi {
+  outline: 2px dashed var(--sg-color-primary);
+  outline-offset: 2px;
+}
+
+.we-ctxmenu {
+  z-index: 10000;
+  background: var(--sg-color-bg-elevated, var(--sg-color-bg, #fff));
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  padding: 4px;
+  min-width: 160px;
+  font-size: 13px;
+}
+
+.we-ctxmenu-item {
+  all: unset;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--sg-color-text);
+}
+
+.we-ctxmenu-item:hover {
+  background: var(--sg-color-bg-hover);
+}
+
+.we-ctxmenu-item-danger {
+  color: var(--sg-color-error, #d4380d);
+}
+
 .we-node-start,
 .we-node-end {
   border-radius: 999px;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Diagram,
   useGraph,
@@ -12,6 +12,11 @@ import {
   Empty,
   notification,
   NotificationContainer,
+} from '@skygraph/react'
+import type {
+  DiagramSelectionMode,
+  DiagramNodeAction,
+  DiagramEdgeAction,
 } from '@skygraph/react'
 import type { GraphNode, NodeId, Outline } from '@skygraph/core'
 import { seedNodes, seedEdges, NODE_SHAPE, NODE_PALETTE } from './data'
@@ -55,6 +60,57 @@ function outlineFor(kind: NodeKind): Outline {
   return { kind: 'rect', w: shape.w, h: shape.h }
 }
 
+interface CtxItem {
+  key: string
+  label: string
+  danger?: boolean
+}
+
+function DiagramContextMenu({
+  x,
+  y,
+  items,
+  onSelect,
+  onClose,
+}: {
+  x: number
+  y: number
+  items: CtxItem[]
+  onSelect: (key: string) => void
+  onClose: () => void
+}) {
+  useEffect(() => {
+    const close = () => onClose()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('mousedown', close)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('mousedown', close)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [onClose])
+  return (
+    <div
+      className="we-ctxmenu"
+      style={{ position: 'fixed', left: x, top: y }}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      {items.map((it) => (
+        <button
+          key={it.key}
+          type="button"
+          className={`we-ctxmenu-item${it.danger ? ' we-ctxmenu-item-danger' : ''}`}
+          onClick={() => onSelect(it.key)}
+        >
+          {it.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function NodeBadge({ kind }: { kind: NodeKind }) {
   const colorMap: Record<NodeKind, 'success' | 'processing' | 'warning' | 'error'> = {
     start: 'success',
@@ -65,10 +121,20 @@ function NodeBadge({ kind }: { kind: NodeKind }) {
   return <Tag color={colorMap[kind]}>{kind}</Tag>
 }
 
+interface ContextMenuState {
+  open: boolean
+  x: number
+  y: number
+  /** When set — context comes from a click on a specific node. */
+  nodeId?: NodeId
+}
+
 export function WorkflowEditorApp() {
   const { graph, state } = useGraph()
   const initialised = useRef(false)
   const [selected, setSelected] = useState<NodeId | null>(null)
+  const [selection, setSelection] = useState<NodeId[]>([])
+  const [selectionMode, setSelectionMode] = useState<DiagramSelectionMode>('lasso')
   const [routing, setRouting] = useState<Routing>('orthogonal')
   const [draggable, setDraggable] = useState(true)
   const [labelDraft, setLabelDraft] = useState('')
@@ -79,6 +145,7 @@ export function WorkflowEditorApp() {
   const [edgeFrom, setEdgeFrom] = useState<string>('')
   const [edgeTo, setEdgeTo] = useState<string>('')
   const [edgeLabel, setEdgeLabel] = useState('')
+  const [menu, setMenu] = useState<ContextMenuState>({ open: false, x: 0, y: 0 })
 
   // Seed the engine on mount.
   useEffect(() => {
@@ -212,6 +279,70 @@ export function WorkflowEditorApp() {
 
   const nodeOptions = nodes.map((n) => ({ label: nodeLabelOf(n), value: String(n.id) }))
 
+  const nodeActions: DiagramNodeAction[] = useMemo(
+    () => [
+      {
+        id: 'rename',
+        label: 'Rename',
+        icon: '✎',
+        onClick: (node) => {
+          handleSelect(node.id)
+        },
+      },
+      {
+        id: 'duplicate',
+        label: 'Duplicate',
+        icon: '⎘',
+        onClick: (node) => {
+          const data = (node.data as NodeData) ?? { kind: 'task', label: 'New' }
+          const id = `${data.kind}-${Date.now().toString(36).slice(-5)}`
+          graph.addNode({
+            id,
+            transform: { x: node.transform.x + 32, y: node.transform.y + 32 },
+            outline: outlineFor(data.kind),
+            data: { kind: data.kind, label: `${data.label} copy` } satisfies NodeData,
+          })
+          notification.success(`Duplicated "${data.label}"`)
+        },
+      },
+      {
+        id: 'delete',
+        label: 'Delete',
+        icon: '✕',
+        onClick: (node) => {
+          graph.removeNode(node.id)
+          notification.info(`Deleted node ${node.id}`)
+          if (selected === node.id) setSelected(null)
+        },
+      },
+    ],
+    [graph, selected],
+  )
+
+  const edgeActions: DiagramEdgeAction[] = useMemo(
+    () => [
+      {
+        id: 'remove-edge',
+        label: 'Remove edge',
+        icon: '✕',
+        onClick: (edge) => {
+          graph.removeEdge(edge.id)
+          notification.info(`Removed edge ${edge.id}`)
+        },
+      },
+    ],
+    [graph],
+  )
+
+  const closeMenu = useCallback(() => setMenu((m) => ({ ...m, open: false })), [])
+  const handleBulkDelete = useCallback(() => {
+    if (selection.length === 0) return
+    for (const id of selection) graph.removeNode(id)
+    notification.warning(`Removed ${selection.length} nodes`)
+    setSelection([])
+    setSelected(null)
+  }, [graph, selection])
+
   return (
     <div className="we-shell">
       <NotificationContainer />
@@ -259,7 +390,24 @@ export function WorkflowEditorApp() {
               { label: 'Orthogonal', value: 'orthogonal' },
             ]}
           />
+          <Segmented
+            value={selectionMode}
+            onChange={(v) => setSelectionMode(v as DiagramSelectionMode)}
+            options={[
+              { label: 'Single', value: 'single' },
+              { label: 'Multi (⌃-click)', value: 'multi' },
+              { label: 'Lasso', value: 'lasso' },
+            ]}
+          />
           <div className="sc-toolbar-spacer" />
+          {selection.length > 0 && (
+            <>
+              <Tag color="processing">{selection.length} selected</Tag>
+              <Popconfirm title={`Delete ${selection.length} selected nodes?`} onConfirm={handleBulkDelete}>
+                <Button size="small">Delete selected</Button>
+              </Popconfirm>
+            </>
+          )}
           <Button size="small" onClick={() => setDraggable(!draggable)}>
             {draggable ? 'Lock layout' : 'Unlock layout'}
           </Button>
@@ -277,14 +425,28 @@ export function WorkflowEditorApp() {
             width="100%"
             height={560}
             draggable={draggable}
+            selectionMode={selectionMode}
+            selection={selection}
+            onSelectionChange={setSelection}
+            nodeActions={nodeActions}
+            edgeActions={edgeActions}
+            onNodeContextMenu={(e, node) => {
+              e.preventDefault()
+              setMenu({ open: true, x: e.clientX, y: e.clientY, nodeId: node.id })
+            }}
+            onCanvasContextMenu={(e) => {
+              e.preventDefault()
+              setMenu({ open: true, x: e.clientX, y: e.clientY })
+            }}
             renderNode={(node) => {
               const kind = nodeKindOf(node)
               const label = nodeLabelOf(node)
               const isActive = selected === node.id
+              const inSel = selection.includes(node.id)
               return (
                 <button
                   type="button"
-                  className={`we-node we-node-${kind}${isActive ? ' we-node-active' : ''}`}
+                  className={`we-node we-node-${kind}${isActive ? ' we-node-active' : ''}${inSel ? ' we-node-multi' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation()
                     handleSelect(node.id)
@@ -296,6 +458,50 @@ export function WorkflowEditorApp() {
               )
             }}
           />
+          {menu.open && (
+            <DiagramContextMenu
+              x={menu.x}
+              y={menu.y}
+              onClose={closeMenu}
+              items={menu.nodeId
+                ? [
+                    { key: 'rename', label: '✎ Rename' },
+                    { key: 'duplicate', label: '⎘ Duplicate' },
+                    { key: 'delete', label: '✕ Delete', danger: true },
+                  ]
+                : [
+                    { key: 'add-node', label: '+ New node' },
+                    { key: 'add-edge', label: '+ New edge' },
+                  ]
+              }
+              onSelect={(key) => {
+                closeMenu()
+                if (menu.nodeId) {
+                  const node = state.nodes.get(menu.nodeId)
+                  if (!node) return
+                  if (key === 'rename') handleSelect(menu.nodeId)
+                  else if (key === 'duplicate') {
+                    const data = (node.data as NodeData) ?? { kind: 'task', label: 'New' }
+                    const id = `${data.kind}-${Date.now().toString(36).slice(-5)}`
+                    graph.addNode({
+                      id,
+                      transform: { x: node.transform.x + 32, y: node.transform.y + 32 },
+                      outline: outlineFor(data.kind),
+                      data: { kind: data.kind, label: `${data.label} copy` } satisfies NodeData,
+                    })
+                    notification.success(`Duplicated "${data.label}"`)
+                  } else if (key === 'delete') {
+                    graph.removeNode(menu.nodeId)
+                    notification.info(`Deleted ${menu.nodeId}`)
+                    if (selected === menu.nodeId) setSelected(null)
+                  }
+                } else {
+                  if (key === 'add-node') setAddOpen(true)
+                  if (key === 'add-edge') setEdgeOpen(true)
+                }
+              }}
+            />
+          )}
         </div>
       </section>
 

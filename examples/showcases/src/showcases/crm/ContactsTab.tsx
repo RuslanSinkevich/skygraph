@@ -27,7 +27,7 @@ export function ContactsTab() {
 
   const columns: TableColumn[] = [
     {
-      key: 'name', title: 'Contact', width: 240, sortable: true,
+      key: 'name', title: 'Contact', width: 240, sortable: true, fixed: 'left' as const,
       render: (_, row) => <>{renderUserCell({
         name: String(row.name),
         email: String(row.email),
@@ -43,11 +43,15 @@ export function ContactsTab() {
       render: (val) => <Tag color={statusColor(String(val))}>{String(val)}</Tag>,
     },
     {
-      key: 'revenue', title: 'Revenue', width: 120, sortable: true, align: 'right',
+      key: 'revenue', title: 'Revenue', width: 130, sortable: true, align: 'right',
+      filterMode: 'advanced' as const,
+      advancedFilterType: 'number' as const,
+      onFilter: (value, row) => Number(row.revenue) >= Number(value),
       render: (val) => {
         const n = Number(val)
         return <span style={{ fontWeight: n > 100000 ? 600 : 400 }}>{money(n)}</span>
       },
+      aggregate: 'sum' as const,
     },
     { key: 'lastContact', title: 'Last Contact', width: 120, sortable: true },
     {
@@ -116,6 +120,14 @@ export function ContactsTab() {
         data={tableData}
         pageSize={10}
         size="small"
+        bordered
+        sticky
+        columnPinning
+        densityToggle
+        groupByOptions={[
+          { key: 'company', label: 'Company' },
+          { key: 'status', label: 'Status' },
+        ]}
         rowSelection={{ selectedKeys: selected, onChange: (keys) => setSelected(keys as string[]) }}
         summary={(rows) => {
           const total = rows.reduce((s, r) => s + (Number(r.data.revenue) || 0), 0)

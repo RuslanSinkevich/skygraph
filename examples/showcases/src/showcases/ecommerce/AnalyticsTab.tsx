@@ -121,6 +121,10 @@ export function AnalyticsTab() {
               height={220}
               legend
               yAxis={{ tickCount: 4 }}
+              actions
+              crosshair
+              animate
+              fileName="ecommerce-revenue"
             />
           ) : (
             <div className="ana-empty">No data in selected period</div>
@@ -130,7 +134,15 @@ export function AnalyticsTab() {
         <div className="ana-card">
           <div className="ana-card-title">Orders by status</div>
           <div style={{ display: 'flex', gap: 16, alignItems: 'center', justifyContent: 'center' }}>
-            <PieChart data={statusSplit} height={180} outerRadius={70} innerRadius={32} />
+            <PieChart
+              data={statusSplit}
+              height={180}
+              outerRadius={70}
+              innerRadius={32}
+              actions
+              animate
+              fileName="ecommerce-orders-status"
+            />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {statusSplit.map(s => (
                 <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
@@ -150,6 +162,9 @@ export function AnalyticsTab() {
             height={220}
             legend
             yAxis={{ tickCount: 4 }}
+            actions
+            animate
+            fileName="ecommerce-revenue-by-category"
           />
         </div>
 
