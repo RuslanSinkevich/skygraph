@@ -78,6 +78,7 @@ import { ResourceCalendarDemo } from './demos/ResourceCalendarDemo'
 import { Landing } from './pages/Landing/Landing'
 import { Roadmap } from './pages/Roadmap/Roadmap'
 import { About } from './pages/About/About'
+import { BenchmarksPage } from './pages/Benchmarks/BenchmarksPage'
 
 import { FrameworkSwitcher } from './components/FrameworkSwitcher'
 
@@ -294,6 +295,7 @@ function sectionForRoute(route: string): AppShellSection {
   if (route === 'landing') return 'landing'
   if (route === 'roadmap') return 'roadmap'
   if (route === 'about') return 'about'
+  if (route === 'benchmarks') return null
   if (route.startsWith('components/')) return 'components'
   if (route.startsWith('guide/')) return 'guide'
   if (route === 'tokens') return 'tokens'
@@ -324,6 +326,7 @@ export default function App() {
       { key: 'components', label: t.header.navComponents, href: '#/components/button' },
       { key: 'guide', label: t.header.navGuide, href: '#/guide/getting-started' },
       { key: 'showcases', label: t.header.navShowcases, href: SHOWCASES_URL, external: true },
+      { key: 'benchmarks', label: 'Benchmarks', href: '#/benchmarks' },
       { key: 'roadmap', label: t.header.navRoadmap, href: '#/roadmap' },
       { key: 'about', label: t.header.navAbout, href: '#/about' },
       { key: 'github', label: t.header.navGithub, href: GITHUB_URL, external: true },
@@ -367,7 +370,7 @@ export default function App() {
     <Header
       brand="SkyGraph"
       items={navItems}
-      active={section}
+      active={route === 'benchmarks' ? 'benchmarks' : section}
       onBrandClick={() => navigate('landing')}
       onSelect={(key) => {
         const item = navItems.find((it) => it.key === key)
@@ -493,6 +496,7 @@ function renderPage(route: string): (props: { onNavigate: (key: string) => void 
   if (route === 'landing') return Landing
   if (route === 'roadmap') return Roadmap
   if (route === 'about') return About
+  if (route === 'benchmarks') return () => <BenchmarksPage />
   const componentPage = componentPages[route]
   if (componentPage) return () => componentPage()
   const guidePage = guidePages[route]

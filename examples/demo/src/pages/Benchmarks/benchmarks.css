@@ -1,0 +1,321 @@
+/*
+ * Benchmarks page (`#/benchmarks`).
+ *
+ * Tabbed page comparing SkyGraph runtime against antd / react-hook-form /
+ * recharts. Token-only colors so dark mode works out of the box.
+ */
+
+.bench-page {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 0 64px;
+  gap: 32px;
+}
+
+.bench-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px solid var(--sg-color-border);
+  padding-bottom: 24px;
+}
+
+.bench-title {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.bench-lead {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--sg-color-text-secondary);
+  max-width: 820px;
+  margin: 0;
+}
+
+.bench-disclaimers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.bench-disclaimers > div {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--sg-color-text-secondary);
+  background: var(--sg-color-bg-secondary);
+  border: 1px solid var(--sg-color-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.bench-disclaimers strong {
+  color: var(--sg-color-text);
+}
+
+@media (max-width: 1024px) {
+  .bench-disclaimers {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Tabs ──────────────────────────────────────────────────────────── */
+
+.bench-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 1024px) {
+  .bench-tabs {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bench-tab {
+  appearance: none;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1px solid var(--sg-color-border);
+  border-radius: 10px;
+  background: var(--sg-color-bg);
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: inherit;
+  transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
+}
+
+.bench-tab:hover {
+  border-color: var(--sg-color-primary);
+}
+
+.bench-tab--active {
+  border-color: var(--sg-color-primary);
+  background: var(--sg-color-primary-bg);
+}
+
+.bench-tab-label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.bench-tab-sub {
+  font-size: 12.5px;
+  color: var(--sg-color-text-secondary);
+}
+
+.bench-tab-vs {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+}
+
+/* ── Body ──────────────────────────────────────────────────────────── */
+
+.bench-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.bench-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--sg-color-border);
+  border-radius: 12px;
+  background: var(--sg-color-bg);
+}
+
+.bench-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bench-btn {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--sg-color-border);
+  background: var(--sg-color-bg);
+  color: inherit;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.bench-btn:hover:not(:disabled) {
+  border-color: var(--sg-color-primary);
+  color: var(--sg-color-primary);
+}
+
+.bench-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.bench-btn--primary {
+  background: var(--sg-color-primary);
+  color: var(--sg-color-text-inverse, #fff);
+  border-color: var(--sg-color-primary);
+}
+
+.bench-btn--primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+  color: var(--sg-color-text-inverse, #fff);
+}
+
+.bench-progress {
+  font-size: 12.5px;
+  color: var(--sg-color-text-secondary);
+}
+
+.bench-method,
+.bench-method-detail {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--sg-color-text-secondary);
+  background: var(--sg-color-bg-secondary);
+  border: 1px solid var(--sg-color-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.bench-method strong,
+.bench-method-detail strong {
+  color: var(--sg-color-text);
+}
+
+.bench-method-detail h2 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.bench-method-detail ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bench-method code,
+.bench-method-detail code,
+.bench-lead code {
+  font-size: 12px;
+  background: var(--sg-color-bg);
+  border: 1px solid var(--sg-color-border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ── Results table ─────────────────────────────────────────────────── */
+
+.bench-results {
+  overflow-x: auto;
+  border: 1px solid var(--sg-color-border);
+  border-radius: 8px;
+}
+
+.bench-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.bench-table th,
+.bench-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--sg-color-border);
+}
+
+.bench-table th {
+  font-weight: 600;
+  background: var(--sg-color-bg-secondary);
+  color: var(--sg-color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.bench-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.bench-table-label {
+  font-weight: 500;
+}
+
+.bench-empty {
+  font-size: 13px;
+  color: var(--sg-color-text-secondary);
+  padding: 18px;
+  border: 1px dashed var(--sg-color-border);
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* ── Live preview ──────────────────────────────────────────────────── */
+
+.bench-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px dashed var(--sg-color-border);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--sg-color-bg-secondary);
+}
+
+.bench-preview-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bench-preview-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bench-preview-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--sg-color-text-secondary);
+}
+
+.bench-preview-controls select {
+  font: inherit;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--sg-color-border);
+  background: var(--sg-color-bg);
+  color: inherit;
+}
+
+.bench-preview-frame {
+  background: var(--sg-color-bg);
+  border: 1px solid var(--sg-color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
