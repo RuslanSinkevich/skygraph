@@ -1,0 +1,67 @@
+import type { DemoDict } from './types'
+
+export const en: DemoDict = {
+  app: {
+    appTitle: 'SkyGraph Vue',
+    tagline: 'Reactive primitives + 27 components for Vue 3',
+    heroSub:
+      'Composables and components powered by @skygraph/core and @skygraph/styles. Same DOM contract, same CSS, idiomatic Vue API.',
+  },
+  search: {
+    placeholder: 'Search components',
+    ariaLabel: 'Search components',
+    noMatches: 'No components match',
+  },
+  menuSections: {
+    dataEntry: 'Data Entry',
+    dataDisplay: 'Data Display',
+    feedback: 'Feedback',
+    navigation: 'Navigation',
+    form: 'Form',
+    visualization: 'Visualization',
+  },
+  header: {
+    navComponents: 'Components',
+    navHome: 'Home',
+    themeAria: 'Toggle theme',
+    languageAria: 'Switch language',
+  },
+  componentDoc: {
+    examples: 'Examples',
+    whenToUse: 'When to use',
+    propsTitle: 'API',
+    showCode: 'Show code',
+    hideCode: 'Hide code',
+    copy: 'Copy',
+    copied: 'Copied',
+  },
+  propsTable: {
+    colProperty: 'Property',
+    colDescription: 'Description',
+    colType: 'Type',
+    colDefault: 'Default',
+    requiredLabel: 'required',
+  },
+  landing: {
+    title: 'SkyGraph for Vue',
+    lead:
+      'A framework-agnostic UI kit with a Vue 3 adapter. Composables for forms, tables, trees, graphs and 27 ready-to-use components.',
+    statComponents: 'Components',
+    statComposables: 'Composables',
+    statTests: 'Tests',
+    ctaPrimary: 'Browse components',
+    ctaSecondary: 'Read source',
+    featureReactiveTitle: 'Reactive core',
+    featureReactiveDesc:
+      'A single store engine with form / table / tree / graph adapters. Same engine across React, Vue and Angular.',
+    featureZeroRuntimeTitle: 'Zero-runtime CSS',
+    featureZeroRuntimeDesc:
+      'All styling lives in @skygraph/styles. No CSS-in-JS, no runtime cost, theming via plain CSS variables.',
+    featureA11yTitle: 'Accessible by default',
+    featureA11yDesc:
+      'Roving tabindex, list navigation, focus traps and ARIA wiring built in to every primitive.',
+    featureMultiTitle: 'Same DOM, same CSS',
+    featureMultiDesc:
+      'Vue components emit the exact same .sg-* classes as the React adapter — themes and showcases work everywhere.',
+  },
+}

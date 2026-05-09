@@ -1,6 +1,12 @@
-import { createApp } from 'vue'
+import { createApp, h } from 'vue'
 import App from './App.vue'
+import { router } from './router'
+import { I18nProvider } from './i18n'
 import '@skygraph/styles'
 import './style.css'
 
-createApp(App).mount('#app')
+createApp({
+  render: () => h(I18nProvider, null, () => h(App)),
+})
+  .use(router)
+  .mount('#app')
