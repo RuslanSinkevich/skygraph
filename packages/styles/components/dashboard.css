@@ -1,4 +1,11 @@
-/* Dashboard — minimal static-layout grid for widgets. */
+/* Dashboard — minimal static-layout grid for widgets.
+ *
+ * Editor-mode treatment lives in the same file so the visual difference
+ * between view and edit reads as a single, designed state rather than a
+ * collection of bolted-on tweaks. All colors / shadows route through
+ * `--sg-dashboard-*` semantic tokens so dark theme picks them up
+ * without per-rule duplication.
+ */
 
 .sg-dashboard {
   width: 100%;
@@ -11,12 +18,19 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: var(--sg-shadow-sm);
-  transition: box-shadow 180ms ease;
+  box-shadow: var(--sg-dashboard-widget-shadow);
+  /* `transform` participates so the hover lift below stays in lock-step
+   * with the elevation change. Border-color animates on hover to give
+   * the widget a faint frame highlight. */
+  transition:
+    box-shadow var(--sg-transition-medium),
+    transform var(--sg-transition-medium),
+    border-color var(--sg-transition-medium);
 }
 
 .sg-dashboard-widget:hover {
-  box-shadow: var(--sg-shadow);
+  box-shadow: var(--sg-dashboard-widget-shadow-hover);
+  border-color: var(--sg-color-border);
 }
 
 .sg-dashboard-widget[data-sg-maximized='true'] {
@@ -72,7 +86,10 @@
   color: var(--sg-color-text-secondary);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease;
+  transition:
+    opacity var(--sg-transition-fast),
+    background-color var(--sg-transition-fast),
+    color var(--sg-transition-fast);
 }
 
 .sg-dashboard-widget[data-sg-actions='visible'] .sg-dashboard-widget-more,
@@ -142,9 +159,47 @@
   height: 16px;
 }
 
-/* Editor — opt-in interactive layer. The base widget chrome above is reused. */
+/* ─── Editor mode ────────────────────────────────────────────────────────
+ *
+ * `data-edit-mode='true'` on `.sg-dashboard-editor` flips the dashboard
+ * into edit mode. Key visual signals:
+ *   1. Subtle grid pattern on the editor background — communicates that
+ *      widgets snap to a layout grid.
+ *   2. Dashed accent border on every widget — reads as "drag me".
+ *   3. Resize handle gets full opacity + a halo when hovered.
+ * Reused base widget chrome above.
+ */
+
+.sg-dashboard-editor[data-edit-mode='true'] {
+  /* Fine 8px grid that hints at the underlying layout snap step. The
+   * `--sg-dashboard-editor-grid-color` token is primary-tinted in both
+   * themes so the pattern reads as "active editing surface". */
+  background-image:
+    linear-gradient(to right, var(--sg-dashboard-editor-grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--sg-dashboard-editor-grid-color) 1px, transparent 1px);
+  background-size: 16px 16px;
+  border-radius: var(--sg-border-radius);
+  /* A faint inset frame visually fences off the editor area — a useful
+   * affordance when the surrounding page also has its own layout. */
+  box-shadow: inset 0 0 0 1px var(--sg-color-border-secondary);
+}
+
 .sg-dashboard-editor[data-edit-mode='true'] .sg-dashboard-widget {
   position: relative;
+  /* Dashed accent border replaces the solid one only in edit mode so
+   * widgets read as "live, draggable" without being noisy in view-mode.
+   * We override the *border* property entirely (style + color) so the
+   * change is unambiguous. */
+  border: 1px dashed var(--sg-dashboard-editor-widget-border);
+}
+
+.sg-dashboard-editor[data-edit-mode='true'] .sg-dashboard-widget:hover {
+  /* In edit-mode hover also tints the entire widget border so the
+   * dashed line goes from "inert outline" to "actively highlighted". */
+  border-color: var(--sg-color-primary);
+  box-shadow:
+    var(--sg-dashboard-widget-shadow-hover),
+    0 0 0 2px var(--sg-color-primary-bg);
 }
 
 .sg-dashboard-editor[data-edit-mode='true'] .sg-dashboard-widget-header {
@@ -167,7 +222,7 @@
   background-position: 0 2px, 4px 2px;
   background-repeat: repeat-y;
   opacity: 0.6;
-  transition: opacity 120ms ease;
+  transition: opacity var(--sg-transition-fast);
 }
 
 .sg-dashboard-editor[data-edit-mode='true'] .sg-dashboard-widget:hover .sg-dashboard-widget-header::before {
@@ -176,6 +231,19 @@
 
 .sg-dashboard-editor[data-edit-mode='true'] .sg-dashboard-widget-header:active {
   cursor: grabbing;
+}
+
+/* Drop-zone affordance: while the editor is not actively being hovered
+ * by a particular widget but a drag is happening, an empty grid cell
+ * becomes a candidate target. We use `:focus-within` as a proxy for
+ * "interaction in progress" — when a widget is being dragged via
+ * keyboard, it lands focus on the editor. The pattern matches the
+ * snap grid above so the user's eye doesn't need to refocus. */
+.sg-dashboard-editor[data-edit-mode='true']:focus-within {
+  background-image:
+    linear-gradient(to right, var(--sg-dashboard-editor-drop-zone-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--sg-dashboard-editor-drop-zone-border) 1px, transparent 1px);
+  background-color: var(--sg-dashboard-editor-drop-zone-bg);
 }
 
 .sg-dashboard-editor-resize-handle {
@@ -191,7 +259,10 @@
   align-items: flex-end;
   justify-content: flex-end;
   padding: 2px;
-  transition: opacity 140ms ease;
+  border-radius: var(--sg-border-radius-sm) 0 var(--sg-border-radius) 0;
+  transition:
+    opacity var(--sg-transition-fast),
+    background-color var(--sg-transition-fast);
 }
 
 .sg-dashboard-editor-resize-handle-grip {
@@ -201,10 +272,28 @@
   background-image:
     linear-gradient(135deg, transparent 0 60%, var(--sg-color-border-secondary) 60% 70%, transparent 70% 80%, var(--sg-color-border-secondary) 80% 90%, transparent 90%);
   pointer-events: none;
+  transition: background-image var(--sg-transition-fast);
 }
 
 .sg-dashboard-editor-resize-handle:hover,
 .sg-dashboard-editor-resize-handle:focus-visible,
 .sg-dashboard-widget:hover .sg-dashboard-editor-resize-handle {
   opacity: 1;
+}
+
+.sg-dashboard-editor-resize-handle:hover {
+  background: var(--sg-color-primary-bg);
+}
+
+.sg-dashboard-editor-resize-handle:hover .sg-dashboard-editor-resize-handle-grip,
+.sg-dashboard-editor-resize-handle:focus-visible .sg-dashboard-editor-resize-handle-grip {
+  /* On hover the grip lines pick up the primary color so the handle
+   * reads as "actively armed for resize". */
+  background-image:
+    linear-gradient(135deg, transparent 0 60%, var(--sg-color-primary) 60% 70%, transparent 70% 80%, var(--sg-color-primary) 80% 90%, transparent 90%);
+}
+
+.sg-dashboard-editor-resize-handle:focus-visible {
+  outline: 2px solid var(--sg-color-primary);
+  outline-offset: -1px;
 }
