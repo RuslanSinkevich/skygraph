@@ -8,15 +8,18 @@ import {
 } from './types'
 import { ChartLegend } from './ChartLegend'
 import { ChartAxes } from './ChartAxes'
-import { ChartBrush, resolveBrushConfig, type ChartBrushConfig, type ChartBrushRange } from './ChartBrush'
+import {
+  ChartBrush,
+  resolveBrushConfig,
+  type ChartBrushConfig,
+  type ChartBrushRange,
+} from './ChartBrush'
 import type { BaseChartProps } from './types'
 import { useChartPrint, type ChartRef } from './chartRef'
 import { useChartSize } from './useChartSize'
 import { ChartHoverToolbar, resolveChartActions } from './ChartHoverToolbar'
-import {
-  makeChartContextMenuHandler,
-  makeSeriesContextMenuHandler,
-} from './chartContextMenu'
+import { makeChartContextMenuHandler, makeSeriesContextMenuHandler } from './chartContextMenu'
+import { useConfig } from '../../ConfigProvider'
 
 export interface AreaChartProps extends BaseChartProps {
   /** Stack series on top of each other (cumulative). @default false */
@@ -62,6 +65,7 @@ function AreaChartInner(
   }: AreaChartProps,
   forwardedRef: ForwardedRef<ChartRef>,
 ) {
+  const chartsLocale = useConfig().locale?.charts
   const { rootRef } = useChartPrint<Element>(forwardedRef, printable)
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [pt, pr, pb, pl] = normalizePadding(padding)
@@ -93,10 +97,7 @@ function AreaChartInner(
     })
   }, [series, stacked, categories.length])
 
-  const { min, max } = useMemo(
-    () => chartBounds(stackedValues),
-    [stackedValues],
-  )
+  const { min, max } = useMemo(() => chartBounds(stackedValues), [stackedValues])
 
   const baseline = Math.min(0, min)
   const top = Math.max(0, max)
@@ -111,7 +112,9 @@ function AreaChartInner(
   }
   const yBase = yFor(0)
 
-  const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-area', className].filter(Boolean).join(' ')
+  const wrapperClass = unstyled
+    ? className
+    : ['sg-chart', 'sg-chart-area', className].filter(Boolean).join(' ')
 
   const anim = resolveChartAnimation(animate)
   const animKey = useMemo(
@@ -128,9 +131,7 @@ function AreaChartInner(
   const [internalBrushRange, setInternalBrushRange] = useState<ChartBrushRange | null>(
     brushConfig?.defaultRange ?? null,
   )
-  const effectiveBrushRange = isBrushControlled
-    ? brushConfig!.range ?? null
-    : internalBrushRange
+  const effectiveBrushRange = isBrushControlled ? (brushConfig!.range ?? null) : internalBrushRange
   const handleBrushChange = (next: ChartBrushRange | null) => {
     if (!isBrushControlled) setInternalBrushRange(next)
     brushConfig?.onRangeChange?.(next)
@@ -160,7 +161,7 @@ function AreaChartInner(
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
       role="img"
-      aria-label="Area chart"
+      aria-label={chartsLocale?.areaChart ?? 'Area chart'}
       onContextMenu={handleSvgContextMenu}
     >
       <ChartAxes

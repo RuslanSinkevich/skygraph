@@ -1,4 +1,5 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps } from '../../types'
 
 /** Props for the Skeleton loading placeholder layout. */
@@ -31,12 +32,13 @@ export function Skeleton({
   style,
   unstyled,
 }: SkeletonProps) {
+  const loadingLabel = useConfig().locale?.skeleton?.loading ?? 'Loading'
   if (!loading) return <>{children}</>
 
-  const avatarSize = typeof avatar === 'object' ? avatar.size ?? 40 : 40
-  const avatarShape = typeof avatar === 'object' ? avatar.shape ?? 'circle' : 'circle'
-  const titleWidth = typeof title === 'object' ? title.width ?? '38%' : '38%'
-  const rows = typeof paragraph === 'object' ? paragraph.rows ?? 3 : 3
+  const avatarSize = typeof avatar === 'object' ? (avatar.size ?? 40) : 40
+  const avatarShape = typeof avatar === 'object' ? (avatar.shape ?? 'circle') : 'circle'
+  const titleWidth = typeof title === 'object' ? (title.width ?? '38%') : '38%'
+  const rows = typeof paragraph === 'object' ? (paragraph.rows ?? 3) : 3
   const rowWidths = typeof paragraph === 'object' ? paragraph.width : undefined
 
   const getRowWidth = (index: number, total: number): string | number => {
@@ -47,7 +49,7 @@ export function Skeleton({
 
   if (unstyled) {
     return (
-      <div className={className} style={style} aria-busy="true" aria-label="Loading">
+      <div className={className} style={style} aria-busy="true" aria-label={loadingLabel}>
         {avatar && <div style={{ width: avatarSize, height: avatarSize }} />}
         <div>
           {title && <div style={{ width: titleWidth, height: 16 }} />}
@@ -67,18 +69,17 @@ export function Skeleton({
         active ? 'sg-skeleton-active' : '',
         avatar ? 'sg-skeleton-with-avatar' : '',
         className,
-      ].filter(Boolean).join(' ')}
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={style}
       aria-busy="true"
-      aria-label="Loading"
+      aria-label={loadingLabel}
     >
       {avatar && (
         <div className="sg-skeleton-header">
           <span
-            className={[
-              'sg-skeleton-avatar',
-              `sg-skeleton-avatar-${avatarShape}`,
-            ].join(' ')}
+            className={['sg-skeleton-avatar', `sg-skeleton-avatar-${avatarShape}`].join(' ')}
             style={{ width: avatarSize, height: avatarSize }}
           />
         </div>
@@ -94,12 +95,7 @@ export function Skeleton({
           <ul className="sg-skeleton-paragraph">
             {Array.from({ length: rows }, (_, i) => {
               const w = getRowWidth(i, rows)
-              return (
-                <li
-                  key={i}
-                  style={{ width: typeof w === 'number' ? `${w}px` : w }}
-                />
-              )
+              return <li key={i} style={{ width: typeof w === 'number' ? `${w}px` : w }} />
             })}
           </ul>
         )}

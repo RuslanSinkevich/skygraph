@@ -1,11 +1,6 @@
 import { useMemo, useRef, useSyncExternalStore } from 'react'
 import { createCore, createGraph } from '@skygraph/core'
-import type {
-  Core,
-  GraphEngine,
-  GraphEngineOptions,
-  GraphState,
-} from '@skygraph/core'
+import type { Core, GraphEngine, GraphEngineOptions, GraphState } from '@skygraph/core'
 
 export interface UseGraphOptions extends GraphEngineOptions {
   /** Bring your own Core instance (for cross-engine coordination). */
@@ -22,7 +17,7 @@ export interface UseGraphReturn {
 }
 
 /**
- * Reactive bridge between {@link createGraph} and React.
+ * Reactive bridge between `createGraph` (from `@skygraph/core`) and React.
  *
  * The hook creates (or reuses) a Core + Graph pair, subscribes to the
  * `$graph.snapshot.*` namespace, and re-renders the consumer on every commit.

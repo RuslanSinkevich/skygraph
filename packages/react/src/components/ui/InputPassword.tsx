@@ -146,7 +146,11 @@ export function InputPassword({
             className="sg-input-password-toggle"
             onClick={() => setVisible(!visible)}
             tabIndex={-1}
-            aria-label={visible ? 'Hide password' : 'Show password'}
+            aria-label={
+              visible
+                ? (config.locale?.inputPassword?.hidePassword ?? 'Hide password')
+                : (config.locale?.inputPassword?.showPassword ?? 'Show password')
+            }
           >
             {visible ? '◉' : '○'}
           </button>
@@ -155,9 +159,13 @@ export function InputPassword({
       {showStrength && current.length > 0 && (
         <div className="sg-input-password-strength">
           <div className="sg-input-password-strength-bar">
-            <span className={`sg-input-password-strength-fill sg-input-password-strength-${strength}`} />
+            <span
+              className={`sg-input-password-strength-fill sg-input-password-strength-${strength}`}
+            />
           </div>
-          <span className={`sg-input-password-strength-label sg-input-password-strength-${strength}`}>
+          <span
+            className={`sg-input-password-strength-label sg-input-password-strength-${strength}`}
+          >
             {labels[strength]}
           </span>
         </div>

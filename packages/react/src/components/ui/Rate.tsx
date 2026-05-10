@@ -33,6 +33,9 @@ export function Rate({
 }: RateProps) {
   const config = useConfig()
   const disabled = disabledProp ?? config.disabled
+  const rateLocale = config.locale?.rate
+  const ariaLabel = rateLocale?.ariaLabel ?? 'Rating'
+  const starLabel = rateLocale?.star ?? ((n: number) => `${n} star${n > 1 ? 's' : ''}`)
 
   const [internalValue, setInternalValue] = React.useState(value ?? defaultValue)
   const [hoverValue, setHoverValue] = React.useState<number | null>(null)
@@ -80,13 +83,11 @@ export function Rate({
   }
 
   const wrapperClass = unstyled
-    ? className ?? ''
-    : ['sg-rate', disabled ? 'sg-rate-disabled' : '', className]
-        .filter(Boolean)
-        .join(' ')
+    ? (className ?? '')
+    : ['sg-rate', disabled ? 'sg-rate-disabled' : '', className].filter(Boolean).join(' ')
 
   return (
-    <div className={wrapperClass} style={style} role="radiogroup" aria-label="Rating">
+    <div className={wrapperClass} style={style} role="radiogroup" aria-label={ariaLabel}>
       {Array.from({ length: count }, (_, i) => {
         const starIndex = i + 1
         const isFull = displayValue >= starIndex
@@ -108,7 +109,7 @@ export function Rate({
             }
             role="radio"
             aria-checked={isFull}
-            aria-label={`${starIndex} star${starIndex > 1 ? 's' : ''}`}
+            aria-label={starLabel(starIndex)}
             tabIndex={disabled ? -1 : 0}
             onClick={(e) =>
               handleStarClick(starIndex, e.clientX, e.currentTarget.getBoundingClientRect())

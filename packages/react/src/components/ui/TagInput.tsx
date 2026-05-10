@@ -50,6 +50,7 @@ export function TagInput({
   const config = useConfig()
   const size = sizeProp ?? config.size ?? 'middle'
   const disabled = disabledProp ?? config.disabled ?? false
+  const removeTagLabel = config.locale?.tagInput?.removeTag ?? ((tag: string) => `Remove ${tag}`)
   const [internalTags, setInternalTags] = useState<string[]>(defaultValue)
   const [inputValue, setInputValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -86,7 +87,10 @@ export function TagInput({
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault()
     const text = e.clipboardData.getData('text')
-    const pasted = text.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean)
+    const pasted = text
+      .split(/[,;\n]+/)
+      .map((s) => s.trim())
+      .filter(Boolean)
     const next = [...tags]
     for (const t of pasted) {
       if (maxTags && next.length >= maxTags) break
@@ -102,7 +106,11 @@ export function TagInput({
         {tags.map((tag, i) => (
           <span key={`${id}-${i}`}>
             {tag}
-            {removable && <button type="button" onClick={() => removeTag(i)}>×</button>}
+            {removable && (
+              <button type="button" onClick={() => removeTag(i)}>
+                ×
+              </button>
+            )}
           </span>
         ))}
         <input
@@ -132,11 +140,7 @@ export function TagInput({
   const tagColorClass = tagColor !== 'default' ? `sg-tag-${tagColor}` : ''
 
   return (
-    <div
-      className={wrapperClasses}
-      style={style}
-      onClick={() => inputRef.current?.focus()}
-    >
+    <div className={wrapperClasses} style={style} onClick={() => inputRef.current?.focus()}>
       {tags.map((tag, i) => (
         <span key={`${id}-${i}`} className={`sg-tag ${tagColorClass}`}>
           {tag}
@@ -148,7 +152,7 @@ export function TagInput({
                 removeTag(i)
               }}
               role="button"
-              aria-label={`Remove ${tag}`}
+              aria-label={removeTagLabel(tag)}
             >
               ×
             </span>

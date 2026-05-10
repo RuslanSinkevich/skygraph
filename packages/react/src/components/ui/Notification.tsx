@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Transition } from './Transition'
+import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps } from '../../types'
 
 /** Visual variant for notification styling and icon. */
@@ -98,12 +99,12 @@ export function NotificationContainer({
     const fn: Listener = (newItems) => setList(newItems)
     listenerRef.current = fn
     listeners.add(fn)
-    return () => { listeners.delete(fn) }
+    return () => {
+      listeners.delete(fn)
+    }
   }, [])
 
-  const filtered = list.filter(
-    (i) => (i.placement ?? 'topRight') === placement
-  )
+  const filtered = list.filter((i) => (i.placement ?? 'topRight') === placement)
 
   if (filtered.length === 0) return null
 
@@ -146,6 +147,7 @@ function NotificationCard({
   unstyled?: boolean
 }) {
   const type = item.type ?? 'info'
+  const closeAriaLabel = useConfig().locale?.notification?.closeAriaLabel ?? 'Close'
 
   if (unstyled) {
     return (
@@ -153,7 +155,9 @@ function NotificationCard({
         <span>{typeIcons[type]}</span>
         <span>{item.message}</span>
         {item.description && <div>{item.description}</div>}
-        <button onClick={onClose}>×</button>
+        <button onClick={onClose} aria-label={closeAriaLabel}>
+          ×
+        </button>
       </div>
     )
   }
@@ -163,11 +167,9 @@ function NotificationCard({
       <div className="sg-notification-icon">{typeIcons[type]}</div>
       <div className="sg-notification-content">
         <div className="sg-notification-message">{item.message}</div>
-        {item.description && (
-          <div className="sg-notification-description">{item.description}</div>
-        )}
+        {item.description && <div className="sg-notification-description">{item.description}</div>}
       </div>
-      <button className="sg-notification-close" onClick={onClose} aria-label="Close">
+      <button className="sg-notification-close" onClick={onClose} aria-label={closeAriaLabel}>
         ×
       </button>
     </div>

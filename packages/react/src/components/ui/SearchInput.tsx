@@ -124,7 +124,7 @@ export function SearchInput({
           className="sg-search-input-clear"
           onClick={handleClear}
           tabIndex={-1}
-          aria-label="Clear"
+          aria-label={config.locale?.searchInput?.clear ?? 'Clear'}
         >
           ×
         </button>

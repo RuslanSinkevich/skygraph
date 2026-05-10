@@ -105,8 +105,12 @@
 }
 
 @keyframes sg-chart-line-fade {
-  from { opacity: 0.05; }
-  to { opacity: 1; }
+  from {
+    opacity: 0.05;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Bar chart — each <rect> grows from its baseline (transform-origin set
@@ -122,7 +126,9 @@
 }
 
 @keyframes sg-chart-bar-grow {
-  to { transform: scaleY(1); }
+  to {
+    transform: scaleY(1);
+  }
 }
 
 /* Area chart — fade + slight slide-up of the whole filled region. We avoid
@@ -209,15 +215,11 @@
   /* Real elevation instead of the previous flat 0 1px 2px shadow.
    * `drop-shadow` is preferred over `box-shadow` here — the SVG <rect>
    * shape is what we're shadowing, not a CSS box. */
-  filter:
-    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.18))
-    drop-shadow(0 1px 3px rgba(0, 0, 0, 0.10));
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.18)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
 }
 
 [data-sg-theme='dark'] .sg-chart-crosshair-tooltip-bg {
-  filter:
-    drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55))
-    drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
 }
 
 .sg-chart-crosshair-tooltip-title,
@@ -249,7 +251,7 @@
    * against the chart series even when the inline fill is set very
    * low alpha. */
   pointer-events: none;
-  filter: drop-shadow(0 1px 3px rgba(22, 119, 255, 0.20));
+  filter: drop-shadow(0 1px 3px rgba(22, 119, 255, 0.2));
 }
 
 [data-sg-theme='dark'] .sg-chart-brush-selection {
@@ -290,7 +292,7 @@
   pointer-events: none;
 }
 
-.sg-chart-toolbar[data-sg-toolbar="visible"] {
+.sg-chart-toolbar[data-sg-toolbar='visible'] {
   opacity: 1;
   transform: translateY(0);
 }
@@ -354,9 +356,20 @@
   /* Tiny breathing room so a hover background doesn't collide with the
    * chart's bottom edge. */
   padding-top: var(--sg-padding-xs);
+  /* Layout — moved from inline style on <ChartLegend> root. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--sg-color-text-secondary);
 }
 
 .sg-chart-legend-item {
+  /* Layout — moved from inline style on each legend entry. */
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   /* Hover surface — purely additive (does not override inline display:
    * inline-flex emitted by the React component). */
   padding: 2px var(--sg-padding-xs);
@@ -378,9 +391,16 @@
 }
 
 .sg-chart-legend-swatch {
+  /* Layout — moved from inline style on each legend swatch. The
+   * `background` is still emitted inline by the React component since it
+   * comes from the dynamic series colour. */
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
   /* Subtle inner ring so the swatch reads as a chip rather than a flat
    * square — useful when the series colour is close to the background. */
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.10);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
 [data-sg-theme='dark'] .sg-chart-legend-swatch {

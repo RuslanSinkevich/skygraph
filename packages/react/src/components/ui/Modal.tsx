@@ -60,28 +60,27 @@ export function Modal({
   const modalLocale = useConfig().locale?.modal
   const okText = okTextProp ?? modalLocale?.okText ?? 'OK'
   const cancelText = cancelTextProp ?? modalLocale?.cancelText ?? 'Cancel'
+  const closeAriaLabel = modalLocale?.closeAriaLabel ?? 'Close'
 
   const defaultFooter =
-    footer === null
-      ? null
-      : footer === undefined && onOk
-        ? (
-          <>
-            <Button onClick={onClose} disabled={confirmLoading}>
-              {cancelText}
-            </Button>
-            <Button type={okType} loading={confirmLoading} onClick={() => onOk()}>
-              {okText}
-            </Button>
-          </>
-        )
-        : footer
+    footer === null ? null : footer === undefined && onOk ? (
+      <>
+        <Button onClick={onClose} disabled={confirmLoading}>
+          {cancelText}
+        </Button>
+        <Button type={okType} loading={confirmLoading} onClick={() => onOk()}>
+          {okText}
+        </Button>
+      </>
+    ) : (
+      footer
+    )
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     },
-    [onClose]
+    [onClose],
   )
 
   useEffect(() => {
@@ -105,7 +104,9 @@ export function Modal({
         {title && <div id={titleId}>{title}</div>}
         <div id={bodyId}>{children}</div>
         {defaultFooter && <div>{defaultFooter}</div>}
-        <Button type="text" onClick={onClose} unstyled aria-label="Close">x</Button>
+        <Button type="text" onClick={onClose} unstyled aria-label={closeAriaLabel}>
+          x
+        </Button>
       </div>
     )
   }
@@ -117,7 +118,9 @@ export function Modal({
           <div
             ref={trapRef}
             className={['sg-modal', className].filter(Boolean).join(' ')}
-            style={{ width }}
+            style={{
+              ['--sg-modal-width' as string]: typeof width === 'number' ? `${width}px` : width,
+            }}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -125,17 +128,23 @@ export function Modal({
             aria-describedby={children ? bodyId : undefined}
           >
             <div className="sg-modal-header">
-              {title && <div className="sg-modal-title" id={titleId}>{title}</div>}
+              {title && (
+                <div className="sg-modal-title" id={titleId}>
+                  {title}
+                </div>
+              )}
               <Button
                 type="text"
                 className="sg-modal-close"
                 onClick={onClose}
-                aria-label="Close"
+                aria-label={closeAriaLabel}
               >
                 &times;
               </Button>
             </div>
-            <div className="sg-modal-body" id={bodyId}>{children}</div>
+            <div className="sg-modal-body" id={bodyId}>
+              {children}
+            </div>
             {defaultFooter && <div className="sg-modal-footer">{defaultFooter}</div>}
           </div>
         </Transition>

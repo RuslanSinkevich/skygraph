@@ -15,6 +15,7 @@ import type {
   DashboardWidgetContextMenuHandler,
   WidgetAction,
 } from './types'
+import { useConfig } from '../../ConfigProvider'
 
 export type {
   DashboardCommonProps,
@@ -63,11 +64,10 @@ export function Dashboard({
   onWidgetContextMenu,
   onDashboardContextMenu,
 }: DashboardProps) {
+  const dashboardLocale = useConfig().locale?.dashboard
   const [maximizedId, setMaximizedId] = useState<string | null>(null)
 
-  const wrapperClass = unstyled
-    ? className
-    : ['sg-dashboard', className].filter(Boolean).join(' ')
+  const wrapperClass = unstyled ? className : ['sg-dashboard', className].filter(Boolean).join(' ')
 
   const gridStyle: CSSProperties = {
     display: 'grid',
@@ -89,7 +89,7 @@ export function Dashboard({
       className={wrapperClass}
       style={gridStyle}
       role="region"
-      aria-label="Dashboard"
+      aria-label={dashboardLocale?.ariaLabel ?? 'Dashboard'}
       onContextMenu={onDashboardContextMenu ? handleRootContextMenu : undefined}
     >
       {widgets.map((w) => (
@@ -100,9 +100,7 @@ export function Dashboard({
           isMaximized={maximizedId === w.id}
           totalColumns={columns}
           onWidgetContextMenu={onWidgetContextMenu}
-          onToggleMaximize={() =>
-            setMaximizedId((cur) => (cur === w.id ? null : w.id))
-          }
+          onToggleMaximize={() => setMaximizedId((cur) => (cur === w.id ? null : w.id))}
         />
       ))}
     </div>
@@ -119,14 +117,8 @@ export function Dashboard({
 export interface DashboardWidgetEditorBindings {
   editable: boolean
   showResizeHandle: boolean
-  onPointerDownDragHandle?: (
-    e: ReactPointerEvent<HTMLElement>,
-    widget: DashboardWidget,
-  ) => void
-  onPointerDownResizeHandle?: (
-    e: ReactPointerEvent<HTMLElement>,
-    widget: DashboardWidget,
-  ) => void
+  onPointerDownDragHandle?: (e: ReactPointerEvent<HTMLElement>, widget: DashboardWidget) => void
+  onPointerDownResizeHandle?: (e: ReactPointerEvent<HTMLElement>, widget: DashboardWidget) => void
 }
 
 export interface DashboardWidgetViewProps {
@@ -162,6 +154,7 @@ export function DashboardWidgetView({
   editor,
   defaultActions,
 }: DashboardWidgetViewProps) {
+  const dashboardLocale = useConfig().locale?.dashboard
   const [hovered, setHovered] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -195,9 +188,7 @@ export function DashboardWidgetView({
     const raw = widget.actions ?? defaultActions ?? []
     return raw
       .filter((a) => !a.hidden?.(widget))
-      .map((a) =>
-        a.id === '__maximize__' && isMaximized ? { ...a, label: 'Restore' } : a,
-      )
+      .map((a) => (a.id === '__maximize__' && isMaximized ? { ...a, label: 'Restore' } : a))
   }, [widget, defaultActions, isMaximized])
 
   const hasActions = actions.length > 0
@@ -255,15 +246,13 @@ export function DashboardWidgetView({
           )}
         </div>
       )}
-      <div className={unstyled ? undefined : 'sg-dashboard-widget-body'}>
-        {content}
-      </div>
+      <div className={unstyled ? undefined : 'sg-dashboard-widget-body'}>{content}</div>
       {editor?.showResizeHandle && (
         <div
           className={unstyled ? undefined : 'sg-dashboard-editor-resize-handle'}
           data-role="resize-handle"
           role="button"
-          aria-label="Resize widget"
+          aria-label={dashboardLocale?.resizeWidget ?? 'Resize widget'}
           tabIndex={-1}
           onPointerDown={
             editor.onPointerDownResizeHandle
@@ -305,6 +294,7 @@ function WidgetActionsMenu({
   onOpenChange,
   onActivateMaximize,
 }: WidgetActionsMenuProps) {
+  const dashboardLocale = useConfig().locale?.dashboard
   const wrapperRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -354,7 +344,7 @@ function WidgetActionsMenu({
         className={triggerCls}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Widget actions"
+        aria-label={dashboardLocale?.widgetActions ?? 'Widget actions'}
         data-role="widget-more-button"
         onClick={(e) => {
           e.stopPropagation()
@@ -364,11 +354,7 @@ function WidgetActionsMenu({
         <MoreIcon />
       </button>
       {open && (
-        <div
-          className={menuCls}
-          role="menu"
-          data-role="widget-actions-menu"
-        >
+        <div className={menuCls} role="menu" data-role="widget-actions-menu">
           {actions.map((a) => {
             const itemCls = unstyled
               ? undefined

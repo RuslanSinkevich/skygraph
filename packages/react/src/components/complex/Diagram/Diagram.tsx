@@ -1,4 +1,12 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import type {
   CSSProperties,
   ForwardedRef,
@@ -140,7 +148,8 @@ export interface DiagramProps {
   routeAroundNodes?: boolean
   /**
    * Tuning knobs forwarded to the orthogonal router when
-   * `routeAroundNodes` is on. See {@link routeOrthogonal}'s options.
+   * `routeAroundNodes` is on. See the `routeOrthogonal` router options
+   * (from `@skygraph/core`).
    */
   routingOptions?: {
     gridSize?: number
@@ -248,16 +257,16 @@ function resolveAnchor(
   return { point: anchor.point }
 }
 
-function endpointWorldPoint(
-  graph: GraphEngine,
-  ep: EdgeEndpoint,
-): Point | null {
+function endpointWorldPoint(graph: GraphEngine, ep: EdgeEndpoint): Point | null {
   const node = graph.getNode(ep.node)
   if (!node) return null
   const local = resolveAnchor(graph, ep.node, ep.anchor)
   if (!local) return null
   const bounds = graph.boundsOf(ep.node)
-  return [bounds.x + (local.point[0] - localOriginOffset(node).x), bounds.y + (local.point[1] - localOriginOffset(node).y)]
+  return [
+    bounds.x + (local.point[0] - localOriginOffset(node).x),
+    bounds.y + (local.point[1] - localOriginOffset(node).y),
+  ]
 }
 
 /**
@@ -441,11 +450,7 @@ function DiagramInner(
 
   const wrapperClass = unstyled
     ? className
-    : [
-        'sg-diagram',
-        snapToGrid ? 'sg-diagram-grid' : '',
-        className,
-      ].filter(Boolean).join(' ')
+    : ['sg-diagram', snapToGrid ? 'sg-diagram-grid' : '', className].filter(Boolean).join(' ')
 
   const wrapperStyle: CSSProperties = {
     position: 'relative',
@@ -570,9 +575,7 @@ function DiagramInner(
       e.stopPropagation()
 
       const groupIds =
-        multiCapable && selectionSet.has(id)
-          ? Array.from(new Set([id, ...currentSelection]))
-          : [id]
+        multiCapable && selectionSet.has(id) ? Array.from(new Set([id, ...currentSelection])) : [id]
       const members = groupIds
         .map((mid) => {
           const n = graph.getNode(mid)
@@ -647,9 +650,7 @@ function DiagramInner(
       setLasso(screen)
       const world = screenRectToWorld(screen, viewRef.current)
       const hits = nodesInBox(boundsByIdRef.current, world)
-      const next = l.additive
-        ? Array.from(new Set([...l.initial, ...hits]))
-        : hits
+      const next = l.additive ? Array.from(new Set([...l.initial, ...hits])) : hits
       commitSelection(next)
     }
     const onUp = () => {
@@ -799,13 +800,10 @@ function DiagramInner(
   const hasEdgeActions = !!edgeActions && edgeActions.length > 0
   const edgesInteractive = !!onEdgeContextMenu || hasEdgeActions
 
-  const hoveredNodeRecord =
-    hoveredNode != null ? state.nodes.get(hoveredNode) ?? null : null
-  const hoveredNodeBounds =
-    hoveredNode != null ? boundsById.get(hoveredNode) ?? null : null
+  const hoveredNodeRecord = hoveredNode != null ? (state.nodes.get(hoveredNode) ?? null) : null
+  const hoveredNodeBounds = hoveredNode != null ? (boundsById.get(hoveredNode) ?? null) : null
 
-  const hoveredEdgeRecord =
-    hoveredEdge != null ? state.edges.get(hoveredEdge) ?? null : null
+  const hoveredEdgeRecord = hoveredEdge != null ? (state.edges.get(hoveredEdge) ?? null) : null
   const hoveredEdgeMid = useMemo(() => {
     if (!hoveredEdgeRecord) return null
     const a = endpointWorldPoint(graph, hoveredEdgeRecord.from)
@@ -872,7 +870,9 @@ function DiagramInner(
                 `sg-diagram-node-${node.outline.kind}`,
                 draggable ? 'sg-diagram-node-draggable' : '',
                 isSelected ? 'sg-diagram-node-selected' : '',
-              ].filter(Boolean).join(' ')
+              ]
+                .filter(Boolean)
+                .join(' ')
           return (
             <div
               key={node.id}
@@ -890,9 +890,7 @@ function DiagramInner(
                 userSelect: draggable ? 'none' : undefined,
               }}
               onMouseDown={
-                draggable || selectionMode !== 'single'
-                  ? handleNodeMouseDown(node.id)
-                  : undefined
+                draggable || selectionMode !== 'single' ? handleNodeMouseDown(node.id) : undefined
               }
               onContextMenu={onNodeContextMenu ? handleNodeContextMenu(node) : undefined}
               onMouseEnter={hasNodeActions ? () => showNodeHover(node.id) : undefined}

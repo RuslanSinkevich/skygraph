@@ -52,7 +52,7 @@ export interface FormContextValue {
 export const FormContext = createContext<FormContextValue | null>(null)
 
 /**
- * Returns the current {@link FormContextValue} from the nearest {@link Form}.
+ * Returns the current `FormContextValue` from the nearest {@link Form}.
  * @throws If used outside `<Form>`.
  */
 export function useFormContext(): FormContextValue {

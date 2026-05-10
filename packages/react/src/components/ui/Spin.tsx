@@ -57,7 +57,7 @@ export function Spin({
 
   const spinSizeClass = resolvedSize === 'middle' ? 'default' : resolvedSize
   const spinClasses = unstyled
-    ? className ?? ''
+    ? (className ?? '')
     : ['sg-spin', `sg-spin-${spinSizeClass}`, className].filter(Boolean).join(' ')
 
   const spinElement = indicator ?? (
@@ -66,7 +66,7 @@ export function Spin({
       style={style}
       role="status"
       aria-live="polite"
-      aria-label="Loading"
+      aria-label={config.locale?.spin?.loading ?? 'Loading'}
     />
   )
 
@@ -96,9 +96,7 @@ export function Spin({
         {spinElement}
         {tip && <div className={unstyled ? '' : 'sg-spin-tip'}>{tip}</div>}
       </div>
-      <div className={visible ? (unstyled ? '' : 'sg-spin-blur') : ''}>
-        {children}
-      </div>
+      <div className={visible ? (unstyled ? '' : 'sg-spin-blur') : ''}>{children}</div>
     </div>
   )
 }

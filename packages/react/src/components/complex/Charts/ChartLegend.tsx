@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { colorForSeries } from './types'
 import type { ChartSeries } from './types'
+import { useConfig } from '../../ConfigProvider'
 
 export interface ChartLegendProps {
   series: readonly ChartSeries[]
@@ -13,38 +14,20 @@ export interface ChartLegendProps {
  * `<span>` per series (colored swatch + label).
  */
 export function ChartLegend({ series, className, style }: ChartLegendProps) {
+  const chartsLocale = useConfig().locale?.charts
   return (
     <div
       className={['sg-chart-legend', className].filter(Boolean).join(' ')}
       role="list"
-      aria-label="Chart legend"
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 12,
-        marginTop: 8,
-        fontSize: 12,
-        color: 'var(--sg-color-text-secondary)',
-        ...style,
-      }}
+      aria-label={chartsLocale?.legend ?? 'Chart legend'}
+      style={style}
     >
       {series.map((s, i) => (
-        <span
-          key={s.id}
-          role="listitem"
-          className="sg-chart-legend-item"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-        >
+        <span key={s.id} role="listitem" className="sg-chart-legend-item">
           <span
             aria-hidden="true"
             className="sg-chart-legend-swatch"
-            style={{
-              display: 'inline-block',
-              width: 10,
-              height: 10,
-              borderRadius: 2,
-              background: colorForSeries(s, i),
-            }}
+            style={{ background: colorForSeries(s, i) }}
           />
           {s.label}
         </span>

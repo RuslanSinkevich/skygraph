@@ -56,6 +56,7 @@ export function Upload({
   const uploadLocale = config.locale?.upload
   const uploadText = uploadLocale?.uploadText ?? 'Upload'
   const removeLabel = uploadLocale?.removeFile ?? 'Remove file'
+  const uploadAriaLabel = uploadLocale?.uploadAriaLabel ?? 'Upload file'
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleClick = () => {
@@ -75,10 +76,8 @@ export function Upload({
   }
 
   const wrapperClass = unstyled
-    ? className ?? ''
-    : ['sg-upload', loading ? 'sg-upload-loading' : '', className]
-        .filter(Boolean)
-        .join(' ')
+    ? (className ?? '')
+    : ['sg-upload', loading ? 'sg-upload-loading' : '', className].filter(Boolean).join(' ')
 
   return (
     <div className={wrapperClass} style={style}>
@@ -88,7 +87,7 @@ export function Upload({
         accept={accept}
         multiple={multiple}
         style={{ display: 'none' }}
-        aria-label="Upload file"
+        aria-label={uploadAriaLabel}
         onChange={handleChange}
       />
       <div onClick={handleClick}>
@@ -106,9 +105,7 @@ export function Upload({
               className={
                 unstyled
                   ? ''
-                  : ['sg-upload-item', `sg-upload-item-${file.status}`]
-                      .filter(Boolean)
-                      .join(' ')
+                  : ['sg-upload-item', `sg-upload-item-${file.status}`].filter(Boolean).join(' ')
               }
             >
               <span className={unstyled ? '' : 'sg-upload-item-name'}>

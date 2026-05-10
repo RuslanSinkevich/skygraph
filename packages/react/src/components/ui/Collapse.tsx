@@ -64,7 +64,7 @@ export function Collapse({
   const size = sizeProp ?? config.size ?? 'middle'
 
   const [internalActive, setInternalActive] = useState<string[]>(
-    toArray(activeKey ?? defaultActiveKey)
+    toArray(activeKey ?? defaultActiveKey),
   )
   const currentActive = activeKey !== undefined ? toArray(activeKey) : internalActive
 
@@ -186,10 +186,7 @@ function CollapsePanel({
 
   const arrow = showArrow ? (
     <span
-      className={[
-        'sg-collapse-arrow',
-        isActive ? 'sg-collapse-arrow-open' : '',
-      ]
+      className={['sg-collapse-arrow', isActive ? 'sg-collapse-arrow-open' : '']
         .filter(Boolean)
         .join(' ')}
     />
@@ -219,8 +216,8 @@ function CollapsePanel({
         ref={contentRef}
         className="sg-collapse-content"
         style={{
-          maxHeight: height !== undefined ? `${height}px` : isActive ? 'none' : '0px',
-          overflow: 'hidden',
+          ['--sg-collapse-content-max-height' as string]:
+            height !== undefined ? `${height}px` : isActive ? 'none' : '0px',
         }}
         onTransitionEnd={handleTransitionEnd}
       >

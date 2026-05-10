@@ -1,9 +1,6 @@
 import { Fragment, useMemo, type CSSProperties } from 'react'
-import type {
-  EventTimelineProps,
-  TimelineEvent,
-  TimelineGroupBy,
-} from './types'
+import type { EventTimelineProps, TimelineEvent, TimelineGroupBy } from './types'
+import { useConfig } from '../../ConfigProvider'
 
 function toMs(v: Date | number): number {
   return v instanceof Date ? v.getTime() : v
@@ -64,6 +61,7 @@ export function EventTimeline({
   className,
   style,
 }: EventTimelineProps) {
+  const timelineLocale = useConfig().locale?.timeline
   const sorted = useMemo(() => {
     return [...events].sort((a, b) => toMs(a.date) - toMs(b.date))
   }, [events])
@@ -91,13 +89,7 @@ export function EventTimeline({
 
   const wrapperClass = unstyled
     ? className
-    : [
-        'sg-event-timeline',
-        `sg-event-timeline-${orientation}`,
-        className,
-      ]
-        .filter(Boolean)
-        .join(' ')
+    : ['sg-event-timeline', `sg-event-timeline-${orientation}`, className].filter(Boolean).join(' ')
 
   const wrapperStyle: CSSProperties = {
     display: 'flex',
@@ -110,7 +102,7 @@ export function EventTimeline({
       className={wrapperClass}
       style={wrapperStyle}
       role="list"
-      aria-label="Timeline"
+      aria-label={timelineLocale?.ariaLabel ?? 'Timeline'}
       data-orientation={orientation}
       data-group-by={groupBy ?? 'none'}
     >
@@ -138,9 +130,7 @@ export function EventTimeline({
               renderEvent(ev)
             ) : (
               <>
-                <div className={unstyled ? undefined : 'sg-event-timeline-title'}>
-                  {ev.title}
-                </div>
+                <div className={unstyled ? undefined : 'sg-event-timeline-title'}>{ev.title}</div>
                 {ev.description !== undefined && (
                   <div className={unstyled ? undefined : 'sg-event-timeline-description'}>
                     {ev.description}
@@ -156,12 +146,8 @@ export function EventTimeline({
                 data-event-id={ev.id}
                 data-event-time={toMs(ev.date)}
               >
-                <div className={unstyled ? undefined : 'sg-event-timeline-marker'}>
-                  {marker}
-                </div>
-                <div className={unstyled ? undefined : 'sg-event-timeline-content'}>
-                  {body}
-                </div>
+                <div className={unstyled ? undefined : 'sg-event-timeline-marker'}>{marker}</div>
+                <div className={unstyled ? undefined : 'sg-event-timeline-content'}>{body}</div>
               </div>
             )
           })}

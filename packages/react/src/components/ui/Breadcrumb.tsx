@@ -1,4 +1,5 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps } from '../../types'
 
 /** One segment in the breadcrumb trail. */
@@ -27,9 +28,10 @@ export function Breadcrumb({
   style,
   unstyled,
 }: BreadcrumbProps) {
+  const ariaLabel = useConfig().locale?.breadcrumb?.ariaLabel ?? 'Breadcrumb'
   if (unstyled) {
     return (
-      <nav className={className} style={style} aria-label="Breadcrumb">
+      <nav className={className} style={style} aria-label={ariaLabel}>
         {items.map((item, i) => (
           <span key={i}>
             {item.href ? <a href={item.href}>{item.title}</a> : item.title}
@@ -44,7 +46,7 @@ export function Breadcrumb({
     <nav
       className={['sg-breadcrumb', className].filter(Boolean).join(' ')}
       style={style}
-      aria-label="Breadcrumb"
+      aria-label={ariaLabel}
     >
       {items.map((item, i) => {
         const isLast = i === items.length - 1
@@ -68,9 +70,7 @@ export function Breadcrumb({
                 {item.title}
               </span>
             )}
-            {!isLast && (
-              <span className="sg-breadcrumb-separator">{separator}</span>
-            )}
+            {!isLast && <span className="sg-breadcrumb-separator">{separator}</span>}
           </React.Fragment>
         )
       })}

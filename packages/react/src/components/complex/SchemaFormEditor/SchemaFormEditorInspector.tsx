@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 import type { SchemaEditorStore } from './useSchemaEditor'
 import type { EditorField } from './types'
 import type { AutoFieldOption, FieldType } from '../AutoField/AutoField'
+import { useConfig } from '../../ConfigProvider'
 
 export interface SchemaFormEditorInspectorProps {
   store: SchemaEditorStore
@@ -208,6 +209,7 @@ function OptionsEditor({
   options: AutoFieldOption[]
   onChange: (next: AutoFieldOption[]) => void
 }) {
+  const sfeLocale = useConfig().locale?.schemaFormEditor
   function update(idx: number, patch: Partial<AutoFieldOption>) {
     const copy = options.map((o) => ({ ...o }))
     copy[idx] = { ...copy[idx]!, ...patch }
@@ -235,20 +237,20 @@ function OptionsEditor({
             className="sg-sfe-inspector-input"
             data-testid="sfe-inspector-option-label"
             value={opt.label}
-            placeholder="Label"
+            placeholder={sfeLocale?.optionLabelPlaceholder ?? 'Label'}
             onChange={(e) => update(idx, { label: e.target.value })}
           />
           <input
             className="sg-sfe-inspector-input"
             data-testid="sfe-inspector-option-value"
             value={String(opt.value)}
-            placeholder="Value"
+            placeholder={sfeLocale?.optionValuePlaceholder ?? 'Value'}
             onChange={(e) => update(idx, { value: e.target.value })}
           />
           <button
             type="button"
             className="sg-sfe-inspector-option-remove"
-            aria-label="Remove option"
+            aria-label={sfeLocale?.removeOption ?? 'Remove option'}
             onClick={() => remove(idx)}
           >
             ×

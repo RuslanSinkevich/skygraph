@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useConfig } from '../../ConfigProvider'
 import type { CascaderProps, CascaderOption } from './types'
 
 function getOptionLabel(opt: CascaderOption): string {
@@ -7,10 +8,7 @@ function getOptionLabel(opt: CascaderOption): string {
   return String(opt.value)
 }
 
-function findPath(
-  options: CascaderOption[],
-  values: (string | number)[],
-): CascaderOption[] {
+function findPath(options: CascaderOption[], values: (string | number)[]): CascaderOption[] {
   const path: CascaderOption[] = []
   let current = options
   for (const val of values) {
@@ -80,6 +78,10 @@ export function Cascader(props: CascaderProps) {
     unstyled,
   } = props
 
+  const cascaderLocale = useConfig().locale?.cascader
+  const searchPlaceholder = cascaderLocale?.searchPlaceholder ?? 'Search...'
+  const noMatchesText = cascaderLocale?.noMatches ?? 'No matches'
+
   const [internalValue, setInternalValue] = useState<(string | number)[]>(
     () => controlledValue ?? defaultValue ?? [],
   )
@@ -123,116 +125,145 @@ export function Cascader(props: CascaderProps) {
         searchRef.current.focus()
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
-  const rebuildColumns = useCallback((vals: (string | number)[]) => {
-    const cols: CascaderOption[][] = [options]
-    let current = options
-    const active: (string | number)[] = []
-    for (const val of vals) {
-      const found = current.find((o) => o.value === val)
-      if (!found) break
-      active.push(val)
-      if (found.children && found.children.length > 0) {
-        cols.push(found.children)
-        current = found.children
-      } else {
-        break
-      }
-    }
-    setActiveColumns(cols)
-    setActiveValues(active)
-  }, [options])
-
-  const fireChange = useCallback((values: (string | number)[], path: CascaderOption[]) => {
-    setInternalValue(values)
-    onChange?.(values, path)
-  }, [onChange])
-
-  const handleOptionClick = useCallback((opt: CascaderOption, colIndex: number) => {
-    if (opt.disabled) return
-
-    const newActiveValues = [...activeValues.slice(0, colIndex), opt.value]
-    setActiveValues(newActiveValues)
-
-    const newColumns = [...activeColumns.slice(0, colIndex + 1)]
-    if (opt.children && opt.children.length > 0) {
-      newColumns.push(opt.children)
-    }
-    setActiveColumns(newColumns)
-
-    const isLeaf = opt.isLeaf !== false && (!opt.children || opt.children.length === 0)
-
-    if (loadData && !isLeaf && (!opt.children || opt.children.length === 0) && !opt.isLeaf) {
-      const path = findPath(options, newActiveValues)
-      setLoadingValues((prev) => new Set(prev).add(opt.value))
-      loadData(path)
-      setTimeout(() => {
-        setLoadingValues((prev) => {
-          const next = new Set(prev)
-          next.delete(opt.value)
-          return next
-        })
-        rebuildColumns(newActiveValues)
-      }, 0)
-    }
-
-    if (multiple) {
-      if (isLeaf) {
-        const path = findPath(options, newActiveValues)
-        const exists = multiValues.some((mv) => arraysEqual(mv, newActiveValues))
-        if (exists) {
-          const newMulti = multiValues.filter((mv) => !arraysEqual(mv, newActiveValues))
-          setMultiValues(newMulti)
-          onChange?.(newActiveValues, path)
+  const rebuildColumns = useCallback(
+    (vals: (string | number)[]) => {
+      const cols: CascaderOption[][] = [options]
+      let current = options
+      const active: (string | number)[] = []
+      for (const val of vals) {
+        const found = current.find((o) => o.value === val)
+        if (!found) break
+        active.push(val)
+        if (found.children && found.children.length > 0) {
+          cols.push(found.children)
+          current = found.children
         } else {
-          const newMulti = [...multiValues, newActiveValues]
-          setMultiValues(newMulti)
-          onChange?.(newActiveValues, path)
+          break
         }
       }
-      return
-    }
+      setActiveColumns(cols)
+      setActiveValues(active)
+    },
+    [options],
+  )
 
-    if (isLeaf || changeOnSelect) {
-      const path = findPath(options, newActiveValues)
-      fireChange(newActiveValues, path)
-      if (isLeaf) {
-        setOpen(false)
-        setSearchValue('')
+  const fireChange = useCallback(
+    (values: (string | number)[], path: CascaderOption[]) => {
+      setInternalValue(values)
+      onChange?.(values, path)
+    },
+    [onChange],
+  )
+
+  const handleOptionClick = useCallback(
+    (opt: CascaderOption, colIndex: number) => {
+      if (opt.disabled) return
+
+      const newActiveValues = [...activeValues.slice(0, colIndex), opt.value]
+      setActiveValues(newActiveValues)
+
+      const newColumns = [...activeColumns.slice(0, colIndex + 1)]
+      if (opt.children && opt.children.length > 0) {
+        newColumns.push(opt.children)
       }
-    }
-  }, [activeValues, activeColumns, options, multiple, multiValues, changeOnSelect, loadData, fireChange, rebuildColumns, onChange])
+      setActiveColumns(newColumns)
 
-  const handleOptionHover = useCallback((opt: CascaderOption, colIndex: number) => {
-    if (expandTrigger !== 'hover' || opt.disabled) return
-    const newActiveValues = [...activeValues.slice(0, colIndex), opt.value]
-    setActiveValues(newActiveValues)
+      const isLeaf = opt.isLeaf !== false && (!opt.children || opt.children.length === 0)
 
-    const newColumns = [...activeColumns.slice(0, colIndex + 1)]
-    if (opt.children && opt.children.length > 0) {
-      newColumns.push(opt.children)
-    }
-    setActiveColumns(newColumns)
-  }, [expandTrigger, activeValues, activeColumns])
+      if (loadData && !isLeaf && (!opt.children || opt.children.length === 0) && !opt.isLeaf) {
+        const path = findPath(options, newActiveValues)
+        setLoadingValues((prev) => new Set(prev).add(opt.value))
+        loadData(path)
+        setTimeout(() => {
+          setLoadingValues((prev) => {
+            const next = new Set(prev)
+            next.delete(opt.value)
+            return next
+          })
+          rebuildColumns(newActiveValues)
+        }, 0)
+      }
 
-  const handleClear = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (disabled) return
-    if (multiple) {
-      setMultiValues([])
-    }
-    fireChange([], [])
-    setSearchValue('')
-  }, [disabled, multiple, fireChange])
+      if (multiple) {
+        if (isLeaf) {
+          const path = findPath(options, newActiveValues)
+          const exists = multiValues.some((mv) => arraysEqual(mv, newActiveValues))
+          if (exists) {
+            const newMulti = multiValues.filter((mv) => !arraysEqual(mv, newActiveValues))
+            setMultiValues(newMulti)
+            onChange?.(newActiveValues, path)
+          } else {
+            const newMulti = [...multiValues, newActiveValues]
+            setMultiValues(newMulti)
+            onChange?.(newActiveValues, path)
+          }
+        }
+        return
+      }
 
-  const handleRemoveMulti = useCallback((index: number, e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (disabled) return
-    const newMulti = multiValues.filter((_, i) => i !== index)
-    setMultiValues(newMulti)
-  }, [disabled, multiValues])
+      if (isLeaf || changeOnSelect) {
+        const path = findPath(options, newActiveValues)
+        fireChange(newActiveValues, path)
+        if (isLeaf) {
+          setOpen(false)
+          setSearchValue('')
+        }
+      }
+    },
+    [
+      activeValues,
+      activeColumns,
+      options,
+      multiple,
+      multiValues,
+      changeOnSelect,
+      loadData,
+      fireChange,
+      rebuildColumns,
+      onChange,
+    ],
+  )
+
+  const handleOptionHover = useCallback(
+    (opt: CascaderOption, colIndex: number) => {
+      if (expandTrigger !== 'hover' || opt.disabled) return
+      const newActiveValues = [...activeValues.slice(0, colIndex), opt.value]
+      setActiveValues(newActiveValues)
+
+      const newColumns = [...activeColumns.slice(0, colIndex + 1)]
+      if (opt.children && opt.children.length > 0) {
+        newColumns.push(opt.children)
+      }
+      setActiveColumns(newColumns)
+    },
+    [expandTrigger, activeValues, activeColumns],
+  )
+
+  const handleClear = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (disabled) return
+      if (multiple) {
+        setMultiValues([])
+      }
+      fireChange([], [])
+      setSearchValue('')
+    },
+    [disabled, multiple, fireChange],
+  )
+
+  const handleRemoveMulti = useCallback(
+    (index: number, e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (disabled) return
+      const newMulti = multiValues.filter((_, i) => i !== index)
+      setMultiValues(newMulti)
+    },
+    [disabled, multiValues],
+  )
 
   const handleTriggerClick = useCallback(() => {
     if (disabled) return
@@ -255,21 +286,24 @@ export function Cascader(props: CascaderProps) {
     return allPaths.filter(({ path }) => searchFilter(searchValue, path))
   }, [searchValue, searchFilter, options, changeOnSelect])
 
-  const handleSearchSelect = useCallback((values: (string | number)[], path: CascaderOption[]) => {
-    if (multiple) {
-      const exists = multiValues.some((mv) => arraysEqual(mv, values))
-      if (exists) {
-        setMultiValues(multiValues.filter((mv) => !arraysEqual(mv, values)))
+  const handleSearchSelect = useCallback(
+    (values: (string | number)[], path: CascaderOption[]) => {
+      if (multiple) {
+        const exists = multiValues.some((mv) => arraysEqual(mv, values))
+        if (exists) {
+          setMultiValues(multiValues.filter((mv) => !arraysEqual(mv, values)))
+        } else {
+          setMultiValues([...multiValues, values])
+        }
+        onChange?.(values, path)
       } else {
-        setMultiValues([...multiValues, values])
+        fireChange(values, path)
+        setOpen(false)
+        setSearchValue('')
       }
-      onChange?.(values, path)
-    } else {
-      fireChange(values, path)
-      setOpen(false)
-      setSearchValue('')
-    }
-  }, [multiple, multiValues, fireChange, onChange])
+    },
+    [multiple, multiValues, fireChange, onChange],
+  )
 
   const getDisplayText = useCallback((): React.ReactNode => {
     if (multiple) return null
@@ -283,9 +317,12 @@ export function Cascader(props: CascaderProps) {
 
   const displayText = getDisplayText()
 
-  const isMultiChecked = useCallback((values: (string | number)[]): boolean => {
-    return multiValues.some((mv) => arraysEqual(mv, values))
-  }, [multiValues])
+  const isMultiChecked = useCallback(
+    (values: (string | number)[]): boolean => {
+      return multiValues.some((mv) => arraysEqual(mv, values))
+    },
+    [multiValues],
+  )
 
   // Unstyled render
   if (unstyled) {
@@ -295,15 +332,16 @@ export function Cascader(props: CascaderProps) {
           {!multiple && !displayText && <span>{placeholder}</span>}
           {!multiple && displayText && <span>{displayText}</span>}
           {multiple && multiValues.length === 0 && <span>{placeholder}</span>}
-          {multiple && multiValues.map((mv, i) => {
-            const path = findPath(options, mv)
-            return (
-              <span key={i}>
-                {path.map(getOptionLabel).join(' / ')}
-                <span onClick={(e) => handleRemoveMulti(i, e)}>&times;</span>
-              </span>
-            )
-          })}
+          {multiple &&
+            multiValues.map((mv, i) => {
+              const path = findPath(options, mv)
+              return (
+                <span key={i}>
+                  {path.map(getOptionLabel).join(' / ')}
+                  <span onClick={(e) => handleRemoveMulti(i, e)}>&times;</span>
+                </span>
+              )
+            })}
         </div>
         {open && (
           <div>
@@ -312,7 +350,7 @@ export function Cascader(props: CascaderProps) {
                 ref={searchRef}
                 value={searchValue}
                 onChange={handleSearchChange}
-                placeholder="Search..."
+                placeholder={searchPlaceholder}
               />
             )}
             {searchResults ? (
@@ -322,7 +360,7 @@ export function Cascader(props: CascaderProps) {
                     {path.map(getOptionLabel).join(' / ')}
                   </div>
                 ))}
-                {searchResults.length === 0 && <div>No matches</div>}
+                {searchResults.length === 0 && <div>{noMatchesText}</div>}
               </div>
             ) : (
               <div style={{ display: 'flex' }}>
@@ -355,15 +393,15 @@ export function Cascader(props: CascaderProps) {
     disabled ? 'sg-cascader-disabled' : '',
     multiple ? 'sg-cascader-multiple' : '',
     className,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 
-  const visibleMulti = maxTagCount !== undefined && multiple
-    ? multiValues.slice(0, maxTagCount)
-    : multiValues
+  const visibleMulti =
+    maxTagCount !== undefined && multiple ? multiValues.slice(0, maxTagCount) : multiValues
 
-  const hiddenCount = maxTagCount !== undefined && multiple
-    ? Math.max(0, multiValues.length - maxTagCount)
-    : 0
+  const hiddenCount =
+    maxTagCount !== undefined && multiple ? Math.max(0, multiValues.length - maxTagCount) : 0
 
   return (
     <div className={wrapperCls} style={style} ref={wrapperRef}>
@@ -381,27 +419,23 @@ export function Cascader(props: CascaderProps) {
             <span className="sg-cascader-placeholder">{placeholder}</span>
           )}
 
-          {multiple && visibleMulti.map((mv, i) => {
-            const path = findPath(options, mv)
-            return (
-              <span key={i} className="sg-cascader-tag">
-                <span className="sg-cascader-tag-label">
-                  {path.map(getOptionLabel).join(' / ')}
+          {multiple &&
+            visibleMulti.map((mv, i) => {
+              const path = findPath(options, mv)
+              return (
+                <span key={i} className="sg-cascader-tag">
+                  <span className="sg-cascader-tag-label">
+                    {path.map(getOptionLabel).join(' / ')}
+                  </span>
+                  <span className="sg-cascader-tag-close" onClick={(e) => handleRemoveMulti(i, e)}>
+                    &times;
+                  </span>
                 </span>
-                <span
-                  className="sg-cascader-tag-close"
-                  onClick={(e) => handleRemoveMulti(i, e)}
-                >
-                  &times;
-                </span>
-              </span>
-            )
-          })}
+              )
+            })}
 
           {hiddenCount > 0 && (
-            <span className="sg-cascader-tag sg-cascader-tag-rest">
-              +{hiddenCount}...
-            </span>
+            <span className="sg-cascader-tag sg-cascader-tag-rest">+{hiddenCount}...</span>
           )}
 
           {showSearch && open && (
@@ -410,6 +444,7 @@ export function Cascader(props: CascaderProps) {
               className="sg-cascader-search-input"
               value={searchValue}
               onChange={handleSearchChange}
+              placeholder={searchPlaceholder}
             />
           )}
         </div>
@@ -436,12 +471,18 @@ export function Cascader(props: CascaderProps) {
                     className={[
                       'sg-cascader-search-item',
                       checked ? 'sg-cascader-search-item-checked' : '',
-                      !multiple && arraysEqual(values, currentValue) ? 'sg-cascader-search-item-active' : '',
-                    ].filter(Boolean).join(' ')}
+                      !multiple && arraysEqual(values, currentValue)
+                        ? 'sg-cascader-search-item-active'
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
                     onClick={() => handleSearchSelect(values, path)}
                   >
                     {multiple && (
-                      <span className={`sg-cascader-search-check ${checked ? 'sg-cascader-search-check-active' : ''}`}>
+                      <span
+                        className={`sg-cascader-search-check ${checked ? 'sg-cascader-search-check-active' : ''}`}
+                      >
                         {checked ? '✓' : ''}
                       </span>
                     )}
@@ -457,7 +498,7 @@ export function Cascader(props: CascaderProps) {
                 )
               })}
               {searchResults.length === 0 && (
-                <div className="sg-cascader-empty">No matches</div>
+                <div className="sg-cascader-empty">{noMatchesText}</div>
               )}
             </div>
           ) : (
@@ -468,7 +509,11 @@ export function Cascader(props: CascaderProps) {
                     const isActive = activeValues[colIndex] === opt.value
                     const hasChildren = opt.children && opt.children.length > 0
                     const isLoading = loadingValues.has(opt.value)
-                    const isChecked = multiple && multiValues.some((mv) => mv[colIndex] === opt.value && mv.length === colIndex + 1)
+                    const isChecked =
+                      multiple &&
+                      multiValues.some(
+                        (mv) => mv[colIndex] === opt.value && mv.length === colIndex + 1,
+                      )
 
                     return (
                       <div
@@ -478,12 +523,16 @@ export function Cascader(props: CascaderProps) {
                           isActive ? 'sg-cascader-option-active' : '',
                           opt.disabled ? 'sg-cascader-option-disabled' : '',
                           isLoading ? 'sg-cascader-option-loading' : '',
-                        ].filter(Boolean).join(' ')}
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
                         onClick={() => handleOptionClick(opt, colIndex)}
                         onMouseEnter={() => handleOptionHover(opt, colIndex)}
                       >
                         {multiple && (
-                          <span className={`sg-cascader-option-check ${isChecked ? 'sg-cascader-option-check-active' : ''}`}>
+                          <span
+                            className={`sg-cascader-option-check ${isChecked ? 'sg-cascader-option-check-active' : ''}`}
+                          >
                             {isChecked ? '✓' : ''}
                           </span>
                         )}
@@ -492,7 +541,9 @@ export function Cascader(props: CascaderProps) {
                           <span className="sg-cascader-option-expand">▸</span>
                         )}
                         {isLoading && (
-                          <span className="sg-cascader-option-expand sg-cascader-option-spinner">⟳</span>
+                          <span className="sg-cascader-option-expand sg-cascader-option-spinner">
+                            ⟳
+                          </span>
                         )}
                       </div>
                     )

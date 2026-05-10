@@ -1,4 +1,5 @@
 import React from 'react'
+import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps, SizableProps } from '../../types'
 
 /** Props for the Tag component (label with optional close control). */
@@ -30,11 +31,16 @@ export function Tag({
   style,
   unstyled,
 }: TagProps) {
+  const closeAriaLabel = useConfig().locale?.tag?.closeAriaLabel ?? 'Close'
   if (unstyled) {
     return (
       <span className={className} style={style}>
         {children}
-        {closable && <span onClick={onClose} role="button">×</span>}
+        {closable && (
+          <span onClick={onClose} role="button">
+            ×
+          </span>
+        )}
       </span>
     )
   }
@@ -45,7 +51,9 @@ export function Tag({
     isPreset ? `sg-tag-${color}` : '',
     bordered ? '' : 'sg-tag-borderless',
     className,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   const customStyle: React.CSSProperties = isPreset
     ? { ...style }
@@ -62,7 +70,7 @@ export function Tag({
             onClose?.()
           }}
           role="button"
-          aria-label="Close"
+          aria-label={closeAriaLabel}
         >
           ×
         </span>

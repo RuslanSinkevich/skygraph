@@ -6,7 +6,7 @@ import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../t
 export interface PinInputProps extends BaseComponentProps, InteractiveProps, SizableProps {
   /** Number of character cells. @default 6 */
   length?: number
-  /** Controlled combined string value (padded/truncated to {@link length}). */
+  /** Controlled combined string value (padded/truncated to `length`). */
   value?: string
   /** Initial combined string when uncontrolled. @default '' */
   defaultValue?: string
@@ -119,7 +119,9 @@ export function PinInput({
         {Array.from({ length }, (_, i) => (
           <input
             key={`${id}-${i}`}
-            ref={(el) => { refs.current[i] = el }}
+            ref={(el) => {
+              refs.current[i] = el
+            }}
             type={mask ? 'password' : 'text'}
             inputMode={type === 'numeric' ? 'numeric' : 'text'}
             maxLength={1}
@@ -152,7 +154,9 @@ export function PinInput({
         return (
           <input
             key={`${id}-${i}`}
-            ref={(el) => { refs.current[i] = el }}
+            ref={(el) => {
+              refs.current[i] = el
+            }}
             className={[
               'sg-pin-input-cell',
               `sg-pin-input-cell-${size}`,

@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useId } from 'react'
 import { Button } from './Button'
 import { Transition } from './Transition'
+import { useConfig } from '../ConfigProvider'
 import { useFocusTrap } from '../../hooks/a11y/useFocusTrap'
 import type { BaseComponentProps } from '../../types'
 
@@ -61,12 +62,14 @@ export function Drawer({
   const titleId = `${uid}-title`
   const bodyId = `${uid}-body`
   const trapRef = useFocusTrap(open)
+  const { locale } = useConfig()
+  const closeAriaLabel = locale?.drawer?.closeAriaLabel ?? 'Close'
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     },
-    [onClose]
+    [onClose],
   )
 
   useEffect(() => {
@@ -95,7 +98,11 @@ export function Drawer({
         {title && <div id={titleId}>{title}</div>}
         <div id={bodyId}>{children}</div>
         {footer && <div>{footer}</div>}
-        {closable && <button onClick={onClose} aria-label="Close">×</button>}
+        {closable && (
+          <button onClick={onClose} aria-label={closeAriaLabel}>
+            ×
+          </button>
+        )}
       </div>
     )
   }
@@ -105,20 +112,11 @@ export function Drawer({
   return (
     <Transition visible={open} name="sg-fade" unmountOnExit duration={300}>
       <div className="sg-drawer-root">
-        {mask && (
-          <div
-            className="sg-drawer-mask"
-            onClick={maskClosable ? onClose : undefined}
-          />
-        )}
+        {mask && <div className="sg-drawer-mask" onClick={maskClosable ? onClose : undefined} />}
         <Transition visible={open} name={transitionName} unmountOnExit duration={300}>
           <div
             ref={trapRef}
-            className={[
-              'sg-drawer',
-              `sg-drawer-${placement}`,
-              className,
-            ].filter(Boolean).join(' ')}
+            className={['sg-drawer', `sg-drawer-${placement}`, className].filter(Boolean).join(' ')}
             style={{ ...sizeStyle, ...style }}
             role="dialog"
             aria-modal="true"
@@ -127,20 +125,26 @@ export function Drawer({
           >
             {(title || closable) && (
               <div className="sg-drawer-header">
-                {title && <div className="sg-drawer-title" id={titleId}>{title}</div>}
+                {title && (
+                  <div className="sg-drawer-title" id={titleId}>
+                    {title}
+                  </div>
+                )}
                 {closable && (
                   <Button
                     type="text"
                     className="sg-drawer-close"
                     onClick={onClose}
-                    aria-label="Close"
+                    aria-label={closeAriaLabel}
                   >
                     &times;
                   </Button>
                 )}
               </div>
             )}
-            <div className="sg-drawer-body" id={bodyId}>{children}</div>
+            <div className="sg-drawer-body" id={bodyId}>
+              {children}
+            </div>
             {footer && <div className="sg-drawer-footer">{footer}</div>}
           </div>
         </Transition>

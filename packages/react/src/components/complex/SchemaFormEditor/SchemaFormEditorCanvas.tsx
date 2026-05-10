@@ -11,6 +11,7 @@ import { PALETTE_DATA_TYPE } from './SchemaFormEditorPalette'
 import type { SchemaEditorStore } from './useSchemaEditor'
 import type { EditorField } from './types'
 import type { FieldType } from '../AutoField/AutoField'
+import { useConfig } from '../../ConfigProvider'
 
 export interface SchemaFormEditorCanvasProps {
   store: SchemaEditorStore
@@ -28,7 +29,16 @@ export function SchemaFormEditorCanvas({
   className,
   style,
 }: SchemaFormEditorCanvasProps) {
-  const { state, addField, removeField, moveFieldUp, moveFieldDown, duplicateField, moveField, setSelectedId } = store
+  const {
+    state,
+    addField,
+    removeField,
+    moveFieldUp,
+    moveFieldDown,
+    duplicateField,
+    moveField,
+    setSelectedId,
+  } = store
   const fields = state.schema.fields
   const isEmpty = fields.length === 0
 
@@ -41,9 +51,7 @@ export function SchemaFormEditorCanvas({
   // pick up their `defaultValue`.
   const formKey = useMemo(
     () =>
-      fields
-        .map((f) => `${f.id}:${f.name}:${f.type}:${String(f.defaultValue ?? '')}`)
-        .join('|'),
+      fields.map((f) => `${f.id}:${f.name}:${f.type}:${String(f.defaultValue ?? '')}`).join('|'),
     [fields],
   )
 
@@ -242,6 +250,7 @@ function FieldOverlay({
   onFieldDrop,
   onIndicator,
 }: FieldOverlayProps) {
+  const sfeLocale = useConfig().locale?.schemaFormEditor
   function handleDragOver(e: DragEvent<HTMLDivElement>) {
     e.preventDefault()
     e.stopPropagation()
@@ -258,10 +267,9 @@ function FieldOverlay({
         <div className="sg-sfe-canvas-drop-indicator" data-testid="sfe-drop-indicator" />
       )}
       <div
-        className={[
-          'sg-sfe-canvas-field',
-          isSelected ? 'sg-sfe-canvas-field-selected' : '',
-        ].filter(Boolean).join(' ')}
+        className={['sg-sfe-canvas-field', isSelected ? 'sg-sfe-canvas-field-selected' : '']
+          .filter(Boolean)
+          .join(' ')}
         data-testid="sfe-canvas-field"
         data-field-id={field.id}
         data-field-name={field.name}
@@ -291,7 +299,7 @@ function FieldOverlay({
               type="button"
               className="sg-sfe-canvas-field-toolbar-btn"
               data-testid="sfe-action-up"
-              aria-label="Move field up"
+              aria-label={sfeLocale?.moveFieldUp ?? 'Move field up'}
               onClick={() => onMoveUp(field.id)}
             >
               ↑
@@ -300,7 +308,7 @@ function FieldOverlay({
               type="button"
               className="sg-sfe-canvas-field-toolbar-btn"
               data-testid="sfe-action-down"
-              aria-label="Move field down"
+              aria-label={sfeLocale?.moveFieldDown ?? 'Move field down'}
               onClick={() => onMoveDown(field.id)}
             >
               ↓
@@ -309,7 +317,7 @@ function FieldOverlay({
               type="button"
               className="sg-sfe-canvas-field-toolbar-btn"
               data-testid="sfe-action-duplicate"
-              aria-label="Duplicate field"
+              aria-label={sfeLocale?.duplicateField ?? 'Duplicate field'}
               onClick={() => onDuplicate(field.id)}
             >
               ⎘
@@ -318,7 +326,7 @@ function FieldOverlay({
               type="button"
               className="sg-sfe-canvas-field-toolbar-btn sg-sfe-canvas-field-toolbar-btn-danger"
               data-testid="sfe-action-delete"
-              aria-label="Delete field"
+              aria-label={sfeLocale?.deleteField ?? 'Delete field'}
               onClick={() => onRemove(field.id)}
             >
               ×
@@ -338,9 +346,7 @@ function FieldOverlay({
               />
             )}
           </Field>
-          {field.helpText && (
-            <span className="sg-sfe-canvas-field-help">{field.helpText}</span>
-          )}
+          {field.helpText && <span className="sg-sfe-canvas-field-help">{field.helpText}</span>}
         </div>
       </div>
     </>

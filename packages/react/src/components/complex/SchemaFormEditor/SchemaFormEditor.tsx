@@ -10,6 +10,7 @@ import { SchemaFormEditorSchemaView } from './SchemaFormEditorSchemaView'
 import { createFieldFromPaletteType, editorSchemaToJsonSchema } from './adapters/jsonSchema'
 import { SchemaForm } from '../SchemaForm'
 import type { EditorSchema } from './types'
+import { useConfig } from '../../ConfigProvider'
 
 export interface SchemaFormEditorProps {
   /** Initial schema (uncontrolled). Use `setSchema` from a custom store for controlled use. */
@@ -43,6 +44,7 @@ export function SchemaFormEditor({
   style,
   hideSchemaView,
 }: SchemaFormEditorProps) {
+  const sfeLocale = useConfig().locale?.schemaFormEditor
   const internalOptions: UseSchemaEditorOptions = { initialSchema, onChange }
   const internalStore = useSchemaEditor(internalOptions)
   const store = externalStore ?? internalStore
@@ -81,7 +83,7 @@ export function SchemaFormEditor({
           type="button"
           className="sg-sfe-toolbar-btn"
           data-testid="sfe-undo"
-          aria-label="Undo"
+          aria-label={sfeLocale?.undo ?? 'Undo'}
           disabled={!store.state.canUndo}
           onClick={() => store.undo()}
         >
@@ -91,7 +93,7 @@ export function SchemaFormEditor({
           type="button"
           className="sg-sfe-toolbar-btn"
           data-testid="sfe-redo"
-          aria-label="Redo"
+          aria-label={sfeLocale?.redo ?? 'Redo'}
           disabled={!store.state.canRedo}
           onClick={() => store.redo()}
         >
@@ -114,10 +116,9 @@ export function SchemaFormEditor({
               <div className="sg-sfe-tabs">
                 <button
                   type="button"
-                  className={[
-                    'sg-sfe-tab',
-                    bottomTab === 'preview' ? 'sg-sfe-tab-active' : '',
-                  ].filter(Boolean).join(' ')}
+                  className={['sg-sfe-tab', bottomTab === 'preview' ? 'sg-sfe-tab-active' : '']
+                    .filter(Boolean)
+                    .join(' ')}
                   data-testid="sfe-tab-preview"
                   onClick={() => setBottomTab('preview')}
                 >
@@ -125,10 +126,9 @@ export function SchemaFormEditor({
                 </button>
                 <button
                   type="button"
-                  className={[
-                    'sg-sfe-tab',
-                    bottomTab === 'schema' ? 'sg-sfe-tab-active' : '',
-                  ].filter(Boolean).join(' ')}
+                  className={['sg-sfe-tab', bottomTab === 'schema' ? 'sg-sfe-tab-active' : '']
+                    .filter(Boolean)
+                    .join(' ')}
                   data-testid="sfe-tab-schema"
                   onClick={() => setBottomTab('schema')}
                 >

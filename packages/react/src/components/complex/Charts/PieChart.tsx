@@ -1,25 +1,17 @@
 import { forwardRef, useMemo, useRef, useState, type CSSProperties, type ForwardedRef } from 'react'
-import {
-  chartDataKey,
-  colorForSeries,
-  resolveChartAnimation,
-  type ChartAnimation,
-} from './types'
+import { chartDataKey, colorForSeries, resolveChartAnimation, type ChartAnimation } from './types'
 import type { ChartSeries } from './types'
 import type { PrintableProp } from '../../../utils/print'
 import { useChartPrint, type ChartRef } from './chartRef'
 import { useChartSize } from './useChartSize'
-import {
-  ChartHoverToolbar,
-  resolveChartActions,
-  type ChartActionsProp,
-} from './ChartHoverToolbar'
+import { ChartHoverToolbar, resolveChartActions, type ChartActionsProp } from './ChartHoverToolbar'
 import {
   makeChartContextMenuHandler,
   makeSeriesContextMenuHandler,
   type ChartContextMenuHandler,
   type ChartSeriesContextMenuHandler,
 } from './chartContextMenu'
+import { useConfig } from '../../ConfigProvider'
 
 export interface PieChartSlice {
   /** Stable id for keying / legend. */
@@ -96,6 +88,7 @@ function PieChartInner(
   }: PieChartProps,
   forwardedRef: ForwardedRef<ChartRef>,
 ) {
+  const chartsLocale = useConfig().locale?.charts
   const { rootRef } = useChartPrint<Element>(forwardedRef, printable)
   const svgRef = useRef<SVGSVGElement | null>(null)
 
@@ -108,15 +101,14 @@ function PieChartInner(
   const viewW = measured.width
   const viewH = measured.height
 
-  const total = useMemo(
-    () => data.reduce((sum, d) => sum + Math.max(0, d.value), 0),
-    [data],
-  )
+  const total = useMemo(() => data.reduce((sum, d) => sum + Math.max(0, d.value), 0), [data])
 
   const cx = viewW / 2
   const cy = viewH / 2
 
-  const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-pie', className].filter(Boolean).join(' ')
+  const wrapperClass = unstyled
+    ? className
+    : ['sg-chart', 'sg-chart-pie', className].filter(Boolean).join(' ')
 
   const anim = resolveChartAnimation(animate)
   const animKey = useMemo(() => chartDataKey([data]), [data])
@@ -149,7 +141,7 @@ function PieChartInner(
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
       role="img"
-      aria-label="Pie chart (empty)"
+      aria-label={`${chartsLocale?.pieChart ?? 'Pie chart'} (empty)`}
       onContextMenu={handleSvgContextMenu}
     />
   ) : (
@@ -161,7 +153,7 @@ function PieChartInner(
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
       role="img"
-      aria-label="Pie chart"
+      aria-label={chartsLocale?.pieChart ?? 'Pie chart'}
       onContextMenu={handleSvgContextMenu}
     >
       {data.map((slice, i) => {
@@ -199,7 +191,12 @@ function PieChartInner(
               'Z',
             ].join(' ')
 
-        const fakeSeries: ChartSeries = { id: slice.id, label: slice.label, values: [], color: slice.color }
+        const fakeSeries: ChartSeries = {
+          id: slice.id,
+          label: slice.label,
+          values: [],
+          color: slice.color,
+        }
         const sliceStyle: CSSProperties | undefined = anim.enabled
           ? {
               ...animStyle,

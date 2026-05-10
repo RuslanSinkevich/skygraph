@@ -6,7 +6,11 @@ import type { BaseComponentProps, InteractiveProps, SizableProps } from '../../t
 // ── Date helpers ──
 
 function isSameDay(a: Date, b: Date): boolean {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  )
 }
 
 function isToday(d: Date): boolean {
@@ -57,8 +61,12 @@ function formatDate(d: Date | null, fmt: string): string {
 
 function parseDate(str: string, fmt: string): Date | null {
   if (!str) return null
-  const yi = fmt.indexOf('YYYY'), mi = fmt.indexOf('MM'), di = fmt.indexOf('DD')
-  const hi = fmt.indexOf('HH'), mni = fmt.indexOf('mm'), si = fmt.indexOf('ss')
+  const yi = fmt.indexOf('YYYY'),
+    mi = fmt.indexOf('MM'),
+    di = fmt.indexOf('DD')
+  const hi = fmt.indexOf('HH'),
+    mni = fmt.indexOf('mm'),
+    si = fmt.indexOf('ss')
 
   const year = yi >= 0 ? parseInt(str.substring(yi, yi + 4), 10) : new Date().getFullYear()
   const month = mi >= 0 ? parseInt(str.substring(mi, mi + 2), 10) - 1 : 0
@@ -102,8 +110,18 @@ function getMonthGrid(year: number, month: number): DayCell[][] {
 }
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ]
 const DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
@@ -233,7 +251,9 @@ function TimeScrollColumn({
         <div
           key={n}
           data-active={n === value}
-          className={unstyled ? '' : `sg-dp-time-cell${n === value ? ' sg-dp-time-cell-active' : ''}`}
+          className={
+            unstyled ? '' : `sg-dp-time-cell${n === value ? ' sg-dp-time-cell-active' : ''}`
+          }
           onClick={() => onChange(n)}
         >
           {String(n).padStart(2, '0')}
@@ -277,16 +297,43 @@ function TimePanel({
     return arr
   }, [secondStep])
 
-  const setH = (h: number) => { const d = cloneDate(value); d.setHours(h); onChange(d) }
-  const setM = (m: number) => { const d = cloneDate(value); d.setMinutes(m); onChange(d) }
-  const setS = (s: number) => { const d = cloneDate(value); d.setSeconds(s); onChange(d) }
+  const setH = (h: number) => {
+    const d = cloneDate(value)
+    d.setHours(h)
+    onChange(d)
+  }
+  const setM = (m: number) => {
+    const d = cloneDate(value)
+    d.setMinutes(m)
+    onChange(d)
+  }
+  const setS = (s: number) => {
+    const d = cloneDate(value)
+    d.setSeconds(s)
+    onChange(d)
+  }
 
   return (
     <div className={unstyled ? '' : 'sg-dp-time-panel'}>
-      <TimeScrollColumn items={hours} value={value.getHours()} onChange={setH} unstyled={unstyled} />
-      <TimeScrollColumn items={minutes} value={value.getMinutes()} onChange={setM} unstyled={unstyled} />
+      <TimeScrollColumn
+        items={hours}
+        value={value.getHours()}
+        onChange={setH}
+        unstyled={unstyled}
+      />
+      <TimeScrollColumn
+        items={minutes}
+        value={value.getMinutes()}
+        onChange={setM}
+        unstyled={unstyled}
+      />
       {showSeconds && (
-        <TimeScrollColumn items={seconds} value={value.getSeconds()} onChange={setS} unstyled={unstyled} />
+        <TimeScrollColumn
+          items={seconds}
+          value={value.getSeconds()}
+          onChange={setS}
+          unstyled={unstyled}
+        />
       )}
     </div>
   )
@@ -330,29 +377,55 @@ function CalendarPanel({
   const weeks = useMemo(() => getMonthGrid(viewYear, viewMonth), [viewYear, viewMonth])
   const monthLabel = `${monthNames[viewMonth]} ${viewYear}`
 
-  const isInRange = useCallback((d: Date): boolean => {
-    if (!rangeStart) return false
-    const end = rangeEnd ?? hoverDate
-    if (!end) return false
-    const s = startOfDay(rangeStart).getTime()
-    const e = startOfDay(end).getTime()
-    const t = startOfDay(d).getTime()
-    return t > Math.min(s, e) && t < Math.max(s, e)
-  }, [rangeStart, rangeEnd, hoverDate])
+  const isInRange = useCallback(
+    (d: Date): boolean => {
+      if (!rangeStart) return false
+      const end = rangeEnd ?? hoverDate
+      if (!end) return false
+      const s = startOfDay(rangeStart).getTime()
+      const e = startOfDay(end).getTime()
+      const t = startOfDay(d).getTime()
+      return t > Math.min(s, e) && t < Math.max(s, e)
+    },
+    [rangeStart, rangeEnd, hoverDate],
+  )
 
-  const isRangeEdge = useCallback((d: Date): 'start' | 'end' | null => {
-    if (!rangeStart) return null
-    if (isSameDay(d, rangeStart)) return 'start'
-    const end = rangeEnd ?? hoverDate
-    if (end && isSameDay(d, end)) return 'end'
-    return null
-  }, [rangeStart, rangeEnd, hoverDate])
+  const isRangeEdge = useCallback(
+    (d: Date): 'start' | 'end' | null => {
+      if (!rangeStart) return null
+      if (isSameDay(d, rangeStart)) return 'start'
+      const end = rangeEnd ?? hoverDate
+      if (end && isSameDay(d, end)) return 'end'
+      return null
+    },
+    [rangeStart, rangeEnd, hoverDate],
+  )
+
+  const dpLocale = useConfig().locale?.datePicker
+  const prevYearLabel = dpLocale?.prevYear ?? 'Previous year'
+  const nextYearLabel = dpLocale?.nextYear ?? 'Next year'
+  const prevMonthLabel = dpLocale?.prevMonth ?? 'Previous month'
+  const nextMonthLabel = dpLocale?.nextMonth ?? 'Next month'
 
   return (
     <div className={unstyled ? '' : 'sg-dp-panel'}>
       <div className={unstyled ? '' : 'sg-dp-panel-header'}>
-        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onYearChange(-1)} title="Previous year">&laquo;</button>
-        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onMonthChange(-1)} title="Previous month">&lsaquo;</button>
+        <button
+          className={unstyled ? '' : 'sg-dp-nav-btn'}
+          onClick={() => onYearChange(-1)}
+          title={prevYearLabel}
+          aria-label={prevYearLabel}
+        >
+          &laquo;
+        </button>
+        <button
+          className={unstyled ? '' : 'sg-dp-nav-btn'}
+          onClick={() => onMonthChange(-1)}
+          title={prevMonthLabel}
+          aria-label={prevMonthLabel}
+        >
+          &lsaquo;
+        </button>
         {onTitleClick ? (
           <button
             type="button"
@@ -364,12 +437,32 @@ function CalendarPanel({
         ) : (
           <span className={unstyled ? '' : 'sg-dp-panel-title'}>{monthLabel}</span>
         )}
-        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onMonthChange(1)} title="Next month">&rsaquo;</button>
-        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onYearChange(1)} title="Next year">&raquo;</button>
+        <button
+          className={unstyled ? '' : 'sg-dp-nav-btn'}
+          onClick={() => onMonthChange(1)}
+          title={nextMonthLabel}
+          aria-label={nextMonthLabel}
+        >
+          &rsaquo;
+        </button>
+        <button
+          className={unstyled ? '' : 'sg-dp-nav-btn'}
+          onClick={() => onYearChange(1)}
+          title={nextYearLabel}
+          aria-label={nextYearLabel}
+        >
+          &raquo;
+        </button>
       </div>
       <table className={unstyled ? '' : 'sg-dp-table'}>
         <thead>
-          <tr>{dayNames.map((d) => <th key={d} className={unstyled ? '' : 'sg-dp-th'}>{d}</th>)}</tr>
+          <tr>
+            {dayNames.map((d) => (
+              <th key={d} className={unstyled ? '' : 'sg-dp-th'}>
+                {d}
+              </th>
+            ))}
+          </tr>
         </thead>
         <tbody>
           {weeks.map((week, wi) => (
@@ -381,16 +474,20 @@ function CalendarPanel({
                 const inRange = isInRange(cell.date)
                 const edge = isRangeEdge(cell.date)
 
-                const cls = unstyled ? '' : [
-                  'sg-dp-cell',
-                  !cell.inMonth ? 'sg-dp-cell-outside' : '',
-                  selected ? 'sg-dp-cell-selected' : '',
-                  today ? 'sg-dp-cell-today' : '',
-                  disabled ? 'sg-dp-cell-disabled' : '',
-                  inRange ? 'sg-dp-cell-in-range' : '',
-                  edge === 'start' ? 'sg-dp-cell-range-start' : '',
-                  edge === 'end' ? 'sg-dp-cell-range-end' : '',
-                ].filter(Boolean).join(' ')
+                const cls = unstyled
+                  ? ''
+                  : [
+                      'sg-dp-cell',
+                      !cell.inMonth ? 'sg-dp-cell-outside' : '',
+                      selected ? 'sg-dp-cell-selected' : '',
+                      today ? 'sg-dp-cell-today' : '',
+                      disabled ? 'sg-dp-cell-disabled' : '',
+                      inRange ? 'sg-dp-cell-in-range' : '',
+                      edge === 'start' ? 'sg-dp-cell-range-start' : '',
+                      edge === 'end' ? 'sg-dp-cell-range-end' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
 
                 return (
                   <td
@@ -432,19 +529,28 @@ function MonthPanel({
   return (
     <div className={unstyled ? '' : 'sg-dp-panel'}>
       <div className={unstyled ? '' : 'sg-dp-panel-header'}>
-        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onYearChange(-1)}>&laquo;</button>
+        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onYearChange(-1)}>
+          &laquo;
+        </button>
         <span className={unstyled ? '' : 'sg-dp-panel-title'}>{viewYear}</span>
-        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onYearChange(1)}>&raquo;</button>
+        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onYearChange(1)}>
+          &raquo;
+        </button>
       </div>
       <div className={unstyled ? '' : 'sg-dp-month-grid'}>
         {monthNames.map((name, i) => {
-          const isSelected = selectedDate && selectedDate.getFullYear() === viewYear && selectedDate.getMonth() === i
+          const isSelected =
+            selectedDate && selectedDate.getFullYear() === viewYear && selectedDate.getMonth() === i
           const isCurrent = new Date().getFullYear() === viewYear && new Date().getMonth() === i
-          const cls = unstyled ? '' : [
-            'sg-dp-month-cell',
-            isSelected ? 'sg-dp-month-cell-selected' : '',
-            isCurrent ? 'sg-dp-month-cell-current' : '',
-          ].filter(Boolean).join(' ')
+          const cls = unstyled
+            ? ''
+            : [
+                'sg-dp-month-cell',
+                isSelected ? 'sg-dp-month-cell-selected' : '',
+                isCurrent ? 'sg-dp-month-cell-current' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')
           return (
             <div key={i} className={cls} onClick={() => onSelect(i)}>
               {name.substring(0, 3)}
@@ -481,21 +587,31 @@ function YearPanel({
   return (
     <div className={unstyled ? '' : 'sg-dp-panel'}>
       <div className={unstyled ? '' : 'sg-dp-panel-header'}>
-        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onDecadeChange(-10)}>&laquo;</button>
-        <span className={unstyled ? '' : 'sg-dp-panel-title'}>{startYear} - {startYear + 9}</span>
-        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onDecadeChange(10)}>&raquo;</button>
+        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onDecadeChange(-10)}>
+          &laquo;
+        </button>
+        <span className={unstyled ? '' : 'sg-dp-panel-title'}>
+          {startYear} - {startYear + 9}
+        </span>
+        <button className={unstyled ? '' : 'sg-dp-nav-btn'} onClick={() => onDecadeChange(10)}>
+          &raquo;
+        </button>
       </div>
       <div className={unstyled ? '' : 'sg-dp-year-grid'}>
         {years.map((y) => {
           const isSelected = selectedDate?.getFullYear() === y
           const isCurrent = new Date().getFullYear() === y
           const isOutside = y < startYear || y > startYear + 9
-          const cls = unstyled ? '' : [
-            'sg-dp-year-cell',
-            isSelected ? 'sg-dp-year-cell-selected' : '',
-            isCurrent ? 'sg-dp-year-cell-current' : '',
-            isOutside ? 'sg-dp-year-cell-outside' : '',
-          ].filter(Boolean).join(' ')
+          const cls = unstyled
+            ? ''
+            : [
+                'sg-dp-year-cell',
+                isSelected ? 'sg-dp-year-cell-selected' : '',
+                isCurrent ? 'sg-dp-year-cell-current' : '',
+                isOutside ? 'sg-dp-year-cell-outside' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')
           return (
             <div key={y} className={cls} onClick={() => onSelect(y)}>
               {y}
@@ -521,7 +637,11 @@ function PresetsSidebar({
   return (
     <div className={unstyled ? '' : 'sg-dp-presets'}>
       {presets.map((p) => (
-        <div key={p.label} className={unstyled ? '' : 'sg-dp-preset-item'} onClick={() => onSelect(p.value)}>
+        <div
+          key={p.label}
+          className={unstyled ? '' : 'sg-dp-preset-item'}
+          onClick={() => onSelect(p.value)}
+        >
           {p.label}
         </div>
       ))}
@@ -582,12 +702,22 @@ export function DatePicker({
 
   const timeConfig: ShowTimeConfig = typeof showTime === 'object' ? showTime : {}
   const hasTime = !!showTime
-  const fmt = formatProp ?? (hasTime ? 'YYYY-MM-DD HH:mm:ss' : picker === 'month' ? 'YYYY-MM' : picker === 'year' ? 'YYYY' : 'YYYY-MM-DD')
+  const fmt =
+    formatProp ??
+    (hasTime
+      ? 'YYYY-MM-DD HH:mm:ss'
+      : picker === 'month'
+        ? 'YYYY-MM'
+        : picker === 'year'
+          ? 'YYYY'
+          : 'YYYY-MM-DD')
 
   const normalizedValue = toValidDate(value)
   const normalizedDefault = toValidDate(defaultValue)
 
-  const [internalValue, setInternalValue] = useState<Date | null>(value !== undefined ? normalizedValue : normalizedDefault)
+  const [internalValue, setInternalValue] = useState<Date | null>(
+    value !== undefined ? normalizedValue : normalizedDefault,
+  )
   const [internalOpen, setInternalOpen] = useState(false)
   const [inputText, setInputText] = useState('')
   const [isInputting, setIsInputting] = useState(false)
@@ -600,7 +730,9 @@ export function DatePicker({
   const [pickerLevel, setPickerLevel] = useState<'date' | 'month' | 'year'>(
     picker === 'year' ? 'year' : picker === 'month' ? 'month' : 'date',
   )
-  const [tempTime, setTempTime] = useState<Date>(() => currentValue ?? timeConfig.defaultValue ?? new Date())
+  const [tempTime, setTempTime] = useState<Date>(
+    () => currentValue ?? timeConfig.defaultValue ?? new Date(),
+  )
 
   const ref = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -752,16 +884,20 @@ export function DatePicker({
     if (e.key === 'Escape') closeDropdown()
   }
 
-  const displayText = isInputting ? inputText : (currentValue ? formatDate(currentValue, fmt) : '')
+  const displayText = isInputting ? inputText : currentValue ? formatDate(currentValue, fmt) : ''
 
-  const wrapperCls = unstyled ? className ?? '' : [
-    'sg-datepicker',
-    `sg-datepicker-${size}`,
-    isOpen ? 'sg-datepicker-open' : '',
-    disabled ? 'sg-datepicker-disabled' : '',
-    loading ? 'sg-datepicker-loading' : '',
-    className,
-  ].filter(Boolean).join(' ')
+  const wrapperCls = unstyled
+    ? (className ?? '')
+    : [
+        'sg-datepicker',
+        `sg-datepicker-${size}`,
+        isOpen ? 'sg-datepicker-open' : '',
+        disabled ? 'sg-datepicker-disabled' : '',
+        loading ? 'sg-datepicker-loading' : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')
 
   const placementCls = `sg-dp-dropdown-${placement}`
 
@@ -805,10 +941,18 @@ export function DatePicker({
           ) : (
             <>
               {allowClear && currentValue && (
-                <span className={unstyled ? '' : 'sg-datepicker-clear'} onClick={handleClear}>&times;</span>
+                <span className={unstyled ? '' : 'sg-datepicker-clear'} onClick={handleClear}>
+                  &times;
+                </span>
               )}
-              <svg className={unstyled ? '' : 'sg-datepicker-icon'} viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-                <path d="M11 1V0h1v1h2.5A1.5 1.5 0 0116 2.5v12a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 010 14.5v-12A1.5 1.5 0 011.5 1H4V0h1v1h6zM1.5 2a.5.5 0 00-.5.5V4h14V2.5a.5.5 0 00-.5-.5h-13zM15 5H1v9.5a.5.5 0 00.5.5h13a.5.5 0 00.5-.5V5z"/>
+              <svg
+                className={unstyled ? '' : 'sg-datepicker-icon'}
+                viewBox="0 0 16 16"
+                width="14"
+                height="14"
+                fill="currentColor"
+              >
+                <path d="M11 1V0h1v1h2.5A1.5 1.5 0 0116 2.5v12a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 010 14.5v-12A1.5 1.5 0 011.5 1H4V0h1v1h6zM1.5 2a.5.5 0 00-.5.5V4h14V2.5a.5.5 0 00-.5-.5h-13zM15 5H1v9.5a.5.5 0 00.5.5h13a.5.5 0 00.5-.5V5z" />
               </svg>
             </>
           )}
@@ -831,9 +975,13 @@ export function DatePicker({
                   onSelect={handleDateSelect}
                   onMonthChange={(d) => {
                     const m = viewMonth + d
-                    if (m < 0) { setViewMonth(11); setViewYear(viewYear - 1) }
-                    else if (m > 11) { setViewMonth(0); setViewYear(viewYear + 1) }
-                    else setViewMonth(m)
+                    if (m < 0) {
+                      setViewMonth(11)
+                      setViewYear(viewYear - 1)
+                    } else if (m > 11) {
+                      setViewMonth(0)
+                      setViewYear(viewYear + 1)
+                    } else setViewMonth(m)
                   }}
                   onYearChange={(d) => setViewYear(viewYear + d)}
                   onTitleClick={
@@ -864,21 +1012,41 @@ export function DatePicker({
               )}
 
               {hasTime && pickerLevel === 'date' && (
-                <TimePanel value={tempTime} onChange={handleTimeChange} config={timeConfig} unstyled={unstyled} />
+                <TimePanel
+                  value={tempTime}
+                  onChange={handleTimeChange}
+                  config={timeConfig}
+                  unstyled={unstyled}
+                />
               )}
 
               <div className={unstyled ? '' : 'sg-dp-footer'}>
                 <div className={unstyled ? '' : 'sg-dp-footer-start'}>
                   {showToday && !hasTime && pickerLevel === 'date' && (
-                    <button className={unstyled ? '' : 'sg-dp-footer-btn sg-dp-today-btn'} onClick={handleToday}>{todayBtnLabel}</button>
+                    <button
+                      className={unstyled ? '' : 'sg-dp-footer-btn sg-dp-today-btn'}
+                      onClick={handleToday}
+                    >
+                      {todayBtnLabel}
+                    </button>
                   )}
                   {showNow && hasTime && (
-                    <button className={unstyled ? '' : 'sg-dp-footer-btn sg-dp-now-btn'} onClick={handleNow}>{nowBtnLabel}</button>
+                    <button
+                      className={unstyled ? '' : 'sg-dp-footer-btn sg-dp-now-btn'}
+                      onClick={handleNow}
+                    >
+                      {nowBtnLabel}
+                    </button>
                   )}
                 </div>
                 <div className={unstyled ? '' : 'sg-dp-footer-end'}>
                   {hasTime && (
-                    <button className={unstyled ? '' : 'sg-dp-footer-btn sg-dp-ok-btn'} onClick={handleTimeOk}>{okBtnLabel}</button>
+                    <button
+                      className={unstyled ? '' : 'sg-dp-footer-btn sg-dp-ok-btn'}
+                      onClick={handleTimeOk}
+                    >
+                      {okBtnLabel}
+                    </button>
                   )}
                 </div>
               </div>
@@ -1044,47 +1212,87 @@ export function RangePicker({
 
   const moveLeftMonth = (d: number) => {
     const m = leftMonth + d
-    if (m < 0) { setLeftMonth(11); setLeftYear(leftYear - 1) }
-    else if (m > 11) { setLeftMonth(0); setLeftYear(leftYear + 1) }
-    else setLeftMonth(m)
+    if (m < 0) {
+      setLeftMonth(11)
+      setLeftYear(leftYear - 1)
+    } else if (m > 11) {
+      setLeftMonth(0)
+      setLeftYear(leftYear + 1)
+    } else setLeftMonth(m)
   }
 
-  const wrapperCls = unstyled ? className ?? '' : [
-    'sg-datepicker', 'sg-datepicker-range',
-    `sg-datepicker-${size}`,
-    isOpen ? 'sg-datepicker-open' : '',
-    disabled ? 'sg-datepicker-disabled' : '',
-    className,
-  ].filter(Boolean).join(' ')
+  const wrapperCls = unstyled
+    ? (className ?? '')
+    : [
+        'sg-datepicker',
+        'sg-datepicker-range',
+        `sg-datepicker-${size}`,
+        isOpen ? 'sg-datepicker-open' : '',
+        disabled ? 'sg-datepicker-disabled' : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')
 
   return (
     <div className={wrapperCls} ref={ref} style={style}>
-      <div className={unstyled ? '' : 'sg-datepicker-input sg-datepicker-range-input'} onClick={openDropdown}>
+      <div
+        className={unstyled ? '' : 'sg-datepicker-input sg-datepicker-range-input'}
+        onClick={openDropdown}
+      >
         <span
-          className={unstyled ? '' : `sg-datepicker-range-part${activeIndex === 0 ? ' sg-datepicker-range-active' : ''}`}
-          onClick={(e) => { e.stopPropagation(); setActiveIndex(0); openDropdown() }}
+          className={
+            unstyled
+              ? ''
+              : `sg-datepicker-range-part${activeIndex === 0 ? ' sg-datepicker-range-active' : ''}`
+          }
+          onClick={(e) => {
+            e.stopPropagation()
+            setActiveIndex(0)
+            openDropdown()
+          }}
         >
           {currentValue[0] ? formatDate(currentValue[0], fmt) : placeholder[0]}
         </span>
         <span className={unstyled ? '' : 'sg-datepicker-separator'}>{separator}</span>
         <span
-          className={unstyled ? '' : `sg-datepicker-range-part${activeIndex === 1 ? ' sg-datepicker-range-active' : ''}`}
-          onClick={(e) => { e.stopPropagation(); setActiveIndex(1); openDropdown() }}
+          className={
+            unstyled
+              ? ''
+              : `sg-datepicker-range-part${activeIndex === 1 ? ' sg-datepicker-range-active' : ''}`
+          }
+          onClick={(e) => {
+            e.stopPropagation()
+            setActiveIndex(1)
+            openDropdown()
+          }}
         >
           {currentValue[1] ? formatDate(currentValue[1], fmt) : placeholder[1]}
         </span>
         <span className={unstyled ? '' : 'sg-datepicker-suffix'}>
           {allowClear && (currentValue[0] || currentValue[1]) && (
-            <span className={unstyled ? '' : 'sg-datepicker-clear'} onClick={handleClear}>&times;</span>
+            <span className={unstyled ? '' : 'sg-datepicker-clear'} onClick={handleClear}>
+              &times;
+            </span>
           )}
-          <svg className={unstyled ? '' : 'sg-datepicker-icon'} viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-            <path d="M11 1V0h1v1h2.5A1.5 1.5 0 0116 2.5v12a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 010 14.5v-12A1.5 1.5 0 011.5 1H4V0h1v1h6zM1.5 2a.5.5 0 00-.5.5V4h14V2.5a.5.5 0 00-.5-.5h-13zM15 5H1v9.5a.5.5 0 00.5.5h13a.5.5 0 00.5-.5V5z"/>
+          <svg
+            className={unstyled ? '' : 'sg-datepicker-icon'}
+            viewBox="0 0 16 16"
+            width="14"
+            height="14"
+            fill="currentColor"
+          >
+            <path d="M11 1V0h1v1h2.5A1.5 1.5 0 0116 2.5v12a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 010 14.5v-12A1.5 1.5 0 011.5 1H4V0h1v1h6zM1.5 2a.5.5 0 00-.5.5V4h14V2.5a.5.5 0 00-.5-.5h-13zM15 5H1v9.5a.5.5 0 00.5.5h13a.5.5 0 00.5-.5V5z" />
           </svg>
         </span>
       </div>
 
       {isOpen && (
-        <div className={unstyled ? '' : `sg-dp-dropdown sg-dp-dropdown-range sg-dp-dropdown-${placement}`}>
+        <div
+          className={
+            unstyled ? '' : `sg-dp-dropdown sg-dp-dropdown-range sg-dp-dropdown-${placement}`
+          }
+        >
           <div className={unstyled ? '' : 'sg-dp-dropdown-inner'}>
             {presets && presets.length > 0 && (
               <PresetsSidebar presets={presets} onSelect={handlePresetSelect} unstyled={unstyled} />
@@ -1140,7 +1348,12 @@ export function RangePicker({
 
               <div className={unstyled ? '' : 'sg-dp-footer'}>
                 {hasTime && (
-                  <button className={unstyled ? '' : 'sg-dp-footer-btn sg-dp-ok-btn'} onClick={handleTimeOk}>{okBtnLabel}</button>
+                  <button
+                    className={unstyled ? '' : 'sg-dp-footer-btn sg-dp-ok-btn'}
+                    onClick={handleTimeOk}
+                  >
+                    {okBtnLabel}
+                  </button>
                 )}
               </div>
             </div>

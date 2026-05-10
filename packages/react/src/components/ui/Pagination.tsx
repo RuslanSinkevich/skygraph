@@ -55,6 +55,7 @@ export function Pagination({
   const totalPrefix = locale?.totalPrefix ?? 'Total'
   const itemsPerPageLabel = locale?.itemsPerPage ?? '/ page'
   const jumpLabel = locale?.jump ?? 'Go to'
+  const ariaLabel = locale?.ariaLabel ?? 'Pagination'
   const [jumpValue, setJumpValue] = useState('')
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
@@ -80,13 +81,13 @@ export function Pagination({
   const renderTotal = () => {
     if (!showTotal) return null
     if (typeof showTotal === 'function') {
-      return (
-        <span className="sg-pagination-total">
-          {showTotal(total, [rangeStart, rangeEnd])}
-        </span>
-      )
+      return <span className="sg-pagination-total">{showTotal(total, [rangeStart, rangeEnd])}</span>
     }
-    return <span className="sg-pagination-total">{totalPrefix} {total}</span>
+    return (
+      <span className="sg-pagination-total">
+        {totalPrefix} {total}
+      </span>
+    )
   }
 
   const renderSizeChanger = () => {
@@ -129,8 +130,10 @@ export function Pagination({
 
   if (unstyled) {
     return (
-      <nav className={className} style={style} aria-label="Pagination">
-        <button disabled={safeCurrentPage <= 1} onClick={() => go(safeCurrentPage - 1)}>‹</button>
+      <nav className={className} style={style} aria-label={ariaLabel}>
+        <button disabled={safeCurrentPage <= 1} onClick={() => go(safeCurrentPage - 1)}>
+          ‹
+        </button>
         {pages.map((p, i) =>
           p === '...' ? (
             <span key={`e${i}`}>…</span>
@@ -162,7 +165,7 @@ export function Pagination({
           .filter(Boolean)
           .join(' ')}
         style={style}
-        aria-label="Pagination"
+        aria-label={ariaLabel}
       >
         <button
           className="sg-pagination-item sg-pagination-prev"
@@ -191,7 +194,7 @@ export function Pagination({
         .filter(Boolean)
         .join(' ')}
       style={style}
-      aria-label="Pagination"
+      aria-label={ariaLabel}
     >
       {renderTotal()}
       <button

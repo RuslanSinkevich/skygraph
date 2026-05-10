@@ -2,9 +2,10 @@ import type { CSSProperties, MouseEvent as ReactMouseEvent, ReactNode } from 're
 import type { GraphEdge, GraphNode } from '@skygraph/core'
 
 /**
- * Mini-toolbar entry rendered above a hovered {@link GraphNode}. The
- * `onClick` receives the original node so handlers can run engine
- * mutations (e.g. `graph.removeNode(node.id)`) without re-resolving by id.
+ * Mini-toolbar entry rendered above a hovered `GraphNode` (from
+ * `@skygraph/core`). The `onClick` receives the original node so handlers
+ * can run engine mutations (e.g. `graph.removeNode(node.id)`) without
+ * re-resolving by id.
  */
 export interface NodeAction {
   /** Stable key — also the value reflected in `data-action-id`. */
@@ -22,7 +23,7 @@ export interface NodeAction {
   hidden?: (node: GraphNode) => boolean
 }
 
-/** Same shape as {@link NodeAction}, but rendered above a hovered edge. */
+/** Same shape as `NodeAction`, but rendered above a hovered edge. */
 export interface EdgeAction {
   id: string
   icon?: ReactNode

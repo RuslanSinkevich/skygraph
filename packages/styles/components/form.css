@@ -106,3 +106,10 @@
   margin-top: 4px;
   line-height: 1.4;
 }
+
+/* Horizontal layout label/control wrappers — width and text-align come
+ * from the React component as inline overrides (computed from `labelCol`
+ * / `wrapperCol` props), so this rule only locks down the static parts. */
+.sg-field-label-wrap {
+  flex-shrink: 0;
+}

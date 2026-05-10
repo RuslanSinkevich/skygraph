@@ -141,8 +141,12 @@ export function InlineEdit({
         />
         {showButtons && (
           <>
-            <button type="button" onClick={save}>✓</button>
-            <button type="button" onClick={cancel}>✕</button>
+            <button type="button" onClick={save}>
+              ✓
+            </button>
+            <button type="button" onClick={cancel}>
+              ✕
+            </button>
           </>
         )}
       </span>
@@ -151,13 +155,7 @@ export function InlineEdit({
 
   return (
     <span
-      className={[
-        'sg-inline-edit',
-        `sg-inline-edit-${size}`,
-        className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      className={['sg-inline-edit', `sg-inline-edit-${size}`, className].filter(Boolean).join(' ')}
       style={style}
     >
       <input
@@ -174,7 +172,7 @@ export function InlineEdit({
             type="button"
             className="sg-inline-edit-btn sg-inline-edit-btn-save"
             onClick={save}
-            aria-label="Save"
+            aria-label={config.locale?.inlineEdit?.save ?? 'Save'}
           >
             ✓
           </button>
@@ -182,7 +180,7 @@ export function InlineEdit({
             type="button"
             className="sg-inline-edit-btn sg-inline-edit-btn-cancel"
             onClick={cancel}
-            aria-label="Cancel"
+            aria-label={config.locale?.inlineEdit?.cancel ?? 'Cancel'}
           >
             ✕
           </button>

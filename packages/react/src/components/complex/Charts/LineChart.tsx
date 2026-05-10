@@ -9,15 +9,18 @@ import {
 import { ChartLegend } from './ChartLegend'
 import { ChartAxes } from './ChartAxes'
 import { ChartCrosshair, type ChartCrosshairPoint } from './ChartCrosshair'
-import { ChartBrush, resolveBrushConfig, type ChartBrushConfig, type ChartBrushRange } from './ChartBrush'
+import {
+  ChartBrush,
+  resolveBrushConfig,
+  type ChartBrushConfig,
+  type ChartBrushRange,
+} from './ChartBrush'
 import type { BaseChartProps } from './types'
 import { useChartPrint, type ChartRef } from './chartRef'
 import { useChartSize } from './useChartSize'
 import { ChartHoverToolbar, resolveChartActions } from './ChartHoverToolbar'
-import {
-  makeChartContextMenuHandler,
-  makeSeriesContextMenuHandler,
-} from './chartContextMenu'
+import { makeChartContextMenuHandler, makeSeriesContextMenuHandler } from './chartContextMenu'
+import { useConfig } from '../../ConfigProvider'
 
 /**
  * Crosshair behaviour toggle for {@link LineChart}. When `true`, a vertical
@@ -84,6 +87,7 @@ function LineChartInner(
   }: LineChartProps,
   forwardedRef: ForwardedRef<ChartRef>,
 ) {
+  const chartsLocale = useConfig().locale?.charts
   const { rootRef } = useChartPrint<Element>(forwardedRef, printable)
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [pt, pr, pb, pl] = normalizePadding(padding)
@@ -96,10 +100,7 @@ function LineChartInner(
   const plotW = Math.max(0, viewW - pl - pr)
   const plotH = Math.max(0, viewH - pt - pb)
 
-  const { min, max } = useMemo(
-    () => chartBounds(series.map((s) => s.values)),
-    [series],
-  )
+  const { min, max } = useMemo(() => chartBounds(series.map((s) => s.values)), [series])
 
   const range = max - min || 1
   const xStep = categories.length > 1 ? plotW / (categories.length - 1) : 0
@@ -111,7 +112,9 @@ function LineChartInner(
     return pt + (1 - (v - min) / range) * plotH
   }
 
-  const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-line', className].filter(Boolean).join(' ')
+  const wrapperClass = unstyled
+    ? className
+    : ['sg-chart', 'sg-chart-line', className].filter(Boolean).join(' ')
 
   const anim = resolveChartAnimation(animate)
   const animKey = useMemo(
@@ -133,9 +136,7 @@ function LineChartInner(
   const [internalBrushRange, setInternalBrushRange] = useState<ChartBrushRange | null>(
     brushConfig?.defaultRange ?? null,
   )
-  const effectiveBrushRange = isBrushControlled
-    ? brushConfig!.range ?? null
-    : internalBrushRange
+  const effectiveBrushRange = isBrushControlled ? (brushConfig!.range ?? null) : internalBrushRange
   const handleBrushChange = (next: ChartBrushRange | null) => {
     if (!isBrushControlled) setInternalBrushRange(next)
     brushConfig?.onRangeChange?.(next)
@@ -204,7 +205,7 @@ function LineChartInner(
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
       role="img"
-      aria-label="Line chart"
+      aria-label={chartsLocale?.lineChart ?? 'Line chart'}
       onMouseMove={crosshairEnabled ? handleMouseMove : undefined}
       onMouseLeave={crosshairEnabled ? handleMouseLeave : undefined}
       onContextMenu={handleSvgContextMenu}
@@ -250,7 +251,9 @@ function LineChartInner(
               return (
                 <line
                   key={segIdx}
-                  className={anim.enabled && !unstyled ? 'sg-chart-line-segment-animate' : undefined}
+                  className={
+                    anim.enabled && !unstyled ? 'sg-chart-line-segment-animate' : undefined
+                  }
                   x1={seg.from[0]}
                   y1={seg.from[1]}
                   x2={seg.to[0]}
@@ -271,26 +274,27 @@ function LineChartInner(
                 />
               )
             })}
-            {markers && s.values.map((v, i) => {
-              if (v === null || v === undefined) return null
-              return (
-                <circle
-                  key={i}
-                  cx={xFor(i)}
-                  cy={yFor(v)}
-                  r={Math.max(2, strokeWidth)}
-                  fill={stroke}
-                  onContextMenu={makeSeriesContextMenuHandler(onSeriesContextMenu, {
-                    seriesId: s.id,
-                    seriesIndex: sIdx,
-                    valueIndex: i,
-                    value: v,
-                  })}
-                >
-                  <title>{`${s.label} · ${categories[i]}: ${v}`}</title>
-                </circle>
-              )
-            })}
+            {markers &&
+              s.values.map((v, i) => {
+                if (v === null || v === undefined) return null
+                return (
+                  <circle
+                    key={i}
+                    cx={xFor(i)}
+                    cy={yFor(v)}
+                    r={Math.max(2, strokeWidth)}
+                    fill={stroke}
+                    onContextMenu={makeSeriesContextMenuHandler(onSeriesContextMenu, {
+                      seriesId: s.id,
+                      seriesIndex: sIdx,
+                      valueIndex: i,
+                      value: v,
+                    })}
+                  >
+                    <title>{`${s.label} · ${categories[i]}: ${v}`}</title>
+                  </circle>
+                )
+              })}
           </g>
         )
       })}

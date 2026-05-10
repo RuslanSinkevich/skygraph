@@ -218,16 +218,23 @@ export function Field({
     </div>
   ) : null
 
-  const warningNodes = hasWarnings && !hasErrors ? (
-    <div id={helpId} className="sg-field-warning">
-      {field.warnings.map((w, i) => (
-        <div key={i}>{w}</div>
-      ))}
-    </div>
-  ) : null
+  const warningNodes =
+    hasWarnings && !hasErrors ? (
+      <div id={helpId} className="sg-field-warning">
+        {field.warnings.map((w, i) => (
+          <div key={i}>{w}</div>
+        ))}
+      </div>
+    ) : null
 
   const helpNode =
-    errorNodes ?? warningNodes ?? (help ? <div id={helpId} className="sg-field-help">{help}</div> : null)
+    errorNodes ??
+    warningNodes ??
+    (help ? (
+      <div id={helpId} className="sg-field-help">
+        {help}
+      </div>
+    ) : null)
   const describedBy = helpNode ? helpId : undefined
 
   const extraNode = extra ? <div className="sg-field-extra">{extra}</div> : null
@@ -336,7 +343,6 @@ export function Field({
           className="sg-field-label-wrap"
           style={{
             width: labelPct,
-            flexShrink: 0,
             textAlign: labelAlign,
           }}
         >

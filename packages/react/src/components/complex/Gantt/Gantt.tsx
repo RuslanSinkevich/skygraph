@@ -6,12 +6,8 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from 'react'
 import { routeOrthogonal, pointsToPath } from '@skygraph/core'
-import type {
-  GanttProps,
-  GanttRange,
-  GanttScale,
-  GanttTask,
-} from './types'
+import type { GanttProps, GanttRange, GanttScale, GanttTask } from './types'
+import { useConfig } from '../../ConfigProvider'
 
 const DAY = 86_400_000
 const STEP_MS: Record<GanttScale, number> = {
@@ -123,6 +119,7 @@ export function Gantt({
   className,
   style,
 }: GanttProps) {
+  const ganttLocale = useConfig().locale?.gantt
   const onChangeRef = useRef(onTaskChange)
   onChangeRef.current = onTaskChange
 
@@ -139,7 +136,7 @@ export function Gantt({
     if (resources && resources.length > 0) {
       rows = resources.map((r) => ({ key: r.id, label: r.name }))
       const idx = new Map(resources.map((r, i) => [r.id, i]))
-      rowOf = (t) => (t.resourceId ? idx.get(t.resourceId) ?? 0 : 0)
+      rowOf = (t) => (t.resourceId ? (idx.get(t.resourceId) ?? 0) : 0)
     } else {
       rows = tasks.map((t) => ({ key: t.id, label: t.name }))
       const idx = new Map(tasks.map((t, i) => [t.id, i]))
@@ -211,11 +208,7 @@ export function Gantt({
   } | null>(null)
 
   const startInteraction = useCallback(
-    (
-      e: ReactMouseEvent<HTMLDivElement>,
-      task: GanttTask,
-      kind: 'move' | 'resize',
-    ) => {
+    (e: ReactMouseEvent<HTMLDivElement>, task: GanttTask, kind: 'move' | 'resize') => {
       if (e.button !== 0) return
       if (kind === 'move' && !draggable) return
       if (kind === 'resize' && !resizable) return
@@ -279,9 +272,7 @@ export function Gantt({
   )
 
   // ─── Render ─────────────────────────────────────────────────────────────
-  const wrapperClass = unstyled
-    ? className
-    : ['sg-gantt', className].filter(Boolean).join(' ')
+  const wrapperClass = unstyled ? className : ['sg-gantt', className].filter(Boolean).join(' ')
 
   const headerHeight = rowHeight
   const gridHeight = resolved.rows.length * rowHeight
@@ -301,7 +292,7 @@ export function Gantt({
       className={wrapperClass}
       style={wrapperStyle}
       role="region"
-      aria-label="Gantt chart"
+      aria-label={ganttLocale?.ariaLabel ?? 'Gantt chart'}
       data-scale={scale}
     >
       {/* Sidebar (task / resource list) */}
@@ -442,9 +433,7 @@ export function Gantt({
                 aria-label={task.name}
                 data-task-id={task.id}
                 data-row-index={resolved.rowOf(task)}
-                onMouseDown={
-                  draggable ? (e) => startInteraction(e, task, 'move') : undefined
-                }
+                onMouseDown={draggable ? (e) => startInteraction(e, task, 'move') : undefined}
               >
                 {progress > 0 && (
                   <div
@@ -469,7 +458,7 @@ export function Gantt({
                   <div
                     className={unstyled ? undefined : 'sg-gantt-bar-resize'}
                     role="button"
-                    aria-label="Resize task"
+                    aria-label={ganttLocale?.resizeTask ?? 'Resize task'}
                     tabIndex={-1}
                     data-role="resize-handle"
                     style={{

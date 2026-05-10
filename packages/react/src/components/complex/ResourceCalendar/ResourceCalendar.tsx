@@ -10,12 +10,8 @@ import {
 } from 'react'
 import { detectConflicts, isAvailable } from '@skygraph/core'
 import type { CalendarConflict as Conflict } from '@skygraph/core'
-import type {
-  Assignment,
-  CalendarScale,
-  Resource,
-  ResourceCalendarProps,
-} from './types'
+import type { Assignment, CalendarScale, Resource, ResourceCalendarProps } from './types'
+import { useConfig } from '../../ConfigProvider'
 
 const DAY = 86_400_000
 const STEP_MS: Record<CalendarScale, number> = {
@@ -56,10 +52,7 @@ function formatTick(timeMs: number, scale: CalendarScale): string {
   }
 }
 
-function deriveRange(
-  assignments: readonly Assignment[],
-  step: number,
-): { from: Date; to: Date } {
+function deriveRange(assignments: readonly Assignment[], step: number): { from: Date; to: Date } {
   if (assignments.length === 0) {
     const now = Date.now()
     return {
@@ -120,6 +113,7 @@ export function ResourceCalendar({
   className,
   style,
 }: ResourceCalendarProps) {
+  const resourceCalendarLocale = useConfig().locale?.resourceCalendar
   const onChangeRef = useRef(onAssignmentChange)
   onChangeRef.current = onAssignmentChange
   const onConflictRef = useRef(onConflict)
@@ -235,13 +229,14 @@ export function ResourceCalendar({
   // assignment blocks. We bucket slots so non-uniform consecutive
   // unavailable slots merge into one block visually.
   const availabilityBands = useMemo(() => {
-    if (!rules || rules.length === 0) return [] as Array<{
-      key: string
-      x: number
-      y: number
-      w: number
-      h: number
-    }>
+    if (!rules || rules.length === 0)
+      return [] as Array<{
+        key: string
+        x: number
+        y: number
+        w: number
+        h: number
+      }>
     const out: Array<{ key: string; x: number; y: number; w: number; h: number }> = []
     for (const r of resources) {
       const row = rowIndexById.get(r.id)
@@ -391,9 +386,7 @@ export function ResourceCalendar({
   )
 
   // ─── Render ─────────────────────────────────────────────────────────────
-  const wrapperClass = unstyled
-    ? className
-    : ['sg-rcal', className].filter(Boolean).join(' ')
+  const wrapperClass = unstyled ? className : ['sg-rcal', className].filter(Boolean).join(' ')
 
   const headerHeight = Math.max(28, Math.round(rowHeight * 0.6))
   const gridHeight = resources.length * rowHeight
@@ -413,14 +406,11 @@ export function ResourceCalendar({
       className={wrapperClass}
       style={wrapperStyle}
       role="region"
-      aria-label="Resource calendar"
+      aria-label={resourceCalendarLocale?.ariaLabel ?? 'Resource calendar'}
       data-scale={scale}
     >
       {/* Sidebar (resource list) */}
-      <div
-        className={unstyled ? undefined : 'sg-rcal-sidebar'}
-        style={{ width: sidebarWidth }}
-      >
+      <div className={unstyled ? undefined : 'sg-rcal-sidebar'} style={{ width: sidebarWidth }}>
         <div
           className={unstyled ? undefined : 'sg-rcal-sidebar-header'}
           style={{ height: headerHeight }}
@@ -431,7 +421,11 @@ export function ResourceCalendar({
             className={unstyled ? undefined : 'sg-rcal-sidebar-row'}
             style={{ height: rowHeight }}
             role="row"
-            aria-label={`Resource ${r.name}`}
+            aria-label={
+              resourceCalendarLocale?.resource
+                ? resourceCalendarLocale.resource(r.name)
+                : `Resource ${r.name}`
+            }
             data-row-index={i}
             data-resource-id={r.id}
           >
@@ -441,13 +435,15 @@ export function ResourceCalendar({
               data-role="marker"
               aria-hidden="true"
             />
-            <span className={unstyled ? undefined : 'sg-rcal-sidebar-name'}>
-              {r.name}
-            </span>
+            <span className={unstyled ? undefined : 'sg-rcal-sidebar-name'}>{r.name}</span>
             {r.capacityPerSlot !== undefined && (
               <span
                 className={unstyled ? undefined : 'sg-rcal-sidebar-capacity'}
-                aria-label={`capacity ${r.capacityPerSlot} per slot`}
+                aria-label={
+                  resourceCalendarLocale?.capacity
+                    ? resourceCalendarLocale.capacity(r.capacityPerSlot)
+                    : `capacity ${r.capacityPerSlot} per slot`
+                }
               >
                 ×{r.capacityPerSlot}
               </span>
@@ -547,7 +543,7 @@ export function ResourceCalendar({
           {assignmentRects.map(({ assignment, x, y, w, h }) => {
             const status = conflictingIds.has(assignment.id)
               ? 'conflict'
-              : assignment.status ?? 'tentative'
+              : (assignment.status ?? 'tentative')
             const blockClass = unstyled
               ? undefined
               : [
@@ -578,22 +574,18 @@ export function ResourceCalendar({
                 }}
                 role="button"
                 tabIndex={0}
-                aria-label={`${assignment.title}${status === 'conflict' ? ' (conflict)' : ''}`}
+                aria-label={`${assignment.title}${status === 'conflict' ? (resourceCalendarLocale?.conflictSuffix ?? ' (conflict)') : ''}`}
                 data-assignment-id={assignment.id}
                 data-status={status}
                 data-resource-id={assignment.resourceId}
-                onMouseDown={
-                  draggable
-                    ? (e) => startInteraction(e, assignment, 'move')
-                    : undefined
-                }
+                onMouseDown={draggable ? (e) => startInteraction(e, assignment, 'move') : undefined}
                 onKeyDown={(e) => onAssignmentKeyDown(e, assignment)}
               >
                 {resizable && (
                   <div
                     className={unstyled ? undefined : 'sg-rcal-assignment-resize-start'}
                     role="button"
-                    aria-label="Resize start"
+                    aria-label={resourceCalendarLocale?.resizeStart ?? 'Resize start'}
                     tabIndex={-1}
                     data-role="resize-handle-start"
                     style={{
@@ -604,9 +596,7 @@ export function ResourceCalendar({
                       width: 6,
                       cursor: 'ew-resize',
                     }}
-                    onMouseDown={(e) =>
-                      startInteraction(e, assignment, 'resize-start')
-                    }
+                    onMouseDown={(e) => startInteraction(e, assignment, 'resize-start')}
                   />
                 )}
                 <span
@@ -619,7 +609,7 @@ export function ResourceCalendar({
                   <div
                     className={unstyled ? undefined : 'sg-rcal-assignment-resize-end'}
                     role="button"
-                    aria-label="Resize end"
+                    aria-label={resourceCalendarLocale?.resizeEnd ?? 'Resize end'}
                     tabIndex={-1}
                     data-role="resize-handle-end"
                     style={{
@@ -630,9 +620,7 @@ export function ResourceCalendar({
                       width: 6,
                       cursor: 'ew-resize',
                     }}
-                    onMouseDown={(e) =>
-                      startInteraction(e, assignment, 'resize-end')
-                    }
+                    onMouseDown={(e) => startInteraction(e, assignment, 'resize-end')}
                   />
                 )}
               </div>

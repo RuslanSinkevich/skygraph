@@ -7,11 +7,8 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { DashboardWidgetView } from './Dashboard'
-import type {
-  DashboardCommonProps,
-  DashboardWidget,
-  WidgetAction,
-} from './types'
+import type { DashboardCommonProps, DashboardWidget, WidgetAction } from './types'
+import { useConfig } from '../../ConfigProvider'
 
 /**
  * Patch describing a layout change for one widget. Only the changed fields
@@ -134,6 +131,7 @@ export function DashboardEditor({
   onWidgetSettings,
   onWidgetRemove,
 }: DashboardEditorProps) {
+  const dashboardLocale = useConfig().locale?.dashboard
   const gridRef = useRef<HTMLDivElement | null>(null)
   const dragRef = useRef<DragState | null>(null)
   const [maximizedId, setMaximizedId] = useState<string | null>(null)
@@ -314,7 +312,7 @@ export function DashboardEditor({
       className={wrapperClass}
       style={gridStyle}
       role="region"
-      aria-label="Dashboard editor"
+      aria-label={dashboardLocale?.editorAriaLabel ?? 'Dashboard editor'}
       data-edit-mode={editable ? 'true' : 'false'}
       onContextMenu={onDashboardContextMenu ? handleRootContextMenu : undefined}
     >
@@ -326,9 +324,7 @@ export function DashboardEditor({
           isMaximized={maximizedId === w.id}
           totalColumns={columns}
           onWidgetContextMenu={onWidgetContextMenu}
-          onToggleMaximize={() =>
-            setMaximizedId((cur) => (cur === w.id ? null : w.id))
-          }
+          onToggleMaximize={() => setMaximizedId((cur) => (cur === w.id ? null : w.id))}
           editor={{
             editable,
             showResizeHandle: editable,

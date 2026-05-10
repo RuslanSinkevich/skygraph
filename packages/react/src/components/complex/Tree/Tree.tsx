@@ -10,21 +10,40 @@ import { DEFAULT_TREE_LOCALE, DEFAULT_INDENT, NODE_HEIGHT } from './types'
  */
 export function Tree(props: TreeProps) {
   const {
-    treeData, fieldNames,
-    checkable = false, checkStrictly = false,
-    checkedKeys: controlledCheckedKeys, defaultCheckedKeys,
+    treeData,
+    fieldNames,
+    checkable = false,
+    checkStrictly = false,
+    checkedKeys: controlledCheckedKeys,
+    defaultCheckedKeys,
     onCheck,
-    selectable = true, multiple = false,
-    selectedKeys: controlledSelectedKeys, defaultSelectedKeys,
+    selectable = true,
+    multiple = false,
+    selectedKeys: controlledSelectedKeys,
+    defaultSelectedKeys,
     onSelect,
-    expandedKeys: controlledExpandedKeys, defaultExpandedKeys,
-    defaultExpandAll = false, autoExpandParent = false,
+    expandedKeys: controlledExpandedKeys,
+    defaultExpandedKeys,
+    defaultExpandAll = false,
+    autoExpandParent = false,
     onExpand,
-    draggable = false, allowDrop, onDragStart, onDragOver, onDragLeave, onDragEnd, onDrop,
+    draggable = false,
+    allowDrop,
+    onDragStart,
+    onDragOver,
+    onDragLeave,
+    onDragEnd,
+    onDrop,
     loadData,
-    showLine = false, showIcon = false,
-    icon: globalIcon, switcherIcon, blockNode = false,
-    height, virtual = true, disabled = false, indentSize = DEFAULT_INDENT,
+    showLine = false,
+    showIcon = false,
+    icon: globalIcon,
+    switcherIcon,
+    blockNode = false,
+    height,
+    virtual = true,
+    disabled = false,
+    indentSize = DEFAULT_INDENT,
     directory = false,
     onRightClick,
     // Search
@@ -38,7 +57,8 @@ export function Tree(props: TreeProps) {
     keyboard = true,
     // Editable
     editable = false,
-    onEdit, onEditCancel,
+    onEdit,
+    onEditCancel,
     // Custom render
     titleRender,
     // Actions
@@ -56,7 +76,10 @@ export function Tree(props: TreeProps) {
     scrollToKey,
     // Status
     nodeStatus,
-    locale, className, style, unstyled,
+    locale,
+    className,
+    style,
+    unstyled,
   } = props
 
   const t = useMemo(() => ({ ...DEFAULT_TREE_LOCALE, ...locale }), [locale])
@@ -65,12 +88,21 @@ export function Tree(props: TreeProps) {
   const isShowLine = !!showLine
 
   const {
-    tree, treeState, flatNodes,
-    toggleExpand, setExpandedKeys, expandAll, collapseAll,
-    toggleCheck, setCheckedKeys,
-    select, setSelectedKeys,
-    markLoading, markLoaded,
-    moveNode, filterNodes,
+    tree,
+    treeState,
+    flatNodes,
+    toggleExpand,
+    setExpandedKeys,
+    expandAll,
+    collapseAll,
+    toggleCheck,
+    setCheckedKeys,
+    select,
+    setSelectedKeys,
+    markLoading,
+    markLoaded,
+    moveNode,
+    filterNodes,
     refresh,
   } = useTree({
     data: treeData,
@@ -88,33 +120,44 @@ export function Tree(props: TreeProps) {
   const [internalSearchValue, setInternalSearchValue] = useState(defaultSearchValue)
   const searchValue = controlledSearchValue ?? internalSearchValue
 
-  const handleSearchChange = useCallback((value: string) => {
-    if (controlledSearchValue === undefined) {
-      setInternalSearchValue(value)
-    }
-    onSearch?.(value)
-
-    if (!value) {
-      filterNodes(null)
-      return
-    }
-
-    const predicate = filterTreeNode
-      ? (node: TreeNodeData) => filterTreeNode(node, value)
-      : (node: TreeNodeData) => {
-          const title = String(node.title ?? '')
-          return title.toLowerCase().includes(value.toLowerCase())
-        }
-
-    filterNodes(predicate)
-
-    if (autoExpandParent) {
-      const filtered = tree.getFilteredKeys()
-      if (filtered) {
-        setExpandedKeys(filtered)
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      if (controlledSearchValue === undefined) {
+        setInternalSearchValue(value)
       }
-    }
-  }, [controlledSearchValue, onSearch, filterTreeNode, filterNodes, autoExpandParent, tree, setExpandedKeys])
+      onSearch?.(value)
+
+      if (!value) {
+        filterNodes(null)
+        return
+      }
+
+      const predicate = filterTreeNode
+        ? (node: TreeNodeData) => filterTreeNode(node, value)
+        : (node: TreeNodeData) => {
+            const title = String(node.title ?? '')
+            return title.toLowerCase().includes(value.toLowerCase())
+          }
+
+      filterNodes(predicate)
+
+      if (autoExpandParent) {
+        const filtered = tree.getFilteredKeys()
+        if (filtered) {
+          setExpandedKeys(filtered)
+        }
+      }
+    },
+    [
+      controlledSearchValue,
+      onSearch,
+      filterTreeNode,
+      filterNodes,
+      autoExpandParent,
+      tree,
+      setExpandedKeys,
+    ],
+  )
 
   useEffect(() => {
     if (controlledSearchValue !== undefined && controlledSearchValue !== internalSearchValue) {
@@ -154,10 +197,13 @@ export function Tree(props: TreeProps) {
   const focusedKey = controlledFocusedKey ?? internalFocusedKey
   const treeRef = useRef<HTMLDivElement>(null)
 
-  const setFocusedKey = useCallback((key: TreeKey | null) => {
-    setInternalFocusedKey(key)
-    if (key !== null) onFocusCallback?.(key)
-  }, [onFocusCallback])
+  const setFocusedKey = useCallback(
+    (key: TreeKey | null) => {
+      setInternalFocusedKey(key)
+      if (key !== null) onFocusCallback?.(key)
+    },
+    [onFocusCallback],
+  )
 
   useEffect(() => {
     if (autoFocus && flatNodes.length > 0 && focusedKey === null) {
@@ -170,27 +216,36 @@ export function Tree(props: TreeProps) {
   // ═══════════════════════════════════════════
   const [editingKey, setEditingKey] = useState<TreeKey | null>(null)
 
-  const isNodeEditable = useCallback((node: TreeNodeData): boolean => {
-    if (typeof editable === 'function') return editable(node)
-    return !!editable
-  }, [editable])
+  const isNodeEditable = useCallback(
+    (node: TreeNodeData): boolean => {
+      if (typeof editable === 'function') return editable(node)
+      return !!editable
+    },
+    [editable],
+  )
 
   const handleEditStart = useCallback((key: TreeKey) => {
     setEditingKey(key)
   }, [])
 
-  const handleEditConfirm = useCallback((key: TreeKey, value: string) => {
-    const node = tree.getNode(key)
-    if (node && onEdit) {
-      onEdit({ key, node, value, oldValue: String(node.title ?? '') })
-    }
-    setEditingKey(null)
-  }, [tree, onEdit])
+  const handleEditConfirm = useCallback(
+    (key: TreeKey, value: string) => {
+      const node = tree.getNode(key)
+      if (node && onEdit) {
+        onEdit({ key, node, value, oldValue: String(node.title ?? '') })
+      }
+      setEditingKey(null)
+    },
+    [tree, onEdit],
+  )
 
-  const handleEditCancelInternal = useCallback((key: TreeKey) => {
-    setEditingKey(null)
-    onEditCancel?.(key)
-  }, [onEditCancel])
+  const handleEditCancelInternal = useCallback(
+    (key: TreeKey) => {
+      setEditingKey(null)
+      onEditCancel?.(key)
+    },
+    [onEditCancel],
+  )
 
   // ═══════════════════════════════════════════
   // DRAG STATE
@@ -202,125 +257,155 @@ export function Tree(props: TreeProps) {
   // ═══════════════════════════════════════════
   // EVENT HANDLERS
   // ═══════════════════════════════════════════
-  const handleExpand = useCallback((key: TreeKey) => {
-    toggleExpand(key)
-    const node = tree.getNode(key)
-    if (node && onExpand) {
-      const newState = tree.getState()
-      const expanded = newState.expandedKeys.includes(key)
-      onExpand(newState.expandedKeys, { expanded, node })
-    }
-  }, [toggleExpand, tree, onExpand])
+  const handleExpand = useCallback(
+    (key: TreeKey) => {
+      toggleExpand(key)
+      const node = tree.getNode(key)
+      if (node && onExpand) {
+        const newState = tree.getState()
+        const expanded = newState.expandedKeys.includes(key)
+        onExpand(newState.expandedKeys, { expanded, node })
+      }
+    },
+    [toggleExpand, tree, onExpand],
+  )
 
-  const handleCheck = useCallback((key: TreeKey) => {
-    toggleCheck(key)
-    if (onCheck) {
-      const newState = tree.getState()
-      const node = tree.getNode(key)!
-      const checkedNodes = newState.checkedKeys
-        .map((ck: TreeKey) => tree.getNode(ck))
-        .filter(Boolean) as TreeNodeData[]
-      onCheck(newState.checkedKeys, {
-        checked: newState.checkedKeys.includes(key),
-        node,
-        checkedNodes,
-        halfCheckedKeys: newState.halfCheckedKeys,
+  const handleCheck = useCallback(
+    (key: TreeKey) => {
+      toggleCheck(key)
+      if (onCheck) {
+        const newState = tree.getState()
+        const node = tree.getNode(key)!
+        const checkedNodes = newState.checkedKeys
+          .map((ck: TreeKey) => tree.getNode(ck))
+          .filter(Boolean) as TreeNodeData[]
+        onCheck(newState.checkedKeys, {
+          checked: newState.checkedKeys.includes(key),
+          node,
+          checkedNodes,
+          halfCheckedKeys: newState.halfCheckedKeys,
+        })
+      }
+    },
+    [toggleCheck, tree, onCheck],
+  )
+
+  const handleSelect = useCallback(
+    (key: TreeKey) => {
+      select(key, multiple)
+      if (onSelect) {
+        const newState = tree.getState()
+        const node = tree.getNode(key)!
+        const selectedNodes = newState.selectedKeys
+          .map((sk: TreeKey) => tree.getNode(sk))
+          .filter(Boolean) as TreeNodeData[]
+        onSelect(newState.selectedKeys, {
+          selected: newState.selectedKeys.includes(key),
+          node,
+          selectedNodes,
+        })
+      }
+    },
+    [select, multiple, tree, onSelect],
+  )
+
+  const handleLoadData = useCallback(
+    (node: TreeNodeData) => {
+      if (!loadData) return
+      const key = node.key
+      if (treeState.loadedKeys.includes(key) || treeState.loadingKeys.includes(key)) return
+      markLoading(key)
+      loadData(node).then(() => {
+        markLoaded(key)
       })
-    }
-  }, [toggleCheck, tree, onCheck])
-
-  const handleSelect = useCallback((key: TreeKey) => {
-    select(key, multiple)
-    if (onSelect) {
-      const newState = tree.getState()
-      const node = tree.getNode(key)!
-      const selectedNodes = newState.selectedKeys
-        .map((sk: TreeKey) => tree.getNode(sk))
-        .filter(Boolean) as TreeNodeData[]
-      onSelect(newState.selectedKeys, {
-        selected: newState.selectedKeys.includes(key),
-        node,
-        selectedNodes,
-      })
-    }
-  }, [select, multiple, tree, onSelect])
-
-  const handleLoadData = useCallback((node: TreeNodeData) => {
-    if (!loadData) return
-    const key = node.key
-    if (treeState.loadedKeys.includes(key) || treeState.loadingKeys.includes(key)) return
-    markLoading(key)
-    loadData(node).then(() => {
-      markLoaded(key)
-    })
-  }, [loadData, treeState.loadedKeys, treeState.loadingKeys, markLoading, markLoaded])
+    },
+    [loadData, treeState.loadedKeys, treeState.loadingKeys, markLoading, markLoaded],
+  )
 
   // Drag handlers
-  const handleDragStart = useCallback((e: React.DragEvent, key: TreeKey) => {
-    setDragKey(key)
-    e.dataTransfer.effectAllowed = 'move'
-    const node = tree.getNode(key)
-    if (node) onDragStart?.({ event: e, node })
-  }, [tree, onDragStart])
+  const handleDragStart = useCallback(
+    (e: React.DragEvent, key: TreeKey) => {
+      setDragKey(key)
+      e.dataTransfer.effectAllowed = 'move'
+      const node = tree.getNode(key)
+      if (node) onDragStart?.({ event: e, node })
+    },
+    [tree, onDragStart],
+  )
 
-  const handleDragOver = useCallback((e: React.DragEvent, key: TreeKey) => {
-    e.preventDefault()
-    setDropKey(key)
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-    const y = e.clientY - rect.top
-    const h = rect.height
-    let pos: -1 | 0 | 1 = 0
-    if (y < h * 0.25) pos = -1
-    else if (y > h * 0.75) pos = 1
-    setDropPosition(pos)
-    const node = tree.getNode(key)
-    if (node) onDragOver?.({ event: e, node })
-  }, [tree, onDragOver])
+  const handleDragOver = useCallback(
+    (e: React.DragEvent, key: TreeKey) => {
+      e.preventDefault()
+      setDropKey(key)
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+      const y = e.clientY - rect.top
+      const h = rect.height
+      let pos: -1 | 0 | 1 = 0
+      if (y < h * 0.25) pos = -1
+      else if (y > h * 0.75) pos = 1
+      setDropPosition(pos)
+      const node = tree.getNode(key)
+      if (node) onDragOver?.({ event: e, node })
+    },
+    [tree, onDragOver],
+  )
 
-  const handleDragLeave = useCallback((e: React.DragEvent, key: TreeKey) => {
-    setDropKey(null)
-    const node = tree.getNode(key)
-    if (node) onDragLeave?.({ event: e, node })
-  }, [tree, onDragLeave])
+  const handleDragLeave = useCallback(
+    (e: React.DragEvent, key: TreeKey) => {
+      setDropKey(null)
+      const node = tree.getNode(key)
+      if (node) onDragLeave?.({ event: e, node })
+    },
+    [tree, onDragLeave],
+  )
 
-  const handleDragEnd = useCallback((e: React.DragEvent, key: TreeKey) => {
-    setDragKey(null)
-    setDropKey(null)
-    const node = tree.getNode(key)
-    if (node) onDragEnd?.({ event: e, node })
-  }, [tree, onDragEnd])
-
-  const handleDrop = useCallback((e: React.DragEvent, key: TreeKey) => {
-    e.preventDefault()
-    if (dragKey === null || dragKey === key) {
+  const handleDragEnd = useCallback(
+    (e: React.DragEvent, key: TreeKey) => {
       setDragKey(null)
       setDropKey(null)
-      return
-    }
+      const node = tree.getNode(key)
+      if (node) onDragEnd?.({ event: e, node })
+    },
+    [tree, onDragEnd],
+  )
 
-    const dragNode = tree.getNode(dragKey)
-    const dropNode = tree.getNode(key)
-    if (!dragNode || !dropNode) return
+  const handleDrop = useCallback(
+    (e: React.DragEvent, key: TreeKey) => {
+      e.preventDefault()
+      if (dragKey === null || dragKey === key) {
+        setDragKey(null)
+        setDropKey(null)
+        return
+      }
 
-    if (allowDrop && !allowDrop({ dragNode, dropNode, dropPosition })) {
+      const dragNode = tree.getNode(dragKey)
+      const dropNode = tree.getNode(key)
+      if (!dragNode || !dropNode) return
+
+      if (allowDrop && !allowDrop({ dragNode, dropNode, dropPosition })) {
+        setDragKey(null)
+        setDropKey(null)
+        return
+      }
+
+      moveNode(dragKey, key, dropPosition)
+
+      if (onDrop) {
+        onDrop({ event: e, node: dropNode, dragNode, dropPosition })
+      }
+
       setDragKey(null)
       setDropKey(null)
-      return
-    }
+    },
+    [dragKey, dropPosition, tree, allowDrop, moveNode, onDrop],
+  )
 
-    moveNode(dragKey, key, dropPosition)
-
-    if (onDrop) {
-      onDrop({ event: e, node: dropNode, dragNode, dropPosition })
-    }
-
-    setDragKey(null)
-    setDropKey(null)
-  }, [dragKey, dropPosition, tree, allowDrop, moveNode, onDrop])
-
-  const handleRightClick = useCallback((e: React.MouseEvent, node: TreeNodeData) => {
-    onRightClick?.({ event: e, node })
-  }, [onRightClick])
+  const handleRightClick = useCallback(
+    (e: React.MouseEvent, node: TreeNodeData) => {
+      onRightClick?.({ event: e, node })
+    },
+    [onRightClick],
+  )
 
   const isDraggable = (node: TreeNodeData): boolean => {
     if (typeof draggable === 'function') return draggable(node)
@@ -337,115 +422,134 @@ export function Tree(props: TreeProps) {
   // Scrolls the virtual viewport so the row for `key` is visible. Declared
   // before `handleKeyDown` so it can be listed in the callback's deps array
   // (otherwise eslint-react-hooks/exhaustive-deps complains).
-  const scrollToFocused = useCallback((key: TreeKey) => {
-    const index = flatNodes.findIndex((item) => item.key === key)
-    if (index === -1) return
-    const el = containerRef.current ?? treeRef.current
-    if (!el) return
-    const targetTop = index * itemHeight
-    const { scrollTop: st, clientHeight: ch } = el
-    if (targetTop < st) {
-      el.scrollTop = targetTop
-    } else if (targetTop + itemHeight > st + ch) {
-      el.scrollTop = targetTop + itemHeight - ch
-    }
-  }, [flatNodes, itemHeight])
+  const scrollToFocused = useCallback(
+    (key: TreeKey) => {
+      const index = flatNodes.findIndex((item) => item.key === key)
+      if (index === -1) return
+      const el = containerRef.current ?? treeRef.current
+      if (!el) return
+      const targetTop = index * itemHeight
+      const { scrollTop: st, clientHeight: ch } = el
+      if (targetTop < st) {
+        el.scrollTop = targetTop
+      } else if (targetTop + itemHeight > st + ch) {
+        el.scrollTop = targetTop + itemHeight - ch
+      }
+    },
+    [flatNodes, itemHeight],
+  )
 
   // ═══════════════════════════════════════════
   // KEYBOARD NAVIGATION
   // ═══════════════════════════════════════════
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!keyboard || disabled || editingKey !== null) return
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!keyboard || disabled || editingKey !== null) return
 
-    const currentIndex = flatNodes.findIndex((item) => item.key === focusedKey)
-    if (currentIndex === -1 && flatNodes.length === 0) return
+      const currentIndex = flatNodes.findIndex((item) => item.key === focusedKey)
+      if (currentIndex === -1 && flatNodes.length === 0) return
 
-    const focusNode = (index: number) => {
-      if (index >= 0 && index < flatNodes.length) {
-        setFocusedKey(flatNodes[index].key)
-        scrollToFocused(flatNodes[index].key)
+      const focusNode = (index: number) => {
+        if (index >= 0 && index < flatNodes.length) {
+          setFocusedKey(flatNodes[index].key)
+          scrollToFocused(flatNodes[index].key)
+        }
       }
-    }
 
-    switch (e.key) {
-      case 'ArrowDown': {
-        e.preventDefault()
-        focusNode(currentIndex === -1 ? 0 : Math.min(currentIndex + 1, flatNodes.length - 1))
-        break
-      }
-      case 'ArrowUp': {
-        e.preventDefault()
-        focusNode(currentIndex === -1 ? 0 : Math.max(currentIndex - 1, 0))
-        break
-      }
-      case 'ArrowRight': {
-        e.preventDefault()
-        if (currentIndex === -1) break
-        const item = flatNodes[currentIndex]
-        if (!item.isLeaf && !treeState.expandedKeys.includes(item.key)) {
-          handleExpand(item.key)
-        } else if (!item.isLeaf && treeState.expandedKeys.includes(item.key)) {
-          focusNode(currentIndex + 1)
+      switch (e.key) {
+        case 'ArrowDown': {
+          e.preventDefault()
+          focusNode(currentIndex === -1 ? 0 : Math.min(currentIndex + 1, flatNodes.length - 1))
+          break
         }
-        break
-      }
-      case 'ArrowLeft': {
-        e.preventDefault()
-        if (currentIndex === -1) break
-        const item = flatNodes[currentIndex]
-        if (!item.isLeaf && treeState.expandedKeys.includes(item.key)) {
-          handleExpand(item.key)
-        } else if (item.parentKey !== null) {
-          const parentIndex = flatNodes.findIndex((n) => n.key === item.parentKey)
-          if (parentIndex !== -1) focusNode(parentIndex)
+        case 'ArrowUp': {
+          e.preventDefault()
+          focusNode(currentIndex === -1 ? 0 : Math.max(currentIndex - 1, 0))
+          break
         }
-        break
-      }
-      case 'Home': {
-        e.preventDefault()
-        focusNode(0)
-        break
-      }
-      case 'End': {
-        e.preventDefault()
-        focusNode(flatNodes.length - 1)
-        break
-      }
-      case 'Enter': {
-        e.preventDefault()
-        if (currentIndex === -1) break
-        const item = flatNodes[currentIndex]
-        if (selectable) handleSelect(item.key)
-        break
-      }
-      case ' ': {
-        e.preventDefault()
-        if (currentIndex === -1) break
-        const item = flatNodes[currentIndex]
-        if (checkable) handleCheck(item.key)
-        else if (!item.isLeaf) handleExpand(item.key)
-        break
-      }
-      case '*': {
-        e.preventDefault()
-        expandAll()
-        break
-      }
-      case 'F2': {
-        e.preventDefault()
-        if (currentIndex === -1) break
-        const item = flatNodes[currentIndex]
-        if (isNodeEditable(item.node)) {
-          handleEditStart(item.key)
+        case 'ArrowRight': {
+          e.preventDefault()
+          if (currentIndex === -1) break
+          const item = flatNodes[currentIndex]
+          if (!item.isLeaf && !treeState.expandedKeys.includes(item.key)) {
+            handleExpand(item.key)
+          } else if (!item.isLeaf && treeState.expandedKeys.includes(item.key)) {
+            focusNode(currentIndex + 1)
+          }
+          break
         }
-        break
+        case 'ArrowLeft': {
+          e.preventDefault()
+          if (currentIndex === -1) break
+          const item = flatNodes[currentIndex]
+          if (!item.isLeaf && treeState.expandedKeys.includes(item.key)) {
+            handleExpand(item.key)
+          } else if (item.parentKey !== null) {
+            const parentIndex = flatNodes.findIndex((n) => n.key === item.parentKey)
+            if (parentIndex !== -1) focusNode(parentIndex)
+          }
+          break
+        }
+        case 'Home': {
+          e.preventDefault()
+          focusNode(0)
+          break
+        }
+        case 'End': {
+          e.preventDefault()
+          focusNode(flatNodes.length - 1)
+          break
+        }
+        case 'Enter': {
+          e.preventDefault()
+          if (currentIndex === -1) break
+          const item = flatNodes[currentIndex]
+          if (selectable) handleSelect(item.key)
+          break
+        }
+        case ' ': {
+          e.preventDefault()
+          if (currentIndex === -1) break
+          const item = flatNodes[currentIndex]
+          if (checkable) handleCheck(item.key)
+          else if (!item.isLeaf) handleExpand(item.key)
+          break
+        }
+        case '*': {
+          e.preventDefault()
+          expandAll()
+          break
+        }
+        case 'F2': {
+          e.preventDefault()
+          if (currentIndex === -1) break
+          const item = flatNodes[currentIndex]
+          if (isNodeEditable(item.node)) {
+            handleEditStart(item.key)
+          }
+          break
+        }
       }
-    }
-  }, [
-    keyboard, disabled, editingKey, flatNodes, focusedKey, treeState.expandedKeys,
-    handleExpand, handleCheck, handleSelect, expandAll, setFocusedKey,
-    checkable, selectable, scrollToFocused, isNodeEditable, handleEditStart,
-  ])
+    },
+    [
+      keyboard,
+      disabled,
+      editingKey,
+      flatNodes,
+      focusedKey,
+      treeState.expandedKeys,
+      handleExpand,
+      handleCheck,
+      handleSelect,
+      expandAll,
+      setFocusedKey,
+      checkable,
+      selectable,
+      scrollToFocused,
+      isNodeEditable,
+      handleEditStart,
+    ],
+  )
 
   // ═══════════════════════════════════════════
   // VIRTUAL SCROLL (handlers + memoized slices)
@@ -477,7 +581,10 @@ export function Tree(props: TreeProps) {
   const virtualOffset = visibleSlice.startIndex * itemHeight
 
   const totalHeight = flatNodes.length * itemHeight
-  const virtualBottomPad = Math.max(0, totalHeight - virtualOffset - visibleNodes.length * itemHeight)
+  const virtualBottomPad = Math.max(
+    0,
+    totalHeight - virtualOffset - visibleNodes.length * itemHeight,
+  )
 
   // scrollToKey prop
   useEffect(() => {
@@ -507,8 +614,15 @@ export function Tree(props: TreeProps) {
     const allKeys = tree.getAllKeys()
     setCheckedKeys(allKeys)
     if (onCheck) {
-      const allNodes = allKeys.map((k: TreeKey) => tree.getNode(k)).filter(Boolean) as TreeNodeData[]
-      onCheck(allKeys, { checked: true, node: allNodes[0], checkedNodes: allNodes, halfCheckedKeys: [] })
+      const allNodes = allKeys
+        .map((k: TreeKey) => tree.getNode(k))
+        .filter(Boolean) as TreeNodeData[]
+      onCheck(allKeys, {
+        checked: true,
+        node: allNodes[0],
+        checkedNodes: allNodes,
+        halfCheckedKeys: [],
+      })
     }
   }, [tree, setCheckedKeys, onCheck])
 
@@ -541,7 +655,13 @@ export function Tree(props: TreeProps) {
     return map
   }, [treeData, isShowLine])
 
-  const renderNode = (item: { node: TreeNodeData; key: TreeKey; depth: number; isLeaf: boolean; parentKey?: TreeKey | null }) => {
+  const renderNode = (item: {
+    node: TreeNodeData
+    key: TreeKey
+    depth: number
+    isLeaf: boolean
+    parentKey?: TreeKey | null
+  }) => {
     const lineInfo = siblingsMap?.get(item.key)
     return (
       <TreeNodeRow
@@ -567,7 +687,12 @@ export function Tree(props: TreeProps) {
         directory={directory}
         animated={animated}
         globalIcon={globalIcon}
-        nodeIcon={item.node.icon as React.ReactNode | ((props: { expanded: boolean; selected: boolean }) => React.ReactNode) | undefined}
+        nodeIcon={
+          item.node.icon as
+            | React.ReactNode
+            | ((props: { expanded: boolean; selected: boolean }) => React.ReactNode)
+            | undefined
+        }
         switcherIcon={switcherIcon}
         draggable={isDraggable(item.node)}
         dropPosition={dropKey === item.key ? dropPosition : null}
@@ -631,7 +756,9 @@ export function Tree(props: TreeProps) {
     disabled ? 'sg-tree-disabled' : '',
     animated ? 'sg-tree-animated' : '',
     className,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   const renderSearch = () => {
     if (!showSearch) return null
@@ -649,7 +776,7 @@ export function Tree(props: TreeProps) {
           <button
             className="sg-tree-search-clear"
             onClick={() => handleSearchChange('')}
-            aria-label="Clear search"
+            aria-label={t.clearSearch}
             type="button"
           >
             ×

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, Children } from 'react'
+import { useConfig } from '../ConfigProvider'
 import type { BaseComponentProps } from '../../types'
 
 /** Props for a simple slide carousel with dots and optional autoplay. */
@@ -34,6 +35,7 @@ export function Carousel({
   const slides = Children.toArray(children)
   const count = slides.length
   const [current, setCurrent] = useState(0)
+  const slideLabel = useConfig().locale?.carousel?.slide ?? ((index: number) => `Slide ${index}`)
 
   const goTo = useCallback(
     (index: number) => {
@@ -74,7 +76,9 @@ export function Carousel({
         `sg-carousel-dots-${dotPosition}`,
         isVertical ? 'sg-carousel-vertical' : '',
         className,
-      ].filter(Boolean).join(' ')}
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={style}
     >
       <div className="sg-carousel-container">
@@ -86,7 +90,9 @@ export function Carousel({
                 'sg-carousel-slide',
                 i === current ? 'sg-carousel-slide-active' : '',
                 `sg-carousel-effect-${effect}`,
-              ].filter(Boolean).join(' ')}
+              ]
+                .filter(Boolean)
+                .join(' ')}
               style={
                 effect === 'slide'
                   ? { transform: `translateX(${(i - current) * 100}%)` }
@@ -101,16 +107,19 @@ export function Carousel({
       </div>
 
       {dots && count > 1 && (
-        <div className={['sg-carousel-dots', isVertical ? 'sg-carousel-dots-vertical' : ''].filter(Boolean).join(' ')}>
+        <div
+          className={['sg-carousel-dots', isVertical ? 'sg-carousel-dots-vertical' : '']
+            .filter(Boolean)
+            .join(' ')}
+        >
           {slides.map((_, i) => (
             <button
               key={i}
-              className={[
-                'sg-carousel-dot',
-                i === current ? 'sg-carousel-dot-active' : '',
-              ].filter(Boolean).join(' ')}
+              className={['sg-carousel-dot', i === current ? 'sg-carousel-dot-active' : '']
+                .filter(Boolean)
+                .join(' ')}
               onClick={() => goTo(i)}
-              aria-label={`Slide ${i + 1}`}
+              aria-label={slideLabel(i + 1)}
             />
           ))}
         </div>

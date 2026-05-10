@@ -9,6 +9,27 @@ export type {
   FormLocale,
   UploadLocale,
   TransferLocale,
+  InputPasswordLocale,
+  SearchInputLocale,
+  InlineEditLocale,
+  TagInputLocale,
+  DrawerLocale,
+  NotificationLocale,
+  TagLocale,
+  SpinLocale,
+  SkeletonLocale,
+  BreadcrumbLocale,
+  CarouselLocale,
+  RateLocale,
+  ChartsLocale,
+  DatePickerLocale,
+  CascaderLocale,
+  TreeSelectLocale,
+  DashboardLocale,
+  GanttLocale,
+  ResourceCalendarLocale,
+  TimelineLocale,
+  SchemaFormEditorLocale,
 } from './types'
 
 // ConfigProvider
@@ -16,7 +37,7 @@ export { ConfigProvider, useConfig } from './components/ConfigProvider'
 export type { SgConfig, ConfigProviderProps } from './components/ConfigProvider'
 
 // Locale presets
-export { en_US, ru_RU } from './locales'
+export { en_US, ru_RU, zh_CN, de_DE, fr_FR, es_ES } from './locales'
 
 // Hooks
 export { useField } from './hooks/useField'
@@ -91,7 +112,13 @@ export type { CascaderProps, CascaderOption } from './components/complex/Cascade
 // The previous ui/Calendar.tsx was a re-export shim that violated the
 // "ui/ has no core" boundary; we now export directly from complex.
 export { Calendar } from './components/complex/Calendar'
-export type { CalendarProps, CalendarLocale, CalendarHeaderInfo, CalendarCellInfo, CalendarEvent } from './components/complex/Calendar'
+export type {
+  CalendarProps,
+  CalendarLocale,
+  CalendarHeaderInfo,
+  CalendarCellInfo,
+  CalendarEvent,
+} from './components/complex/Calendar'
 
 // UI components (pure React, no core)
 export { Spin } from './components/ui/Spin'
@@ -119,7 +146,13 @@ export type { TextareaProps } from './components/ui/Textarea'
 export { InputNumber } from './components/ui/InputNumber'
 export type { InputNumberProps } from './components/ui/InputNumber'
 export { DatePicker, RangePicker } from './components/ui/DatePicker'
-export type { DatePickerProps, RangePickerProps, PickerMode, DatePreset, ShowTimeConfig } from './components/ui/DatePicker'
+export type {
+  DatePickerProps,
+  RangePickerProps,
+  PickerMode,
+  DatePreset,
+  ShowTimeConfig,
+} from './components/ui/DatePicker'
 export { TimePicker, TimeRangePicker } from './components/ui/TimePicker'
 export type { TimePickerProps, TimeRangePickerProps } from './components/ui/TimePicker'
 export { AutoComplete } from './components/ui/AutoComplete'
@@ -180,7 +213,11 @@ export { AutoField } from './components/complex/AutoField'
 export type { AutoFieldProps, FieldType, AutoFieldOption } from './components/complex/AutoField'
 export { zodRule, zodRules, zodDefaults, zodToJsonSchema } from './adapters/zodAdapter'
 export type { ZodLikeSchema, ZodObjectLikeSchema, ZodAdapterOptions } from './adapters/zodAdapter'
-export { jsonSchemaToFields, jsonSchemaToRules, jsonSchemaToDefaults } from './adapters/jsonSchemaAdapter'
+export {
+  jsonSchemaToFields,
+  jsonSchemaToRules,
+  jsonSchemaToDefaults,
+} from './adapters/jsonSchemaAdapter'
 export type { JSONSchema, JSONSchemaProperty, AutoFieldConfig } from './adapters/jsonSchemaAdapter'
 export { FormProvider, useFormProvider } from './components/complex/FormProvider'
 export type { FormProviderProps } from './components/complex/FormProvider'
@@ -386,11 +423,7 @@ export type { ListProps, ListItemProps, ListItemMetaProps } from './components/c
 // `TransferLocale` is already exported above (from `./types`) — avoid a
 // duplicate identifier in the rolled-up `.d.ts`.
 export { Transfer, TransferList } from './components/complex/Transfer'
-export type {
-  TransferProps,
-  TransferItem,
-  TransferListProps,
-} from './components/complex/Transfer'
+export type { TransferProps, TransferItem, TransferListProps } from './components/complex/Transfer'
 export { Mentions } from './components/ui/Mentions'
 export type { MentionsProps, MentionOption } from './components/ui/Mentions'
 export { Transition } from './components/ui/Transition'

@@ -103,6 +103,8 @@ export interface TreeLocale {
   checkAllText?: string
   /** Toolbar control to clear all checks. */
   uncheckAllText?: string
+  /** Accessible label for the clear-search (×) button. */
+  clearSearch?: string
 }
 
 /** Default English strings for `Tree`. */
@@ -114,6 +116,7 @@ export const DEFAULT_TREE_LOCALE: Required<TreeLocale> = {
   collapseAllText: 'Collapse All',
   checkAllText: 'Check All',
   uncheckAllText: 'Uncheck All',
+  clearSearch: 'Clear search',
 }
 
 /** Default indent between tree levels in pixels. */
@@ -164,7 +167,11 @@ export interface TreeProps {
   /** Enables drag handles per node or per node predicate. @default false */
   draggable?: boolean | ((node: TreeNodeData) => boolean)
   /** Validates whether a drop is allowed. */
-  allowDrop?: (info: { dragNode: TreeNodeData; dropNode: TreeNodeData; dropPosition: -1 | 0 | 1 }) => boolean
+  allowDrop?: (info: {
+    dragNode: TreeNodeData
+    dropNode: TreeNodeData
+    dropPosition: -1 | 0 | 1
+  }) => boolean
   /** Drag start callback. */
   onDragStart?: (info: DragInfo) => void
   /** Drag enter callback. */
@@ -190,7 +197,9 @@ export interface TreeProps {
   /** Default node icon render or element. */
   icon?: React.ReactNode | ((props: { expanded: boolean; selected: boolean }) => React.ReactNode)
   /** Custom expand/collapse control. */
-  switcherIcon?: React.ReactNode | ((props: { expanded: boolean; loading: boolean; isLeaf: boolean }) => React.ReactNode)
+  switcherIcon?:
+    | React.ReactNode
+    | ((props: { expanded: boolean; loading: boolean; isLeaf: boolean }) => React.ReactNode)
   /** Makes the whole row clickable for selection. @default false */
   blockNode?: boolean
   /** Fixed viewport height enabling internal virtual scroll. */
@@ -232,7 +241,10 @@ export interface TreeProps {
   onEditCancel?: (key: TreeKey) => void
 
   /** Custom title area render. */
-  titleRender?: (node: TreeNodeData, info: { expanded: boolean; selected: boolean; checked: boolean; halfChecked: boolean }) => React.ReactNode
+  titleRender?: (
+    node: TreeNodeData,
+    info: { expanded: boolean; selected: boolean; checked: boolean; halfChecked: boolean },
+  ) => React.ReactNode
 
   /** Inline action buttons on node rows. */
   actions?: TreeNodeAction[]

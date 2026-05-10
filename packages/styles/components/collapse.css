@@ -145,7 +145,15 @@
 /* --- Content --- */
 
 .sg-collapse-content {
+  /* Dynamic max-height is set via the `--sg-collapse-content-max-height`
+   * CSS variable, so the React component no longer has to emit an inline
+   * `overflow: hidden` either. Default `0px` keeps the content collapsed
+   * before the React state is initialised. */
+  --sg-collapse-content-max-height: 0px;
+
   transition: max-height 0.3s var(--sg-transition-timing);
+  max-height: var(--sg-collapse-content-max-height);
+  overflow: hidden;
 }
 
 .sg-collapse-content-inner {

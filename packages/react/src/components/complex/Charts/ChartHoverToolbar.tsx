@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { downloadSvg, downloadSvgAsPng } from './chartExport'
 import { printElement } from '../../../utils/print'
+import { useConfig } from '../../ConfigProvider'
 
 /**
  * Контекст, передаваемый в `onClick` каждой `ChartAction`. Содержит ссылку
@@ -205,6 +206,7 @@ export function ChartHoverToolbar({
   className,
   style,
 }: ChartHoverToolbarProps) {
+  const chartsLocale = useConfig().locale?.charts
   const visibleActions = actions.filter((a) => !a.hidden)
   if (visibleActions.length === 0) return null
 
@@ -221,7 +223,7 @@ export function ChartHoverToolbar({
       data-sg-chart-toolbar=""
       data-sg-toolbar={visible ? 'visible' : 'hidden'}
       role="toolbar"
-      aria-label="Chart actions"
+      aria-label={chartsLocale?.actions ?? 'Chart actions'}
       aria-hidden={visible ? undefined : true}
     >
       {visibleActions.map((a) => (

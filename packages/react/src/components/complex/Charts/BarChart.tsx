@@ -8,15 +8,18 @@ import {
 } from './types'
 import { ChartLegend } from './ChartLegend'
 import { ChartAxes } from './ChartAxes'
-import { ChartBrush, resolveBrushConfig, type ChartBrushConfig, type ChartBrushRange } from './ChartBrush'
+import {
+  ChartBrush,
+  resolveBrushConfig,
+  type ChartBrushConfig,
+  type ChartBrushRange,
+} from './ChartBrush'
 import type { BaseChartProps } from './types'
 import { useChartPrint, type ChartRef } from './chartRef'
 import { useChartSize } from './useChartSize'
 import { ChartHoverToolbar, resolveChartActions } from './ChartHoverToolbar'
-import {
-  makeChartContextMenuHandler,
-  makeSeriesContextMenuHandler,
-} from './chartContextMenu'
+import { makeChartContextMenuHandler, makeSeriesContextMenuHandler } from './chartContextMenu'
+import { useConfig } from '../../ConfigProvider'
 
 export interface BarChartProps extends BaseChartProps {
   /** Gap between groups in [0..1] of category step. @default 0.2 */
@@ -62,6 +65,7 @@ function BarChartInner(
   }: BarChartProps,
   forwardedRef: ForwardedRef<ChartRef>,
 ) {
+  const chartsLocale = useConfig().locale?.charts
   const { rootRef } = useChartPrint<Element>(forwardedRef, printable)
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [pt, pr, pb, pl] = normalizePadding(padding)
@@ -74,10 +78,7 @@ function BarChartInner(
   const plotW = Math.max(0, viewW - pl - pr)
   const plotH = Math.max(0, viewH - pt - pb)
 
-  const { min, max } = useMemo(
-    () => chartBounds(series.map((s) => s.values)),
-    [series],
-  )
+  const { min, max } = useMemo(() => chartBounds(series.map((s) => s.values)), [series])
 
   // Always include zero in the range so positive bars rest on the baseline.
   const baseline = Math.min(0, min)
@@ -92,7 +93,9 @@ function BarChartInner(
   const barSlot = seriesCount > 0 ? groupInner / seriesCount : 0
   const barWidth = barSlot * (1 - barGap)
 
-  const wrapperClass = unstyled ? className : ['sg-chart', 'sg-chart-bar', className].filter(Boolean).join(' ')
+  const wrapperClass = unstyled
+    ? className
+    : ['sg-chart', 'sg-chart-bar', className].filter(Boolean).join(' ')
 
   const anim = resolveChartAnimation(animate)
   const animKey = useMemo(
@@ -106,9 +109,7 @@ function BarChartInner(
   const [internalBrushRange, setInternalBrushRange] = useState<ChartBrushRange | null>(
     brushConfig?.defaultRange ?? null,
   )
-  const effectiveBrushRange = isBrushControlled
-    ? brushConfig!.range ?? null
-    : internalBrushRange
+  const effectiveBrushRange = isBrushControlled ? (brushConfig!.range ?? null) : internalBrushRange
   const handleBrushChange = (next: ChartBrushRange | null) => {
     if (!isBrushControlled) setInternalBrushRange(next)
     brushConfig?.onRangeChange?.(next)
@@ -138,7 +139,7 @@ function BarChartInner(
       height={height}
       viewBox={`0 0 ${viewW} ${viewH}`}
       role="img"
-      aria-label="Bar chart"
+      aria-label={chartsLocale?.barChart ?? 'Bar chart'}
       onContextMenu={handleSvgContextMenu}
     >
       <ChartAxes

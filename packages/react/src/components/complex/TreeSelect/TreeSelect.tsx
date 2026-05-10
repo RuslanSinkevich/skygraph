@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Tree } from '../Tree'
+import { useConfig } from '../../ConfigProvider'
 import type { TreeSelectProps, TreeKey, TreeNodeData } from './types'
 
 function toArray(val: TreeKey | TreeKey[] | undefined): TreeKey[] {
@@ -126,9 +127,15 @@ export function TreeSelect(props: TreeSelectProps) {
     unstyled,
   } = props
 
+  const treeSelectLocale = useConfig().locale?.treeSelect
+  const searchPlaceholder = treeSelectLocale?.searchPlaceholder ?? 'Search...'
+  const noMatchesText = treeSelectLocale?.noMatches ?? 'No matches'
+
   const isMultiple = multiple || treeCheckable
 
-  const [internalValue, setInternalValue] = useState<TreeKey[]>(() => toArray(controlledValue ?? defaultValue))
+  const [internalValue, setInternalValue] = useState<TreeKey[]>(() =>
+    toArray(controlledValue ?? defaultValue),
+  )
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -179,56 +186,85 @@ export function TreeSelect(props: TreeSelectProps) {
     return collectAllKeys(filteredTreeData)
   }, [searchValue, filteredTreeData])
 
-  const fireChange = useCallback((keys: TreeKey[], triggerNode: TreeNodeData) => {
-    setInternalValue(keys)
-    const labels = keys.map((k) => getNodeLabel(findNode(treeData, k)))
-    if (onChange) {
-      const result = isMultiple ? keys : keys[0]
-      onChange(result as TreeKey & TreeKey[], labels, { triggerNode })
-    }
-  }, [treeData, onChange, isMultiple])
+  const fireChange = useCallback(
+    (keys: TreeKey[], triggerNode: TreeNodeData) => {
+      setInternalValue(keys)
+      const labels = keys.map((k) => getNodeLabel(findNode(treeData, k)))
+      if (onChange) {
+        const result = isMultiple ? keys : keys[0]
+        onChange(result as TreeKey & TreeKey[], labels, { triggerNode })
+      }
+    },
+    [treeData, onChange, isMultiple],
+  )
 
-  const handleTreeSelect = useCallback((_selectedKeys: TreeKey[], info: { selected: boolean; node: TreeNodeData; selectedNodes: TreeNodeData[] }) => {
-    if (treeCheckable) return
-    const node = info.node
-    if (isMultiple) {
-      const newKeys = info.selected
-        ? [...currentValue, node.key]
-        : currentValue.filter((k) => k !== node.key)
+  const handleTreeSelect = useCallback(
+    (
+      _selectedKeys: TreeKey[],
+      info: { selected: boolean; node: TreeNodeData; selectedNodes: TreeNodeData[] },
+    ) => {
+      if (treeCheckable) return
+      const node = info.node
+      if (isMultiple) {
+        const newKeys = info.selected
+          ? [...currentValue, node.key]
+          : currentValue.filter((k) => k !== node.key)
+        fireChange(newKeys, node)
+      } else {
+        fireChange([node.key], node)
+        setOpen(false)
+        setSearchValue('')
+      }
+    },
+    [treeCheckable, isMultiple, currentValue, fireChange],
+  )
+
+  const handleTreeCheck = useCallback(
+    (
+      checkedKeys: TreeKey[],
+      info: {
+        checked: boolean
+        node: TreeNodeData
+        checkedNodes: TreeNodeData[]
+        halfCheckedKeys: TreeKey[]
+      },
+    ) => {
+      const displayed = applyStrategy(checkedKeys, treeData, showCheckedStrategy)
+      fireChange(displayed, info.node)
+    },
+    [treeData, showCheckedStrategy, fireChange],
+  )
+
+  const handleRemoveTag = useCallback(
+    (key: TreeKey, e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (disabled) return
+      const node = findNode(treeData, key) ?? ({ key } as TreeNodeData)
+      const newKeys = currentValue.filter((k) => k !== key)
       fireChange(newKeys, node)
-    } else {
-      fireChange([node.key], node)
-      setOpen(false)
+    },
+    [disabled, treeData, currentValue, fireChange],
+  )
+
+  const handleClear = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (disabled) return
+      const node = treeData[0] ?? ({ key: '' } as TreeNodeData)
+      fireChange([], node)
       setSearchValue('')
-    }
-  }, [treeCheckable, isMultiple, currentValue, fireChange])
+    },
+    [disabled, treeData, fireChange],
+  )
 
-  const handleTreeCheck = useCallback((checkedKeys: TreeKey[], info: { checked: boolean; node: TreeNodeData; checkedNodes: TreeNodeData[]; halfCheckedKeys: TreeKey[] }) => {
-    const displayed = applyStrategy(checkedKeys, treeData, showCheckedStrategy)
-    fireChange(displayed, info.node)
-  }, [treeData, showCheckedStrategy, fireChange])
-
-  const handleRemoveTag = useCallback((key: TreeKey, e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (disabled) return
-    const node = findNode(treeData, key) ?? { key } as TreeNodeData
-    const newKeys = currentValue.filter((k) => k !== key)
-    fireChange(newKeys, node)
-  }, [disabled, treeData, currentValue, fireChange])
-
-  const handleClear = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (disabled) return
-    const node = treeData[0] ?? { key: '' } as TreeNodeData
-    fireChange([], node)
-    setSearchValue('')
-  }, [disabled, treeData, fireChange])
-
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value
-    setSearchValue(val)
-    onSearch?.(val)
-  }, [onSearch])
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value
+      setSearchValue(val)
+      onSearch?.(val)
+    },
+    [onSearch],
+  )
 
   const handleTriggerClick = useCallback(() => {
     if (disabled) return
@@ -259,12 +295,13 @@ export function TreeSelect(props: TreeSelectProps) {
           {!isMultiple && displayedValues.length > 0 && (
             <span>{getNodeLabel(findNode(treeData, displayedValues[0]))}</span>
           )}
-          {isMultiple && displayedValues.map((key) => (
-            <span key={String(key)}>
-              {getNodeLabel(findNode(treeData, key))}
-              <span onClick={(e) => handleRemoveTag(key, e)}>&times;</span>
-            </span>
-          ))}
+          {isMultiple &&
+            displayedValues.map((key) => (
+              <span key={String(key)}>
+                {getNodeLabel(findNode(treeData, key))}
+                <span onClick={(e) => handleRemoveTag(key, e)}>&times;</span>
+              </span>
+            ))}
         </div>
         {open && (
           <div>
@@ -273,7 +310,7 @@ export function TreeSelect(props: TreeSelectProps) {
                 ref={searchRef}
                 value={searchValue}
                 onChange={handleSearchChange}
-                placeholder="Search..."
+                placeholder={searchPlaceholder}
               />
             )}
             <Tree
@@ -306,15 +343,17 @@ export function TreeSelect(props: TreeSelectProps) {
     disabled ? 'sg-treeselect-disabled' : '',
     isMultiple ? 'sg-treeselect-multiple' : '',
     className,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 
-  const visibleTags = maxTagCount !== undefined && isMultiple
-    ? displayedValues.slice(0, maxTagCount)
-    : displayedValues
+  const visibleTags =
+    maxTagCount !== undefined && isMultiple
+      ? displayedValues.slice(0, maxTagCount)
+      : displayedValues
 
-  const hiddenCount = maxTagCount !== undefined && isMultiple
-    ? Math.max(0, displayedValues.length - maxTagCount)
-    : 0
+  const hiddenCount =
+    maxTagCount !== undefined && isMultiple ? Math.max(0, displayedValues.length - maxTagCount) : 0
 
   return (
     <div className={wrapperCls} style={style} ref={wrapperRef}>
@@ -330,24 +369,20 @@ export function TreeSelect(props: TreeSelectProps) {
             </span>
           )}
 
-          {isMultiple && visibleTags.map((key) => (
-            <span key={String(key)} className="sg-treeselect-tag">
-              <span className="sg-treeselect-tag-label">
-                {getNodeLabel(findNode(treeData, key))}
+          {isMultiple &&
+            visibleTags.map((key) => (
+              <span key={String(key)} className="sg-treeselect-tag">
+                <span className="sg-treeselect-tag-label">
+                  {getNodeLabel(findNode(treeData, key))}
+                </span>
+                <span className="sg-treeselect-tag-close" onClick={(e) => handleRemoveTag(key, e)}>
+                  &times;
+                </span>
               </span>
-              <span
-                className="sg-treeselect-tag-close"
-                onClick={(e) => handleRemoveTag(key, e)}
-              >
-                &times;
-              </span>
-            </span>
-          ))}
+            ))}
 
           {hiddenCount > 0 && (
-            <span className="sg-treeselect-tag sg-treeselect-tag-rest">
-              +{hiddenCount}...
-            </span>
+            <span className="sg-treeselect-tag sg-treeselect-tag-rest">+{hiddenCount}...</span>
           )}
 
           {showSearch && open && (
@@ -374,7 +409,7 @@ export function TreeSelect(props: TreeSelectProps) {
       {open && (
         <div className="sg-treeselect-dropdown" style={dropdownStyle}>
           {filteredTreeData.length === 0 ? (
-            <div className="sg-treeselect-empty">No matches</div>
+            <div className="sg-treeselect-empty">{noMatchesText}</div>
           ) : (
             <Tree
               treeData={filteredTreeData}
