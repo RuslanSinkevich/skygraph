@@ -17,16 +17,25 @@ import type {
 import { TABLE_PREFIX } from '../namespaces'
 import { computeAggregate, matchesColumnFilter } from './filter'
 
-function rowPath(tableId: string, rowId: RowId, column: string): string {
-  return `${TABLE_PREFIX}${tableId}.byId.${rowId}.${column}`
-}
-
 function statePath(tableId: string, key: string): string {
   return `${TABLE_PREFIX}${tableId}.state.${key}`
 }
 
 let tableCounter = 0
 
+/**
+ * `createTable` строит TableEngine поверх Core. Пользовательские данные строк
+ * хранятся в private замыкании (`dataById`/`keysById`), а в Core попадают
+ * только пути `$table.<id>.state.*` (агрегированные счётчики, ширины колонок,
+ * пин-конфиг). Это держит `addRows(100k)` на масштабе O(N) Map.set вместо
+ * O(N × cols) `core.set` (исторический паттерн `byId.<rid>.<col>` создавал
+ * сотни тысяч узлов в Store и аллокаций Set/Map в `Core.set` на каждую
+ * cell-запись — см. `docs/_streams/findings/T-Table-Perf.md` H1).
+ *
+ * Семантика публичных методов `getRow`/`getCell`/`getVisibleRows` сохранена.
+ * Внешние подписки на `$table.<id>.state.*` пути продолжают работать;
+ * подписок на `byId.*` в монорепе нет (они никогда не были задокументированы).
+ */
 export function createTable(core: Core, options?: TableOptions): TableEngine {
   const tableId = `t${tableCounter++}`
   let currentPageSize = options?.pageSize ?? 50
@@ -46,29 +55,29 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
   let columnAggregates: ColumnAggregate[] = []
   let groups: TableGroup[] = []
 
+  // Private storage: данные строк живут в замыкании, не в Core store.
+  // Это устраняет 800k `core.set` per-cell на 100k×7 датасете и убирает
+  // основной источник аллокаций (Store-узлы + Set/Map в `Core.set`).
+  const dataById = new Map<RowId, Record<string, unknown>>()
+  const keysById = new Map<RowId, string[]>()
+
   function getRowData(id: RowId): Record<string, unknown> | undefined {
-    const prefix = `${TABLE_PREFIX}${tableId}.byId.${id}.`
-    const data: Record<string, unknown> = {}
-    let found = false
+    const stored = dataById.get(id)
+    if (!stored) return undefined
 
+    // Если пользователь передал явный whitelist колонок через
+    // `TableOptions.columns`, отдаём отфильтрованную копию (исторический
+    // контракт). В типичном кейсе (опция не задана) — возвращаем хранимую
+    // ссылку без копии: hot path `compareBySort`/`recomputeFiltered`/render
+    // не должны платить за per-row allocation.
     if (options?.columns) {
+      const filtered: Record<string, unknown> = {}
       for (const col of options.columns) {
-        const val = core.get(`${prefix}${col}`)
-        if (val !== undefined) found = true
-        data[col] = val
+        filtered[col] = stored[col]
       }
-    } else {
-      const stored = core.get(`${TABLE_PREFIX}${tableId}.byId.${id}.__keys`) as
-        | string[]
-        | undefined
-      if (!stored) return undefined
-      found = true
-      for (const col of stored) {
-        data[col] = core.get(`${prefix}${col}`)
-      }
+      return filtered
     }
-
-    return found ? data : undefined
+    return stored
   }
 
   function matchesFilters(rowData: Record<string, unknown>): boolean {
@@ -144,7 +153,7 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       const { value, rows } = map.get(key)!
       const aggregates: Record<string, unknown> = {}
       for (const agg of columnAggregates) {
-        const values = rows.map((id) => core.get(rowPath(tableId, id, agg.column)))
+        const values = rows.map((id) => dataById.get(id)?.[agg.column])
         aggregates[agg.column] = computeAggregate(values, agg.type)
       }
       return { key, value, rows, aggregates }
@@ -165,15 +174,12 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
   function getColumnKeys(): string[] {
     if (options?.columns) return options.columns
     if (order.length === 0) return []
-    const first = getRowData(order[0])
-    return first ? Object.keys(first) : []
+    const firstId = order[0]
+    return keysById.get(firstId) ?? []
   }
 
   /** Привести `AdvancedFilter | ColumnFilter` к единому `ColumnFilter`. */
-  function toColumnFilter(
-    column: string,
-    filter: AdvancedFilter | ColumnFilter,
-  ): ColumnFilter {
+  function toColumnFilter(column: string, filter: AdvancedFilter | ColumnFilter): ColumnFilter {
     const adv = filter as AdvancedFilter
     if (adv.op != null) {
       return { column, operator: adv.op, value: adv.value }
@@ -184,28 +190,21 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
 
   const table: TableEngine = {
     addRow(id: RowId, data: Record<string, unknown>): void {
-      const keys = Object.keys(data)
-      core.batch(() => {
-        core.set(`${TABLE_PREFIX}${tableId}.byId.${id}.__keys`, keys)
-        for (const [col, val] of Object.entries(data)) {
-          core.set(rowPath(tableId, id, col), val)
-        }
-      })
+      dataById.set(id, data)
+      keysById.set(id, Object.keys(data))
       order.push(id)
       recomputeFiltered()
     },
 
     addRows(rows: Array<{ id: RowId; data: Record<string, unknown> }>): void {
-      core.batch(() => {
-        for (const row of rows) {
-          const keys = Object.keys(row.data)
-          core.set(`${TABLE_PREFIX}${tableId}.byId.${row.id}.__keys`, keys)
-          for (const [col, val] of Object.entries(row.data)) {
-            core.set(rowPath(tableId, row.id, col), val)
-          }
-          order.push(row.id)
-        }
-      })
+      // Single Map.set per row instead of (cols + 1) `core.set` per row —
+      // на 100k×7 это разница 800k vs 100k операций и убирает
+      // основной источник аллокаций. См. `findings/T-Table-Perf.md` H1.
+      for (const row of rows) {
+        dataById.set(row.id, row.data)
+        keysById.set(row.id, Object.keys(row.data))
+        order.push(row.id)
+      }
       recomputeFiltered()
     },
 
@@ -213,11 +212,22 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       const idx = order.indexOf(id)
       if (idx === -1) return
       order.splice(idx, 1)
+      dataById.delete(id)
+      keysById.delete(id)
       recomputeFiltered()
     },
 
     updateCell(id: RowId, column: string, value: unknown): void {
-      core.set(rowPath(tableId, id, column), value)
+      const row = dataById.get(id)
+      if (!row) return
+      // Мутация хранимого объекта. `getRow` отдаёт эту же ссылку (см. контракт
+      // в JSDoc к `createTable`), `recomputeFiltered` снизу пересоберёт сорт/
+      // группы как раньше.
+      row[column] = value
+      const keys = keysById.get(id)
+      if (keys && !keys.includes(column)) {
+        keys.push(column)
+      }
       recomputeFiltered()
     },
 
@@ -226,14 +236,22 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
     },
 
     getCell(id: RowId, column: string): unknown {
-      return core.get(rowPath(tableId, id, column))
+      return dataById.get(id)?.[column]
     },
 
     getVisibleRows(): Array<{ id: RowId; data: Record<string, unknown> }> {
       const start = (page - 1) * currentPageSize
       const end = start + currentPageSize
       const slice = filteredOrder.slice(start, end)
-      return slice.map((id) => ({ id, data: getRowData(id) ?? {} }))
+      const out = new Array(slice.length) as Array<{
+        id: RowId
+        data: Record<string, unknown>
+      }>
+      for (let i = 0; i < slice.length; i++) {
+        const id = slice[i]
+        out[i] = { id, data: getRowData(id) ?? {} }
+      }
+      return out
     },
 
     getAllRowIds(): RowId[] {
@@ -241,7 +259,15 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
     },
 
     getAllRows(): Array<{ id: RowId; data: Record<string, unknown> }> {
-      return filteredOrder.map((id) => ({ id, data: getRowData(id) ?? {} }))
+      const out = new Array(filteredOrder.length) as Array<{
+        id: RowId
+        data: Record<string, unknown>
+      }>
+      for (let i = 0; i < filteredOrder.length; i++) {
+        const id = filteredOrder[i]
+        out[i] = { id, data: getRowData(id) ?? {} }
+      }
+      return out
     },
 
     setSort(column: string, direction: SortDirection, append?: boolean): void {
@@ -365,10 +391,12 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
     },
 
     moveRows(ids: RowId[], toIndex: number): void {
-      const items = ids.map((id) => {
-        const idx = order.indexOf(id)
-        return { id, idx }
-      }).filter((x) => x.idx !== -1)
+      const items = ids
+        .map((id) => {
+          const idx = order.indexOf(id)
+          return { id, idx }
+        })
+        .filter((x) => x.idx !== -1)
 
       if (items.length === 0) return
 
@@ -388,18 +416,22 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
         result.push(cols)
       }
 
-      const sourceIds = exportOptions?.allRows ? filteredOrder : filteredOrder.slice(
-        (page - 1) * currentPageSize,
-        (page - 1) * currentPageSize + currentPageSize,
-      )
+      const sourceIds = exportOptions?.allRows
+        ? filteredOrder
+        : filteredOrder.slice(
+            (page - 1) * currentPageSize,
+            (page - 1) * currentPageSize + currentPageSize,
+          )
 
       for (const id of sourceIds) {
         const data = getRowData(id)
         if (!data) continue
-        result.push(cols.map((col) => {
-          const v = data[col]
-          return v == null ? '' : String(v)
-        }))
+        result.push(
+          cols.map((col) => {
+            const v = data[col]
+            return v == null ? '' : String(v)
+          }),
+        )
       }
 
       return result
@@ -470,6 +502,8 @@ export function createTable(core: Core, options?: TableOptions): TableEngine {
       groupByField = null
       columnAggregates = []
       groups = []
+      dataById.clear()
+      keysById.clear()
       core.set(statePath(tableId, 'columnWidths'), {})
       publishState()
     },
