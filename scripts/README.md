@@ -10,6 +10,7 @@ run on Node 18+ without extra dev-dependencies.
 | `check-no-important.mjs` | Forbid `!important` in component CSS. |
 | `check-bundle-budget.mjs` | Sum every JS chunk shipped by `examples/demo` against a hard ceiling. |
 | `gen-demo-page.mjs` | Scaffold a new demo page for `examples/demo` and/or `examples/demo-vue`. |
+| `gen-vue-demo.mjs` | Scaffold a Wave-3 Vue demo aggregator (`demos/<comp>/`, `<comp>-doc/`, `<Comp>Demo.vue`). |
 
 ---
 
@@ -92,6 +93,91 @@ unless `--force` is passed).
 | `0` | Success (or dry-run finished). |
 | `1` | Bad CLI arguments / target already exists. |
 | `2` | Internal error (template missing, fs failure). |
+
+---
+
+## `gen-vue-demo.mjs`
+
+Scaffolds a **Wave-3 Vue demo aggregator** matching the architecture
+introduced by `T-Vue-Demo-Foundation`:
+
+```
+examples/demo-vue/src/demos/<comp-kebab>/<Example>.demo.vue
+examples/demo-vue/src/demos/<comp-kebab>-doc/{en,ru,useStrings}.ts
+examples/demo-vue/src/demos/<Comp>Demo.vue   (aggregator)
+```
+
+The aggregator wires `?raw`-imports of every `.demo.vue` example into
+`<DemoBox>` cards, renders a `<PropsTable>` and (optionally) a
+`<CssVarsTable>`. Templates live in `scripts/templates/vue-demo-*.tmpl`.
+
+### Usage
+
+```bash
+node scripts/gen-vue-demo.mjs <comp-kebab> [--examples=N] [--with-css-vars]
+```
+
+### Options
+
+| Flag | Description |
+|---|---|
+| `--examples=N` | Number of `Default<i>.demo.vue` files (default: `1`). When `N > 1`, files are numbered `Default1.demo.vue` …; the aggregator imports each as `Default<i>Source` via `?raw` and renders one `<DemoBox>` per file. |
+| `--with-css-vars` | Emits a non-empty `cssVarsData` skeleton in the aggregator and a `cssHint` text in the doc. Without the flag the generator strips the `<CssVarsTable>` block entirely. |
+| `-h`, `--help` | Print usage and exit. |
+
+### Examples
+
+```bash
+# Single Default example, no CSS-vars table.
+node scripts/gen-vue-demo.mjs color-picker
+
+# Three Default examples (Default1 / Default2 / Default3).
+node scripts/gen-vue-demo.mjs date-picker --examples=3
+
+# Pre-wired CssVarsTable for components that expose `--sg-*` tokens.
+node scripts/gen-vue-demo.mjs charts --with-css-vars
+```
+
+### What it creates / what is left to you
+
+| Created automatically | Left to do by hand |
+|---|---|
+| `demos/<comp>/Default.demo.vue` (× N) — TODO body. | Real Vue component usage in each `.demo.vue`. |
+| `demos/<comp>-doc/{en.ts, ru.ts, useStrings.ts}` — TODO strings. | Real translations + `pageTitle` / `crumb*` / `demo*Title|Desc` / `prop*` / `css*` keys. |
+| `demos/<Comp>Demo.vue` — wired aggregator with `?raw`-imports. | `propsData` / `cssVarsData` arrays with real props and CSS-vars. |
+| —                                                           | Route registration in `router/index.ts` (script prints the snippet). |
+| —                                                           | Sidebar entry in `nav.ts`. |
+| —                                                           | Removal of the old `pages/<Comp>Page.vue` (if any). |
+
+The generator deliberately avoids touching `router/index.ts`, `nav.ts`,
+i18n dicts, or `package.json` — those are shared with parallel work
+streams in Wave 3.2 (see `docs/_streams/wave-3/CHARTER.md`).
+
+### Templates
+
+| File | Purpose |
+|---|---|
+| `scripts/templates/vue-demo-example.vue.tmpl` | Single `*.demo.vue` example with `useDemoStrings`. |
+| `scripts/templates/vue-demo-doc-en.ts.tmpl` | English doc strings (source of truth). |
+| `scripts/templates/vue-demo-doc-ru.ts.tmpl` | Russian copy with the same key set. |
+| `scripts/templates/vue-demo-doc-strings.ts.tmpl` | `use<Pascal>DocStrings()` hook returning a `ComputedRef`. |
+| `scripts/templates/vue-demo-aggregator.vue.tmpl` | `<Comp>Demo.vue` aggregator with `<ComponentDoc>` + `<DemoBox>` + `<PropsTable>` (+ `<CssVarsTable>` when `--with-css-vars`). |
+
+Placeholders inside templates:
+
+| Placeholder | Replaced with | Example for `--name color-picker` |
+|---|---|---|
+| `__NAME__` | the raw kebab-case argument | `color-picker` |
+| `__PASCAL__` | PascalCase | `ColorPicker` |
+| `__TITLE__` | Title Case | `Color Picker` |
+| `__LOCALE_KEY__` | camelCase | `colorPicker` |
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Success. |
+| `1` | Bad CLI arguments / target file already exists. |
 
 ---
 

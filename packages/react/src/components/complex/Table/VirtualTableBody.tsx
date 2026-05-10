@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useReducer, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { createVirtual } from '@skygraph/core'
 import type { VirtualEngine } from '@skygraph/core'
 import { TableBody, type BodyProps } from './TableBody'
@@ -140,26 +140,29 @@ export function VirtualTableBody(props: VirtualBodyProps) {
   )
   const bottomPad = Math.max(0, totalHeight - topPad - visibleSize)
 
-  // ResizeObserver на первом дочернем элементе каждой строки. Так как row-div
-  // использует `display: contents`, у него нет собственной геометрии — мы
-  // измеряем первую ячейку, чьи размеры в CSS Grid = размерам всей строки.
-  useLayoutEffect(() => {
+  // Чтобы измерения не входили в петлю из субпиксельного дребезга
+  // (`getBoundingClientRect` периодически возвращает 47.5 ↔ 48.0 на одних
+  // и тех же DOM-узлах), стабилизируем высоту до целых пикселей перед
+  // тем, как отдать её движку.
+  const normalizeHeight = (h: number) => Math.ceil(h)
+
+  // Стабильный ResizeObserver — создаётся один раз на жизнь компонента, а
+  // не на каждый ре-рендер. На каждый wheel-tick мы только diff-наблюдаем
+  // новые ячейки и снимаем наблюдение со старых: это сводит работу с
+  // O(visible) до O(добавилось+убралось), что критично для плавности.
+  //
+  // Здесь сознательно НЕТ scroll-anchoring. Любой сдвиг `scrollTop` внутри
+  // RO-callback'а во время активного wheel/drag воспринимается браузером
+  // как «контент дёрнулся назад», что хуже, чем лёгкий дрейф ползунка от
+  // пересчёта `totalHeight`. Если в проекте появится строка, реально
+  // меняющая высоту после async-загрузки (картинка, шрифт), её можно будет
+  // покрыть отдельной anchoring-веткой по флагу.
+  const roRef = useRef<ResizeObserver | null>(null)
+  const observedCellsRef = useRef<Set<HTMLElement>>(new Set())
+
+  useEffect(() => {
     if (!isDynamic) return
-    const grid = scrollContainerRef.current?.querySelector('.sg-table-grid')
-    if (!grid) return
-    if (typeof ResizeObserver === 'undefined') {
-      // jsdom / старые runtime — фоллбэк на одноразовое измерение через
-      // getBoundingClientRect, чтобы хотя бы initial-render отчитался.
-      const rowEls = grid.querySelectorAll<HTMLElement>('[data-sg-virtual-row-index]')
-      rowEls.forEach((rowEl) => {
-        const idx = Number(rowEl.getAttribute('data-sg-virtual-row-index'))
-        const firstCell = rowEl.firstElementChild as HTMLElement | null
-        if (firstCell) {
-          virtual.setMeasuredHeight(idx, firstCell.getBoundingClientRect().height)
-        }
-      })
-      return
-    }
+    if (typeof ResizeObserver === 'undefined') return
 
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -167,21 +170,65 @@ export function VirtualTableBody(props: VirtualBodyProps) {
         const rowEl = target.closest('[data-sg-virtual-row-index]') as HTMLElement | null
         if (!rowEl) continue
         const idx = Number(rowEl.getAttribute('data-sg-virtual-row-index'))
-        const h = entry.contentRect.height
-        virtual.setMeasuredHeight(idx, h)
+        virtual.setMeasuredHeight(idx, normalizeHeight(entry.contentRect.height))
       }
     })
+    roRef.current = ro
+    return () => {
+      ro.disconnect()
+      roRef.current = null
+      observedCellsRef.current.clear()
+    }
+  }, [isDynamic, virtual])
+
+  // На каждый ре-рендер: diff observe/unobserve + sync-prime только для
+  // строк, которые движок ещё не видел. Для уже измеренных строк ничего
+  // не делаем — иначе на каждый scroll бесплатно дёргали бы layout.
+  useLayoutEffect(() => {
+    if (!isDynamic) return
+    const grid = scrollContainerRef.current?.querySelector('.sg-table-grid')
+    if (!grid) return
 
     const rowEls = grid.querySelectorAll<HTMLElement>('[data-sg-virtual-row-index]')
+    const ro = roRef.current
+    const currentCells = new Set<HTMLElement>()
+
     rowEls.forEach((rowEl) => {
       const firstCell = rowEl.firstElementChild as HTMLElement | null
       if (!firstCell) return
       const idx = Number(rowEl.getAttribute('data-sg-virtual-row-index'))
-      virtual.setMeasuredHeight(idx, firstCell.getBoundingClientRect().height)
-      ro.observe(firstCell)
+      currentCells.add(firstCell)
+
+      // Sync prime для впервые увиденных строк, чтобы первый paint после
+      // их появления уже использовал реальную высоту, а не эстимейт.
+      // Для уже знакомых строк не трогаем — RO сам выстрелит, если
+      // высота реально поменялась.
+      if (!virtual.hasMeasured(idx)) {
+        virtual.setMeasuredHeight(idx, normalizeHeight(firstCell.getBoundingClientRect().height))
+      }
+
+      if (ro && !observedCellsRef.current.has(firstCell)) {
+        ro.observe(firstCell)
+      }
     })
 
-    return () => ro.disconnect()
+    if (ro) {
+      for (const cell of observedCellsRef.current) {
+        if (!currentCells.has(cell)) ro.unobserve(cell)
+      }
+    }
+    observedCellsRef.current = currentCells
+
+    // Фоллбэк для jsdom / runtime без RO — одноразовое измерение, чтобы
+    // initial-render тестов отчитался.
+    if (typeof ResizeObserver === 'undefined') {
+      rowEls.forEach((rowEl) => {
+        const firstCell = rowEl.firstElementChild as HTMLElement | null
+        if (!firstCell) return
+        const idx = Number(rowEl.getAttribute('data-sg-virtual-row-index'))
+        virtual.setMeasuredHeight(idx, normalizeHeight(firstCell.getBoundingClientRect().height))
+      })
+    }
   }, [isDynamic, virtual, scrollContainerRef, visibleRows])
 
   const spacerColumn = `1 / ${totalCols + 1}`
@@ -189,11 +236,7 @@ export function VirtualTableBody(props: VirtualBodyProps) {
   return (
     <>
       {topPad > 0 && (
-        <div
-          style={{ gridColumn: spacerColumn, height: topPad }}
-          role="presentation"
-          aria-hidden
-        />
+        <div style={{ gridColumn: spacerColumn, height: topPad }} role="presentation" aria-hidden />
       )}
       <TableBody
         {...bodyProps}

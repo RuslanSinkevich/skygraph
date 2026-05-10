@@ -73,12 +73,19 @@ export const en: DemoDict = {
     colDefault: 'Default',
     requiredLabel: 'required',
   },
+  cssVarsTable: {
+    title: 'CSS Variables',
+    colVariable: 'Variable',
+    colDefault: 'Default',
+    colDescription: 'Description',
+  },
   landing: {
     title: 'SkyGraph for Vue',
     lead: 'A framework-agnostic UI kit with a Vue 3 adapter. Composables for forms, tables, trees, graphs and 27 ready-to-use components.',
     statComponents: 'Components',
     statComposables: 'Composables',
     statTests: 'Tests',
+    statEngines: 'Engines',
     ctaPrimary: 'Browse components',
     ctaSecondary: 'Read source',
     featureReactiveTitle: 'Reactive core',
@@ -93,5 +100,10 @@ export const en: DemoDict = {
     featureMultiTitle: 'Same DOM, same CSS',
     featureMultiDesc:
       'Vue components emit the exact same .sg-* classes as the React adapter — themes and showcases work everywhere.',
+    quickInstallTitle: 'Quick install',
+    quickInstallDesc:
+      'Add @skygraph/vue and @skygraph/styles, import the stylesheet once, and start composing.',
+    quickInstallCopy: 'Copy',
+    quickInstallCopied: 'Copied',
   },
 }

@@ -2,7 +2,9 @@ import { createHashRouter, type RouteRecord } from './hashRouter'
 
 const Landing = () => import('../pages/Landing.vue')
 
-const ButtonPage = () => import('../pages/ButtonPage.vue')
+// `/components/button` — Wave 3.1 reference migration to demos/ architecture.
+// Old `pages/ButtonPage.vue` is gone (see T-Vue-Demo-Foundation done report).
+const ButtonDemo = () => import('../demos/ButtonDemo.vue')
 const InputPage = () => import('../pages/InputPage.vue')
 const InputNumberPage = () => import('../pages/InputNumberPage.vue')
 const TextareaPage = () => import('../pages/TextareaPage.vue')
@@ -62,7 +64,7 @@ const SchemaFormEditorPage = () => import('../pages/SchemaFormEditorPage.vue')
 
 const routes: RouteRecord[] = [
   { path: '/', component: Landing },
-  { path: '/components/button', component: ButtonPage },
+  { path: '/components/button', component: ButtonDemo },
   { path: '/components/input', component: InputPage },
   { path: '/components/inputnumber', component: InputNumberPage },
   { path: '/components/textarea', component: TextareaPage },

@@ -1,0 +1,160 @@
+/*
+ * Landing page styles — Wave 3.1.
+ *
+ * Sits next to (and partially overrides) the existing `.dv-landing-*`
+ * rules in `examples/demo-vue/src/style.css`. New sections introduced
+ * by Wave 3.1 (StatsRow with 4 cells, FeatureGrid with 4 cards,
+ * QuickInstall) get rules here so the legacy 3-cell layout in
+ * `style.css` remains as a backstop.
+ */
+
+.dv-landing-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 36px 0;
+}
+
+.dv-landing-stat-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.dv-landing-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.dv-landing-feature {
+  padding: 22px;
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: 12px;
+  background: var(--sg-color-bg);
+  transition: border-color 0.18s ease;
+}
+
+.dv-landing-feature:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--sg-color-primary) 50%,
+    var(--sg-color-border-secondary) 50%
+  );
+}
+
+.dv-landing-feature h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dv-landing-feature p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--sg-color-text-secondary);
+}
+
+/* QuickInstall ──────────────────────────────────────────────────────── */
+
+.dv-landing-install {
+  margin-top: 56px;
+}
+
+.dv-landing-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.dv-landing-section-sub {
+  margin: 0 0 18px;
+  color: var(--sg-color-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.dv-landing-install-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.dv-landing-install-card {
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: 12px;
+  background: var(--sg-color-bg-secondary);
+  overflow: hidden;
+}
+
+.dv-landing-install-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px dashed var(--sg-color-border-secondary);
+  background: var(--sg-color-bg);
+}
+
+.dv-landing-install-card-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sg-color-text);
+}
+
+.dv-landing-install-copy {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+}
+
+.dv-landing-install-copy:hover {
+  color: var(--sg-color-primary);
+  background: var(--sg-color-bg-hover, var(--sg-color-bg-secondary));
+}
+
+.dv-landing-install-code {
+  margin: 0;
+  padding: 16px 18px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: var(--sg-color-text);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* Reuse the existing `.dv-css-vars-hint` / `.dv-doc-table` selectors
+ * from `style.css`; CssVarsTable + DemoBox are documented there.
+ */
+.dv-css-vars-hint {
+  margin: -4px 0 12px;
+  font-size: 13px;
+  color: var(--sg-color-text-secondary);
+}
+
+@media (max-width: 880px) {
+  .dv-landing-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .dv-landing-install-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .dv-landing-stats {
+    grid-template-columns: 1fr;
+  }
+  .dv-landing-features {
+    grid-template-columns: 1fr;
+  }
+}

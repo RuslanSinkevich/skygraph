@@ -1,4 +1,5 @@
 import type React from 'react'
+import { FilterIcon, SearchIcon } from './defaultIcons'
 import type { UseTableOptions } from '../../../hooks/useTable'
 import type {
   AdvancedFilter,
@@ -10,7 +11,13 @@ import type {
   SortDirection,
   TableGroup,
 } from '@skygraph/core'
-import type { BaseComponentProps, InteractiveProps, SizableProps, SlotClassNames, SlotStyles } from '../../../types'
+import type {
+  BaseComponentProps,
+  InteractiveProps,
+  SizableProps,
+  SlotClassNames,
+  SlotStyles,
+} from '../../../types'
 import type { TableLocale } from '../../../types/locale'
 import type { ContextMenuItem } from './ContextMenu'
 import type { PrintableProp } from '../../../utils/print'
@@ -248,8 +255,8 @@ export const DEFAULT_LOCALE: Required<TableLocale> = {
   sortAsc: '▲',
   sortDesc: '▼',
   expandIcon: '›',
-  filterIcon: '▾',
-  searchIcon: '🔍',
+  filterIcon: FilterIcon,
+  searchIcon: SearchIcon,
   totalRows: (count) => `${count} rows`,
   selectedRows: (count) => `${count} selected`,
   exportCSV: 'Export CSV',
@@ -281,11 +288,11 @@ export const DEFAULT_LOCALE: Required<TableLocale> = {
   filterAdvancedInPlaceholder: 'value1, value2, ...',
   filterAdvancedBetweenMaxPlaceholder: 'Max',
   filterOpEq: '=',
-  filterOpNeq: '≠',
+  filterOpNeq: '!=',
   filterOpLt: '<',
-  filterOpLte: '≤',
+  filterOpLte: '<=',
   filterOpGt: '>',
-  filterOpGte: '≥',
+  filterOpGte: '>=',
   filterOpBetween: 'between',
   filterOpIn: 'in',
   filterOpNotIn: 'not in',
@@ -316,7 +323,8 @@ export interface SelectionSummaryAction {
  * Props for the `Table` component: column model, selection, scrolling, and toolbar features.
  * Styling and interaction props from `BaseComponentProps`, `InteractiveProps`, and `SizableProps` are inherited without per-prop docs here.
  */
-export interface TableProps extends Omit<UseTableOptions, 'columns'>, BaseComponentProps, InteractiveProps, SizableProps {
+export interface TableProps
+  extends Omit<UseTableOptions, 'columns'>, BaseComponentProps, InteractiveProps, SizableProps {
   /** Column definitions (leaf and/or grouped). */
   columns: TableColumn[]
   /** Dataset rows bound to the table engine (from `useTable` options). */

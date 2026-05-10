@@ -1,10 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Table, Tag, Button } from '@skygraph/react'
-import type {
-  TableColumn,
-  FilterDropdownProps,
-  SummaryCell,
-} from '@skygraph/react'
+import { Table, Tag, Button, Select } from '@skygraph/react'
+import type { TableColumn, FilterDropdownProps, SummaryCell } from '@skygraph/react'
 import { generateProducts } from './_data/generators'
 
 /**
@@ -54,11 +50,7 @@ export function AdvancedFiltersTable() {
       advancedFilterType: 'text',
       advancedFilterOperators: ['in', 'notIn'],
       render: (v) => (
-        <Tag
-          color={
-            v === 'active' ? 'success' : v === 'paused' ? 'warning' : 'default'
-          }
-        >
+        <Tag color={v === 'active' ? 'success' : v === 'paused' ? 'warning' : 'default'}>
           {String(v)}
         </Tag>
       ),
@@ -100,34 +92,35 @@ export function AdvancedFiltersTable() {
       render: (v) => (
         <span style={{ display: 'inline-flex', gap: 4, flexWrap: 'wrap' }}>
           {(v as string[]).map((t) => (
-            <Tag key={t} color="default">{t}</Tag>
+            <Tag key={t} color="default">
+              {t}
+            </Tag>
           ))}
         </span>
       ),
     },
   ]
 
-  const summary = (rows: { id: string; data: Record<string, unknown> }[]): SummaryCell[][] => [[
-    {
-      content: (
-        <span>
-          Showing <strong>{rows.length}</strong> of {data.length}
-        </span>
-      ),
-      colSpan: columns.length - 1,
-    },
-    {
-      content: (
-        <Button
-          size="small"
-          onClick={() => setResetKey((k) => k + 1)}
-        >
-          Reset all filters
-        </Button>
-      ),
-      align: 'right',
-    },
-  ]]
+  const summary = (rows: { id: string; data: Record<string, unknown> }[]): SummaryCell[][] => [
+    [
+      {
+        content: (
+          <span>
+            Showing <strong>{rows.length}</strong> of {data.length}
+          </span>
+        ),
+        colSpan: columns.length - 1,
+      },
+      {
+        content: (
+          <Button size="small" onClick={() => setResetKey((k) => k + 1)}>
+            Reset all filters
+          </Button>
+        ),
+        align: 'right',
+      },
+    ],
+  ]
 
   return (
     <Table
@@ -167,38 +160,29 @@ function TagsFilterDropdown({
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      <select
+      <Select
+        size="small"
         value={current.mode}
-        onChange={(e) =>
-          setSelectedKeys([{ ...current, mode: e.target.value as 'contains' | 'notContains' }])
-        }
-        style={{ padding: '4px 8px' }}
-      >
-        <option value="contains">contains</option>
-        <option value="notContains">not contains</option>
-      </select>
-      <select
+        onChange={(v) => setSelectedKeys([{ ...current, mode: v as 'contains' | 'notContains' }])}
+        options={[
+          { label: 'contains', value: 'contains' },
+          { label: 'not contains', value: 'notContains' },
+        ]}
+        aria-label="Tag filter mode"
+      />
+      <Select
+        size="small"
         value={current.tag}
-        onChange={(e) => setSelectedKeys([{ ...current, tag: e.target.value }])}
-        style={{ padding: '4px 8px' }}
-      >
-        <option value="">— pick tag —</option>
-        {ALL_TAGS.map((t) => (
-          <option key={t} value={t}>
-            {t}
-          </option>
-        ))}
-      </select>
+        onChange={(v) => setSelectedKeys([{ ...current, tag: String(v) }])}
+        placeholder="— pick tag —"
+        options={ALL_TAGS.map((t) => ({ label: t, value: t }))}
+        aria-label="Tag value"
+      />
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 4 }}>
         <Button size="small" onClick={clearFilters}>
           Reset
         </Button>
-        <Button
-          size="small"
-          type="primary"
-          disabled={!current.tag}
-          onClick={confirm}
-        >
+        <Button size="small" type="primary" disabled={!current.tag} onClick={confirm}>
           OK
         </Button>
       </div>

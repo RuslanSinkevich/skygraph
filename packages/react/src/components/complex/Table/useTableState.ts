@@ -23,12 +23,7 @@ import type {
   SortConfig,
   RowId,
 } from './types'
-import {
-  DEFAULT_COL_WIDTH,
-  MIN_COL_WIDTH,
-  SELECTION_COL_WIDTH,
-  DEFAULT_LOCALE,
-} from './types'
+import { DEFAULT_COL_WIDTH, MIN_COL_WIDTH, SELECTION_COL_WIDTH, DEFAULT_LOCALE } from './types'
 import type { ContextMenuState } from './ContextMenu'
 
 /**
@@ -85,6 +80,7 @@ export function useTableState(props: TableProps) {
     setPage,
     setFilterFn,
     setColumnWidth: persistColumnWidth,
+    refresh,
   } = useTable(tableOptions)
 
   const t = useMemo(() => ({ ...DEFAULT_LOCALE, ...locale }), [locale])
@@ -128,7 +124,7 @@ export function useTableState(props: TableProps) {
     () => new Set(hiddenColumnsProp ?? []),
   )
   const hiddenSet = useMemo(
-    () => hiddenColumnsProp ? new Set(hiddenColumnsProp) : internalHidden,
+    () => (hiddenColumnsProp ? new Set(hiddenColumnsProp) : internalHidden),
     [hiddenColumnsProp, internalHidden],
   )
 
@@ -136,9 +132,7 @@ export function useTableState(props: TableProps) {
     (key: string) => {
       if (onHiddenColumnsChange) {
         const current = hiddenColumnsProp ?? []
-        const next = current.includes(key)
-          ? current.filter((k) => k !== key)
-          : [...current, key]
+        const next = current.includes(key) ? current.filter((k) => k !== key) : [...current, key]
         onHiddenColumnsChange(next)
       } else {
         setInternalHidden((prev) => {
@@ -191,6 +185,11 @@ export function useTableState(props: TableProps) {
   const [openFilterDropdown, setOpenFilterDropdown] = useState<string | null>(null)
   const [advancedFilters, setAdvancedFiltersState] = useState<Record<string, AdvancedFilter>>({})
   const filterRef = useRef<HTMLDivElement>(null)
+  // Anchor элемент (FilterTrigger span). Используется FilterDropdownContent
+  // для расчёта координат при рендере popover'а через React Portal в
+  // document.body — иначе scroll-контейнер таблицы клипает popover и dropdown
+  // вложенного <Select>.
+  const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null)
 
   /**
    * Apply / clear an advanced column filter through the engine and mirror
@@ -207,8 +206,13 @@ export function useTableState(props: TableProps) {
         return next
       })
       table.setColumnFilter(colKey, filter)
+      // Engine.setColumnFilter пересчитывает filteredOrder, но React-стейт
+      // visibleRows живёт в useTable и обновляется только через refresh().
+      // Без него таблица не перерисуется, пока пользователь не сделает любое
+      // другое действие, которое случайно дернёт refresh.
+      refresh()
     },
-    [table],
+    [table, refresh],
   )
 
   const resizeRef = useRef<{ col: string; startX: number; startW: number } | null>(null)
@@ -217,10 +221,12 @@ export function useTableState(props: TableProps) {
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
 
   const columns = useMemo(() => {
-    const base = hasColumnGroups ? leafColumns : (() => {
-      const map = new Map(leafColumns.map((c) => [c.key, c]))
-      return colOrder.filter((k) => map.has(k)).map((k) => map.get(k)!)
-    })()
+    const base = hasColumnGroups
+      ? leafColumns
+      : (() => {
+          const map = new Map(leafColumns.map((c) => [c.key, c]))
+          return colOrder.filter((k) => map.has(k)).map((k) => map.get(k)!)
+        })()
     return base.filter((c) => !hiddenSet.has(c.key) && !c.hidden)
   }, [leafColumns, colOrder, hasColumnGroups, hiddenSet])
 
@@ -416,8 +422,7 @@ export function useTableState(props: TableProps) {
       const current = prev[colKey] ?? []
       if (!multiple) return { ...prev, [colKey]: [value] }
       const idx = current.indexOf(value)
-      const next =
-        idx >= 0 ? current.filter((_, i) => i !== idx) : [...current, value]
+      const next = idx >= 0 ? current.filter((_, i) => i !== idx) : [...current, value]
       return { ...prev, [colKey]: next }
     })
   }
@@ -630,10 +635,16 @@ export function useTableState(props: TableProps) {
           e.preventDefault()
           if (e.shiftKey) {
             col -= 1
-            if (col < 0) { col = maxCol; row = Math.max(0, row - 1) }
+            if (col < 0) {
+              col = maxCol
+              row = Math.max(0, row - 1)
+            }
           } else {
             col += 1
-            if (col > maxCol) { col = 0; row = Math.min(maxRow, row + 1) }
+            if (col > maxCol) {
+              col = 0
+              row = Math.min(maxRow, row + 1)
+            }
           }
           break
         case 'Home':
@@ -702,7 +713,11 @@ export function useTableState(props: TableProps) {
   }, [baseFlatRows, groupBy, columns, expandedGroups])
 
   // Separate pinned rows
-  const { top: pinnedTop, middle: middleRows, bottom: pinnedBottom } = useMemo(
+  const {
+    top: pinnedTop,
+    middle: middleRows,
+    bottom: pinnedBottom,
+  } = useMemo(
     () => separatePinnedRows(groupedRows, pinnedRowsConfig?.top, pinnedRowsConfig?.bottom),
     [groupedRows, pinnedRowsConfig],
   )
@@ -750,10 +765,7 @@ export function useTableState(props: TableProps) {
         : null
   const declaredGridWidth =
     extraBefore.reduce((sum, w) => sum + Number.parseFloat(w), 0) +
-    columns.reduce(
-      (sum, c) => sum + (colWidths[c.key] ?? c.width ?? DEFAULT_COL_WIDTH),
-      0,
-    )
+    columns.reduce((sum, c) => sum + (colWidths[c.key] ?? c.width ?? DEFAULT_COL_WIDTH), 0)
   const shouldFillScrollX =
     hasScrollX &&
     scrollXMinWidth !== null &&
@@ -816,8 +828,7 @@ export function useTableState(props: TableProps) {
     getFixedStyle(col, fixedLeftOffsets, fixedRightOffsets, isHeader)
 
   const allSelected = rowSelection
-    ? visibleRows.length > 0 &&
-      visibleRows.every((r) => rowSelection.selectedKeys.includes(r.id))
+    ? visibleRows.length > 0 && visibleRows.every((r) => rowSelection.selectedKeys.includes(r.id))
     : false
   const someSelected = rowSelection
     ? visibleRows.some((r) => rowSelection.selectedKeys.includes(r.id)) && !allSelected
@@ -857,7 +868,13 @@ export function useTableState(props: TableProps) {
     treeExpanded,
     handleToggleTreeExpand,
     // Filters
-    filterState: { activeFilters, filterSearchText, openFilterDropdown, advancedFilters },
+    filterState: {
+      activeFilters,
+      filterSearchText,
+      openFilterDropdown,
+      advancedFilters,
+      filterAnchor,
+    },
     filterActions: {
       setOpenFilterDropdown,
       handleFilterToggle,
@@ -868,6 +885,7 @@ export function useTableState(props: TableProps) {
       setFilterSearchText,
       getFilterDropdownProps,
       setAdvancedFilter,
+      setFilterAnchor,
     },
     filterRef,
     // Drag columns

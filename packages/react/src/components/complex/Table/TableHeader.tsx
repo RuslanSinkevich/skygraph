@@ -66,11 +66,15 @@ interface HeaderProps {
     openFilterDropdown: string | null
     /** Active advanced filters keyed by column. */
     advancedFilters: Record<string, AdvancedFilter>
+    /** Anchor элемент для портального позиционирования popover'а. */
+    filterAnchor: HTMLElement | null
   }
   /** Filter dropdown callbacks and helpers. */
   filterActions: {
     /** Opens or closes a column filter popover. */
     setOpenFilterDropdown: (key: string | null) => void
+    /** Сохраняет DOM-якорь для позиционирования portal'нутого popover'а. */
+    setFilterAnchor: (el: HTMLElement | null) => void
     /** Toggles a value in multi-select filters. */
     handleFilterToggle: (colKey: string, value: unknown, multiple: boolean) => void
     /** Applies filters and closes the dropdown. */
@@ -136,26 +140,24 @@ function SortIndicator({
 
   return (
     <span className={`sg-table-sort-arrows${isActive ? ' sg-table-sort-active' : ''}`}>
-      <span
-        className={`sg-table-sort-asc${dir === 'asc' ? ' sg-table-sort-current' : ''}`}
-      >
+      <span className={`sg-table-sort-asc${dir === 'asc' ? ' sg-table-sort-current' : ''}`}>
         {t.sortAsc}
       </span>
-      <span
-        className={`sg-table-sort-desc${dir === 'desc' ? ' sg-table-sort-current' : ''}`}
-      >
+      <span className={`sg-table-sort-desc${dir === 'desc' ? ' sg-table-sort-current' : ''}`}>
         {t.sortDesc}
       </span>
-      {idx >= 0 && sorts.length > 1 && (
-        <span className="sg-table-sort-index">{idx + 1}</span>
-      )}
+      {idx >= 0 && sorts.length > 1 && <span className="sg-table-sort-index">{idx + 1}</span>}
     </span>
   )
 }
 
 function ColumnTooltip({ content }: { content: string | React.ReactNode }) {
   if (!content) return null
-  return <span className="sg-table-th-tooltip" title={typeof content === 'string' ? content : undefined}>ⓘ</span>
+  return (
+    <span className="sg-table-th-tooltip" title={typeof content === 'string' ? content : undefined}>
+      ⓘ
+    </span>
+  )
 }
 
 /** Renders flat or grouped header cells with sort, filter, resize, and drag handles. */
@@ -266,10 +268,18 @@ export function TableHeader(props: HeaderProps) {
             style={{ display: 'contents', ...sSty.headerRow }}
           >
             {ri === 0 && rowDraggable && (
-              <div className="sg-table-th" role="columnheader" style={{ gridRow: `span ${headerRows.length}` }} />
+              <div
+                className="sg-table-th"
+                role="columnheader"
+                style={{ gridRow: `span ${headerRows.length}` }}
+              />
             )}
             {ri === 0 && showRowNumber && (
-              <div className="sg-table-th sg-table-cell-row-number" role="columnheader" style={{ gridRow: `span ${headerRows.length}` }}>
+              <div
+                className="sg-table-th sg-table-cell-row-number"
+                role="columnheader"
+                style={{ gridRow: `span ${headerRows.length}` }}
+              >
                 {t.rowNumber}
               </div>
             )}
@@ -323,7 +333,9 @@ export function TableHeader(props: HeaderProps) {
                   onContextMenu={isLeaf ? (e) => buildContextMenu(cell.col, e) : undefined}
                 >
                   <span
-                    className={['sg-table-th-content', sCls.headerCellContent].filter(Boolean).join(' ')}
+                    className={['sg-table-th-content', sCls.headerCellContent]
+                      .filter(Boolean)
+                      .join(' ')}
                     style={sSty.headerCellContent}
                   >
                     {cell.col.title}
@@ -336,7 +348,14 @@ export function TableHeader(props: HeaderProps) {
                     <div
                       className="sg-table-resize-handle"
                       onMouseDown={(e) => onResizeStart(e, cell.col.key)}
-                      onDoubleClick={onAutoResize ? (e) => { e.stopPropagation(); onAutoResize(cell.col.key) } : undefined}
+                      onDoubleClick={
+                        onAutoResize
+                          ? (e) => {
+                              e.stopPropagation()
+                              onAutoResize(cell.col.key)
+                            }
+                          : undefined
+                      }
                     />
                   )}
                 </div>
@@ -354,9 +373,7 @@ export function TableHeader(props: HeaderProps) {
       role="row"
       style={{ display: 'contents', ...sSty.headerRow }}
     >
-      {rowDraggable && (
-        <div className="sg-table-th" role="columnheader" />
-      )}
+      {rowDraggable && <div className="sg-table-th" role="columnheader" />}
       {showRowNumber && (
         <div className="sg-table-th sg-table-cell-row-number" role="columnheader">
           {t.rowNumber}
@@ -365,17 +382,11 @@ export function TableHeader(props: HeaderProps) {
       {rowSelection && (
         <div className="sg-table-th sg-table-cell-selection" role="columnheader">
           {rowSelection.type !== 'radio' && (
-            <Checkbox
-              checked={allSelected}
-              indeterminate={someSelected}
-              onChange={onSelectAll}
-            />
+            <Checkbox checked={allSelected} indeterminate={someSelected} onChange={onSelectAll} />
           )}
         </div>
       )}
-      {expandable && (
-        <div className="sg-table-th sg-table-cell-expand" role="columnheader" />
-      )}
+      {expandable && <div className="sg-table-th sg-table-cell-expand" role="columnheader" />}
       {columns.map((col) => (
         <div
           key={col.key}
@@ -415,7 +426,14 @@ export function TableHeader(props: HeaderProps) {
             <div
               className="sg-table-resize-handle"
               onMouseDown={(e) => onResizeStart(e, col.key)}
-              onDoubleClick={onAutoResize ? (e) => { e.stopPropagation(); onAutoResize(col.key) } : undefined}
+              onDoubleClick={
+                onAutoResize
+                  ? (e) => {
+                      e.stopPropagation()
+                      onAutoResize(col.key)
+                    }
+                  : undefined
+              }
             />
           )}
         </div>

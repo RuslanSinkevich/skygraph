@@ -40,7 +40,13 @@
 
 ---
 
-## 3. Архитектура: 2 волны, 13 стримов
+## 3. Архитектура: 3 волны
+
+| Волна | Статус | Кратко |
+|---|---|---|
+| 1 — INFRA | закрыта | 4 task-карты, 1 таб последовательно |
+| 2 — РАБОЧИЕ | закрыта | 13 task-карт в 8 параллельных табах |
+| 3 — Vue Demo Parity | план | 6 task-карт: 1 фундамент + 5 параллельных воркеров. См. `docs/_streams/wave-3/CHARTER.md` |
 
 ### Волна 1 — INFRA (4 task-карты, 1 таб последовательно)
 
@@ -87,6 +93,33 @@
 | T-Polish | Vue dts rollup + bundle budget guard + `sideEffects: false` |
 | T-Showcases-I18n | локализация 12 SkyGraph Showcases (en/ru) |
 | T-Table-Perf | профайлинг и быстрые wins по `<Table>` (12x отставание от antd) |
+
+### Волна 3 — VUE DEMO PARITY (6 task-карт, 1 фундамент + 5 параллельных воркеров)
+
+После Волны 2 в `examples/demo-vue` 32 страницы по схеме «всё в одном
+файле» — без `?raw`-импорта исходников, без `CssVarsTable`, словари
+вшиты в страницу, Landing — заглушка ~2 KB. React-демо использует
+другую архитектуру: `demos/<comp>/*.demo.tsx` + `demos/<comp>-doc/{en,ru}.ts`
++ `demos/<Comp>Demo.tsx` агрегатор. Волна 3 приводит Vue-демо к
+паритету.
+
+Подробности — `docs/_streams/wave-3/CHARTER.md`.
+
+#### Волна 3.1 — фундамент (1 таб, последовательно)
+
+| ID | Назначение |
+|---|---|
+| T-Vue-Demo-Foundation | Аудит разрывов + `vue-broken-styles.md` + `demos/components/{ComponentDoc,DemoBox,PropsTable,CssVarsTable,SourceCode}.vue` + `?raw`-импорты + `scripts/gen-vue-demo.mjs` + эталонная миграция Button + полная Landing |
+
+#### Волна 3.2 — контент (5 параллельных табов, после 3.1)
+
+| Таб | ID | Кол-во компонентов | Группа |
+|---|---|---:|---|
+| A | T-Vue-Demo-Forms | 18 | data-entry |
+| B | T-Vue-Demo-Display | 13 | display |
+| C | T-Vue-Demo-NavFeedback | 12 | navigation + feedback |
+| D | T-Vue-Demo-Complex | 12 | complex (Form/Table/Tree/Charts/...) |
+| E | T-Vue-Demo-StyleFixes | — | визуальные регрессии из аудита 3.1 |
 
 ---
 
@@ -350,3 +383,12 @@ pnpm check:styles
 - `T-Polish.md` (Vue dts rollup + bundle budget guard + sideEffects)
 - `T-Showcases-I18n.md` (локализация 12 показ-апп)
 - `T-Table-Perf.md` (профайлинг Table)
+
+### Волна 3 — `docs/_streams/wave-3/`
+- `wave-3/CHARTER.md` (мини-конституция Волны 3)
+- `wave-3/T-Vue-Demo-Foundation.md` (3.1 — фундамент)
+- `wave-3/T-Vue-Demo-Forms.md` (3.2 / Tab A — 18 data-entry компонентов)
+- `wave-3/T-Vue-Demo-Display.md` (3.2 / Tab B — 13 display компонентов)
+- `wave-3/T-Vue-Demo-NavFeedback.md` (3.2 / Tab C — 12 nav+feedback компонентов)
+- `wave-3/T-Vue-Demo-Complex.md` (3.2 / Tab D — 12 complex компонентов)
+- `wave-3/T-Vue-Demo-StyleFixes.md` (3.2 / Tab E — фиксы регрессий)

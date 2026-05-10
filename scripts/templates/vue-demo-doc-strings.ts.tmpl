@@ -1,0 +1,20 @@
+import { computed, type ComputedRef } from 'vue'
+import { useI18n } from '../../i18n'
+import type { Locale } from '../../i18n/types'
+import type { __PASCAL__DocStrings } from './en'
+import { __LOCALE_KEY__DocEn } from './en'
+import { __LOCALE_KEY__DocRu } from './ru'
+
+const dictByLocale: Record<Locale, __PASCAL__DocStrings> = {
+  en: __LOCALE_KEY__DocEn as __PASCAL__DocStrings,
+  ru: __LOCALE_KEY__DocRu,
+}
+
+/**
+ * Doc strings for the `__PASCAL__` component page (`__PASCAL__Demo.vue`).
+ * English module (`en.ts`) is the source of truth; `ru.ts` matches keys.
+ */
+export function use__PASCAL__DocStrings(): ComputedRef<__PASCAL__DocStrings> {
+  const { locale } = useI18n()
+  return computed(() => dictByLocale[locale.value])
+}

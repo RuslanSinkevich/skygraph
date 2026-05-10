@@ -76,12 +76,19 @@ export interface DemoDict {
     colDefault: string
     requiredLabel: string
   }
+  cssVarsTable: {
+    title: string
+    colVariable: string
+    colDefault: string
+    colDescription: string
+  }
   landing: {
     title: string
     lead: string
     statComponents: string
     statComposables: string
     statTests: string
+    statEngines: string
     ctaPrimary: string
     ctaSecondary: string
     featureReactiveTitle: string
@@ -92,5 +99,9 @@ export interface DemoDict {
     featureA11yDesc: string
     featureMultiTitle: string
     featureMultiDesc: string
+    quickInstallTitle: string
+    quickInstallDesc: string
+    quickInstallCopy: string
+    quickInstallCopied: string
   }
 }

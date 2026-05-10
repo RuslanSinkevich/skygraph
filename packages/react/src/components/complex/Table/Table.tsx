@@ -9,7 +9,14 @@ import { VirtualTableBody } from './VirtualTableBody'
 import { ContextMenu } from './ContextMenu'
 import { useTableState } from './useTableState'
 import { useConfig } from '../../ConfigProvider'
-import { toCSVString, downloadCSV, toTSVString, toJSONString, downloadJSON, copyToClipboard } from './export'
+import {
+  toCSVString,
+  downloadCSV,
+  toTSVString,
+  toJSONString,
+  downloadJSON,
+  copyToClipboard,
+} from './export'
 import { printElement } from '../../../utils/print'
 import type { PrintOptions } from '../../../utils/print'
 import { slotClass, slotStyle } from '../../../types'
@@ -105,16 +112,13 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
   // renders — otherwise `useMemo(gridTemplate, [rowNumConfig, ...])` below
   // would invalidate every render whenever `showRowNumber === true`.
   const rowNumConfig = useMemo(
-    () =>
-      showRowNumber ? (typeof showRowNumber === 'object' ? showRowNumber : {}) : null,
+    () => (showRowNumber ? (typeof showRowNumber === 'object' ? showRowNumber : {}) : null),
     [showRowNumber],
   )
 
   const getExportData = useCallback(() => {
     const cols = state.columns.map((c) => c.key)
-    const headers = state.columns.map((c) =>
-      typeof c.title === 'string' ? c.title : c.key,
-    )
+    const headers = state.columns.map((c) => (typeof c.title === 'string' ? c.title : c.key))
     const rows = state.flatRows
       .filter((r) => !r.__groupRow)
       .map((row) =>
@@ -175,21 +179,29 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
     return parts.join(' ')
   }, [rowDraggable, rowNumConfig, state.gridTemplate])
 
-  const totalCols =
-    state.totalCols +
-    (rowDraggable ? 1 : 0) +
-    (rowNumConfig ? 1 : 0)
+  const totalCols = state.totalCols + (rowDraggable ? 1 : 0) + (rowNumConfig ? 1 : 0)
 
   const virtualConfig = virtualProp
     ? {
-        rowHeight:
-          typeof virtualProp === 'object' ? virtualProp.rowHeight ?? 40 : 40,
+        rowHeight: typeof virtualProp === 'object' ? (virtualProp.rowHeight ?? 40) : 40,
         estimateRowHeight:
           typeof virtualProp === 'object' ? virtualProp.estimateRowHeight : undefined,
-        overscan: typeof virtualProp === 'object' ? virtualProp.overscan ?? 5 : 5,
+        overscan: typeof virtualProp === 'object' ? (virtualProp.overscan ?? 5) : 5,
         height: typeof virtualProp === 'object' ? virtualProp.height : undefined,
       }
     : null
+
+  // Fixed-height fast path: number `rowHeight` + no measurement estimate.
+  // We pin every visible cell to that height via CSS so the rendered DOM's
+  // `scrollHeight` matches the engine's `totalHeight` exactly — without
+  // this, natural cell padding makes the two drift apart by a few pixels
+  // per row and the scrollbar thumb lags behind the cursor while dragged.
+  const virtualFixedRowHeight =
+    virtualConfig &&
+    typeof virtualConfig.rowHeight === 'number' &&
+    virtualConfig.estimateRowHeight == null
+      ? virtualConfig.rowHeight
+      : null
 
   // Unstyled
   if (unstyled) {
@@ -226,15 +238,21 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
   }
 
   const hasToolbar =
-    searchable || columnVisibility || exportable || exportJSON ||
-    fullscreenable || densityToggle || printable || groupBy ||
+    searchable ||
+    columnVisibility ||
+    exportable ||
+    exportJSON ||
+    fullscreenable ||
+    densityToggle ||
+    printable ||
+    groupBy ||
     (groupByOptions && groupByOptions.length > 0)
 
   const wrapperCls = [
     'sg-table-wrapper',
     `sg-table-${effectiveSize}`,
     bordered ? 'sg-table-bordered' : '',
-    (sticky || virtualConfig) ? 'sg-table-sticky' : '',
+    sticky || virtualConfig ? 'sg-table-sticky' : '',
     loading ? 'sg-table-loading' : '',
     striped ? 'sg-table-striped' : '',
     state.isFullscreen ? 'sg-table-fullscreen' : '',
@@ -264,8 +282,8 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
       className={wrapperCls}
       style={slotStyle(sSty.root, style)}
       ref={(el) => {
-        (tableRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-        (state.wrapperRef as React.MutableRefObject<HTMLDivElement | null>).current = el
+        ;(tableRef as React.MutableRefObject<HTMLDivElement | null>).current = el
+        ;(state.wrapperRef as React.MutableRefObject<HTMLDivElement | null>).current = el
       }}
       onKeyDown={keyboardNavigation ? state.handleKeyNav : undefined}
       tabIndex={keyboardNavigation ? 0 : undefined}
@@ -302,11 +320,7 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
               </div>
             )}
             {densityToggle && (
-              <DensityDropdown
-                value={state.density}
-                onChange={state.setDensity}
-                t={state.t}
-              />
+              <DensityDropdown value={state.density} onChange={state.setDensity} t={state.t} />
             )}
             {columnVisibility && (
               <ColumnVisibilityDropdown
@@ -348,9 +362,7 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
       {/* Selection Summary Bar */}
       {selectionSummary && selectedCount > 0 && (
         <div className="sg-table-selection-bar">
-          <span className="sg-table-selection-count">
-            {state.t.selectedRows(selectedCount)}
-          </span>
+          <span className="sg-table-selection-count">{state.t.selectedRows(selectedCount)}</span>
           {selectionActions?.map((action) => (
             <button
               key={action.key}
@@ -378,11 +390,7 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
 
       <div
         ref={scrollRef}
-        className={slotClass(
-          'sg-table-scroll',
-          scroll?.x ? 'sg-table-scroll-x' : '',
-          sCls.scroll,
-        )}
+        className={slotClass('sg-table-scroll', scroll?.x ? 'sg-table-scroll-x' : '', sCls.scroll)}
         style={slotStyle(
           Object.keys(scrollStyle).length > 0 ? scrollStyle : undefined,
           sSty.scroll,
@@ -424,11 +432,20 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
         )}
 
         <div
-          className={slotClass('sg-table-grid', sCls.grid)}
+          className={slotClass(
+            'sg-table-grid',
+            virtualFixedRowHeight != null ? 'sg-table-grid-virtual-fixed' : '',
+            sCls.grid,
+          )}
           style={slotStyle(
             {
               gridTemplateColumns: gridTemplate,
               minWidth: scroll?.x,
+              ...(virtualFixedRowHeight != null
+                ? ({
+                    ['--sg-virtual-row-height' as string]: `${virtualFixedRowHeight}px`,
+                  } as React.CSSProperties)
+                : null),
             },
             sSty.grid,
           )}
@@ -570,8 +587,7 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
                     <span className="sg-table-aggregate-value">
                       <span className="sg-table-aggregate-label">
                         {typeof col.aggregate === 'string' ? state.t[col.aggregate] : ''}
-                      </span>
-                      {' '}
+                      </span>{' '}
                       {String(state.aggregates![col.key])}
                     </span>
                   ) : null}
@@ -596,9 +612,7 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
                     className="sg-table-td sg-table-summary-cell"
                     role="cell"
                     style={{
-                      gridColumn: cell.colSpan
-                        ? `span ${cell.colSpan}`
-                        : undefined,
+                      gridColumn: cell.colSpan ? `span ${cell.colSpan}` : undefined,
                       textAlign: cell.align,
                     }}
                   >
@@ -646,10 +660,7 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
       </div>
 
       {/* Context Menu */}
-      <ContextMenu
-        state={state.contextMenu}
-        onClose={() => state.setContextMenu(null)}
-      />
+      <ContextMenu state={state.contextMenu} onClose={() => state.setContextMenu(null)} />
 
       {loading && (
         <div className="sg-table-loading-mask">
@@ -658,10 +669,7 @@ function TableInner(props: TableProps, forwardedRef: React.ForwardedRef<TableRef
       )}
 
       {showPagination && state.tableState.totalPages > 1 && (
-        <div
-          className={slotClass('sg-table-pagination', sCls.pagination)}
-          style={sSty.pagination}
-        >
+        <div className={slotClass('sg-table-pagination', sCls.pagination)} style={sSty.pagination}>
           <span className="sg-table-pagination-total">
             {state.t.totalRows(state.tableState.filteredRows)}
           </span>
@@ -721,10 +729,7 @@ function ColumnVisibilityDropdown({
         <div className="sg-table-col-visibility-dropdown">
           {leafColumns.map((col) => (
             <label key={col.key} className="sg-table-col-visibility-item">
-              <Checkbox
-                checked={!hiddenSet.has(col.key)}
-                onChange={() => onToggle(col.key)}
-              />
+              <Checkbox checked={!hiddenSet.has(col.key)} onChange={() => onToggle(col.key)} />
               <span>{typeof col.title === 'string' ? col.title : col.key}</span>
             </label>
           ))}
@@ -762,14 +767,18 @@ function GroupByDropdown({
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button className="sg-table-toolbar-btn" onClick={() => setOpen(!open)}>
-        {t.groupByLabel}{current ? `: ${typeof current.label === 'string' ? current.label : current.key}` : ''}
+        {t.groupByLabel}
+        {current ? `: ${typeof current.label === 'string' ? current.label : current.key}` : ''}
       </button>
       {open && (
         <div className="sg-table-group-by-dropdown" role="menu">
           <button
             type="button"
             className={`sg-table-group-by-option${value === null ? ' sg-table-group-by-active' : ''}`}
-            onClick={() => { onChange(null); setOpen(false) }}
+            onClick={() => {
+              onChange(null)
+              setOpen(false)
+            }}
           >
             {t.groupByNone}
           </button>
@@ -778,7 +787,10 @@ function GroupByDropdown({
               key={opt.key}
               type="button"
               className={`sg-table-group-by-option${value === opt.key ? ' sg-table-group-by-active' : ''}`}
-              onClick={() => { onChange(opt.key); setOpen(false) }}
+              onClick={() => {
+                onChange(opt.key)
+                setOpen(false)
+              }}
             >
               {opt.label}
             </button>

@@ -73,12 +73,19 @@ export const ru: DemoDict = {
     colDefault: 'По умолчанию',
     requiredLabel: 'обязательно',
   },
+  cssVarsTable: {
+    title: 'CSS-переменные',
+    colVariable: 'Переменная',
+    colDefault: 'По умолчанию',
+    colDescription: 'Описание',
+  },
   landing: {
     title: 'SkyGraph для Vue',
     lead: 'Фреймворк-агностичная UI-библиотека с Vue 3 адаптером. Композаблы для форм, таблиц, деревьев и графов плюс 27 готовых компонентов.',
     statComponents: 'компонентов',
     statComposables: 'композаблов',
     statTests: 'тестов',
+    statEngines: 'движков',
     ctaPrimary: 'Открыть компоненты',
     ctaSecondary: 'Исходники',
     featureReactiveTitle: 'Реактивное ядро',
@@ -93,5 +100,10 @@ export const ru: DemoDict = {
     featureMultiTitle: 'Тот же DOM, тот же CSS',
     featureMultiDesc:
       'Vue-компоненты выдают ровно те же .sg-* классы, что и React-адаптер — темы и шоукейсы работают везде.',
+    quickInstallTitle: 'Быстрая установка',
+    quickInstallDesc:
+      'Добавьте @skygraph/vue и @skygraph/styles, импортируйте стили один раз — и можно собирать.',
+    quickInstallCopy: 'Копировать',
+    quickInstallCopied: 'Скопировано',
   },
 }

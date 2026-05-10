@@ -1,7 +1,9 @@
 import React from 'react'
+import { createPortal } from 'react-dom'
 import { Checkbox } from '../../ui/Checkbox'
 import { Input } from '../../ui/Input'
 import { Button } from '../../ui/Button'
+import { Select } from '../../ui/Select'
 import type {
   AdvancedFilter,
   FilterDropdownProps,
@@ -20,12 +22,16 @@ interface FilterState {
   openFilterDropdown: string | null
   /** Active advanced filters keyed by column. */
   advancedFilters: Record<string, AdvancedFilter>
+  /** Anchor элемент (FilterTrigger), используется для позиционирования portal. */
+  filterAnchor: HTMLElement | null
 }
 
 /** Callbacks that mutate filter UI state. */
 interface FilterActions {
   /** Opens or closes a column filter popover. */
   setOpenFilterDropdown: (key: string | null) => void
+  /** Сохраняет DOM-элемент-якорь для портального позиционирования popover'а. */
+  setFilterAnchor: (el: HTMLElement | null) => void
   /** Toggles a preset filter value. */
   handleFilterToggle: (colKey: string, value: unknown, multiple: boolean) => void
   /** Confirms the current filter selection. */
@@ -107,19 +113,72 @@ export function FilterTrigger({ col, t, state, actions }: FilterTriggerProps) {
       ? state.advancedFilters[col.key] != null
       : (state.activeFilters[col.key]?.length ?? 0) > 0
   const iconNode = col.filterIcon
-    ? typeof col.filterIcon === 'function' ? col.filterIcon(filtered) : col.filterIcon
-    : col.filterMode === 'search' ? t.searchIcon : t.filterIcon
+    ? typeof col.filterIcon === 'function'
+      ? col.filterIcon(filtered)
+      : col.filterIcon
+    : col.filterMode === 'search'
+      ? t.searchIcon
+      : t.filterIcon
 
   return (
     <span
       className={`sg-table-filter-trigger${filtered ? ' sg-table-filter-active' : ''}`}
       onClick={(e) => {
         e.stopPropagation()
-        actions.setOpenFilterDropdown(state.openFilterDropdown === col.key ? null : col.key)
+        const isOpen = state.openFilterDropdown === col.key
+        if (isOpen) {
+          actions.setOpenFilterDropdown(null)
+          actions.setFilterAnchor(null)
+        } else {
+          actions.setFilterAnchor(e.currentTarget)
+          actions.setOpenFilterDropdown(col.key)
+        }
       }}
     >
       {iconNode}
     </span>
+  )
+}
+
+/**
+ * Обёртка над `createPortal`, которая позиционирует children как `position: fixed`
+ * у нижнего края `anchor`. Пересчитывает координаты на scroll/resize.
+ * Без портала advanced-фильтр клипается scroll-контейнером таблицы.
+ */
+function FilterPortal({
+  anchor,
+  children,
+}: {
+  anchor: HTMLElement | null
+  children: React.ReactNode
+}) {
+  const [coords, setCoords] = React.useState<{ top: number; left: number } | null>(null)
+
+  React.useLayoutEffect(() => {
+    if (!anchor) return
+    const update = () => {
+      const r = anchor.getBoundingClientRect()
+      setCoords({ top: r.bottom + 4, left: r.left })
+    }
+    update()
+    window.addEventListener('scroll', update, true)
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update, true)
+      window.removeEventListener('resize', update)
+    }
+  }, [anchor])
+
+  if (!anchor || !coords || typeof document === 'undefined') return null
+
+  return createPortal(
+    <div
+      className="sg-table-filter-portal"
+      style={{ position: 'fixed', top: coords.top, left: coords.left, zIndex: 1100 }}
+    >
+      {children}
+    </div>,
+    document.body,
   )
 }
 
@@ -129,33 +188,70 @@ export function FilterDropdownContent({ col, t, state, actions, filterRef }: Fil
 
   if (col.filterDropdown) {
     const props = actions.getFilterDropdownProps(col)
-    const content = typeof col.filterDropdown === 'function' ? col.filterDropdown(props) : col.filterDropdown
+    const content =
+      typeof col.filterDropdown === 'function' ? col.filterDropdown(props) : col.filterDropdown
     return (
-      <div className="sg-table-filter-dropdown" ref={filterRef} onClick={(e) => e.stopPropagation()}>
-        {content}
-      </div>
+      <FilterPortal anchor={state.filterAnchor}>
+        <div
+          className="sg-table-filter-dropdown"
+          ref={filterRef}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {content}
+        </div>
+      </FilterPortal>
     )
   }
 
   if (col.filterMode === 'advanced') {
-    return <AdvancedFilterPanel col={col} t={t} state={state} actions={actions} filterRef={filterRef} />
+    return (
+      <FilterPortal anchor={state.filterAnchor}>
+        <AdvancedFilterPanel
+          col={col}
+          t={t}
+          state={state}
+          actions={actions}
+          filterRef={filterRef}
+        />
+      </FilterPortal>
+    )
   }
 
   if (col.filterMode === 'search') {
     const searchVal = (state.activeFilters[col.key]?.[0] as string) ?? ''
     return (
-      <div className="sg-table-filter-dropdown sg-table-filter-search-mode" ref={filterRef} onClick={(e) => e.stopPropagation()}>
-        <Input
-          placeholder={`${t.searchPlaceholder.replace('...', '')} ${typeof col.title === 'string' ? col.title : ''}...`}
-          size="small"
-          value={searchVal}
-          onChange={(v) => actions.handleSearchFilterChange(col.key, v)}
-        />
-        <div className="sg-table-filter-actions">
-          <Button size="small" onClick={() => { actions.handleFilterReset(col.key); actions.handleFilterClose(col.key) }}>{t.filterReset}</Button>
-          <Button size="small" type="primary" onClick={() => actions.handleFilterConfirm(col.key)}>{t.filterConfirm}</Button>
+      <FilterPortal anchor={state.filterAnchor}>
+        <div
+          className="sg-table-filter-dropdown sg-table-filter-search-mode"
+          ref={filterRef}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Input
+            placeholder={`${t.searchPlaceholder.replace('...', '')} ${typeof col.title === 'string' ? col.title : ''}...`}
+            size="small"
+            value={searchVal}
+            onChange={(v) => actions.handleSearchFilterChange(col.key, v)}
+          />
+          <div className="sg-table-filter-actions">
+            <Button
+              size="small"
+              onClick={() => {
+                actions.handleFilterReset(col.key)
+                actions.handleFilterClose(col.key)
+              }}
+            >
+              {t.filterReset}
+            </Button>
+            <Button
+              size="small"
+              type="primary"
+              onClick={() => actions.handleFilterConfirm(col.key)}
+            >
+              {t.filterConfirm}
+            </Button>
+          </div>
         </div>
-      </div>
+      </FilterPortal>
     )
   }
 
@@ -176,40 +272,63 @@ export function FilterDropdownContent({ col, t, state, actions, filterRef }: Fil
   }
 
   return (
-    <div className="sg-table-filter-dropdown" ref={filterRef} onClick={(e) => e.stopPropagation()}>
-      {col.filterSearch !== undefined && col.filterSearch !== false && (
-        <div className="sg-table-filter-search">
-          <Input
-            placeholder={t.filterSearchPlaceholder}
-            size="small"
-            value={searchTxt}
-            onChange={(v) => actions.setFilterSearchText((prev) => ({ ...prev, [col.key]: v }))}
-          />
-        </div>
-      )}
-      <div className="sg-table-filter-list">
-        {visibleFilters.map((f) => {
-          const checked = currentVals.includes(f.value)
-          return (
-            <label key={String(f.value)} className="sg-table-filter-item">
-              {multiple ? (
-                <Checkbox checked={checked} onChange={() => actions.handleFilterToggle(col.key, f.value, true)} />
-              ) : (
-                <input type="radio" checked={checked} onChange={() => actions.handleFilterToggle(col.key, f.value, false)} />
-              )}
-              <span>{f.text}</span>
-            </label>
-          )
-        })}
-        {visibleFilters.length === 0 && (
-          <div className="sg-table-filter-empty">{t.filterEmptyText}</div>
+    <FilterPortal anchor={state.filterAnchor}>
+      <div
+        className="sg-table-filter-dropdown"
+        ref={filterRef}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {col.filterSearch !== undefined && col.filterSearch !== false && (
+          <div className="sg-table-filter-search">
+            <Input
+              placeholder={t.filterSearchPlaceholder}
+              size="small"
+              value={searchTxt}
+              onChange={(v) => actions.setFilterSearchText((prev) => ({ ...prev, [col.key]: v }))}
+            />
+          </div>
         )}
+        <div className="sg-table-filter-list">
+          {visibleFilters.map((f) => {
+            const checked = currentVals.includes(f.value)
+            return (
+              <label key={String(f.value)} className="sg-table-filter-item">
+                {multiple ? (
+                  <Checkbox
+                    checked={checked}
+                    onChange={() => actions.handleFilterToggle(col.key, f.value, true)}
+                  />
+                ) : (
+                  <input
+                    type="radio"
+                    checked={checked}
+                    onChange={() => actions.handleFilterToggle(col.key, f.value, false)}
+                  />
+                )}
+                <span>{f.text}</span>
+              </label>
+            )
+          })}
+          {visibleFilters.length === 0 && (
+            <div className="sg-table-filter-empty">{t.filterEmptyText}</div>
+          )}
+        </div>
+        <div className="sg-table-filter-actions">
+          <Button
+            size="small"
+            onClick={() => {
+              actions.handleFilterReset(col.key)
+              actions.handleFilterClose(col.key)
+            }}
+          >
+            {t.filterReset}
+          </Button>
+          <Button size="small" type="primary" onClick={() => actions.handleFilterConfirm(col.key)}>
+            {t.filterConfirm}
+          </Button>
+        </div>
       </div>
-      <div className="sg-table-filter-actions">
-        <Button size="small" onClick={() => { actions.handleFilterReset(col.key); actions.handleFilterClose(col.key) }}>{t.filterReset}</Button>
-        <Button size="small" type="primary" onClick={() => actions.handleFilterConfirm(col.key)}>{t.filterConfirm}</Button>
-      </div>
-    </div>
+    </FilterPortal>
   )
 }
 
@@ -276,6 +395,10 @@ function AdvancedFilterPanel({ col, t, state, actions, filterRef }: FilterTrigge
 
   const showValueInput = !NO_VALUE_OPS.has(draftOp)
   const showSecondInput = draftOp === 'between'
+  const isValueRequired = showValueInput
+  const valueIsEmpty = isValueRequired && draftValue.trim() === ''
+  const secondValueIsEmpty = showSecondInput && draftValue2.trim() === ''
+  const confirmDisabled = valueIsEmpty || secondValueIsEmpty
 
   return (
     <div
@@ -284,23 +407,23 @@ function AdvancedFilterPanel({ col, t, state, actions, filterRef }: FilterTrigge
       onClick={(e) => e.stopPropagation()}
     >
       <div className="sg-table-filter-advanced-row">
-        <select
-          className="sg-table-filter-advanced-op"
+        <Select
+          size="small"
           value={draftOp}
-          onChange={(e) => setDraftOp(e.target.value as FilterOperator)}
-        >
-          {ops.map((op) => (
-            <option key={op} value={op}>
-              {operatorLabel(op, t)}
-            </option>
-          ))}
-        </select>
+          onChange={(v) => setDraftOp(v as FilterOperator)}
+          options={ops.map((op) => ({ label: operatorLabel(op, t), value: op }))}
+          aria-label="Filter operator"
+        />
       </div>
       {showValueInput && (
         <div className="sg-table-filter-advanced-row">
           <Input
             size="small"
-            type={isNumeric && draftOp !== 'in' && draftOp !== 'notIn' && draftOp !== 'between' ? 'number' : 'text'}
+            type={
+              isNumeric && draftOp !== 'in' && draftOp !== 'notIn' && draftOp !== 'between'
+                ? 'number'
+                : 'text'
+            }
             value={draftValue}
             onChange={setDraftValue}
             placeholder={
@@ -323,8 +446,12 @@ function AdvancedFilterPanel({ col, t, state, actions, filterRef }: FilterTrigge
         </div>
       )}
       <div className="sg-table-filter-actions">
-        <Button size="small" onClick={reset}>{t.filterReset}</Button>
-        <Button size="small" type="primary" onClick={confirm}>{t.filterConfirm}</Button>
+        <Button size="small" onClick={reset}>
+          {t.filterReset}
+        </Button>
+        <Button size="small" type="primary" disabled={confirmDisabled} onClick={confirm}>
+          {t.filterConfirm}
+        </Button>
       </div>
     </div>
   )
