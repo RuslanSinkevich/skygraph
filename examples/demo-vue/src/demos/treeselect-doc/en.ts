@@ -1,0 +1,87 @@
+/**
+ * English source of truth for TreeSelect doc page strings.
+ * Other locales must provide the same keys (see `ru.ts`).
+ *
+ * Mirrors `examples/demo/src/demos/treeselect-doc/en.ts`. Vue deltas:
+ *   - node fields are `value` / `label` (not `key` / `title`);
+ *   - `treeDefaultExpandAll` is replaced by `default-expanded-keys`;
+ *   - `tree-checkable` does **not** cascade subtree selection (see
+ *     `findings/T-Vue-Demo-Forms.md` → `treeselect-no-cascade-in-vue`).
+ */
+export const treeSelectDocEn = {
+  pageTitle: 'TreeSelect',
+  pageBadge: 'Data Entry',
+  crumbCategory: 'Data Entry',
+  crumbTreeSelect: 'TreeSelect',
+  pageLead:
+    'Dropdown selector backed by a tree. Pick one node, many nodes, or tick subtrees with `tree-checkable`.',
+  pageWhen1: 'When options have a hierarchy (org charts, regions, taxonomies).',
+  pageWhen2: 'When you want multi-select with checkbox controls (`tree-checkable`).',
+  pageWhen3: 'Inside forms — wrap with `<SgField>` to capture validation.',
+
+  demoBasicTitle: 'Basic',
+  demoBasicDesc: 'Single-value picker.',
+  demoMultipleTitle: 'Multiple',
+  demoMultipleDesc: 'Pick multiple nodes — selections are joined into the trigger label.',
+  demoCheckableTitle: 'Checkable',
+  demoCheckableDesc:
+    'Checkboxes per node (no auto-cascade — Vue toggles individual nodes).',
+  demoSearchTitle: 'Search',
+  demoSearchDesc: 'Filter nodes by typing.',
+  demoDisabledNodesTitle: 'Disabled nodes',
+  demoDisabledNodesDesc: 'Per-node `disabled` greys out specific rows.',
+  demoSizesTitle: 'Sizes',
+  demoSizesDesc: 'Three sizes, same structure.',
+  demoTokensOverrideTitle: 'Tokens override',
+  demoTokensOverrideDesc:
+    'Scope tokens to theme one TreeSelect without touching the rest of the page.',
+
+  tableTreeSelectApi: 'TreeSelect API',
+  tableTreeNodeData: 'TreeSelectNode',
+  tableCssVars: 'CSS Variables',
+
+  propTreeData: 'Hierarchical nodes',
+  propModelValue: 'Selected value(s) (`v-model`); array when `multiple`',
+  propValue: 'Compat alias for `modelValue`',
+  propDefaultValue: 'Initial selection (uncontrolled)',
+  propMultiple: 'Enable multi-select',
+  propTreeCheckable: 'Render checkboxes per node (no subtree cascade)',
+  propShowSearch: 'Show filter input in the dropdown',
+  propAllowClear: 'Show clear button when there is a value',
+  propPlaceholder: 'Placeholder shown when empty',
+  propDefaultExpandedKeys:
+    'Initially expanded keys (use this in place of React `treeDefaultExpandAll`)',
+  propSize: 'Control size',
+  propDisabled: 'Disable the whole selector',
+  propUnstyled: 'Render without SkyGraph styles',
+  emitUpdateModelValue: 'Fires with the new value (used by `v-model`)',
+  emitChange: 'Mirror of `update:modelValue`',
+  emitSearch: 'Fires with the current search text',
+
+  nodeValue: 'Unique identifier used in `model-value`',
+  nodeLabel: 'Display label (string)',
+  nodeChildren: 'Nested child nodes',
+  nodeDisabled: 'Block selection on this node',
+  nodeSelectable: 'Per-node selection enable',
+
+  cssHint:
+    "TreeSelect shares Input's control tokens; the dropdown reuses the same overlay + hover variables as Select.",
+
+  cssSgColorPrimary: 'Focused/active node + selected pill fill',
+  cssSgColorPrimaryBg: 'Focus ring around the control',
+  cssSgColorPrimaryHover: 'Hover border of the control',
+  cssSgInputBg: 'Control background (shared with Input)',
+  cssSgInputBorder: 'Control border color',
+  cssSgInputRadius: 'Control radius',
+  cssSgInputHeight: 'Control min-height',
+  cssSgColorBgElevated: 'Dropdown panel background',
+  cssSgShadowLg: 'Dropdown panel shadow',
+  cssSgColorBgHover: 'Row hover background in the dropdown',
+  cssSgColorBorderSecondary: 'Tag border in multi-select mode',
+  cssSgBorderRadiusSm: 'Selected-tag radius',
+} as const
+
+/** Writable string map — use for props / table builders (same keys as `treeSelectDocEn`). */
+export type TreeSelectDocStrings = {
+  -readonly [K in keyof typeof treeSelectDocEn]: string
+}

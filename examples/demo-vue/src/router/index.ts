@@ -41,26 +41,28 @@ const StepsPage = () => import('../pages/StepsPage.vue')
 const TimelinePage = () => import('../pages/TimelinePage.vue')
 const CarouselPage = () => import('../pages/CarouselPage.vue')
 const DescriptionsPage = () => import('../pages/DescriptionsPage.vue')
-const TimePickerPage = () => import('../pages/TimePickerPage.vue')
+const TimePickerDemo = () => import('../demos/TimePickerDemo.vue')
 const ColorPickerPage = () => import('../pages/ColorPickerPage.vue')
-const ListPage = () => import('../pages/ListPage.vue')
-const TreePage = () => import('../pages/TreePage.vue')
+// Wave 3.2 / Tab D — `list` and `tree` migrated to demos/ architecture.
+const ListDemo = () => import('../demos/ListDemo.vue')
+const TreeDemo = () => import('../demos/TreeDemo.vue')
 const TreeSelectPage = () => import('../pages/TreeSelectPage.vue')
 const CascaderPage = () => import('../pages/CascaderPage.vue')
-const CalendarPage = () => import('../pages/CalendarPage.vue')
+const CalendarDemo = () => import('../demos/CalendarDemo.vue')
 const NotificationPage = () => import('../pages/NotificationPage.vue')
-const TransferPage = () => import('../pages/TransferPage.vue')
-const UploadPage = () => import('../pages/UploadPage.vue')
+const TransferDemo = () => import('../demos/TransferDemo.vue')
+const UploadDemo = () => import('../demos/UploadDemo.vue')
 const ConfigProviderPage = () => import('../pages/ConfigProviderPage.vue')
-const FormPage = () => import('../pages/FormPage.vue')
-const TablePage = () => import('../pages/TablePage.vue')
-const ChartsPage = () => import('../pages/ChartsPage.vue')
-const DiagramPage = () => import('../pages/DiagramPage.vue')
-const DashboardPage = () => import('../pages/DashboardPage.vue')
-const GanttPage = () => import('../pages/GanttPage.vue')
-const EventTimelinePage = () => import('../pages/EventTimelinePage.vue')
-const ResourceCalendarPage = () => import('../pages/ResourceCalendarPage.vue')
-const SchemaFormEditorPage = () => import('../pages/SchemaFormEditorPage.vue')
+// Wave 3.2 / Tab D — complex components migrated to demos/ architecture.
+const FormDemo = () => import('../demos/FormDemo.vue')
+const TableDemo = () => import('../demos/TableDemo.vue')
+const ChartsDemo = () => import('../demos/ChartsDemo.vue')
+const DiagramDemo = () => import('../demos/DiagramDemo.vue')
+const DashboardDemo = () => import('../demos/DashboardDemo.vue')
+const GanttDemo = () => import('../demos/GanttDemo.vue')
+const EventTimelineDemo = () => import('../demos/EventTimelineDemo.vue')
+const ResourceCalendarDemo = () => import('../demos/ResourceCalendarDemo.vue')
+const SchemaFormEditorDemo = () => import('../demos/SchemaFormEditorDemo.vue')
 
 const routes: RouteRecord[] = [
   { path: '/', component: Landing },
@@ -101,26 +103,26 @@ const routes: RouteRecord[] = [
   { path: '/components/timeline', component: TimelinePage },
   { path: '/components/carousel', component: CarouselPage },
   { path: '/components/descriptions', component: DescriptionsPage },
-  { path: '/components/timepicker', component: TimePickerPage },
+  { path: '/components/timepicker', component: TimePickerDemo },
   { path: '/components/colorpicker', component: ColorPickerPage },
-  { path: '/components/list', component: ListPage },
-  { path: '/components/tree', component: TreePage },
+  { path: '/components/list', component: ListDemo },
+  { path: '/components/tree', component: TreeDemo },
   { path: '/components/treeselect', component: TreeSelectPage },
   { path: '/components/cascader', component: CascaderPage },
-  { path: '/components/calendar', component: CalendarPage },
+  { path: '/components/calendar', component: CalendarDemo },
   { path: '/components/notification', component: NotificationPage },
-  { path: '/components/transfer', component: TransferPage },
-  { path: '/components/upload', component: UploadPage },
+  { path: '/components/transfer', component: TransferDemo },
+  { path: '/components/upload', component: UploadDemo },
   { path: '/components/configprovider', component: ConfigProviderPage },
-  { path: '/components/form', component: FormPage },
-  { path: '/components/table', component: TablePage },
-  { path: '/components/charts', component: ChartsPage },
-  { path: '/components/diagram', component: DiagramPage },
-  { path: '/components/dashboard', component: DashboardPage },
-  { path: '/components/gantt', component: GanttPage },
-  { path: '/components/event-timeline', component: EventTimelinePage },
-  { path: '/components/resource-calendar', component: ResourceCalendarPage },
-  { path: '/components/schema-form-editor', component: SchemaFormEditorPage },
+  { path: '/components/form', component: FormDemo },
+  { path: '/components/table', component: TableDemo },
+  { path: '/components/charts', component: ChartsDemo },
+  { path: '/components/diagram', component: DiagramDemo },
+  { path: '/components/dashboard', component: DashboardDemo },
+  { path: '/components/gantt', component: GanttDemo },
+  { path: '/components/event-timeline', component: EventTimelineDemo },
+  { path: '/components/resource-calendar', component: ResourceCalendarDemo },
+  { path: '/components/schema-form-editor', component: SchemaFormEditorDemo },
 
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
