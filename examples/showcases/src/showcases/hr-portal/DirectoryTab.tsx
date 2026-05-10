@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react'
-import {
-  Table, Tag, Avatar, Segmented,
-} from '@skygraph/react'
+import { Table, Tag, Avatar, Segmented } from '@skygraph/react'
 import type { TableColumn } from '@skygraph/react'
 import { employees, employeeToRow } from './data'
-import { Toolbar, useFilteredList, money, statusColor } from '../_shared'
+import { Toolbar, useFilteredList, money, statusColor, useAppLocale } from '../_shared'
 
 export function DirectoryTab() {
+  const l = useAppLocale('hrPortal')
+  const d = l.directory
   const [search, setSearch] = useState('')
   const [view, setView] = useState<string>('table')
 
@@ -15,32 +15,54 @@ export function DirectoryTab() {
 
   const columns: TableColumn[] = [
     {
-      key: 'name', title: 'Employee', width: 220, sortable: true,
+      key: 'name',
+      title: d.table.employee,
+      width: 220,
+      sortable: true,
       render: (val, row) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Avatar size="small">{String(row.avatar)}</Avatar>
           <div>
             <div style={{ fontWeight: 500 }}>{String(val)}</div>
-            <div style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>{String(row.email)}</div>
+            <div style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>
+              {String(row.email)}
+            </div>
           </div>
         </div>
       ),
     },
     {
-      key: 'department', title: 'Department', width: 120, sortable: true,
-      filters: ['Engineering', 'Design', 'Product', 'Marketing', 'Sales', 'HR', 'Finance'].map(d => ({ text: d, value: d })),
+      key: 'department',
+      title: d.table.department,
+      width: 120,
+      sortable: true,
+      filters: ['Engineering', 'Design', 'Product', 'Marketing', 'Sales', 'HR', 'Finance'].map(
+        (dep) => ({ text: dep, value: dep }),
+      ),
       onFilter: (value, row) => row.department === value,
     },
-    { key: 'role', title: 'Role', width: 150 },
+    { key: 'role', title: d.table.role, width: 150 },
     {
-      key: 'status', title: 'Status', width: 100,
-      filters: ['active', 'on-leave', 'remote'].map(v => ({ text: v, value: v })),
+      key: 'status',
+      title: d.table.status,
+      width: 100,
+      filters: (['active', 'on-leave', 'remote'] as const).map((v) => ({
+        text: l.statusLabel[v],
+        value: v,
+      })),
       onFilter: (value, row) => row.status === value,
-      render: (val) => <Tag color={statusColor(String(val))}>{String(val)}</Tag>,
+      render: (val) => {
+        const v = String(val) as keyof typeof l.statusLabel
+        return <Tag color={statusColor(String(val))}>{l.statusLabel[v] ?? String(val)}</Tag>
+      },
     },
-    { key: 'startDate', title: 'Start Date', width: 110, sortable: true },
+    { key: 'startDate', title: d.table.startDate, width: 110, sortable: true },
     {
-      key: 'salary', title: 'Salary', width: 100, sortable: true, align: 'right',
+      key: 'salary',
+      title: d.table.salary,
+      width: 100,
+      sortable: true,
+      align: 'right',
       render: (val) => money(Number(val)),
     },
   ]
@@ -48,14 +70,19 @@ export function DirectoryTab() {
   return (
     <>
       <Toolbar
-        search={{ value: search, onChange: setSearch, placeholder: 'Search employees…', width: 220 }}
+        search={{
+          value: search,
+          onChange: setSearch,
+          placeholder: d.searchPlaceholder,
+          width: 220,
+        }}
         actions={
           <Segmented
             value={view}
             onChange={setView}
             options={[
-              { label: 'Table', value: 'table' },
-              { label: 'Cards', value: 'cards' },
+              { label: d.views.table, value: 'table' },
+              { label: d.views.cards, value: 'cards' },
             ]}
           />
         }
@@ -64,13 +91,19 @@ export function DirectoryTab() {
         <Table columns={columns} data={tableData} pageSize={10} size="small" />
       ) : (
         <div className="sc-card-grid">
-          {filtered.map(e => (
-            <div key={e.id} className="sc-card" style={{ alignItems: 'center', textAlign: 'center' }}>
+          {filtered.map((e) => (
+            <div
+              key={e.id}
+              className="sc-card"
+              style={{ alignItems: 'center', textAlign: 'center' }}
+            >
               <Avatar size="large">{e.avatar}</Avatar>
               <div style={{ fontWeight: 600 }}>{e.name}</div>
               <div style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>{e.role}</div>
-              <Tag color={statusColor(e.status)}>{e.status}</Tag>
-              <div style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>{e.department}</div>
+              <Tag color={statusColor(e.status)}>{l.statusLabel[e.status] ?? e.status}</Tag>
+              <div style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>
+                {e.department}
+              </div>
             </div>
           ))}
         </div>

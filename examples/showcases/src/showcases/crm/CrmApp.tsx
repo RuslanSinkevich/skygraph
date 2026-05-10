@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { TabItem } from '@skygraph/react'
 import { contacts, deals, pipelineStats } from './data'
-import { ShowcaseShell, StatsRow, money } from '../_shared'
+import { ShowcaseShell, StatsRow, money, useAppLocale } from '../_shared'
 import { LeadsTab } from './LeadsTab'
 import { ContactsTab } from './ContactsTab'
 import { DealsTab } from './DealsTab'
@@ -11,6 +11,7 @@ import { HierarchyTab } from './HierarchyTab'
 import { DeadlinesTab } from './DeadlinesTab'
 
 function CrmStats() {
+  const l = useAppLocale('crm').stats
   const totalRevenue = contacts.reduce((s, c) => s + c.revenue, 0)
   const totalDeals = deals.reduce((s, d) => s + d.value, 0)
   const wonDeals = pipelineStats['closed-won']
@@ -22,30 +23,30 @@ function CrmStats() {
     <StatsRow
       items={[
         {
-          label: 'Total Contacts',
+          label: l.contacts,
           value: contacts.length,
-          sub: `${contacts.filter(c => c.status === 'customer').length} customers`,
+          sub: l.contactsSub(contacts.filter((c) => c.status === 'customer').length),
         },
         {
-          label: 'Pipeline Value',
+          label: l.pipeline,
           value: money(totalDeals, { compact: true }),
-          sub: `${deals.length} active deals`,
+          sub: l.pipelineSub(deals.length),
         },
         {
-          label: 'Won Revenue',
+          label: l.won,
           value: money(wonValue, { compact: true }),
           subTone: 'success',
-          sub: `${wonDeals.length} deals closed`,
+          sub: l.wonSub(wonDeals.length),
         },
         {
-          label: 'Avg Deal Size',
+          label: l.avgDeal,
           value: money(avgDealSize, { compact: true }),
-          sub: `win rate ${winRate}%`,
+          sub: l.avgDealSub(winRate),
         },
         {
-          label: 'Total Revenue',
+          label: l.lifetime,
           value: money(totalRevenue, { compact: true }),
-          sub: 'lifetime value',
+          sub: l.lifetimeSub,
         },
       ]}
     />
@@ -53,16 +54,17 @@ function CrmStats() {
 }
 
 export function CrmApp() {
+  const t = useAppLocale('crm').tabs
   const [active, setActive] = useState('leads')
 
   const tabs: TabItem[] = [
-    { key: 'leads', label: 'Leads', children: <LeadsTab /> },
-    { key: 'contacts', label: 'Contacts', children: <ContactsTab /> },
-    { key: 'deals', label: 'Deals', children: <DealsTab /> },
-    { key: 'pipeline', label: 'Pipeline (Kanban)', children: <PipelineTab /> },
-    { key: 'hierarchy', label: 'Hierarchy', children: <HierarchyTab /> },
-    { key: 'deadlines', label: 'Deadlines', children: <DeadlinesTab /> },
-    { key: 'activity', label: 'Activity', children: <ActivityTab /> },
+    { key: 'leads', label: t.leads, children: <LeadsTab /> },
+    { key: 'contacts', label: t.contacts, children: <ContactsTab /> },
+    { key: 'deals', label: t.deals, children: <DealsTab /> },
+    { key: 'pipeline', label: t.pipeline, children: <PipelineTab /> },
+    { key: 'hierarchy', label: t.hierarchy, children: <HierarchyTab /> },
+    { key: 'deadlines', label: t.deadlines, children: <DeadlinesTab /> },
+    { key: 'activity', label: t.activity, children: <ActivityTab /> },
   ]
 
   return <ShowcaseShell header={<CrmStats />} tabs={tabs} activeKey={active} onChange={setActive} />

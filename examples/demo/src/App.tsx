@@ -11,8 +11,12 @@ import {
   Sidebar,
   ThemeSwitcher,
 } from '@skygraph-examples/shared-react/layout'
-import type { AppShellSection, NavItem, SidebarSection } from '@skygraph-examples/shared-react/layout'
-import { GITHUB_URL, SHOWCASES_URL } from '@skygraph-examples/shared'
+import type {
+  AppShellSection,
+  NavItem,
+  SidebarSection,
+} from '@skygraph-examples/shared-react/layout'
+import { GITHUB_URL } from '@skygraph-examples/shared'
 import { NotificationContainer } from '@skygraph/react'
 
 import { SpinDemo } from './demos/SpinDemo'
@@ -79,6 +83,12 @@ import { Landing } from './pages/Landing/Landing'
 import { Roadmap } from './pages/Roadmap/Roadmap'
 import { About } from './pages/About/About'
 import { BenchmarksPage } from './pages/Benchmarks/BenchmarksPage'
+import { ShowcasesPage } from './pages/Showcases/ShowcasesPage'
+import './pages/Benchmarks/benchmarks.css'
+
+import { TableBenchmark } from './demos/benchmarks/TableBenchmark'
+import { TreeBenchmark } from './demos/benchmarks/TreeBenchmark'
+import { ChartBenchmark } from './demos/benchmarks/ChartBenchmark'
 
 import { FrameworkSwitcher } from './components/FrameworkSwitcher'
 
@@ -295,7 +305,8 @@ function sectionForRoute(route: string): AppShellSection {
   if (route === 'landing') return 'landing'
   if (route === 'roadmap') return 'roadmap'
   if (route === 'about') return 'about'
-  if (route === 'benchmarks') return null
+  if (route === 'benchmarks' || route.startsWith('benchmarks/')) return null
+  if (route === 'showcases' || route.startsWith('showcases/')) return null
   if (route.startsWith('components/')) return 'components'
   if (route.startsWith('guide/')) return 'guide'
   if (route === 'tokens') return 'tokens'
@@ -325,8 +336,8 @@ export default function App() {
     () => [
       { key: 'components', label: t.header.navComponents, href: '#/components/button' },
       { key: 'guide', label: t.header.navGuide, href: '#/guide/getting-started' },
-      { key: 'showcases', label: t.header.navShowcases, href: SHOWCASES_URL, external: true },
-      { key: 'benchmarks', label: 'Benchmarks', href: '#/benchmarks' },
+      { key: 'showcases', label: t.header.navShowcases, href: '#/showcases' },
+      { key: 'benchmarks', label: t.header.navBenchmarks, href: '#/benchmarks' },
       { key: 'roadmap', label: t.header.navRoadmap, href: '#/roadmap' },
       { key: 'about', label: t.header.navAbout, href: '#/about' },
       { key: 'github', label: t.header.navGithub, href: GITHUB_URL, external: true },
@@ -337,11 +348,8 @@ export default function App() {
   const componentsSidebar = useMemo(() => buildComponentsSidebar(t), [t])
   const guideSidebar = useMemo(() => buildGuideSidebar(t), [t])
 
-  const sidebarSections = section === 'components'
-    ? componentsSidebar
-    : section === 'guide'
-      ? guideSidebar
-      : null
+  const sidebarSections =
+    section === 'components' ? componentsSidebar : section === 'guide' ? guideSidebar : null
 
   const filteredSidebar = useMemo(() => {
     if (!sidebarSections) return null
@@ -370,7 +378,13 @@ export default function App() {
     <Header
       brand="SkyGraph"
       items={navItems}
-      active={route === 'benchmarks' ? 'benchmarks' : section}
+      active={
+        route === 'benchmarks' || route.startsWith('benchmarks/')
+          ? 'benchmarks'
+          : route === 'showcases' || route.startsWith('showcases/')
+            ? 'showcases'
+            : section
+      }
       onBrandClick={() => navigate('landing')}
       onSelect={(key) => {
         const item = navItems.find((it) => it.key === key)
@@ -428,7 +442,7 @@ export default function App() {
               href: `${GITHUB_URL}/blob/master/CHANGELOG.md`,
               external: true,
             },
-            { label: t.footer.linkShowcases, href: SHOWCASES_URL, external: true },
+            { label: t.footer.linkShowcases, href: '#/showcases' },
             {
               label: t.footer.linkArchitecture,
               href: `${GITHUB_URL}/blob/master/ARCHITECTURE.md`,
@@ -472,13 +486,8 @@ export default function App() {
 
   return (
     <>
-      <AppShell
-        section={section}
-        header={header}
-        sidebar={sidebarNode}
-        footer={footer}
-      >
-        <Page onNavigate={navigate} />
+      <AppShell section={section} header={header} sidebar={sidebarNode} footer={footer}>
+        <Page onNavigate={navigate} route={route} />
       </AppShell>
       <NotificationContainer placement="topRight" />
       <NotificationContainer placement="topLeft" />
@@ -487,14 +496,79 @@ export default function App() {
   )
 }
 
-function renderPage(route: string): (props: { onNavigate: (key: string) => void }) => React.JSX.Element {
-  if (route === 'landing') return Landing
-  if (route === 'roadmap') return Roadmap
-  if (route === 'about') return About
+type PageProps = { onNavigate: (key: string) => void; route: string }
+
+function renderPage(route: string): (props: PageProps) => React.JSX.Element {
+  if (route === 'landing') return (p) => <Landing onNavigate={p.onNavigate} />
+  if (route === 'roadmap') return () => <Roadmap />
+  if (route === 'about') return () => <About />
   if (route === 'benchmarks') return () => <BenchmarksPage />
+  if (route === 'benchmarks/table') {
+    return (p) => (
+      <SingleBenchmarkPage
+        title="Table benchmark"
+        subtitle={`SkyGraph <Table> vs antd <Table virtual>`}
+        onBack={() => p.onNavigate('benchmarks')}
+      >
+        <TableBenchmark />
+      </SingleBenchmarkPage>
+    )
+  }
+  if (route === 'benchmarks/tree') {
+    return (p) => (
+      <SingleBenchmarkPage
+        title="Tree benchmark"
+        subtitle={`SkyGraph <Tree> vs antd <Tree height>`}
+        onBack={() => p.onNavigate('benchmarks')}
+      >
+        <TreeBenchmark />
+      </SingleBenchmarkPage>
+    )
+  }
+  if (route === 'benchmarks/chart') {
+    return (p) => (
+      <SingleBenchmarkPage
+        title="Chart benchmark"
+        subtitle={`SkyGraph <BarChart> vs recharts <BarChart>`}
+        onBack={() => p.onNavigate('benchmarks')}
+      >
+        <ChartBenchmark />
+      </SingleBenchmarkPage>
+    )
+  }
+  if (route === 'showcases' || route.startsWith('showcases/')) {
+    return (p) => <ShowcasesPage route={p.route} onNavigate={p.onNavigate} />
+  }
   const componentPage = componentPages[route]
   if (componentPage) return () => componentPage()
   const guidePage = guidePages[route]
   if (guidePage) return () => guidePage()
-  return Landing
+  return (p) => <Landing onNavigate={p.onNavigate} />
+}
+
+interface SingleBenchmarkPageProps {
+  title: string
+  subtitle: string
+  onBack: () => void
+  children: React.ReactNode
+}
+
+function SingleBenchmarkPage({ title, subtitle, onBack, children }: SingleBenchmarkPageProps) {
+  return (
+    <div className="bench-page">
+      <header className="bench-header">
+        <button
+          type="button"
+          className="bench-btn"
+          onClick={onBack}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          ← All benchmarks
+        </button>
+        <h1 className="bench-title">{title}</h1>
+        <p className="bench-lead">{subtitle}</p>
+      </header>
+      <div className="bench-body">{children}</div>
+    </div>
+  )
 }

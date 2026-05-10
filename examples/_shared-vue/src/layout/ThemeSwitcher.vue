@@ -1,18 +1,26 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { useI18n } from '../i18n'
 
-const STORAGE_KEY = 'skygraph-demo-vue-theme'
+const THEME_STORAGE_KEY = 'skygraph-demo-theme'
 
 type Theme = 'light' | 'dark'
+
+interface Props {
+  /** Aria-label for the toggle button. */
+  ariaLabel?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  ariaLabel: 'Toggle theme',
+})
 
 function readInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'light'
   try {
-    const stored = window.localStorage.getItem(STORAGE_KEY)
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY)
     if (stored === 'dark' || stored === 'light') return stored
   } catch {
-    // ignore
+    // localStorage may be unavailable (SSR / privacy mode).
   }
   if (typeof window.matchMedia === 'function') {
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'
@@ -20,22 +28,25 @@ function readInitialTheme(): Theme {
   return 'light'
 }
 
-const { t } = useI18n()
 const theme = ref<Theme>('light')
 
 onMounted(() => {
   theme.value = readInitialTheme()
 })
 
-watch(theme, (next) => {
-  if (typeof document === 'undefined') return
-  document.documentElement.setAttribute('data-sg-theme', next)
-  try {
-    window.localStorage.setItem(STORAGE_KEY, next)
-  } catch {
-    // ignore
-  }
-}, { immediate: true })
+watch(
+  theme,
+  (next) => {
+    if (typeof document === 'undefined') return
+    document.documentElement.setAttribute('data-sg-theme', next)
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, next)
+    } catch {
+      // ignore
+    }
+  },
+  { immediate: true },
+)
 
 function toggle() {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
@@ -45,9 +56,9 @@ function toggle() {
 <template>
   <button
     type="button"
-    class="dv-theme-toggle"
-    :aria-label="t.header.themeAria"
-    :title="t.header.themeAria"
+    class="xshell-theme"
+    :aria-label="ariaLabel"
+    :title="ariaLabel"
     @click="toggle"
   >
     <svg
@@ -66,14 +77,7 @@ function toggle() {
         stroke-linecap="round"
       />
     </svg>
-    <svg
-      v-else
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden="true"
-    >
+    <svg v-else width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <path
         d="M13 9.5A6 6 0 0 1 6.5 3a.5.5 0 0 0-.7-.5A6.5 6.5 0 1 0 13.5 10.2a.5.5 0 0 0-.5-.7Z"
         fill="currentColor"

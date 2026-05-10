@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@skygraph-examples/shared": "workspace:*",
+    "@skygraph-examples/shared-vue": "workspace:*",
     "@skygraph/core": "workspace:*",
     "@skygraph/styles": "workspace:*",
     "@skygraph/vue": "workspace:*",

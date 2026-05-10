@@ -7,16 +7,18 @@ import { LayoutsTab } from './LayoutsTab'
 import { DynamicTab } from './DynamicTab'
 import { SchemaTab } from './SchemaTab'
 import { formsStyles } from './styles'
+import { useAppLocale } from '../_shared'
 
 export function FormsApp() {
+  const l = useAppLocale('forms')
   const [activeTab, setActiveTab] = useState('basic')
 
   const tabs: TabItem[] = [
-    { key: 'basic', label: 'Basic', children: <BasicTab /> },
-    { key: 'validation', label: 'Validation', children: <ValidationTab /> },
-    { key: 'layouts', label: 'Layouts', children: <LayoutsTab /> },
-    { key: 'dynamic', label: 'Dynamic', children: <DynamicTab /> },
-    { key: 'schema', label: 'Schema (Wizard)', children: <SchemaTab /> },
+    { key: 'basic', label: l.tabs.basic, children: <BasicTab /> },
+    { key: 'validation', label: l.tabs.validation, children: <ValidationTab /> },
+    { key: 'layouts', label: l.tabs.layouts, children: <LayoutsTab /> },
+    { key: 'dynamic', label: l.tabs.dynamic, children: <DynamicTab /> },
+    { key: 'schema', label: l.tabs.schema, children: <SchemaTab /> },
   ]
 
   return (

@@ -42,14 +42,10 @@ import {
   getSummary,
 } from './data'
 import type { ChannelMetric, MetricRow, ProductMetric } from './data'
-import {
-  StatsRow,
-  money,
-  num,
-  percent,
-  colorFromString,
-  initials,
-} from '../_shared'
+import { StatsRow, money, num, percent, colorFromString, initials, useAppLocale } from '../_shared'
+import type { ShowcasesLocale } from '@skygraph-examples/shared'
+
+type DashboardLocale = ShowcasesLocale['apps']['dashboard']
 
 const HEALTH_COLOR: Record<'healthy' | 'degraded' | 'down', string> = {
   healthy: 'success',
@@ -76,10 +72,15 @@ interface AnalyticsContext {
 }
 
 export function DashboardApp() {
+  const l = useAppLocale('dashboard')
   const [mode, setMode] = useState<Mode>('operations')
   const [period, setPeriod] = useState<Period>('14d')
   const [range, setRange] = useState<[Date | null, Date | null]>([null, null])
-  const [drill, setDrill] = useState<AnalyticsContext>({ metric: null, channel: null, product: null })
+  const [drill, setDrill] = useState<AnalyticsContext>({
+    metric: null,
+    channel: null,
+    product: null,
+  })
   const tableRef = useRef<TableRef>(null)
 
   const slice = useMemo(() => {
@@ -98,19 +99,39 @@ export function DashboardApp() {
     return { revenue, orders, signups, active, trend }
   }, [slice])
 
-  const dateCategories = useMemo(() => slice.map(d => d.date.slice(5)), [slice])
+  const dateCategories = useMemo(() => slice.map((d) => d.date.slice(5)), [slice])
 
   const revenueSeries: ChartSeries[] = [
-    { id: 'revenue', label: 'Revenue', values: slice.map(d => d.revenue), color: 'var(--sg-color-primary)' },
+    {
+      id: 'revenue',
+      label: l.drilldown.columns.revenue,
+      values: slice.map((d) => d.revenue),
+      color: 'var(--sg-color-primary)',
+    },
   ]
 
   const ordersSeries: ChartSeries[] = [
-    { id: 'orders', label: 'Orders', values: slice.map(d => d.orders), color: 'var(--sg-color-success)' },
-    { id: 'signups', label: 'Signups', values: slice.map(d => d.signups), color: 'var(--sg-color-warning)' },
+    {
+      id: 'orders',
+      label: l.drilldown.columns.orders,
+      values: slice.map((d) => d.orders),
+      color: 'var(--sg-color-success)',
+    },
+    {
+      id: 'signups',
+      label: l.stats.signups,
+      values: slice.map((d) => d.signups),
+      color: 'var(--sg-color-warning)',
+    },
   ]
 
   const activeSeries: ChartSeries[] = [
-    { id: 'active', label: 'Active users', values: slice.map(d => d.active), color: 'var(--sg-color-primary)' },
+    {
+      id: 'active',
+      label: l.widgets.activeTitle,
+      values: slice.map((d) => d.active),
+      color: 'var(--sg-color-primary)',
+    },
   ]
 
   const trafficSlices: PieChartSlice[] = trafficByCountry.slice(0, 6).map((t, i) => ({
@@ -120,7 +141,7 @@ export function DashboardApp() {
     color: PALETTE[i % PALETTE.length]!,
   }))
 
-  const trafficLegend: ChartSeries[] = trafficSlices.map(s => ({
+  const trafficLegend: ChartSeries[] = trafficSlices.map((s) => ({
     id: s.id,
     label: s.label,
     color: s.color,
@@ -130,26 +151,34 @@ export function DashboardApp() {
   const widgetActions = (id: string): WidgetAction[] => [
     {
       id: 'refresh',
-      label: 'Refresh',
-      onClick: () => notification.info(`Refreshed ${id}`),
+      label: l.widgetActions.refresh,
+      onClick: () => notification.info(l.widgetToasts.refreshed(id)),
     },
     {
       id: 'export',
-      label: 'Export PNG',
-      onClick: (w) => notification.success(`Export queued for "${w.id}"`),
+      label: l.widgetActions.exportPng,
+      onClick: (w) => notification.success(l.widgetToasts.exportQueued(w.id)),
     },
     {
       id: 'pin',
-      label: 'Pin to top',
-      onClick: () => notification.success(`Pinned ${id}`),
+      label: l.widgetActions.pinToTop,
+      onClick: () => notification.success(l.widgetToasts.pinned(id)),
     },
   ]
 
   const buildWidgets = (): DashboardWidget[] => [
     {
       id: 'revenue-chart',
-      title: <WidgetTitle title="Revenue trend" hint={`${money(totals.revenue, { compact: true })} total`} />,
-      x: 1, y: 1, w: 8, h: 3,
+      title: (
+        <WidgetTitle
+          title={l.widgets.revenueTitle}
+          hint={l.widgets.revenueHint(money(totals.revenue, { compact: true }))}
+        />
+      ),
+      x: 1,
+      y: 1,
+      w: 8,
+      h: 3,
       actions: widgetActions('revenue-chart'),
       children: (
         <LineChart
@@ -166,8 +195,16 @@ export function DashboardApp() {
     },
     {
       id: 'traffic-pie',
-      title: <WidgetTitle title="Top countries" hint={`${trafficByCountry.length} regions`} />,
-      x: 9, y: 1, w: 4, h: 3,
+      title: (
+        <WidgetTitle
+          title={l.widgets.countriesTitle}
+          hint={l.widgets.countriesHint(trafficByCountry.length)}
+        />
+      ),
+      x: 9,
+      y: 1,
+      w: 4,
+      h: 3,
       actions: widgetActions('traffic-pie'),
       children: (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
@@ -178,8 +215,16 @@ export function DashboardApp() {
     },
     {
       id: 'orders-bar',
-      title: <WidgetTitle title="Orders & signups" hint={`${num(totals.orders)} orders`} />,
-      x: 1, y: 4, w: 6, h: 3,
+      title: (
+        <WidgetTitle
+          title={l.widgets.ordersTitle}
+          hint={l.widgets.ordersHint(num(totals.orders))}
+        />
+      ),
+      x: 1,
+      y: 4,
+      w: 6,
+      h: 3,
       actions: widgetActions('orders-bar'),
       children: (
         <BarChart
@@ -194,8 +239,16 @@ export function DashboardApp() {
     },
     {
       id: 'active-area',
-      title: <WidgetTitle title="Active users" hint={`${num(totals.active)} now`} />,
-      x: 7, y: 4, w: 6, h: 3,
+      title: (
+        <WidgetTitle
+          title={l.widgets.activeTitle}
+          hint={l.widgets.activeHint(num(totals.active))}
+        />
+      ),
+      x: 7,
+      y: 4,
+      w: 6,
+      h: 3,
       actions: widgetActions('active-area'),
       children: (
         <AreaChart
@@ -209,17 +262,28 @@ export function DashboardApp() {
     },
     {
       id: 'health',
-      title: <WidgetTitle title="Service health" hint={`${serviceHealth.length} services`} />,
-      x: 1, y: 7, w: 6, h: 4,
+      title: (
+        <WidgetTitle
+          title={l.widgets.healthTitle}
+          hint={l.widgets.healthHint(serviceHealth.length)}
+        />
+      ),
+      x: 1,
+      y: 7,
+      w: 6,
+      h: 4,
       actions: widgetActions('health'),
-      children: <ServiceList />,
+      children: <ServiceList l={l} />,
     },
     {
       id: 'activity',
-      title: <WidgetTitle title="Recent activity" hint="last hour" />,
-      x: 7, y: 7, w: 6, h: 4,
+      title: <WidgetTitle title={l.widgets.activityTitle} hint={l.widgets.activityHint} />,
+      x: 7,
+      y: 7,
+      w: 6,
+      h: 4,
       actions: widgetActions('activity'),
-      children: <ActivityFeed />,
+      children: <ActivityFeed l={l} />,
     },
   ]
 
@@ -233,12 +297,12 @@ export function DashboardApp() {
 
   const handleWidgetContextMenu = (e: React.MouseEvent, w: DashboardWidget) => {
     e.preventDefault()
-    notification.info(`Right-click on widget "${w.id}" — context menu would open here`)
+    notification.info(l.widgetToasts.nodeContext(w.id))
   }
 
   const handleDashboardContextMenu = (e: React.MouseEvent) => {
     e.preventDefault()
-    notification.info('Right-click on background — would offer "Add widget…"')
+    notification.info(l.widgetToasts.canvasContext)
   }
 
   const handlePrint = () => {
@@ -251,10 +315,9 @@ export function DashboardApp() {
 
       <div className="db-toolbar">
         <div>
-          <h2 style={{ margin: 0, fontSize: 20 }}>Operations dashboard</h2>
+          <h2 style={{ margin: 0, fontSize: 20 }}>{l.title}</h2>
           <p style={{ margin: '4px 0 0', color: 'var(--sg-color-text-secondary)', fontSize: 13 }}>
-            Live metrics across web, API, and infrastructure. Drill into KPIs for breakdowns or open
-            the layout editor.
+            {l.lead}
           </p>
         </div>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -262,15 +325,12 @@ export function DashboardApp() {
             value={mode}
             onChange={(v) => setMode(v as Mode)}
             options={[
-              { label: 'Operations', value: 'operations' },
-              { label: 'Drill-down', value: 'drilldown' },
-              { label: 'Layout editor', value: 'editor' },
+              { label: l.modes.operations, value: 'operations' },
+              { label: l.modes.drilldown, value: 'drilldown' },
+              { label: l.modes.editor, value: 'editor' },
             ]}
           />
-          <RangePicker
-            value={range}
-            onChange={(v) => setRange(v as [Date | null, Date | null])}
-          />
+          <RangePicker value={range} onChange={(v) => setRange(v as [Date | null, Date | null])} />
           <Segmented
             value={period}
             onChange={(v) => setPeriod(v as Period)}
@@ -281,10 +341,10 @@ export function DashboardApp() {
             ]}
           />
           {mode === 'drilldown' ? (
-            <Button onClick={handlePrint}>Print table</Button>
+            <Button onClick={handlePrint}>{l.printTable}</Button>
           ) : (
-            <Button onClick={() => notification.success('Report exported', 'CSV is in your downloads folder.')}>
-              Export
+            <Button onClick={() => notification.success(l.exportToast, l.exportToastSub)}>
+              {l.exportButton}
             </Button>
           )}
         </div>
@@ -295,16 +355,37 @@ export function DashboardApp() {
           {
             key: 'revenue',
             icon: '💰',
-            label: 'Revenue',
+            label: l.stats.revenue,
             value: money(totals.revenue, { compact: true }),
-            sub: `${trendIcon} ${percent(Math.abs(totals.trend))} vs prev`,
+            sub: l.stats.revenueSub(trendIcon, percent(Math.abs(totals.trend))),
             subTone: trendTone,
             progress: Math.min(100, Math.abs(totals.trend) * 4),
             progressStatus: trendTone === 'success' ? 'success' : 'error',
           },
-          { key: 'orders', icon: '📦', label: 'Orders', value: num(totals.orders), sub: `${(totals.orders / slice.length).toFixed(1)} per day`, subTone: 'default' },
-          { key: 'signups', icon: '🆕', label: 'Signups', value: num(totals.signups), sub: 'unique users', subTone: 'default' },
-          { key: 'active', icon: '👥', label: 'Active now', value: num(totals.active), sub: 'last 5 min', subTone: 'default' },
+          {
+            key: 'orders',
+            icon: '📦',
+            label: l.stats.orders,
+            value: num(totals.orders),
+            sub: l.stats.ordersSub((totals.orders / slice.length).toFixed(1)),
+            subTone: 'default',
+          },
+          {
+            key: 'signups',
+            icon: '🆕',
+            label: l.stats.signups,
+            value: num(totals.signups),
+            sub: l.stats.signupsSub,
+            subTone: 'default',
+          },
+          {
+            key: 'active',
+            icon: '👥',
+            label: l.stats.active,
+            value: num(totals.active),
+            sub: l.stats.activeSub,
+            subTone: 'default',
+          },
         ]}
       />
 
@@ -323,9 +404,9 @@ export function DashboardApp() {
         <DashboardEditor
           widgets={widgets}
           onLayoutChange={(next) => setWidgets(next)}
-          onWidgetRefresh={(w) => notification.info(`Refresh "${w.id}"`)}
-          onWidgetSettings={(w) => notification.info(`Settings for "${w.id}"`)}
-          onWidgetRemove={(w) => notification.warning(`Removed "${w.id}"`)}
+          onWidgetRefresh={(w) => notification.info(l.widgetToasts.refreshShort(w.id))}
+          onWidgetSettings={(w) => notification.info(l.widgetToasts.settings(w.id))}
+          onWidgetRemove={(w) => notification.warning(l.widgetToasts.removed(w.id))}
           columns={12}
           rowHeight={70}
           gap={12}
@@ -334,6 +415,7 @@ export function DashboardApp() {
 
       {mode === 'drilldown' && (
         <DrillDownView
+          l={l}
           tableRef={tableRef}
           slice={slice}
           onPickMetric={(m) => setDrill({ metric: m, channel: null, product: null })}
@@ -345,29 +427,41 @@ export function DashboardApp() {
       <Drawer
         open={!!drill.metric}
         onClose={() => setDrill({ metric: null, channel: null, product: null })}
-        title={`Day Details — ${drill.metric?.date ?? ''}`}
+        title={l.drawers.dayDetailsTitle(drill.metric?.date ?? '')}
         width={420}
       >
         {drill.metric && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <Descriptions
               items={[
-                { label: 'Date', children: drill.metric.date },
-                { label: 'Revenue', children: money(drill.metric.revenue) },
-                { label: 'Orders', children: String(drill.metric.orders) },
-                { label: 'Visitors', children: num(drill.metric.visitors) },
-                { label: 'Conversion', children: percent(drill.metric.conversion, 2) },
-                { label: 'AOV', children: money(drill.metric.avgOrderValue) },
-                { label: 'New Customers', children: String(drill.metric.newCustomers) },
-                { label: 'Returning', children: String(drill.metric.returningCustomers) },
+                { label: l.drawers.date, children: drill.metric.date },
+                { label: l.drawers.revenue, children: money(drill.metric.revenue) },
+                { label: l.drawers.orders, children: String(drill.metric.orders) },
+                { label: l.drawers.visitors, children: num(drill.metric.visitors) },
+                { label: l.drawers.conversion, children: percent(drill.metric.conversion, 2) },
+                { label: l.drawers.aov, children: money(drill.metric.avgOrderValue) },
+                { label: l.drawers.newCustomers, children: String(drill.metric.newCustomers) },
+                { label: l.drawers.returning, children: String(drill.metric.returningCustomers) },
               ]}
               column={1}
               size="small"
             />
-            <h4>Revenue Performance</h4>
-            <Progress percent={Math.min(100, Math.round((drill.metric.revenue / 5000) * 100))} status={drill.metric.revenue > 3000 ? 'success' : 'active'} />
-            <h4>Conversion Rate</h4>
-            <Progress percent={Math.round(drill.metric.conversion * 20)} status={drill.metric.conversion >= 3 ? 'success' : drill.metric.conversion >= 2 ? 'active' : 'error'} />
+            <h4>{l.drawers.revenuePerformance}</h4>
+            <Progress
+              percent={Math.min(100, Math.round((drill.metric.revenue / 5000) * 100))}
+              status={drill.metric.revenue > 3000 ? 'success' : 'active'}
+            />
+            <h4>{l.drawers.conversionRate}</h4>
+            <Progress
+              percent={Math.round(drill.metric.conversion * 20)}
+              status={
+                drill.metric.conversion >= 3
+                  ? 'success'
+                  : drill.metric.conversion >= 2
+                    ? 'active'
+                    : 'error'
+              }
+            />
           </div>
         )}
       </Drawer>
@@ -378,7 +472,7 @@ export function DashboardApp() {
         title={drill.channel?.channel ?? ''}
         width={400}
       >
-        {drill.channel && <ChannelDetail channel={drill.channel} />}
+        {drill.channel && <ChannelDetail l={l} channel={drill.channel} />}
       </Drawer>
 
       <Drawer
@@ -387,7 +481,7 @@ export function DashboardApp() {
         title={drill.product?.name ?? ''}
         width={420}
       >
-        {drill.product && <ProductDetail product={drill.product} />}
+        {drill.product && <ProductDetail l={l} product={drill.product} />}
       </Drawer>
 
       <style>{styles}</style>
@@ -396,6 +490,7 @@ export function DashboardApp() {
 }
 
 interface DrillDownViewProps {
+  l: DashboardLocale
   tableRef: React.Ref<TableRef>
   slice: typeof daily30
   onPickMetric: (m: MetricRow) => void
@@ -403,7 +498,14 @@ interface DrillDownViewProps {
   onPickProduct: (p: ProductMetric) => void
 }
 
-function DrillDownView({ tableRef, slice, onPickMetric, onPickChannel, onPickProduct }: DrillDownViewProps) {
+function DrillDownView({
+  l,
+  tableRef,
+  slice,
+  onPickMetric,
+  onPickChannel,
+  onPickProduct,
+}: DrillDownViewProps) {
   const [tab, setTab] = useState<'overview' | 'channels' | 'products'>('overview')
   void slice
 
@@ -413,22 +515,34 @@ function DrillDownView({ tableRef, slice, onPickMetric, onPickChannel, onPickPro
         value={tab}
         onChange={(v) => setTab(v as typeof tab)}
         options={[
-          { label: 'Overview (daily)', value: 'overview' },
-          { label: 'Channels', value: 'channels' },
-          { label: 'Top products', value: 'products' },
+          { label: l.drilldown.overview, value: 'overview' },
+          { label: l.drilldown.channels, value: 'channels' },
+          { label: l.drilldown.products, value: 'products' },
         ]}
         style={{ marginBottom: 16 }}
       />
-      {tab === 'overview' && <OverviewTable tableRef={tableRef} onPick={onPickMetric} />}
-      {tab === 'channels' && <ChannelsTable onPick={onPickChannel} />}
-      {tab === 'products' && <ProductsTable onPick={onPickProduct} />}
+      {tab === 'overview' && <OverviewTable l={l} tableRef={tableRef} onPick={onPickMetric} />}
+      {tab === 'channels' && <ChannelsTable l={l} onPick={onPickChannel} />}
+      {tab === 'products' && <ProductsTable l={l} onPick={onPickProduct} />}
     </div>
   )
 }
 
-function OverviewTable({ tableRef, onPick }: { tableRef: React.Ref<TableRef>; onPick: (m: MetricRow) => void }) {
+function OverviewTable({
+  l,
+  tableRef,
+  onPick,
+}: {
+  l: DashboardLocale
+  tableRef: React.Ref<TableRef>
+  onPick: (m: MetricRow) => void
+}) {
   const tableData = useMemo(
-    () => dailyMetrics.map((m) => ({ id: String(m.id), data: m as unknown as Record<string, unknown> })),
+    () =>
+      dailyMetrics.map((m) => ({
+        id: String(m.id),
+        data: m as unknown as Record<string, unknown>,
+      })),
     [],
   )
   const summary = getSummary(dailyMetrics)
@@ -437,7 +551,7 @@ function OverviewTable({ tableRef, onPick }: { tableRef: React.Ref<TableRef>; on
   const columns: TableColumn[] = [
     {
       key: 'date',
-      title: 'Date',
+      title: l.drilldown.columns.date,
       width: 110,
       sortable: true,
       filterMode: 'search',
@@ -446,7 +560,7 @@ function OverviewTable({ tableRef, onPick }: { tableRef: React.Ref<TableRef>; on
     },
     {
       key: 'revenue',
-      title: 'Revenue',
+      title: l.drilldown.columns.revenue,
       width: 120,
       sortable: true,
       align: 'right',
@@ -456,26 +570,67 @@ function OverviewTable({ tableRef, onPick }: { tableRef: React.Ref<TableRef>; on
       render: (val) => money(Number(val)),
       aggregate: 'sum',
     },
-    { key: 'orders', title: 'Orders', width: 80, sortable: true, align: 'center', aggregate: 'sum' },
-    { key: 'visitors', title: 'Visitors', width: 100, sortable: true, align: 'center', render: (v) => num(Number(v)), aggregate: 'sum' },
+    {
+      key: 'orders',
+      title: l.drilldown.columns.orders,
+      width: 80,
+      sortable: true,
+      align: 'center',
+      aggregate: 'sum',
+    },
+    {
+      key: 'visitors',
+      title: l.drilldown.columns.visitors,
+      width: 100,
+      sortable: true,
+      align: 'center',
+      render: (v) => num(Number(v)),
+      aggregate: 'sum',
+    },
     {
       key: 'conversion',
-      title: 'Conversion',
+      title: l.drilldown.columns.conversion,
       width: 130,
       sortable: true,
       render: (val) => {
         const n = Number(val)
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Progress percent={n * 20} showInfo={false} style={{ width: 60 }} status={n >= 3 ? 'success' : n >= 2 ? 'active' : 'error'} />
+            <Progress
+              percent={n * 20}
+              showInfo={false}
+              style={{ width: 60 }}
+              status={n >= 3 ? 'success' : n >= 2 ? 'active' : 'error'}
+            />
             <span>{percent(n, 2)}</span>
           </div>
         )
       },
     },
-    { key: 'avgOrderValue', title: 'AOV', width: 80, sortable: true, align: 'right', render: (v) => money(Number(v)) },
-    { key: 'newCustomers', title: 'New', width: 60, sortable: true, align: 'center', aggregate: 'sum' },
-    { key: 'returningCustomers', title: 'Returning', width: 80, sortable: true, align: 'center', aggregate: 'sum' },
+    {
+      key: 'avgOrderValue',
+      title: l.drilldown.columns.aov,
+      width: 80,
+      sortable: true,
+      align: 'right',
+      render: (v) => money(Number(v)),
+    },
+    {
+      key: 'newCustomers',
+      title: l.drilldown.columns.newCustomers,
+      width: 60,
+      sortable: true,
+      align: 'center',
+      aggregate: 'sum',
+    },
+    {
+      key: 'returningCustomers',
+      title: l.drilldown.columns.returning,
+      width: 80,
+      sortable: true,
+      align: 'center',
+      aggregate: 'sum',
+    },
     {
       key: 'actions',
       title: '',
@@ -497,8 +652,7 @@ function OverviewTable({ tableRef, onPick }: { tableRef: React.Ref<TableRef>; on
   return (
     <div>
       <div style={{ marginBottom: 8, fontSize: 13, color: 'var(--sg-color-text-secondary)' }}>
-        Trend: <strong>{trendIcon} {Math.abs(summary.revenueTrend)}%</strong> revenue change vs previous half-period.
-        Right-click headers / cells for context menus. Try Group-by toolbar.
+        {l.drilldownLead(trendIcon, Math.abs(summary.revenueTrend))}
       </div>
       <Table
         ref={tableRef}
@@ -516,8 +670,8 @@ function OverviewTable({ tableRef, onPick }: { tableRef: React.Ref<TableRef>; on
         columnPinning
         columnVisibility
         groupByOptions={[
-          { key: 'returningCustomers', label: 'Returning' },
-          { key: 'orders', label: 'Orders' },
+          { key: 'returningCustomers', label: l.drilldown.groupedReturning },
+          { key: 'orders', label: l.drilldown.groupedOrders },
         ]}
         footer
       />
@@ -525,21 +679,44 @@ function OverviewTable({ tableRef, onPick }: { tableRef: React.Ref<TableRef>; on
   )
 }
 
-function ChannelsTable({ onPick }: { onPick: (c: ChannelMetric) => void }) {
+function ChannelsTable({ l, onPick }: { l: DashboardLocale; onPick: (c: ChannelMetric) => void }) {
   const tableData = useMemo(
-    () => channelMetrics.map((c) => ({ id: c.channel, data: c as unknown as Record<string, unknown> })),
+    () =>
+      channelMetrics.map((c) => ({ id: c.channel, data: c as unknown as Record<string, unknown> })),
     [],
   )
   const totalVisitors = channelMetrics.reduce((s, c) => s + c.visitors, 0)
   const totalRevenue = channelMetrics.reduce((s, c) => s + c.revenue, 0)
 
   const columns: TableColumn[] = [
-    { key: 'channel', title: 'Channel', width: 200, sortable: true, fixed: 'left', render: (v) => <strong>{String(v)}</strong> },
-    { key: 'visitors', title: 'Visitors', width: 110, sortable: true, render: (v) => num(Number(v)), aggregate: 'sum' },
-    { key: 'revenue', title: 'Revenue', width: 130, sortable: true, align: 'right', render: (v) => money(Number(v)), aggregate: 'sum' },
+    {
+      key: 'channel',
+      title: l.drilldown.channelsTable.channel,
+      width: 200,
+      sortable: true,
+      fixed: 'left',
+      render: (v) => <strong>{String(v)}</strong>,
+    },
+    {
+      key: 'visitors',
+      title: l.drilldown.channelsTable.visitors,
+      width: 110,
+      sortable: true,
+      render: (v) => num(Number(v)),
+      aggregate: 'sum',
+    },
+    {
+      key: 'revenue',
+      title: l.drilldown.channelsTable.revenue,
+      width: 130,
+      sortable: true,
+      align: 'right',
+      render: (v) => money(Number(v)),
+      aggregate: 'sum',
+    },
     {
       key: 'conversion',
-      title: 'Conversion',
+      title: l.drilldown.channelsTable.conversion,
       width: 160,
       sortable: true,
       filterMode: 'advanced',
@@ -547,22 +724,31 @@ function ChannelsTable({ onPick }: { onPick: (c: ChannelMetric) => void }) {
       onFilter: (v, row) => Number(row.conversion) >= Number(v),
       render: (val) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Progress percent={Number(val) * 15} showInfo={false} style={{ width: 80 }} status={Number(val) >= 4 ? 'success' : 'active'} />
+          <Progress
+            percent={Number(val) * 15}
+            showInfo={false}
+            style={{ width: 80 }}
+            status={Number(val) >= 4 ? 'success' : 'active'}
+          />
           <span>{percent(Number(val), 1)}</span>
         </div>
       ),
     },
     {
       key: 'trend',
-      title: 'Trend',
+      title: l.drilldown.channelsTable.trend,
       width: 120,
       filters: [
-        { text: 'Up', value: 'up' },
-        { text: 'Flat', value: 'flat' },
-        { text: 'Down', value: 'down' },
+        { text: l.drilldown.channelsTable.trendUp, value: 'up' },
+        { text: l.drilldown.channelsTable.trendFlat, value: 'flat' },
+        { text: l.drilldown.channelsTable.trendDown, value: 'down' },
       ],
       onFilter: (v, row) => row.trend === v,
-      render: (v) => <Tag color={v === 'up' ? 'success' : v === 'down' ? 'error' : 'default'}>{String(v)}</Tag>,
+      render: (v) => (
+        <Tag color={v === 'up' ? 'success' : v === 'down' ? 'error' : 'default'}>
+          {l.trendLabel[v as 'up' | 'flat' | 'down']}
+        </Tag>
+      ),
     },
     {
       key: 'actions',
@@ -576,7 +762,7 @@ function ChannelsTable({ onPick }: { onPick: (c: ChannelMetric) => void }) {
             if (c) onPick(c)
           }}
         >
-          Details
+          {l.detailsBtn}
         </Button>
       ),
     },
@@ -585,12 +771,12 @@ function ChannelsTable({ onPick }: { onPick: (c: ChannelMetric) => void }) {
   return (
     <>
       <Descriptions
-        title="Channel summary"
+        title={l.drilldown.channelsTable.summaryTitle}
         items={[
-          { label: 'Total Visitors', children: num(totalVisitors) },
-          { label: 'Total Revenue', children: money(totalRevenue) },
-          { label: 'Top Channel', children: 'Organic Search' },
-          { label: 'Best Conversion', children: 'Email (5.2%)' },
+          { label: l.drilldown.channelsTable.totalVisitors, children: num(totalVisitors) },
+          { label: l.drilldown.channelsTable.totalRevenue, children: money(totalRevenue) },
+          { label: l.drilldown.channelsTable.topChannel, children: l.channelTopValue },
+          { label: l.drilldown.channelsTable.bestConversion, children: l.channelBestConvValue },
         ]}
         column={2}
         size="small"
@@ -611,19 +797,42 @@ function ChannelsTable({ onPick }: { onPick: (c: ChannelMetric) => void }) {
   )
 }
 
-function ProductsTable({ onPick }: { onPick: (p: ProductMetric) => void }) {
+function ProductsTable({ l, onPick }: { l: DashboardLocale; onPick: (p: ProductMetric) => void }) {
   const tableData = useMemo(
-    () => topProducts.map((p) => ({ id: String(p.id), data: p as unknown as Record<string, unknown> })),
+    () =>
+      topProducts.map((p) => ({ id: String(p.id), data: p as unknown as Record<string, unknown> })),
     [],
   )
 
   const columns: TableColumn[] = [
-    { key: 'name', title: 'Product', width: 240, sortable: true, fixed: 'left', render: (v) => <strong>{String(v)}</strong> },
-    { key: 'unitsSold', title: 'Units Sold', width: 110, sortable: true, render: (v) => num(Number(v)), aggregate: 'sum' },
-    { key: 'revenue', title: 'Revenue', width: 130, sortable: true, align: 'right', render: (v) => money(Number(v)), aggregate: 'sum' },
+    {
+      key: 'name',
+      title: l.drilldown.productsTable.product,
+      width: 240,
+      sortable: true,
+      fixed: 'left',
+      render: (v) => <strong>{String(v)}</strong>,
+    },
+    {
+      key: 'unitsSold',
+      title: l.drilldown.productsTable.unitsSold,
+      width: 110,
+      sortable: true,
+      render: (v) => num(Number(v)),
+      aggregate: 'sum',
+    },
+    {
+      key: 'revenue',
+      title: l.drilldown.productsTable.revenue,
+      width: 130,
+      sortable: true,
+      align: 'right',
+      render: (v) => money(Number(v)),
+      aggregate: 'sum',
+    },
     {
       key: 'rating',
-      title: 'Rating',
+      title: l.drilldown.productsTable.rating,
       width: 200,
       sortable: true,
       render: (v) => (
@@ -635,7 +844,7 @@ function ProductsTable({ onPick }: { onPick: (p: ProductMetric) => void }) {
     },
     {
       key: 'returnRate',
-      title: 'Return Rate',
+      title: l.drilldown.productsTable.returnRate,
       width: 130,
       sortable: true,
       filterMode: 'advanced',
@@ -643,7 +852,9 @@ function ProductsTable({ onPick }: { onPick: (p: ProductMetric) => void }) {
       onFilter: (v, row) => Number(row.returnRate) <= Number(v),
       render: (v) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ color: Number(v) > 3 ? 'var(--sg-color-error)' : undefined }}>{percent(Number(v), 1)}</span>
+          <span style={{ color: Number(v) > 3 ? 'var(--sg-color-error)' : undefined }}>
+            {percent(Number(v), 1)}
+          </span>
           {Number(v) > 3 && <Badge count={1} color="red" />}
         </div>
       ),
@@ -660,7 +871,7 @@ function ProductsTable({ onPick }: { onPick: (p: ProductMetric) => void }) {
             if (p) onPick(p)
           }}
         >
-          Details
+          {l.detailsBtn}
         </Button>
       ),
     },
@@ -681,50 +892,71 @@ function ProductsTable({ onPick }: { onPick: (p: ProductMetric) => void }) {
   )
 }
 
-function ChannelDetail({ channel }: { channel: ChannelMetric }) {
+function ChannelDetail({ l, channel }: { l: DashboardLocale; channel: ChannelMetric }) {
   const totalVisitors = channelMetrics.reduce((s, c) => s + c.visitors, 0)
   const totalRevenue = channelMetrics.reduce((s, c) => s + c.revenue, 0)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <Descriptions
         items={[
-          { label: 'Channel', children: channel.channel },
-          { label: 'Visitors', children: num(channel.visitors) },
-          { label: 'Revenue', children: money(channel.revenue) },
-          { label: 'Conversion', children: percent(channel.conversion, 1) },
-          { label: 'Trend', children: <Tag color={channel.trend === 'up' ? 'success' : channel.trend === 'down' ? 'error' : 'default'}>{channel.trend}</Tag> },
-          { label: 'Revenue/Visitor', children: money(channel.revenue / channel.visitors) },
+          { label: l.drawers.channel, children: channel.channel },
+          { label: l.drawers.visitors, children: num(channel.visitors) },
+          { label: l.drawers.revenue, children: money(channel.revenue) },
+          { label: l.drawers.conversion, children: percent(channel.conversion, 1) },
+          {
+            label: l.drilldown.channelsTable.trend,
+            children: (
+              <Tag
+                color={
+                  channel.trend === 'up'
+                    ? 'success'
+                    : channel.trend === 'down'
+                      ? 'error'
+                      : 'default'
+                }
+              >
+                {l.trendLabel[channel.trend]}
+              </Tag>
+            ),
+          },
+          {
+            label: l.drawers.revenuePerVisitor,
+            children: money(channel.revenue / channel.visitors),
+          },
         ]}
         column={1}
         size="small"
       />
-      <h4>Traffic Share</h4>
+      <h4>{l.drawers.trafficShare}</h4>
       <Progress percent={Math.round((channel.visitors / totalVisitors) * 100)} status="active" />
-      <h4>Revenue Share</h4>
+      <h4>{l.drawers.revenueShare}</h4>
       <Progress percent={Math.round((channel.revenue / totalRevenue) * 100)} status="success" />
     </div>
   )
 }
 
-function ProductDetail({ product }: { product: ProductMetric }) {
+function ProductDetail({ l, product }: { l: DashboardLocale; product: ProductMetric }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <Descriptions
         items={[
-          { label: 'Product', children: product.name },
-          { label: 'Units Sold', children: num(product.unitsSold) },
-          { label: 'Revenue', children: money(product.revenue) },
-          { label: 'Avg Price', children: money(product.revenue / product.unitsSold) },
-          { label: 'Rating', children: `⭐ ${product.rating}` },
-          { label: 'Return Rate', children: percent(product.returnRate, 1) },
+          { label: l.drawers.product, children: product.name },
+          { label: l.drilldown.productsTable.unitsSold, children: num(product.unitsSold) },
+          { label: l.drawers.revenue, children: money(product.revenue) },
+          { label: l.drawers.avgPrice, children: money(product.revenue / product.unitsSold) },
+          { label: l.drawers.rating, children: `⭐ ${product.rating}` },
+          { label: l.drawers.returnRateLabel, children: percent(product.returnRate, 1) },
         ]}
         column={1}
         size="small"
       />
-      <h4>Rating</h4>
+      <h4>{l.drawers.ratingHeading}</h4>
       <Rate value={product.rating} disabled allowHalf count={5} />
-      <h4>Return Rate Health</h4>
-      <Progress percent={product.returnRate * 10} status={product.returnRate > 3 ? 'error' : product.returnRate > 2 ? 'active' : 'success'} />
+      <h4>{l.drawers.returnRateHealth}</h4>
+      <Progress
+        percent={product.returnRate * 10}
+        status={product.returnRate > 3 ? 'error' : product.returnRate > 2 ? 'active' : 'success'}
+      />
     </div>
   )
 }
@@ -738,35 +970,42 @@ function WidgetTitle({ title, hint }: { title: string; hint?: string }) {
   )
 }
 
-function ServiceList() {
-  if (!serviceHealth.length) return <Empty description="No services" />
+function ServiceList({ l }: { l: DashboardLocale }) {
+  if (!serviceHealth.length) return <Empty description={l.empty.noServices} />
   return (
     <div className="db-list">
-      {serviceHealth.map(s => {
-        const tone = s.status === 'healthy' ? 'success' : s.status === 'degraded' ? 'warning' : 'error'
+      {serviceHealth.map((s) => {
+        const tone =
+          s.status === 'healthy' ? 'success' : s.status === 'degraded' ? 'warning' : 'error'
         const pct = s.uptime
         return (
           <div key={s.name} className="db-list-row">
             <div className="db-list-left">
-              <Tag color={HEALTH_COLOR[s.status]}>{s.status}</Tag>
+              <Tag color={HEALTH_COLOR[s.status]}>{l.healthLabel[s.status]}</Tag>
               <strong>{s.name}</strong>
               <span className="db-muted">{s.region}</span>
             </div>
             <div className="db-list-right">
-              <Progress percent={pct} showInfo={false} status={tone === 'success' ? 'success' : tone === 'warning' ? 'active' : 'error'} />
+              <Progress
+                percent={pct}
+                showInfo={false}
+                status={tone === 'success' ? 'success' : tone === 'warning' ? 'active' : 'error'}
+              />
               <span style={{ fontSize: 12, minWidth: 60, textAlign: 'right' }}>
                 {s.latencyMs}ms · {percent(pct, 2)}
               </span>
               <Dropdown
                 trigger="click"
                 items={[
-                  { key: 'restart', label: 'Restart' },
-                  { key: 'logs', label: 'View logs' },
-                  { key: 'silence', label: 'Silence alerts' },
+                  { key: 'restart', label: l.serviceMenu.restart },
+                  { key: 'logs', label: l.serviceMenu.viewLogs },
+                  { key: 'silence', label: l.serviceMenu.silence },
                 ]}
-                onSelect={(k) => notification.info(`${k}: ${s.name}`)}
+                onSelect={(k) => notification.info(l.serviceToast(String(k), s.name))}
               >
-                <Button size="small" type="text">⋯</Button>
+                <Button size="small" type="text">
+                  ⋯
+                </Button>
               </Dropdown>
             </div>
           </div>
@@ -776,10 +1015,10 @@ function ServiceList() {
   )
 }
 
-function ActivityFeed() {
+function ActivityFeed({ l }: { l: DashboardLocale }) {
   return (
     <div className="db-list">
-      {recentActivity.slice(0, 8).map(a => (
+      {recentActivity.slice(0, 8).map((a) => (
         <div key={a.id} className="db-list-row">
           <div className="db-list-left">
             <Avatar size="small" style={{ background: colorFromString(a.user) }}>
@@ -787,16 +1026,30 @@ function ActivityFeed() {
             </Avatar>
             <div>
               <div style={{ fontSize: 13 }}>
-                <strong>{a.user}</strong> <span className="db-muted">{a.action}</span> {a.target}
+                <strong>{a.user}</strong>{' '}
+                <span className="db-muted">
+                  {l.activityType[a.action as keyof typeof l.activityType] ?? a.action}
+                </span>{' '}
+                {a.target}
               </div>
-              <div className="db-muted" style={{ fontSize: 11 }}>{a.ago}</div>
+              <div className="db-muted" style={{ fontSize: 11 }}>
+                {a.ago}
+              </div>
             </div>
           </div>
-          <Tag color={
-            a.type === 'alert' ? 'error' :
-            a.type === 'deploy' ? 'success' :
-            a.type === 'edit' ? 'warning' : 'default'
-          }>{a.type}</Tag>
+          <Tag
+            color={
+              a.type === 'alert'
+                ? 'error'
+                : a.type === 'deploy'
+                  ? 'success'
+                  : a.type === 'edit'
+                    ? 'warning'
+                    : 'default'
+            }
+          >
+            {l.activityType[a.type]}
+          </Tag>
         </div>
       ))}
     </div>

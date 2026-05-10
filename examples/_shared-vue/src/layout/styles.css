@@ -1,0 +1,468 @@
+/*
+ * Shared example-app shell — Linear/Radix-leaning minimal chrome.
+ *
+ * Mirror of `examples/_shared-react/src/layout/styles.css` for the Vue
+ * adapter. DOM structure and class names are byte-identical so any
+ * future style refactor only has to land once.
+ *
+ * All colours go through `var(--sg-color-*)` tokens (defined by
+ * `@skygraph/styles`). Dark mode is inherited automatically from
+ * `data-sg-theme="dark"` on `<html>`.
+ *
+ * Class prefix is `xshell-` to avoid collisions with the legacy
+ * `.demo-*` and `.hub-*` classes still used by individual demo pages.
+ */
+
+/* ── Root ───────────────────────────────────────────────────────────── */
+
+.xshell {
+  --xshell-header-h: 56px;
+  --xshell-sidebar-w: 280px;
+  --xshell-content-max: 1280px;
+  --xshell-footer-pad-y: 32px;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--sg-color-bg);
+  color: var(--sg-color-text);
+}
+
+.xshell-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: var(--xshell-sidebar-w) 1fr;
+  min-height: 0;
+}
+
+.xshell--no-sidebar .xshell-body {
+  grid-template-columns: 1fr;
+}
+
+.xshell-main {
+  min-width: 0;
+  padding: 0 32px 64px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.xshell-main-inner {
+  width: 100%;
+  max-width: var(--xshell-content-max);
+}
+
+.xshell--flush .xshell-main {
+  padding: 0;
+  min-height: calc(100vh - var(--xshell-header-h));
+}
+
+.xshell--flush .xshell-main-inner {
+  max-width: none;
+  min-height: calc(100vh - var(--xshell-header-h));
+  display: flex;
+  flex-direction: column;
+}
+
+.xshell--flush .xshell-body {
+  align-items: stretch;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+
+.xshell-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--xshell-header-h);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  background: color-mix(in srgb, var(--sg-color-bg) 85%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--sg-color-border);
+}
+
+.xshell-header-burger {
+  all: unset;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: var(--sg-color-text-secondary);
+}
+
+.xshell-header-burger:hover {
+  background: var(--sg-color-bg-hover);
+  color: var(--sg-color-text);
+}
+
+.xshell-logo {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sg-color-text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.xshell-logo-mark {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, var(--sg-color-primary), var(--sg-color-primary-hover));
+}
+
+.xshell-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 12px;
+}
+
+.xshell-nav-item {
+  all: unset;
+  cursor: pointer;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--sg-color-text-secondary);
+  border-radius: 6px;
+  transition:
+    color 0.12s ease,
+    background 0.12s ease;
+  white-space: nowrap;
+}
+
+.xshell-nav-item:hover {
+  color: var(--sg-color-text);
+  background: var(--sg-color-bg-hover);
+}
+
+.xshell-nav-item--active {
+  color: var(--sg-color-text);
+  background: var(--sg-color-bg-hover);
+  font-weight: 500;
+}
+
+.xshell-nav-item-external::after {
+  content: '↗';
+  margin-left: 4px;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.xshell-header-spacer {
+  flex: 1;
+}
+
+.xshell-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.xshell-search input {
+  width: 200px;
+  height: 32px;
+  padding: 0 10px 0 30px;
+  border: 1px solid var(--sg-color-border);
+  border-radius: 6px;
+  background: var(--sg-color-bg-secondary);
+  color: var(--sg-color-text);
+  font-size: 13px;
+  outline: none;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+
+.xshell-search input::placeholder {
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+}
+
+.xshell-search input:focus {
+  border-color: var(--sg-color-primary);
+  background: var(--sg-color-bg);
+}
+
+.xshell-search-icon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+  pointer-events: none;
+}
+
+.xshell-header-extras {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────────── */
+
+.xshell-sidebar {
+  position: sticky;
+  top: var(--xshell-header-h);
+  width: var(--xshell-sidebar-w);
+  height: calc(100vh - var(--xshell-header-h));
+  overflow-y: auto;
+  padding: 16px 0 24px;
+  border-right: 1px solid var(--sg-color-border);
+  background: var(--sg-color-bg);
+}
+
+.xshell-sidebar-section {
+  margin-bottom: 4px;
+}
+
+.xshell-sidebar-section-title {
+  padding: 12px 24px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+}
+
+.xshell-sidebar-item {
+  display: block;
+  padding: 5px 24px 5px 24px;
+  font-size: 13px;
+  color: var(--sg-color-text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition:
+    color 0.12s ease,
+    background 0.12s ease,
+    border-color 0.12s ease;
+  user-select: none;
+}
+
+.xshell-sidebar-item:hover {
+  color: var(--sg-color-text);
+  background: var(--sg-color-bg-hover);
+}
+
+.xshell-sidebar-item--active {
+  color: var(--sg-color-primary);
+  border-left-color: var(--sg-color-primary);
+  font-weight: 500;
+  background: var(--sg-color-primary-bg);
+}
+
+.xshell-sidebar-empty {
+  padding: 20px 24px;
+  font-size: 12px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+}
+
+.xshell-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 25;
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────── */
+
+.xshell-footer {
+  border-top: 1px solid var(--sg-color-border);
+  background: var(--sg-color-bg-secondary);
+  padding: var(--xshell-footer-pad-y) 32px 0;
+  margin-top: 64px;
+}
+
+.xshell-footer-inner {
+  max-width: var(--xshell-content-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px;
+  padding-bottom: var(--xshell-footer-pad-y);
+}
+
+.xshell-footer-col-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+  margin-bottom: 12px;
+}
+
+.xshell-footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.xshell-footer-col a {
+  font-size: 13px;
+  color: var(--sg-color-text-secondary);
+  text-decoration: none;
+  transition: color 0.12s ease;
+}
+
+.xshell-footer-col a:hover {
+  color: var(--sg-color-primary);
+}
+
+.xshell-footer-bottom {
+  max-width: var(--xshell-content-max);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid var(--sg-color-border);
+  font-size: 12px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+  flex-wrap: wrap;
+}
+
+.xshell-footer-version {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--sg-color-border);
+  background: var(--sg-color-bg);
+  color: var(--sg-color-text-secondary);
+}
+
+.xshell-footer-spacer {
+  flex: 1;
+}
+
+/* ── Switchers (theme + language) ───────────────────────────────────── */
+
+.xshell-theme {
+  all: unset;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: var(--sg-color-text-secondary);
+  transition:
+    color 0.12s ease,
+    background 0.12s ease;
+}
+
+.xshell-theme:hover {
+  color: var(--sg-color-text);
+  background: var(--sg-color-bg-hover);
+}
+
+.xshell-lang {
+  display: inline-flex;
+  border: 1px solid var(--sg-color-border);
+  border-radius: 6px;
+  background: var(--sg-color-bg);
+  overflow: hidden;
+}
+
+.xshell-lang-btn {
+  all: unset;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--sg-color-text-secondary);
+  letter-spacing: 0.04em;
+  transition:
+    color 0.12s ease,
+    background 0.12s ease;
+}
+
+.xshell-lang-btn:hover {
+  color: var(--sg-color-text);
+  background: var(--sg-color-bg-hover);
+}
+
+.xshell-lang-btn--active {
+  background: var(--sg-color-primary);
+  color: var(--sg-color-white, #fff);
+}
+
+/* ── Mobile (≤1024px) ───────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .xshell-header-burger {
+    display: inline-flex;
+  }
+
+  .xshell-nav {
+    display: none;
+  }
+
+  .xshell-search input {
+    width: 140px;
+  }
+
+  .xshell-body {
+    grid-template-columns: 1fr;
+  }
+
+  .xshell-sidebar {
+    position: fixed;
+    top: var(--xshell-header-h);
+    left: 0;
+    height: calc(100vh - var(--xshell-header-h));
+    z-index: 26;
+    background: var(--sg-color-bg);
+    transform: translateX(-100%);
+    transition: transform 0.18s ease;
+  }
+
+  .xshell--sidebar-open .xshell-sidebar {
+    transform: translateX(0);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  }
+
+  .xshell--sidebar-open .xshell-sidebar-backdrop {
+    display: block;
+  }
+
+  .xshell-main {
+    padding: 0 20px 48px;
+  }
+
+  .xshell-footer {
+    padding: 24px 20px 0;
+  }
+
+  .xshell-footer-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .xshell-search {
+    display: none;
+  }
+
+  .xshell-footer-inner {
+    grid-template-columns: 1fr;
+  }
+}

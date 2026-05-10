@@ -12,6 +12,16 @@ export default defineConfig({
     alias: {
       '@skygraph/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
       '@skygraph/vue': path.resolve(__dirname, '../../packages/vue/src/index.ts'),
+      '@skygraph-examples/shared': path.resolve(__dirname, '../_shared/src/index.ts'),
+      '@skygraph-examples/shared-vue/layout/styles.css': path.resolve(
+        __dirname,
+        '../_shared-vue/src/layout/styles.css',
+      ),
+      '@skygraph-examples/shared-vue/layout': path.resolve(
+        __dirname,
+        '../_shared-vue/src/layout/index.ts',
+      ),
+      '@skygraph-examples/shared-vue': path.resolve(__dirname, '../_shared-vue/src/index.ts'),
     },
   },
   server: {

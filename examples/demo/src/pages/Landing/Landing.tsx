@@ -5,7 +5,6 @@ import {
   TEST_COUNT,
   ENGINE_COUNT,
   SHOWCASE_COUNT,
-  SHOWCASES_URL,
 } from '@skygraph-examples/shared'
 import type { ChangelogRound, ChangelogSubsection } from '@skygraph-examples/shared'
 import changelogMd from '../../../../../CHANGELOG.md?raw'
@@ -16,7 +15,7 @@ const SHOWCASE_PREVIEWS = [
   { key: 'crm', icon: '👥', titleKey: 'CRM Dashboard' },
   { key: 'dashboard', icon: '📈', titleKey: 'Operations Dashboard' },
   { key: 'workflow-editor', icon: '🔀', titleKey: 'Workflow Editor' },
-  { key: 'analytics', icon: '📊', titleKey: 'Analytics Workbench' },
+  { key: 'table-kitchen-sink', icon: '🍳', titleKey: 'Table — Kitchen Sink' },
 ] as const
 
 const MINIMAL_EXAMPLE = `import { Form, Field, Input, SubmitButton } from '@skygraph/react'
@@ -48,7 +47,7 @@ export function Landing({ onNavigate }: LandingProps) {
       <StatsRow t={t} />
       <FeatureGrid t={t} onNavigate={onNavigate} />
       <WhatsNew t={t} round={latestRound} onNavigate={onNavigate} />
-      <ShowcasesPreview t={t} />
+      <ShowcasesPreview t={t} onNavigate={onNavigate} />
       <QuickInstall t={t} />
     </div>
   )
@@ -71,14 +70,13 @@ function Hero({ onNavigate }: { onNavigate: (key: string) => void }) {
         >
           {t.landing.ctaPrimary} →
         </button>
-        <a
+        <button
+          type="button"
           className="landing-cta-secondary"
-          href={SHOWCASES_URL}
-          target="_blank"
-          rel="noreferrer noopener"
+          onClick={() => onNavigate('showcases')}
         >
           {t.landing.ctaSecondary}
-        </a>
+        </button>
       </div>
       <div className="landing-hero-install">
         <span className="landing-hero-install-prompt">$</span>
@@ -220,9 +218,7 @@ function SubsectionCard({ subsection }: { subsection: ChangelogSubsection }) {
   }, [subsection])
   return (
     <div className="landing-changelog-sub">
-      <div className="landing-changelog-sub-title">
-        {stripInlineMarkdown(subsection.title)}
-      </div>
+      <div className="landing-changelog-sub-title">{stripInlineMarkdown(subsection.title)}</div>
       <div className="landing-changelog-sub-body">{summary}</div>
     </div>
   )
@@ -230,7 +226,13 @@ function SubsectionCard({ subsection }: { subsection: ChangelogSubsection }) {
 
 // ---------------------------------------------------------------------------
 
-function ShowcasesPreview({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
+function ShowcasesPreview({
+  t,
+  onNavigate,
+}: {
+  t: ReturnType<typeof useI18n>['t']
+  onNavigate: (key: string) => void
+}) {
   return (
     <section className="landing-block">
       <h2 className="landing-section-title">{t.landing.showcasesTitle}</h2>
@@ -240,9 +242,11 @@ function ShowcasesPreview({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
           <a
             key={s.key}
             className="landing-showcase"
-            href={`${SHOWCASES_URL}/src/showcases/${s.key}`}
-            target="_blank"
-            rel="noreferrer noopener"
+            href={`#/showcases/${s.key}`}
+            onClick={(ev) => {
+              ev.preventDefault()
+              onNavigate(`showcases/${s.key}`)
+            }}
           >
             <span className="landing-showcase-icon">{s.icon}</span>
             <span className="landing-showcase-title">{s.titleKey}</span>
@@ -252,9 +256,11 @@ function ShowcasesPreview({ t }: { t: ReturnType<typeof useI18n>['t'] }) {
       </div>
       <a
         className="landing-link"
-        href={SHOWCASES_URL}
-        target="_blank"
-        rel="noreferrer noopener"
+        href="#/showcases"
+        onClick={(ev) => {
+          ev.preventDefault()
+          onNavigate('showcases')
+        }}
       >
         {t.landing.showcasesLink}
       </a>
@@ -267,11 +273,11 @@ function showcaseDescFor(key: string): string {
     case 'crm':
       return 'Contacts table + drag-and-drop pipeline + activity timeline.'
     case 'dashboard':
-      return 'Live KPI grid with mixed charts, service health, activity feed.'
+      return 'Live KPI grid with mixed charts, drill-down, layout editor.'
     case 'workflow-editor':
       return 'Visio-like flowchart on top of GraphEngine.'
-    case 'analytics':
-      return 'Drill-down KPI tables, channels, products and alerts.'
+    case 'table-kitchen-sink':
+      return 'Sorting, filtering, grouping, virtual scroll, export, print.'
     default:
       return ''
   }

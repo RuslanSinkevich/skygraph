@@ -17,249 +17,13 @@ a {
   color: inherit;
 }
 
-/* ── App layout ───────────────────────────────────────────────────────── */
-
-.dv-app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.dv-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--sg-color-bg);
-  border-bottom: 1px solid var(--sg-color-border-secondary);
-  backdrop-filter: blur(8px);
-}
-
-.dv-header-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 20px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.dv-header-brand {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--sg-color-text);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.dv-header-brand-tag {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--sg-color-primary);
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: var(--sg-color-primary-bg);
-}
-
-.dv-header-nav {
-  display: flex;
-  gap: 4px;
-}
-
-.dv-header-nav-item {
-  text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  color: var(--sg-color-text-secondary);
-}
-
-.dv-header-nav-item:hover {
-  color: var(--sg-color-text);
-  background: var(--sg-color-bg-hover, var(--sg-color-bg-secondary));
-}
-
-.dv-header-nav-item-active {
-  color: var(--sg-color-primary);
-  background: var(--sg-color-primary-bg);
-}
-
-.dv-header-extras {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-left: auto;
-}
-
-.dv-header-search {
-  border: 1px solid var(--sg-color-border);
-  background: var(--sg-color-bg-secondary);
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 13px;
-  color: var(--sg-color-text);
-  width: 220px;
-}
-
-.dv-header-search:focus {
-  outline: 2px solid var(--sg-color-primary);
-  outline-offset: -1px;
-}
-
-/* Theme toggle */
-.dv-theme-toggle,
-.dv-lang-btn {
-  all: unset;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  padding: 6px 8px;
-  color: var(--sg-color-text-secondary);
-  transition: all 0.15s;
-  border: 1px solid transparent;
-}
-
-.dv-theme-toggle:hover,
-.dv-lang-btn:hover {
-  color: var(--sg-color-text);
-  background: var(--sg-color-bg-secondary);
-}
-
-.dv-lang {
-  display: inline-flex;
-  border: 1px solid var(--sg-color-border-secondary);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.dv-lang-btn {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 6px 10px;
-  border-radius: 0;
-  border: none;
-}
-
-.dv-lang-btn-active {
-  background: var(--sg-color-primary);
-  color: var(--sg-color-white, #fff);
-}
-
-.dv-lang-btn-active:hover {
-  background: var(--sg-color-primary);
-  color: var(--sg-color-white, #fff);
-}
-
-/* ── Shell + Sidebar ──────────────────────────────────────────────────── */
-
-.dv-shell {
-  flex: 1;
-  display: flex;
-  max-width: 1280px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.dv-shell-aside {
-  width: 240px;
-  flex-shrink: 0;
-  border-right: 1px solid var(--sg-color-border-secondary);
-  padding: 20px 12px;
-  position: sticky;
-  top: 56px;
-  align-self: flex-start;
-  max-height: calc(100vh - 56px);
-  overflow-y: auto;
-}
-
-.dv-shell-main {
-  flex: 1;
-  padding: 32px 28px 48px;
-  min-width: 0;
-}
-
-.dv-shell-main-full {
-  padding: 0;
-}
-
-.dv-sidebar-section + .dv-sidebar-section {
-  margin-top: 18px;
-}
-
-.dv-sidebar-section-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
-  padding: 0 10px;
-  margin-bottom: 6px;
-}
-
-.dv-sidebar-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.dv-sidebar-link {
-  display: block;
-  padding: 6px 10px;
-  font-size: 13px;
-  color: var(--sg-color-text-secondary);
-  text-decoration: none;
-  border-radius: 6px;
-  margin-bottom: 1px;
-}
-
-.dv-sidebar-link:hover {
-  color: var(--sg-color-text);
-  background: var(--sg-color-bg-secondary);
-}
-
-.dv-sidebar-link-active {
-  color: var(--sg-color-primary);
-  background: var(--sg-color-primary-bg);
-  font-weight: 500;
-}
-
-.dv-sidebar-empty {
-  padding: 8px 10px;
-  font-size: 13px;
-  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
-}
-
-/* ── Footer ───────────────────────────────────────────────────────────── */
-
-.dv-footer {
-  border-top: 1px solid var(--sg-color-border-secondary);
-  padding: 18px 24px;
-  font-size: 12px;
-  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
-}
-
-.dv-footer-sep {
-  opacity: 0.5;
-}
-
-.dv-footer a {
-  color: var(--sg-color-primary);
-  text-decoration: none;
-}
-
-.dv-footer a:hover {
-  text-decoration: underline;
-}
+/*
+ * Layout chrome (header / sidebar / footer / theme + lang switchers)
+ * lives in `@skygraph-examples/shared-vue/layout/styles.css` (`xshell-*`
+ * classes). The remainder of this file is the documentation-page chrome
+ * (`.dv-doc-*`, `.dv-demo-*`, `.dv-props-*`, `.dv-landing-*`) consumed
+ * by `ComponentDoc.vue`, `DemoBox.vue`, `PropsTable.vue`, `Landing.vue`.
+ */
 
 /* ── ComponentDoc ─────────────────────────────────────────────────────── */
 
@@ -523,7 +287,11 @@ a {
   font-size: 56px;
   font-weight: 800;
   margin: 0 0 12px;
-  background: linear-gradient(120deg, var(--sg-color-primary), color-mix(in srgb, var(--sg-color-primary) 50%, #8a2be2 50%));
+  background: linear-gradient(
+    120deg,
+    var(--sg-color-primary),
+    color-mix(in srgb, var(--sg-color-primary) 50%, #8a2be2 50%)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -642,9 +410,6 @@ a {
 }
 
 @media (max-width: 720px) {
-  .dv-shell-aside {
-    display: none;
-  }
   .dv-landing-hero h1 {
     font-size: 40px;
   }
@@ -653,8 +418,5 @@ a {
   }
   .dv-landing-features {
     grid-template-columns: 1fr;
-  }
-  .dv-header-search {
-    width: 140px;
   }
 }

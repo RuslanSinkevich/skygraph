@@ -2,21 +2,28 @@ import { useState, useMemo } from 'react'
 import { Select, Tag, Timeline } from '@skygraph/react'
 import { activities, contacts } from './data'
 import type { Activity } from './data'
-import { Toolbar } from '../_shared'
+import { Toolbar, useAppLocale } from '../_shared'
 
 const typeIcons: Record<Activity['type'], string> = {
-  call: '📞', email: '📧', meeting: '🤝', note: '📝',
+  call: '📞',
+  email: '📧',
+  meeting: '🤝',
+  note: '📝',
 }
 
 const colors: Record<Activity['type'], string> = {
-  call: 'blue', email: 'green', meeting: 'orange', note: 'gray',
+  call: 'blue',
+  email: 'green',
+  meeting: 'orange',
+  note: 'gray',
 }
 
 export function ActivityTab() {
+  const av = useAppLocale('crm').activity
   const [type, setType] = useState<string>('all')
 
   const filtered = useMemo(
-    () => type === 'all' ? activities : activities.filter(a => a.type === type),
+    () => (type === 'all' ? activities : activities.filter((a) => a.type === type)),
     [type],
   )
 
@@ -28,20 +35,20 @@ export function ActivityTab() {
             value={type}
             onChange={(v) => setType(String(v))}
             options={[
-              { label: 'All Types', value: 'all' },
-              { label: '📞 Calls', value: 'call' },
-              { label: '📧 Emails', value: 'email' },
-              { label: '🤝 Meetings', value: 'meeting' },
-              { label: '📝 Notes', value: 'note' },
+              { label: av.typeFilterAll, value: 'all' },
+              { label: `📞 ${av.typeFilters.call}`, value: 'call' },
+              { label: `📧 ${av.typeFilters.email}`, value: 'email' },
+              { label: `🤝 ${av.typeFilters.meeting}`, value: 'meeting' },
+              { label: `📝 ${av.typeFilters.note}`, value: 'note' },
             ]}
             style={{ width: 160 }}
           />
         }
-        actions={<Tag>{filtered.length} activities</Tag>}
+        actions={<Tag>{av.countLabel(filtered.length)}</Tag>}
       />
       <Timeline
-        items={filtered.slice(0, 30).map(a => {
-          const contact = contacts.find(c => c.id === a.contactId)
+        items={filtered.slice(0, 30).map((a) => {
+          const contact = contacts.find((c) => c.id === a.contactId)
           return {
             children: (
               <div>

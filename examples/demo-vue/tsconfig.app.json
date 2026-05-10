@@ -14,8 +14,18 @@
     "paths": {
       "@skygraph/core": ["../../packages/core/src/index.ts"],
       "@skygraph/vue": ["../../packages/vue/src/index.ts"],
-      "@skygraph/styles": ["../../packages/styles/index.d.ts"]
+      "@skygraph/styles": ["../../packages/styles/index.d.ts"],
+      "@skygraph-examples/shared": ["../_shared/src/index.ts"],
+      "@skygraph-examples/shared-vue": ["../_shared-vue/src/index.ts"],
+      "@skygraph-examples/shared-vue/layout": ["../_shared-vue/src/layout/index.ts"],
+      "vue": ["./node_modules/vue"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "../_shared-vue/src/**/*.ts",
+    "../_shared-vue/src/**/*.vue"
+  ]
 }

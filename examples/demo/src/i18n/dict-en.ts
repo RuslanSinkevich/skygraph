@@ -1,4 +1,5 @@
 import type { DemoDict } from './types'
+import { showcasesLocaleEn } from '@skygraph-examples/shared'
 
 export const en: DemoDict = {
   app: {
@@ -17,14 +18,11 @@ export const en: DemoDict = {
 
   features: {
     reactiveCoreTitle: 'Reactive Core',
-    reactiveCoreDesc:
-      'Fine-grained subscriptions. Batch updates. No re-render waterfalls.',
+    reactiveCoreDesc: 'Fine-grained subscriptions. Batch updates. No re-render waterfalls.',
     componentsTitle: 'Components',
-    componentsDesc:
-      'Forms, tables, trees, modals, pickers — production-ready out of the box.',
+    componentsDesc: 'Forms, tables, trees, modals, pickers — production-ready out of the box.',
     zeroRuntimeTitle: 'Zero Runtime CSS',
-    zeroRuntimeDesc:
-      'Pure CSS variables. Dark mode in one attribute. No styled-components.',
+    zeroRuntimeDesc: 'Pure CSS variables. Dark mode in one attribute. No styled-components.',
   },
 
   overview: {
@@ -127,13 +125,13 @@ export const en: DemoDict = {
     headlessHeading: 'Headless Mode',
     headlessLead:
       'Need full control over styling? Pass unstyled to any component to strip all SkyGraph CSS. You keep the reactive behavior and accessibility — bring your own classes:',
-    headlessFooter: 'Headless mode is per-component — mix styled and unstyled freely in the same app.',
+    headlessFooter:
+      'Headless mode is per-component — mix styled and unstyled freely in the same app.',
   },
 
   designTokens: {
     title: 'Design Tokens',
-    lead:
-      'Every SkyGraph visual is driven by a CSS custom property. Override a token on `:root` for app-wide changes, on a wrapper for a subtree, or on a single component instance.',
+    lead: 'Every SkyGraph visual is driven by a CSS custom property. Override a token on `:root` for app-wide changes, on a wrapper for a subtree, or on a single component instance.',
     searchPlaceholder: 'Search tokens (e.g. radius, primary, shadow, table)…',
     searchAriaLabel: 'Search tokens',
     summaryGlobal: 'global tokens',
@@ -188,8 +186,7 @@ export const en: DemoDict = {
     basicFormLead:
       "SkyGraph's reactive core powers forms out of the box — validation, dependencies, and dynamic fields with zero boilerplate:",
     individualComponents: 'Using Individual Components',
-    individualComponentsLead:
-      'Every component works standalone — no provider or context required:',
+    individualComponentsLead: 'Every component works standalone — no provider or context required:',
     whatsNext: "What's Next",
     cardThemingTitle: 'Theming',
     cardThemingDesc: 'CSS variables, dark mode, custom palettes',
@@ -203,12 +200,15 @@ export const en: DemoDict = {
     navComponents: 'Components',
     navShowcases: 'Showcases',
     navGuide: 'Guide',
+    navBenchmarks: 'Benchmarks',
     navRoadmap: 'Roadmap',
     navAbout: 'About',
     navGithub: 'GitHub',
     burgerAria: 'Open navigation',
     themeAria: 'Toggle theme',
   },
+
+  showcases: showcasesLocaleEn,
 
   footer: {
     columnDocs: 'Documentation',
@@ -248,32 +248,26 @@ export const en: DemoDict = {
     featureReactiveCoreDesc:
       'Path-based store, transactions, batched notifies, computed values with cycle detection.',
     featureEnginesTitle: 'Domain engines',
-    featureEnginesDesc:
-      'Form, Table, Tree, Virtual, Graph, Calendar — six engines on one store.',
+    featureEnginesDesc: 'Form, Table, Tree, Virtual, Graph, Calendar — six engines on one store.',
     featurePrintTitle: 'Print & export',
-    featurePrintDesc:
-      'ref.print() + SVG/PNG export for Charts, Diagram and Table.',
+    featurePrintDesc: 'ref.print() + SVG/PNG export for Charts, Diagram and Table.',
     featureChartsTitle: 'Charts UX',
     featureChartsDesc:
       'Responsive SVG, brushing, crosshair, animations, hover toolbar, context menu.',
     featureDiagramTitle: 'Diagram UX',
-    featureDiagramDesc:
-      'Multi-select, lasso, hover actions, orthogonal routing, undo/redo.',
+    featureDiagramDesc: 'Multi-select, lasso, hover actions, orthogonal routing, undo/redo.',
     featureStylingTitle: 'Styling contract',
-    featureStylingDesc:
-      'Three-layer tokens, slots API, dark mode, zero runtime CSS-in-JS.',
+    featureStylingDesc: 'Three-layer tokens, slots API, dark mode, zero runtime CSS-in-JS.',
     whatsNewTitle: "What's new",
     whatsNewLink: 'View full changelog →',
     showcasesTitle: 'Real-world apps',
-    showcasesSub:
-      'Mini-applications composed from @skygraph/react — fake data, real components.',
-    showcasesLink: 'View all 14 showcases →',
+    showcasesSub: 'Mini-applications composed from @skygraph/react — fake data, real components.',
+    showcasesLink: 'View all 12 showcases →',
   },
 
   roadmap: {
     title: 'Roadmap',
-    lead:
-      'Live snapshot of TODO.md. Closed items are tagged with the round that landed them; open items are candidates for upcoming streams.',
+    lead: 'Live snapshot of TODO.md. Closed items are tagged with the round that landed them; open items are candidates for upcoming streams.',
     statClosed: 'closed',
     statOpen: 'open',
     statTotal: 'total',
@@ -294,20 +288,17 @@ export const en: DemoDict = {
     licenseValue: 'MIT',
     architectureLink: 'Architecture →',
     skyPlatformTitle: 'Sky platform',
-    skyPlatformLead:
-      'Three coupled projects sharing one design system and one data model.',
+    skyPlatformLead: 'Three coupled projects sharing one design system and one data model.',
     skycodeTitle: 'Skycode',
     skycodeDesc: 'AI-augmented IDE — VS Code fork with the Skycode assistant.',
     skyforkTitle: 'SkyFork',
     skyforkDesc: 'Codebase orchestration — branch hub, agent runner, automation.',
     skygraphTitle: 'SkyGraph',
-    skygraphDesc:
-      'This library — the UI / data foundation underneath every Sky surface.',
+    skygraphDesc: 'This library — the UI / data foundation underneath every Sky surface.',
     multiFrameworkTitle: 'Multi-framework — coming soon',
     multiFrameworkLead:
       'The core engine and the styling contract are framework-agnostic. Adapters in flight:',
     multiFrameworkVue: 'Vue 3 — Composition-API bindings on top of the core store.',
-    multiFrameworkAngular:
-      'Angular — signals-based store integration, same components.',
+    multiFrameworkAngular: 'Angular — signals-based store integration, same components.',
   },
 }

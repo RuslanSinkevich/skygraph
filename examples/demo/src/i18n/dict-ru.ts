@@ -1,4 +1,5 @@
 import type { DemoDict } from './types'
+import { showcasesLocaleRu } from '@skygraph-examples/shared'
 
 export const ru: DemoDict = {
   app: {
@@ -17,11 +18,9 @@ export const ru: DemoDict = {
 
   features: {
     reactiveCoreTitle: 'Реактивное ядро',
-    reactiveCoreDesc:
-      'Точечные подписки. Батчинг обновлений. Без каскадных ререндеров.',
+    reactiveCoreDesc: 'Точечные подписки. Батчинг обновлений. Без каскадных ререндеров.',
     componentsTitle: 'Компоненты',
-    componentsDesc:
-      'Формы, таблицы, деревья, модалки, пикеры — готовы к продакшену.',
+    componentsDesc: 'Формы, таблицы, деревья, модалки, пикеры — готовы к продакшену.',
     zeroRuntimeTitle: 'CSS без рантайма',
     zeroRuntimeDesc:
       'Только CSS-переменные. Тёмная тема — один атрибут. Никакого styled-components.',
@@ -98,8 +97,7 @@ export const ru: DemoDict = {
 
   theming: {
     title: 'Темизация',
-    lead:
-      'SkyGraph использует трёхслойную систему CSS-переменных. Переопределите любой слой, чтобы создать свою тему — без шага сборки и без рантайма JS.',
+    lead: 'SkyGraph использует трёхслойную систему CSS-переменных. Переопределите любой слой, чтобы создать свою тему — без шага сборки и без рантайма JS.',
     threeLayersHeading: 'Три слоя',
     colLayer: 'Слой',
     colPrefix: 'Префикс',
@@ -134,8 +132,7 @@ export const ru: DemoDict = {
 
   designTokens: {
     title: 'Дизайн-токены',
-    lead:
-      'Каждый визуал SkyGraph управляется CSS-переменной. Переопределите токен на `:root` для изменений на уровне всего приложения, на обёртке — для поддерева, или на одном инстансе компонента.',
+    lead: 'Каждый визуал SkyGraph управляется CSS-переменной. Переопределите токен на `:root` для изменений на уровне всего приложения, на обёртке — для поддерева, или на одном инстансе компонента.',
     searchPlaceholder: 'Поиск токенов (например, radius, primary, shadow, table)…',
     searchAriaLabel: 'Поиск токенов',
     summaryGlobal: 'глобальных токенов',
@@ -205,12 +202,15 @@ export const ru: DemoDict = {
     navComponents: 'Компоненты',
     navShowcases: 'Кейсы',
     navGuide: 'Руководство',
+    navBenchmarks: 'Бенчмарки',
     navRoadmap: 'Roadmap',
     navAbout: 'О проекте',
     navGithub: 'GitHub',
     burgerAria: 'Открыть навигацию',
     themeAria: 'Переключить тему',
   },
+
+  showcases: showcasesLocaleRu,
 
   footer: {
     columnDocs: 'Документация',
@@ -253,29 +253,25 @@ export const ru: DemoDict = {
     featureEnginesDesc:
       'Form, Table, Tree, Virtual, Graph, Calendar — шесть движков поверх одного store.',
     featurePrintTitle: 'Печать и экспорт',
-    featurePrintDesc:
-      'ref.print() + SVG/PNG-экспорт для Charts, Diagram и Table.',
+    featurePrintDesc: 'ref.print() + SVG/PNG-экспорт для Charts, Diagram и Table.',
     featureChartsTitle: 'Charts UX',
     featureChartsDesc:
       'Responsive SVG, brushing, crosshair, анимации, hover-тулбар, контекстное меню.',
     featureDiagramTitle: 'Diagram UX',
-    featureDiagramDesc:
-      'Множественный выбор, lasso, hover-actions, orthogonal routing, undo/redo.',
+    featureDiagramDesc: 'Множественный выбор, lasso, hover-actions, orthogonal routing, undo/redo.',
     featureStylingTitle: 'Стилевой контракт',
-    featureStylingDesc:
-      'Трёхслойные токены, slots API, тёмная тема, zero runtime CSS-in-JS.',
+    featureStylingDesc: 'Трёхслойные токены, slots API, тёмная тема, zero runtime CSS-in-JS.',
     whatsNewTitle: 'Что нового',
     whatsNewLink: 'Полный changelog →',
     showcasesTitle: 'Реальные приложения',
     showcasesSub:
       'Мини-приложения, собранные на @skygraph/react — фейковые данные, настоящие компоненты.',
-    showcasesLink: 'Смотреть все 14 кейсов →',
+    showcasesLink: 'Смотреть все 12 кейсов →',
   },
 
   roadmap: {
     title: 'Roadmap',
-    lead:
-      'Живой срез TODO.md. Закрытые пункты помечены раундом, в котором приехали; открытые — кандидаты в ближайшие стримы.',
+    lead: 'Живой срез TODO.md. Закрытые пункты помечены раундом, в котором приехали; открытые — кандидаты в ближайшие стримы.',
     statClosed: 'закрыто',
     statOpen: 'открыто',
     statTotal: 'всего',
@@ -296,21 +292,16 @@ export const ru: DemoDict = {
     licenseValue: 'MIT',
     architectureLink: 'Архитектура →',
     skyPlatformTitle: 'Платформа Sky',
-    skyPlatformLead:
-      'Три связанных проекта на одной дизайн-системе и одной модели данных.',
+    skyPlatformLead: 'Три связанных проекта на одной дизайн-системе и одной модели данных.',
     skycodeTitle: 'Skycode',
     skycodeDesc: 'AI-IDE — форк VS Code со встроенным ассистентом Skycode.',
     skyforkTitle: 'SkyFork',
-    skyforkDesc:
-      'Оркестрация кодовой базы — branch-хаб, agent runner, автоматизация.',
+    skyforkDesc: 'Оркестрация кодовой базы — branch-хаб, agent runner, автоматизация.',
     skygraphTitle: 'SkyGraph',
     skygraphDesc: 'Эта библиотека — UI/data-основа любого Sky-интерфейса.',
     multiFrameworkTitle: 'Multi-framework — скоро',
-    multiFrameworkLead:
-      'Ядро и стилевой контракт фреймворк-независимы. Адаптеры в работе:',
-    multiFrameworkVue:
-      'Vue 3 — биндинги Composition API поверх того же ядра.',
-    multiFrameworkAngular:
-      'Angular — интеграция через signals, те же компоненты.',
+    multiFrameworkLead: 'Ядро и стилевой контракт фреймворк-независимы. Адаптеры в работе:',
+    multiFrameworkVue: 'Vue 3 — биндинги Composition API поверх того же ядра.',
+    multiFrameworkAngular: 'Angular — интеграция через signals, те же компоненты.',
   },
 }

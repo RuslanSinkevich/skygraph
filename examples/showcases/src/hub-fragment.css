@@ -1,0 +1,197 @@
+/* Hub + showcase chrome (embeddable in React demo without full app.css body reset). */
+
+/* ── Hub layout ─────────────────────────────────────────────────────── */
+
+.hub {
+  padding: 32px 0 64px;
+}
+
+.hub h1 {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.hub-sub {
+  font-size: 14px;
+  color: var(--sg-color-text-secondary);
+  margin-bottom: 24px;
+  max-width: 720px;
+  line-height: 1.6;
+}
+
+.hub-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.hub-search {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--sg-color-bg);
+  color: var(--sg-color-text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.hub-search:focus {
+  border-color: var(--sg-color-primary);
+}
+
+.hub-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hub-cat {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--sg-color-border);
+  background: var(--sg-color-bg);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--sg-color-text-secondary);
+  transition:
+    color 0.12s ease,
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+
+.hub-cat:hover {
+  color: var(--sg-color-text);
+  border-color: var(--sg-color-text-secondary);
+}
+
+.hub-cat--active {
+  background: var(--sg-color-primary);
+  color: var(--sg-color-white, #fff);
+  border-color: var(--sg-color-primary);
+}
+
+.hub-cat-count {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.hub-empty {
+  padding: 60px 0;
+  text-align: center;
+  color: var(--sg-color-text-secondary);
+  border: 1px dashed var(--sg-color-border-secondary);
+  border-radius: 8px;
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.hub-card {
+  all: unset;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--sg-color-border);
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  background: var(--sg-color-bg);
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+
+.hub-card:hover {
+  border-color: var(--sg-color-text-secondary);
+  background: var(--sg-color-bg-hover);
+}
+
+.hub-card-icon {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.hub-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: var(--sg-color-text);
+}
+
+.hub-card p {
+  font-size: 13px;
+  color: var(--sg-color-text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.hub-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.hub-card-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--sg-color-bg-secondary);
+  color: var(--sg-color-text-secondary);
+}
+
+/* ── Showcase shell ─────────────────────────────────────────────────── */
+
+.showcase-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.showcase-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  height: 48px;
+  background: var(--sg-color-bg-secondary);
+  border-bottom: 1px solid var(--sg-color-border-secondary);
+  flex-shrink: 0;
+}
+
+.showcase-back {
+  all: unset;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--sg-color-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.showcase-back:hover {
+  text-decoration: underline;
+}
+
+.showcase-topbar-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.showcase-body {
+  flex: 1;
+  display: flex;
+}

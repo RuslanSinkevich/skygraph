@@ -1,11 +1,21 @@
 import { useState, useMemo } from 'react'
 import {
-  Table, Tag, Button, Modal, Form, Field, InputNumber, Select, Segmented, Progress, notification,
+  Table,
+  Tag,
+  Button,
+  Modal,
+  Form,
+  Field,
+  InputNumber,
+  Select,
+  Segmented,
+  Progress,
+  notification,
 } from '@skygraph/react'
 import type { TableColumn } from '@skygraph/react'
 import { products as initial } from './data'
 import type { Product } from './data'
-import { Toolbar, useFilteredList, money, statusColor } from '../_shared'
+import { Toolbar, useFilteredList, statusColor, useAppLocale } from '../_shared'
 import { emojiForProduct } from './common'
 
 type StockBucket = 'all' | 'out' | 'low' | 'healthy'
@@ -21,64 +31,88 @@ function bucketColor(b: Exclude<StockBucket, 'all'>): string {
 }
 
 export function InventoryTab() {
+  const inv = useAppLocale('ecommerce').inventory
   const [products, setProducts] = useState(initial)
   const [search, setSearch] = useState('')
   const [bucket, setBucket] = useState<StockBucket>('all')
   const [restock, setRestock] = useState<Product | null>(null)
 
   const buckets = useMemo(() => {
-    const out = products.filter(p => bucketOf(p) === 'out').length
-    const low = products.filter(p => bucketOf(p) === 'low').length
-    const healthy = products.filter(p => bucketOf(p) === 'healthy').length
+    const out = products.filter((p) => bucketOf(p) === 'out').length
+    const low = products.filter((p) => bucketOf(p) === 'low').length
+    const healthy = products.filter((p) => bucketOf(p) === 'healthy').length
     return { out, low, healthy, total: products.length }
   }, [products])
 
   const visible = useMemo(
-    () => products.filter(p => bucket === 'all' || bucketOf(p) === bucket),
+    () => products.filter((p) => bucket === 'all' || bucketOf(p) === bucket),
     [products, bucket],
   )
 
   const filtered = useFilteredList(visible, search, ['name', 'sku', 'brand'])
 
   const tableData = useMemo(
-    () => filtered.map(p => ({ id: p.id, data: p as unknown as Record<string, unknown> })),
+    () => filtered.map((p) => ({ id: p.id, data: p as unknown as Record<string, unknown> })),
     [filtered],
   )
 
   const columns: TableColumn[] = [
     {
-      key: 'name', title: 'Product', width: 280, sortable: true,
+      key: 'name',
+      title: inv.columns.product,
+      width: 280,
+      sortable: true,
       render: (val, row) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 24 }}>{emojiForProduct(String(val), String(row.category))}</span>
           <div>
             <div style={{ fontWeight: 500 }}>{String(val)}</div>
-            <div style={{ fontSize: 11, color: 'var(--sg-color-text-secondary)', fontFamily: 'monospace' }}>
+            <div
+              style={{
+                fontSize: 11,
+                color: 'var(--sg-color-text-secondary)',
+                fontFamily: 'monospace',
+              }}
+            >
               {String(row.sku)}
             </div>
           </div>
         </div>
       ),
     },
-    { key: 'brand', title: 'Brand', width: 120, sortable: true },
-    { key: 'category', title: 'Category', width: 130, sortable: true },
+    { key: 'brand', title: inv.columns.brand, width: 120, sortable: true },
+    { key: 'category', title: inv.columns.category, width: 130, sortable: true },
     {
-      key: 'stock', title: 'On Hand', width: 100, sortable: true, align: 'right',
+      key: 'stock',
+      title: inv.columns.onHand,
+      width: 100,
+      sortable: true,
+      align: 'right',
       render: (val, row) => {
         const b = bucketOf(row as unknown as Product)
         return <Tag color={bucketColor(b)}>{Number(val)}</Tag>
       },
     },
     {
-      key: 'reserved', title: 'Reserved', width: 100, sortable: true, align: 'right',
+      key: 'reserved',
+      title: inv.columns.reserved,
+      width: 100,
+      sortable: true,
+      align: 'right',
       render: (val) => Number(val).toLocaleString(),
     },
     {
-      key: 'available', title: 'Available', width: 110, sortable: true, align: 'right',
+      key: 'available',
+      title: inv.columns.available,
+      width: 110,
+      sortable: true,
+      align: 'right',
       render: (val) => <strong>{Number(val).toLocaleString()}</strong>,
     },
     {
-      key: 'health', title: 'Health', width: 130,
+      key: 'health',
+      title: inv.columns.health,
+      width: 130,
       render: (_, row) => {
         const stock = Number(row.stock)
         const pct = Math.min(100, Math.round((stock / 100) * 100))
@@ -87,72 +121,98 @@ export function InventoryTab() {
       },
     },
     {
-      key: 'status', title: 'Status', width: 100,
-      render: (val) => <Tag color={statusColor(String(val))}>{String(val)}</Tag>,
+      key: 'status',
+      title: inv.columns.status,
+      width: 100,
+      render: (val) => (
+        <Tag color={statusColor(String(val))}>{inv.statusLabel[String(val)] ?? String(val)}</Tag>
+      ),
     },
     {
-      key: 'actions', title: '', width: 100,
+      key: 'actions',
+      title: '',
+      width: 100,
       render: (_, row) => (
-        <Button size="small" onClick={() => {
-          const p = products.find(x => x.id === String(row.id))
-          if (p) setRestock(p)
-        }}>Restock</Button>
+        <Button
+          size="small"
+          onClick={() => {
+            const p = products.find((x) => x.id === String(row.id))
+            if (p) setRestock(p)
+          }}
+        >
+          {inv.restockBtn}
+        </Button>
       ),
     },
   ]
 
   return (
     <>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: 12,
-        marginBottom: 16,
-      }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: 12,
+          marginBottom: 16,
+        }}
+      >
         <div className="inv-card">
-          <div className="inv-card-label">Out of stock</div>
-          <div className="inv-card-value" style={{ color: 'var(--sg-color-error)' }}>{buckets.out}</div>
+          <div className="inv-card-label">{inv.cards.out}</div>
+          <div className="inv-card-value" style={{ color: 'var(--sg-color-error)' }}>
+            {buckets.out}
+          </div>
         </div>
         <div className="inv-card">
-          <div className="inv-card-label">Low stock (&lt; 10)</div>
-          <div className="inv-card-value" style={{ color: 'var(--sg-color-warning)' }}>{buckets.low}</div>
+          <div className="inv-card-label">{inv.cards.low}</div>
+          <div className="inv-card-value" style={{ color: 'var(--sg-color-warning)' }}>
+            {buckets.low}
+          </div>
         </div>
         <div className="inv-card">
-          <div className="inv-card-label">Healthy</div>
-          <div className="inv-card-value" style={{ color: 'var(--sg-color-success)' }}>{buckets.healthy}</div>
+          <div className="inv-card-label">{inv.cards.healthy}</div>
+          <div className="inv-card-value" style={{ color: 'var(--sg-color-success)' }}>
+            {buckets.healthy}
+          </div>
         </div>
         <div className="inv-card">
-          <div className="inv-card-label">Total SKUs</div>
+          <div className="inv-card-label">{inv.cards.total}</div>
           <div className="inv-card-value">{buckets.total}</div>
         </div>
       </div>
 
       <Toolbar
-        search={{ value: search, onChange: setSearch, placeholder: 'Search by name, SKU or brand…' }}
+        search={{ value: search, onChange: setSearch, placeholder: inv.searchPlaceholder }}
         filters={
           <Segmented
             value={bucket}
             onChange={(v) => setBucket(v as StockBucket)}
             options={[
-              { label: `All (${buckets.total})`, value: 'all' },
-              { label: `Out (${buckets.out})`, value: 'out' },
-              { label: `Low (${buckets.low})`, value: 'low' },
-              { label: `Healthy (${buckets.healthy})`, value: 'healthy' },
+              { label: inv.bucketAll(buckets.total), value: 'all' },
+              { label: inv.bucketOut(buckets.out), value: 'out' },
+              { label: inv.bucketLow(buckets.low), value: 'low' },
+              { label: inv.bucketHealthy(buckets.healthy), value: 'healthy' },
             ]}
           />
         }
         actions={
-          <Button size="small" onClick={() => notification.info('Reorder report exported (mock)')}>
-            Export Reorder Report
+          <Button size="small" onClick={() => notification.info(inv.exportToast)}>
+            {inv.exportBtn}
           </Button>
         }
       />
-      <Table columns={columns} data={tableData} pageSize={12} size="small" striped highlightOnHover />
+      <Table
+        columns={columns}
+        data={tableData}
+        pageSize={12}
+        size="small"
+        striped
+        highlightOnHover
+      />
 
       <Modal
         open={!!restock}
         onClose={() => setRestock(null)}
-        title={restock ? `Restock — ${restock.name}` : ''}
+        title={restock ? inv.restockTitle(restock.name) : ''}
         footer={null}
         width={420}
       >
@@ -161,26 +221,34 @@ export function InventoryTab() {
             initialValues={{ quantity: 50, supplier: 'primary' }}
             onFinish={(values) => {
               const qty = Number(values.quantity ?? 0)
-              setProducts(prev => prev.map(p => p.id === restock.id
-                ? { ...p, stock: p.stock + qty, available: p.available + qty }
-                : p))
-              notification.success(`Added ${qty} units to ${restock.name}`)
+              setProducts((prev) =>
+                prev.map((p) =>
+                  p.id === restock.id
+                    ? { ...p, stock: p.stock + qty, available: p.available + qty }
+                    : p,
+                ),
+              )
+              notification.success(inv.restockedToast(qty, restock.name))
               setRestock(null)
             }}
           >
-            <Field name="quantity" label="Quantity" rules={[{ required: true }]}>
+            <Field name="quantity" label={inv.quantity} rules={[{ required: true }]}>
               <InputNumber min={1} max={1000} style={{ width: '100%' }} />
             </Field>
-            <Field name="supplier" label="Supplier">
-              <Select options={[
-                { label: 'Primary supplier', value: 'primary' },
-                { label: 'Backup supplier', value: 'backup' },
-                { label: 'Local supplier', value: 'local' },
-              ]} />
+            <Field name="supplier" label={inv.supplier}>
+              <Select
+                options={[
+                  { label: inv.supplierOptions.primary, value: 'primary' },
+                  { label: inv.supplierOptions.backup, value: 'backup' },
+                  { label: inv.supplierOptions.local, value: 'local' },
+                ]}
+              />
             </Field>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-              <Button onClick={() => setRestock(null)}>Cancel</Button>
-              <Button type="primary" htmlType="submit">Order Restock</Button>
+              <Button onClick={() => setRestock(null)}>{inv.cancel}</Button>
+              <Button type="primary" htmlType="submit">
+                {inv.orderRestock}
+              </Button>
             </div>
           </Form>
         )}

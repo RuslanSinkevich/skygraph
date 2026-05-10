@@ -2,70 +2,110 @@ import { useState } from 'react'
 import { Table, Segmented, notification } from '@skygraph/react'
 import type { TableColumn, CellSpan } from '@skygraph/react'
 import { treeEmployees } from './data'
-import { tableData, statusTag, ratingBar, salaryFmt, locale } from './common'
+import { tableData, statusTag, ratingBar, salaryFmt, makeTableLocale } from './common'
+import { useAppLocale } from '../_shared'
 
 type Mode = 'group' | 'tree' | 'colgroups' | 'cellspan'
 
 function GroupByDemo() {
+  const l = useAppLocale('tableKitchenSink')
+  const g = l.grouped
   const [groupField, setGroupField] = useState('department')
   return (
     <>
       <div style={{ marginBottom: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
-        <span style={{ fontSize: 13 }}>Group by:</span>
+        <span style={{ fontSize: 13 }}>{g.groupByLabel}</span>
         <Segmented
           value={groupField}
           onChange={(v) => setGroupField(v as string)}
           options={[
-            { label: 'Department', value: 'department' },
-            { label: 'Role', value: 'role' },
-            { label: 'Status', value: 'status' },
-            { label: 'Location', value: 'location' },
+            { label: g.groupOptions.department, value: 'department' },
+            { label: g.groupOptions.role, value: 'role' },
+            { label: g.groupOptions.status, value: 'status' },
+            { label: g.groupOptions.location, value: 'location' },
           ]}
         />
       </div>
       <Table
         columns={[
-          { key: 'name', title: 'Employee', width: 200, sortable: true, fixed: 'left' as const },
-          { key: 'department', title: 'Department', width: 130, sortable: true },
-          { key: 'role', title: 'Role', width: 100, sortable: true },
           {
-            key: 'salary', title: 'Salary', width: 120, sortable: true,
-            align: 'right' as const, render: (v) => salaryFmt(v), aggregate: 'avg' as const,
+            key: 'name',
+            title: g.columns.employee,
+            width: 200,
+            sortable: true,
+            fixed: 'left' as const,
           },
-          { key: 'rating', title: 'Rating', width: 150, render: (v) => ratingBar(v), aggregate: 'avg' as const },
+          { key: 'department', title: g.columns.department, width: 130, sortable: true },
+          { key: 'role', title: g.columns.role, width: 100, sortable: true },
           {
-            key: 'projects', title: 'Projects', width: 90, sortable: true,
-            align: 'center' as const, aggregate: 'sum' as const,
+            key: 'salary',
+            title: g.columns.salary,
+            width: 120,
+            sortable: true,
+            align: 'right' as const,
+            render: (v) => salaryFmt(v),
+            aggregate: 'avg' as const,
           },
-          { key: 'status', title: 'Status', width: 110, render: (v) => statusTag(v) },
+          {
+            key: 'rating',
+            title: g.columns.rating,
+            width: 150,
+            render: (v) => ratingBar(v),
+            aggregate: 'avg' as const,
+          },
+          {
+            key: 'projects',
+            title: g.columns.projects,
+            width: 90,
+            sortable: true,
+            align: 'center' as const,
+            aggregate: 'sum' as const,
+          },
+          {
+            key: 'status',
+            title: g.columns.status,
+            width: 110,
+            render: (v) => statusTag(v, l.statusLabel),
+          },
         ]}
         data={tableData}
         pageSize={200}
         showPagination={false}
         groupBy={groupField}
         defaultGroupExpanded
-        onGroupExpandChange={(key, expanded) => notification.info(`Group "${key}": ${expanded ? 'expanded' : 'collapsed'}`)}
+        onGroupExpandChange={(key, expanded) =>
+          notification.info(g.groupExpandToast(key, expanded ? g.expanded : g.collapsed))
+        }
         footer
         showRowNumber
         bordered
         searchable
         scroll={{ x: 1100, y: 500 }}
-        locale={locale}
+        locale={makeTableLocale(l)}
       />
     </>
   )
 }
 
 function TreeDemo() {
+  const l = useAppLocale('tableKitchenSink')
+  const g = l.grouped
   const treeCols: TableColumn[] = [
-    { key: 'name', title: 'Name', width: 250, sortable: true },
-    { key: 'role', title: 'Role', width: 120 },
+    { key: 'name', title: g.columns.name, width: 250, sortable: true },
+    { key: 'role', title: g.columns.role, width: 120 },
     {
-      key: 'salary', title: 'Salary', width: 120,
+      key: 'salary',
+      title: g.columns.salary,
+      width: 120,
       render: (v) => (Number(v) > 0 ? salaryFmt(v) : '-'),
       aggregate: 'sum' as const,
     },
-    { key: 'status', title: 'Status', width: 110, render: (v) => (v ? statusTag(v) : '-') },
+    {
+      key: 'status',
+      title: g.columns.status,
+      width: 110,
+      render: (v) => (v ? statusTag(v, l.statusLabel) : '-'),
+    },
   ]
 
   return (
@@ -77,42 +117,82 @@ function TreeDemo() {
       showRowNumber
       showPagination={false}
       footer
-      locale={locale}
+      locale={makeTableLocale(l)}
     />
   )
 }
 
 function ColumnGroupsDemo() {
+  const l = useAppLocale('tableKitchenSink')
+  const g = l.grouped
   const groupedColumns: TableColumn[] = [
-    { key: 'name', title: 'Employee', width: 180, sortable: true, fixed: 'left' as const, copyable: true, ellipsis: true },
+    {
+      key: 'name',
+      title: g.columns.employee,
+      width: 180,
+      sortable: true,
+      fixed: 'left' as const,
+      copyable: true,
+      ellipsis: true,
+    },
     {
       key: 'personal',
-      title: 'Personal Info',
+      title: g.columnGroups.personal,
       children: [
-        { key: 'department', title: 'Department', width: 130, sortable: true },
-        { key: 'role', title: 'Role', width: 100, sortable: true, editable: true },
-        { key: 'location', title: 'Location', width: 130 },
+        { key: 'department', title: g.columns.department, width: 130, sortable: true },
+        { key: 'role', title: g.columns.role, width: 100, sortable: true, editable: true },
+        { key: 'location', title: g.columnGroups.location, width: 130 },
       ],
     },
     {
       key: 'compensation',
-      title: 'Compensation & Performance',
+      title: g.columnGroups.compensation,
       children: [
         {
-          key: 'salary', title: 'Salary', width: 120, sortable: true,
-          align: 'right' as const, render: (v) => salaryFmt(v), aggregate: 'avg' as const,
+          key: 'salary',
+          title: g.columns.salary,
+          width: 120,
+          sortable: true,
+          align: 'right' as const,
+          render: (v) => salaryFmt(v),
+          aggregate: 'avg' as const,
         },
-        { key: 'experience', title: 'Exp (yrs)', width: 90, sortable: true, align: 'center' as const, aggregate: 'avg' as const },
-        { key: 'rating', title: 'Rating', width: 150, render: (v) => ratingBar(v), aggregate: 'avg' as const },
-        { key: 'projects', title: 'Projects', width: 90, sortable: true, align: 'center' as const, aggregate: 'sum' as const },
+        {
+          key: 'experience',
+          title: g.columnGroups.experience,
+          width: 90,
+          sortable: true,
+          align: 'center' as const,
+          aggregate: 'avg' as const,
+        },
+        {
+          key: 'rating',
+          title: g.columns.rating,
+          width: 150,
+          render: (v) => ratingBar(v),
+          aggregate: 'avg' as const,
+        },
+        {
+          key: 'projects',
+          title: g.columns.projects,
+          width: 90,
+          sortable: true,
+          align: 'center' as const,
+          aggregate: 'sum' as const,
+        },
       ],
     },
     {
       key: 'meta',
-      title: 'Meta',
+      title: g.columnGroups.meta,
       children: [
-        { key: 'status', title: 'Status', width: 110, render: (v) => statusTag(v) },
-        { key: 'hireDate', title: 'Hire Date', width: 110 },
+        {
+          key: 'status',
+          title: g.columns.status,
+          width: 110,
+          render: (v) => statusTag(v, l.statusLabel),
+        },
+        { key: 'hireDate', title: g.columnGroups.hireDate, width: 110 },
       ],
     },
   ]
@@ -128,20 +208,27 @@ function ColumnGroupsDemo() {
       showRowNumber
       striped
       scroll={{ x: 1300 }}
-      locale={locale}
+      locale={makeTableLocale(l)}
     />
   )
 }
 
 function CellSpanDemo() {
+  const l = useAppLocale('tableKitchenSink')
+  const g = l.grouped
   const slice = tableData.slice(0, 15)
   const cols: TableColumn[] = [
     {
-      key: 'name', title: 'Employee', width: 200, sortable: true,
+      key: 'name',
+      title: g.columns.employee,
+      width: 200,
+      sortable: true,
       render: (val) => <span style={{ fontWeight: 500 }}>{String(val)}</span>,
     },
     {
-      key: 'department', title: 'Department', width: 140,
+      key: 'department',
+      title: g.columns.department,
+      width: 140,
       onCell: (_row, idx): CellSpan => {
         if (idx === 0) return { rowSpan: 3 }
         if (idx === 1 || idx === 2) return { rowSpan: 0 }
@@ -150,24 +237,33 @@ function CellSpanDemo() {
       },
     },
     {
-      key: 'role', title: 'Role', width: 120,
+      key: 'role',
+      title: g.columns.role,
+      width: 120,
       onCell: (_row, idx): CellSpan => {
         if (idx === 5) return { colSpan: 0 }
         return {}
       },
     },
     {
-      key: 'salary', title: 'Salary', width: 120,
-      align: 'right' as const, render: (v) => salaryFmt(v),
+      key: 'salary',
+      title: g.columns.salary,
+      width: 120,
+      align: 'right' as const,
+      render: (v) => salaryFmt(v),
     },
-    { key: 'status', title: 'Status', width: 110, render: (v) => statusTag(v) },
+    {
+      key: 'status',
+      title: g.columns.status,
+      width: 110,
+      render: (v) => statusTag(v, l.statusLabel),
+    },
   ]
 
   return (
     <div>
       <p style={{ marginBottom: 12, color: 'var(--sg-color-text-secondary)', fontSize: 13 }}>
-        Cell spanning via <code>onCell</code>: rows 1–3 share a merged Department cell, row 6 merges
-        Department + Role.
+        {g.cellSpanLead}
       </p>
       <Table
         columns={cols}
@@ -176,13 +272,15 @@ function CellSpanDemo() {
         showPagination={false}
         bordered
         showRowNumber
-        locale={locale}
+        locale={makeTableLocale(l)}
       />
     </div>
   )
 }
 
 export function GroupedTab() {
+  const l = useAppLocale('tableKitchenSink')
+  const g = l.grouped
   const [mode, setMode] = useState<Mode>('group')
 
   return (
@@ -191,10 +289,10 @@ export function GroupedTab() {
         value={mode}
         onChange={(v) => setMode(v as Mode)}
         options={[
-          { label: 'Group by', value: 'group' },
-          { label: 'Tree data', value: 'tree' },
-          { label: 'Column groups', value: 'colgroups' },
-          { label: 'Cell span', value: 'cellspan' },
+          { label: g.modes.group, value: 'group' },
+          { label: g.modes.tree, value: 'tree' },
+          { label: g.modes.colgroups, value: 'colgroups' },
+          { label: g.modes.cellspan, value: 'cellspan' },
         ]}
         style={{ marginBottom: 16 }}
       />

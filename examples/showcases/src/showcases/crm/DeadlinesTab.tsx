@@ -2,8 +2,7 @@ import { useMemo, useState } from 'react'
 import { ResourceCalendar, Tag, Empty } from '@skygraph/react'
 import type { Assignment, Conflict, Resource } from '@skygraph/react'
 import { activities, contacts, deals } from './data'
-import { stageLabels } from './common'
-import { money, statusColor } from '../_shared'
+import { money, statusColor, useAppLocale } from '../_shared'
 
 const PALETTE = [
   '#3b82f6',
@@ -22,7 +21,10 @@ function dateMs(s: string): number {
   return new Date(s + 'T00:00:00Z').getTime()
 }
 
-function buildAssignments(resourceFor: (contactId: string) => string | null): Assignment[] {
+function buildAssignments(
+  resourceFor: (contactId: string) => string | null,
+  stageLabel: (s: string) => string,
+): Assignment[] {
   const items: Assignment[] = []
   let n = 0
   for (const a of activities) {
@@ -48,7 +50,7 @@ function buildAssignments(resourceFor: (contactId: string) => string | null): As
     items.push({
       id: `deal-${d.id}`,
       resourceId: rid,
-      title: `${stageLabels[d.stage]} · ${d.title} (${money(d.value, { compact: true })})`,
+      title: `${stageLabel(d.stage)} · ${d.title} (${money(d.value, { compact: true })})`,
       start: target - 2 * DAY_MS,
       end: target + 2 * DAY_MS,
       status: d.probability >= 70 ? 'confirmed' : 'tentative',
@@ -58,6 +60,9 @@ function buildAssignments(resourceFor: (contactId: string) => string | null): As
 }
 
 export function DeadlinesTab() {
+  const lc = useAppLocale('crm')
+  const dl = lc.deadlines
+  const stageLabel = (s: string) => lc.stageLabel[s] ?? s
   const { resources, assignments: seed } = useMemo(() => {
     const byCompany = new Map<string, typeof contacts>()
     for (const c of contacts) {
@@ -82,21 +87,23 @@ export function DeadlinesTab() {
     for (const [company, list] of top) {
       for (const c of list) lookup.set(c.id, `co:${company}`)
     }
-    const assignments = buildAssignments((cid) => lookup.get(cid) ?? null)
+    const assignments = buildAssignments((cid) => lookup.get(cid) ?? null, stageLabel)
     return { resources: rs, assignments }
-  }, [])
+  }, [lc])
 
   const [assignments, setAssignments] = useState(seed)
   const [conflicts, setConflicts] = useState<Conflict[]>([])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <p style={{ color: 'var(--sg-color-text-secondary)', fontSize: 13, margin: 0 }}>
-        Top 8 accounts as resource lanes. Activities (1d) and active deals (~5d window around predicted close) are
-        assignments. Each lane has <code>capacityPerSlot=2</code> — over-capacity weeks surface as conflicts.
-        Drag to move, edge-drag to resize.
-      </p>
-      <div style={{ overflowX: 'auto', border: '1px solid var(--sg-color-border-secondary)', borderRadius: 8 }}>
+      <p style={{ color: 'var(--sg-color-text-secondary)', fontSize: 13, margin: 0 }}>{dl.intro}</p>
+      <div
+        style={{
+          overflowX: 'auto',
+          border: '1px solid var(--sg-color-border-secondary)',
+          borderRadius: 8,
+        }}
+      >
         <ResourceCalendar
           resources={resources}
           assignments={assignments}
@@ -113,9 +120,9 @@ export function DeadlinesTab() {
         />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <strong style={{ fontSize: 13 }}>Conflicts:</strong>
+        <strong style={{ fontSize: 13 }}>{dl.conflictsLabel}</strong>
         {conflicts.length === 0 ? (
-          <span style={{ fontSize: 13, color: 'var(--sg-color-success)' }}>none</span>
+          <span style={{ fontSize: 13, color: 'var(--sg-color-success)' }}>{dl.conflictsNone}</span>
         ) : (
           conflicts.slice(0, 8).map((c) => (
             <Tag key={c.id} color={statusColor(c.reason === 'overlap' ? 'warning' : 'error')}>
@@ -124,7 +131,7 @@ export function DeadlinesTab() {
           ))
         )}
       </div>
-      {assignments.length === 0 && <Empty description="No upcoming activities" />}
+      {assignments.length === 0 && <Empty description={dl.noActivities} />}
     </div>
   )
 }

@@ -25,6 +25,41 @@ const ProgressPage = () => import('../pages/ProgressPage.vue')
 const SpinPage = () => import('../pages/SpinPage.vue')
 const SkeletonPage = () => import('../pages/SkeletonPage.vue')
 
+// T-VueDemo-Pages additions
+const RatePage = () => import('../pages/RatePage.vue')
+const AutoCompletePage = () => import('../pages/AutoCompletePage.vue')
+const BreadcrumbPage = () => import('../pages/BreadcrumbPage.vue')
+const DropdownPage = () => import('../pages/DropdownPage.vue')
+const PopconfirmPage = () => import('../pages/PopconfirmPage.vue')
+const CollapsePage = () => import('../pages/CollapsePage.vue')
+const EmptyPage = () => import('../pages/EmptyPage.vue')
+const ResultPage = () => import('../pages/ResultPage.vue')
+const SegmentedPage = () => import('../pages/SegmentedPage.vue')
+const StepsPage = () => import('../pages/StepsPage.vue')
+const TimelinePage = () => import('../pages/TimelinePage.vue')
+const CarouselPage = () => import('../pages/CarouselPage.vue')
+const DescriptionsPage = () => import('../pages/DescriptionsPage.vue')
+const TimePickerPage = () => import('../pages/TimePickerPage.vue')
+const ColorPickerPage = () => import('../pages/ColorPickerPage.vue')
+const ListPage = () => import('../pages/ListPage.vue')
+const TreePage = () => import('../pages/TreePage.vue')
+const TreeSelectPage = () => import('../pages/TreeSelectPage.vue')
+const CascaderPage = () => import('../pages/CascaderPage.vue')
+const CalendarPage = () => import('../pages/CalendarPage.vue')
+const NotificationPage = () => import('../pages/NotificationPage.vue')
+const TransferPage = () => import('../pages/TransferPage.vue')
+const UploadPage = () => import('../pages/UploadPage.vue')
+const ConfigProviderPage = () => import('../pages/ConfigProviderPage.vue')
+const FormPage = () => import('../pages/FormPage.vue')
+const TablePage = () => import('../pages/TablePage.vue')
+const ChartsPage = () => import('../pages/ChartsPage.vue')
+const DiagramPage = () => import('../pages/DiagramPage.vue')
+const DashboardPage = () => import('../pages/DashboardPage.vue')
+const GanttPage = () => import('../pages/GanttPage.vue')
+const EventTimelinePage = () => import('../pages/EventTimelinePage.vue')
+const ResourceCalendarPage = () => import('../pages/ResourceCalendarPage.vue')
+const SchemaFormEditorPage = () => import('../pages/SchemaFormEditorPage.vue')
+
 const routes: RouteRecord[] = [
   { path: '/', component: Landing },
   { path: '/components/button', component: ButtonPage },
@@ -49,6 +84,42 @@ const routes: RouteRecord[] = [
   { path: '/components/progress', component: ProgressPage },
   { path: '/components/spin', component: SpinPage },
   { path: '/components/skeleton', component: SkeletonPage },
+
+  // T-VueDemo-Pages additions
+  { path: '/components/rate', component: RatePage },
+  { path: '/components/autocomplete', component: AutoCompletePage },
+  { path: '/components/breadcrumb', component: BreadcrumbPage },
+  { path: '/components/dropdown', component: DropdownPage },
+  { path: '/components/popconfirm', component: PopconfirmPage },
+  { path: '/components/collapse', component: CollapsePage },
+  { path: '/components/empty', component: EmptyPage },
+  { path: '/components/result', component: ResultPage },
+  { path: '/components/segmented', component: SegmentedPage },
+  { path: '/components/steps', component: StepsPage },
+  { path: '/components/timeline', component: TimelinePage },
+  { path: '/components/carousel', component: CarouselPage },
+  { path: '/components/descriptions', component: DescriptionsPage },
+  { path: '/components/timepicker', component: TimePickerPage },
+  { path: '/components/colorpicker', component: ColorPickerPage },
+  { path: '/components/list', component: ListPage },
+  { path: '/components/tree', component: TreePage },
+  { path: '/components/treeselect', component: TreeSelectPage },
+  { path: '/components/cascader', component: CascaderPage },
+  { path: '/components/calendar', component: CalendarPage },
+  { path: '/components/notification', component: NotificationPage },
+  { path: '/components/transfer', component: TransferPage },
+  { path: '/components/upload', component: UploadPage },
+  { path: '/components/configprovider', component: ConfigProviderPage },
+  { path: '/components/form', component: FormPage },
+  { path: '/components/table', component: TablePage },
+  { path: '/components/charts', component: ChartsPage },
+  { path: '/components/diagram', component: DiagramPage },
+  { path: '/components/dashboard', component: DashboardPage },
+  { path: '/components/gantt', component: GanttPage },
+  { path: '/components/event-timeline', component: EventTimelinePage },
+  { path: '/components/resource-calendar', component: ResourceCalendarPage },
+  { path: '/components/schema-form-editor', component: SchemaFormEditorPage },
+
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 

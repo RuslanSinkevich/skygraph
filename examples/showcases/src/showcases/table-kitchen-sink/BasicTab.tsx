@@ -1,30 +1,46 @@
 import { useState } from 'react'
 import { Table, Button, Empty, Segmented, notification } from '@skygraph/react'
 import type { TableColumn } from '@skygraph/react'
-import { statusTag, ratingBar, salaryFmt, tableData, locale } from './common'
-
-const basicColumns: TableColumn[] = [
-  { key: 'name', title: 'Employee', width: 200, sortable: true, copyable: true, ellipsis: true },
-  { key: 'department', title: 'Department', width: 130, sortable: true },
-  { key: 'role', title: 'Role', width: 120, sortable: true },
-  {
-    key: 'salary', title: 'Salary', width: 120, sortable: true, align: 'right',
-    render: (v) => salaryFmt(v),
-  },
-  { key: 'rating', title: 'Rating', width: 150, render: (v) => ratingBar(v) },
-  { key: 'status', title: 'Status', width: 110, render: (v) => statusTag(v) },
-  { key: 'hireDate', title: 'Hire Date', width: 110, sortable: true },
-]
+import { statusTag, ratingBar, salaryFmt, tableData, makeTableLocale } from './common'
+import { useAppLocale } from '../_shared'
 
 function BasicDemo() {
+  const l = useAppLocale('tableKitchenSink')
+  const cols: TableColumn[] = [
+    {
+      key: 'name',
+      title: l.basic.columns.employee,
+      width: 200,
+      sortable: true,
+      copyable: true,
+      ellipsis: true,
+    },
+    { key: 'department', title: l.basic.columns.department, width: 130, sortable: true },
+    { key: 'role', title: l.basic.columns.role, width: 120, sortable: true },
+    {
+      key: 'salary',
+      title: l.basic.columns.salary,
+      width: 120,
+      sortable: true,
+      align: 'right',
+      render: (v) => salaryFmt(v),
+    },
+    { key: 'rating', title: l.basic.columns.rating, width: 150, render: (v) => ratingBar(v) },
+    {
+      key: 'status',
+      title: l.basic.columns.status,
+      width: 110,
+      render: (v) => statusTag(v, l.statusLabel),
+    },
+    { key: 'hireDate', title: l.basic.columns.hireDate, width: 110, sortable: true },
+  ]
   return (
     <div>
       <p style={{ marginBottom: 12, color: 'var(--sg-color-text-secondary)', fontSize: 13 }}>
-        Standard table with pagination, search and row selection. Strip-down view of the kitchen sink
-        for the most common case.
+        {l.basic.basicLead}
       </p>
       <Table
-        columns={basicColumns}
+        columns={cols}
         data={tableData}
         pageSize={10}
         showPagination
@@ -35,37 +51,63 @@ function BasicDemo() {
         bordered
         highlightOnHover
         showRowNumber
-        locale={locale}
+        locale={makeTableLocale(l)}
       />
     </div>
   )
 }
 
 function EmptyDemo() {
+  const l = useAppLocale('tableKitchenSink')
+  const cols: TableColumn[] = [
+    {
+      key: 'name',
+      title: l.basic.columns.employee,
+      width: 200,
+      sortable: true,
+      copyable: true,
+      ellipsis: true,
+    },
+    { key: 'department', title: l.basic.columns.department, width: 130, sortable: true },
+    { key: 'role', title: l.basic.columns.role, width: 120, sortable: true },
+    {
+      key: 'salary',
+      title: l.basic.columns.salary,
+      width: 120,
+      sortable: true,
+      align: 'right',
+      render: (v) => salaryFmt(v),
+    },
+  ]
   return (
     <div>
       <p style={{ marginBottom: 12, color: 'var(--sg-color-text-secondary)', fontSize: 13 }}>
-        Empty state with a custom illustration and call-to-action button.
+        {l.basic.emptyLead}
       </p>
       <Table
-        columns={basicColumns.slice(0, 4)}
+        columns={cols}
         data={[]}
         emptyContent={
-          <Empty description="No employees match your criteria">
-            <Button type="primary" size="small" onClick={() => notification.info('Add employee (mock)')}>
-              Add Employee
+          <Empty description={l.basic.emptyDescription}>
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => notification.info(l.basic.addEmployeeToast)}
+            >
+              {l.basic.addEmployee}
             </Button>
           </Empty>
         }
         searchable
         bordered
-        locale={locale}
+        locale={makeTableLocale(l)}
       />
     </div>
   )
 }
 
 export function BasicTab() {
+  const l = useAppLocale('tableKitchenSink')
   const [section, setSection] = useState<'basic' | 'empty'>('basic')
 
   return (
@@ -74,8 +116,8 @@ export function BasicTab() {
         value={section}
         onChange={(v) => setSection(v as typeof section)}
         options={[
-          { label: 'Basic table', value: 'basic' },
-          { label: 'Empty state', value: 'empty' },
+          { label: l.basic.sectionBasic, value: 'basic' },
+          { label: l.basic.sectionEmpty, value: 'empty' },
         ]}
         style={{ marginBottom: 16 }}
       />

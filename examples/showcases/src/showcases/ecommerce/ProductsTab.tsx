@@ -1,11 +1,26 @@
 import { useState, useMemo } from 'react'
 import {
-  Tag, Button, Input, Select, Segmented, Drawer, Modal,
-  Form, Field, InputNumber, Cascader, Switch, Carousel, Descriptions, Progress, Rate, notification,
+  Tag,
+  Button,
+  Input,
+  Select,
+  Segmented,
+  Drawer,
+  Modal,
+  Form,
+  Field,
+  InputNumber,
+  Cascader,
+  Switch,
+  Carousel,
+  Descriptions,
+  Progress,
+  Rate,
+  notification,
 } from '@skygraph/react'
 import { products as initial, categories } from './data'
 import type { Product } from './data'
-import { useFilteredList, money, percent, statusColor } from '../_shared'
+import { useFilteredList, money, percent, statusColor, useAppLocale } from '../_shared'
 import { emojiForProduct } from './common'
 
 /**
@@ -14,6 +29,8 @@ import { emojiForProduct } from './common'
  * that genuinely showcases retail-style components instead of repeating the table demo.
  */
 export function ProductsTab() {
+  const lc = useAppLocale('ecommerce')
+  const p = lc.products
   const [products] = useState(initial)
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState<string>('all')
@@ -27,8 +44,8 @@ export function ProductsTab() {
 
   const visible = useMemo(() => {
     let r = filtered
-    if (category !== 'all') r = r.filter(p => p.category === category)
-    if (statusFilter !== 'all') r = r.filter(p => p.status === statusFilter)
+    if (category !== 'all') r = r.filter((p) => p.category === category)
+    if (statusFilter !== 'all') r = r.filter((p) => p.status === statusFilter)
     return [...r].sort((a, b) => {
       if (sort === 'featured') {
         if (a.featured !== b.featured) return a.featured ? -1 : 1
@@ -45,7 +62,7 @@ export function ProductsTab() {
     <>
       <div className="sc-toolbar" style={{ flexWrap: 'wrap', gap: 12 }}>
         <Input
-          placeholder="Search products…"
+          placeholder={p.searchPlaceholder}
           value={search}
           onChange={setSearch}
           style={{ width: 220 }}
@@ -54,10 +71,10 @@ export function ProductsTab() {
           value={category}
           onChange={(v) => setCategory(String(v))}
           options={[
-            { label: 'All categories', value: 'all' },
-            { label: 'Electronics', value: 'Electronics' },
-            { label: 'Clothing', value: 'Clothing' },
-            { label: 'Home & Garden', value: 'Home & Garden' },
+            { label: p.categoryAll, value: 'all' },
+            { label: p.categoryOptions.electronics, value: 'Electronics' },
+            { label: p.categoryOptions.clothing, value: 'Clothing' },
+            { label: p.categoryOptions.homeGarden, value: 'Home & Garden' },
           ]}
           style={{ width: 180 }}
         />
@@ -65,10 +82,10 @@ export function ProductsTab() {
           value={statusFilter}
           onChange={(v) => setStatusFilter(String(v))}
           options={[
-            { label: 'All status', value: 'all' },
-            { label: 'Active', value: 'active' },
-            { label: 'Draft', value: 'draft' },
-            { label: 'Archived', value: 'archived' },
+            { label: p.statusAll, value: 'all' },
+            { label: p.statusOptions.active, value: 'active' },
+            { label: p.statusOptions.draft, value: 'draft' },
+            { label: p.statusOptions.archived, value: 'archived' },
           ]}
           style={{ width: 140 }}
         />
@@ -76,11 +93,11 @@ export function ProductsTab() {
           value={sort}
           onChange={(v) => setSort(String(v))}
           options={[
-            { label: 'Featured', value: 'featured' },
-            { label: 'Top sellers', value: 'sold' },
-            { label: 'Price ↑', value: 'price-asc' },
-            { label: 'Price ↓', value: 'price-desc' },
-            { label: 'Highest rated', value: 'rating' },
+            { label: p.sortOptions.featured, value: 'featured' },
+            { label: p.sortOptions.sold, value: 'sold' },
+            { label: p.sortOptions.priceAsc, value: 'price-asc' },
+            { label: p.sortOptions.priceDesc, value: 'price-desc' },
+            { label: p.sortOptions.rating, value: 'rating' },
           ]}
           style={{ width: 150 }}
         />
@@ -89,40 +106,57 @@ export function ProductsTab() {
           value={view}
           onChange={(v) => setView(v as 'grid' | 'list')}
           options={[
-            { label: 'Grid', value: 'grid' },
-            { label: 'List', value: 'list' },
+            { label: p.views.grid, value: 'grid' },
+            { label: p.views.list, value: 'list' },
           ]}
         />
-        <Button type="primary" onClick={() => setCreateOpen(true)}>+ Add Product</Button>
+        <Button type="primary" onClick={() => setCreateOpen(true)}>
+          {p.addBtn}
+        </Button>
       </div>
 
-      <div style={{ marginTop: 8, marginBottom: 12, fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>
-        Showing <strong>{visible.length}</strong> of {products.length} products
+      <div
+        style={{
+          marginTop: 8,
+          marginBottom: 12,
+          fontSize: 12,
+          color: 'var(--sg-color-text-secondary)',
+        }}
+      >
+        {p.showing(visible.length, products.length)}
       </div>
 
       {view === 'grid' ? (
         <div className="prod-grid">
-          {visible.map(p => (
-            <div key={p.id} className="prod-card" onClick={() => setDetail(p)}>
+          {visible.map((prod) => (
+            <div key={prod.id} className="prod-card" onClick={() => setDetail(prod)}>
               <div className="prod-card-img">
-                {emojiForProduct(p.name, p.category)}
-                {p.featured && <span className="prod-badge">★ Featured</span>}
-                {p.tags.includes('sale') && <span className="prod-badge prod-badge--sale">SALE</span>}
+                {emojiForProduct(prod.name, prod.category)}
+                {prod.featured && <span className="prod-badge">★ {p.featured}</span>}
+                {prod.tags.includes('sale') && (
+                  <span className="prod-badge prod-badge--sale">{p.sale}</span>
+                )}
               </div>
               <div className="prod-card-body">
-                <div className="prod-card-name">{p.name}</div>
-                <div className="prod-card-brand">{p.brand}</div>
+                <div className="prod-card-name">{prod.name}</div>
+                <div className="prod-card-brand">{prod.brand}</div>
                 <div className="prod-card-price">
-                  <strong>{money(p.price)}</strong>
-                  <Tag color={statusColor(p.status)} style={{ fontSize: 10 }}>{p.status}</Tag>
+                  <strong>{money(prod.price)}</strong>
+                  <Tag color={statusColor(prod.status)} style={{ fontSize: 10 }}>
+                    {lc.products.statusOptions[
+                      prod.status as keyof typeof lc.products.statusOptions
+                    ] ?? prod.status}
+                  </Tag>
                 </div>
                 <div className="prod-card-meta">
-                  <span>⭐ {p.rating}</span>
+                  <span>⭐ {prod.rating}</span>
                   <span>·</span>
-                  <span>{p.sold.toLocaleString()} sold</span>
+                  <span>
+                    {prod.sold.toLocaleString()} {p.soldSuffix}
+                  </span>
                   <span>·</span>
-                  <span style={{ color: p.stock < 10 ? 'var(--sg-color-error)' : undefined }}>
-                    {p.stock < 10 ? `Low stock (${p.stock})` : `${p.stock} in stock`}
+                  <span style={{ color: prod.stock < 10 ? 'var(--sg-color-error)' : undefined }}>
+                    {prod.stock < 10 ? p.lowStockBadge(prod.stock) : p.inStock(prod.stock)}
                   </span>
                 </div>
               </div>
@@ -131,20 +165,26 @@ export function ProductsTab() {
         </div>
       ) : (
         <div className="prod-list">
-          {visible.map(p => (
-            <div key={p.id} className="prod-list-row" onClick={() => setDetail(p)}>
-              <div className="prod-list-img">{emojiForProduct(p.name, p.category)}</div>
+          {visible.map((prod) => (
+            <div key={prod.id} className="prod-list-row" onClick={() => setDetail(prod)}>
+              <div className="prod-list-img">{emojiForProduct(prod.name, prod.category)}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div className="prod-card-name">{p.name}</div>
+                <div className="prod-card-name">{prod.name}</div>
                 <div className="prod-card-meta">
-                  {p.brand} · ⭐ {p.rating} · {p.sold.toLocaleString()} sold · {p.tags.join(', ')}
+                  {prod.brand} · ⭐ {prod.rating} · {prod.sold.toLocaleString()} {p.soldSuffix} ·{' '}
+                  {prod.tags.join(', ')}
                 </div>
               </div>
               <div style={{ width: 100, textAlign: 'right' }}>
-                <div style={{ fontWeight: 600 }}>{money(p.price)}</div>
-                <div style={{ fontSize: 11, color: 'var(--sg-color-text-secondary)' }}>{percent(p.margin)} margin</div>
+                <div style={{ fontWeight: 600 }}>{money(prod.price)}</div>
+                <div style={{ fontSize: 11, color: 'var(--sg-color-text-secondary)' }}>
+                  {percent(prod.margin)} {p.marginSuffix}
+                </div>
               </div>
-              <Tag color={statusColor(p.status)}>{p.status}</Tag>
+              <Tag color={statusColor(prod.status)}>
+                {lc.products.statusOptions[prod.status as keyof typeof lc.products.statusOptions] ??
+                  prod.status}
+              </Tag>
             </div>
           ))}
         </div>
@@ -163,7 +203,9 @@ export function ProductsTab() {
               dots
               style={{ background: 'var(--sg-color-bg-secondary)', borderRadius: 8 }}
             >
-              <div className="prod-carousel-slide">{emojiForProduct(detail.name, detail.category)}</div>
+              <div className="prod-carousel-slide">
+                {emojiForProduct(detail.name, detail.category)}
+              </div>
               <div className="prod-carousel-slide">📦</div>
               <div className="prod-carousel-slide" style={{ fontSize: 36 }}>
                 {detail.featured ? '★' : '🆕'}
@@ -172,69 +214,114 @@ export function ProductsTab() {
 
             <Descriptions
               items={[
-                { label: 'SKU', children: detail.sku },
-                { label: 'Brand', children: detail.brand },
-                { label: 'Category', children: `${detail.category} → ${detail.subcategory}` },
-                { label: 'Price', children: money(detail.price) },
-                { label: 'Cost', children: money(detail.cost) },
-                { label: 'Margin', children: percent(detail.margin) },
-                { label: 'Stock / Reserved', children: `${detail.stock} / ${detail.reserved}` },
-                { label: 'Available', children: String(detail.available) },
-                { label: 'Status', children: <Tag color={statusColor(detail.status)}>{detail.status}</Tag> },
-                { label: 'Rating', children: <Rate value={detail.rating} disabled allowHalf /> },
-                { label: 'Sold', children: detail.sold.toLocaleString() },
-                { label: 'Revenue', children: money(detail.revenue) },
+                { label: p.drawer.sku, children: detail.sku },
+                { label: p.drawer.brand, children: detail.brand },
+                {
+                  label: p.drawer.category,
+                  children: `${detail.category} → ${detail.subcategory}`,
+                },
+                { label: p.drawer.price, children: money(detail.price) },
+                { label: p.drawer.cost, children: money(detail.cost) },
+                { label: p.drawer.margin, children: percent(detail.margin) },
+                { label: p.drawer.stockReserved, children: `${detail.stock} / ${detail.reserved}` },
+                { label: p.drawer.available, children: String(detail.available) },
+                {
+                  label: p.drawer.status,
+                  children: (
+                    <Tag color={statusColor(detail.status)}>
+                      {lc.products.statusOptions[
+                        detail.status as keyof typeof lc.products.statusOptions
+                      ] ?? detail.status}
+                    </Tag>
+                  ),
+                },
+                {
+                  label: p.drawer.rating,
+                  children: <Rate value={detail.rating} disabled allowHalf />,
+                },
+                { label: p.drawer.sold, children: detail.sold.toLocaleString() },
+                { label: p.drawer.revenue, children: money(detail.revenue) },
               ]}
               column={2}
               size="small"
             />
 
-            <h4>Tags</h4>
+            <h4>{p.drawer.tagsHeading}</h4>
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-              {detail.tags.map(t => <Tag key={t}>{t}</Tag>)}
+              {detail.tags.map((t) => (
+                <Tag key={t}>{t}</Tag>
+              ))}
             </div>
 
-            <h4>Stock Health</h4>
+            <h4>{p.drawer.stockHealth}</h4>
             <Progress
               percent={Math.min(100, Math.round((detail.stock / 200) * 100))}
               status={detail.stock < 10 ? 'error' : detail.stock < 30 ? 'active' : 'success'}
             />
 
-            <h4>Description</h4>
-            <p style={{ fontSize: 13, color: 'var(--sg-color-text-secondary)' }}>{detail.description}</p>
+            <h4>{p.drawer.descriptionHeading}</h4>
+            <p style={{ fontSize: 13, color: 'var(--sg-color-text-secondary)' }}>
+              {detail.description}
+            </p>
           </div>
         )}
       </Drawer>
 
-      <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Add New Product" footer={null} width={560}>
-        <Form onFinish={(values) => {
-          notification.success('Product created (mock)', JSON.stringify(values, null, 2))
-          setCreateOpen(false)
-        }}>
-          <Field name="name" label="Product Name" rules={[{ required: true }]}>
-            <Input placeholder="Wireless Earbuds Pro" />
+      <Modal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        title={p.createTitle}
+        footer={null}
+        width={560}
+      >
+        <Form
+          onFinish={(values) => {
+            notification.success(p.createdToast, JSON.stringify(values, null, 2))
+            setCreateOpen(false)
+          }}
+        >
+          <Field name="name" label={p.fields.name} rules={[{ required: true }]}>
+            <Input placeholder={p.fields.namePh} />
           </Field>
-          <Field name="category" label="Category" rules={[{ required: true }]}>
-            <Cascader options={categories} placeholder="Select category" style={{ width: '100%' }} />
-          </Field>
-          <Field name="brand" label="Brand">
-            <Select
-              options={['SkyTech', 'NeoBrand', 'CoreWave', 'PrimeGear', 'AlphaLine', 'ZenCraft'].map(b => ({ label: b, value: b }))}
-              placeholder="Select brand"
+          <Field name="category" label={p.fields.category} rules={[{ required: true }]}>
+            <Cascader
+              options={categories}
+              placeholder={p.fields.categoryPh}
+              style={{ width: '100%' }}
             />
           </Field>
-          <Field name="price" label="Price ($)" rules={[{ required: true }]}>
-            <InputNumber placeholder="29.99" min={0} step={0.01} style={{ width: '100%' }} />
+          <Field name="brand" label={p.fields.brand}>
+            <Select
+              options={[
+                'SkyTech',
+                'NeoBrand',
+                'CoreWave',
+                'PrimeGear',
+                'AlphaLine',
+                'ZenCraft',
+              ].map((b) => ({ label: b, value: b }))}
+              placeholder={p.fields.brandPh}
+            />
           </Field>
-          <Field name="stock" label="Initial Stock" rules={[{ required: true }]}>
-            <InputNumber placeholder="100" min={0} style={{ width: '100%' }} />
+          <Field name="price" label={p.fields.price} rules={[{ required: true }]}>
+            <InputNumber
+              placeholder={p.fields.pricePh}
+              min={0}
+              step={0.01}
+              style={{ width: '100%' }}
+            />
           </Field>
-          <Field name="featured" label="Featured">
+          <Field name="stock" label={p.fields.stock} rules={[{ required: true }]}>
+            <InputNumber placeholder={p.fields.stockPh} min={0} style={{ width: '100%' }} />
+          </Field>
+          <Field name="featured" label={p.fields.featured}>
             <Switch />
           </Field>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-            <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button type="primary" htmlType="submit">Create Product</Button>
+            <Button onClick={() => setCreateOpen(false)}>{p.cancel}</Button>
+            <Button type="primary" htmlType="submit">
+              {p.create}
+            </Button>
           </div>
         </Form>
       </Modal>

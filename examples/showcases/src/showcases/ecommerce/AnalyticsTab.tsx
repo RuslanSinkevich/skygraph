@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
-import {
-  Segmented, Tag, Progress, BarChart, LineChart, PieChart,
-} from '@skygraph/react'
+import { Segmented, Tag, Progress, BarChart, LineChart, PieChart } from '@skygraph/react'
 import { products, orders, customerList } from './data'
-import { money, num, percent } from '../_shared'
+import { money, num, percent, useAppLocale } from '../_shared'
 import { emojiForProduct } from './common'
 
 type Period = '7d' | '30d' | '90d' | 'all'
@@ -16,10 +14,11 @@ function withinPeriod(dateStr: string, period: Period): boolean {
 }
 
 export function AnalyticsTab() {
+  const a = useAppLocale('ecommerce').analytics
   const [period, setPeriod] = useState<Period>('30d')
 
   const filteredOrders = useMemo(
-    () => orders.filter(o => o.status !== 'cancelled' && withinPeriod(o.date, period)),
+    () => orders.filter((o) => o.status !== 'cancelled' && withinPeriod(o.date, period)),
     [period],
   )
 
@@ -35,7 +34,7 @@ export function AnalyticsTab() {
       aov,
       inventory,
       vipShare: customerList.length
-        ? (customerList.filter(c => c.status === 'vip').length / customerList.length) * 100
+        ? (customerList.filter((c) => c.status === 'vip').length / customerList.length) * 100
         : 0,
     }
   }, [filteredOrders])
@@ -62,7 +61,11 @@ export function AnalyticsTab() {
     for (const p of products) {
       map.set(p.category, (map.get(p.category) ?? 0) + p.revenue)
     }
-    return [...map.entries()].map(([label, value]) => ({ id: label, label, value: Math.round(value) }))
+    return [...map.entries()].map(([label, value]) => ({
+      id: label,
+      label,
+      value: Math.round(value),
+    }))
   }, [])
 
   const statusSplit = useMemo(() => {
@@ -80,44 +83,44 @@ export function AnalyticsTab() {
           value={period}
           onChange={(v) => setPeriod(v as Period)}
           options={[
-            { label: 'Last 7 days', value: '7d' },
-            { label: 'Last 30 days', value: '30d' },
-            { label: 'Last 90 days', value: '90d' },
-            { label: 'All time', value: 'all' },
+            { label: a.periods.d7, value: '7d' },
+            { label: a.periods.d30, value: '30d' },
+            { label: a.periods.d90, value: '90d' },
+            { label: a.periods.all, value: 'all' },
           ]}
         />
       </div>
 
       <div className="ana-stats">
         <div className="ana-stat">
-          <div className="ana-stat-label">Revenue</div>
+          <div className="ana-stat-label">{a.stats.revenue}</div>
           <div className="ana-stat-value">{money(stats.revenue, { compact: true })}</div>
-          <div className="ana-stat-sub">{stats.orders} orders</div>
+          <div className="ana-stat-sub">{a.stats.ordersSub(stats.orders)}</div>
         </div>
         <div className="ana-stat">
-          <div className="ana-stat-label">Avg Order Value</div>
+          <div className="ana-stat-label">{a.stats.aov}</div>
           <div className="ana-stat-value">{money(stats.aov)}</div>
-          <div className="ana-stat-sub">{num(stats.items)} items sold</div>
+          <div className="ana-stat-sub">{a.stats.itemsSub(num(stats.items))}</div>
         </div>
         <div className="ana-stat">
-          <div className="ana-stat-label">Inventory Value</div>
+          <div className="ana-stat-label">{a.stats.inventoryValue}</div>
           <div className="ana-stat-value">{money(stats.inventory, { compact: true })}</div>
-          <div className="ana-stat-sub">at cost across {products.length} SKUs</div>
+          <div className="ana-stat-sub">{a.stats.inventorySub(products.length)}</div>
         </div>
         <div className="ana-stat">
-          <div className="ana-stat-label">VIP Share</div>
+          <div className="ana-stat-label">{a.stats.vipShare}</div>
           <div className="ana-stat-value">{percent(stats.vipShare)}</div>
-          <div className="ana-stat-sub">of customers</div>
+          <div className="ana-stat-sub">{a.stats.vipSub}</div>
         </div>
       </div>
 
       <div className="ana-grid">
         <div className="ana-card" style={{ gridColumn: 'span 2' }}>
-          <div className="ana-card-title">Revenue trend</div>
+          <div className="ana-card-title">{a.cards.revenueTrend}</div>
           {dailySeries.categories.length > 0 ? (
             <LineChart
               categories={dailySeries.categories}
-              series={[{ id: 'revenue', label: 'Revenue', values: dailySeries.values }]}
+              series={[{ id: 'revenue', label: a.stats.revenue, values: dailySeries.values }]}
               height={220}
               legend
               yAxis={{ tickCount: 4 }}
@@ -127,12 +130,12 @@ export function AnalyticsTab() {
               fileName="ecommerce-revenue"
             />
           ) : (
-            <div className="ana-empty">No data in selected period</div>
+            <div className="ana-empty">{a.cards.noData}</div>
           )}
         </div>
 
         <div className="ana-card">
-          <div className="ana-card-title">Orders by status</div>
+          <div className="ana-card-title">{a.cards.ordersByStatus}</div>
           <div style={{ display: 'flex', gap: 16, alignItems: 'center', justifyContent: 'center' }}>
             <PieChart
               data={statusSplit}
@@ -144,9 +147,14 @@ export function AnalyticsTab() {
               fileName="ecommerce-orders-status"
             />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {statusSplit.map(s => (
-                <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-                  <Tag color="default" style={{ margin: 0 }}>{s.label}</Tag>
+              {statusSplit.map((s) => (
+                <div
+                  key={s.id}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}
+                >
+                  <Tag color="default" style={{ margin: 0 }}>
+                    {s.label}
+                  </Tag>
                   <span>{s.value}</span>
                 </div>
               ))}
@@ -155,10 +163,12 @@ export function AnalyticsTab() {
         </div>
 
         <div className="ana-card">
-          <div className="ana-card-title">Revenue by category</div>
+          <div className="ana-card-title">{a.cards.revenueByCategory}</div>
           <BarChart
-            categories={categorySplit.map(c => c.label)}
-            series={[{ id: 'revenue', label: 'Revenue', values: categorySplit.map(c => c.value) }]}
+            categories={categorySplit.map((c) => c.label)}
+            series={[
+              { id: 'revenue', label: a.stats.revenue, values: categorySplit.map((c) => c.value) },
+            ]}
             height={220}
             legend
             yAxis={{ tickCount: 4 }}
@@ -169,9 +179,9 @@ export function AnalyticsTab() {
         </div>
 
         <div className="ana-card" style={{ gridColumn: 'span 2' }}>
-          <div className="ana-card-title">Top products by revenue</div>
+          <div className="ana-card-title">{a.cards.topProducts}</div>
           <div className="ana-list">
-            {topProducts.map(p => {
+            {topProducts.map((p) => {
               const max = topProducts[0].revenue || 1
               const pct = Math.round((p.revenue / max) * 100)
               return (
@@ -180,14 +190,14 @@ export function AnalyticsTab() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div className="ana-list-name">{p.name}</div>
                     <div className="ana-list-meta">
-                      {p.brand} · {num(p.sold)} sold · ⭐ {p.rating}
+                      {p.brand} · {num(p.sold)} {a.soldSuffix} · ⭐ {p.rating}
                     </div>
                     <Progress percent={pct} size="small" showInfo={false} />
                   </div>
                   <div style={{ textAlign: 'right', minWidth: 100 }}>
                     <div style={{ fontWeight: 600 }}>{money(p.revenue, { compact: true })}</div>
                     <Tag color={p.margin > 50 ? 'success' : 'warning'} style={{ fontSize: 10 }}>
-                      {percent(p.margin)} margin
+                      {percent(p.margin)} {a.marginSuffix}
                     </Tag>
                   </div>
                 </div>

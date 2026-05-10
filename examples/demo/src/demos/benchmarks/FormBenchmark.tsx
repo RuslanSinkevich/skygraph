@@ -3,7 +3,11 @@ import { createRoot } from 'react-dom/client'
 import { flushSync } from 'react-dom'
 import { Form, Field, useFormContext } from '@skygraph/react'
 import type { FormEngine } from '@skygraph/core'
-import { useForm as useRhfForm, FormProvider as RhfFormProvider, useFormContext as useRhfContext } from 'react-hook-form'
+import {
+  useForm as useRhfForm,
+  FormProvider as RhfFormProvider,
+  useFormContext as useRhfContext,
+} from 'react-hook-form'
 
 import {
   formatMetric,
@@ -55,7 +59,8 @@ function SkyFormBlock({ holder }: { holder: { current: ApiHolder } }) {
 function RhfHandle({ holder }: { holder: { current: ApiHolder } }) {
   const ctx = useRhfContext()
   if (!holder.current.rhfSet) {
-    holder.current.rhfSet = (name, value) => ctx.setValue(name, value, { shouldDirty: true, shouldValidate: false })
+    holder.current.rhfSet = (name, value) =>
+      ctx.setValue(name, value, { shouldDirty: true, shouldValidate: false })
   }
   if (!holder.current.rhfSubmit) {
     holder.current.rhfSubmit = () =>
@@ -109,7 +114,9 @@ function buildRunner(variant: 'skygraph' | 'rhf'): Runner {
     host.style.width = '600px'
     document.body.appendChild(host)
     const root = createRoot(host)
-    const holder = { current: { sky: null, rhfSubmit: null, rhfSet: null } satisfies ApiHolder }
+    const holder: { current: ApiHolder } = {
+      current: { sky: null, rhfSubmit: null, rhfSet: null },
+    }
 
     const t0 = performance.now()
     flushSync(() => {
@@ -187,7 +194,14 @@ export function FormBenchmark() {
       for (const v of variants) {
         if (signal.aborted) throw new Error('aborted')
         setProgress(`Running ${v.label}...`)
-        const r = await runVariant(v.id, v.label, 'ms', v.runner, { iterations: 5, warmup: 1, sleepMs: 64 }, signal)
+        const r = await runVariant(
+          v.id,
+          v.label,
+          'ms',
+          v.runner,
+          { iterations: 5, warmup: 1, sleepMs: 64 },
+          signal,
+        )
         out.push(r)
         setResults([...out])
       }
@@ -208,7 +222,12 @@ export function FormBenchmark() {
   return (
     <div className="bench-section">
       <div className="bench-controls">
-        <button className="bench-btn bench-btn--primary" type="button" onClick={run} disabled={running}>
+        <button
+          className="bench-btn bench-btn--primary"
+          type="button"
+          onClick={run}
+          disabled={running}
+        >
           {running ? 'Running…' : `Run · ${FIELD_COUNT} fields × 6`}
         </button>
         <button className="bench-btn" type="button" onClick={stop} disabled={!running}>
@@ -218,11 +237,12 @@ export function FormBenchmark() {
       </div>
 
       <div className="bench-method">
-        <strong>Method.</strong> {FIELD_COUNT} text inputs are mounted in one <code>flushSync</code>, mount time is
-        captured to the next two frames. Then {CHANGE_FIELDS} fields are changed via the library's controlled API
-        (<code>FormApi.setValue</code> / <code>setValue</code> from react-hook-form) and per-change time is reported.
-        Submit bytes is the size of <code>JSON.stringify(values)</code>. We discard the warm-up run and report the
-        median of 5 runs.
+        <strong>Method.</strong> {FIELD_COUNT} text inputs are mounted in one <code>flushSync</code>
+        , mount time is captured to the next two frames. Then {CHANGE_FIELDS} fields are changed via
+        the library's controlled API (<code>FormApi.setValue</code> / <code>setValue</code> from
+        react-hook-form) and per-change time is reported. Submit bytes is the size of{' '}
+        <code>JSON.stringify(values)</code>. We discard the warm-up run and report the median of 5
+        runs.
       </div>
 
       <ResultsTable
@@ -237,7 +257,8 @@ export function FormBenchmark() {
           {
             key: 'bytes',
             label: 'Submit bytes',
-            extract: (r) => (r.extras?.submitBytes ? formatMetric(r.extras.submitBytes, 'bytes') : '—'),
+            extract: (r) =>
+              r.extras?.submitBytes ? formatMetric(r.extras.submitBytes, 'bytes') : '—',
           },
           { key: 'min', label: 'Min mount', extract: (r) => formatMetric(r.min, 'ms') },
           { key: 'max', label: 'Max mount', extract: (r) => formatMetric(r.max, 'ms') },
@@ -261,7 +282,10 @@ export function FormBenchmark() {
             </label>
           </div>
         </div>
-        <div className="bench-preview-frame" style={{ maxHeight: 360, overflowY: 'auto', padding: 12 }}>
+        <div
+          className="bench-preview-frame"
+          style={{ maxHeight: 360, overflowY: 'auto', padding: 12 }}
+        >
           {previewVariant === 'skygraph' ? <SkyPreview /> : <RhfPreview />}
         </div>
       </div>

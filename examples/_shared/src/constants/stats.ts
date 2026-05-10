@@ -23,7 +23,7 @@ export const TEST_COUNT = 1013
 export const ENGINE_COUNT = 6
 
 /** Showcases in `examples/showcases/src/showcases/`. */
-export const SHOWCASE_COUNT = 14
+export const SHOWCASE_COUNT = 12
 
 /**
  * Hosted SkyGraph showcases entry-point. Until a public hosting target

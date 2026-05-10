@@ -1,3 +1,5 @@
+import type { ShowcasesLocale } from '@skygraph-examples/shared'
+
 /**
  * Demo i18n types.
  *
@@ -201,12 +203,16 @@ export interface DemoDict {
     navComponents: string
     navShowcases: string
     navGuide: string
+    navBenchmarks: string
     navRoadmap: string
     navAbout: string
     navGithub: string
     burgerAria: string
     themeAria: string
   }
+
+  /** Embedded showcases hub (same copy as standalone `showcasesLocale`). */
+  showcases: ShowcasesLocale
 
   footer: {
     columnDocs: string

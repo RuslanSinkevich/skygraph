@@ -1,10 +1,6 @@
 export { parseChangelog } from './parsers/changelog'
 export { parseTodo, flattenTodos } from './parsers/todo'
-export type {
-  ChangelogEntry,
-  ChangelogRound,
-  ChangelogSubsection,
-} from './types/changelog'
+export type { ChangelogEntry, ChangelogRound, ChangelogSubsection } from './types/changelog'
 export type { TodoItem, TodoSection, TodoStatus } from './types/todo'
 export {
   COMPONENT_COUNT,
@@ -15,3 +11,6 @@ export {
   DEMO_URL,
   GITHUB_URL,
 } from './constants/stats'
+
+export type { ShowcasesLocale, ShowcaseCategoryKey } from './showcasesLocale'
+export { showcasesLocaleEn, showcasesLocaleRu } from './showcasesLocale'

@@ -3,6 +3,7 @@ import App from './App.vue'
 import { router } from './router'
 import { I18nProvider } from './i18n'
 import '@skygraph/styles'
+import '@skygraph-examples/shared-vue/layout/styles.css'
 import './style.css'
 
 createApp({

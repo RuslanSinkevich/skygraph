@@ -1,69 +1,95 @@
 import { useState } from 'react'
 import {
-  Button, Input, InputNumber, Textarea, Select, Checkbox, Segmented,
-  Form, Field, InputPassword, InputGroup, notification,
+  Button,
+  Input,
+  InputNumber,
+  Textarea,
+  Select,
+  Checkbox,
+  Segmented,
+  Form,
+  Field,
+  InputPassword,
+  InputGroup,
+  notification,
 } from '@skygraph/react'
+import { useAppLocale } from '../_shared'
 
 function ValidationDemo() {
+  const v = useAppLocale('forms').validation
   return (
     <div className="forms-section">
-      <p style={{ color: 'var(--sg-color-text-secondary)', marginBottom: 16 }}>
-        Real-time validation with rules, warnings, feedback icons and various trigger modes.
-      </p>
+      <p style={{ color: 'var(--sg-color-text-secondary)', marginBottom: 16 }}>{v.rulesLead}</p>
       <Form
         layout="vertical"
         requiredMark
-        onFinish={(values) => notification.success('Form submitted!', JSON.stringify(values, null, 2))}
+        onFinish={(values) =>
+          notification.success(v.submittedToast, JSON.stringify(values, null, 2))
+        }
         scrollToFirstError
       >
         <div className="forms-grid">
           <div className="forms-cell">
             <Field
               name="username"
-              label="Username"
+              label={v.fields.username}
               required
               rules={[
-                { required: true, message: 'Username is required' },
-                { min: 3, message: 'At least 3 characters' },
-                { max: 20, message: 'Max 20 characters' },
-                { pattern: /^[a-zA-Z0-9_]+$/, message: 'Only letters, numbers and underscore' },
+                { required: true, message: v.fields.usernameRequired },
+                { min: 3, message: v.fields.usernameMin },
+                { max: 20, message: v.fields.usernameMax },
+                { pattern: /^[a-zA-Z0-9_]+$/, message: v.fields.usernamePattern },
               ]}
               hasFeedback
             >
-              {(field) => <Input value={field.value as string ?? ''} onChange={field.onChange} onBlur={field.onBlur} placeholder="john_doe" />}
+              {(field) => (
+                <Input
+                  value={(field.value as string) ?? ''}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  placeholder={v.fields.usernamePlaceholder}
+                />
+              )}
             </Field>
           </div>
           <div className="forms-cell">
             <Field
               name="email"
-              label="Email"
+              label={v.fields.email}
               required
               rules={[
-                { required: true, message: 'Email is required' },
-                { type: 'email', message: 'Invalid email format' },
+                { required: true, message: v.fields.emailRequired },
+                { type: 'email', message: v.fields.emailInvalid },
               ]}
               hasFeedback
             >
-              {(field) => <Input value={field.value as string ?? ''} onChange={field.onChange} onBlur={field.onBlur} placeholder="user@example.com" />}
+              {(field) => (
+                <Input
+                  value={(field.value as string) ?? ''}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  placeholder={v.fields.emailPlaceholder}
+                />
+              )}
             </Field>
           </div>
           <div className="forms-cell">
             <Field
               name="password"
-              label="Password"
+              label={v.fields.password}
               required
               rules={[
-                { required: true, message: 'Password is required' },
-                { min: 8, message: 'At least 8 characters' },
+                { required: true, message: v.fields.passwordRequired },
+                { min: 8, message: v.fields.passwordMin },
               ]}
               hasFeedback
             >
               {(field) => (
                 <InputPassword
-                  value={field.value as string ?? ''}
+                  value={(field.value as string) ?? ''}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
-                  placeholder="Strong password"
+                  placeholder={v.fields.passwordPlaceholder}
                   showStrength
                 />
               )}
@@ -72,18 +98,18 @@ function ValidationDemo() {
           <div className="forms-cell">
             <Field
               name="age"
-              label="Age"
-              rules={[{ type: 'number', min: 18, max: 120, message: 'Must be 18-120' }]}
+              label={v.fields.age}
+              rules={[{ type: 'number', min: 18, max: 120, message: v.fields.ageRange }]}
               hasFeedback
             >
               {(field) => (
                 <InputNumber
                   value={field.value as number}
-                  onChange={(v) => field.onChange(v)}
+                  onChange={(val) => field.onChange(val)}
                   onBlur={field.onBlur}
                   min={0}
                   max={200}
-                  placeholder="Your age"
+                  placeholder={v.fields.agePlaceholder}
                   style={{ width: '100%' }}
                 />
               )}
@@ -92,32 +118,42 @@ function ValidationDemo() {
           <div className="forms-cell">
             <Field
               name="website"
-              label="Website"
-              rules={[{ type: 'url', message: 'Enter a valid URL' }]}
-              help="Include https://"
+              label={v.fields.website}
+              rules={[{ type: 'url', message: v.fields.websiteUrl }]}
+              help={v.fields.websiteHelp}
               hasFeedback
             >
               {(field) => (
                 <InputGroup before="https://">
-                  <Input value={field.value as string ?? ''} onChange={field.onChange} onBlur={field.onBlur} placeholder="yoursite.com" />
+                  <Input
+                    value={(field.value as string) ?? ''}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder={v.fields.websitePlaceholder}
+                  />
                 </InputGroup>
               )}
             </Field>
           </div>
           <div className="forms-cell">
-            <Field name="role" label="Role" required rules={[{ required: true, message: 'Select a role' }]}>
+            <Field
+              name="role"
+              label={v.fields.role}
+              required
+              rules={[{ required: true, message: v.fields.rolePick }]}
+            >
               {(field) => (
                 <Select
                   value={field.value as string}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
                   options={[
-                    { label: 'Developer', value: 'dev' },
-                    { label: 'Designer', value: 'design' },
-                    { label: 'Manager', value: 'manager' },
-                    { label: 'QA Engineer', value: 'qa' },
+                    { label: v.roleOptions.developer, value: 'dev' },
+                    { label: v.roleOptions.designer, value: 'design' },
+                    { label: v.roleOptions.manager, value: 'manager' },
+                    { label: v.roleOptions.qa, value: 'qa' },
                   ]}
-                  placeholder="Select role"
+                  placeholder={v.fields.rolePlaceholder}
                 />
               )}
             </Field>
@@ -125,30 +161,40 @@ function ValidationDemo() {
           <div className="forms-cell" style={{ gridColumn: 'span 2' }}>
             <Field
               name="bio"
-              label="Bio"
-              rules={[{ max: 200, message: 'Max 200 characters' }]}
-              warningRules={[{ min: 20, message: 'A longer bio helps others know you' }]}
-              extra="Tell us about yourself"
+              label={v.fields.bio}
+              rules={[{ max: 200, message: v.fields.bioMax }]}
+              warningRules={[{ min: 20, message: v.fields.bioWarn }]}
+              extra={v.fields.bioExtra}
             >
               {(field) => (
                 <Textarea
-                  value={field.value as string ?? ''}
+                  value={(field.value as string) ?? ''}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
-                  placeholder="A few words about you..."
+                  placeholder={v.fields.bioPlaceholder}
                 />
               )}
             </Field>
           </div>
           <div className="forms-cell">
-            <Field name="agree" required rules={[{ validator: (v) => v ? null : 'You must agree' }]}>
-              {(field) => <Checkbox checked={field.value as boolean} onChange={field.onChange}>I agree to the Terms of Service</Checkbox>}
+            <Field
+              name="agree"
+              required
+              rules={[{ validator: (val) => (val ? null : v.fields.agreeRequired) }]}
+            >
+              {(field) => (
+                <Checkbox checked={field.value as boolean} onChange={field.onChange}>
+                  {v.fields.agree}
+                </Checkbox>
+              )}
             </Field>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
-          <Button type="primary" htmlType="submit">Submit</Button>
-          <Button htmlType="reset">Reset</Button>
+          <Button type="primary" htmlType="submit">
+            {v.submit}
+          </Button>
+          <Button htmlType="reset">{v.reset}</Button>
         </div>
       </Form>
     </div>
@@ -156,6 +202,8 @@ function ValidationDemo() {
 }
 
 function MockupsDemo() {
+  const v = useAppLocale('forms').validation
+  const a = v.auth
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login')
 
   return (
@@ -163,73 +211,185 @@ function MockupsDemo() {
       <div className="mockup-container">
         <div className="mockup-card">
           <div className="mockup-header">
-            <div style={{ fontSize: 24, fontWeight: 700 }}>SkyGraph</div>
+            <div style={{ fontSize: 24, fontWeight: 700 }}>{a.brand}</div>
             <Segmented
               value={mode}
-              onChange={(v) => setMode(v as typeof mode)}
+              onChange={(val) => setMode(val as typeof mode)}
               options={[
-                { label: 'Login', value: 'login' },
-                { label: 'Register', value: 'register' },
-                { label: 'Forgot', value: 'forgot' },
+                { label: a.modes.login, value: 'login' },
+                { label: a.modes.register, value: 'register' },
+                { label: a.modes.forgot, value: 'forgot' },
               ]}
               size="small"
             />
           </div>
 
           {mode === 'login' && (
-            <Form layout="vertical" onFinish={(v) => notification.success('Login success (mock)', JSON.stringify(v))}>
-              <Field name="email" label="Email" required rules={[{ required: true }, { type: 'email' }]}>
-                {(f) => <Input value={f.value as string ?? ''} onChange={f.onChange} onBlur={f.onBlur} placeholder="you@email.com" />}
+            <Form
+              layout="vertical"
+              onFinish={(values) => notification.success(a.loginToast, JSON.stringify(values))}
+            >
+              <Field
+                name="email"
+                label={a.loginEmail}
+                required
+                rules={[{ required: true }, { type: 'email' }]}
+              >
+                {(f) => (
+                  <Input
+                    value={(f.value as string) ?? ''}
+                    onChange={f.onChange}
+                    onBlur={f.onBlur}
+                    placeholder={a.loginEmailPlaceholder}
+                  />
+                )}
               </Field>
-              <Field name="password" label="Password" required rules={[{ required: true }]}>
-                {(f) => <InputPassword value={f.value as string ?? ''} onChange={f.onChange} onBlur={f.onBlur} placeholder="Your password" />}
+              <Field name="password" label={a.loginPassword} required rules={[{ required: true }]}>
+                {(f) => (
+                  <InputPassword
+                    value={(f.value as string) ?? ''}
+                    onChange={f.onChange}
+                    onBlur={f.onBlur}
+                    placeholder={a.loginPasswordPlaceholder}
+                  />
+                )}
               </Field>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '8px 0' }}>
-                <Checkbox>Remember me</Checkbox>
-                <a style={{ fontSize: 13, color: 'var(--sg-color-primary)', cursor: 'pointer' }} onClick={() => setMode('forgot')}>Forgot password?</a>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  margin: '8px 0',
+                }}
+              >
+                <Checkbox>{a.rememberMe}</Checkbox>
+                <a
+                  style={{ fontSize: 13, color: 'var(--sg-color-primary)', cursor: 'pointer' }}
+                  onClick={() => setMode('forgot')}
+                >
+                  {a.forgotLink}
+                </a>
               </div>
-              <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 8 }}>Sign In</Button>
+              <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 8 }}>
+                {a.signIn}
+              </Button>
             </Form>
           )}
 
           {mode === 'register' && (
-            <Form layout="vertical" onFinish={(v) => notification.success('Registered (mock)', JSON.stringify(v))}>
+            <Form
+              layout="vertical"
+              onFinish={(values) => notification.success(a.registerToast, JSON.stringify(values))}
+            >
               <div className="forms-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
                 <div className="forms-cell">
-                  <Field name="firstName" label="First Name" required rules={[{ required: true }]}>
-                    {(f) => <Input value={f.value as string ?? ''} onChange={f.onChange} onBlur={f.onBlur} placeholder="Jane" />}
+                  <Field name="firstName" label={a.firstName} required rules={[{ required: true }]}>
+                    {(f) => (
+                      <Input
+                        value={(f.value as string) ?? ''}
+                        onChange={f.onChange}
+                        onBlur={f.onBlur}
+                        placeholder={a.firstNamePlaceholder}
+                      />
+                    )}
                   </Field>
                 </div>
                 <div className="forms-cell">
-                  <Field name="lastName" label="Last Name" required rules={[{ required: true }]}>
-                    {(f) => <Input value={f.value as string ?? ''} onChange={f.onChange} onBlur={f.onBlur} placeholder="Doe" />}
+                  <Field name="lastName" label={a.lastName} required rules={[{ required: true }]}>
+                    {(f) => (
+                      <Input
+                        value={(f.value as string) ?? ''}
+                        onChange={f.onChange}
+                        onBlur={f.onBlur}
+                        placeholder={a.lastNamePlaceholder}
+                      />
+                    )}
                   </Field>
                 </div>
               </div>
-              <Field name="email" label="Email" required rules={[{ required: true }, { type: 'email' }]}>
-                {(f) => <Input value={f.value as string ?? ''} onChange={f.onChange} onBlur={f.onBlur} placeholder="jane@example.com" />}
+              <Field
+                name="email"
+                label={a.loginEmail}
+                required
+                rules={[{ required: true }, { type: 'email' }]}
+              >
+                {(f) => (
+                  <Input
+                    value={(f.value as string) ?? ''}
+                    onChange={f.onChange}
+                    onBlur={f.onBlur}
+                    placeholder={a.regEmailPlaceholder}
+                  />
+                )}
               </Field>
-              <Field name="password" label="Password" required rules={[{ required: true }, { min: 8 }]}>
-                {(f) => <InputPassword value={f.value as string ?? ''} onChange={f.onChange} onBlur={f.onBlur} placeholder="Min 8 characters" showStrength />}
+              <Field
+                name="password"
+                label={a.loginPassword}
+                required
+                rules={[{ required: true }, { min: 8 }]}
+              >
+                {(f) => (
+                  <InputPassword
+                    value={(f.value as string) ?? ''}
+                    onChange={f.onChange}
+                    onBlur={f.onBlur}
+                    placeholder={a.regPasswordPlaceholder}
+                    showStrength
+                  />
+                )}
               </Field>
-              <Field name="agree" required rules={[{ validator: (v) => v ? null : 'Required' }]}>
-                {(f) => <Checkbox checked={f.value as boolean} onChange={f.onChange}>I agree to Terms &amp; Privacy Policy</Checkbox>}
+              <Field
+                name="agree"
+                required
+                rules={[{ validator: (val) => (val ? null : a.agreeRequired) }]}
+              >
+                {(f) => (
+                  <Checkbox checked={f.value as boolean} onChange={f.onChange}>
+                    {a.agreeTerms}
+                  </Checkbox>
+                )}
               </Field>
-              <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 8 }}>Create Account</Button>
+              <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 8 }}>
+                {a.createAccount}
+              </Button>
             </Form>
           )}
 
           {mode === 'forgot' && (
-            <Form layout="vertical" onFinish={(v) => notification.success('Reset link sent (mock)', JSON.stringify(v))}>
-              <p style={{ color: 'var(--sg-color-text-secondary)', marginBottom: 16, fontSize: 13 }}>
-                Enter your email and we'll send you a reset link.
+            <Form
+              layout="vertical"
+              onFinish={(values) => notification.success(a.resetToast, JSON.stringify(values))}
+            >
+              <p
+                style={{ color: 'var(--sg-color-text-secondary)', marginBottom: 16, fontSize: 13 }}
+              >
+                {a.forgotLead}
               </p>
-              <Field name="email" label="Email" required rules={[{ required: true }, { type: 'email' }]}>
-                {(f) => <Input value={f.value as string ?? ''} onChange={f.onChange} onBlur={f.onBlur} placeholder="you@email.com" />}
+              <Field
+                name="email"
+                label={a.loginEmail}
+                required
+                rules={[{ required: true }, { type: 'email' }]}
+              >
+                {(f) => (
+                  <Input
+                    value={(f.value as string) ?? ''}
+                    onChange={f.onChange}
+                    onBlur={f.onBlur}
+                    placeholder={a.loginEmailPlaceholder}
+                  />
+                )}
               </Field>
-              <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 8 }}>Send Reset Link</Button>
+              <Button type="primary" htmlType="submit" style={{ width: '100%', marginTop: 8 }}>
+                {a.sendReset}
+              </Button>
               <div style={{ textAlign: 'center', marginTop: 12 }}>
-                <a style={{ fontSize: 13, color: 'var(--sg-color-primary)', cursor: 'pointer' }} onClick={() => setMode('login')}>← Back to login</a>
+                <a
+                  style={{ fontSize: 13, color: 'var(--sg-color-primary)', cursor: 'pointer' }}
+                  onClick={() => setMode('login')}
+                >
+                  {a.backToLogin}
+                </a>
               </div>
             </Form>
           )}
@@ -240,16 +400,17 @@ function MockupsDemo() {
 }
 
 export function ValidationTab() {
+  const v = useAppLocale('forms').validation
   const [section, setSection] = useState<'rules' | 'auth-forms'>('rules')
 
   return (
     <div className="forms-section">
       <Segmented
         value={section}
-        onChange={(v) => setSection(v as typeof section)}
+        onChange={(val) => setSection(val as typeof section)}
         options={[
-          { label: 'Rules & feedback', value: 'rules' },
-          { label: 'Auth form templates', value: 'auth-forms' },
+          { label: v.sections.rules, value: 'rules' },
+          { label: v.sections.authForms, value: 'auth-forms' },
         ]}
         style={{ marginBottom: 16 }}
       />

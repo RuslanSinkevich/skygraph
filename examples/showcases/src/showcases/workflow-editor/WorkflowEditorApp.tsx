@@ -13,15 +13,14 @@ import {
   notification,
   NotificationContainer,
 } from '@skygraph/react'
-import type {
-  DiagramSelectionMode,
-  DiagramNodeAction,
-  DiagramEdgeAction,
-} from '@skygraph/react'
+import type { DiagramSelectionMode, DiagramNodeAction, DiagramEdgeAction } from '@skygraph/react'
 import type { GraphNode, NodeId, Outline } from '@skygraph/core'
 import { seedNodes, seedEdges, NODE_SHAPE, NODE_PALETTE } from './data'
 import type { NodeKind } from './data'
+import { useAppLocale } from '../_shared'
+import type { ShowcasesLocale } from '@skygraph-examples/shared'
 
+type WeLocale = ShowcasesLocale['apps']['workflowEditor']
 type Routing = 'straight' | 'orthogonal' | 'manual'
 
 interface NodeData {
@@ -111,14 +110,14 @@ function DiagramContextMenu({
   )
 }
 
-function NodeBadge({ kind }: { kind: NodeKind }) {
+function NodeBadge({ kind, l }: { kind: NodeKind; l: WeLocale }) {
   const colorMap: Record<NodeKind, 'success' | 'processing' | 'warning' | 'error'> = {
     start: 'success',
     task: 'processing',
     decision: 'warning',
     end: 'error',
   }
-  return <Tag color={colorMap[kind]}>{kind}</Tag>
+  return <Tag color={colorMap[kind]}>{l.kindLabel[kind]}</Tag>
 }
 
 interface ContextMenuState {
@@ -130,6 +129,7 @@ interface ContextMenuState {
 }
 
 export function WorkflowEditorApp() {
+  const l = useAppLocale('workflowEditor')
   const { graph, state } = useGraph()
   const initialised = useRef(false)
   const [selected, setSelected] = useState<NodeId | null>(null)
@@ -191,7 +191,7 @@ export function WorkflowEditorApp() {
   const nodes = useMemo(() => Array.from(state.nodes.values()), [state])
   const edges = useMemo(() => Array.from(state.edges.values()), [state])
 
-  const selectedNode = selected ? state.nodes.get(selected) ?? null : null
+  const selectedNode = selected ? (state.nodes.get(selected) ?? null) : null
 
   function handleSelect(id: NodeId) {
     setSelected(id)
@@ -205,13 +205,13 @@ export function WorkflowEditorApp() {
     graph.updateNode(selectedNode.id, {
       data: { ...data, label: labelDraft } satisfies NodeData,
     })
-    notification.success(`Renamed to "${labelDraft}"`)
+    notification.success(l.toasts.renamed(labelDraft))
   }
 
   function handleDelete() {
     if (!selected) return
     graph.removeNode(selected)
-    notification.info(`Deleted node ${selected}`)
+    notification.info(l.toasts.deletedNode(String(selected)))
     setSelected(null)
   }
 
@@ -224,7 +224,7 @@ export function WorkflowEditorApp() {
       outline: outlineFor(addKind),
       data: { kind: addKind, label } satisfies NodeData,
     })
-    notification.success(`Added "${label}"`)
+    notification.success(l.toasts.addedNode(label))
     setAddOpen(false)
     setAddLabel('')
     setAddKind('task')
@@ -233,11 +233,11 @@ export function WorkflowEditorApp() {
 
   function handleAddEdge() {
     if (!edgeFrom || !edgeTo) {
-      notification.error('Pick source and target')
+      notification.error(l.toasts.pickEnds)
       return
     }
     if (edgeFrom === edgeTo) {
-      notification.error('Source and target must differ')
+      notification.error(l.toasts.differentEnds)
       return
     }
     graph.addEdge({
@@ -246,7 +246,7 @@ export function WorkflowEditorApp() {
       routing,
       data: edgeLabel ? { label: edgeLabel } : undefined,
     })
-    notification.success(`Connected ${edgeFrom} → ${edgeTo}`)
+    notification.success(l.toasts.connected(edgeFrom, edgeTo))
     setEdgeOpen(false)
     setEdgeFrom('')
     setEdgeTo('')
@@ -274,7 +274,7 @@ export function WorkflowEditorApp() {
       })
     }
     setSelected(null)
-    notification.info('Workflow reset to template')
+    notification.info(l.toasts.reset)
   }
 
   const nodeOptions = nodes.map((n) => ({ label: nodeLabelOf(n), value: String(n.id) }))
@@ -283,7 +283,7 @@ export function WorkflowEditorApp() {
     () => [
       {
         id: 'rename',
-        label: 'Rename',
+        label: l.nodeActions.rename,
         icon: '✎',
         onClick: (node) => {
           handleSelect(node.id)
@@ -291,7 +291,7 @@ export function WorkflowEditorApp() {
       },
       {
         id: 'duplicate',
-        label: 'Duplicate',
+        label: l.nodeActions.duplicate,
         icon: '⎘',
         onClick: (node) => {
           const data = (node.data as NodeData) ?? { kind: 'task', label: 'New' }
@@ -302,56 +302,54 @@ export function WorkflowEditorApp() {
             outline: outlineFor(data.kind),
             data: { kind: data.kind, label: `${data.label} copy` } satisfies NodeData,
           })
-          notification.success(`Duplicated "${data.label}"`)
+          notification.success(l.toasts.duplicated(data.label))
         },
       },
       {
         id: 'delete',
-        label: 'Delete',
+        label: l.nodeActions.delete,
         icon: '✕',
         onClick: (node) => {
           graph.removeNode(node.id)
-          notification.info(`Deleted node ${node.id}`)
+          notification.info(l.toasts.deletedNode(String(node.id)))
           if (selected === node.id) setSelected(null)
         },
       },
     ],
-    [graph, selected],
+    [graph, selected, l],
   )
 
   const edgeActions: DiagramEdgeAction[] = useMemo(
     () => [
       {
         id: 'remove-edge',
-        label: 'Remove edge',
+        label: l.edgeActions.remove,
         icon: '✕',
         onClick: (edge) => {
           graph.removeEdge(edge.id)
-          notification.info(`Removed edge ${edge.id}`)
+          notification.info(l.toasts.removedEdge(String(edge.id)))
         },
       },
     ],
-    [graph],
+    [graph, l],
   )
 
   const closeMenu = useCallback(() => setMenu((m) => ({ ...m, open: false })), [])
   const handleBulkDelete = useCallback(() => {
     if (selection.length === 0) return
     for (const id of selection) graph.removeNode(id)
-    notification.warning(`Removed ${selection.length} nodes`)
+    notification.warning(l.toasts.bulkRemoved(selection.length))
     setSelection([])
     setSelected(null)
-  }, [graph, selection])
+  }, [graph, selection, l])
 
   return (
     <div className="we-shell">
       <NotificationContainer />
 
       <aside className="we-palette">
-        <h4 className="we-palette-title">Palette</h4>
-        <p className="we-palette-hint">
-          Click a shape to add a node, then drag it on the canvas.
-        </p>
+        <h4 className="we-palette-title">{l.paletteTitle}</h4>
+        <p className="we-palette-hint">{l.paletteHint}</p>
         {NODE_PALETTE.map((p) => (
           <button
             key={p.kind}
@@ -362,21 +360,27 @@ export function WorkflowEditorApp() {
                 id,
                 transform: { x: 80 + Math.random() * 80, y: 340 + Math.random() * 80 },
                 outline: outlineFor(p.kind),
-                data: { kind: p.kind, label: p.label } satisfies NodeData,
+                data: { kind: p.kind, label: l.kindLabel[p.kind] } satisfies NodeData,
               })
               setSelected(id)
-              setLabelDraft(p.label)
+              setLabelDraft(l.kindLabel[p.kind])
             }}
           >
             <span className="we-palette-icon">{p.emoji}</span>
-            <span>{p.label}</span>
+            <span>{l.kindLabel[p.kind]}</span>
           </button>
         ))}
 
-        <h4 className="we-palette-title" style={{ marginTop: 20 }}>Stats</h4>
+        <h4 className="we-palette-title" style={{ marginTop: 20 }}>
+          {l.statsTitle}
+        </h4>
         <div className="we-stats">
-          <div><strong>{nodes.length}</strong> nodes</div>
-          <div><strong>{edges.length}</strong> edges</div>
+          <div>
+            <strong>{nodes.length}</strong> {l.nodesLabel}
+          </div>
+          <div>
+            <strong>{edges.length}</strong> {l.edgesLabel}
+          </div>
         </div>
       </aside>
 
@@ -386,35 +390,42 @@ export function WorkflowEditorApp() {
             value={routing}
             onChange={(v) => setRouting(v as Routing)}
             options={[
-              { label: 'Straight', value: 'straight' },
-              { label: 'Orthogonal', value: 'orthogonal' },
+              { label: l.routing.straight, value: 'straight' },
+              { label: l.routing.orthogonal, value: 'orthogonal' },
             ]}
           />
           <Segmented
             value={selectionMode}
             onChange={(v) => setSelectionMode(v as DiagramSelectionMode)}
             options={[
-              { label: 'Single', value: 'single' },
-              { label: 'Multi (⌃-click)', value: 'multi' },
-              { label: 'Lasso', value: 'lasso' },
+              { label: l.selection.single, value: 'single' },
+              { label: l.selection.multi, value: 'multi' },
+              { label: l.selection.lasso, value: 'lasso' },
             ]}
           />
           <div className="sc-toolbar-spacer" />
           {selection.length > 0 && (
             <>
-              <Tag color="processing">{selection.length} selected</Tag>
-              <Popconfirm title={`Delete ${selection.length} selected nodes?`} onConfirm={handleBulkDelete}>
-                <Button size="small">Delete selected</Button>
+              <Tag color="processing">{l.selectedTag(selection.length)}</Tag>
+              <Popconfirm
+                title={l.deleteSelectedConfirm(selection.length)}
+                onConfirm={handleBulkDelete}
+              >
+                <Button size="small">{l.deleteSelected}</Button>
               </Popconfirm>
             </>
           )}
           <Button size="small" onClick={() => setDraggable(!draggable)}>
-            {draggable ? 'Lock layout' : 'Unlock layout'}
+            {draggable ? l.lockLayout : l.unlockLayout}
           </Button>
-          <Button size="small" onClick={() => setEdgeOpen(true)}>+ Edge</Button>
-          <Button size="small" type="primary" onClick={() => setAddOpen(true)}>+ Node</Button>
-          <Popconfirm title="Reset to template?" onConfirm={handleReset}>
-            <Button size="small">Reset</Button>
+          <Button size="small" onClick={() => setEdgeOpen(true)}>
+            {l.addEdge}
+          </Button>
+          <Button size="small" type="primary" onClick={() => setAddOpen(true)}>
+            {l.addNode}
+          </Button>
+          <Popconfirm title={l.resetConfirm} onConfirm={handleReset}>
+            <Button size="small">{l.resetTemplate}</Button>
           </Popconfirm>
         </div>
 
@@ -463,16 +474,17 @@ export function WorkflowEditorApp() {
               x={menu.x}
               y={menu.y}
               onClose={closeMenu}
-              items={menu.nodeId
-                ? [
-                    { key: 'rename', label: '✎ Rename' },
-                    { key: 'duplicate', label: '⎘ Duplicate' },
-                    { key: 'delete', label: '✕ Delete', danger: true },
-                  ]
-                : [
-                    { key: 'add-node', label: '+ New node' },
-                    { key: 'add-edge', label: '+ New edge' },
-                  ]
+              items={
+                menu.nodeId
+                  ? [
+                      { key: 'rename', label: `✎ ${l.contextMenu.rename}` },
+                      { key: 'duplicate', label: `⎘ ${l.contextMenu.duplicate}` },
+                      { key: 'delete', label: `✕ ${l.contextMenu.delete}`, danger: true },
+                    ]
+                  : [
+                      { key: 'add-node', label: `+ ${l.contextMenu.addNode}` },
+                      { key: 'add-edge', label: `+ ${l.contextMenu.addEdge}` },
+                    ]
               }
               onSelect={(key) => {
                 closeMenu()
@@ -489,10 +501,10 @@ export function WorkflowEditorApp() {
                       outline: outlineFor(data.kind),
                       data: { kind: data.kind, label: `${data.label} copy` } satisfies NodeData,
                     })
-                    notification.success(`Duplicated "${data.label}"`)
+                    notification.success(l.toasts.duplicated(data.label))
                   } else if (key === 'delete') {
                     graph.removeNode(menu.nodeId)
-                    notification.info(`Deleted ${menu.nodeId}`)
+                    notification.info(l.toasts.deletedShort(String(menu.nodeId)))
                     if (selected === menu.nodeId) setSelected(null)
                   }
                 } else {
@@ -506,53 +518,52 @@ export function WorkflowEditorApp() {
       </section>
 
       <aside className="we-inspector">
-        <h4 className="we-palette-title">Inspector</h4>
+        <h4 className="we-palette-title">{l.inspector.title}</h4>
         {!selectedNode ? (
-          <Empty description="Select a node" />
+          <Empty description={l.inspector.selectNode} />
         ) : (
           <>
             <div className="we-inspector-row">
-              <span className="we-inspector-label">ID</span>
+              <span className="we-inspector-label">{l.inspector.id}</span>
               <code>{String(selectedNode.id)}</code>
             </div>
             <div className="we-inspector-row">
-              <span className="we-inspector-label">Kind</span>
-              <NodeBadge kind={nodeKindOf(selectedNode)} />
+              <span className="we-inspector-label">{l.inspector.kind}</span>
+              <NodeBadge kind={nodeKindOf(selectedNode)} l={l} />
             </div>
             <div className="we-inspector-row">
-              <span className="we-inspector-label">Position</span>
+              <span className="we-inspector-label">{l.inspector.position}</span>
               <code>
                 ({Math.round(selectedNode.transform.x)}, {Math.round(selectedNode.transform.y)})
               </code>
             </div>
             <div className="we-inspector-row">
-              <span className="we-inspector-label">Outgoing</span>
-              <code>
-                {edges.filter((e) => e.from.node === selectedNode.id).length}
-              </code>
+              <span className="we-inspector-label">{l.inspector.outgoing}</span>
+              <code>{edges.filter((e) => e.from.node === selectedNode.id).length}</code>
             </div>
             <div className="we-inspector-row">
-              <span className="we-inspector-label">Incoming</span>
-              <code>
-                {edges.filter((e) => e.to.node === selectedNode.id).length}
-              </code>
+              <span className="we-inspector-label">{l.inspector.incoming}</span>
+              <code>{edges.filter((e) => e.to.node === selectedNode.id).length}</code>
             </div>
 
             <div className="we-inspector-section">
-              <label className="we-inspector-label">Label</label>
+              <label className="we-inspector-label">{l.inspector.label}</label>
               <Input value={labelDraft} onChange={setLabelDraft} />
               <Button size="small" type="primary" onClick={handleRename} style={{ marginTop: 8 }}>
-                Apply
+                {l.inspector.apply}
               </Button>
             </div>
 
             <div className="we-inspector-section">
-              <Popconfirm title={`Delete "${nodeLabelOf(selectedNode)}"?`} onConfirm={handleDelete}>
+              <Popconfirm
+                title={l.inspector.deleteConfirm(nodeLabelOf(selectedNode))}
+                onConfirm={handleDelete}
+              >
                 <Button
                   size="small"
                   style={{ width: '100%', color: 'var(--sg-color-error, #d4380d)' }}
                 >
-                  Delete node
+                  {l.inspector.delete}
                 </Button>
               </Popconfirm>
             </div>
@@ -563,26 +574,32 @@ export function WorkflowEditorApp() {
       <Modal
         open={addOpen}
         onClose={() => setAddOpen(false)}
-        title="Add node"
+        title={l.modals.addTitle}
         footer={null}
         width={420}
       >
         <div className="we-form">
           <label className="we-form-row">
-            <span className="we-form-label">Label</span>
-            <Input value={addLabel} onChange={setAddLabel} placeholder="Describe the step" />
+            <span className="we-form-label">{l.modals.labelField}</span>
+            <Input
+              value={addLabel}
+              onChange={setAddLabel}
+              placeholder={l.modals.labelPlaceholder}
+            />
           </label>
           <label className="we-form-row">
-            <span className="we-form-label">Kind</span>
+            <span className="we-form-label">{l.modals.kindField}</span>
             <Select
               value={addKind}
               onChange={(v) => setAddKind(v as NodeKind)}
-              options={NODE_PALETTE.map((p) => ({ label: p.label, value: p.kind }))}
+              options={NODE_PALETTE.map((p) => ({ label: l.kindLabel[p.kind], value: p.kind }))}
             />
           </label>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-            <Button onClick={() => setAddOpen(false)}>Cancel</Button>
-            <Button type="primary" onClick={handleAddNode}>Add</Button>
+            <Button onClick={() => setAddOpen(false)}>{l.modals.cancel}</Button>
+            <Button type="primary" onClick={handleAddNode}>
+              {l.modals.add}
+            </Button>
           </div>
         </div>
       </Modal>
@@ -590,36 +607,42 @@ export function WorkflowEditorApp() {
       <Modal
         open={edgeOpen}
         onClose={() => setEdgeOpen(false)}
-        title="Connect nodes"
+        title={l.modals.edgeTitle}
         footer={null}
         width={420}
       >
         <div className="we-form">
           <label className="we-form-row">
-            <span className="we-form-label">From</span>
+            <span className="we-form-label">{l.modals.fromField}</span>
             <Select
               value={edgeFrom}
               onChange={(v) => setEdgeFrom(String(v))}
               options={nodeOptions}
-              placeholder="Source node"
+              placeholder={l.modals.fromPlaceholder}
             />
           </label>
           <label className="we-form-row">
-            <span className="we-form-label">To</span>
+            <span className="we-form-label">{l.modals.toField}</span>
             <Select
               value={edgeTo}
               onChange={(v) => setEdgeTo(String(v))}
               options={nodeOptions}
-              placeholder="Target node"
+              placeholder={l.modals.toPlaceholder}
             />
           </label>
           <label className="we-form-row">
-            <span className="we-form-label">Label</span>
-            <Input value={edgeLabel} onChange={setEdgeLabel} placeholder="yes / no / ..." />
+            <span className="we-form-label">{l.modals.edgeLabel}</span>
+            <Input
+              value={edgeLabel}
+              onChange={setEdgeLabel}
+              placeholder={l.modals.edgeLabelPlaceholder}
+            />
           </label>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-            <Button onClick={() => setEdgeOpen(false)}>Cancel</Button>
-            <Button type="primary" onClick={handleAddEdge}>Connect</Button>
+            <Button onClick={() => setEdgeOpen(false)}>{l.modals.cancel}</Button>
+            <Button type="primary" onClick={handleAddEdge}>
+              {l.modals.connect}
+            </Button>
           </div>
         </div>
       </Modal>

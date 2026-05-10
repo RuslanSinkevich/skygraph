@@ -1,26 +1,43 @@
 import { Table } from '@skygraph/react'
-import { tableData, statusTag, ratingBar, salaryFmt, locale } from './common'
+import { tableData, statusTag, ratingBar, salaryFmt, makeTableLocale } from './common'
+import { useAppLocale } from '../_shared'
 
 export function PinnedTab() {
+  const l = useAppLocale('tableKitchenSink')
+  const p = l.pinned
   const slice = tableData.slice(0, 20)
 
   return (
     <div>
       <p style={{ marginBottom: 12, color: 'var(--sg-color-text-secondary)', fontSize: 13 }}>
-        First 2 rows pinned to <strong>top</strong>, last 2 pinned to <strong>bottom</strong>. They stay
-        visible while scrolling.
+        {p.lead}
       </p>
       <Table
         columns={[
-          { key: 'name', title: 'Employee', width: 200, sortable: true, fixed: 'left' as const },
-          { key: 'department', title: 'Department', width: 130, sortable: true },
-          { key: 'role', title: 'Role', width: 100 },
           {
-            key: 'salary', title: 'Salary', width: 120, sortable: true,
-            align: 'right' as const, render: (v) => salaryFmt(v),
+            key: 'name',
+            title: p.columns.employee,
+            width: 200,
+            sortable: true,
+            fixed: 'left' as const,
           },
-          { key: 'rating', title: 'Rating', width: 150, render: (v) => ratingBar(v) },
-          { key: 'status', title: 'Status', width: 110, render: (v) => statusTag(v) },
+          { key: 'department', title: p.columns.department, width: 130, sortable: true },
+          { key: 'role', title: p.columns.role, width: 100 },
+          {
+            key: 'salary',
+            title: p.columns.salary,
+            width: 120,
+            sortable: true,
+            align: 'right' as const,
+            render: (v) => salaryFmt(v),
+          },
+          { key: 'rating', title: p.columns.rating, width: 150, render: (v) => ratingBar(v) },
+          {
+            key: 'status',
+            title: p.columns.status,
+            width: 110,
+            render: (v) => statusTag(v, l.statusLabel),
+          },
         ]}
         data={slice}
         pageSize={20}
@@ -33,7 +50,7 @@ export function PinnedTab() {
         showRowNumber
         striped
         scroll={{ x: 900 }}
-        locale={locale}
+        locale={makeTableLocale(l)}
       />
     </div>
   )

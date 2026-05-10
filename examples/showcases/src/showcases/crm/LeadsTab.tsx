@@ -1,12 +1,25 @@
 import { useState, useMemo } from 'react'
 import {
-  Table, Tag, Button, Modal, Dropdown, Segmented, Progress, notification,
+  Table,
+  Tag,
+  Button,
+  Modal,
+  Dropdown,
+  Segmented,
+  Progress,
+  notification,
 } from '@skygraph/react'
 import type { TableColumn } from '@skygraph/react'
 import { contacts as initialContacts, activities, deals } from './data'
 import type { Contact, ContactStatus } from './data'
 import {
-  Toolbar, useFilteredList, money, statusColor, renderUserCell, shortDate,
+  Toolbar,
+  useFilteredList,
+  money,
+  statusColor,
+  renderUserCell,
+  shortDate,
+  useAppLocale,
 } from '../_shared'
 import { ContactForm } from './ContactForm'
 import { ContactDrawer } from './ContactDrawer'
@@ -14,6 +27,8 @@ import { ContactDrawer } from './ContactDrawer'
 type LeadFilter = 'all' | 'lead' | 'prospect'
 
 export function LeadsTab() {
+  const lc = useAppLocale('crm')
+  const ld = lc.leads
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<LeadFilter>('all')
   const [drawerContact, setDrawerContact] = useState<Contact | null>(null)
@@ -21,59 +36,84 @@ export function LeadsTab() {
   const [convertContact, setConvertContact] = useState<Contact | null>(null)
 
   const leads = useMemo(
-    () => initialContacts.filter(c => c.status === 'lead' || c.status === 'prospect'),
+    () => initialContacts.filter((c) => c.status === 'lead' || c.status === 'prospect'),
     [],
   )
 
   const visible = useMemo(() => {
-    return leads.filter(c => filter === 'all' || c.status === (filter as ContactStatus))
+    return leads.filter((c) => filter === 'all' || c.status === (filter as ContactStatus))
   }, [leads, filter])
 
   const filtered = useFilteredList(visible, search, ['name', 'company', 'email'])
 
   const tableData = useMemo(
-    () => filtered.map(c => ({ id: c.id, data: c as unknown as Record<string, unknown> })),
+    () => filtered.map((c) => ({ id: c.id, data: c as unknown as Record<string, unknown> })),
     [filtered],
   )
 
   const columns: TableColumn[] = [
     {
-      key: 'name', title: 'Lead', width: 240, sortable: true,
-      render: (_, row) => <>{renderUserCell({
-        name: String(row.name),
-        email: String(row.email),
-        avatar: String(row.avatar),
-      })}</>,
+      key: 'name',
+      title: ld.columns.lead,
+      width: 240,
+      sortable: true,
+      render: (_, row) => (
+        <>
+          {renderUserCell({
+            name: String(row.name),
+            email: String(row.email),
+            avatar: String(row.avatar),
+          })}
+        </>
+      ),
     },
-    { key: 'company', title: 'Company', width: 140, sortable: true },
+    { key: 'company', title: ld.columns.company, width: 140, sortable: true },
     {
-      key: 'status', title: 'Stage', width: 110,
-      render: (val) => <Tag color={statusColor(String(val))}>{String(val)}</Tag>,
+      key: 'status',
+      title: ld.columns.stage,
+      width: 110,
+      render: (val) => (
+        <Tag color={statusColor(String(val))}>{lc.statusLabel[String(val)] ?? String(val)}</Tag>
+      ),
     },
     {
-      key: 'revenue', title: 'Potential', width: 120, sortable: true, align: 'right',
+      key: 'revenue',
+      title: ld.columns.potential,
+      width: 120,
+      sortable: true,
+      align: 'right',
       render: (val) => money(Number(val)),
     },
     {
-      key: 'lastContact', title: 'Last Contact', width: 120, sortable: true,
+      key: 'lastContact',
+      title: ld.columns.lastContact,
+      width: 120,
+      sortable: true,
       render: (val) => shortDate(String(val)),
     },
     {
-      key: 'actions', title: '', width: 150,
+      key: 'actions',
+      title: '',
+      width: 150,
       render: (_, row) => (
         <div style={{ display: 'flex', gap: 4 }}>
-          <Button size="small" onClick={() => {
-            const c = initialContacts.find(x => x.id === String(row.id))
-            if (c) setDrawerContact(c)
-          }}>View</Button>
+          <Button
+            size="small"
+            onClick={() => {
+              const c = initialContacts.find((x) => x.id === String(row.id))
+              if (c) setDrawerContact(c)
+            }}
+          >
+            {ld.viewBtn}
+          </Button>
           <Dropdown
             items={[
-              { key: 'edit', label: 'Edit' },
-              { key: 'convert', label: 'Convert to Customer' },
-              { key: 'email', label: 'Send Email' },
+              { key: 'edit', label: ld.rowActions.edit },
+              { key: 'convert', label: ld.rowActions.convert },
+              { key: 'email', label: ld.rowActions.sendEmail },
             ]}
             onSelect={(key) => {
-              const c = initialContacts.find(x => x.id === String(row.id))
+              const c = initialContacts.find((x) => x.id === String(row.id))
               if (!c) return
               if (key === 'edit') setEditContact(c)
               else if (key === 'convert') setConvertContact(c)
@@ -88,72 +128,89 @@ export function LeadsTab() {
   ]
 
   const conversionRate = leads.length
-    ? Math.round((leads.filter(c => c.status === 'prospect').length / leads.length) * 100)
+    ? Math.round((leads.filter((c) => c.status === 'prospect').length / leads.length) * 100)
     : 0
 
-  const drawerActivities = drawerContact ? activities.filter(a => a.contactId === drawerContact.id) : []
-  const drawerDeals = drawerContact ? deals.filter(d => d.contactId === drawerContact.id) : []
+  const drawerActivities = drawerContact
+    ? activities.filter((a) => a.contactId === drawerContact.id)
+    : []
+  const drawerDeals = drawerContact ? deals.filter((d) => d.contactId === drawerContact.id) : []
 
   return (
     <>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: 12,
-        marginBottom: 16,
-      }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: 12,
+          marginBottom: 16,
+        }}
+      >
         <div className="lead-card">
-          <div className="lead-card-label">Total Leads</div>
+          <div className="lead-card-label">{ld.cards.total}</div>
           <div className="lead-card-value">{leads.length}</div>
         </div>
         <div className="lead-card">
-          <div className="lead-card-label">New Leads</div>
-          <div className="lead-card-value">{leads.filter(c => c.status === 'lead').length}</div>
+          <div className="lead-card-label">{ld.cards.newLeads}</div>
+          <div className="lead-card-value">{leads.filter((c) => c.status === 'lead').length}</div>
         </div>
         <div className="lead-card">
-          <div className="lead-card-label">Qualified Prospects</div>
-          <div className="lead-card-value">{leads.filter(c => c.status === 'prospect').length}</div>
+          <div className="lead-card-label">{ld.cards.qualified}</div>
+          <div className="lead-card-value">
+            {leads.filter((c) => c.status === 'prospect').length}
+          </div>
         </div>
         <div className="lead-card">
-          <div className="lead-card-label">Lead → Prospect Rate</div>
+          <div className="lead-card-label">{ld.cards.conversion}</div>
           <Progress percent={conversionRate} size="small" />
         </div>
       </div>
 
       <Toolbar
-        search={{ value: search, onChange: setSearch, placeholder: 'Search leads…' }}
+        search={{ value: search, onChange: setSearch, placeholder: ld.searchPlaceholder }}
         filters={
           <Segmented
             value={filter}
             onChange={(v) => setFilter(v as LeadFilter)}
             options={[
-              { label: `All (${leads.length})`, value: 'all' },
-              { label: `Leads`, value: 'lead' },
-              { label: `Prospects`, value: 'prospect' },
+              { label: ld.filterAll(leads.length), value: 'all' },
+              { label: ld.filterLeads, value: 'lead' },
+              { label: ld.filterProspects, value: 'prospect' },
             ]}
           />
         }
         actions={
-          <Button type="primary" onClick={() => setEditContact({
-            id: `new-${Date.now()}`,
-            name: '', email: '', company: '', phone: '',
-            status: 'lead', revenue: 0, lastContact: shortDate(new Date()),
-            avatar: '?',
-          } as Contact)}>+ Add Lead</Button>
+          <Button
+            type="primary"
+            onClick={() =>
+              setEditContact({
+                id: `new-${Date.now()}`,
+                name: '',
+                email: '',
+                company: '',
+                phone: '',
+                status: 'lead',
+                revenue: 0,
+                lastContact: shortDate(new Date()),
+                avatar: '?',
+              } as Contact)
+            }
+          >
+            {ld.addLead}
+          </Button>
         }
       />
-      <Table
-        columns={columns}
-        data={tableData}
-        pageSize={10}
-        size="small"
-        striped
-      />
+      <Table columns={columns} data={tableData} pageSize={10} size="small" striped />
 
       <ContactDrawer
         contact={drawerContact}
         onClose={() => setDrawerContact(null)}
-        onEdit={() => { if (drawerContact) { setEditContact(drawerContact); setDrawerContact(null) } }}
+        onEdit={() => {
+          if (drawerContact) {
+            setEditContact(drawerContact)
+            setDrawerContact(null)
+          }
+        }}
         activities={drawerActivities}
         deals={drawerDeals}
       />
@@ -161,7 +218,7 @@ export function LeadsTab() {
       <Modal
         open={!!editContact}
         onClose={() => setEditContact(null)}
-        title={editContact?.name ? `Edit — ${editContact.name}` : 'Add Lead'}
+        title={editContact?.name ? ld.editTitle(editContact.name) : ld.addLeadTitle}
         footer={null}
         width={520}
       >
@@ -169,11 +226,10 @@ export function LeadsTab() {
           <ContactForm
             initialValues={editContact}
             onSubmit={(values) => {
-              notification.success('Lead saved (mock)', JSON.stringify(values, null, 2))
+              notification.success(ld.savedToast, JSON.stringify(values, null, 2))
               setEditContact(null)
             }}
             onCancel={() => setEditContact(null)}
-            submitLabel="Save"
           />
         )}
       </Modal>
@@ -181,14 +237,14 @@ export function LeadsTab() {
       <Modal
         open={!!convertContact}
         onClose={() => setConvertContact(null)}
-        title={`Convert "${convertContact?.name}" to customer?`}
+        title={ld.convertTitle(convertContact?.name ?? '')}
         onOk={() => {
-          notification.success(`${convertContact?.name} converted to customer (mock)`)
+          notification.success(ld.convertedToast(convertContact?.name ?? ''))
           setConvertContact(null)
         }}
-        okText="Convert"
+        okText={ld.convertOk}
       >
-        <p>This will move the lead to the Contacts tab as an active customer.</p>
+        <p>{ld.convertText}</p>
       </Modal>
 
       <style>{leadsStyles}</style>

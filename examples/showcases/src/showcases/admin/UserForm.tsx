@@ -1,8 +1,7 @@
-import {
-  Form, Field, Input, Select, Switch, Button,
-} from '@skygraph/react'
+import { Form, Field, Input, Select, Switch, Button } from '@skygraph/react'
 import type { SystemUser } from './data'
 import { roles } from './data'
+import { useAppLocale } from '../_shared'
 
 export interface UserFormProps {
   initialValues?: Partial<SystemUser>
@@ -12,41 +11,62 @@ export interface UserFormProps {
   showStatus?: boolean
 }
 
-const departments = ['Engineering', 'Product', 'Design', 'Marketing', 'Sales', 'Support', 'Finance', 'HR']
+const departments = [
+  'Engineering',
+  'Product',
+  'Design',
+  'Marketing',
+  'Sales',
+  'Support',
+  'Finance',
+  'HR',
+]
 
-export function UserForm({ initialValues, onSubmit, onCancel, submitLabel = 'Save', showStatus = false }: UserFormProps) {
+export function UserForm({
+  initialValues,
+  onSubmit,
+  onCancel,
+  submitLabel,
+  showStatus = false,
+}: UserFormProps) {
+  const f = useAppLocale('admin').userForm
   return (
     <Form initialValues={initialValues} onFinish={(v) => onSubmit(v as Partial<SystemUser>)}>
-      <Field name="name" label="Full Name" rules={[{ required: true }]}>
-        <Input placeholder="John Doe" />
+      <Field name="name" label={f.fullName} rules={[{ required: true }]}>
+        <Input placeholder={f.fullNamePh} />
       </Field>
-      <Field name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
-        <Input placeholder="john@company.io" />
+      <Field name="email" label={f.email} rules={[{ required: true, type: 'email' }]}>
+        <Input placeholder={f.emailPh} />
       </Field>
-      <Field name="department" label="Department" rules={[{ required: true }]}>
-        <Select options={departments.map(d => ({ label: d, value: d }))} placeholder="Select department" />
+      <Field name="department" label={f.department} rules={[{ required: true }]}>
+        <Select options={departments.map((d) => ({ label: d, value: d }))} placeholder={f.deptPh} />
       </Field>
-      <Field name="role" label="Role" rules={[{ required: true }]}>
-        <Select options={roles.map(r => ({ label: r.name, value: r.key }))} placeholder="Select role" />
+      <Field name="role" label={f.role} rules={[{ required: true }]}>
+        <Select
+          options={roles.map((r) => ({ label: r.name, value: r.key }))}
+          placeholder={f.rolePh}
+        />
       </Field>
       {showStatus && (
-        <Field name="status" label="Status">
+        <Field name="status" label={f.status}>
           <Select
             options={[
-              { label: 'Active', value: 'active' },
-              { label: 'Suspended', value: 'suspended' },
-              { label: 'Pending', value: 'pending' },
-              { label: 'Deactivated', value: 'deactivated' },
+              { label: f.statusOptions.active, value: 'active' },
+              { label: f.statusOptions.suspended, value: 'suspended' },
+              { label: f.statusOptions.pending, value: 'pending' },
+              { label: f.statusOptions.deactivated, value: 'deactivated' },
             ]}
           />
         </Field>
       )}
-      <Field name="twoFactor" label="Require 2FA">
+      <Field name="twoFactor" label={f.twoFa}>
         <Switch />
       </Field>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-        {onCancel && <Button onClick={onCancel}>Cancel</Button>}
-        <Button type="primary" htmlType="submit">{submitLabel}</Button>
+        {onCancel && <Button onClick={onCancel}>{f.cancel}</Button>}
+        <Button type="primary" htmlType="submit">
+          {submitLabel ?? ''}
+        </Button>
       </div>
     </Form>
   )

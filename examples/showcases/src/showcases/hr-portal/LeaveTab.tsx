@@ -1,20 +1,8 @@
 import { useMemo, useState } from 'react'
-import {
-  ResourceCalendar,
-  Table,
-  Tag,
-  Button,
-  Segmented,
-  notification,
-} from '@skygraph/react'
-import type {
-  Assignment,
-  Conflict,
-  Resource,
-  TableColumn,
-} from '@skygraph/react'
+import { ResourceCalendar, Table, Tag, Button, Segmented, notification } from '@skygraph/react'
+import type { Assignment, Conflict, Resource, TableColumn } from '@skygraph/react'
 import { employees, leaveRecords, leaveToRow } from './data'
-import { statusColor } from '../_shared'
+import { statusColor, useAppLocale } from '../_shared'
 
 const PALETTE = [
   '#3b82f6',
@@ -41,6 +29,8 @@ function dateMs(s: string): number {
 }
 
 export function LeaveTab() {
+  const lc = useAppLocale('hrPortal')
+  const lv = lc.leave
   const [view, setView] = useState<'calendar' | 'table'>('calendar')
   const [conflicts, setConflicts] = useState<Conflict[]>([])
 
@@ -62,41 +52,48 @@ export function LeaveTab() {
       .map((l) => ({
         id: l.id,
         resourceId: l.employeeId,
-        title: `${l.type} · ${l.status}`,
+        title: `${lc.leaveTypeLabel[l.type] ?? l.type} · ${lc.leaveStatusLabel[l.status] ?? l.status}`,
         start: dateMs(l.startDate),
         end: dateMs(l.endDate) + DAY_MS,
-        status: l.status === 'pending' ? 'tentative' : TYPE_STATUS[l.type] ?? 'tentative',
+        status: l.status === 'pending' ? 'tentative' : (TYPE_STATUS[l.type] ?? 'tentative'),
       }))
-  }, [resources])
+  }, [resources, lc])
 
   const [assignments, setAssignments] = useState(initialAssignments)
 
   const tableData = useMemo(() => leaveRecords.map(leaveToRow), [])
 
   const columns: TableColumn[] = [
-    { key: 'employeeName', title: 'Employee', width: 180, sortable: true, fixed: 'left' },
+    { key: 'employeeName', title: lv.table.employee, width: 180, sortable: true, fixed: 'left' },
     {
       key: 'type',
-      title: 'Type',
+      title: lv.table.type,
       width: 110,
-      filters: [
-        { text: 'vacation', value: 'vacation' },
-        { text: 'sick', value: 'sick' },
-        { text: 'personal', value: 'personal' },
-        { text: 'remote', value: 'remote' },
-      ],
+      filters: (['vacation', 'sick', 'personal', 'remote'] as const).map((v) => ({
+        text: lv.table.typeFilters[v],
+        value: v,
+      })),
       onFilter: (v, row) => row.type === v,
-      render: (val) => <Tag>{String(val)}</Tag>,
+      render: (val) => {
+        const v = String(val) as keyof typeof lc.leaveTypeLabel
+        return <Tag>{lc.leaveTypeLabel[v] ?? String(val)}</Tag>
+      },
     },
-    { key: 'startDate', title: 'From', width: 120, sortable: true },
-    { key: 'endDate', title: 'To', width: 120, sortable: true },
+    { key: 'startDate', title: lv.table.from, width: 120, sortable: true },
+    { key: 'endDate', title: lv.table.to, width: 120, sortable: true },
     {
       key: 'status',
-      title: 'Status',
+      title: lv.table.status,
       width: 110,
-      filters: ['approved', 'pending', 'rejected'].map((v) => ({ text: v, value: v })),
+      filters: (['approved', 'pending', 'rejected'] as const).map((v) => ({
+        text: lv.table.statusFilters[v],
+        value: v,
+      })),
       onFilter: (value, row) => row.status === value,
-      render: (val) => <Tag color={statusColor(String(val))}>{String(val)}</Tag>,
+      render: (val) => {
+        const v = String(val) as keyof typeof lc.leaveStatusLabel
+        return <Tag color={statusColor(String(val))}>{lc.leaveStatusLabel[v] ?? String(val)}</Tag>
+      },
     },
     {
       key: 'actions',
@@ -108,15 +105,15 @@ export function LeaveTab() {
             <Button
               size="small"
               type="primary"
-              onClick={() => notification.success(`Approved leave for ${row.employeeName}`)}
+              onClick={() => notification.success(lv.toasts.approved(String(row.employeeName)))}
             >
-              Approve
+              {lv.table.approve}
             </Button>
             <Button
               size="small"
-              onClick={() => notification.error(`Rejected leave for ${row.employeeName}`)}
+              onClick={() => notification.error(lv.toasts.rejected(String(row.employeeName)))}
             >
-              Reject
+              {lv.table.reject}
             </Button>
           </div>
         ) : null,
@@ -130,17 +127,23 @@ export function LeaveTab() {
           value={view}
           onChange={(v) => setView(v as typeof view)}
           options={[
-            { label: 'Lane planner (ResourceCalendar)', value: 'calendar' },
-            { label: 'Requests table', value: 'table' },
+            { label: lv.views.calendar, value: 'calendar' },
+            { label: lv.views.table, value: 'table' },
           ]}
         />
         <span style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>
-          {conflicts.length === 0 ? 'No overlapping leaves' : `${conflicts.length} overlap(s) detected`}
+          {conflicts.length === 0 ? lv.noOverlaps : lv.overlapsCount(conflicts.length)}
         </span>
       </div>
 
       {view === 'calendar' ? (
-        <div style={{ overflowX: 'auto', border: '1px solid var(--sg-color-border-secondary)', borderRadius: 8 }}>
+        <div
+          style={{
+            overflowX: 'auto',
+            border: '1px solid var(--sg-color-border-secondary)',
+            borderRadius: 8,
+          }}
+        >
           <ResourceCalendar
             resources={resources}
             assignments={assignments}
@@ -169,8 +172,8 @@ export function LeaveTab() {
           densityToggle
           exportable
           groupByOptions={[
-            { key: 'type', label: 'Leave type' },
-            { key: 'status', label: 'Status' },
+            { key: 'type', label: lv.table.groupByType },
+            { key: 'status', label: lv.table.groupByStatus },
           ]}
           footer
         />
