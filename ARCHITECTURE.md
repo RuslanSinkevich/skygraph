@@ -25,14 +25,20 @@
 │    tree/         — TreeEngine               │
 │    virtual/      — VirtualScroll engine     │
 │    graph/        — GraphEngine (diagrams)   │
-│    validation/   — sync + async             │
+│    calendar/     — CalendarEngine           │
+│                                             │
+│  Валидация живёт внутри `engines/form/`     │
+│  (FormEngine + middleware/validation.ts) —  │
+│  отдельного `validation/` пакета нет.       │
 │                                             │
 │  engines/ использует runtime/ internal API  │
 │  runtime/ НИКОГДА не импортирует engines/   │
 └─────────────────────────────────────────────┘
           ▲ public API only
           │
-@skygraph/react (peer: core + react)
+@skygraph/react (peer: core + react) — канонический адаптер
+@skygraph/vue   (peer: core + vue ^3.4) — полный паритет API/CSS
+@skygraph/angular (планируется) — тот же контракт
 ┌─────────────────────────────────────────────┐
 │  hooks/                                     │
 │    useField, useForm, useFieldArray         │
@@ -81,14 +87,17 @@
 
 Engine, который пишет в `Core` store под `$`-префиксом, **обязан** зарезервировать свой префикс через `reservePrefix(engineName, prefix)` из `engines/namespaces.ts`. Коллизия между двумя engines бросает исключение на загрузке модуля, а не молча перетирает данные.
 
-Зарезервированные префиксы:
+Зарезервированные префиксы (`packages/core/src/engines/namespaces.ts`):
 
-| Engine | Префикс |
+| Engine    | Префикс       |
 |---|---|
-| form  | `$meta.`  |
-| table | `$table.` |
-| tree  | `$tree.`  |
-| graph | `$graph.` |
+| form      | `$meta.`     |
+| table     | `$table.`    |
+| tree      | `$tree.`     |
+| graph     | `$graph.`    |
+| calendar  | `$calendar.` |
+
+`virtual/` работает в памяти (без записи в Core store) и префикс не резервирует.
 
 Пользовательские данные не должны жить под `$` — эта зона для engines.
 
@@ -494,58 +503,93 @@ skygraph/
 │   │   │   │   └── index.ts
 │   │   │   ├── engines/
 │   │   │   │   ├── form/       — FormEngine, FieldModel, MetaStore, ValidationEngine
-│   │   │   │   ├── table/      — TableEngine (sort, filter, pagination)
+│   │   │   │   ├── table/      — TableEngine (sort, filter, pagination, pinning, group)
 │   │   │   │   ├── tree/       — TreeEngine (expand, check, drag, async)
-│   │   │   │   └── virtual/    — VirtualScroll engine
-│   │   │   ├── __tests__/      — 146 unit tests
+│   │   │   │   ├── virtual/    — VirtualScroll engine (windowed rendering)
+│   │   │   │   ├── graph/      — GraphEngine (nodes/edges/anchors/orthogonal routing)
+│   │   │   │   ├── calendar/   — CalendarEngine (resources/assignments/conflicts)
+│   │   │   │   └── namespaces.ts — `$meta. $table. $tree. $graph. $calendar.`
+│   │   │   ├── __tests__/      — 388 unit tests (+ 1 bench-gated)
 │   │   │   ├── types.ts
 │   │   │   ├── Core.ts
 │   │   │   └── index.ts
 │   │   └── package.json
 │   │
-│   └── react/
-│       ├── src/
-│       │   ├── hooks/
-│       │   │   ├── useField.ts, useForm.ts, useFieldArray.ts
-│       │   │   ├── useWatch.ts, useComputed.ts, useHistory.ts
-│       │   │   ├── useTable.ts, useTree.ts, useVirtualScroll.ts
-│       │   │   └── a11y/
-│       │   │       ├── useFocusTrap.ts
-│       │   │       ├── useRovingTabIndex.ts
-│       │   │       └── useListNavigation.ts
-│       │   ├── components/
-│       │   │   ├── complex/    — Form, Field, FormList, FormProvider,
-│       │   │   │                 SchemaForm, AutoField/, SubmitButton,
-│       │   │   │                 Table/, DataGrid/, Tree/, List/,
-│       │   │   │                 TreeSelect/, Cascader/, Calendar/,
-│       │   │   │                 Transfer/, VirtualList/
-│       │   │   ├── ui/         — 44 standalone components
-│       │   │   │                 (Button, Input, Select, Modal, Drawer,
-│       │   │   │                  Tabs, Menu, Notification, Tooltip,
-│       │   │   │                  Transition, Mentions, Calendar, ...)
-│       │   │   └── ConfigProvider.tsx
-│       │   ├── adapters/
-│       │   │   ├── zodAdapter.ts
-│       │   │   └── jsonSchemaAdapter.ts
-│       │   ├── types/          — shared types (BaseComponentProps, SgLocale, etc.)
-│       │   ├── __tests__/      — 282 component/hook/adapter tests
-│       │   └── index.ts
-│       └── package.json
+│   ├── react/                  — @skygraph/react (канонический адаптер)
+│   │   ├── src/
+│   │   │   ├── hooks/
+│   │   │   │   ├── useField.ts, useForm.ts, useFieldArray.ts
+│   │   │   │   ├── useWatch.ts, useComputed.ts, useHistory.ts
+│   │   │   │   ├── useTable.ts, useTree.ts, useGraph.ts
+│   │   │   │   ├── useVirtualScroll.ts, useChartSize.ts
+│   │   │   │   └── a11y/       — useFocusTrap, useRovingTabIndex, useListNavigation
+│   │   │   ├── components/
+│   │   │   │   ├── complex/    — Form, Field, FormList, FormProvider,
+│   │   │   │   │                 SchemaForm, SchemaFormEditor, AutoField, SubmitButton,
+│   │   │   │   │                 Table, DataGrid, Tree, List, TreeSelect, Cascader,
+│   │   │   │   │                 Calendar, Transfer, VirtualList,
+│   │   │   │   │                 Diagram, LineChart, BarChart, AreaChart, PieChart,
+│   │   │   │   │                 Dashboard/DashboardEditor,
+│   │   │   │   │                 Gantt, EventTimeline, ResourceCalendar
+│   │   │   │   ├── ui/         — 47 standalone components
+│   │   │   │   └── ConfigProvider.tsx
+│   │   │   ├── adapters/       — zodAdapter, jsonSchemaAdapter
+│   │   │   ├── types/          — shared types (BaseComponentProps, SgLocale, …)
+│   │   │   ├── __tests__/      — 625 component/hook/adapter tests
+│   │   │   └── index.ts
+│   │   └── package.json
 │   │
-│   └── styles/                 — @skygraph/styles (framework-agnostic CSS)
+│   ├── vue/                    — @skygraph/vue (полный паритет API/CSS)
+│   │   ├── src/
+│   │   │   ├── composables/    — useForm/useField/useFieldArray/useWatch,
+│   │   │   │                     useTable/useTree/useGraph/useVirtualScroll,
+│   │   │   │                     useHistory/useChartSize, useFocusTrap,
+│   │   │   │                     useRovingTabIndex/useListNavigation
+│   │   │   ├── components/
+│   │   │   │   ├── ui/         — 52 SFC primitives (Button, Input, Modal, Drawer,
+│   │   │   │   │                 Tabs, Menu, Notification, Tooltip, Transition,
+│   │   │   │   │                 ConfigProvider, Pagination, Steps, Carousel, …)
+│   │   │   │   └── complex/    — SgForm/SgField/SgFormList/SgFormProvider,
+│   │   │   │                     SgSchemaForm/SgSchemaFormEditor,
+│   │   │   │                     SgTable/SgDataGrid/SgTree/SgList/SgVirtualList,
+│   │   │   │                     SgDiagram/SgLineChart/SgBarChart/SgAreaChart/SgPieChart,
+│   │   │   │                     SgDashboard/SgDashboardEditor,
+│   │   │   │                     SgGantt/SgEventTimeline/SgResourceCalendar
+│   │   │   ├── adapters/       — jsonSchemaAdapter
+│   │   │   ├── locales/        — locale dictionaries
+│   │   │   ├── utils/          — print
+│   │   │   ├── __tests__/      — 659 vitest cases (+ styling-contract.parity.test.ts)
+│   │   │   └── index.ts
+│   │   └── package.json
+│   │
+│   └── styles/                 — @skygraph/styles (framework-agnostic CSS, 0 deps)
 │       ├── tokens.css, reset.css, index.css
 │       ├── transitions.css     — fade, slide, zoom, collapse
 │       ├── print.css           — @media print layer
-│       ├── components/         — 60+ component CSS files
+│       ├── components/         — 64 component CSS files
 │       ├── themes/             — default.css, dark.css
 │       └── package.json
 │
 ├── examples/
-│   └── demo/                   — Ant-style interactive documentation
-│       └── src/
-│           ├── components/     — DemoBox, PropsTable, ComponentDoc
-│           └── demos/          — 40+ component demo pages
+│   ├── _shared/                — @skygraph-examples/shared (vanilla TS)
+│   │                              parsers (changelog/todo), constants (stats),
+│   │                              showcasesLocale, types
+│   ├── _shared-react/          — @skygraph-examples/shared-react
+│   │                              AppShell, Header, Footer, Sidebar, theme/lang switchers
+│   ├── demo/                   — Ant-style React demo (live docs + benchmarks page)
+│   │   └── src/
+│   │       ├── components/     — DemoBox, PropsTable, ComponentDoc, FrameworkSwitcher
+│   │       ├── demos/          — 50+ component demo pages
+│   │       │   └── benchmarks/ — Form/Table/LineChart benchmarks (vs RHF/AntD/Recharts)
+│   │       └── pages/          — Landing, Roadmap, About, Benchmarks, Showcases (embedded)
+│   ├── demo-vue/               — Ant-style Vue demo (23 pages, ant-style shell)
+│   └── showcases/              — 12 mini-apps (CRM, Helpdesk, Inbox, Dashboard, …)
 │
+├── deploy/                     — Docker/Caddy multi-framework deploy
+│   ├── Caddyfile, Dockerfile, build-all.mjs
+│   └── stubs/                  — placeholders for `/vue/` and `/angular/`
+│
+├── _audit/                     — point-in-time architecture/styles drift reports
 ├── package.json
 ├── tsconfig.base.json
 ├── ARCHITECTURE.md

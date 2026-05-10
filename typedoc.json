@@ -1,0 +1,29 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "packages/core/src/index.ts",
+    "packages/react/src/index.ts",
+    "packages/vue/src/index.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs/api",
+  "name": "SkyGraph API",
+  "readme": "none",
+  "tsconfig": "tsconfig.base.json",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeProtected": false,
+  "excludeExternals": true,
+  "skipErrorChecking": true,
+  "categorizeByGroup": true,
+  "githubPages": false,
+  "hideGenerator": true,
+  "navigationLinks": {
+    "Repository": "https://github.com/skycode/skygraph"
+  },
+  "validation": {
+    "notExported": false,
+    "invalidLink": true,
+    "notDocumented": false
+  }
+}

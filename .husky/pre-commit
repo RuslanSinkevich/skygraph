@@ -1,0 +1,12 @@
+pnpm lint-staged
+
+# Per-package typecheck. Глобальный `pnpm typecheck` в этом монорепо
+# использует голый `tsc --noEmit` через `pnpm -r exec`, что в случае
+# `@skygraph/vue` падает: tsc не понимает `.vue`-импортов без
+# vue-tsc. Поэтому в hook вызываем точечно — vue через `vue-tsc`,
+# остальные через обычный tsc. Если упадёт корневой `pnpm typecheck`
+# в CI — это отдельный pre-existing finding (см.
+# `docs/_streams/findings/T-CI.md`), не блокируем им разработчика.
+pnpm --filter @skygraph/core exec tsc --noEmit
+pnpm --filter @skygraph/react exec tsc --noEmit
+pnpm --filter @skygraph/vue typecheck

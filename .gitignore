@@ -42,3 +42,11 @@ deploy/output/
 # Local scratch (commit message bodies for HEREDOC-style commits, etc.)
 .git-commit-msg.tmp
 *.tmp
+
+# Playwright (T-Smoke)
+playwright-report/
+test-results/
+.playwright/
+
+# api-extractor working dir (T-API). Snapshots live in `etc/`, are committed.
+packages/*/temp/

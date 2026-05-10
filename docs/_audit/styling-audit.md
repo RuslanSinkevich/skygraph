@@ -4,20 +4,20 @@
 
 ## 1. Токены
 
-- tokens.css объявляет: **91** имён.
+- tokens.css объявляет: **129** имён.
 - Компонентные CSS используют «чужие» имена: **0**.
 
 Все использованные `var(--sg-*)` объявлены. :white_check_mark:
 
 ## 2. Классы `.sg-*`
 
-- В CSS определено классов: **1046**.
+- В CSS определено классов: **1047**.
 - В DOM компонентов используется строк-классов: **894**.
-- Совпадают (есть и в CSS, и в DOM): **786**.
+- Совпадают (есть и в CSS, и в DOM): **789**.
 - Только в CSS, runtime-генерируемые (Transition): **41** (исключены из dead-code).
 - Только в CSS, динамически-генерируемые (template literals `sg-X-${...}`): **199** (исключены из dead-code).
-- Только в CSS, **возможно мёртвый код**: **20**.
-- Только в DOM (нет стилей): **108**.
+- Только в CSS, **возможно мёртвый код**: **18**.
+- Только в DOM (нет стилей): **105**.
 - Найденных в коде template-prefix'ов: **70**.
 
 <details><summary>Только в CSS — возможно мёртвый код</summary>
@@ -25,10 +25,8 @@
 - `.sg-diagram-controls`
 - `.sg-diagram-minimap`
 - `.sg-diagram-toolbar`
-- `.sg-dp-footer-link`
 - `.sg-dp-time-cell`
 - `.sg-dp-time-cell-active`
-- `.sg-modal-body-loading`
 - `.sg-no-print`
 - `.sg-pagination-item-active`
 - `.sg-tree-action-btn`
@@ -315,9 +313,6 @@
 - `sg-cascader-multiple`
 - `sg-cascader-option-loading`
 - `sg-chart-area`
-- `sg-chart-legend`
-- `sg-chart-legend-item`
-- `sg-chart-legend-swatch`
 - `sg-chart-pie`
 - `sg-collapse-panel-active`
 - `sg-datagrid--loading`

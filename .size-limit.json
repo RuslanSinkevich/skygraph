@@ -1,0 +1,38 @@
+[
+  {
+    "name": "@skygraph/core (esm)",
+    "path": "packages/core/dist/index.js",
+    "limit": "16 KB",
+    "brotli": true
+  },
+  {
+    "name": "@skygraph/react (esm)",
+    "path": "packages/react/dist/index.js",
+    "limit": "110 KB",
+    "brotli": true
+  },
+  {
+    "name": "@skygraph/vue (esm)",
+    "path": "packages/vue/dist/index.js",
+    "limit": "90 KB",
+    "brotli": true
+  },
+  {
+    "name": "@skygraph/vue (cjs)",
+    "path": "packages/vue/dist/index.cjs",
+    "limit": "160 KB",
+    "brotli": true
+  },
+  {
+    "name": "examples/demo (main bundle)",
+    "path": "examples/demo/dist/assets/index-*.js",
+    "limit": "1 MB",
+    "brotli": true
+  },
+  {
+    "name": "examples/demo-vue (main bundle)",
+    "path": "examples/demo-vue/dist/assets/index-*.js",
+    "limit": "160 KB",
+    "brotli": true
+  }
+]

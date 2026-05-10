@@ -7,6 +7,251 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Round 13 — `@skygraph/vue` full port + benchmarks + showcases dedup + deploy
+
+Round 13 закрылся 19 коммитами на master в две фазы. Фаза 1 (7 коммитов
+`e504766` … `b20dddc`) дотащила `@skygraph/vue` от round-12 MVP-уровня
+до полного API/CSS-паритета с React-адаптером. Фаза 2 (12 коммитов
+`9d45ab8` … `907d89d`) — параллельные side-quests: visual polish viz,
+showcases dedup, demo benchmarks page, multi-framework deploy scaffold,
+demo-vue ant-style shell, audit drift report. Этот sync-коммит
+синхронизирует `TODO.md` / `CHANGELOG.md` / `README.md` /
+`ARCHITECTURE.md` / `docs/multi-framework.md` под новую реальность.
+
+#### `@skygraph/vue` — full port (Фаза 1)
+
+После round-12 MVP в `@skygraph/vue` лежало 5 composables и 4 components.
+Round 13 довёл это до полного паритета с React-адаптером.
+
+- **`e504766` feat(vue/ui)** — 27 ui primitives:
+  - Feedback (10): `Modal`, `Drawer`, `Notification` (+ `NotificationContainer` +
+    `useNotification` синглтон), `Popconfirm`, `Tooltip`, `Progress`, `Spin`,
+    `Result`, `Empty`, `Skeleton`.
+  - Navigation (7): `Tabs`, `Menu`, `Breadcrumb`, `Dropdown`, `Pagination`,
+    `Steps`, `Segmented`.
+  - Display (7): `Badge`, `Tag`, `Avatar`, `Carousel`, `Timeline`,
+    `Descriptions`, `Collapse`.
+  - Misc (3): `Button` (moved from `components/Button/` into `components/ui/`),
+    `Transition` (CSS-class enter/leave контракт идентичен React, **не**
+    Vue built-in `<Transition>`), `ConfigProvider` (`provide`/`inject` +
+    реактивный `ComputedRef<SgConfig>` через `useConfig()` /
+    `useConfigWithDefaults()`).
+  - Поддержка: composable `useFocusTrap` для `Modal`/`Drawer`/`Popconfirm`,
+    shared types (`SizeType`, `BaseComponentProps`, `SgLocale`).
+  - Тесты: 271 vitest case (ui-config / ui-button / ui-feedback /
+    ui-navigation / ui-display / ui-a11y / ui-extended). axe-core
+    отсутствует в воркспейсе — вместо него structural a11y assertions
+    (ARIA roles / атрибуты / focus traps), эквивалент React `a11y-axe.test.tsx`.
+  - Подробнее: `docs/_audit/vue-ui-primitives-port.md`.
+- **`177e946` feat(vue/forms)** — composables (полный set вокруг form
+  engine) + `<SgForm>` + `<SgField>` + `<SgFormList>` + `<SgFormProvider>` +
+  `<SgSchemaForm>` (auto-generation из JSON Schema через
+  `jsonSchemaAdapter`).
+- **`4a4d5b7` feat(vue/forms)** — `<SgSchemaFormEditor>` (palette + canvas
+  + inspector + Preview/Schema toggle). `useSchemaEditor()` с bounded
+  undo/redo, round-trip адаптеры `jsonSchemaToEditorSchema` /
+  `editorSchemaToJsonSchema` — paritet с React-версией.
+- **`b1b12b6` feat(vue/forms)** — 19 ui form controls (`Input`,
+  `InputNumber`, `Textarea`, `Select`, `Checkbox`, `Radio`, `Switch`,
+  `Slider`, `DatePicker`, `TimePicker`, `AutoComplete`, `Rate`, `Upload`,
+  `ColorPicker`, `Cascader`, `TreeSelect`, `Mentions`, `Calendar`).
+- **`7f3111f` feat(vue/data-display)** — table/tree/list/virtual domain:
+  `<SgTable>` (sort/filter/pagination/grouping/row-selection) +
+  `<SgDataGrid>` + `<SgTree>` + `<SgList>` + `<SgVirtualList>`.
+  Composables `useTable` / `useTree` / `useVirtualScroll` с api-symmetry
+  React-хукам.
+- **`0507750` feat(vue/visualization)** — visualization domain:
+  `<SgLineChart>` / `<SgBarChart>` / `<SgAreaChart>` / `<SgPieChart>` +
+  `<SgChartLegend>` / `<SgChartAxes>` (responsive SVG через
+  `useChartSize` + `ResizeObserver`), `<SgDiagram>` (visual layer of
+  `GraphEngine` с draggable nodes / zoom / pan / orthogonal routing /
+  context menu / hover actions / multi-select / lasso),
+  `<SgDashboard>` + `<SgDashboardEditor>`, `<SgGantt>`, `<SgEventTimeline>`,
+  `<SgResourceCalendar>`. Print utility (`printElement`, `buildPrintHtml`,
+  `buildPageRule`, `PrintOptions`, `PrintableProp`).
+- **`b20dddc` test(vue)** — `styling-contract.parity.test.ts` (≈725
+  строк, 30+ component snapshots) — для каждого ported компонента
+  монтирует Vue-версию и React-версию в jsdom, сравнивает class set и
+  DOM shape. Документированные exceptions (Input `status`-классы как
+  superset, Textarea root tag `<div>` vs React `<span>`, Tooltip
+  wrapper `<span>` vs React `<div>`) зафиксированы в
+  `docs/multi-framework.md` § "Documented DOM-contract exceptions".
+
+Финальные цифры пакета на закрытии round 13:
+- `@skygraph/vue`: 14 composables, 52 ui SFCs (Input разбит на
+  Input/InputNumber/InputPassword/InputGroup/SearchInput/PinInput/
+  TagInput/InlineEdit вариации одного движка), 14 complex SFCs,
+  print utility, jsonSchemaAdapter.
+- 659 vitest cases (`pnpm --filter @skygraph/vue test` зелёный).
+- ESM bundle ≈300 KB / 65 KB gzip.
+- `vue-tsc --noEmit` clean для всей portированной поверхности.
+
+#### Visual polish (Фаза 2)
+
+- **`dfd02d0` style(diagram)** — `packages/styles/components/diagram.css`
+  +168 строк, `tokens.css` +149 строк новых семантических токенов
+  (selection / drop / connection / node-state). Без изменений API.
+- **`54fdd2f` style(charts)** — `packages/styles/components/charts.css`
+  +121 строки: tooltip / crosshair / brush refinement, лучше дефолты
+  z-index для interactive overlays.
+- **`5f03284` style(dashboard)** — `packages/styles/components/dashboard.css`
+  +97 строк: editor mode affordances (drop targets / drag handles /
+  empty placeholder).
+- **`b2a2cfc` style(viz-secondary)** — gantt/timeline/resource-calendar/
+  event-timeline polish (axes, milestone markers, conflict overlays).
+
+#### Showcases dedup + modernize (Фаза 2)
+
+- **`47c8ff1` refactor(showcases)** — physical merge: `analytics/` влит
+  в `dashboard/` (одна и та же тема операционной аналитики), `project-
+  tracker/` влит в `crm/` (deals/timeline/calendar = CRM workflow).
+  Было 14 шоукейсов → стало **12**. Удалено: `analytics/AlertsTab.tsx`,
+  `analytics/AnalyticsApp.tsx`, `analytics/ChannelsTab.tsx`,
+  `analytics/ChartsTab.tsx`, `analytics/OverviewTab.tsx`,
+  `analytics/ProductsTab.tsx`, `analytics/data.ts`, и весь
+  `project-tracker/` (`BoardTab`, `CalendarTab`, `ProjectsTab`,
+  `ProjectTrackerApp`, `TaskForm`, `TasksTab`, `common.ts`, `data.ts`).
+  Перевезено: `crm/DeadlinesTab.tsx` (новый), `crm/HierarchyTab.tsx`
+  (новый), `dashboard/data.ts` (расширен), `dashboard/DashboardApp.tsx`
+  (+547 строк — теперь 4 встроенные KPI-секции с charts/tables/drill-down).
+- **`302e241` feat(showcases)** — модернизация уцелевших шоукейсов под
+  round-11/12 фичи: `crm` использует `<ResourceCalendar>` для дедлайнов,
+  `dashboard` — hover-toolbars и context menu на charts, `workflow-editor`
+  — orthogonal routing с препятствиями + multi-select / lasso,
+  `helpdesk` — обновлённый conversation timeline, `hr-portal` — leave
+  calendar с conflict detection, `admin` — обновлённая audit-вкладка,
+  `ecommerce` — inventory-вкладка.
+- **`687afde` feat(react-side)** — embed showcases в demo через
+  `examples/demo/src/pages/Showcases/ShowcasesPage.tsx`, общий
+  `examples/showcases/src/ShowcasesViews.tsx` (split на Hub view +
+  Detail view), `showcaseLoaders.ts` / `showcaseMeta.ts` /
+  `showcaseRouting.ts`, `hub-fragment.css` для embedded mode. Hash-
+  routing работает в обоих режимах: `#/crm` (legacy standalone) и
+  `#/showcases/crm` (embedded в demo).
+  - Стрингы шоукейсов вынесены в `examples/_shared/src/showcasesLocale.ts`
+    (en/ru); `SHOWCASE_COUNT` в `examples/_shared/src/constants/stats.ts`
+    bumped 14 → 12.
+
+#### Demo benchmarks page (Фаза 2)
+
+- **`b7fc719` feat(demo)** — новая страница `/#/benchmarks` (1713 строк).
+  - `FormBenchmark` — SkyGraph `<Form>` + `<Field>` vs `react-hook-form` +
+    plain `<input>`, 100 полей × 6 запусков (1 warmup + 5 measured),
+    три метрики: median mount (ms), per-change (ms), submit bytes
+    (`new Blob([JSON.stringify(values)]).size`).
+  - `TableBenchmark` — SkyGraph `<Table>` vs AntD `<Table>`, sort/filter
+    workload.
+  - `LineChartBenchmark` — SkyGraph `<LineChart>` vs Recharts, mount +
+    re-render.
+  - Helper `benchUtils.ts` (172 строки) — runner с warmup/iterations/
+    sleepMs/AbortSignal, медиана/min/max + extras.
+  - Live-preview под бенчмарком (один из вариантов рендерится в
+    скроллируемом фрейме рядом с результатами).
+  - `examples/demo/package.json` тянет `react-hook-form`, `antd`,
+    `recharts` как devDependencies, чтобы фреймворки сравнения были
+    локальные.
+
+#### Multi-framework deploy scaffold (Фаза 2)
+
+- **`11e2c2e` chore** — `deploy/{Caddyfile,Dockerfile,build-all.mjs,
+  README.md,stubs/}`. Layout:
+  - `/` — React demo (main).
+  - `/vue/` — Vue demo (Coming-Soon stub пока demo-vue не подцеплен в
+    общий билд; шаблон уже в `build-all.mjs` закомментирован).
+  - `/angular/` — Angular demo (placeholder).
+  - `node deploy/build-all.mjs` локально: builds packages → tsc -b demo →
+    `vite build --base=/` (overrides legacy `/skygraph/` base без
+    редактирования source) → копирует `examples/demo/dist` в
+    `deploy/output/` → копирует stubs.
+  - `Dockerfile` тащит multi-stage build (Node 22 builder + Caddy 2
+    runtime), Caddy auto-issues Let's Encrypt cert на первом
+    запросе по доменному имени.
+  - Корневой `.dockerignore` тримит docker context.
+  - `deploy/output/` gitignored.
+- **Demo SEO** (`11e2c2e`) — `examples/demo/index.html` получил title /
+  description / Open Graph / Twitter card meta-tags.
+- **`FrameworkSwitcher`** (`11e2c2e`) — компонент в хедере demo (`React`
+  / `Vue` / `Angular`), текущий tab подсвечен (`active="react"`),
+  кликом уводит на соответствующий deploy path. В demo-vue идентичный
+  компонент с `active="vue"`.
+
+#### Demo-vue ant-style shell (Фаза 2)
+
+- **`bfc1505` feat(demo-vue)** — ant-style shell + 22 компонент-
+  страницы (стало 23 с Landing): `App.vue` redesign (sidebar +
+  header + main + footer), компоненты `ComponentDoc.vue`, `DemoBox.vue`,
+  `Header.vue`, `LanguageToggle.vue`, `PropsTable.vue`, `Sidebar.vue`,
+  `ThemeToggle.vue`, hash-router (`router/hashRouter.ts`,
+  `router/index.ts`), i18n (`I18nProvider.ts`, `dict-en.ts`,
+  `dict-ru.ts`, `useDemoStrings.ts`), nav (`nav.ts`).
+  - Pages: `Landing`, `AvatarPage`, `BadgePage`, `ButtonPage`,
+    `CheckboxPage`, `DatePickerPage`, `DrawerPage`, `InputNumberPage`,
+    `InputPage`, `MenuPage`, `ModalPage`, `PaginationPage`,
+    `ProgressPage`, `RadioPage`, `SelectPage`, `SkeletonPage`,
+    `SliderPage`, `SpinPage`, `SwitchPage`, `TabsPage`, `TagPage`,
+    `TextareaPage`, `TooltipPage`. URL-схема одинаковая с React-demo
+    (`/components/<slug>`) — cross-linking из FrameworkSwitcher работает.
+  - `style.css` +650 строк — общий ant-style layout (sidebar 240px,
+    header 56px, page content max-width 960px, dark theme через
+    `data-sg-theme="dark"`).
+- **`907d89d` feat(demo)** — `LanguageSwitcher` перенесён из Footer в
+  Header (рядом с FrameworkSwitcher / ThemeSwitcher), Footer остаётся
+  чистым со ссылками. Всего 25 строк изменений (Header.tsx,
+  LanguageSwitcher.tsx, App.tsx).
+
+#### Architecture drift audit (Фаза 2)
+
+- **`9d45ab8` audit** — `_audit/architecture-drift-2026-05-09.md`
+  (новый file, 127 строк). Read-only обход `packages/core/` и
+  `packages/styles/` против инвариантов из ARCHITECTURE.md /
+  `docs/multi-framework.md` / `docs/styling-contract.md`. Никаких
+  правок в коде не сделано.
+  - core: PASS (с оговорками) — 6 findings (2 warn / 4 note).
+  - styles: PASS — 3 findings (3 note).
+  - Все 388 unit-тестов `@skygraph/core` проходят.
+  - Документационный дрейф (validation-engine ghost в ARCHITECTURE.md,
+    calendar/graph не упомянуты в namespaces/file-structure) починен в
+    sync-коммите этого round 13 (`ARCHITECTURE.md` §1 диаграмма + §1
+    namespaces table + §8 file structure обновлены).
+  - `engines/virtual/` структурная неединообразность (нет `types.ts` /
+    отдельного `VirtualEngine.ts`) и DOM-aware defaults в
+    `runtime/Scheduler.ts` (`requestAnimationFrame`) /
+    `middleware/persistence.ts` (`localStorage`) — оставлены как
+    есть, не блокеры.
+  - Magic `#fff` в `colorpicker.css:139,173` — note, не блокер.
+  - 20 dead-CSS-классов кандидатов и 108 DOM-only классов без CSS —
+    note, не блокер, разбираются батчами.
+
+#### Tests / Build / Gates на закрытии round 13
+
+- `pnpm -r test`: **388 + 1 skipped** (core, bench-gated) + **625**
+  (react) + **659** (vue) = **1672 active**.
+- `pnpm -r build`: все четыре пакета (`core`, `react`, `vue`,
+  `styles`) + demo + demo-vue + showcases собираются.
+- `pnpm exec eslint packages/`: 0 errors / 0 warnings.
+- `pnpm lint:examples`: 0 errors / 27 warnings (baseline).
+- `pnpm check:styles`: OK (91 tokens, 70 файлов; 71 файл без
+  unjustified `!important`).
+- `pnpm exec tsc --noEmit`: clean в `core` / `react` / `styles`.
+- `pnpm --filter @skygraph/vue exec vue-tsc --noEmit`: clean для
+  portированной поверхности (pre-existing type-debt в
+  `Form/Checkbox/list/virtual-list/table` тестах остаётся вне scope
+  round 13 — мигрируется отдельным стримом).
+
+#### Размеры на закрытии round 13
+
+- `@skygraph/core` ESM main: ≈32 KB.
+- `@skygraph/react` ESM main: ≈440 KB (без tree-shake).
+- `@skygraph/vue` ESM main: ≈300 KB / ≈65 KB gzip.
+- `@skygraph/styles` raw: ≈234 KB (`*.css` суммарно), gzipped
+  в showcases-bundle ≈25 KB.
+
+#### API break / migration
+
+Round 13 — **без breaking changes** для существующих React-пользователей.
+Vue-адаптер по-прежнему alpha (path к `1.0`), публичные API могут
+меняться; CSS-контракт стабилен.
+
 ### Round 12 — `@skygraph/styles` extraction + Vue MVP + Foundation finalisation
 
 Round 12 закрылся тремя коммитами на master: `13a695e` (CSS extraction),

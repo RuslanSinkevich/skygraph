@@ -12,9 +12,11 @@
 
 1. **React stays the canonical adapter** — `@skygraph/react` keeps shipping
    today's API and demos as-is. No regressions for existing users.
-2. **Vue is the next adapter** ✅ (MVP shipped, alpha). It reuses
-   `@skygraph/core` and `@skygraph/styles` 1:1 — no per-framework CSS,
-   no per-framework engine implementations.
+2. **Vue is the second canonical adapter** ✅ (full surface shipped, alpha
+   towards `1.0`). It reuses `@skygraph/core` and `@skygraph/styles` 1:1
+   — no per-framework CSS, no per-framework engine implementations.
+   `styling-contract.parity.test.ts` keeps DOM/class output pixel-aligned
+   with React on every PR.
 3. **Angular is optional later**. Same contract.
 4. **Shared documentation** — public docs (component pages, recipes) show
    `React | Vue | Angular` tabs once an adapter exists. Source of truth
@@ -36,11 +38,11 @@
 
 ## Per-framework adapter packages
 
-| Package              | Status      | Wraps                             | Distribution             |
-| -------------------- | ----------- | --------------------------------- | ------------------------ |
-| `@skygraph/react`    | ✅ shipping  | core engines via `useX` hooks     | `dependencies: styles`   |
-| `@skygraph/vue`      | ✅ MVP (alpha) | core engines via `useX` composables | `dependencies: styles` |
-| `@skygraph/angular`  | ⚪ later     | core engines via `XService` (DI)  | `dependencies: styles`   |
+| Package              | Status                | Wraps                                       | Distribution             |
+| -------------------- | --------------------- | ------------------------------------------- | ------------------------ |
+| `@skygraph/react`    | ✅ shipping (canonical)| core engines via `useX` hooks               | `dependencies: styles`   |
+| `@skygraph/vue`      | ✅ full surface (alpha → 1.0) | core engines via `useX` composables   | `dependencies: styles`   |
+| `@skygraph/angular`  | ⚪ later               | core engines via `XService` (DI)            | `dependencies: styles`   |
 
 ### Adapter contract
 
@@ -53,18 +55,31 @@ Every adapter:
    don't need to add `@skygraph/styles` separately unless they want
    cherry-pick CSS subpaths).
 3. **Mirrors the same API surface** under idiomatic framework names.
-   Symmetric examples:
+   Symmetric examples (full Vue parity as of round 13):
 
    | Capability       | React              | Vue                       | Angular (planned)        |
    | ---------------- | ------------------ | ------------------------- | ------------------------ |
    | Form binding     | `useForm`          | `useForm` ✅              | `FormService`            |
    | Single field     | `useField`         | `useField` ✅             | `FieldDirective`         |
+   | Field array      | `useFieldArray`    | `useFieldArray` ✅        | (TBD)                    |
+   | Watch values     | `useWatch`         | `useWatch` ✅             | `select()` (RxJS)        |
    | Table data       | `useTable`         | `useTable` ✅             | `TableService`           |
    | Tree data        | `useTree`          | `useTree` ✅              | `TreeService`            |
    | Graph engine     | `useGraph`         | `useGraph` ✅             | `GraphService`           |
-   | Validation       | `useValidation`    | `useValidation` (planned) | `ValidationService`      |
-   | History          | `useHistory`       | `useHistory` ✅            | `HistoryService`         |
-   | Computed         | `useComputed`      | `useComputed` (planned)   | `ComputedService`        |
+   | Virtual list     | `useVirtualScroll` | `useVirtualScroll` ✅     | `VirtualService`         |
+   | History          | `useHistory`       | `useHistory` ✅           | `HistoryService`         |
+   | Computed         | `useComputed`      | `useComputed` ✅          | `ComputedService`        |
+   | Chart sizing     | `useChartSize`     | `useChartSize` ✅         | (TBD)                    |
+   | Focus trap (a11y)| `useFocusTrap`     | `useFocusTrap` ✅         | `FocusTrapDirective`     |
+   | Roving tabindex  | `useRovingTabIndex`| `useRovingTabIndex` ✅    | (TBD)                    |
+   | List navigation  | `useListNavigation`| `useListNavigation` ✅    | (TBD)                    |
+
+   Component surface paritet (Vue vs React, all `Sg*`-prefixed): all 17
+   complex (Form/Table/Tree/Diagram/Charts/Dashboard/Gantt/Timeline/
+   ResourceCalendar/SchemaForm/SchemaFormEditor/…) and all 47 ui primitives
+   are ported (Vue ships 52 ui SFCs because `Input` is split into
+   `Input/InputNumber/InputPassword/InputGroup/SearchInput/PinInput/TagInput/InlineEdit`
+   variants which are all shapes of the same engine).
 
 4. **Emits the exact same `.sg-*` class names** on rendered DOM as
    `@skygraph/react`. This is a hard contract — see
@@ -82,16 +97,22 @@ remains framework-free forever.
 
 ## Demo strategy
 
-- **`examples/demo`** stays React. It is the canonical demo package.
+- **`examples/demo`** stays React. It is the canonical demo package
+  (Ant-style live docs + 50+ component pages + benchmarks page comparing
+  SkyGraph vs `react-hook-form` / AntD `Table` / Recharts).
 - **`examples/demo-vue`** ✅ exists today as a separate workspace
   package, also Vite-powered, mounting showcases against
-  `@skygraph/vue`. URL paths and component slugs are kept identical so
-  cross-linking works (e.g. `/components/form` exists in both).
+  `@skygraph/vue`. Currently ships an Ant-style shell + 23 component
+  pages; URL paths and component slugs are kept identical to the React
+  demo so cross-linking works (e.g. `/components/form` exists in both).
 - **`examples/demo-angular`** (later) follows the same pattern.
-- **No bundle merging.** Each demo package is its own SPA. The public
-  docs site (planned) embeds them via cross-links / iframes /
-  pre-rendered snippets — `React | Vue | Angular` tabs on a component
-  page resolve to the matching demo URL, not a single super-bundle.
+- **No bundle merging.** Each demo package is its own SPA. A
+  `FrameworkSwitcher` widget in the React demo header lets the reader
+  jump between `/`, `/vue/`, `/angular/` deploy paths.
+- **`deploy/`** ships a Caddy + Docker scaffold to host React/Vue/
+  (Angular stub) under one domain (`deploy/build-all.mjs` builds React
+  with `--base=/`, copies into `deploy/output/`, drops Coming-Soon
+  stubs into `vue/` and `angular/` until those demos are wired in).
 
 ### Shared demo content (`examples/_shared/`)
 

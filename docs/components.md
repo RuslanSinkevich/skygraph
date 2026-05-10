@@ -1,5 +1,11 @@
 # Компоненты — руководство по разработке
 
+> Гайд написан с прицелом на React-адаптер (`@skygraph/react`) — это
+> канонический референс. Vue-адаптер (`@skygraph/vue`) повторяет ту же
+> структуру и ту же таксономию (UI / Complex), только TSX → SFC и хуки
+> → composables. См. [`multi-framework.md`](./multi-framework.md) для
+> правил паритета между адаптерами.
+
 ## Два типа компонентов
 
 ### UI-компоненты (`components/ui/`)
@@ -8,11 +14,33 @@
 
 Примеры: Button, Input, Modal, Checkbox, Select, Tabs, Tooltip, ...
 
+В Vue-адаптере живут как `*.vue` SFCs в `packages/vue/src/components/ui/`,
+экспортируются под именем `Sg<Name>` (напр. `SgButton`, `SgInput`).
+
 ### Complex-компоненты (`components/complex/`)
 
 Используют core через хуки. Если > 300 строк — разбивать на папку.
 
-Примеры: Form, Table, Tree, TreeSelect, Transfer, Calendar, List, Cascader, DataGrid, AutoField, SchemaForm, FormList, FormProvider, VirtualList, **Diagram** (визуальный слой `GraphEngine` с поддержкой draggable узлов и orthogonal-роутинга рёбер), **Charts** (LineChart / BarChart / AreaChart / PieChart + ChartLegend), **Dashboard** (CSS-grid layout для виджетов).
+Примеры (React): Form, Table, Tree, TreeSelect, Transfer, Calendar, List,
+Cascader, DataGrid, AutoField, SchemaForm, **SchemaFormEditor** (palette
++ canvas + inspector + undo/redo), FormList, FormProvider, VirtualList,
+**Diagram** (визуальный слой `GraphEngine` — draggable узлы, zoom/pan,
+orthogonal routing с препятствиями, context menu, hover actions,
+multi-select / lasso), **Charts** (LineChart / BarChart / AreaChart /
+PieChart + ChartLegend + ChartAxes — responsive SVG через
+`useChartSize`, hover toolbar, brush, crosshair, animations,
+context menu), **Dashboard** + **DashboardEditor** (CSS-grid layout
+для виджетов + drag/resize + widget hover actions + context menu),
+**Gantt**, **EventTimeline**, **ResourceCalendar** (lane planner с
+availability + conflicts + capacity).
+
+В Vue-адаптере те же complex-компоненты живут в
+`packages/vue/src/components/complex/<Name>/`, экспортируются под
+`Sg<Name>` (`SgForm`, `SgTable`, `SgDiagram`, `SgDashboard`,
+`SgSchemaFormEditor`, …). DOM shape и `.sg-*`-классы идентичны
+React-варианту — это hard-контракт, проверяется
+`packages/vue/src/__tests__/styling-contract.parity.test.ts` (≈725
+строк, 30+ component snapshots).
 
 ## Как добавить UI-компонент
 

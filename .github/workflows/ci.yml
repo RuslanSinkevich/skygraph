@@ -8,11 +8,17 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    name: build / ${{ matrix.os }} / node ${{ matrix.node-version }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         node-version: [18, 20, 22]
+        include:
+          - os: windows-latest
+            node-version: 22
 
     steps:
       - uses: actions/checkout@v4
@@ -36,20 +42,87 @@ jobs:
       # after any CSS / JSX className change so the dead-code report
       # stays accurate.
       - name: audit:styles drift check
+        shell: bash
         run: |
           pnpm audit:styles
           git diff --exit-code docs/_audit/styling-audit.md \
             || (echo "::error::docs/_audit/styling-audit.md is out of date — run 'pnpm audit:styles' locally and commit the result." && exit 1)
 
       - run: pnpm build
+
+      # Bundle budget guard (T-Polish). Sums every JS chunk in
+      # `examples/demo/dist/assets/*.js` against a hard ceiling so new
+      # lazy-loaded showcase apps cannot silently inflate first-paint
+      # network cost. Numbers are platform/Node-version independent, so
+      # we only run it once.
+      - name: Bundle budget
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version == 22
+        run: pnpm bundle:check
+
       - run: pnpm test
+
+      # Per-package smoke checks (T-CI). These catch issues in adapters /
+      # demo apps that the cross-package build doesn't surface on its own.
+      - name: per-package typecheck — @skygraph/vue
+        run: pnpm --filter @skygraph/vue typecheck
+      - name: per-package build — demo (React)
+        run: pnpm --filter demo build
+      - name: per-package build — demo-vue
+        run: pnpm --filter demo-vue build
+
+      # Public API snapshot drift (T-API).
+      - name: api:check
+        run: pnpm api:check
+
+      # Bundle size guard (T-Size). Only meaningful on a single OS/Node
+      # combo — re-running on every matrix cell wastes CI time and the
+      # numbers are platform-independent (brotli of built artefacts).
+      - name: size-limit
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version == 22
+        run: pnpm size
 
       # Lightweight coverage step. Non-blocking: a coverage drop should
       # not red-X the matrix (we don't enforce thresholds yet), but we
       # still want the artefact for inspection on PRs.
       - name: coverage (core + react)
-        if: matrix.node-version == 22
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version == 22
         continue-on-error: true
         run: |
           pnpm --filter @skygraph/core test:coverage
           pnpm --filter @skygraph/react test:coverage
+
+  smoke:
+    name: smoke (Playwright)
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Demo bundles are needed because smoke tests run against
+      # `vite preview` (production build), not `vite dev`.
+      - run: pnpm build
+      - run: pnpm --filter demo build
+      - run: pnpm --filter demo-vue build
+
+      - run: pnpm test:smoke:install
+      - run: pnpm test:smoke
+
+      - name: upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7

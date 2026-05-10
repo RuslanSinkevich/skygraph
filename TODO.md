@@ -1,7 +1,61 @@
 # SkyGraph — TODO
 
-> Реальные хвосты после round 1..9 + 9.1 closeout + round 11 + round 12.
+> Реальные хвосты после round 1..9 + 9.1 closeout + round 11 + round 12 + round 13.
 > Каждая запись — кандидат в будущий стрим или мини-стрим.
+>
+> Статус на 2026-05-09: round 13 закрыт 19 коммитами на master двумя
+> фазами (Vue full port + side-quests UX/демо/деплой). Подробности —
+> в `CHANGELOG.md` секция "Round 13".
+>
+> Главное:
+> - `@skygraph/vue` доехал до полного API/CSS-паритета с React-адаптером:
+>   14 composables (включая `useChartSize`/`useFocusTrap`/`useRovingTabIndex`/
+>   `useListNavigation`/`useHistory`/`useVirtualScroll`), 52 ui SFCs,
+>   14 complex SFCs (Form/SchemaForm/SchemaFormEditor/Table/DataGrid/Tree/
+>   List/VirtualList/Diagram/Charts/Dashboard/Gantt/Timeline/ResourceCalendar)
+>   + print utility. Контракт держится тестом
+>   `packages/vue/src/__tests__/styling-contract.parity.test.ts` (≈725
+>   строк, 30+ component snapshots vs React DOM/classes).
+> - Бенчмарки: новая страница `/#/benchmarks` в demo (Form vs RHF, Table vs
+>   AntD, LineChart vs Recharts) — mount/per-change/submit-bytes под
+>   одинаковой нагрузкой, медиана 5 прогонов с warm-up.
+> - Showcases дедуп: `project-tracker` влит в `crm`, `analytics` — в
+>   `dashboard`. Было 14 → стало 12. Все шоукейсы модернизированы под
+>   round-11/12 фичи (ResourceCalendar в CRM, hover toolbar в Dashboard,
+>   GraphEngine routing в Workflow Editor, и т.д.).
+> - Deploy: `deploy/{Caddyfile,Dockerfile,build-all.mjs,stubs/}` —
+>   multi-framework subdir (`/`, `/vue/`, `/angular/`) под Caddy.
+>   `deploy/output/` gitignored, билд локально.
+> - Demo SEO + FrameworkSwitcher в хедере React demo (jumps `/` →
+>   `/vue/` → `/angular/`).
+> - Demo-vue: ant-style shell + 23 компонент-страницы.
+> - Visual polish: `diagram.css` (+149 строк новых семантических токенов),
+>   `charts.css` (tooltip/crosshair/brush refinement), `dashboard.css`
+>   (+editor mode affordances), `gantt.css`/`timeline.css`/
+>   `resource-calendar.css`/`event-timeline.css` — secondary viz polish.
+> - Architecture drift audit: `_audit/architecture-drift-2026-05-09.md`
+>   зафиксировал 9 findings (2 warn / 7 note). Документационный дрейф
+>   между ARCHITECTURE.md и реальностью кода (validation-engine ghost,
+>   calendar/graph не упомянуты в namespaces/file-structure) починен в
+>   docs sync (этот коммит). engines/virtual/ структура и DOM-aware
+>   defaults (`requestAnimationFrame`, `localStorage`) — оставлены как
+>   есть, не блокеры.
+>
+> Все гейты зелёные на момент закрытия round 13:
+>  - `pnpm exec eslint packages/` 0 errors / 0 warnings.
+>  - `pnpm lint:examples` 0 errors / 27 warnings (baseline).
+>  - `pnpm check:styles` OK (91 tokens, 70 файлов; 71 файл без
+>    unjustified `!important`).
+>  - `pnpm -r test` — **388 + 1 skipped** (core, bench-gated) +
+>    **625** (react) + **659** (vue) = **1672 active** tests.
+>  - `pnpm -r build` — все четыре пакета (`core`, `react`, `vue`,
+>    `styles`) + demo + demo-vue + showcases собираются.
+>  - `pnpm exec tsc --noEmit` clean в `core` / `react` / `styles`,
+>    `pnpm --filter @skygraph/vue exec vue-tsc --noEmit` clean для
+>    portированной поверхности (pre-existing type-debt в Form/Checkbox/
+>    list/virtual-list/table тестах остаётся вне scope round 13).
+>
+> ---
 >
 > Статус на 2026-05-08: round 12 — три коммита на master:
 > 1) `13a695e` infra(css): extract `@skygraph/styles` package — CSS
@@ -216,25 +270,41 @@ subpaths под `@skygraph/react/styles/<...>` удалены из
 `scripts/{audit-styles,check-tokens,check-no-important}.mjs` обновлены
 под новый путь.
 
-### 4.6 Multi-framework — следующие шаги (хвост round 12)
-- `@skygraph/vue` adapter (composables `useForm` / `useTable` / `useTree` /
-  `useGraph` / `useField` поверх `@skygraph/core` + `.vue` SFCs для
-  `Form`, `Field`, `Input`, `Button`). Scaffold лежит в working tree
-  TAB B (uncommitted) — не закрылся, потому что `pnpm typecheck`
-  (`pnpm -r exec tsc --noEmit`) падает на `.vue` файлах: они требуют
-  `vue-tsc`, не plain `tsc`. Развязка — переключить root `typecheck`
-  на per-package script (`pnpm -r run typecheck`) или явно исключить
-  `packages/vue` из recursive `tsc` команды.
-- Hard remove shim `packages/react/styles/` после migration window.
-  Сейчас shim — 2 строки и весь legacy path работает; план — выпустить
-  его как `@deprecated` в одном минор-релизе, удалить в следующем
-  major. Без TAB B closure не делаем.
-- `docs/multi-framework.md` — стратегия "контракт адаптеров +
-  CSS-контракт + версионирование". Готов в working tree TAB B
-  (uncommitted), задеплоится отдельным стримом.
-- Shared examples workspaces (`examples/_shared/`,
-  `examples/_shared-react/`) для переиспользования fixture-данных
-  между demo / showcases / будущим vue-demo. Тоже WIP в TAB B.
+### 4.6 ✅ Multi-framework — закрыто round 12 + round 13
+- ✅ `@skygraph/vue` adapter — round 12 закрыл MVP (5 composables + 4
+  components), round 13 (`e504766` … `0507750`) добил до полного
+  паритета: 14 composables, 52 ui SFCs, 14 complex SFCs, print utility,
+  styling-contract.parity test (≈725 строк) против React DOM/classes.
+- ✅ Hard remove shim `packages/react/styles/` — закрыто round 12
+  (`e9888e1`) одновременно со стилевой extraction'ом, без миграционного
+  окна (изменение строго механическое).
+- ✅ `docs/multi-framework.md` — закрыто round 12 (`e9888e1`),
+  обновлено round 13 (`b20dddc` documented Vue DOM-contract
+  exceptions, `11e2c2e` align Vue row, текущий docs sync обновляет
+  таблицу composables-паритета).
+- ✅ Shared examples workspaces — закрыто round 12 / 13:
+  `examples/_shared/` (vanilla TS — parsers, constants, showcasesLocale),
+  `examples/_shared-react/` (AppShell, Header, Footer, Sidebar, theme/
+  language switchers). Используются и `examples/demo`, и `examples/
+  showcases` (через embed); demo-vue имеет свой shell в `examples/
+  demo-vue/src/components/`.
+
+### 4.7 ✅ Multi-framework deploy — закрыто round 13
+Закрыто `11e2c2e`: `deploy/{Caddyfile,Dockerfile,build-all.mjs,stubs/}`
+— Caddy serve `/` (React demo) + `/vue/` + `/angular/` (Coming-Soon
+stubs пока demo-vue/demo-angular не склеены в общий билд). Корневой
+`.dockerignore` тримит docker context. `deploy/output/` gitignored,
+собирается через `node deploy/build-all.mjs`. README — в
+`deploy/README.md`.
+
+### 4.8 ✅ Benchmarks page — закрыто round 13
+Закрыто `b7fc719` + `687afde`: новая страница `/#/benchmarks` в
+`examples/demo` с тремя бенчмарками — `FormBenchmark` (SkyGraph vs
+react-hook-form, 100 полей × 6 запусков, mount + per-change + submit
+bytes), `TableBenchmark` (SkyGraph vs AntD `Table`), `LineChartBenchmark`
+(SkyGraph vs Recharts). Helper `benchUtils.ts` — нормализованный
+runner (warmup + median of N + min/max + extras). Live-preview под
+бенчмарком позволяет визуально сверить рендер.
 
 ---
 
@@ -284,12 +354,44 @@ Round 9 — 7 коммитов (A, B, C, D + 2× i18n batch + closeout):
 | `3a4a342` | fix   | Slider stretches in flex/grid; Rate dims inactive symbols (round 9.1) |
 | `95d4aea` | demo  | ButtonDemo i18n + DistributedComposition (round 9.1) |
 
+Round 13 — 19 коммитов в две фазы (Vue full port + side-quests):
+
+Фаза 1 — Vue full port (7 коммитов):
+
+| sha7 | scope | summary |
+|------|-------|---------|
+| `e504766` | feat   | vue/ui — port 27 ui primitives (feedback + navigation + display + ConfigProvider/Transition), 271 vitest |
+| `177e946` | feat   | vue/forms — composables + Form + SchemaForm |
+| `4a4d5b7` | feat   | vue/forms — SchemaFormEditor (palette + canvas + inspector) |
+| `b1b12b6` | feat   | vue/forms — 19 ui form controls + tests |
+| `7f3111f` | feat   | vue/data-display — port table/tree/list/virtual domain (composables + 5 complex components) |
+| `0507750` | feat   | vue/visualization — port charts/diagram/dashboard/gantt/timeline/resource-calendar + print utility |
+| `b20dddc` | test   | vue — styling-contract.parity (≈725 строк, 30+ component snapshots vs React) + 21 строка doc-exceptions |
+
+Фаза 2 — side-quests (UX полишинг + demo expansion + audit + deploy):
+
+| sha7 | scope | summary |
+|------|-------|---------|
+| `9d45ab8` | audit  | architecture drift check (core + styles, 9 findings) |
+| `dfd02d0` | style  | diagram visual polish + 149 строк новых семантических токенов |
+| `54fdd2f` | style  | charts visual polish (tooltip / crosshair / brush refinement) |
+| `5f03284` | style  | dashboard visual polish + editor mode affordances |
+| `47c8ff1` | refac  | showcases dedup — project-tracker → crm, analytics → dashboard (14 → 12) |
+| `b2a2cfc` | style  | viz secondary polish — gantt/timeline/resource-calendar/event-timeline |
+| `302e241` | feat   | showcases modernize to round-11+12 features |
+| `bfc1505` | feat   | demo-vue — ant-style shell + 22 component pages |
+| `b7fc719` | feat   | demo — benchmarks page (vs antd/rhf/recharts), 1713 строк |
+| `687afde` | feat   | react-side — showcases dedup+modernize + benchmarks page wiring |
+| `11e2c2e` | chore  | demo SEO + FrameworkSwitcher + docs + Docker deploy scaffold |
+| `907d89d` | feat   | demo — перенести LanguageSwitcher из футера в хедер |
+| (this commit) | docs   | round-13 sync — TODO/CHANGELOG/README/ARCHITECTURE/multi-framework |
+
 Round 12 — 1 single-commit + docs sync:
 
 | sha7 | scope | summary |
 |------|-------|---------|
 | `13a695e` | infra | extract `@skygraph/styles` package + tsconfig.lib bump ES2022 |
-| (this commit) | docs  | round-12 sync — TODO/CHANGELOG/README backfill + sha7 |
+| `b1f6cc8` | docs  | round-12 sync — TODO/CHANGELOG/README backfill + sha7 |
 
 Round 11 — 15 коммитов в две волны:
 

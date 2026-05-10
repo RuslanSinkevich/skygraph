@@ -41,6 +41,37 @@ skygraph/
 3. Ensure `pnpm lint`, `pnpm build`, and `pnpm test` all pass
 4. Submit a pull request
 
+## Git Hooks (husky + lint-staged)
+
+Hooks are wired through [husky](https://github.com/typicode/husky) and
+[lint-staged](https://github.com/lint-staged/lint-staged). They're installed
+automatically by `pnpm install` (via the `prepare` script), or you can
+re-install them manually:
+
+```bash
+pnpm prepare:hooks
+```
+
+What runs on each commit:
+
+- `pre-commit` — `pnpm lint-staged` (ESLint + Prettier on staged files only)
+  followed by `pnpm typecheck` (per-package `tsc --noEmit`).
+- `commit-msg` — Conventional Commits header validation
+  (`<type>(<scope>): <subject>`).
+
+If a hook misfires and blocks an emergency commit you can bypass it with
+`git commit --no-verify`, but please open a PR with the fix afterwards.
+
+## CI Matrix
+
+Every push and PR runs the `CI` workflow (`.github/workflows/ci.yml`) across:
+
+- `ubuntu-latest` × Node 18, 20, 22
+- `windows-latest` × Node 22 (catches path-related regressions)
+
+Plus a dedicated `smoke` job that builds both demos and runs Playwright
+smoke tests against `vite preview`.
+
 ## Conventions
 
 ### Code Style
