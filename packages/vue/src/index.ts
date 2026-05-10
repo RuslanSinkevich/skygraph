@@ -10,6 +10,8 @@ export type { UseFieldArrayReturn } from './composables/useFieldArray'
 
 export { useWatch } from './composables/useWatch'
 
+export { useComputed } from './composables/useComputed'
+
 export { useTable } from './composables/useTable'
 export type { UseTableOptions, UseTableReturn, FilterFn } from './composables/useTable'
 
@@ -44,10 +46,7 @@ export { useHistory } from './composables/useHistory'
 export type { UseHistoryReturn } from './composables/useHistory'
 
 // Complex data-display components (Tables / Trees / Lists / Virtual)
-export {
-  SgTable,
-  DEFAULT_TABLE_LOCALE,
-} from './components/complex/Table'
+export { SgTable, DEFAULT_TABLE_LOCALE } from './components/complex/Table'
 export type {
   TableProps,
   TableColumn,
@@ -133,6 +132,41 @@ export type {
   ChartExpose,
 } from './components/complex/Charts'
 
+// T-Vue-Charts: Crosshair / Brush / HoverToolbar + download / contextMenu
+// utilities (parity with @skygraph/react Charts surface).
+export {
+  SgChartCrosshair,
+  SgChartBrush,
+  SgChartHoverToolbar,
+  resolveBrushConfig,
+  defaultChartActions,
+  resolveChartActions,
+  downloadSvg,
+  downloadSvgAsPng,
+  serializeSvg,
+  measureSvg,
+  triggerDownload,
+  makeChartContextMenuHandler,
+  makeSeriesContextMenuHandler,
+} from './components/complex/Charts'
+export type {
+  ChartCrosshairProps,
+  ChartCrosshairPoint,
+  ChartBrushProps,
+  ChartBrushConfig,
+  ChartBrushRange,
+  ChartHoverToolbarProps,
+  ChartAction,
+  ChartActionContext,
+  ChartActionsProp,
+  DownloadPngOptions,
+  PngSize,
+  ChartContextMenuPayload,
+  ChartContextMenuHandler,
+  ChartSeriesContextMenuPayload,
+  ChartSeriesContextMenuHandler,
+} from './components/complex/Charts'
+
 export { SgDiagram } from './components/complex/Diagram'
 export type {
   DiagramProps,
@@ -198,11 +232,7 @@ export type {
 } from './components/complex/Form'
 
 // SchemaForm
-export {
-  SgSchemaForm,
-  SgAutoField,
-  SgSubmitButton,
-} from './components/complex/SchemaForm'
+export { SgSchemaForm, SgAutoField, SgSubmitButton } from './components/complex/SchemaForm'
 export type {
   SchemaFormProps,
   AutoFieldProps,
@@ -249,9 +279,35 @@ export {
 } from './adapters/jsonSchemaAdapter'
 export type { JSONSchema, JSONSchemaProperty, AutoFieldConfig } from './adapters/jsonSchemaAdapter'
 
+// Zod adapter (parity with @skygraph/react/src/adapters/zodAdapter) — T-Vue-Misc
+export { zodRule, zodRules, zodDefaults, zodToJsonSchema } from './adapters/zodAdapter'
+export type { ZodLikeSchema, ZodObjectLikeSchema, ZodAdapterOptions } from './adapters/zodAdapter'
+
+// Devtools (parity with @skygraph/react devtools entry) — T-Vue-Misc
+export { default as SgHistoryPanel } from './components/devtools/HistoryPanel.vue'
+export type { HistoryPanelProps } from './components/devtools/HistoryPanel.vue'
+
 // UI form controls
 export { default as SgInput } from './components/ui/Input.vue'
 export type { InputProps } from './components/ui/Input.vue'
+
+export { default as SgInputPassword } from './components/ui/InputPassword.vue'
+export type { InputPasswordProps, PasswordStrength } from './components/ui/InputPassword.vue'
+
+export { default as SgSearchInput } from './components/ui/SearchInput.vue'
+export type { SearchInputProps } from './components/ui/SearchInput.vue'
+
+export { default as SgTagInput } from './components/ui/TagInput.vue'
+export type { TagInputProps } from './components/ui/TagInput.vue'
+
+export { default as SgPinInput } from './components/ui/PinInput.vue'
+export type { PinInputProps } from './components/ui/PinInput.vue'
+
+export { default as SgInlineEdit } from './components/ui/InlineEdit.vue'
+export type { InlineEditProps } from './components/ui/InlineEdit.vue'
+
+export { default as SgInputGroup } from './components/ui/InputGroup.vue'
+export type { InputGroupProps } from './components/ui/InputGroup.vue'
 
 export { default as SgInputNumber } from './components/ui/InputNumber.vue'
 export type { InputNumberProps } from './components/ui/InputNumber.vue'
@@ -385,7 +441,19 @@ export type {
 } from './components/ui'
 
 // Shared types
-export type { SizeType, BaseComponentProps, SgLocale } from './types'
+export type {
+  SizeType,
+  BaseComponentProps,
+  SgLocale,
+  InputPasswordLocale,
+  SearchInputLocale,
+  TagInputLocale,
+  PinInputLocale,
+  InlineEditLocale,
+} from './types'
+
+// Locale presets (ConfigProvider)
+export { en_US, ru_RU, zh_CN, de_DE, fr_FR, es_ES } from './locales'
 
 // Re-export key types from core (mirrors what @skygraph/react does)
 export type {

@@ -47,10 +47,50 @@ export interface PaginationLocale {
   page?: string
 }
 
+/** Locale strings for {@link SgInputPassword}. */
+export interface InputPasswordLocale {
+  showPassword?: string
+  hidePassword?: string
+  strengthWeak?: string
+  strengthMedium?: string
+  strengthStrong?: string
+  strengthVeryStrong?: string
+}
+
+/** Locale strings for {@link SgSearchInput}. */
+export interface SearchInputLocale {
+  placeholder?: string
+  clear?: string
+  search?: string
+}
+
+/** Locale strings for {@link SgTagInput}. */
+export interface TagInputLocale {
+  placeholder?: string
+  removeTag?: string
+}
+
+/** Locale strings for {@link SgPinInput}. */
+export interface PinInputLocale {
+  ariaLabel?: string
+}
+
+/** Locale strings for {@link SgInlineEdit}. */
+export interface InlineEditLocale {
+  placeholder?: string
+  save?: string
+  cancel?: string
+}
+
 /** Root locale object that aggregates all component-level locales. */
 export interface SgLocale {
   modal?: ModalLocale
   popconfirm?: PopconfirmLocale
   empty?: EmptyLocale
   pagination?: PaginationLocale
+  inputPassword?: InputPasswordLocale
+  searchInput?: SearchInputLocale
+  tagInput?: TagInputLocale
+  pinInput?: PinInputLocale
+  inlineEdit?: InlineEditLocale
 }

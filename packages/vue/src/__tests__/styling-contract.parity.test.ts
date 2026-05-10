@@ -63,6 +63,12 @@ import SgRadio from '../components/ui/Radio.vue'
 import SgSwitch from '../components/ui/Switch.vue'
 import SgSlider from '../components/ui/Slider.vue'
 import SgRate from '../components/ui/Rate.vue'
+import SgInputPassword from '../components/ui/InputPassword.vue'
+import SgSearchInput from '../components/ui/SearchInput.vue'
+import SgTagInput from '../components/ui/TagInput.vue'
+import SgPinInput from '../components/ui/PinInput.vue'
+import SgInlineEdit from '../components/ui/InlineEdit.vue'
+import SgInputGroup from '../components/ui/InputGroup.vue'
 
 // ────────────────────────────────────────────────────────────────────────────
 // Helpers — DOM shape extractor.
@@ -92,8 +98,7 @@ function shape(el: Element): DomShape {
   const attrs: Record<string, string> = {}
   for (const a of Array.from(el.attributes)) {
     const name = a.name
-    const keep =
-      name === 'role' || name.startsWith('aria-') || name.startsWith('data-')
+    const keep = name === 'role' || name.startsWith('aria-') || name.startsWith('data-')
     if (!keep) continue
     attrs[name] = a.value
   }
@@ -529,7 +534,10 @@ describe('CSS contract parity — UI primitives', () => {
     // Documented exception #3 (inline span vs div block) — both adapters apply
     // identical .sg-tooltip-wrapper styling and ARIA wiring, only the host
     // element differs. Default Tag stays span on Vue to keep tooltip flow inline.
-    const w = mount(SgTooltip, { props: { title: 'hi' }, slots: { default: '<button>btn</button>' } })
+    const w = mount(SgTooltip, {
+      props: { title: 'hi' },
+      slots: { default: '<button>btn</button>' },
+    })
     const s = rootShape(w)
     expect(s.tag === 'div' || s.tag === 'span').toBe(true)
     expect(s.classes).toEqual(['sg-tooltip-wrapper'])
@@ -548,7 +556,12 @@ describe('CSS contract parity — UI primitives', () => {
     //          </div>
     //        </div>
     const w = mount(SgTabs, {
-      props: { items: [{ key: 'a', label: 'A' }, { key: 'b', label: 'B' }] },
+      props: {
+        items: [
+          { key: 'a', label: 'A' },
+          { key: 'b', label: 'B' },
+        ],
+      },
     })
     const s = rootShape(w)
     expect(s.classes).toContain('sg-tabs')
@@ -572,8 +585,9 @@ describe('CSS contract parity — UI primitives', () => {
     expect(s.tag).toBe('nav')
     expect(s.classes).toEqual(['sg-breadcrumb'])
     expect(s.attrs['aria-label']).toBe('Breadcrumb')
-    const links = s.children.filter((c) =>
-      c.classes.includes('sg-breadcrumb-link') || c.classes.includes('sg-breadcrumb-current'),
+    const links = s.children.filter(
+      (c) =>
+        c.classes.includes('sg-breadcrumb-link') || c.classes.includes('sg-breadcrumb-current'),
     )
     expect(links.length).toBe(2)
     expect(s.children.find((c) => c.classes.includes('sg-breadcrumb-separator'))).toBeDefined()
@@ -600,10 +614,7 @@ describe('CSS contract parity — UI primitives', () => {
     //        </div>
     const w = mount(SgSteps, {
       props: {
-        items: [
-          { title: 'A' },
-          { title: 'B' },
-        ],
+        items: [{ title: 'A' }, { title: 'B' }],
         current: 0,
       },
     })
@@ -690,7 +701,7 @@ describe('CSS contract parity — UI primitives', () => {
     //            <div class="sg-timeline-item-content" />
     //          </li>…
     //        </ul>
-    const w = mount(SgTimeline, { props: { items: [{ children: 'A' }] } })
+    const w = mount(SgTimeline, { props: { items: [{ content: 'A' }] } })
     const s = rootShape(w)
     expect(s.tag).toBe('ul')
     expect(s.classes).toContain('sg-timeline')
@@ -703,7 +714,14 @@ describe('CSS contract parity — UI primitives', () => {
     //          </div>
     //          <div class="sg-carousel-dots">…</div>?
     //        </div>
-    const w = mount(SgCarousel, { props: { items: [{ key: '1', content: 'A' }, { key: '2', content: 'B' }] } })
+    const w = mount(SgCarousel, {
+      props: {
+        items: [
+          { key: '1', content: 'A' },
+          { key: '2', content: 'B' },
+        ],
+      },
+    })
     const s = rootShape(w)
     expect(s.classes).toContain('sg-carousel')
     expect(s.children.find((c) => c.classes.includes('sg-carousel-container'))).toBeDefined()
@@ -721,5 +739,178 @@ describe('CSS contract parity — UI primitives', () => {
     const s = rootShape(w)
     expect(s.tag).toBe('div')
     expect(s.classes).toContain('sg-popconfirm-wrapper')
+  })
+
+  // ── Specialty form controls (T-Vue-Cleanup parity) ───────────────────────
+
+  it('SgInputPassword (default)', () => {
+    // React: <div style={style}>
+    //          <span class="sg-input-password-wrapper sg-input-password-wrapper-middle">
+    //            <input class="sg-input sg-input-password sg-input-middle" .../>
+    //            <button class="sg-input-password-toggle" aria-label="Show password">○</button>
+    //          </span>
+    //        </div>
+    // Vue mirrors the same layout. After T-Vue-Cleanup customClass is gone,
+    // user `class` falls through to the outer <div> (Vue idiom) — `sg-*`
+    // classes on the inner <span> are unchanged from React.
+    const w = mount(SgInputPassword)
+    const s = rootShape(w)
+    expect(s.tag).toBe('div')
+    expect(s.classes).toEqual([])
+    const wrapper = s.children.find((c) => c.classes.includes('sg-input-password-wrapper'))
+    expect(wrapper).toBeDefined()
+    expect(wrapper!.classes).toEqual([
+      'sg-input-password-wrapper',
+      'sg-input-password-wrapper-middle',
+    ])
+    const input = wrapper!.children.find((c) => c.tag === 'input')
+    expect(input).toBeDefined()
+    expect(input!.classes).toEqual(['sg-input', 'sg-input-middle', 'sg-input-password'])
+    const toggle = wrapper!.children.find((c) => c.classes.includes('sg-input-password-toggle'))
+    expect(toggle).toBeDefined()
+  })
+
+  it('SgSearchInput (default)', () => {
+    // React: <span class="sg-search-input sg-search-input-middle">
+    //          <span class="sg-search-input-icon">⌕</span>
+    //          <input class="sg-input sg-input-middle sg-search-input-field" .../>
+    //        </span>
+    const w = mount(SgSearchInput)
+    const s = rootShape(w)
+    expect(s.tag).toBe('span')
+    expect(s.classes).toEqual(['sg-search-input', 'sg-search-input-middle'])
+    const icon = s.children.find((c) => c.classes.includes('sg-search-input-icon'))
+    expect(icon).toBeDefined()
+    const input = s.children.find((c) => c.tag === 'input')
+    expect(input).toBeDefined()
+    expect(input!.classes).toEqual(['sg-input', 'sg-input-middle', 'sg-search-input-field'])
+  })
+
+  it('SgSearchInput (with enterButton, loading)', () => {
+    // React extra classes: sg-search-input-with-button, sg-search-input-loading.
+    const w = mount(SgSearchInput, { props: { enterButton: true, loading: true } })
+    const s = rootShape(w)
+    expect(s.classes).toEqual(
+      expect.arrayContaining([
+        'sg-search-input',
+        'sg-search-input-middle',
+        'sg-search-input-with-button',
+        'sg-search-input-loading',
+      ]),
+    )
+    const btn = s.children.find((c) => c.classes.includes('sg-search-input-btn'))
+    expect(btn).toBeDefined()
+  })
+
+  it('SgTagInput (default)', () => {
+    // React: <div class="sg-tag-input sg-tag-input-middle">
+    //          <input class="sg-tag-input-field" .../>
+    //        </div>
+    const w = mount(SgTagInput)
+    const s = rootShape(w)
+    expect(s.tag).toBe('div')
+    expect(s.classes).toEqual(['sg-tag-input', 'sg-tag-input-middle'])
+    const input = s.children.find((c) => c.tag === 'input')
+    expect(input).toBeDefined()
+    expect(input!.classes).toEqual(['sg-tag-input-field'])
+  })
+
+  it('SgTagInput (with values, success colour)', () => {
+    // React tags get sg-tag + sg-tag-<color>. Close button: sg-tag-close.
+    const w = mount(SgTagInput, {
+      props: { value: ['a', 'b'], tagColor: 'success' },
+    })
+    const s = rootShape(w)
+    const tags = s.children.filter((c) => c.classes.includes('sg-tag'))
+    expect(tags.length).toBe(2)
+    for (const t of tags) {
+      expect(t.classes).toEqual(['sg-tag', 'sg-tag-success'])
+      const close = t.children.find((c) => c.classes.includes('sg-tag-close'))
+      expect(close).toBeDefined()
+      expect(close!.attrs.role).toBe('button')
+    }
+  })
+
+  it('SgPinInput (default)', () => {
+    // React: <div class="sg-pin-input sg-pin-input-middle" role="group" aria-label="PIN input">
+    //          <input class="sg-pin-input-cell sg-pin-input-cell-middle" .../> × length
+    //        </div>
+    const w = mount(SgPinInput)
+    const s = rootShape(w)
+    expect(s.tag).toBe('div')
+    expect(s.classes).toEqual(['sg-pin-input', 'sg-pin-input-middle'])
+    expect(s.attrs.role).toBe('group')
+    expect(s.attrs['aria-label']).toBe('PIN input')
+    const cells = s.children.filter((c) => c.classes.includes('sg-pin-input-cell'))
+    expect(cells.length).toBe(6)
+    for (const cell of cells) {
+      expect(cell.tag).toBe('input')
+      expect(cell.classes).toEqual(['sg-pin-input-cell', 'sg-pin-input-cell-middle'])
+    }
+  })
+
+  it('SgInlineEdit (view, empty)', () => {
+    // React (view, empty value): <span class="sg-inline-edit-view sg-inline-edit-view-middle
+    //                                         sg-inline-edit-view-placeholder"
+    //                                  role="button" tabindex="0">
+    //                              {placeholder}
+    //                              <span class="sg-inline-edit-pencil">✎</span>
+    //                            </span>
+    // Vue InlineEdit uses <template v-if> at the top level, so the SFC is
+    // multi-root from Test Utils' viewpoint. Probe the actual sg-* root via
+    // a query selector.
+    const w = mount(SgInlineEdit)
+    const node = w.find('.sg-inline-edit-view').element as Element
+    const s = prune(shape(node))
+    expect(s.tag).toBe('span')
+    expect(s.classes).toEqual([
+      'sg-inline-edit-view',
+      'sg-inline-edit-view-middle',
+      'sg-inline-edit-view-placeholder',
+    ])
+    expect(s.attrs.role).toBe('button')
+    const pencil = s.children.find((c) => c.classes.includes('sg-inline-edit-pencil'))
+    expect(pencil).toBeDefined()
+  })
+
+  it('SgInlineEdit (view, with value, disabled)', () => {
+    // disabled drops the pencil, adds sg-inline-edit-view-disabled, removes
+    // placeholder class.
+    const w = mount(SgInlineEdit, { props: { value: 'hello', disabled: true } })
+    const node = w.find('.sg-inline-edit-view').element as Element
+    const s = prune(shape(node))
+    expect(s.classes).toEqual([
+      'sg-inline-edit-view',
+      'sg-inline-edit-view-disabled',
+      'sg-inline-edit-view-middle',
+    ])
+    expect(s.children.find((c) => c.classes.includes('sg-inline-edit-pencil'))).toBeUndefined()
+  })
+
+  it('SgInputGroup (default, with input child)', () => {
+    // React: <span class="sg-input-group sg-input-group-middle sg-input-group-compact">
+    //          {children}
+    //        </span>
+    // With before / after slots an additional <span class="sg-input-group-addon">
+    // wraps each addon — same as Vue.
+    const w = mount(SgInputGroup, {
+      slots: { default: '<input class="sg-input" />' },
+    })
+    const s = rootShape(w)
+    expect(s.tag).toBe('span')
+    expect(s.classes).toEqual(['sg-input-group', 'sg-input-group-compact', 'sg-input-group-middle'])
+  })
+
+  it('SgInputGroup (with before/after addons)', () => {
+    const w = mount(SgInputGroup, {
+      slots: {
+        before: '<span>$</span>',
+        default: '<input class="sg-input" />',
+        after: '<span>.00</span>',
+      },
+    })
+    const s = rootShape(w)
+    const addons = s.children.filter((c) => c.classes.includes('sg-input-group-addon'))
+    expect(addons.length).toBe(2)
   })
 })

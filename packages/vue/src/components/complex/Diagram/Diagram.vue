@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import type { GraphNode, NodeId } from '@skygraph/core'
 import { printElement } from '../../../utils/print'
+import type { PrintOptions } from '../../../utils/print'
 import type { DiagramProps } from './types'
 
 const props = withDefaults(defineProps<DiagramProps>(), {
@@ -147,32 +148,39 @@ const nodeSize = (node: GraphNode): { width: number; height: number } => {
   }
 }
 
-const edgePaths = computed(() =>
-  edges.value
-    .map((edge) => {
-      const from = nodeById(edge.from.node)
-      const to = nodeById(edge.to.node)
-      if (!from || !to) return null
-      const fs = nodeSize(from)
-      const ts = nodeSize(to)
-      const fx = from.transform.x + fs.width / 2
-      const fy = from.transform.y + fs.height / 2
-      const tx = to.transform.x + ts.width / 2
-      const ty = to.transform.y + ts.height / 2
-      return { id: edge.id, d: `M${fx},${fy} L${tx},${ty}` }
-    })
-    .filter(Boolean) as { id: string; d: string }[],
+const edgePaths = computed(
+  () =>
+    edges.value
+      .map((edge) => {
+        const from = nodeById(edge.from.node)
+        const to = nodeById(edge.to.node)
+        if (!from || !to) return null
+        const fs = nodeSize(from)
+        const ts = nodeSize(to)
+        const fx = from.transform.x + fs.width / 2
+        const fy = from.transform.y + fs.height / 2
+        const tx = to.transform.x + ts.width / 2
+        const ty = to.transform.y + ts.height / 2
+        return { id: edge.id, d: `M${fx},${fy} L${tx},${ty}` }
+      })
+      .filter(Boolean) as { id: string; d: string }[],
 )
 
+/**
+ * Imperative API surface — kept 1:1 with React's `DiagramRef` (see
+ * `packages/react/src/components/complex/Diagram/Diagram.tsx`). Selection is
+ * managed through the `selectedNodeIds` prop + `selection-change` event;
+ * dedicated `getSelectedIds` / `setSelectedIds` methods would be a Vue-only
+ * extension and were removed in T-Vue-Misc — see
+ * `docs/_streams/decisions/T-Vue-Misc.md` D1.
+ */
 defineExpose({
-  print: (opts: { fileName?: string } = {}) => {
+  print: (opts?: PrintOptions) => {
     if (!rootRef.value) return
-    printElement(rootRef.value, { fileName: opts.fileName ?? props.fileName ?? 'diagram' })
-  },
-  getSelectedIds: () => Array.from(selectedSet.value),
-  setSelectedIds: (ids: NodeId[]) => {
-    internalSelected.value = new Set(ids)
-    emit('selection-change', ids)
+    printElement(rootRef.value, {
+      ...opts,
+      fileName: opts?.fileName ?? props.fileName ?? 'diagram',
+    })
   },
 })
 </script>
@@ -249,7 +257,9 @@ defineExpose({
             width: `${nodeSize(node).width}px`,
             height: `${nodeSize(node).height}px`,
             cursor: props.draggableNodes ? 'move' : 'default',
-            border: selectedSet.has(node.id) ? '2px solid var(--sg-color-primary, #1677ff)' : '1px solid #ccc',
+            border: selectedSet.has(node.id)
+              ? '2px solid var(--sg-color-primary, #1677ff)'
+              : '1px solid #ccc',
             background: '#fff',
             borderRadius: '4px',
             display: 'flex',

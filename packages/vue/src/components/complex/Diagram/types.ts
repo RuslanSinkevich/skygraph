@@ -7,6 +7,7 @@
  */
 import type { CSSProperties } from 'vue'
 import type { GraphEngine, GraphNode, GraphState, NodeId } from '@skygraph/core'
+import type { PrintOptions } from '../../../utils/print'
 
 export type DiagramSelectionMode = 'single' | 'multi'
 
@@ -30,10 +31,14 @@ export interface DiagramProps {
   fileName?: string
 }
 
+/**
+ * Imperative ref API — mirrors React's `DiagramRef` exactly. The previous
+ * Vue-only `getSelectedIds` / `setSelectedIds` methods were removed in
+ * T-Vue-Misc (see `docs/_streams/decisions/T-Vue-Misc.md` D1). Selection is
+ * driven by the `selectedNodeIds` prop and the `selection-change` event.
+ */
 export interface DiagramExpose {
-  print: (opts?: { fileName?: string }) => void
-  getSelectedIds: () => NodeId[]
-  setSelectedIds: (ids: NodeId[]) => void
+  print: (opts?: PrintOptions) => void
 }
 
 export type DiagramNodeRenderProps = { node: GraphNode }

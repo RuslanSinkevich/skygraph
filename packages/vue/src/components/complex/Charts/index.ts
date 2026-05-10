@@ -22,3 +22,34 @@ export type {
   BaseChartProps,
   ChartExpose,
 } from './types'
+
+// ── T-Vue-Charts (parity with @skygraph/react/components/complex/Charts) ──
+
+export { default as SgChartCrosshair } from './ChartCrosshair.vue'
+export type { ChartCrosshairProps, ChartCrosshairPoint } from './ChartCrosshair.vue'
+
+export { default as SgChartBrush, resolveBrushConfig } from './ChartBrush.vue'
+export type { ChartBrushProps, ChartBrushConfig, ChartBrushRange } from './ChartBrush.vue'
+
+export { default as SgChartHoverToolbar } from './ChartHoverToolbar.vue'
+export type { ChartHoverToolbarProps } from './ChartHoverToolbar.vue'
+
+export { defaultChartActions, resolveChartActions } from './chartActions'
+export type { ChartAction, ChartActionContext, ChartActionsProp } from './chartActions'
+
+export {
+  downloadSvg,
+  downloadSvgAsPng,
+  serializeSvg,
+  measureSvg,
+  triggerDownload,
+} from './download'
+export type { DownloadPngOptions, PngSize } from './download'
+
+export { makeChartContextMenuHandler, makeSeriesContextMenuHandler } from './contextMenu'
+export type {
+  ChartContextMenuPayload,
+  ChartContextMenuHandler,
+  ChartSeriesContextMenuPayload,
+  ChartSeriesContextMenuHandler,
+} from './contextMenu'

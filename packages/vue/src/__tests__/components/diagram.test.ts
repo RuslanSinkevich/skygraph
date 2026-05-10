@@ -36,7 +36,10 @@ function setupGraph() {
 describe('SgDiagram', () => {
   it('renders one DOM wrapper per graph node', async () => {
     const { graph } = setupGraph()
-    const w = mount(SgDiagram, { props: { graph, state: graph.getState() }, attachTo: document.body })
+    const w = mount(SgDiagram, {
+      props: { graph, state: graph.getState() },
+      attachTo: document.body,
+    })
     await nextTick()
     expect(w.findAll('[data-node-id]').length).toBe(2)
     w.unmount()
@@ -44,7 +47,10 @@ describe('SgDiagram', () => {
 
   it('positions node wrappers using node transform', async () => {
     const { graph } = setupGraph()
-    const w = mount(SgDiagram, { props: { graph, state: graph.getState() }, attachTo: document.body })
+    const w = mount(SgDiagram, {
+      props: { graph, state: graph.getState() },
+      attachTo: document.body,
+    })
     await nextTick()
     const nodeB = w.find('[data-node-id="b"]')
     const style = nodeB.attributes('style') ?? ''
@@ -55,7 +61,10 @@ describe('SgDiagram', () => {
 
   it('renders one SVG path per edge', async () => {
     const { graph } = setupGraph()
-    const w = mount(SgDiagram, { props: { graph, state: graph.getState() }, attachTo: document.body })
+    const w = mount(SgDiagram, {
+      props: { graph, state: graph.getState() },
+      attachTo: document.body,
+    })
     await nextTick()
     expect(w.findAll('path[data-edge-id]').length).toBe(1)
     w.unmount()
@@ -63,7 +72,10 @@ describe('SgDiagram', () => {
 
   it('selects a node on click', async () => {
     const { graph } = setupGraph()
-    const w = mount(SgDiagram, { props: { graph, state: graph.getState() }, attachTo: document.body })
+    const w = mount(SgDiagram, {
+      props: { graph, state: graph.getState() },
+      attachTo: document.body,
+    })
     await nextTick()
     await w.find('[data-node-id="a"]').trigger('click')
     expect(w.emitted('selection-change')).toBeTruthy()
@@ -73,7 +85,10 @@ describe('SgDiagram', () => {
 
   it('clears selection on canvas click', async () => {
     const { graph } = setupGraph()
-    const w = mount(SgDiagram, { props: { graph, state: graph.getState() }, attachTo: document.body })
+    const w = mount(SgDiagram, {
+      props: { graph, state: graph.getState() },
+      attachTo: document.body,
+    })
     await nextTick()
     await w.find('[data-node-id="a"]').trigger('click')
     await w.find('.sg-diagram-canvas').trigger('click')
@@ -82,27 +97,32 @@ describe('SgDiagram', () => {
     w.unmount()
   })
 
-  it('exposes imperative print and selection methods', async () => {
+  it('exposes the imperative print method (parity with React DiagramRef)', async () => {
     const { graph } = setupGraph()
-    const w = mount(SgDiagram, { props: { graph, state: graph.getState() }, attachTo: document.body })
+    const w = mount(SgDiagram, {
+      props: { graph, state: graph.getState() },
+      attachTo: document.body,
+    })
     await nextTick()
-    const cmp = w.vm as unknown as {
-      print: () => void
-      getSelectedIds: () => string[]
-      setSelectedIds: (ids: string[]) => void
-    }
+    const cmp = w.vm as unknown as { print: (opts?: { fileName?: string }) => void }
     expect(typeof cmp.print).toBe('function')
-    cmp.setSelectedIds(['a', 'b'])
-    expect(cmp.getSelectedIds()).toEqual(['a', 'b'])
+    // Prior `setSelectedIds`/`getSelectedIds` Vue-only methods were removed
+    // for parity (T-Vue-Misc D1) — selection is now managed exclusively
+    // through `selectedNodeIds` prop + `selection-change` emit.
+    expect((w.vm as unknown as Record<string, unknown>).getSelectedIds).toBeUndefined()
+    expect((w.vm as unknown as Record<string, unknown>).setSelectedIds).toBeUndefined()
     w.unmount()
   })
 
   it('emits node-click with node payload', async () => {
     const { graph } = setupGraph()
-    const w = mount(SgDiagram, { props: { graph, state: graph.getState() }, attachTo: document.body })
+    const w = mount(SgDiagram, {
+      props: { graph, state: graph.getState() },
+      attachTo: document.body,
+    })
     await nextTick()
     await w.find('[data-node-id="b"]').trigger('click')
-    const evt = (w.emitted('node-click')![0][0]) as { id: string }
+    const evt = w.emitted('node-click')![0][0] as { id: string }
     expect(evt.id).toBe('b')
     w.unmount()
   })

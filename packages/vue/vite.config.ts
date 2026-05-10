@@ -12,7 +12,19 @@ export default defineConfig({
     vue(),
     dts({
       rollupTypes: true,
+      // `bundledPackages` tells api-extractor to inline core's types into the
+      // rolled `dist/index.d.ts` instead of leaving external `import` lines.
+      bundledPackages: ['@skygraph/core'],
       tsconfigPath: path.resolve(__dirname, 'tsconfig.json'),
+      // Strip workspace `paths` while generating .d.ts so the dts plugin
+      // resolves `@skygraph/core` through node_modules (its built
+      // `dist/index.d.ts`). Without this override the alias resolves
+      // `@skygraph/core` to `../core/src/index.ts` and api-extractor emits
+      // relative imports like `from '../../core/src/index.ts'` into the rolled
+      // output instead of inlining core's types via `bundledPackages`.
+      compilerOptions: {
+        paths: {},
+      },
       include: ['src/**/*.ts', 'src/**/*.vue'],
       exclude: ['src/__tests__/**'],
     }),
