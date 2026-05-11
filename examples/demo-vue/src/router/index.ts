@@ -2,58 +2,52 @@ import { createHashRouter, type RouteRecord } from './hashRouter'
 
 const Landing = () => import('../pages/Landing.vue')
 
-// `/components/button` — Wave 3.1 reference migration to demos/ architecture.
-// Old `pages/ButtonPage.vue` is gone (see T-Vue-Demo-Foundation done report).
 const ButtonDemo = () => import('../demos/ButtonDemo.vue')
-const InputPage = () => import('../pages/InputPage.vue')
-const InputNumberPage = () => import('../pages/InputNumberPage.vue')
-const TextareaPage = () => import('../pages/TextareaPage.vue')
-const SelectPage = () => import('../pages/SelectPage.vue')
-const CheckboxPage = () => import('../pages/CheckboxPage.vue')
-const RadioPage = () => import('../pages/RadioPage.vue')
-const SwitchPage = () => import('../pages/SwitchPage.vue')
-const SliderPage = () => import('../pages/SliderPage.vue')
-const DatePickerPage = () => import('../pages/DatePickerPage.vue')
-const ModalPage = () => import('../pages/ModalPage.vue')
-const DrawerPage = () => import('../pages/DrawerPage.vue')
-const TooltipPage = () => import('../pages/TooltipPage.vue')
-const TabsPage = () => import('../pages/TabsPage.vue')
-const MenuPage = () => import('../pages/MenuPage.vue')
-const PaginationPage = () => import('../pages/PaginationPage.vue')
-const BadgePage = () => import('../pages/BadgePage.vue')
-const TagPage = () => import('../pages/TagPage.vue')
-const AvatarPage = () => import('../pages/AvatarPage.vue')
-const ProgressPage = () => import('../pages/ProgressPage.vue')
-const SpinPage = () => import('../pages/SpinPage.vue')
-const SkeletonPage = () => import('../pages/SkeletonPage.vue')
-
-// T-VueDemo-Pages additions
-const RatePage = () => import('../pages/RatePage.vue')
-const AutoCompletePage = () => import('../pages/AutoCompletePage.vue')
-const BreadcrumbPage = () => import('../pages/BreadcrumbPage.vue')
-const DropdownPage = () => import('../pages/DropdownPage.vue')
-const PopconfirmPage = () => import('../pages/PopconfirmPage.vue')
-const CollapsePage = () => import('../pages/CollapsePage.vue')
-const EmptyPage = () => import('../pages/EmptyPage.vue')
-const ResultPage = () => import('../pages/ResultPage.vue')
-const SegmentedPage = () => import('../pages/SegmentedPage.vue')
-const StepsPage = () => import('../pages/StepsPage.vue')
-const TimelinePage = () => import('../pages/TimelinePage.vue')
-const CarouselPage = () => import('../pages/CarouselPage.vue')
-const DescriptionsPage = () => import('../pages/DescriptionsPage.vue')
+const InputDemo = () => import('../demos/InputDemo.vue')
+const InputNumberDemo = () => import('../demos/InputNumberDemo.vue')
+const TextareaDemo = () => import('../demos/TextareaDemo.vue')
+const SelectDemo = () => import('../demos/SelectDemo.vue')
+const CheckboxDemo = () => import('../demos/CheckboxDemo.vue')
+const RadioDemo = () => import('../demos/RadioDemo.vue')
+const SwitchDemo = () => import('../demos/SwitchDemo.vue')
+const SliderDemo = () => import('../demos/SliderDemo.vue')
+const DatePickerDemo = () => import('../demos/DatePickerDemo.vue')
+const ModalDemo = () => import('../demos/ModalDemo.vue')
+const DrawerDemo = () => import('../demos/DrawerDemo.vue')
+const TooltipDemo = () => import('../demos/TooltipDemo.vue')
+const TabsDemo = () => import('../demos/TabsDemo.vue')
+const MenuDemo = () => import('../demos/MenuDemo.vue')
+const PaginationDemo = () => import('../demos/PaginationDemo.vue')
+const BadgeDemo = () => import('../demos/BadgeDemo.vue')
+const TagDemo = () => import('../demos/TagDemo.vue')
+const AvatarDemo = () => import('../demos/AvatarDemo.vue')
+const ProgressDemo = () => import('../demos/ProgressDemo.vue')
+const SpinDemo = () => import('../demos/SpinDemo.vue')
+const SkeletonDemo = () => import('../demos/SkeletonDemo.vue')
+const RateDemo = () => import('../demos/RateDemo.vue')
+const AutoCompleteDemo = () => import('../demos/AutoCompleteDemo.vue')
+const BreadcrumbDemo = () => import('../demos/BreadcrumbDemo.vue')
+const DropdownDemo = () => import('../demos/DropdownDemo.vue')
+const PopconfirmDemo = () => import('../demos/PopconfirmDemo.vue')
+const CollapseDemo = () => import('../demos/CollapseDemo.vue')
+const EmptyDemo = () => import('../demos/EmptyDemo.vue')
+const ResultDemo = () => import('../demos/ResultDemo.vue')
+const SegmentedDemo = () => import('../demos/SegmentedDemo.vue')
+const StepsDemo = () => import('../demos/StepsDemo.vue')
+const TimelineDemo = () => import('../demos/TimelineDemo.vue')
+const CarouselDemo = () => import('../demos/CarouselDemo.vue')
+const DescriptionsDemo = () => import('../demos/DescriptionsDemo.vue')
 const TimePickerDemo = () => import('../demos/TimePickerDemo.vue')
-const ColorPickerPage = () => import('../pages/ColorPickerPage.vue')
-// Wave 3.2 / Tab D — `list` and `tree` migrated to demos/ architecture.
+const ColorPickerDemo = () => import('../demos/ColorPickerDemo.vue')
 const ListDemo = () => import('../demos/ListDemo.vue')
 const TreeDemo = () => import('../demos/TreeDemo.vue')
-const TreeSelectPage = () => import('../pages/TreeSelectPage.vue')
-const CascaderPage = () => import('../pages/CascaderPage.vue')
+const TreeSelectDemo = () => import('../demos/TreeSelectDemo.vue')
+const CascaderDemo = () => import('../demos/CascaderDemo.vue')
 const CalendarDemo = () => import('../demos/CalendarDemo.vue')
-const NotificationPage = () => import('../pages/NotificationPage.vue')
+const NotificationDemo = () => import('../demos/NotificationDemo.vue')
 const TransferDemo = () => import('../demos/TransferDemo.vue')
 const UploadDemo = () => import('../demos/UploadDemo.vue')
-const ConfigProviderPage = () => import('../pages/ConfigProviderPage.vue')
-// Wave 3.2 / Tab D — complex components migrated to demos/ architecture.
+const ConfigProviderDemo = () => import('../demos/ConfigProviderDemo.vue')
 const FormDemo = () => import('../demos/FormDemo.vue')
 const TableDemo = () => import('../demos/TableDemo.vue')
 const ChartsDemo = () => import('../demos/ChartsDemo.vue')
@@ -67,53 +61,51 @@ const SchemaFormEditorDemo = () => import('../demos/SchemaFormEditorDemo.vue')
 const routes: RouteRecord[] = [
   { path: '/', component: Landing },
   { path: '/components/button', component: ButtonDemo },
-  { path: '/components/input', component: InputPage },
-  { path: '/components/inputnumber', component: InputNumberPage },
-  { path: '/components/textarea', component: TextareaPage },
-  { path: '/components/select', component: SelectPage },
-  { path: '/components/checkbox', component: CheckboxPage },
-  { path: '/components/radio', component: RadioPage },
-  { path: '/components/switch', component: SwitchPage },
-  { path: '/components/slider', component: SliderPage },
-  { path: '/components/datepicker', component: DatePickerPage },
-  { path: '/components/modal', component: ModalPage },
-  { path: '/components/drawer', component: DrawerPage },
-  { path: '/components/tooltip', component: TooltipPage },
-  { path: '/components/tabs', component: TabsPage },
-  { path: '/components/menu', component: MenuPage },
-  { path: '/components/pagination', component: PaginationPage },
-  { path: '/components/badge', component: BadgePage },
-  { path: '/components/tag', component: TagPage },
-  { path: '/components/avatar', component: AvatarPage },
-  { path: '/components/progress', component: ProgressPage },
-  { path: '/components/spin', component: SpinPage },
-  { path: '/components/skeleton', component: SkeletonPage },
-
-  // T-VueDemo-Pages additions
-  { path: '/components/rate', component: RatePage },
-  { path: '/components/autocomplete', component: AutoCompletePage },
-  { path: '/components/breadcrumb', component: BreadcrumbPage },
-  { path: '/components/dropdown', component: DropdownPage },
-  { path: '/components/popconfirm', component: PopconfirmPage },
-  { path: '/components/collapse', component: CollapsePage },
-  { path: '/components/empty', component: EmptyPage },
-  { path: '/components/result', component: ResultPage },
-  { path: '/components/segmented', component: SegmentedPage },
-  { path: '/components/steps', component: StepsPage },
-  { path: '/components/timeline', component: TimelinePage },
-  { path: '/components/carousel', component: CarouselPage },
-  { path: '/components/descriptions', component: DescriptionsPage },
+  { path: '/components/input', component: InputDemo },
+  { path: '/components/inputnumber', component: InputNumberDemo },
+  { path: '/components/textarea', component: TextareaDemo },
+  { path: '/components/select', component: SelectDemo },
+  { path: '/components/checkbox', component: CheckboxDemo },
+  { path: '/components/radio', component: RadioDemo },
+  { path: '/components/switch', component: SwitchDemo },
+  { path: '/components/slider', component: SliderDemo },
+  { path: '/components/datepicker', component: DatePickerDemo },
+  { path: '/components/modal', component: ModalDemo },
+  { path: '/components/drawer', component: DrawerDemo },
+  { path: '/components/tooltip', component: TooltipDemo },
+  { path: '/components/tabs', component: TabsDemo },
+  { path: '/components/menu', component: MenuDemo },
+  { path: '/components/pagination', component: PaginationDemo },
+  { path: '/components/badge', component: BadgeDemo },
+  { path: '/components/tag', component: TagDemo },
+  { path: '/components/avatar', component: AvatarDemo },
+  { path: '/components/progress', component: ProgressDemo },
+  { path: '/components/spin', component: SpinDemo },
+  { path: '/components/skeleton', component: SkeletonDemo },
+  { path: '/components/rate', component: RateDemo },
+  { path: '/components/autocomplete', component: AutoCompleteDemo },
+  { path: '/components/breadcrumb', component: BreadcrumbDemo },
+  { path: '/components/dropdown', component: DropdownDemo },
+  { path: '/components/popconfirm', component: PopconfirmDemo },
+  { path: '/components/collapse', component: CollapseDemo },
+  { path: '/components/empty', component: EmptyDemo },
+  { path: '/components/result', component: ResultDemo },
+  { path: '/components/segmented', component: SegmentedDemo },
+  { path: '/components/steps', component: StepsDemo },
+  { path: '/components/timeline', component: TimelineDemo },
+  { path: '/components/carousel', component: CarouselDemo },
+  { path: '/components/descriptions', component: DescriptionsDemo },
   { path: '/components/timepicker', component: TimePickerDemo },
-  { path: '/components/colorpicker', component: ColorPickerPage },
+  { path: '/components/colorpicker', component: ColorPickerDemo },
   { path: '/components/list', component: ListDemo },
   { path: '/components/tree', component: TreeDemo },
-  { path: '/components/treeselect', component: TreeSelectPage },
-  { path: '/components/cascader', component: CascaderPage },
+  { path: '/components/treeselect', component: TreeSelectDemo },
+  { path: '/components/cascader', component: CascaderDemo },
   { path: '/components/calendar', component: CalendarDemo },
-  { path: '/components/notification', component: NotificationPage },
+  { path: '/components/notification', component: NotificationDemo },
   { path: '/components/transfer', component: TransferDemo },
   { path: '/components/upload', component: UploadDemo },
-  { path: '/components/configprovider', component: ConfigProviderPage },
+  { path: '/components/configprovider', component: ConfigProviderDemo },
   { path: '/components/form', component: FormDemo },
   { path: '/components/table', component: TableDemo },
   { path: '/components/charts', component: ChartsDemo },
