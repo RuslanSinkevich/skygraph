@@ -8,7 +8,7 @@ import { sidebarItems } from './data'
 </script>
 
 <template>
-  <div style="max-width: 256px; background: #111827; padding: 8px; border-radius: 8px">
+  <div style="max-width: 256px; background: #141414; padding: 8px; border-radius: 8px">
     <SgMenu
       theme="dark"
       mode="inline"

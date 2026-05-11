@@ -7,7 +7,14 @@ import { Empty } from '@skygraph/react'
  */
 export function CustomImageEmpty() {
   return (
-    <div style={{ display: 'grid', gap: 24, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+    <div
+      style={{
+        display: 'grid',
+        gap: 24,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        width: '100%',
+      }}
+    >
       <Empty image={<span style={{ fontSize: 48 }}>📭</span>} description="Inbox zero" />
       <Empty
         image={

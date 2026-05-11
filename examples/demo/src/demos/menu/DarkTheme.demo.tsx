@@ -7,7 +7,7 @@ import { sidebarItems } from './data'
  */
 export function DarkThemeMenu() {
   return (
-    <div style={{ maxWidth: 256, background: '#111827', padding: 8, borderRadius: 8 }}>
+    <div style={{ maxWidth: 256, background: '#141414', padding: 8, borderRadius: 8 }}>
       <Menu
         theme="dark"
         mode="inline"

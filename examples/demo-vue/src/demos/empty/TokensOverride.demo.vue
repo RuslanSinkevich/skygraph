@@ -17,7 +17,7 @@ const scoped = {
 </script>
 
 <template>
-  <div :style="scoped">
+  <div class="demo-card-host" :style="scoped">
     <SgEmpty description="Rebrand me via CSS variables" />
   </div>
 </template>

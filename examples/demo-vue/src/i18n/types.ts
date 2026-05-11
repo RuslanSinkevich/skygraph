@@ -63,6 +63,13 @@ export interface DemoDict {
   componentDoc: {
     examples: string
     whenToUse: string
+    /**
+     * Legacy keys still consumed by `examples/demo-vue/src/components/*.vue`
+     * (the pre-Wave-3 wrappers, kept around for non-migrated surfaces).
+     * The new wrappers in `src/demos/components/*` use `demoBox.*` and
+     * `propsTable.titleApi` instead — keep both in sync until the legacy
+     * components are removed (out of scope for T-Vue-Demo-Wrappers-Parity).
+     */
     propsTitle: string
     showCode: string
     hideCode: string
@@ -70,11 +77,29 @@ export interface DemoDict {
     copied: string
   }
   propsTable: {
+    /** Default heading for {@link PropsTable} when `title` prop is absent. */
+    titleApi: string
     colProperty: string
     colDescription: string
     colType: string
     colDefault: string
     requiredLabel: string
+  }
+  /**
+   * `DemoBox` strings (1:1 with React `examples/demo/src/i18n/types.ts`
+   * `demoBox` section). Used by the new wrappers in
+   * `examples/demo-vue/src/demos/components/DemoBox.vue`.
+   */
+  demoBox: {
+    toolbarLabel: string
+    showCode: string
+    hideCode: string
+    showCodeAria: string
+    hideCodeAria: string
+    copyCode: string
+    copy: string
+    copied: string
+    copiedToast: string
   }
   cssVarsTable: {
     title: string

@@ -21,8 +21,8 @@ body,
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background: var(--sg-color-bg);
   color: var(--sg-color-text);
   -webkit-font-smoothing: antialiased;
@@ -421,6 +421,35 @@ body {
   background: none;
   padding: 0;
   font-size: inherit;
+}
+
+/* ── Surface-less components on the preview gradient ──────────────────── */
+
+/*
+ * Result and Empty are full-region components without their own surface.
+ * On the preview gradient they merge into the background and into each
+ * other when stacked. Wrap them in a card-like surface so each instance
+ * reads as a discrete sample. Demos that intentionally embed the
+ * component inside a custom container opt out via `.demo-card-host` on
+ * the wrapping element.
+ */
+.demo-box-preview .sg-result,
+.demo-box-preview .sg-empty {
+  background: var(--sg-color-bg);
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius, 6px);
+}
+
+.demo-box-preview > .sg-result,
+.demo-box-preview > .sg-empty {
+  width: 100%;
+}
+
+.demo-box-preview .demo-card-host .sg-result,
+.demo-box-preview .demo-card-host .sg-empty {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
 
 /* ── Unstyled demo helpers ────────────────────────────────────────────── */

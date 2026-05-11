@@ -4,10 +4,11 @@ import { useI18n } from '../../i18n'
 /**
  * `PropsTable` — documents component props.
  *
- * Mirrors React `examples/demo/src/components/PropsTable.tsx` 1:1.
- * `PropDef` is intentionally a structural type — every page builds an
- * array literal so TypeScript checks the doc strings against keys at
- * call site.
+ * Mirrors React `examples/demo/src/components/PropsTable.tsx` 1:1
+ * (same `.demo-props-section` / `.demo-props-title` / `.doc-table`
+ * className contract). `PropDef` is intentionally a structural type —
+ * every page builds an array literal so TypeScript checks the doc
+ * strings against keys at call site.
  */
 export interface PropDef {
   name: string
@@ -27,9 +28,9 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="dv-props-section">
-    <h3 class="dv-props-title">{{ title ?? t.componentDoc.propsTitle }}</h3>
-    <table class="dv-doc-table">
+  <div class="demo-props-section">
+    <h3 class="demo-props-title">{{ title ?? t.propsTable.titleApi }}</h3>
+    <table class="doc-table">
       <thead>
         <tr>
           <th>{{ t.propsTable.colProperty }}</th>
@@ -45,8 +46,8 @@ const { t } = useI18n()
             <span
               v-if="prop.required"
               :aria-label="t.propsTable.requiredLabel"
-              style="color: var(--sg-color-error); margin-left: 2px"
-              >*</span
+              style="color: var(--sg-color-error)"
+              >{{ ' *' }}</span
             >
           </td>
           <td>{{ prop.description }}</td>

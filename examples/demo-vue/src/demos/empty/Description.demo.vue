@@ -17,6 +17,7 @@ import { SgEmpty } from '@skygraph/vue'
       display: grid;
       gap: 24px;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      width: 100%;
     "
   >
     <SgEmpty description="No results found" />

@@ -3,8 +3,9 @@ import { useI18n } from '../../i18n'
 
 /**
  * `CssVarsTable` — documents the CSS custom properties a component
- * exposes. New in Volna 3 (Vue side); React-аналог:
- * `examples/demo/src/components/CssVarsTable.tsx`.
+ * exposes. Mirrors React `examples/demo/src/components/CssVarsTable.tsx`
+ * 1:1 (same `.demo-props-section` / `.demo-props-title` / `.doc-table`
+ * className contract; `hint` rendered with the same inline-styles).
  *
  * Conventions:
  *   - `name` is **without** the `--` prefix; the table renders it
@@ -33,10 +34,15 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div v-if="props.data.length > 0" class="dv-props-section">
-    <h3 class="dv-props-title">{{ title ?? t.cssVarsTable.title }}</h3>
-    <p v-if="hint" class="dv-css-vars-hint">{{ hint }}</p>
-    <table class="dv-doc-table">
+  <div v-if="props.data.length > 0" class="demo-props-section">
+    <h3 class="demo-props-title">{{ title ?? t.cssVarsTable.title }}</h3>
+    <p
+      v-if="hint"
+      style="margin: -4px 0 12px; font-size: 13px; color: var(--sg-color-text-secondary)"
+    >
+      {{ hint }}
+    </p>
+    <table class="doc-table">
       <thead>
         <tr>
           <th style="width: 30%">{{ t.cssVarsTable.colVariable }}</th>

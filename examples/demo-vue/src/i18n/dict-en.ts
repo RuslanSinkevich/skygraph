@@ -67,11 +67,23 @@ export const en: DemoDict = {
     copied: 'Copied',
   },
   propsTable: {
+    titleApi: 'API',
     colProperty: 'Property',
     colDescription: 'Description',
     colType: 'Type',
     colDefault: 'Default',
     requiredLabel: 'required',
+  },
+  demoBox: {
+    toolbarLabel: 'Demo actions',
+    showCode: 'Show Code',
+    hideCode: 'Hide Code',
+    showCodeAria: 'Show code',
+    hideCodeAria: 'Hide code',
+    copyCode: 'Copy code',
+    copy: 'Copy',
+    copied: 'Copied',
+    copiedToast: 'Copied!',
   },
   cssVarsTable: {
     title: 'CSS Variables',

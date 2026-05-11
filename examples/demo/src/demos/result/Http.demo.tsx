@@ -7,7 +7,14 @@ import { Result, Button } from '@skygraph/react'
  */
 export function HttpResult() {
   return (
-    <div style={{ display: 'grid', gap: 32, gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
+    <div
+      style={{
+        display: 'grid',
+        gap: 32,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+        width: '100%',
+      }}
+    >
       <Result
         status="404"
         title="404"

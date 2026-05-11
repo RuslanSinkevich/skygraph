@@ -7,7 +7,7 @@ import { Result } from '@skygraph/react'
  */
 export function InfoWarningResult() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, width: '100%' }}>
       <Result status="info" title="Your operation has been executed" />
       <Result status="warning" title="There are some problems with your operation" />
     </div>

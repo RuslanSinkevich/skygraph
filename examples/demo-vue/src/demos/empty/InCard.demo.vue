@@ -9,11 +9,13 @@ import { SgEmpty, SgButton } from '@skygraph/vue'
 
 <template>
   <div
+    class="demo-card-host"
     style="
       border: 1px solid var(--sg-color-border);
       border-radius: var(--sg-border-radius);
       padding: 24px;
       background: var(--sg-color-bg-container);
+      width: 100%;
     "
   >
     <SgEmpty description="No rows match your filters">

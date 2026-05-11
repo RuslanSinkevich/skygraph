@@ -7,9 +7,22 @@ import { Empty } from '@skygraph/react'
  */
 export function DescriptionEmpty() {
   return (
-    <div style={{ display: 'grid', gap: 24, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+    <div
+      style={{
+        display: 'grid',
+        gap: 24,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        width: '100%',
+      }}
+    >
       <Empty description="No results found" />
-      <Empty description={<span>No invoices matching <code>status=paid</code></span>} />
+      <Empty
+        description={
+          <span>
+            No invoices matching <code>status=paid</code>
+          </span>
+        }
+      />
     </div>
   )
 }

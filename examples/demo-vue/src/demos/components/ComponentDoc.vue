@@ -3,12 +3,23 @@ import { useI18n } from '../../i18n'
 
 /**
  * `ComponentDoc` — top-level page wrapper that renders the
- * crumbs / title / lead / "When to use" block + a section title
- * before the `<DemoBox>` cards (passed via the default slot).
+ * crumbs / title / lead / "When to use" block + an "Examples"
+ * section title before the `<DemoBox>` cards (passed via the
+ * default slot).
  *
- * Mirrors React `examples/demo/src/components/ComponentDoc.tsx` 1:1.
- * The Vue version exposes a default slot for the demo cards and an
- * `#api` named slot where pages render `PropsTable` / `CssVarsTable`.
+ * Mirrors React `examples/demo/src/components/ComponentDoc.tsx` 1:1
+ * (same DOM, same `.doc-*` className contract). Two Vue-side deltas:
+ *   1. The optional `notes` block is exposed as a **named slot**
+ *      `#notes` — Vue idiom equivalent to React's `notes?: ReactNode`
+ *      prop. Renders inside `<div class="doc-notes">` exactly where
+ *      React does (after `whenToUse`, before the "Examples" heading).
+ *   2. Pages render their `<PropsTable>` / `<CssVarsTable>` via the
+ *      named slot `#api`. React inlines them as children inside the
+ *      `.doc-demos` block; in Vue separating them keeps demo cards in
+ *      the default slot and API tables in their own region. The slot
+ *      output sits **after** `.doc-demos` to mirror the visual order
+ *      (tables under demos) — see `docs/_streams/decisions/T-Vue-Demo-
+ *      Wrappers-Parity.md` for the full rationale.
  */
 interface Props {
   title: string
@@ -23,31 +34,35 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <section class="dv-doc">
-    <div v-if="crumbs && crumbs.length > 0" class="dv-doc-crumbs">
-      <span v-for="(c, i) in crumbs" :key="i" class="dv-doc-crumb">
+  <section class="doc-page">
+    <div v-if="crumbs && crumbs.length > 0" class="doc-crumbs">
+      <span v-for="(c, i) in crumbs" :key="i" class="doc-crumb">
         {{ c }}
-        <span v-if="i < crumbs.length - 1" class="dv-doc-crumb-sep">/</span>
+        <span v-if="i < crumbs.length - 1" class="doc-crumb-sep">/</span>
       </span>
     </div>
 
-    <header class="dv-doc-header">
-      <h1 class="dv-doc-title">
+    <header class="doc-header">
+      <h1 class="doc-component-title">
         {{ title }}
-        <span v-if="badge" class="dv-doc-badge">{{ badge }}</span>
+        <span v-if="badge" class="doc-badge">{{ badge }}</span>
       </h1>
-      <p class="dv-doc-lead">{{ description }}</p>
+      <p class="doc-lead">{{ description }}</p>
     </header>
 
-    <div v-if="whenToUse && whenToUse.length > 0" class="dv-doc-when">
+    <div v-if="whenToUse && whenToUse.length > 0" class="doc-when-to-use">
       <h2>{{ t.componentDoc.whenToUse }}</h2>
       <ul>
         <li v-for="(item, i) in whenToUse" :key="i">{{ item }}</li>
       </ul>
     </div>
 
-    <h2 class="dv-doc-section-title">{{ t.componentDoc.examples }}</h2>
-    <div class="dv-doc-demos">
+    <div v-if="$slots.notes" class="doc-notes">
+      <slot name="notes" />
+    </div>
+
+    <h2>{{ t.componentDoc.examples }}</h2>
+    <div class="doc-demos">
       <slot />
     </div>
 

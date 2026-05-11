@@ -8,7 +8,7 @@ import { SgResult } from '@skygraph/vue'
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 24px">
+  <div style="display: flex; flex-direction: column; gap: 24px; width: 100%">
     <SgResult status="info" title="Your operation has been executed" />
     <SgResult status="warning" title="There are some problems with your operation" />
   </div>

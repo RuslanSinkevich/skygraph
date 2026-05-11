@@ -22,17 +22,14 @@ const data = makeUserRows(5)
   border: 1px dashed #999;
   padding: 12px;
 }
-.demo-unstyled-shell table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.demo-unstyled-shell th,
-.demo-unstyled-shell td {
+.demo-unstyled-shell .sg-table-th,
+.demo-unstyled-shell .sg-table-td {
   padding: 6px 12px;
   border: 1px solid #ccc;
   text-align: left;
 }
-.demo-unstyled-shell th {
+.demo-unstyled-shell .sg-table-th {
   background: #f4f4f4;
+  font-weight: 600;
 }
 </style>

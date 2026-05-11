@@ -17,7 +17,7 @@ const scoped: CSSProperties = {
 
 export function TokensOverrideEmpty() {
   return (
-    <div style={scoped}>
+    <div className="demo-card-host" style={scoped}>
       <Empty description="Rebrand me via CSS variables" />
     </div>
   )

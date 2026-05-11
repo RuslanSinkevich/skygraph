@@ -162,6 +162,33 @@ a {
   align-items: stretch;
 }
 
+/*
+ * Result and Empty are full-region components without their own surface.
+ * On the preview gradient they merge into the background and into each
+ * other when stacked. Wrap them in a card-like surface so each instance
+ * reads as a discrete sample. Demos that intentionally embed the
+ * component inside a custom container opt out via `.demo-card-host` on
+ * the wrapping element.
+ */
+.dv-demo-preview .sg-result,
+.dv-demo-preview .sg-empty {
+  background: var(--sg-color-bg);
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius, 6px);
+}
+
+.dv-demo-preview > .sg-result,
+.dv-demo-preview > .sg-empty {
+  width: 100%;
+}
+
+.dv-demo-preview .demo-card-host .sg-result,
+.dv-demo-preview .demo-card-host .sg-empty {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
 .dv-demo-meta {
   padding: 14px 24px;
   border-top: 1px dashed var(--sg-color-border-secondary);
@@ -420,3 +447,394 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+/* === BEGIN: ported from examples/demo/src/app.css (T-Vue-Demo-Wrappers-Parity) === */
+/*
+ * 1:1 copy of the .doc-* / .demo-box-* / .demo-props-* / .doc-table
+ * sections from examples/demo/src/app.css. The new wrappers in
+ * src/demos/components/* (ComponentDoc, DemoBox, PropsTable,
+ * CssVarsTable) emit the React className contract — this block
+ * supplies the matching styles so demo-vue pages render visually
+ * identical to the React reference.
+ *
+ * Do NOT edit values here; keep this block byte-equivalent to the
+ * source. Style tweaks belong in app.css first, then re-port.
+ *
+ * The legacy .dv-* rules above are intentionally kept until the
+ * pre-Wave-3 wrappers in src/components/* are removed (see finding
+ * `dv-namespace-cleanup`).
+ */
+
+/* ── Doc page base ────────────────────────────────────────────────────── */
+
+.doc-page {
+  max-width: 1120px;
+  padding-top: 24px;
+}
+
+.doc-page h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.doc-page h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 36px 0 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--sg-color-border-secondary);
+}
+
+.doc-page h2:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.doc-page p {
+  line-height: 1.7;
+  margin-bottom: 12px;
+  color: var(--sg-color-text-secondary);
+}
+
+.doc-lead {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.doc-page code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.88em;
+  padding: 2px 6px;
+  background: var(--sg-color-bg-secondary);
+  border-radius: 4px;
+}
+
+.doc-crumbs {
+  font-size: 12px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+  margin-bottom: 10px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.doc-crumb-sep {
+  margin: 0 6px;
+  opacity: 0.5;
+}
+
+.doc-header {
+  padding-bottom: 10px;
+}
+
+.doc-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--sg-color-primary-bg);
+  color: var(--sg-color-primary);
+  font-size: 12px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.doc-notes {
+  margin: 8px 0 4px;
+  padding: 12px 16px;
+  background: var(--sg-color-primary-bg);
+  border: 1px solid
+    color-mix(in srgb, var(--sg-color-primary) 30%, var(--sg-color-border-secondary) 70%);
+  border-radius: var(--sg-border-radius, 6px);
+  color: var(--sg-color-text);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.doc-notes code {
+  background: var(--sg-color-bg);
+}
+
+/* ── Code blocks ──────────────────────────────────────────────────────── */
+
+.doc-code {
+  background: var(--sg-color-bg-secondary);
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius, 6px);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.doc-code code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: var(--sg-color-text);
+  white-space: pre;
+}
+
+/* ── API tables ───────────────────────────────────────────────────────── */
+
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.doc-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--sg-color-bg-secondary);
+  border-bottom: 2px solid var(--sg-color-border-secondary);
+  font-weight: 600;
+  color: var(--sg-color-text);
+}
+
+.doc-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sg-color-border-secondary);
+  color: var(--sg-color-text-secondary);
+  vertical-align: top;
+}
+
+.doc-table td code {
+  font-size: 12px;
+}
+
+/* ── Links ────────────────────────────────────────────────────────────── */
+
+.doc-link {
+  color: var(--sg-color-primary);
+  text-decoration: none;
+}
+
+.doc-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Component Doc Page ──────────────────────────────────────────────── */
+
+.doc-component-title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.doc-when-to-use {
+  margin: 18px 0 10px;
+  padding: 14px 18px;
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius, 6px);
+  background: var(--sg-color-bg-secondary);
+}
+
+.doc-when-to-use h2 {
+  font-size: 14px;
+  margin: 0 0 6px;
+  padding: 0;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+}
+
+.doc-when-to-use ul {
+  padding-left: 20px;
+  margin: 4px 0 0;
+}
+
+.doc-when-to-use li {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--sg-color-text-secondary);
+}
+
+.doc-demos {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+/* ── DemoBox (Ant-like) ──────────────────────────────────────────────── */
+
+.demo-box {
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius, 6px);
+  background: var(--sg-color-bg);
+  transition: border-color 0.2s;
+}
+
+.demo-box:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--sg-color-primary) 40%,
+    var(--sg-color-border-secondary) 60%
+  );
+}
+
+.demo-box-preview {
+  padding: 36px 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  border-radius: var(--sg-border-radius, 6px) var(--sg-border-radius, 6px) 0 0;
+  min-height: 64px;
+  background: linear-gradient(
+    180deg,
+    var(--sg-color-bg) 0%,
+    color-mix(in srgb, var(--sg-color-bg) 92%, var(--sg-color-primary) 8%) 100%
+  );
+}
+
+.demo-box-preview-flush {
+  padding: 0;
+  min-height: 0;
+  background: var(--sg-color-bg);
+}
+
+.demo-box-preview-vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.demo-box-meta {
+  padding: 14px 24px;
+  border-top: 1px dashed var(--sg-color-border-secondary);
+  background: var(--sg-color-bg);
+  position: relative;
+}
+
+.demo-box-meta::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 22px;
+  width: 16px;
+  height: 16px;
+  background: var(--sg-color-bg);
+  border: 1px solid var(--sg-color-border-secondary);
+  border-bottom: none;
+  border-right: none;
+  transform: rotate(45deg);
+}
+
+.demo-box-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sg-color-text);
+  margin-bottom: 2px;
+}
+
+.demo-box-description {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--sg-color-text-secondary);
+}
+
+.demo-box-actions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  border-top: 1px dashed var(--sg-color-border-secondary);
+  padding: 6px 10px;
+}
+
+.demo-box-action {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.demo-box-action:hover {
+  color: var(--sg-color-primary);
+  background: var(--sg-color-bg-hover);
+}
+
+.demo-box-action:focus-visible {
+  outline: 2px solid var(--sg-color-primary);
+  outline-offset: -1px;
+}
+
+.demo-box-code {
+  border-top: 1px solid var(--sg-color-border-secondary);
+  background: var(--sg-color-bg-secondary);
+  overflow-x: auto;
+  border-radius: 0 0 var(--sg-border-radius, 6px) var(--sg-border-radius, 6px);
+}
+
+.demo-box-code pre {
+  margin: 0;
+  padding: 18px 24px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.demo-box-code code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: var(--sg-color-text);
+  white-space: pre;
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* ── Surface-less components on the preview gradient ──────────────────── */
+
+/*
+ * Result and Empty are full-region components without their own surface.
+ * On the preview gradient they merge into the background and into each
+ * other when stacked. Wrap them in a card-like surface so each instance
+ * reads as a discrete sample. Demos that intentionally embed the
+ * component inside a custom container opt out via `.demo-card-host` on
+ * the wrapping element.
+ */
+.demo-box-preview .sg-result,
+.demo-box-preview .sg-empty {
+  background: var(--sg-color-bg);
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius, 6px);
+}
+
+.demo-box-preview > .sg-result,
+.demo-box-preview > .sg-empty {
+  width: 100%;
+}
+
+.demo-box-preview .demo-card-host .sg-result,
+.demo-box-preview .demo-card-host .sg-empty {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+/* ── PropsTable ──────────────────────────────────────────────────────── */
+
+.demo-props-section {
+  margin-top: 32px;
+  margin-bottom: 24px;
+}
+
+.demo-props-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--sg-color-border-secondary);
+}
+
+/* === END:   ported from examples/demo/src/app.css === */
