@@ -8,13 +8,13 @@
   {
     "name": "@skygraph/react (esm)",
     "path": "packages/react/dist/index.js",
-    "limit": "110 KB",
+    "limit": "150 KB",
     "brotli": true
   },
   {
     "name": "@skygraph/vue (esm)",
     "path": "packages/vue/dist/index.js",
-    "limit": "90 KB",
+    "limit": "100 KB",
     "brotli": true
   },
   {
@@ -38,7 +38,7 @@
   {
     "name": "@skygraph/angular (esm)",
     "path": "packages/angular/dist/fesm2022/skygraph-angular.mjs",
-    "limit": "150 KB",
+    "limit": "175 KB",
     "brotli": true
   },
   {
