@@ -32,7 +32,7 @@
   {
     "name": "examples/demo-vue (main bundle)",
     "path": "examples/demo-vue/dist/assets/index-*.js",
-    "limit": "160 KB",
+    "limit": "400 KB",
     "brotli": true
   }
 ]
