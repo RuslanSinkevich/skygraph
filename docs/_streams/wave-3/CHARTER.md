@@ -136,7 +136,22 @@ actions, селекция, парность React↔Vue, visual polish CSS. Ни
 - 3.3b → `packages/vue/src/components/**` (кроме `complex/Diagram/**`) + точечно `packages/styles/components/*.css` (кроме `diagram.css`)
 - 3.3c → `packages/{vue,react}/src/components/complex/Diagram/**` + `packages/core/src/engines/graph/**` + `packages/styles/components/diagram.css` + `examples/showcases/src/showcases/workflow-editor/**`
 
-### Волна 3.3 — пост-миграционный QA (1 таб, после 3.3a + 3.3b + 3.3c)
+### Волна 3.4 — паритет шапки и страниц demo-vue (1 таб, **параллельно с Wave 4.2**)
+
+После Wave 3.3 контент в demo-vue паритетен с React по компонентам и
+обёрткам, но верхнее меню всё ещё короткое: только Components + GitHub.
+В React-демо 7 пунктов nav. Этот стрим расширяет Vue-меню до 5
+пунктов (без Кейсов и Бенчмарков, они React-эксклюзив) и создаёт
+сопутствующие страницы (`/roadmap`, `/about`, `/guide/*`) и
+FrameworkSwitcher.
+
+| ID | Назначение |
+|---|---|
+| T-Vue-Demo-Header-Parity | Расширить `App.vue#navItems` до 5 пунктов, добавить страницы Roadmap/About/Guide (6 шт), FrameworkSwitcher.vue, расширить sidebar и i18n |
+
+Карта: `docs/_streams/wave-3/T-Vue-Demo-Header-Parity.md`.
+
+### Волна 3.3 — пост-миграционный QA (1 таб, после 3.3a + 3.3b + 3.3c + 3.4)
 
 Один независимый стрим **после** мержа всех воркеров 3.2 и **после
 закрытия 3.3a + 3.3b + 3.3c**. Делает полный аудит demo-vue (стили,

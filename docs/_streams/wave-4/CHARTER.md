@@ -114,5 +114,6 @@ findings из 4.1.
 
 | Файл | Статус |
 |---|---|
-| `docs/_streams/wave-4/T-Angular-Foundation.md` | план |
-| (4.2 / 4.3 / 4.4 — карты заводятся после 4.1) | tbd |
+| `docs/_streams/wave-4/T-Angular-Foundation.md` | закрыт |
+| `docs/_streams/wave-4/T-Angular-Wave42-Components.md` | план (параллельно с 3.4) |
+| (4.3 demo полное / 4.4 post-QA — карты заводятся после 4.2) | tbd |

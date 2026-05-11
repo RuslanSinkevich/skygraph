@@ -46,8 +46,8 @@
 |---|---|---|
 | 1 — INFRA | закрыта | 4 task-карты, 1 таб последовательно |
 | 2 — РАБОЧИЕ | закрыта | 13 task-карт в 8 параллельных табах |
-| 3 — Vue Demo Parity | план | 10 task-карт: 1 фундамент + 5 параллельных воркеров 3.2 + 3 параллельных стрима паритета (3.3a обёртки + 3.3b DOM компонентов + 3.3c Diagram) + 1 пост-QA 3.3. См. `docs/_streams/wave-3/CHARTER.md` |
-| 4 — Angular Adapter | план | Старт через `T-Angular-Foundation` (4.1). Каркас уже скаффолдён, `pnpm install` сделан. Идёт **параллельно** с 3.3a/b/c. Подволны 4.2/4.3/4.4 — позже. См. `docs/_streams/wave-4/CHARTER.md` |
+| 3 — Vue Demo Parity | в работе | 11 task-карт: 1 фундамент + 5 параллельных воркеров 3.2 + 3 параллельных стрима паритета 3.3a/b/c (закрыты) + 1 паритет шапки 3.4 + 1 пост-QA 3.3. См. `docs/_streams/wave-3/CHARTER.md` |
+| 4 — Angular Adapter | в работе | 4.1 Foundation закрыт. Идёт 4.2 Components+Demo (**параллельно с 3.4**). Подволны 4.3/4.4 — позже. См. `docs/_streams/wave-4/CHARTER.md` |
 
 ### Волна 1 — INFRA (4 task-карты, 1 таб последовательно)
 
@@ -146,22 +146,29 @@
 
 Карта: `docs/_streams/wave-3/T-Diagram-Polish.md`.
 
-#### Волна 3.3 — пост-миграционный QA (1 таб, после 3.3a + 3.3b + 3.3c)
+#### Волна 3.4 — паритет шапки и страниц demo-vue (1 таб, **параллельно с 4.2**)
 
 | ID | Назначение |
 |---|---|
-| T-Vue-Demo-PostMigration-Audit | Полный аудит стилей/отображения demo-vue против React после миграции и приведения обёрток + компонентов в паритет; документ `audit/vue-demo-postmigration-audit.md`; правки в `demos/<comp>/**`, shell CSS; корни в `packages/**` — findings |
+| T-Vue-Demo-Header-Parity | Расширить `App.vue#navItems` до 5 пунктов (Components, Guide, Roadmap, About, GitHub — без Кейсов и Бенчмарков), добавить страницы `/roadmap`, `/about`, 6 страниц `/guide/*`, FrameworkSwitcher.vue, расширить sidebar (для секции `'guide'`) и i18n |
+
+Карта: `docs/_streams/wave-3/T-Vue-Demo-Header-Parity.md`.
+
+#### Волна 3.3 — пост-миграционный QA (1 таб, после 3.3a + 3.3b + 3.3c + 3.4)
+
+| ID | Назначение |
+|---|---|
+| T-Vue-Demo-PostMigration-Audit | Полный аудит стилей/отображения demo-vue против React после миграции, приведения обёрток + компонентов в паритет и расширения шапки; документ `audit/vue-demo-postmigration-audit.md`; правки в `demos/<comp>/**`, shell CSS; корни в `packages/**` — findings |
 
 Карта: `docs/_streams/wave-3/T-Vue-Demo-PostMigration-Audit.md`.
 
-### Волна 4 — Angular adapter (открыта 4.1, **параллельно с 3.3a/b/c**)
+### Волна 4 — Angular adapter
 
 Третий адаптер `@skygraph/angular` по образцу React/Vue. Каркас
-(packages/angular + examples/demo-angular, минимальные package.json /
-tsconfig / public-api / main.ts) уже скаффолдён, `pnpm install` уже
-выполнен — стрим 4.1 install **не запускает**, идёт параллельно с 3.3.
+(packages/angular + examples/demo-angular) уже скаффолдён, `pnpm install`
+выполнен. 4.1 Foundation закрыт.
 
-#### Волна 4.1 — фундамент
+#### Волна 4.1 — фундамент (закрыт)
 
 | ID | Назначение |
 |---|---|
@@ -169,8 +176,17 @@ tsconfig / public-api / main.ts) уже скаффолдён, `pnpm install` у�
 
 Карта: `docs/_streams/wave-4/T-Angular-Foundation.md`.
 
-Подволны 4.2 (порт компонентов батчами) / 4.3 (полное Angular-демо) /
-4.4 (post-migration QA) — заводятся после 4.1 на основе findings.
+#### Волна 4.2 — компоненты + страницы demo (**параллельно с 3.4**)
+
+| ID | Назначение |
+|---|---|
+| T-Angular-Wave42-Components | Порт остальных компонентов из React в @skygraph/angular батчами A-D (UI primitives → UI inputs → UI nav+feedback → UI selectors+date), параллельно — страницы demo-angular для каждого компонента, расширение sidebar и `app.routes.ts`. Complex (Form/Table/Tree/List) — по возможности; Charts/Diagram/Gantt/Dashboard — finding для Wave 4.3 |
+
+Карта: `docs/_streams/wave-4/T-Angular-Wave42-Components.md`.
+
+Подволны 4.3 (полное Angular-демо: DemoBox/PropsTable/CssVarsTable/?raw,
+Charts/Diagram/Form/Table) и 4.4 (post-migration QA) — заводятся
+после 4.2 на основе findings.
 
 ---
 
@@ -197,6 +213,8 @@ tsconfig / public-api / main.ts) уже скаффолдён, `pnpm install` у�
 | `packages/core/src/engines/table/**`, `packages/react/src/components/complex/Table/{Table,TableBody,VirtualTableBody,TableHeader,TableGroupRow,useTableState,helpers}.{ts,tsx}`, `packages/react/src/__tests__/table-perf.test.tsx` (новый), `examples/demo/src/demos/benchmarks/TablePerfProbe.tsx` (новый, временный) | T-Table-Perf |
 | `packages/{vue,react}/src/components/complex/Diagram/**`, `packages/core/src/engines/graph/**`, `packages/core/src/__tests__/graph.test.ts`, `packages/styles/components/diagram.css`, `examples/showcases/src/showcases/workflow-editor/**`, точечно `examples/demo-vue/src/demos/diagram/**` и `examples/demo/src/demos/diagram/**` | T-Diagram-Polish |
 | `packages/angular/**` (всё внутри пакета: src, tsconfig дополнения, README, тесты), `examples/demo-angular/**` (всё), точечно `.size-limit.json` (только append двух новых записей для @skygraph/angular и demo-angular), `docs/_streams/{decisions,findings,done}/T-Angular-Foundation.md` | T-Angular-Foundation |
+| `packages/angular/src/lib/components/**` (новые SFC батчей A-D), `packages/angular/src/lib/locales/**` (только append), `packages/angular/src/public-api.ts` (только append), `packages/angular/__tests__/styling-contract.parity.test.ts` (расширение), `examples/demo-angular/src/app/pages/components/**` (новые страницы), `examples/demo-angular/src/app/{shared/layout/sidebar.component.ts, app.routes.ts, app.component.ts/html/css}` (только append/точечно) | T-Angular-Wave42-Components |
+| `examples/demo-vue/src/{App.vue, nav.ts, router/index.ts, i18n/{types,dict-en,dict-ru}.ts, style.css}`, `examples/demo-vue/src/pages/{Roadmap,About}.vue` (новые), `examples/demo-vue/src/guide/*.vue` (новые), `examples/demo-vue/src/components/FrameworkSwitcher.vue` (новый), `docs/_streams/{decisions,findings,done}/T-Vue-Demo-Header-Parity.md` | T-Vue-Demo-Header-Parity |
 
 ### Общие зоны (могут трогать несколько стримов)
 
@@ -448,8 +466,10 @@ pnpm check:styles
 - `wave-3/T-Vue-Demo-Wrappers-Parity.md` (3.3a — паритет демо-обёрток с React)
 - `wave-3/T-Vue-Components-DOM-Parity.md` (3.3b — DOM-паритет компонентов `@skygraph/vue`)
 - `wave-3/T-Diagram-Polish.md` (3.3c — полная доводка Diagram: router, DnD, парность)
+- `wave-3/T-Vue-Demo-Header-Parity.md` (3.4 — паритет шапки, страницы Roadmap/About/Guide/*, FrameworkSwitcher)
 - `wave-3/T-Vue-Demo-PostMigration-Audit.md` (3.3 — пост-QA после миграции)
 
 ### Волна 4 — `docs/_streams/wave-4/`
 - `wave-4/CHARTER.md` (мини-конституция Волны 4)
-- `wave-4/T-Angular-Foundation.md` (4.1 — фундамент Angular-адаптера, параллельно с 3.3a/b/c)
+- `wave-4/T-Angular-Foundation.md` (4.1 — фундамент Angular-адаптера, закрыт)
+- `wave-4/T-Angular-Wave42-Components.md` (4.2 — порт компонентов и страницы demo-angular, параллельно с 3.4)
