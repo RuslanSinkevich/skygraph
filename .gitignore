@@ -50,3 +50,8 @@ test-results/
 
 # api-extractor working dir (T-API). Snapshots live in `etc/`, are committed.
 packages/*/temp/
+
+# Angular CLI / ng-packagr work directories
+examples/demo-angular/.angular/
+examples/demo-angular/dist/
+packages/angular/dist/

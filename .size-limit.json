@@ -34,5 +34,17 @@
     "path": "examples/demo-vue/dist/assets/index-*.js",
     "limit": "400 KB",
     "brotli": true
+  },
+  {
+    "name": "@skygraph/angular (esm)",
+    "path": "packages/angular/dist/fesm2022/skygraph-angular.mjs",
+    "limit": "150 KB",
+    "brotli": true
+  },
+  {
+    "name": "examples/demo-angular (main bundle)",
+    "path": "examples/demo-angular/dist/demo-angular/browser/main-*.js",
+    "limit": "600 KB",
+    "brotli": true
   }
 ]

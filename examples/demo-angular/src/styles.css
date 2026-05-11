@@ -1,0 +1,32 @@
+@import '@skygraph/styles/index.css';
+
+:root {
+  --sg-demo-bg: #f5f7fa;
+  --sg-demo-text: #1f2937;
+  --sg-demo-muted: #6b7280;
+  --sg-demo-card: #ffffff;
+  --sg-demo-border: #e5e7eb;
+  --sg-demo-accent: #2563eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  color: var(--sg-demo-text);
+  background: var(--sg-demo-bg);
+}
+
+a {
+  color: var(--sg-demo-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,53 @@
+<h1>Button</h1>
+<p class="lead">
+  Trigger an action — submit a form, open a dialog, navigate. Visual style is
+  controlled by <code>type</code>; size, danger, block, loading and disabled
+  states are independent inputs.
+</p>
+
+<section class="demo-section">
+  <h3>Types</h3>
+  <div class="row">
+    <button sg-button>Default</button>
+    <button sg-button type="primary">Primary</button>
+    <button sg-button type="dashed">Dashed</button>
+    <button sg-button type="text">Text</button>
+    <button sg-button type="link">Link</button>
+  </div>
+</section>
+
+<section class="demo-section">
+  <h3>Sizes</h3>
+  <div class="row">
+    <button sg-button type="primary" size="small">Small</button>
+    <button sg-button type="primary">Middle (default)</button>
+    <button sg-button type="primary" size="large">Large</button>
+  </div>
+</section>
+
+<section class="demo-section">
+  <h3>States</h3>
+  <div class="row">
+    <button sg-button type="primary" [disabled]="true">Disabled</button>
+    <button sg-button type="primary" [loading]="true">Loading</button>
+    <button sg-button (click)="inc()">
+      Click me
+    </button>
+    <span class="click-counter">{{ clicks() }} click{{ clicks() === 1 ? '' : 's' }}</span>
+  </div>
+</section>
+
+<section class="demo-section">
+  <h3>Danger</h3>
+  <div class="row">
+    <button sg-button type="default" [danger]="true">Delete</button>
+    <button sg-button type="primary" [danger]="true">Delete (primary)</button>
+    <button sg-button type="text" [danger]="true">Delete (text)</button>
+  </div>
+</section>
+
+<section class="demo-section block-row">
+  <h3>Block</h3>
+  <button sg-button type="primary" [block]="true">Full-width primary</button>
+  <button sg-button [block]="true">Full-width default</button>
+</section>
