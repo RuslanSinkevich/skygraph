@@ -74,7 +74,7 @@ describe('SgTable', () => {
     })
     const wrapper = mount(Wrapper)
     expect(wrapper.findAll('.sg-table-row-clickable').length).toBe(3)
-    const input = wrapper.find('.sg-table-search-input')
+    const input = wrapper.find('.sg-table-search-input input')
     await input.setValue('Bob')
     await nextTick()
     const rows = wrapper.findAll('.sg-table-row-clickable')
@@ -123,7 +123,7 @@ describe('SgTable', () => {
     })
     const wrapper = mount(Wrapper)
     expect(wrapper.findAll('.sg-table-row-clickable').length).toBe(10)
-    const next = wrapper.find('.sg-table-pagination-next')
+    const next = wrapper.find('.sg-table-pagination-controls .sg-pagination-next')
     await next.trigger('click')
     await nextTick()
     expect(wrapper.findAll('.sg-table-row-clickable').length).toBe(10)
@@ -152,7 +152,12 @@ describe('SgTable', () => {
     const wrapper = mount(Wrapper)
     expect(wrapper.findAll('.sg-table-row-clickable').length).toBe(3)
     const select = wrapper.find('.sg-table-filter-select')
-    await select.setValue('Engineer')
+    await select.find('.sg-select-selector').trigger('click')
+    await nextTick()
+    const options = wrapper.findAll('.sg-table-filter-select .sg-select-option')
+    const engineerOpt = options.find((o) => o.text().includes('Engineer'))
+    expect(engineerOpt).toBeTruthy()
+    await engineerOpt!.trigger('click')
     await nextTick()
     const rows = wrapper.findAll('.sg-table-row-clickable')
     expect(rows.length).toBe(1)
@@ -177,6 +182,46 @@ describe('SgTable', () => {
     const row = wrapper.findAll('.sg-table-row-clickable')[0]
     await row.trigger('click')
     expect(captured.value?.id).toBe('1')
+  })
+
+  it('toolbar search uses SgInput (no raw <input class="sg-input">)', () => {
+    const wrapper = mount(SgTable, {
+      props: { columns: sampleColumns, data: sampleData, searchable: true },
+    })
+    expect(wrapper.find('.sg-table-search-input.sg-input-wrapper').exists()).toBe(true)
+    expect(wrapper.find('.sg-table-search-input input.sg-input').exists()).toBe(true)
+  })
+
+  it('row selection uses SgCheckbox (no raw checkbox)', () => {
+    const rowSelection = { selectedKeys: [] as string[], type: 'checkbox' as const }
+    const wrapper = mount(SgTable, {
+      props: { columns: sampleColumns, data: sampleData, rowSelection },
+    })
+    expect(wrapper.findAll('.sg-table-cell-selection .sg-checkbox').length).toBeGreaterThan(0)
+  })
+
+  it('column filter uses SgSelect (no raw <select>)', () => {
+    const cols = [
+      {
+        key: 'role',
+        title: 'Role',
+        filters: [{ text: 'Engineer', value: 'Engineer' }],
+      },
+    ]
+    const wrapper = mount(SgTable, { props: { columns: cols, data: sampleData } })
+    expect(wrapper.find('.sg-table-filter-select.sg-select').exists()).toBe(true)
+  })
+
+  it('pagination uses SgPagination (no raw button.sg-table-pagination-next)', () => {
+    const data = Array.from({ length: 30 }, (_, i) => ({
+      id: String(i),
+      data: { name: `User ${i}`, age: i, role: 'X' },
+    }))
+    const wrapper = mount(SgTable, {
+      props: { columns: sampleColumns, data, pageSize: 10 },
+    })
+    expect(wrapper.find('.sg-table-pagination-controls.sg-pagination').exists()).toBe(true)
+    expect(wrapper.find('.sg-table-pagination-next').exists()).toBe(false)
   })
 
   it('cell slot allows custom rendering', () => {

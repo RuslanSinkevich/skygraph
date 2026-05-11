@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 export interface TimePickerProps {
   /** v-model binding (Vue idiom). */
@@ -50,6 +50,7 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
   size: 'middle',
   disabled: false,
   loading: false,
+  open: undefined,
 })
 
 const emit = defineEmits<{
@@ -120,6 +121,9 @@ watch(current, (v) => {
 })
 
 const wrapperRef = ref<HTMLDivElement | null>(null)
+const hourColRef = ref<HTMLDivElement | null>(null)
+const minuteColRef = ref<HTMLDivElement | null>(null)
+const secondColRef = ref<HTMLDivElement | null>(null)
 
 const hours = computed(() => {
   const arr: number[] = []
@@ -199,13 +203,40 @@ function openDropdown() {
 }
 
 function handleOutside(e: MouseEvent) {
+  if (!isOpen.value) return
   if (wrapperRef.value && !wrapperRef.value.contains(e.target as Node)) {
     setOpen(false)
   }
 }
 
-onMounted(() => document.addEventListener('mousedown', handleOutside))
-onBeforeUnmount(() => document.removeEventListener('mousedown', handleOutside))
+function handleEscape(e: KeyboardEvent) {
+  if (!isOpen.value) return
+  if (e.key === 'Escape') setOpen(false)
+}
+
+onMounted(() => {
+  document.addEventListener('mousedown', handleOutside)
+  document.addEventListener('keydown', handleEscape)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', handleOutside)
+  document.removeEventListener('keydown', handleEscape)
+})
+
+function scrollActive(col: HTMLElement | null) {
+  if (!col) return
+  const active = col.querySelector('[data-active="true"]') as HTMLElement | null
+  active?.scrollIntoView?.({ block: 'nearest' })
+}
+
+watch([isOpen, hour, minute, second], async () => {
+  if (!isOpen.value) return
+  await nextTick()
+  scrollActive(hourColRef.value)
+  scrollActive(minuteColRef.value)
+  scrollActive(secondColRef.value)
+})
 
 const wrapperCls = computed(() =>
   props.unstyled
@@ -250,14 +281,33 @@ function setPm() {
       <span :class="current ? '' : 'sg-timepicker-placeholder'">{{ current || placeholder }}</span>
       <span class="sg-timepicker-suffix">
         <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
-        <span v-else-if="allowClear && current" class="sg-timepicker-clear" @click="handleClear"
-          >×</span
-        >
+        <template v-else>
+          <span
+            v-if="allowClear && current"
+            class="sg-timepicker-clear"
+            role="button"
+            aria-label="Clear"
+            @click="handleClear"
+            >×</span
+          >
+          <svg
+            class="sg-timepicker-icon"
+            viewBox="0 0 16 16"
+            width="14"
+            height="14"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm0 14.5A6.5 6.5 0 1 1 8 1.5a6.5 6.5 0 0 1 0 13zM8.5 4H7v5l4.25 2.5.75-1.23L8.5 8.25V4z"
+            />
+          </svg>
+        </template>
       </span>
     </div>
     <div v-if="isOpen" class="sg-tp-dropdown">
       <div class="sg-tp-columns">
-        <div class="sg-tp-col">
+        <div ref="hourColRef" class="sg-tp-col">
           <div
             v-for="n in hours"
             :key="n"
@@ -268,7 +318,7 @@ function setPm() {
             {{ pad(n) }}
           </div>
         </div>
-        <div class="sg-tp-col">
+        <div ref="minuteColRef" class="sg-tp-col">
           <div
             v-for="n in minutes"
             :key="n"
@@ -279,7 +329,7 @@ function setPm() {
             {{ pad(n) }}
           </div>
         </div>
-        <div v-if="showSecond" class="sg-tp-col">
+        <div v-if="showSecond" ref="secondColRef" class="sg-tp-col">
           <div
             v-for="n in seconds"
             :key="n"
@@ -298,7 +348,7 @@ function setPm() {
         </div>
       </div>
       <div v-if="showNow" class="sg-tp-footer">
-        <button class="sg-tp-now-btn" @click="handleNow">Now</button>
+        <button type="button" class="sg-tp-now-btn" @click="handleNow">Now</button>
       </div>
     </div>
   </div>

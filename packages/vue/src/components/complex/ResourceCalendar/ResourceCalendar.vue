@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { Assignment, CalendarScale, ResourceCalendarProps } from './types'
 
 const props = withDefaults(defineProps<ResourceCalendarProps>(), {
@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<ResourceCalendarProps>(), {
 
 const emit = defineEmits<{
   (e: 'assignment-change', next: Assignment): void
+  (e: 'assignmentChange', next: Assignment): void
   (e: 'conflict', conflicts: Array<{ a: Assignment; b: Assignment }>): void
 }>()
 
@@ -32,11 +33,23 @@ const stepMs = (scale: CalendarScale): number => {
 
 const toMs = (d: Date | number) => (d instanceof Date ? d.getTime() : d)
 
+function alignDown(t: number, step: number): number {
+  return Math.floor(t / step) * step
+}
+function alignUp(t: number, step: number): number {
+  return Math.ceil(t / step) * step
+}
+
 const computedRange = computed(() => {
-  if (props.range) return { from: props.range.from.getTime(), to: props.range.to.getTime() }
+  const step = stepMs(props.scale)
+  if (props.range)
+    return {
+      from: props.range.from.getTime(),
+      to: props.range.to.getTime(),
+    }
   if (props.assignments.length === 0) {
     const now = Date.now()
-    return { from: now, to: now + stepMs(props.scale) * 4 }
+    return { from: alignDown(now, step), to: alignUp(now + step * 4, step) }
   }
   let min = Infinity
   let max = -Infinity
@@ -46,39 +59,61 @@ const computedRange = computed(() => {
     if (s < min) min = s
     if (e > max) max = e
   }
-  const step = stepMs(props.scale)
-  return { from: min - step, to: max + step }
+  return { from: alignDown(min - step, step), to: alignUp(max + step, step) }
 })
 
 const totalMs = computed(() => computedRange.value.to - computedRange.value.from)
-const totalSteps = computed(() => Math.max(1, Math.ceil(totalMs.value / stepMs(props.scale))))
-const calWidth = computed(() => totalSteps.value * props.columnWidth)
+const stepValue = computed(() => stepMs(props.scale))
+const totalSteps = computed(() => Math.max(1, Math.ceil(totalMs.value / stepValue.value)))
+const pxPerMs = computed(() => props.columnWidth / stepValue.value)
+const totalWidth = computed(() => totalMs.value * pxPerMs.value)
 
-const headerTicks = computed(() => {
-  const arr: { x: number; label: string }[] = []
-  const step = stepMs(props.scale)
+const headerHeight = computed(() => Math.max(28, Math.round(props.rowHeight * 0.6)))
+const gridHeight = computed(() => props.resources.length * props.rowHeight)
+const totalHeight = computed(() => gridHeight.value + headerHeight.value)
+
+function formatTick(timeMs: number, scale: CalendarScale): string {
+  const d = new Date(timeMs)
+  switch (scale) {
+    case 'day': {
+      const dd = String(d.getUTCDate()).padStart(2, '0')
+      const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
+      return `${dd}.${mm}`
+    }
+    case 'week': {
+      const dd = String(d.getUTCDate()).padStart(2, '0')
+      const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
+      return `W ${dd}.${mm}`
+    }
+    case 'month': {
+      const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
+      return `${mm}.${d.getUTCFullYear()}`
+    }
+  }
+}
+
+const ticks = computed(() => {
+  const arr: Array<{ x: number; label: string; time: number }> = []
+  const step = stepValue.value
   for (let i = 0; i < totalSteps.value; i++) {
     const t = computedRange.value.from + i * step
-    const d = new Date(t)
-    let label = ''
-    switch (props.scale) {
-      case 'day':
-        label = `${d.getUTCDate()}.${String(d.getUTCMonth() + 1).padStart(2, '0')}`
-        break
-      case 'week':
-        label = `W${Math.ceil((d.getUTCDate() + 6) / 7)} / ${d.getUTCFullYear()}`
-        break
-      case 'month':
-        label = `${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`
-        break
-    }
-    arr.push({ x: i * props.columnWidth, label })
+    arr.push({
+      x: i * props.columnWidth,
+      label: formatTick(t, props.scale),
+      time: t,
+    })
   }
   return arr
 })
 
-const conflictsByAssignment = computed(() => {
-  const map = new Map<string, boolean>()
+const rowIndexById = computed(() => {
+  const m = new Map<string, number>()
+  props.resources.forEach((r, i) => m.set(r.id, i))
+  return m
+})
+
+const conflictingIds = computed(() => {
+  const ids = new Set<string>()
   const byResource = new Map<string, Assignment[]>()
   for (const a of props.assignments) {
     const list = byResource.get(a.resourceId) ?? []
@@ -88,200 +123,321 @@ const conflictsByAssignment = computed(() => {
   for (const list of byResource.values()) {
     for (let i = 0; i < list.length; i++) {
       for (let j = i + 1; j < list.length; j++) {
-        const a = list[i]
-        const b = list[j]
-        const aS = toMs(a.start)
-        const aE = toMs(a.end)
-        const bS = toMs(b.start)
-        const bE = toMs(b.end)
+        const aS = toMs(list[i].start)
+        const aE = toMs(list[i].end)
+        const bS = toMs(list[j].start)
+        const bE = toMs(list[j].end)
         if (aS < bE && bS < aE) {
-          map.set(a.id, true)
-          map.set(b.id, true)
+          ids.add(list[i].id)
+          ids.add(list[j].id)
         }
       }
     }
   }
-  return map
+  return ids
 })
 
-const blockStyle = (a: Assignment) => {
-  const start = toMs(a.start)
-  const end = toMs(a.end)
-  const x = ((start - computedRange.value.from) / totalMs.value) * calWidth.value
-  const width = Math.max(8, ((end - start) / totalMs.value) * calWidth.value)
-  const isConflict = conflictsByAssignment.value.get(a.id) === true
-  return {
-    left: `${x}px`,
-    width: `${width}px`,
-    background: isConflict ? 'var(--sg-color-error, #ff4d4f)' : 'var(--sg-color-primary, #1677ff)',
-  }
+const assignmentRects = computed(() => {
+  return props.assignments
+    .map((a) => {
+      const row = rowIndexById.value.get(a.resourceId)
+      if (row === undefined) return null
+      const startMs = toMs(a.start)
+      const endMs = toMs(a.end)
+      const x = (startMs - computedRange.value.from) * pxPerMs.value
+      const w = Math.max(2, (endMs - startMs) * pxPerMs.value)
+      const y = row * props.rowHeight
+      return { assignment: a, x, y, w, h: props.rowHeight, row }
+    })
+    .filter((r): r is NonNullable<typeof r> => r !== null)
+})
+
+function statusOf(a: Assignment): string {
+  if (conflictingIds.value.has(a.id)) return 'conflict'
+  return a.status ?? 'tentative'
+}
+
+function blockClass(a: Assignment): string {
+  if (props.unstyled) return ''
+  return [
+    'sg-rcal-assignment',
+    `sg-rcal-assignment-${statusOf(a)}`,
+    props.draggable ? 'sg-rcal-assignment-draggable' : '',
+    props.resizable ? 'sg-rcal-assignment-resizable' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+}
+
+function colorOverrideFor(a: Assignment): string | undefined {
+  if (statusOf(a) === 'conflict') return undefined
+  return props.resources.find((r) => r.id === a.resourceId)?.color
 }
 
 interface DragSession {
-  type: 'move' | 'resize-l' | 'resize-r'
+  kind: 'move' | 'resize-start' | 'resize-end'
   id: string
-  startX: number
-  origin: { start: number; end: number }
+  startClientX: number
+  origStart: number
+  origEnd: number
 }
 
-let dragSession: DragSession | null = null
+const drag = ref<DragSession | null>(null)
 
-const onBlockPointerDown = (e: PointerEvent, a: Assignment) => {
-  if (!props.draggable) return
-  ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
-  dragSession = { type: 'move', id: a.id, startX: e.clientX, origin: { start: toMs(a.start), end: toMs(a.end) } }
-}
-
-const onResizePointerDown = (e: PointerEvent, a: Assignment, side: 'l' | 'r') => {
-  if (!props.resizable) return
+function startInteraction(
+  e: PointerEvent,
+  a: Assignment,
+  kind: 'move' | 'resize-start' | 'resize-end',
+) {
+  if (e.button !== 0) return
+  if (kind === 'move' && !props.draggable) return
+  if (kind !== 'move' && !props.resizable) return
+  e.preventDefault()
   e.stopPropagation()
   ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
-  dragSession = {
-    type: side === 'l' ? 'resize-l' : 'resize-r',
+  drag.value = {
+    kind,
     id: a.id,
-    startX: e.clientX,
-    origin: { start: toMs(a.start), end: toMs(a.end) },
+    startClientX: e.clientX,
+    origStart: toMs(a.start),
+    origEnd: toMs(a.end),
   }
 }
 
-const onPointerMove = (e: PointerEvent) => {
-  const ds = dragSession
-  if (!ds) return
-  const dxPx = e.clientX - ds.startX
-  const dxMs = (dxPx / calWidth.value) * totalMs.value
-  const step = stepMs(props.scale)
-  const snappedDx = Math.round(dxMs / step) * step
-  const a = props.assignments.find((x) => x.id === ds.id)
+function onPointerMove(e: PointerEvent) {
+  const d = drag.value
+  if (!d) return
+  const a = props.assignments.find((x) => x.id === d.id)
   if (!a) return
-  let next: Assignment
-  if (ds.type === 'move') {
-    next = { ...a, start: ds.origin.start + snappedDx, end: ds.origin.end + snappedDx }
-  } else if (ds.type === 'resize-l') {
-    next = { ...a, start: Math.min(ds.origin.end - step, ds.origin.start + snappedDx) }
+  const dxPx = e.clientX - d.startClientX
+  const dxMs = dxPx / pxPerMs.value
+  const step = stepValue.value
+  const snappedDx = Math.round(dxMs / step) * step
+  let nextStart = d.origStart
+  let nextEnd = d.origEnd
+  if (d.kind === 'move') {
+    nextStart = d.origStart + snappedDx
+    nextEnd = d.origEnd + snappedDx
+  } else if (d.kind === 'resize-end') {
+    nextEnd = Math.max(d.origStart + step, d.origEnd + snappedDx)
   } else {
-    next = { ...a, end: Math.max(ds.origin.start + step, ds.origin.end + snappedDx) }
+    nextStart = Math.min(d.origEnd - step, d.origStart + snappedDx)
   }
+  const next: Assignment = { ...a, start: nextStart, end: nextEnd }
   emit('assignment-change', next)
+  emit('assignmentChange', next)
 }
 
-const onPointerUp = () => {
-  dragSession = null
+function onPointerUp() {
+  drag.value = null
 }
+
+function onAssignmentKeyDown(e: KeyboardEvent, a: Assignment) {
+  if (!props.draggable && !props.resizable) return
+  const step = stepValue.value
+  const startMs = toMs(a.start)
+  const endMs = toMs(a.end)
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    const dir = e.key === 'ArrowLeft' ? -1 : 1
+    e.preventDefault()
+    let next: Assignment
+    if (e.shiftKey && props.resizable) {
+      next = { ...a, start: startMs, end: Math.max(startMs + step, endMs + dir * step) }
+    } else if (props.draggable) {
+      next = { ...a, start: startMs + dir * step, end: endMs + dir * step }
+    } else {
+      return
+    }
+    emit('assignment-change', next)
+    emit('assignmentChange', next)
+  }
+}
+
+const wrapperClass = computed(() => {
+  if (props.unstyled) return props.className ?? ''
+  return ['sg-rcal', props.className].filter(Boolean).join(' ')
+})
+
+const wrapperStyle = computed(() => ({
+  display: 'grid',
+  gridTemplateColumns: `${props.sidebarWidth}px 1fr`,
+  width: '100%',
+  overflow: 'auto',
+  height: `${totalHeight.value}px`,
+  ...(props.style ?? {}),
+}))
 </script>
 
 <template>
   <div
-    :class="[!props.unstyled && 'sg-rcal', props.className]"
-    :style="{ display: 'flex', overflow: 'auto', ...(props.style ?? {}) }"
-    role="grid"
+    :class="wrapperClass"
+    :style="wrapperStyle"
+    role="region"
     aria-label="Resource calendar"
+    :data-scale="scale"
+    :data-conflict-count="conflictingIds.size"
     @pointermove="onPointerMove"
     @pointerup="onPointerUp"
   >
-    <div :class="!props.unstyled ? 'sg-rcal-sidebar' : undefined" :style="{ width: `${props.sidebarWidth}px`, flexShrink: 0 }">
+    <!-- Sidebar -->
+    <div :class="unstyled ? undefined : 'sg-rcal-sidebar'" :style="{ width: `${sidebarWidth}px` }">
       <div
-        :class="!props.unstyled ? 'sg-rcal-sidebar-header' : undefined"
-        :style="{ height: `${props.rowHeight}px` }"
-      >
-        Resource
-      </div>
+        :class="unstyled ? undefined : 'sg-rcal-sidebar-header'"
+        :style="{ height: `${headerHeight}px` }"
+      />
       <div
-        v-for="r in props.resources"
+        v-for="(r, i) in resources"
         :key="r.id"
-        :class="!props.unstyled ? 'sg-rcal-sidebar-row' : undefined"
-        :style="{
-          height: `${props.rowHeight}px`,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '0 8px',
-        }"
+        :class="unstyled ? undefined : 'sg-rcal-sidebar-row'"
+        :style="{ height: `${rowHeight}px` }"
+        role="row"
+        :aria-label="`Resource ${r.name}`"
+        :data-row-index="i"
+        :data-resource-id="r.id"
       >
         <span
-          v-if="r.color"
-          class="sg-rcal-color"
-          :style="{ width: '10px', height: '10px', borderRadius: '50%', background: r.color }"
+          :class="unstyled ? undefined : 'sg-rcal-sidebar-marker'"
+          :style="r.color ? { background: r.color } : undefined"
+          data-role="marker"
+          aria-hidden="true"
         />
-        {{ r.name }}
+        <span :class="unstyled ? undefined : 'sg-rcal-sidebar-name'">{{ r.name }}</span>
+        <span
+          v-if="r.capacityPerSlot !== undefined"
+          :class="unstyled ? undefined : 'sg-rcal-sidebar-capacity'"
+          :aria-label="`capacity ${r.capacityPerSlot} per slot`"
+          >×{{ r.capacityPerSlot }}</span
+        >
       </div>
     </div>
-    <div :class="!props.unstyled ? 'sg-rcal-body' : undefined" :style="{ flex: 1, position: 'relative' }">
+
+    <!-- Main pane -->
+    <div
+      :class="unstyled ? undefined : 'sg-rcal-main'"
+      :style="{ position: 'relative', width: `${totalWidth}px`, minWidth: '100%' }"
+    >
       <div
-        :class="!props.unstyled ? 'sg-rcal-header' : undefined"
-        :style="{
-          height: `${props.rowHeight}px`,
-          width: `${calWidth}px`,
-          position: 'relative',
-          borderBottom: '1px solid #e0e0e0',
-        }"
+        :class="unstyled ? undefined : 'sg-rcal-header'"
+        :style="{ position: 'relative', height: `${headerHeight}px`, width: `${totalWidth}px` }"
       >
         <div
-          v-for="(t, i) in headerTicks"
-          :key="i"
+          v-for="t in ticks"
+          :key="t.time"
+          :class="unstyled ? undefined : 'sg-rcal-tick'"
           :style="{
             position: 'absolute',
             left: `${t.x}px`,
             top: 0,
-            bottom: 0,
-            width: `${props.columnWidth}px`,
-            borderLeft: '1px solid #e0e0e0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '10px',
-            color: '#888',
+            width: `${columnWidth}px`,
+            height: `${headerHeight}px`,
           }"
+          :data-tick-time="t.time"
         >
           {{ t.label }}
         </div>
       </div>
+
       <div
-        v-for="r in props.resources"
-        :key="r.id"
-        :data-resource-id="r.id"
-        :class="!props.unstyled ? 'sg-rcal-row' : undefined"
+        :class="unstyled ? undefined : 'sg-rcal-grid'"
         :style="{
           position: 'relative',
-          height: `${props.rowHeight}px`,
-          width: `${calWidth}px`,
-          borderBottom: '1px solid #f0f0f0',
+          width: `${totalWidth}px`,
+          height: `${gridHeight}px`,
         }"
+        :data-conflict-count="conflictingIds.size"
       >
+        <!-- Row backgrounds -->
         <div
-          v-for="a in props.assignments.filter((x) => x.resourceId === r.id)"
-          :key="a.id"
-          :data-assignment-id="a.id"
-          :class="[
-            !props.unstyled ? 'sg-rcal-block' : undefined,
-            conflictsByAssignment.get(a.id) && 'sg-rcal-block--conflict',
-          ]"
+          v-for="(r, i) in resources"
+          :key="r.id"
+          :class="unstyled ? undefined : 'sg-rcal-row'"
           :style="{
             position: 'absolute',
-            top: '6px',
-            height: `${props.rowHeight - 12}px`,
-            color: '#fff',
-            padding: '0 6px',
-            fontSize: '11px',
-            display: 'flex',
-            alignItems: 'center',
-            borderRadius: '4px',
-            cursor: props.draggable ? 'move' : 'default',
-            ...blockStyle(a),
+            left: 0,
+            top: `${i * rowHeight}px`,
+            width: `${totalWidth}px`,
+            height: `${rowHeight}px`,
           }"
-          @pointerdown="(e) => onBlockPointerDown(e, a)"
+          :data-row-index="i"
+          :data-resource-id="r.id"
         >
           <div
-            v-if="props.resizable"
-            class="sg-rcal-resize-l"
-            :style="{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '6px', cursor: 'ew-resize' }"
-            @pointerdown="(e) => onResizePointerDown(e, a, 'l')"
+            v-for="t in ticks"
+            :key="t.time"
+            :class="unstyled ? undefined : 'sg-rcal-slot'"
+            :style="{
+              position: 'absolute',
+              left: `${t.x}px`,
+              top: 0,
+              width: `${columnWidth}px`,
+              height: `${rowHeight}px`,
+            }"
+            :data-slot-time="t.time"
           />
-          <span class="sg-rcal-block-title">{{ a.title }}</span>
+        </div>
+
+        <!-- Assignment blocks -->
+        <div
+          v-for="rect in assignmentRects"
+          :key="rect.assignment.id"
+          :class="blockClass(rect.assignment)"
+          :style="{
+            position: 'absolute',
+            left: `${rect.x}px`,
+            top: `${rect.y + 4}px`,
+            width: `${rect.w}px`,
+            height: `${rect.h - 8}px`,
+            background: colorOverrideFor(rect.assignment),
+            cursor: draggable ? 'grab' : undefined,
+            userSelect: draggable || resizable ? 'none' : undefined,
+          }"
+          role="button"
+          tabindex="0"
+          :aria-label="`${rect.assignment.title}${statusOf(rect.assignment) === 'conflict' ? ' (conflict)' : ''}`"
+          :data-assignment-id="rect.assignment.id"
+          :data-status="statusOf(rect.assignment)"
+          :data-resource-id="rect.assignment.resourceId"
+          @pointerdown="draggable ? startInteraction($event, rect.assignment, 'move') : undefined"
+          @keydown="(e: KeyboardEvent) => onAssignmentKeyDown(e, rect.assignment)"
+        >
           <div
-            v-if="props.resizable"
-            class="sg-rcal-resize-r"
-            :style="{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '6px', cursor: 'ew-resize' }"
-            @pointerdown="(e) => onResizePointerDown(e, a, 'r')"
+            v-if="resizable"
+            :class="unstyled ? undefined : 'sg-rcal-assignment-resize-start'"
+            role="button"
+            aria-label="Resize start"
+            tabindex="-1"
+            data-role="resize-handle-start"
+            :style="{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: '6px',
+              cursor: 'ew-resize',
+            }"
+            @pointerdown="(e: PointerEvent) => startInteraction(e, rect.assignment, 'resize-start')"
+          />
+          <span
+            :class="unstyled ? undefined : 'sg-rcal-assignment-title'"
+            :style="{ position: 'relative', zIndex: 1 }"
+            >{{ rect.assignment.title }}</span
+          >
+          <div
+            v-if="resizable"
+            :class="unstyled ? undefined : 'sg-rcal-assignment-resize-end'"
+            role="button"
+            aria-label="Resize end"
+            tabindex="-1"
+            data-role="resize-handle-end"
+            :style="{
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: '6px',
+              cursor: 'ew-resize',
+            }"
+            @pointerdown="(e: PointerEvent) => startInteraction(e, rect.assignment, 'resize-end')"
           />
         </div>
       </div>

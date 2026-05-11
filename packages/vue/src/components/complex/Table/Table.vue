@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch, useSlots } from 'vue'
 import { useTable } from '../../../composables/useTable'
+import SgInput from '../../ui/Input.vue'
+import SgCheckbox from '../../ui/Checkbox.vue'
+import SgSelect from '../../ui/Select.vue'
+import SgPagination from '../../ui/Pagination.vue'
 import {
   DEFAULT_TABLE_LOCALE,
   type TableProps,
@@ -250,13 +254,14 @@ defineExpose({
       :class="['sg-table-toolbar', sCls.toolbar].filter(Boolean).join(' ') || undefined"
       :style="sSty.toolbar"
     >
-      <input
+      <SgInput
         v-if="searchable"
         v-model="searchQuery"
-        class="sg-input sg-input-small sg-table-search-input"
-        type="search"
+        size="small"
+        class="sg-table-search-input"
         :placeholder="localeFull.searchPlaceholder"
         :aria-label="localeFull.searchPlaceholder"
+        allow-clear
       />
       <slot name="toolbar" />
     </div>
@@ -279,11 +284,10 @@ defineExpose({
           style="display: contents"
         >
           <div v-if="rowSelection" class="sg-table-th sg-table-cell-selection" role="columnheader">
-            <input
+            <SgCheckbox
               v-if="rowSelection.type !== 'radio'"
-              type="checkbox"
               :checked="allCurrentPageSelected"
-              :indeterminate.prop="someCurrentPageSelected"
+              :indeterminate="someCurrentPageSelected"
               aria-label="Select all"
               @change="toggleSelectAll"
             />
@@ -356,21 +360,22 @@ defineExpose({
                 >
               </span>
             </span>
-            <span v-if="col.filters && col.filters.length > 0" class="sg-table-filter-trigger">
-              <select
+            <span
+              v-if="col.filters && col.filters.length > 0"
+              class="sg-table-filter-trigger"
+              @click.stop
+            >
+              <SgSelect
+                size="small"
                 class="sg-table-filter-select"
+                :placeholder="localeFull.filterAll"
+                :options="[
+                  { label: localeFull.filterAll, value: '' },
+                  ...col.filters.map((f) => ({ label: String(f.text), value: String(f.value) })),
+                ]"
                 :aria-label="`Filter ${col.title}`"
-                @click.stop
-                @change="
-                  (e: Event) =>
-                    applyColumnFilter(col, (e.target as HTMLSelectElement).value || null)
-                "
-              >
-                <option value="">All</option>
-                <option v-for="f in col.filters" :key="String(f.value)" :value="String(f.value)">
-                  {{ f.text }}
-                </option>
-              </select>
+                @change="(v: unknown) => applyColumnFilter(col, (v as string) || null)"
+              />
             </span>
           </div>
         </div>
@@ -406,10 +411,18 @@ defineExpose({
             role="cell"
             @click.stop
           >
-            <input
-              :type="rowSelection.type === 'radio' ? 'radio' : 'checkbox'"
+            <SgCheckbox
+              v-if="rowSelection.type !== 'radio'"
               :checked="selectedSet.has(row.id)"
-              :name="rowSelection.type === 'radio' ? 'sg-table-row-radio' : undefined"
+              :aria-label="`Select row ${String(row.id)}`"
+              @change="() => toggleRowSelected(row.id)"
+            />
+            <input
+              v-else
+              type="radio"
+              class="sg-table-row-radio"
+              :checked="selectedSet.has(row.id)"
+              name="sg-table-row-radio"
               :aria-label="`Select row ${String(row.id)}`"
               @change="() => toggleRowSelected(row.id)"
             />
@@ -449,25 +462,14 @@ defineExpose({
       <span class="sg-table-pagination-total">
         {{ localeFull.totalRows(tableState.totalRows) }}
       </span>
-      <span class="sg-table-pagination-controls">
-        <button
-          type="button"
-          class="sg-table-toolbar-btn sg-table-pagination-prev"
-          :disabled="tableState.page <= 1"
-          @click="gotoPage(tableState.page - 1)"
-        >
-          ‹
-        </button>
-        <span class="sg-table-pagination-page">{{ tableState.page }} / {{ totalPages }}</span>
-        <button
-          type="button"
-          class="sg-table-toolbar-btn sg-table-pagination-next"
-          :disabled="tableState.page >= totalPages"
-          @click="gotoPage(tableState.page + 1)"
-        >
-          ›
-        </button>
-      </span>
+      <SgPagination
+        class="sg-table-pagination-controls"
+        :current="tableState.page"
+        :total="tableState.totalRows"
+        :page-size="pageSize"
+        simple
+        @change="gotoPage"
+      />
     </div>
   </div>
 </template>

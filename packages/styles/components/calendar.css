@@ -105,7 +105,8 @@
   color: var(--sg-color-text-secondary);
   cursor: pointer;
   font-size: var(--sg-font-size-lg);
-  transition: color var(--sg-transition-duration),
+  transition:
+    color var(--sg-transition-duration),
     background var(--sg-transition-duration),
     border-color var(--sg-transition-duration),
     box-shadow var(--sg-transition-duration);
@@ -161,7 +162,8 @@
   color: var(--sg-color-text-secondary);
   font-size: var(--sg-font-size-sm);
   cursor: pointer;
-  transition: color var(--sg-transition-duration),
+  transition:
+    color var(--sg-transition-duration),
     background var(--sg-transition-duration),
     border-color var(--sg-transition-duration),
     box-shadow var(--sg-transition-duration);
@@ -286,6 +288,28 @@
   overflow: hidden;
 }
 
+.sg-calendar-cell-events {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+  align-items: center;
+}
+
+.sg-calendar-event-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sg-color-primary);
+}
+
+.sg-calendar-event-more {
+  font-size: var(--sg-font-size-sm);
+  color: var(--sg-color-text-secondary);
+  line-height: 1;
+}
+
 /* Year view (month grid) */
 
 .sg-calendar-month-grid {
@@ -299,7 +323,8 @@
   text-align: center;
   cursor: pointer;
   border-radius: var(--sg-border-radius);
-  transition: color var(--sg-transition-duration),
+  transition:
+    color var(--sg-transition-duration),
     background var(--sg-transition-duration),
     border-color var(--sg-transition-duration),
     box-shadow var(--sg-transition-duration);
@@ -359,7 +384,8 @@
   color: var(--sg-color-primary);
   font-size: var(--sg-font-size-sm);
   cursor: pointer;
-  transition: color var(--sg-transition-duration),
+  transition:
+    color var(--sg-transition-duration),
     background var(--sg-transition-duration),
     border-color var(--sg-transition-duration),
     box-shadow var(--sg-transition-duration);

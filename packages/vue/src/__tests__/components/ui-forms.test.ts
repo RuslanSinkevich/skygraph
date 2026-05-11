@@ -275,7 +275,9 @@ describe('SgDatePicker', () => {
 
   it('shows placeholder when value is empty', () => {
     const w = mount(SgDatePicker, { props: { placeholder: 'Pick a date' } })
-    expect(w.text()).toContain('Pick a date')
+    const input = w.find('input.sg-datepicker-input-text')
+    expect(input.exists()).toBe(true)
+    expect(input.attributes('placeholder')).toBe('Pick a date')
   })
 
   it('renders dropdown when controlled open=true', () => {
@@ -286,7 +288,8 @@ describe('SgDatePicker', () => {
 
   it('shows formatted date when value is set', () => {
     const w = mount(SgDatePicker, { props: { modelValue: new Date(2025, 5, 15) } })
-    expect(w.text()).toContain('2025')
+    const input = w.find('input.sg-datepicker-input-text').element as HTMLInputElement
+    expect(input.value).toContain('2025')
   })
 })
 
@@ -336,9 +339,71 @@ describe('SgCalendar', () => {
 
   it('next/prev month navigation works', async () => {
     const w = mount(SgCalendar, { props: { modelValue: new Date(2025, 0, 15) } })
-    const navBtns = w.findAll('.sg-calendar-nav')
+    const navBtns = w.findAll('.sg-calendar-nav-btn')
+    expect(navBtns.length).toBeGreaterThanOrEqual(2)
     await navBtns[1].trigger('click')
     expect(w.emitted('panelChange')).toBeTruthy()
+  })
+
+  it('renders fullscreen wrapper class + Today footer button by default', () => {
+    const w = mount(SgCalendar)
+    expect(w.classes()).toContain('sg-calendar-fullscreen')
+    expect(w.find('.sg-calendar-today-btn').exists()).toBe(true)
+  })
+
+  it('Year mode renders 12 month cells, clicking switches back to month', async () => {
+    const w = mount(SgCalendar, { props: { mode: 'year' } })
+    const monthCells = w.findAll('.sg-calendar-month-cell')
+    expect(monthCells.length).toBe(12)
+    await monthCells[3].trigger('click')
+    expect(w.emitted('modeChange')).toBeTruthy()
+    expect(w.emitted('modeChange')![0]).toEqual(['month'])
+  })
+
+  it('show-week-number renders week column', () => {
+    const w = mount(SgCalendar, { props: { showWeekNumber: true } })
+    expect(w.find('.sg-calendar-week-header').exists()).toBe(true)
+    expect(w.findAll('.sg-calendar-week-number').length).toBe(6)
+  })
+
+  it('events render dots with max-events overflow', () => {
+    const d = new Date(2025, 0, 15)
+    const events = [
+      { id: 'a', date: d, title: 'A' },
+      { id: 'b', date: d, title: 'B' },
+      { id: 'c', date: d, title: 'C' },
+      { id: 'd', date: d, title: 'D' },
+    ]
+    const w = mount(SgCalendar, {
+      props: { modelValue: d, events, maxEvents: 2 },
+    })
+    expect(w.findAll('.sg-calendar-event-dot').length).toBe(2)
+    expect(w.find('.sg-calendar-event-more').text()).toBe('+2')
+  })
+
+  it('disabled-date blocks selection emit', async () => {
+    const w = mount(SgCalendar, {
+      props: {
+        modelValue: new Date(2025, 0, 15),
+        disabledDate: (d: Date) => d.getDate() === 16,
+      },
+    })
+    const disabled = w.find('.sg-calendar-cell-disabled')
+    expect(disabled.exists()).toBe(true)
+    await disabled.trigger('click')
+    expect(w.emitted('update:modelValue')).toBeFalsy()
+  })
+
+  it('Today footer button selects current date', async () => {
+    const w = mount(SgCalendar, { props: { modelValue: new Date(2020, 0, 1) } })
+    await w.find('.sg-calendar-today-btn').trigger('click')
+    const events = w.emitted('update:modelValue')
+    expect(events).toBeTruthy()
+    const today = new Date()
+    const picked = events![0][0] as Date
+    expect(picked.getFullYear()).toBe(today.getFullYear())
+    expect(picked.getMonth()).toBe(today.getMonth())
+    expect(picked.getDate()).toBe(today.getDate())
   })
 })
 
@@ -359,14 +424,39 @@ describe('SgUpload', () => {
       { uid: '2', name: 'b.txt', status: 'done' as const },
     ]
     const w = mount(SgUpload, { props: { fileList: files } })
-    expect(w.findAll('.sg-upload-list-item').length).toBe(2)
+    expect(w.findAll('.sg-upload-item').length).toBe(2)
+    expect(w.findAll('.sg-upload-item-name').length).toBe(2)
   })
 
   it('emits remove on item × click', async () => {
     const files = [{ uid: '1', name: 'a.txt', status: 'done' as const }]
     const w = mount(SgUpload, { props: { fileList: files } })
-    await w.find('.sg-upload-list-item-remove').trigger('click')
+    await w.find('.sg-upload-item-remove').trigger('click')
     expect(w.emitted('remove')).toBeTruthy()
+  })
+
+  it('uploading row hides remove and shows SgSpin', () => {
+    const files = [{ uid: '1', name: 'a.txt', status: 'uploading' as const, percent: 33 }]
+    const w = mount(SgUpload, { props: { fileList: files } })
+    expect(w.find('.sg-upload-item-remove').exists()).toBe(false)
+    expect(w.find('.sg-spin').exists()).toBe(true)
+    expect(w.find('.sg-upload-item-progress').text()).toBe('33%')
+  })
+
+  it('default trigger uses SgButton not native <button>', () => {
+    const w = mount(SgUpload)
+    expect(w.find('button.sg-button').exists()).toBe(true)
+  })
+
+  it('drag mode renders sg-upload-drag-area', () => {
+    const w = mount(SgUpload, { props: { drag: true } })
+    expect(w.find('.sg-upload-drag-area').exists()).toBe(true)
+    expect(w.find('.sg-upload-drag-icon').exists()).toBe(true)
+  })
+
+  it('listType modifier ends up on wrapper class', () => {
+    const w = mount(SgUpload, { props: { listType: 'picture-card' } })
+    expect(w.classes()).toContain('sg-upload-picture-card')
   })
 })
 
@@ -431,7 +521,10 @@ describe('SgTreeSelect', () => {
   })
 
   it('emits update:modelValue on selection', async () => {
-    const w = mount(SgTreeSelect, { props: { treeData, defaultExpandedKeys: ['p'] }, attachTo: document.body })
+    const w = mount(SgTreeSelect, {
+      props: { treeData, defaultExpandedKeys: ['p'] },
+      attachTo: document.body,
+    })
     await w.find('.sg-treeselect-input').trigger('click')
     const labels = w.findAll('.sg-treeselect-node-label')
     if (labels.length >= 2) {
@@ -456,17 +549,51 @@ describe('SgTransfer', () => {
 
   it('shows source items in left pane', () => {
     const w = mount(SgTransfer, { props: { dataSource } })
-    const items = w.findAll('.sg-transfer-list-content-item')
-    expect(items.length).toBe(3)
+    const leftItems = w.findAll('.sg-transfer-list')[0].findAll('.sg-transfer-list-item')
+    expect(leftItems.length).toBe(3)
   })
 
   it('moves selected items to right pane', async () => {
     const w = mount(SgTransfer, { props: { dataSource, modelValue: [] } })
-    const items = w.findAll('.sg-transfer-list-content-item')
+    const items = w.findAll('.sg-transfer-list-item')
     await items[0].trigger('click')
-    const moveRightBtn = w.findAll('.sg-transfer-operation-btn')[0]
+    const moveRightBtn = w.findAll('.sg-transfer-operations .sg-button')[0]
     await moveRightBtn.trigger('click')
     expect(w.emitted('update:modelValue')).toBeTruthy()
+  })
+
+  it('renders select-all checkbox + count text in each header', () => {
+    const w = mount(SgTransfer, { props: { dataSource, modelValue: ['2'] } })
+    const headers = w.findAll('.sg-transfer-list-header')
+    expect(headers.length).toBe(2)
+    expect(headers[0].find('.sg-checkbox input[type=checkbox]').exists()).toBe(true)
+    expect(headers[1].find('.sg-checkbox input[type=checkbox]').exists()).toBe(true)
+    expect(headers[0].find('.sg-transfer-list-header-count').text()).toContain('items')
+  })
+
+  it('show-search renders SgInput on each pane', () => {
+    const w = mount(SgTransfer, { props: { dataSource, showSearch: true } })
+    const searches = w.findAll('.sg-transfer-list-search input.sg-input')
+    expect(searches.length).toBe(2)
+  })
+
+  it('empty filtered pane shows notFoundContent', async () => {
+    const w = mount(SgTransfer, { props: { dataSource, showSearch: true } })
+    const searches = w.findAll('.sg-transfer-list-search input.sg-input')
+    await searches[0].setValue('zzzzz')
+    expect(w.find('.sg-transfer-list-empty').exists()).toBe(true)
+  })
+
+  it('move arrow button uses sg-button class (not native button)', () => {
+    const w = mount(SgTransfer, { props: { dataSource } })
+    const opBtns = w.findAll('.sg-transfer-operations button.sg-button')
+    expect(opBtns.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('oneWay hides the left-move button', () => {
+    const w = mount(SgTransfer, { props: { dataSource, oneWay: true } })
+    const opBtns = w.findAll('.sg-transfer-operations button.sg-button')
+    expect(opBtns.length).toBe(1)
   })
 })
 

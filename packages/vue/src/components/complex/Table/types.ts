@@ -1,10 +1,4 @@
-import type {
-  ColumnFilter,
-  RowId,
-  SortConfig,
-  SortDirection,
-  FilterOperator,
-} from '@skygraph/core'
+import type { ColumnFilter, RowId, SortConfig, SortDirection, FilterOperator } from '@skygraph/core'
 
 export type { RowId, SortDirection, SortConfig, ColumnFilter, FilterOperator }
 
@@ -28,6 +22,7 @@ export interface TableLocale {
   emptyText?: string
   filterReset?: string
   filterConfirm?: string
+  filterAll?: string
   searchPlaceholder?: string
   sortAsc?: string
   sortDesc?: string
@@ -40,6 +35,7 @@ export const DEFAULT_TABLE_LOCALE: Required<TableLocale> = {
   emptyText: 'No data',
   filterReset: 'Reset',
   filterConfirm: 'OK',
+  filterAll: 'All',
   searchPlaceholder: 'Search...',
   sortAsc: '▲',
   sortDesc: '▼',

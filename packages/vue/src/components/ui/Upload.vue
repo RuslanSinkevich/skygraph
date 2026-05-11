@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import SgButton from './Button.vue'
+import SgSpin from './Spin.vue'
 
 export interface UploadFile {
   uid: string
@@ -26,7 +28,7 @@ export interface UploadProps {
   accept?: string
   /** Disables interaction. */
   disabled?: boolean
-  /** Show drag area instead of click button. */
+  /** Show drag area instead of click trigger. */
   drag?: boolean
   /** Layout: text list, picture row, picture-card grid. */
   listType?: 'text' | 'picture' | 'picture-card'
@@ -175,6 +177,12 @@ const wrapperCls = computed(() =>
         .filter(Boolean)
         .join(' '),
 )
+
+function itemClasses(file: UploadFile) {
+  return props.unstyled
+    ? ''
+    : ['sg-upload-item', `sg-upload-item-${file.status}`].filter(Boolean).join(' ')
+}
 </script>
 
 <template>
@@ -186,6 +194,7 @@ const wrapperCls = computed(() =>
       :multiple="multiple"
       :accept="accept"
       :disabled="disabled"
+      aria-label="Upload file"
       style="display: none"
       @change="onInputChange"
     />
@@ -206,30 +215,28 @@ const wrapperCls = computed(() =>
     </div>
     <div v-else class="sg-upload-select-trigger" @click="openPicker">
       <slot>
-        <button type="button" class="sg-upload-button" :disabled="disabled">Upload</button>
+        <SgButton :disabled="disabled">Upload</SgButton>
       </slot>
     </div>
-    <ul v-if="showUploadList && files.length > 0" class="sg-upload-list">
-      <li
-        v-for="file in files"
-        :key="file.uid"
-        :class="['sg-upload-list-item', `sg-upload-list-item-${file.status}`]"
-      >
-        <span class="sg-upload-list-item-name">{{ file.name }}</span>
-        <span
-          v-if="file.status === 'uploading' && !unstyled"
-          class="sg-spin sg-spin-small"
-          aria-hidden="true"
-        />
-        <span v-if="file.status === 'uploading'" class="sg-upload-list-item-progress"
+    <div v-if="showUploadList && files.length > 0" :class="unstyled ? '' : 'sg-upload-list'">
+      <div v-for="file in files" :key="file.uid" :class="itemClasses(file)">
+        <span :class="unstyled ? '' : 'sg-upload-item-name'">
+          <SgSpin v-if="file.status === 'uploading'" size="small" :unstyled="unstyled" />
+          {{ file.name }}
+        </span>
+        <span v-if="file.status === 'uploading'" :class="unstyled ? '' : 'sg-upload-item-progress'"
           >{{ file.percent ?? 0 }}%</span
         >
-        <span class="sg-upload-list-item-actions">
-          <button type="button" class="sg-upload-list-item-remove" @click="handleRemove(file)">
-            ×
-          </button>
-        </span>
-      </li>
-    </ul>
+        <button
+          v-if="file.status !== 'uploading'"
+          type="button"
+          :class="unstyled ? '' : 'sg-upload-item-remove'"
+          :aria-label="`Remove file: ${file.name}`"
+          @click="handleRemove(file)"
+        >
+          ×
+        </button>
+      </div>
+    </div>
   </div>
 </template>

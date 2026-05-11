@@ -1,11 +1,33 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import SgButton from './Button.vue'
+import SgInput from './Input.vue'
+import SgCheckbox from './Checkbox.vue'
+import SgPagination from './Pagination.vue'
 
 export interface TransferItem {
   key: string
   title: string
   description?: string
   disabled?: boolean
+}
+
+export interface TransferLocale {
+  itemUnit?: string
+  itemsUnit?: string
+  searchPlaceholder?: string
+  notFoundContent?: string
+  selectAll?: string
+  deselectAll?: string
+}
+
+const DEFAULT_LOCALE: Required<TransferLocale> = {
+  itemUnit: 'item',
+  itemsUnit: 'items',
+  searchPlaceholder: 'Search here',
+  notFoundContent: 'Not Found',
+  selectAll: 'Select all',
+  deselectAll: 'Deselect all',
 }
 
 export interface TransferProps {
@@ -25,6 +47,14 @@ export interface TransferProps {
   disabled?: boolean
   /** One-way mode (only left → right). */
   oneWay?: boolean
+  /** Show select-all checkbox in the panel header. */
+  showSelectAll?: boolean
+  /** Enable client pagination. */
+  pagination?: boolean | { pageSize?: number }
+  /** Fixed list body height (px). */
+  listHeight?: number
+  /** Locale overrides. */
+  locale?: TransferLocale
   /** Strips built-in styling. */
   unstyled?: boolean
 }
@@ -34,15 +64,24 @@ const props = withDefaults(defineProps<TransferProps>(), {
   titles: () => ['Source', 'Target'],
   disabled: false,
   oneWay: false,
+  showSelectAll: true,
 })
 
 const emit = defineEmits<{
   (e: 'update:modelValue', keys: string[]): void
   (e: 'change', keys: string[], direction: 'left' | 'right', moveKeys: string[]): void
   (e: 'selectChange', leftKeys: string[], rightKeys: string[]): void
+  (e: 'search', direction: 'left' | 'right', value: string): void
 }>()
 
-const internal = ref<string[]>(props.modelValue ?? props.targetKeys ?? props.defaultTargetKeys ?? [])
+const mergedLocale = computed<Required<TransferLocale>>(() => ({
+  ...DEFAULT_LOCALE,
+  ...(props.locale ?? {}),
+}))
+
+const internal = ref<string[]>(
+  props.modelValue ?? props.targetKeys ?? props.defaultTargetKeys ?? [],
+)
 watch(
   () => props.modelValue ?? props.targetKeys,
   (v) => {
@@ -51,146 +90,313 @@ watch(
 )
 const targets = computed(() => props.modelValue ?? props.targetKeys ?? internal.value)
 
-const leftSelected = ref<Set<string>>(new Set())
-const rightSelected = ref<Set<string>>(new Set())
+const leftSelected = ref<string[]>([])
+const rightSelected = ref<string[]>([])
 const leftSearch = ref('')
 const rightSearch = ref('')
+const leftPage = ref(1)
+const rightPage = ref(1)
 
-const leftItems = computed(() =>
-  props.dataSource.filter(
-    (i) => !targets.value.includes(i.key) && (!leftSearch.value || i.title.toLowerCase().includes(leftSearch.value.toLowerCase())),
-  ),
-)
-const rightItems = computed(() =>
-  props.dataSource.filter(
-    (i) => targets.value.includes(i.key) && (!rightSearch.value || i.title.toLowerCase().includes(rightSearch.value.toLowerCase())),
-  ),
-)
+watch(leftSearch, () => {
+  leftPage.value = 1
+})
+watch(rightSearch, () => {
+  rightPage.value = 1
+})
 
-function toggleLeft(item: TransferItem) {
-  if (item.disabled) return
-  const next = new Set(leftSelected.value)
-  if (next.has(item.key)) next.delete(item.key)
-  else next.add(item.key)
-  leftSelected.value = next
-  emit('selectChange', Array.from(next), Array.from(rightSelected.value))
+const sourceItems = computed(() => props.dataSource.filter((i) => !targets.value.includes(i.key)))
+const targetItems = computed(() => props.dataSource.filter((i) => targets.value.includes(i.key)))
+
+function filterItems(items: TransferItem[], q: string): TransferItem[] {
+  if (!q) return items
+  const v = q.toLowerCase()
+  return items.filter((i) => i.title.toLowerCase().includes(v))
 }
 
-function toggleRight(item: TransferItem) {
-  if (item.disabled) return
-  const next = new Set(rightSelected.value)
-  if (next.has(item.key)) next.delete(item.key)
-  else next.add(item.key)
-  rightSelected.value = next
-  emit('selectChange', Array.from(leftSelected.value), Array.from(next))
+const filteredLeft = computed(() => filterItems(sourceItems.value, leftSearch.value))
+const filteredRight = computed(() => filterItems(targetItems.value, rightSearch.value))
+
+function resolvePageSize(): number {
+  if (!props.pagination) return Infinity
+  if (typeof props.pagination === 'object' && props.pagination.pageSize) {
+    return props.pagination.pageSize
+  }
+  return 10
+}
+
+const pageSize = computed(() => resolvePageSize())
+
+function pageSlice(items: TransferItem[], page: number): TransferItem[] {
+  if (!props.pagination) return items
+  const total = Math.max(1, Math.ceil(items.length / pageSize.value))
+  const safe = Math.min(page, total)
+  const start = (safe - 1) * pageSize.value
+  return items.slice(start, start + pageSize.value)
+}
+
+const visibleLeft = computed(() => pageSlice(filteredLeft.value, leftPage.value))
+const visibleRight = computed(() => pageSlice(filteredRight.value, rightPage.value))
+
+function countText(items: TransferItem[], selected: string[]): string {
+  const count = items.filter((i) => selected.includes(i.key)).length
+  const unit = items.length === 1 ? mergedLocale.value.itemUnit : mergedLocale.value.itemsUnit
+  return count > 0 ? `${count}/${items.length} ${unit}` : `${items.length} ${unit}`
+}
+
+function enabledKeys(items: TransferItem[]): string[] {
+  return items.filter((i) => !i.disabled && !props.disabled).map((i) => i.key)
+}
+
+function allChecked(items: TransferItem[], selected: string[]): boolean {
+  const enabled = enabledKeys(items)
+  return enabled.length > 0 && enabled.every((k) => selected.includes(k))
+}
+
+function indeterminate(items: TransferItem[], selected: string[]): boolean {
+  const enabled = enabledKeys(items)
+  const some = enabled.some((k) => selected.includes(k))
+  return some && !allChecked(items, selected)
+}
+
+function toggleItem(item: TransferItem, side: 'left' | 'right') {
+  if (props.disabled || item.disabled) return
+  const list = side === 'left' ? leftSelected : rightSelected
+  const set = new Set(list.value)
+  if (set.has(item.key)) set.delete(item.key)
+  else set.add(item.key)
+  list.value = Array.from(set)
+  emit('selectChange', leftSelected.value, rightSelected.value)
+}
+
+function toggleAll(side: 'left' | 'right', checked: boolean) {
+  if (props.disabled) return
+  const items = side === 'left' ? filteredLeft.value : filteredRight.value
+  const list = side === 'left' ? leftSelected : rightSelected
+  const enabled = enabledKeys(items)
+  if (checked) {
+    list.value = Array.from(new Set([...list.value, ...enabled]))
+  } else {
+    const drop = new Set(enabled)
+    list.value = list.value.filter((k) => !drop.has(k))
+  }
+  emit('selectChange', leftSelected.value, rightSelected.value)
 }
 
 function moveRight() {
-  const moveKeys = Array.from(leftSelected.value)
+  const moveKeys = leftSelected.value.filter((k) => {
+    const item = props.dataSource.find((i) => i.key === k)
+    return item && !item.disabled
+  })
   if (moveKeys.length === 0) return
   const next = [...targets.value, ...moveKeys]
   internal.value = next
   emit('update:modelValue', next)
   emit('change', next, 'right', moveKeys)
-  leftSelected.value = new Set()
+  leftSelected.value = []
+  emit('selectChange', [], rightSelected.value)
 }
 
 function moveLeft() {
   if (props.oneWay) return
-  const moveKeys = Array.from(rightSelected.value)
+  const moveKeys = rightSelected.value.filter((k) => {
+    const item = props.dataSource.find((i) => i.key === k)
+    return item && !item.disabled
+  })
   if (moveKeys.length === 0) return
-  const next = targets.value.filter((k) => !rightSelected.value.has(k))
+  const moveSet = new Set(moveKeys)
+  const next = targets.value.filter((k) => !moveSet.has(k))
   internal.value = next
   emit('update:modelValue', next)
   emit('change', next, 'left', moveKeys)
-  rightSelected.value = new Set()
+  rightSelected.value = []
+  emit('selectChange', leftSelected.value, [])
+}
+
+const canMoveRight = computed(() =>
+  leftSelected.value.some((k) => {
+    const item = props.dataSource.find((i) => i.key === k)
+    return item && !item.disabled
+  }),
+)
+const canMoveLeft = computed(
+  () =>
+    !props.oneWay &&
+    rightSelected.value.some((k) => {
+      const item = props.dataSource.find((i) => i.key === k)
+      return item && !item.disabled
+    }),
+)
+
+function onLeftSearch(v: string) {
+  leftSearch.value = v
+  emit('search', 'left', v)
+}
+function onRightSearch(v: string) {
+  rightSearch.value = v
+  emit('search', 'right', v)
 }
 
 const wrapperCls = computed(() =>
-  props.unstyled ? '' : ['sg-transfer', props.disabled ? 'sg-transfer-disabled' : ''].filter(Boolean).join(' '),
+  props.unstyled
+    ? ''
+    : ['sg-transfer', props.disabled ? 'sg-transfer-disabled' : ''].filter(Boolean).join(' '),
 )
+
+function itemCls(item: TransferItem, selected: string[]): string {
+  if (props.unstyled) return ''
+  return [
+    'sg-transfer-list-item',
+    selected.includes(item.key) ? 'sg-transfer-list-item-selected' : '',
+    props.disabled || item.disabled ? 'sg-transfer-list-item-disabled' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+}
 </script>
 
 <template>
   <div :class="wrapperCls">
-    <div class="sg-transfer-list">
-      <div class="sg-transfer-list-header">
-        <span class="sg-transfer-list-header-title">{{ titles[0] }}</span>
-        <span class="sg-transfer-list-header-count">{{ leftItems.length }}</span>
+    <!-- Source list -->
+    <div :class="unstyled ? '' : 'sg-transfer-list'">
+      <div :class="unstyled ? '' : 'sg-transfer-list-header'">
+        <SgCheckbox
+          v-if="showSelectAll"
+          :checked="allChecked(filteredLeft, leftSelected)"
+          :indeterminate="indeterminate(filteredLeft, leftSelected)"
+          :disabled="disabled || enabledKeys(filteredLeft).length === 0"
+          @change="(v: boolean) => toggleAll('left', v)"
+        />
+        <span :class="unstyled ? '' : 'sg-transfer-list-header-count'">
+          {{ countText(filteredLeft, leftSelected) }}
+        </span>
+        <span v-if="titles[0]" :class="unstyled ? '' : 'sg-transfer-list-header-title'">
+          {{ titles[0] }}
+        </span>
       </div>
-      <input
-        v-if="showSearch"
-        v-model="leftSearch"
-        class="sg-transfer-list-search"
-        placeholder="Search"
-      />
-      <ul class="sg-transfer-list-content">
-        <li
-          v-for="item in leftItems"
-          :key="item.key"
-          :class="[
-            'sg-transfer-list-content-item',
-            item.disabled ? 'sg-transfer-list-content-item-disabled' : '',
-            leftSelected.has(item.key) ? 'sg-transfer-list-content-item-checked' : '',
-          ]"
-          @click="toggleLeft(item)"
-        >
-          <input
-            type="checkbox"
-            :checked="leftSelected.has(item.key)"
-            :disabled="item.disabled"
-            @click.stop="toggleLeft(item)"
-          />
-          <span class="sg-transfer-list-content-item-text">{{ item.title }}</span>
-        </li>
-      </ul>
+      <div v-if="showSearch" :class="unstyled ? '' : 'sg-transfer-list-search'">
+        <SgInput
+          size="small"
+          :model-value="leftSearch"
+          :placeholder="mergedLocale.searchPlaceholder"
+          allow-clear
+          @update:model-value="onLeftSearch"
+        />
+      </div>
+      <div
+        :class="unstyled ? '' : 'sg-transfer-list-body'"
+        :style="listHeight ? { height: `${listHeight}px`, overflow: 'auto' } : undefined"
+      >
+        <div v-if="visibleLeft.length === 0" :class="unstyled ? '' : 'sg-transfer-list-empty'">
+          {{ mergedLocale.notFoundContent }}
+        </div>
+        <ul v-else :class="unstyled ? '' : 'sg-transfer-list-content'">
+          <li
+            v-for="item in visibleLeft"
+            :key="item.key"
+            :class="itemCls(item, leftSelected)"
+            @click="toggleItem(item, 'left')"
+          >
+            <SgCheckbox
+              :checked="leftSelected.includes(item.key)"
+              :disabled="disabled || item.disabled"
+              @click.stop
+              @change="() => toggleItem(item, 'left')"
+            />
+            <span :class="unstyled ? '' : 'sg-transfer-list-item-text'">{{ item.title }}</span>
+          </li>
+        </ul>
+      </div>
+      <div
+        v-if="pagination && filteredLeft.length > pageSize"
+        :class="unstyled ? '' : 'sg-transfer-list-pagination'"
+      >
+        <SgPagination
+          :current="leftPage"
+          :total="filteredLeft.length"
+          :page-size="pageSize"
+          simple
+          @change="(p: number) => (leftPage = p)"
+        />
+      </div>
     </div>
-    <div class="sg-transfer-operation">
-      <button
-        type="button"
-        class="sg-transfer-operation-btn"
-        :disabled="disabled || leftSelected.size === 0"
-        @click="moveRight"
-      >›</button>
-      <button
+
+    <!-- Operations -->
+    <div :class="unstyled ? '' : 'sg-transfer-operations'">
+      <SgButton type="primary" size="small" :disabled="disabled || !canMoveRight" @click="moveRight"
+        >&rsaquo;</SgButton
+      >
+      <SgButton
         v-if="!oneWay"
-        type="button"
-        class="sg-transfer-operation-btn"
-        :disabled="disabled || rightSelected.size === 0"
+        type="primary"
+        size="small"
+        :disabled="disabled || !canMoveLeft"
         @click="moveLeft"
-      >‹</button>
+        >&lsaquo;</SgButton
+      >
     </div>
-    <div class="sg-transfer-list">
-      <div class="sg-transfer-list-header">
-        <span class="sg-transfer-list-header-title">{{ titles[1] }}</span>
-        <span class="sg-transfer-list-header-count">{{ rightItems.length }}</span>
+
+    <!-- Target list -->
+    <div :class="unstyled ? '' : 'sg-transfer-list'">
+      <div :class="unstyled ? '' : 'sg-transfer-list-header'">
+        <SgCheckbox
+          v-if="showSelectAll"
+          :checked="allChecked(filteredRight, rightSelected)"
+          :indeterminate="indeterminate(filteredRight, rightSelected)"
+          :disabled="disabled || enabledKeys(filteredRight).length === 0"
+          @change="(v: boolean) => toggleAll('right', v)"
+        />
+        <span :class="unstyled ? '' : 'sg-transfer-list-header-count'">
+          {{ countText(filteredRight, rightSelected) }}
+        </span>
+        <span v-if="titles[1]" :class="unstyled ? '' : 'sg-transfer-list-header-title'">
+          {{ titles[1] }}
+        </span>
       </div>
-      <input
-        v-if="showSearch"
-        v-model="rightSearch"
-        class="sg-transfer-list-search"
-        placeholder="Search"
-      />
-      <ul class="sg-transfer-list-content">
-        <li
-          v-for="item in rightItems"
-          :key="item.key"
-          :class="[
-            'sg-transfer-list-content-item',
-            item.disabled ? 'sg-transfer-list-content-item-disabled' : '',
-            rightSelected.has(item.key) ? 'sg-transfer-list-content-item-checked' : '',
-          ]"
-          @click="toggleRight(item)"
-        >
-          <input
-            type="checkbox"
-            :checked="rightSelected.has(item.key)"
-            :disabled="item.disabled"
-            @click.stop="toggleRight(item)"
-          />
-          <span class="sg-transfer-list-content-item-text">{{ item.title }}</span>
-        </li>
-      </ul>
+      <div v-if="showSearch" :class="unstyled ? '' : 'sg-transfer-list-search'">
+        <SgInput
+          size="small"
+          :model-value="rightSearch"
+          :placeholder="mergedLocale.searchPlaceholder"
+          allow-clear
+          @update:model-value="onRightSearch"
+        />
+      </div>
+      <div
+        :class="unstyled ? '' : 'sg-transfer-list-body'"
+        :style="listHeight ? { height: `${listHeight}px`, overflow: 'auto' } : undefined"
+      >
+        <div v-if="visibleRight.length === 0" :class="unstyled ? '' : 'sg-transfer-list-empty'">
+          {{ mergedLocale.notFoundContent }}
+        </div>
+        <ul v-else :class="unstyled ? '' : 'sg-transfer-list-content'">
+          <li
+            v-for="item in visibleRight"
+            :key="item.key"
+            :class="itemCls(item, rightSelected)"
+            @click="toggleItem(item, 'right')"
+          >
+            <SgCheckbox
+              :checked="rightSelected.includes(item.key)"
+              :disabled="disabled || item.disabled"
+              @click.stop
+              @change="() => toggleItem(item, 'right')"
+            />
+            <span :class="unstyled ? '' : 'sg-transfer-list-item-text'">{{ item.title }}</span>
+          </li>
+        </ul>
+      </div>
+      <div
+        v-if="pagination && filteredRight.length > pageSize"
+        :class="unstyled ? '' : 'sg-transfer-list-pagination'"
+      >
+        <SgPagination
+          :current="rightPage"
+          :total="filteredRight.length"
+          :page-size="pageSize"
+          simple
+          @change="(p: number) => (rightPage = p)"
+        />
+      </div>
     </div>
   </div>
 </template>

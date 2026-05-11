@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, getCurrentInstance, useSlots } from 'vue'
 import { useConfigWithDefaults } from './ConfigProvider.vue'
 import type { SizeType } from '../../types'
 
@@ -8,6 +8,8 @@ export interface StepItem {
   title: string
   /** Optional secondary text below the title. */
   description?: string
+  /** Custom icon glyph (emoji / unicode / short label). Pass `icon` slot for rich content. */
+  icon?: string
   /** Overrides auto-derived status from `current` index. */
   status?: 'wait' | 'process' | 'finish' | 'error'
 }
@@ -23,6 +25,9 @@ export interface StepsProps {
   size?: SizeType
   /** Visual variant. @default 'default' */
   type?: 'default' | 'navigation'
+  /** Force-enable / disable click-to-change. When omitted, inferred from
+   *  the presence of a `change` listener (matches React's `onChange` semantics). */
+  clickable?: boolean
   /** Strips built-in styles when true. */
   unstyled?: boolean
 }
@@ -30,15 +35,30 @@ export interface StepsProps {
 const props = withDefaults(defineProps<StepsProps>(), {
   direction: 'horizontal',
   type: 'default',
+  clickable: undefined,
 })
 
 const emit = defineEmits<{
   (e: 'change', current: number): void
 }>()
 
+defineSlots<{
+  icon(props: { item: StepItem; index: number; status: string }): unknown
+}>()
+
+const slots = useSlots()
+const hasIconSlot = computed(() => !!slots.icon)
+
 const { resolvedSize } = useConfigWithDefaults({ size: undefined }, {})
 const realSize = computed<SizeType>(() => props.size ?? resolvedSize.value)
 const stepsSize = computed(() => (realSize.value === 'small' ? 'small' : 'default'))
+
+const instance = getCurrentInstance()
+const hasOnChange = computed(() => {
+  if (props.clickable !== undefined) return props.clickable
+  const vp = instance?.vnode?.props
+  return !!(vp && (vp.onChange || vp['onChange']))
+})
 
 function resolveStatus(index: number, override?: StepItem['status']): string {
   if (override) return override
@@ -59,18 +79,13 @@ const rootClasses = computed(() =>
 )
 
 function itemClasses(status: string, clickable: boolean) {
-  return [
-    'sg-steps-item',
-    `sg-steps-item-${status}`,
-    clickable ? 'sg-steps-item-clickable' : '',
-  ]
+  return ['sg-steps-item', `sg-steps-item-${status}`, clickable ? 'sg-steps-item-clickable' : '']
     .filter(Boolean)
     .join(' ')
 }
 
-const hasOnChange = computed(() => true)
-
 function emitChange(i: number) {
+  if (!hasOnChange.value) return
   emit('change', i)
 }
 </script>
@@ -83,7 +98,11 @@ function emitChange(i: number) {
       :data-status="resolveStatus(i, item.status)"
       @click="emitChange(i)"
     >
-      <span>{{ resolveStatus(i, item.status) === 'finish' ? '✓' : i + 1 }}</span>
+      <span>
+        <slot name="icon" :item="item" :index="i" :status="resolveStatus(i, item.status)">
+          {{ item.icon ?? (resolveStatus(i, item.status) === 'finish' ? '✓' : i + 1) }}
+        </slot>
+      </span>
       <span>{{ item.title }}</span>
       <span v-if="item.description">{{ item.description }}</span>
     </div>
@@ -98,7 +117,12 @@ function emitChange(i: number) {
     >
       <div class="sg-steps-item-container">
         <div class="sg-steps-item-icon">
-          <span class="sg-steps-icon">
+          <span v-if="hasIconSlot || item.icon" class="sg-steps-icon-custom">
+            <slot name="icon" :item="item" :index="i" :status="resolveStatus(i, item.status)">{{
+              item.icon
+            }}</slot>
+          </span>
+          <span v-else class="sg-steps-icon">
             <svg
               v-if="resolveStatus(i, item.status) === 'finish'"
               viewBox="64 64 896 896"

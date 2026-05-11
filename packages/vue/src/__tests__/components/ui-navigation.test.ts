@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import {
@@ -133,11 +133,7 @@ describe('SgMenu', () => {
 })
 
 describe('SgBreadcrumb', () => {
-  const items = [
-    { title: 'Home', href: '/' },
-    { title: 'Products' },
-    { title: 'Detail' },
-  ]
+  const items = [{ title: 'Home', href: '/' }, { title: 'Products' }, { title: 'Detail' }]
 
   it('renders all items', () => {
     const wrapper = mount(SgBreadcrumb, { props: { items } })
@@ -335,11 +331,7 @@ describe('SgPagination', () => {
 })
 
 describe('SgSteps', () => {
-  const items = [
-    { title: 'One' },
-    { title: 'Two' },
-    { title: 'Three' },
-  ]
+  const items = [{ title: 'One' }, { title: 'Two' }, { title: 'Three' }]
 
   it('renders all step titles', () => {
     const wrapper = mount(SgSteps, { props: { items, current: 0 } })
@@ -365,12 +357,41 @@ describe('SgSteps', () => {
     expect(wrapper.findAll('.sg-steps-item-wait').length).toBe(2)
   })
 
-  it('emits change when step is clicked', async () => {
-    const wrapper = mount(SgSteps, { props: { items, current: 0 } })
+  it('emits change when step is clicked (with listener attached)', async () => {
+    const onChange = vi.fn()
+    const wrapper = mount(SgSteps, {
+      props: { items, current: 0 },
+      attrs: { onChange },
+    })
     const steps = wrapper.findAll('.sg-steps-item')
     await steps[2].trigger('click')
     expect(wrapper.emitted('change')).toBeTruthy()
     expect(wrapper.emitted('change')![0]).toEqual([2])
+  })
+
+  it('suppresses change emit when no listener and clickable is unset (React parity)', async () => {
+    const wrapper = mount(SgSteps, { props: { items, current: 0 } })
+    const steps = wrapper.findAll('.sg-steps-item')
+    expect(steps[0].classes()).not.toContain('sg-steps-item-clickable')
+    await steps[2].trigger('click')
+    expect(wrapper.emitted('change')).toBeFalsy()
+  })
+
+  it('clickable=true forces clickable affordance even without listener', () => {
+    const wrapper = mount(SgSteps, { props: { items, current: 0, clickable: true } })
+    expect(wrapper.find('.sg-steps-item-clickable').exists()).toBe(true)
+  })
+
+  it('item.icon renders sg-steps-icon-custom', () => {
+    const wrapper = mount(SgSteps, {
+      props: {
+        items: [{ title: 'Custom', icon: '★' }],
+        current: 0,
+      },
+    })
+    const custom = wrapper.find('.sg-steps-icon-custom')
+    expect(custom.exists()).toBe(true)
+    expect(custom.text()).toBe('★')
   })
 
   it('renders description when set', () => {
@@ -462,5 +483,33 @@ describe('SgSegmented', () => {
     const wrapper = mount(SgSegmented, { props: { options: ['x', 'y'] as any } })
     expect(wrapper.text()).toContain('x')
     expect(wrapper.text()).toContain('y')
+  })
+
+  it('emits update:value + update:modelValue for v-model parity', async () => {
+    const wrapper = mount(SgSegmented, { props: { options: opts } })
+    const items = wrapper.findAll('.sg-segmented-item')
+    await items[1].trigger('click')
+    expect(wrapper.emitted('update:value')).toBeTruthy()
+    expect(wrapper.emitted('update:modelValue')).toBeTruthy()
+    expect(wrapper.emitted('update:value')![0]).toEqual(['week'])
+  })
+
+  it('option.icon renders sg-segmented-item-icon', () => {
+    const wrapper = mount(SgSegmented, {
+      props: {
+        options: [
+          { label: 'Map', value: 'map', icon: '★' },
+          { label: 'Grid', value: 'grid' },
+        ],
+      },
+    })
+    const icons = wrapper.findAll('.sg-segmented-item-icon')
+    expect(icons.length).toBe(1)
+    expect(icons[0].text()).toBe('★')
+  })
+
+  it('modelValue prop drives selection (Vue v-model alias)', () => {
+    const wrapper = mount(SgSegmented, { props: { options: opts, modelValue: 'month' } })
+    expect(wrapper.find('.sg-segmented-item-selected').text()).toBe('Month')
   })
 })
