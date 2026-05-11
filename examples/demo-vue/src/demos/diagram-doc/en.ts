@@ -2,10 +2,12 @@
  * English source of truth for Diagram doc page strings (Vue).
  * Other locales must provide the same keys (see `ru.ts`).
  *
- * Vue's `SgDiagram` is narrower than React's: no `snapToGrid`,
- * `routeAroundNodes`, lasso, contextmenu callbacks, OBB rotation.
- * Examples are scoped to the current Vue API surface — see
- * `findings/T-Vue-Demo-Complex.md` → `diagram-vue-narrower-than-react`.
+ * After T-Diagram-Polish (Wave 3.3c) Vue's `SgDiagram` is on parity
+ * with React: `routing`, `routeAroundNodes`, lasso, hover-actions, DnD,
+ * `panable`/`zoomable`, `snapToGrid`, `*ContextMenu` and OBB-aware
+ * router are all available. Legacy v0 props (`draggableNodes`,
+ * `panZoom`, `selectedNodeIds`) remain as deprecated aliases — see
+ * `decisions/T-Diagram-Polish.md` D2.
  */
 export const diagramDocEn = {
   pageTitle: 'Diagram',
@@ -46,7 +48,7 @@ export const diagramDocEn = {
 
   demoUndoRedoTitle: 'Undo / Redo',
   demoUndoRedoDesc:
-    "Built-in history on `GraphEngine`. Drag the nodes, then `Ctrl+Z` / `Ctrl+Shift+Z` (or use the buttons) to walk the timeline.",
+    'Built-in history on `GraphEngine`. Drag the nodes, then `Ctrl+Z` / `Ctrl+Shift+Z` (or use the buttons) to walk the timeline.',
 
   demoNodeClickTitle: 'Node click event',
   demoNodeClickDesc:
@@ -67,6 +69,10 @@ export const diagramDocEn = {
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc:
     'Drop the default `.sg-diagram*` classes via `unstyled`. The DOM structure stays the same — bring your own design system.',
+
+  demoOrthogonalTitle: 'Orthogonal routing (obstacle-aware)',
+  demoOrthogonalDesc:
+    'Pass `routeAroundNodes` to feed every other node as an obstacle into the A*-based router, and watch edges detour around them rather than cutting through. The router also exits / enters each node from the side nearest to the other endpoint (T-Diagram-Polish 3.3c).',
 
   tableDiagramApi: 'Diagram API',
   tableUseGraphApi: 'useGraph(options) Options',

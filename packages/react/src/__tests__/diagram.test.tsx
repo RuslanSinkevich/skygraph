@@ -153,14 +153,18 @@ describe('Diagram component', () => {
     expect(container.querySelectorAll('.sg-diagram-edge').length).toBe(0)
   })
 
-  it('orthogonal edges produce L-shaped paths (3 points)', () => {
+  it('orthogonal edges produce an orthogonal polyline through right-angle bends', () => {
     const { result } = renderHook(() => useGraph())
     act(() => {
       const a = result.current.graph.addNode({
-        id: 'a', transform: { x: 0, y: 0 }, outline: { kind: 'rect', w: 50, h: 30 },
+        id: 'a',
+        transform: { x: 0, y: 0 },
+        outline: { kind: 'rect', w: 50, h: 30 },
       })
       const b = result.current.graph.addNode({
-        id: 'b', transform: { x: 200, y: 100 }, outline: { kind: 'rect', w: 50, h: 30 },
+        id: 'b',
+        transform: { x: 200, y: 100 },
+        outline: { kind: 'rect', w: 50, h: 30 },
       })
       result.current.graph.addEdge({
         from: { node: a, anchor: 'ne' },
@@ -174,9 +178,24 @@ describe('Diagram component', () => {
     const path = container.querySelector('.sg-diagram-edge-orthogonal') as SVGPathElement
     expect(path).not.toBeNull()
     const d = path.getAttribute('d')!
-    // L-route → 3 points → 2 L commands
+    // T-Diagram-Polish (3.3c): the router now exits / enters through the
+    // side of each node nearest to the other endpoint and adds a short
+    // perpendicular stub, so an orthogonal edge produces ≥ 2 line
+    // segments (≥ 1 bend) — not just a clean L-route.
     const lCount = (d.match(/L /g) ?? []).length
-    expect(lCount).toBe(2)
+    expect(lCount).toBeGreaterThanOrEqual(2)
+    // Every interior bend remains axis-aligned (no diagonals between
+    // consecutive coords).
+    const coords = d
+      .split(/[ML]\s+/g)
+      .filter(Boolean)
+      .map((p) => p.trim().split(/\s+/).map(Number) as [number, number])
+    for (let i = 1; i < coords.length; i++) {
+      const [x0, y0] = coords[i - 1]!
+      const [x1, y1] = coords[i]!
+      // axis-aligned segment: at least one coordinate matches
+      expect(x0 === x1 || y0 === y1).toBe(true)
+    }
   })
 
   it('manual edges with waypoints render through them', () => {
@@ -188,7 +207,10 @@ describe('Diagram component', () => {
         from: { node: a, anchor: 'ne' },
         to: { node: b, anchor: 'nw' },
         routing: 'manual',
-        waypoints: [[50, 0], [50, 100]],
+        waypoints: [
+          [50, 0],
+          [50, 100],
+        ],
       })
     })
     const { container } = render(
@@ -335,11 +357,7 @@ describe('Diagram component', () => {
   it('snapToGrid attaches the sg-diagram-grid hook class', () => {
     const { result } = renderHook(() => useGraph())
     const { container } = render(
-      <Diagram
-        graph={result.current.graph}
-        state={result.current.state}
-        snapToGrid={25}
-      />,
+      <Diagram graph={result.current.graph} state={result.current.state} snapToGrid={25} />,
     )
     expect(container.querySelector('.sg-diagram.sg-diagram-grid')).not.toBeNull()
   })
@@ -378,11 +396,7 @@ describe('Diagram component', () => {
       })
     })
     const { container } = render(
-      <Diagram
-        graph={result.current.graph}
-        state={result.current.state}
-        routeAroundNodes
-      />,
+      <Diagram graph={result.current.graph} state={result.current.state} routeAroundNodes />,
     )
     const path = container.querySelector('.sg-diagram-edge-orthogonal') as SVGPathElement
     expect(path).not.toBeNull()
@@ -528,9 +542,7 @@ describe('Diagram — selection / multi-select', () => {
 
   it('controlled selection prop applies sg-diagram-node-selected class', () => {
     const { graph, state } = simpleScene()
-    const { container } = render(
-      <Diagram graph={graph} state={state} selection={['a', 'c']} />,
-    )
+    const { container } = render(<Diagram graph={graph} state={state} selection={['a', 'c']} />)
     const selected = container.querySelectorAll('.sg-diagram-node-selected')
     expect(selected.length).toBe(2)
     const ids = Array.from(selected).map((el) => el.getAttribute('data-node-id'))

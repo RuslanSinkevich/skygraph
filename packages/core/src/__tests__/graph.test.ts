@@ -146,7 +146,7 @@ describe('GraphEngine: anchors', () => {
       anchorPolicy: { kind: 'perEdge', k: 0 },
     })
     const anchors = graph.anchorsOf(id)
-    expect(anchors.map(a => a.id).sort()).toEqual(['ne', 'nw', 'se', 'sw'])
+    expect(anchors.map((a) => a.id).sort()).toEqual(['ne', 'nw', 'se', 'sw'])
   })
 
   it('rect with perEdge k=2 produces 4 corners + 2*4=8 mid-edge anchors', () => {
@@ -163,10 +163,16 @@ describe('GraphEngine: anchors', () => {
     const { graph } = setup()
     const id = graph.addNode({
       outline: { kind: 'rect', w: 100, h: 60 },
-      anchorPolicy: { kind: 'manual', anchors: [{ id: 'in', s: 0.0 }, { id: 'out', s: 0.5 }] },
+      anchorPolicy: {
+        kind: 'manual',
+        anchors: [
+          { id: 'in', s: 0.0 },
+          { id: 'out', s: 0.5 },
+        ],
+      },
     })
     const anchors = graph.anchorsOf(id)
-    expect(anchors.map(a => a.id).sort()).toEqual(['in', 'out'])
+    expect(anchors.map((a) => a.id).sort()).toEqual(['in', 'out'])
   })
 
   it('polygon vertices always become anchors', () => {
@@ -351,7 +357,7 @@ describe('GraphEngine: edge endpoints with { s } param', () => {
     })
     const eid = graph.addEdge({
       from: { node: a, anchor: { s: 0.25 } }, // closest anchor: ne (s = 0.25)
-      to: { node: b, anchor: { s: 0.75 } },   // closest anchor: sw (s = 0.75)
+      to: { node: b, anchor: { s: 0.75 } }, // closest anchor: sw (s = 0.75)
     })
     expect(graph.getEdge(eid)).toBeDefined()
   })
@@ -403,38 +409,66 @@ describe('GraphEngine: ops — extended', () => {
 describe('Orthogonal routing', () => {
   it('returns straight line when start.x == end.x', () => {
     const path = routeOrthogonal([10, 0], [10, 50])
-    expect(path).toEqual([[10, 0], [10, 50]])
+    expect(path).toEqual([
+      [10, 0],
+      [10, 50],
+    ])
   })
 
   it('returns straight line when start.y == end.y', () => {
     const path = routeOrthogonal([0, 20], [80, 20])
-    expect(path).toEqual([[0, 20], [80, 20]])
+    expect(path).toEqual([
+      [0, 20],
+      [80, 20],
+    ])
   })
 
   it('returns 3-point L-route for diagonal points (auto, dx >= dy → HV)', () => {
     const path = routeOrthogonal([0, 0], [100, 30])
     // dx=100, dy=30 → HV → corner at (end.x, start.y) = (100, 0)
-    expect(path).toEqual([[0, 0], [100, 0], [100, 30]])
+    expect(path).toEqual([
+      [0, 0],
+      [100, 0],
+      [100, 30],
+    ])
   })
 
   it('auto picks VH when dy > dx', () => {
     const path = routeOrthogonal([0, 0], [30, 100])
     // dx=30, dy=100 → VH → corner at (start.x, end.y) = (0, 100)
-    expect(path).toEqual([[0, 0], [0, 100], [30, 100]])
+    expect(path).toEqual([
+      [0, 0],
+      [0, 100],
+      [30, 100],
+    ])
   })
 
   it('preferred=hv overrides auto', () => {
     const path = routeOrthogonal([0, 0], [30, 100], 'hv')
-    expect(path).toEqual([[0, 0], [30, 0], [30, 100]])
+    expect(path).toEqual([
+      [0, 0],
+      [30, 0],
+      [30, 100],
+    ])
   })
 
   it('preferred=vh overrides auto', () => {
     const path = routeOrthogonal([0, 0], [100, 30], 'vh')
-    expect(path).toEqual([[0, 0], [0, 30], [100, 30]])
+    expect(path).toEqual([
+      [0, 0],
+      [0, 30],
+      [100, 30],
+    ])
   })
 
   it('pointsToPath builds an SVG d attribute from polyline', () => {
-    expect(pointsToPath([[0, 0], [10, 0], [10, 5]])).toBe('M 0 0 L 10 0 L 10 5')
+    expect(
+      pointsToPath([
+        [0, 0],
+        [10, 0],
+        [10, 5],
+      ]),
+    ).toBe('M 0 0 L 10 0 L 10 5')
   })
 
   it('pointsToPath returns empty string for empty array', () => {
@@ -539,22 +573,13 @@ describe('Orthogonal routing — obstacle avoidance (A*)', () => {
     return segs
   }
 
-  function segmentEntersAabb(
-    a: [number, number],
-    b: [number, number],
-    box: AABB,
-  ): boolean {
+  function segmentEntersAabb(a: [number, number], b: [number, number], box: AABB): boolean {
     // strict-interior overlap test for an axis-aligned segment vs AABB
     const x0 = Math.min(a[0], b[0])
     const x1 = Math.max(a[0], b[0])
     const y0 = Math.min(a[1], b[1])
     const y1 = Math.max(a[1], b[1])
-    return (
-      x1 > box.x &&
-      x0 < box.x + box.w &&
-      y1 > box.y &&
-      y0 < box.y + box.h
-    )
+    return x1 > box.x && x0 < box.x + box.w && y1 > box.y && y0 < box.y + box.h
   }
 
   it('without obstacles falls back to the L-route', () => {
@@ -613,6 +638,136 @@ describe('Orthogonal routing — obstacle avoidance (A*)', () => {
       maxNodes: 5,
     })
     expect(path.length).toBeGreaterThanOrEqual(2)
+  })
+})
+
+describe('Orthogonal routing — side-aware exits (sourceBounds / targetBounds)', () => {
+  it('source on the left, target on the right and slightly below → exits via right side', () => {
+    // Source rect on the left; target offset down-right so the path actually bends.
+    const sourceBounds: AABB = { x: 0, y: 0, w: 100, h: 60 }
+    const targetBounds: AABB = { x: 200, y: 100, w: 100, h: 60 }
+    // Anchors at NE / SW corners (s = 0.25 / 0.75 in showcase parlance).
+    const path = routeOrthogonal([100, 0], [200, 160], {
+      sourceBounds,
+      targetBounds,
+      stubLength: 10,
+    })
+    // After compression, the polyline must:
+    //  - exit through the RIGHT side of source (first non-source x must equal 100 + stub = 110)
+    //  - enter through the LEFT side of target (last non-target x = 200 - stub = 190)
+    // Find a vertex whose y is 30 (centre of source) AND x ≥ 110.
+    const exitedRight = path.some(([px, py]) => py === 30 && px >= 110)
+    expect(exitedRight).toBe(true)
+    // And a vertex whose y is 130 (centre of target) AND x ≤ 190.
+    const enteredLeft = path.some(([px, py]) => py === 130 && px <= 190)
+    expect(enteredLeft).toBe(true)
+    // Endpoints stay exact so the edge meets its anchor.
+    expect(path[0]).toEqual([100, 0])
+    expect(path[path.length - 1]).toEqual([200, 160])
+  })
+
+  it('source mostly above target → exits through the bottom side', () => {
+    // Source rect's centre is (50, 30). Target rect's centre is (100, 230)
+    // — much more vertical offset than horizontal — so the router should
+    // pick `bottom` for the source side and `top` for the target side.
+    const sourceBounds: AABB = { x: 0, y: 0, w: 100, h: 60 }
+    const targetBounds: AABB = { x: 50, y: 200, w: 100, h: 60 }
+    const path = routeOrthogonal([50, 30], [100, 230], {
+      sourceBounds,
+      targetBounds,
+      stubLength: 8,
+    })
+
+    // After collinear-compression, the bottom-of-source point and the
+    // top-of-target point can collapse into a longer vertical run. So
+    // instead of asserting on the literal exit / enter vertices, assert
+    // that there exists a polyline segment whose strictly-vertical
+    // extent covers y = 60 (source bottom) AND a segment that covers
+    // y = 200 (target top).
+    function hasVerticalSegmentAt(xVal: number, yTarget: number): boolean {
+      for (let i = 1; i < path.length; i++) {
+        const a = path[i - 1]!
+        const b = path[i]!
+        if (a[0] !== xVal || b[0] !== xVal) continue
+        const y0 = Math.min(a[1], b[1])
+        const y1 = Math.max(a[1], b[1])
+        if (yTarget >= y0 && yTarget <= y1) return true
+      }
+      return false
+    }
+    expect(hasVerticalSegmentAt(50, 60)).toBe(true)
+    expect(hasVerticalSegmentAt(100, 200)).toBe(true)
+  })
+
+  it('starts and ends at the original anchor points (unchanged)', () => {
+    const sourceBounds: AABB = { x: 0, y: 0, w: 100, h: 60 }
+    const targetBounds: AABB = { x: 200, y: 0, w: 100, h: 60 }
+    const path = routeOrthogonal([100, 0], [200, 60], {
+      sourceBounds,
+      targetBounds,
+      stubLength: 10,
+    })
+    expect(path[0]).toEqual([100, 0])
+    expect(path[path.length - 1]).toEqual([200, 60])
+  })
+
+  it('with obstacles between source and target, still uses A* for the middle leg', () => {
+    const sourceBounds: AABB = { x: 0, y: 0, w: 100, h: 60 }
+    const targetBounds: AABB = { x: 300, y: 0, w: 100, h: 60 }
+    const wall: AABB = { x: 150, y: -50, w: 40, h: 200 }
+    const path = routeOrthogonal([50, 30], [350, 30], {
+      sourceBounds,
+      targetBounds,
+      obstacles: [wall],
+      gridSize: 10,
+      inflate: 4,
+      stubLength: 10,
+    }) as readonly [number, number][]
+    // Endpoints intact.
+    expect(path[0]).toEqual([50, 30])
+    expect(path[path.length - 1]).toEqual([350, 30])
+    // No path segment cuts through the wall.
+    function segmentEnters(a: [number, number], b: [number, number], box: AABB): boolean {
+      const x0 = Math.min(a[0], b[0])
+      const x1 = Math.max(a[0], b[0])
+      const y0 = Math.min(a[1], b[1])
+      const y1 = Math.max(a[1], b[1])
+      return x1 > box.x && x0 < box.x + box.w && y1 > box.y && y0 < box.y + box.h
+    }
+    for (let i = 1; i < path.length; i++) {
+      expect(segmentEnters(path[i - 1]!, path[i]!, wall)).toBe(false)
+    }
+  })
+
+  it('L-route corner sits at an axis-aligned bend (no grid snapping)', () => {
+    // No bounds, no obstacles → simple L-route. We deliberately do NOT
+    // snap the corner to the grid: `start` / `end` are exact anchor
+    // positions, and snapping would skew the two segments into a
+    // diagonal.
+    const path = routeOrthogonal([0, 0], [97, 33])
+    // dx=97 > dy=33 → HV → corner at (end.x, start.y) = (97, 0).
+    expect(path[1]).toEqual([97, 0])
+    expect(path[0]).toEqual([0, 0])
+    expect(path[path.length - 1]).toEqual([97, 33])
+  })
+
+  it('drops sourceBounds/targetBounds from the obstacle list automatically', () => {
+    // If the caller doesn't filter, the router still routes through the
+    // source rectangle (it's the "starting room", not an obstacle).
+    const sourceBounds: AABB = { x: 0, y: 0, w: 100, h: 60 }
+    const targetBounds: AABB = { x: 200, y: 0, w: 100, h: 60 }
+    const path = routeOrthogonal([50, 30], [250, 30], {
+      sourceBounds,
+      targetBounds,
+      obstacles: [sourceBounds, targetBounds, { x: 140, y: -50, w: 20, h: 200 }],
+      gridSize: 10,
+      inflate: 2,
+      stubLength: 10,
+    })
+    // Path length sane (no crash, at least 4 points: start, sExit, ..., end).
+    expect(path.length).toBeGreaterThanOrEqual(4)
+    expect(path[0]).toEqual([50, 30])
+    expect(path[path.length - 1]).toEqual([250, 30])
   })
 })
 

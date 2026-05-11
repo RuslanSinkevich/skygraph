@@ -354,7 +354,16 @@ export function WorkflowEditorApp() {
           <button
             key={p.kind}
             className="we-palette-item"
+            draggable
+            onDragStart={(e) => {
+              // Encode the template as JSON on the standard
+              // `application/x-sg-node` MIME — see Diagram's `dropTypes`.
+              e.dataTransfer.setData('application/x-sg-node', JSON.stringify({ kind: p.kind }))
+              e.dataTransfer.effectAllowed = 'copy'
+            }}
             onClick={() => {
+              // Click fallback — same code path as drop, just with a
+              // default position so people who only click still get a node.
               const id = `${p.kind}-${Date.now().toString(36).slice(-5)}`
               graph.addNode({
                 id,
@@ -441,6 +450,33 @@ export function WorkflowEditorApp() {
             onSelectionChange={setSelection}
             nodeActions={nodeActions}
             edgeActions={edgeActions}
+            routeAroundNodes
+            routingOptions={{ gridSize: 10, inflate: 8 }}
+            onDropNode={({ x, y, dataTransfer }) => {
+              const raw = dataTransfer?.getData('application/x-sg-node')
+              if (!raw) return
+              let kind: NodeKind = 'task'
+              try {
+                const payload = JSON.parse(raw) as { kind?: NodeKind }
+                if (payload?.kind) kind = payload.kind
+              } catch {
+                // unknown payload — fall through with default kind
+              }
+              const id = `${kind}-${Date.now().toString(36).slice(-5)}`
+              const shape = NODE_SHAPE[kind]
+              // Drop coordinates are in world space (already pan/zoom
+              // adjusted). Centre the node on the cursor so the drop
+              // feels precise.
+              graph.addNode({
+                id,
+                transform: { x: x - shape.w / 2, y: y - shape.h / 2 },
+                outline: outlineFor(kind),
+                data: { kind, label: l.kindLabel[kind] } satisfies NodeData,
+              })
+              setSelected(id)
+              setLabelDraft(l.kindLabel[kind])
+              notification.success(l.toasts.addedNode(l.kindLabel[kind]))
+            }}
             onNodeContextMenu={(e, node) => {
               e.preventDefault()
               setMenu({ open: true, x: e.clientX, y: e.clientY, nodeId: node.id })

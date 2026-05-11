@@ -4,4 +4,8 @@ export type {
   DiagramSelectionMode,
   DiagramExpose,
   DiagramNodeRenderProps,
+  DiagramNodeAction,
+  DiagramEdgeAction,
+  DiagramCanvasContextPoint,
+  DiagramDropPoint,
 } from './types'

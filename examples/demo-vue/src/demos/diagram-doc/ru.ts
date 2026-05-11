@@ -19,7 +19,8 @@ export const diagramDocRu: DiagramDocStrings = {
     'Три rect-узла и два прямых ребра. Рёбра привязаны к якорям контура (`nw`, `ne`, `se`, `sw`).',
 
   demoCustomNodeTitle: 'Свой узел',
-  demoCustomNodeDesc: 'Слот `#node` рисует свою карточку — Vue-идиома для React `renderNode={...}`.',
+  demoCustomNodeDesc:
+    'Слот `#node` рисует свою карточку — Vue-идиома для React `renderNode={...}`.',
 
   demoDraggableTitle: 'Draggable',
   demoDraggableDesc:
@@ -60,6 +61,10 @@ export const diagramDocRu: DiagramDocStrings = {
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc:
     'Сбрасывает дефолтные `.sg-diagram*` классы через `unstyled`. Структура DOM сохраняется — приносите собственный дизайн.',
+
+  demoOrthogonalTitle: 'Ортогональная маршрутизация (обходы узлов)',
+  demoOrthogonalDesc:
+    'Прокинутый `routeAroundNodes` подаёт остальные узлы как препятствия в A*-роутер — линии огибают их, а не идут через. Роутер также выходит / входит через ближайшую грань узла (T-Diagram-Polish 3.3c).',
 
   tableDiagramApi: 'Diagram API',
   tableUseGraphApi: 'useGraph(options) Options',

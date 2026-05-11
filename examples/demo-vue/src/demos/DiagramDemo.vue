@@ -1,12 +1,11 @@
 <script setup lang="ts">
 /**
- * Diagram aggregator (Wave 3.2 / Tab D).
- * Vue's `SgDiagram` is narrower than React's — see
- * `findings/T-Vue-Demo-Complex.md` → `diagram-vue-narrower-than-react`.
- *
- * 10 examples are scoped to the current Vue API surface (no
- * `snapToGrid`, `routeAroundNodes`, lasso, contextmenu callbacks, OBB).
- * No CssVarsTable to keep parity with React (carta §C).
+ * Diagram aggregator. After T-Diagram-Polish (Wave 3.3c) Vue's
+ * `SgDiagram` is on parity with React: routing, `routeAroundNodes`,
+ * lasso, `*ContextMenu`, hover-actions, snap-to-grid, DnD, panable /
+ * zoomable. Legacy v0 props (`draggableNodes`, `panZoom`,
+ * `selectedNodeIds`) still work as deprecated aliases — see
+ * `decisions/T-Diagram-Polish.md` D2.
  */
 import { computed } from 'vue'
 import { ComponentDoc, DemoBox, PropsTable, type PropDef } from './components'
@@ -36,6 +35,8 @@ import LargeDiagram from './diagram/LargeGraph.demo.vue'
 import LargeSource from './diagram/LargeGraph.demo.vue?raw'
 import UnstyledDiagram from './diagram/Unstyled.demo.vue'
 import UnstyledSource from './diagram/Unstyled.demo.vue?raw'
+import OrthogonalDiagram from './diagram/OrthogonalRouting.demo.vue'
+import OrthogonalSource from './diagram/OrthogonalRouting.demo.vue?raw'
 
 const t = useDiagramDocStrings()
 
@@ -47,13 +48,31 @@ const diagramProps = computed<PropDef[]>(() => [
   { name: 'className', description: t.value.propClassName, type: 'string' },
   { name: 'style', description: t.value.propStyle, type: 'CSSProperties' },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
-  { name: 'draggableNodes', description: t.value.propDraggableNodes, type: 'boolean', default: 'true' },
+  {
+    name: 'draggableNodes',
+    description: t.value.propDraggableNodes,
+    type: 'boolean',
+    default: 'true',
+  },
   { name: 'panZoom', description: t.value.propPanZoom, type: 'boolean', default: 'true' },
-  { name: 'selectionMode', description: t.value.propSelectionMode, type: "'single' | 'multi'", default: "'single'" },
+  {
+    name: 'selectionMode',
+    description: t.value.propSelectionMode,
+    type: "'single' | 'multi'",
+    default: "'single'",
+  },
   { name: 'selectedNodeIds', description: t.value.propSelectedNodeIds, type: 'NodeId[]' },
   { name: 'fileName', description: t.value.propFileName, type: 'string', default: "'diagram'" },
-  { name: '@node-click', description: t.value.propEmitNodeClick, type: '(p: { id, node, event }) => void' },
-  { name: '@selection-change', description: t.value.propEmitSelectionChange, type: '(ids: NodeId[]) => void' },
+  {
+    name: '@node-click',
+    description: t.value.propEmitNodeClick,
+    type: '(p: { id, node, event }) => void',
+  },
+  {
+    name: '@selection-change',
+    description: t.value.propEmitSelectionChange,
+    type: '(ids: NodeId[]) => void',
+  },
 ])
 
 const useGraphProps = computed<PropDef[]>(() => [
@@ -78,11 +97,19 @@ const exposeProps = computed<PropDef[]>(() => [
       <BasicDiagram />
     </DemoBox>
 
-    <DemoBox :title="t.demoCustomNodeTitle" :description="t.demoCustomNodeDesc" :code="CustomNodeSource">
+    <DemoBox
+      :title="t.demoCustomNodeTitle"
+      :description="t.demoCustomNodeDesc"
+      :code="CustomNodeSource"
+    >
       <CustomNodeDiagram />
     </DemoBox>
 
-    <DemoBox :title="t.demoDraggableTitle" :description="t.demoDraggableDesc" :code="DraggableSource">
+    <DemoBox
+      :title="t.demoDraggableTitle"
+      :description="t.demoDraggableDesc"
+      :code="DraggableSource"
+    >
       <DraggableDiagram />
     </DemoBox>
 
@@ -90,11 +117,19 @@ const exposeProps = computed<PropDef[]>(() => [
       <PanZoomDiagram />
     </DemoBox>
 
-    <DemoBox :title="t.demoSelectionTitle" :description="t.demoSelectionDesc" :code="SelectionSource">
+    <DemoBox
+      :title="t.demoSelectionTitle"
+      :description="t.demoSelectionDesc"
+      :code="SelectionSource"
+    >
       <SelectionDiagram />
     </DemoBox>
 
-    <DemoBox :title="t.demoMultiSelectTitle" :description="t.demoMultiSelectDesc" :code="MultiSelectSource">
+    <DemoBox
+      :title="t.demoMultiSelectTitle"
+      :description="t.demoMultiSelectDesc"
+      :code="MultiSelectSource"
+    >
       <MultiSelectDiagram />
     </DemoBox>
 
@@ -102,11 +137,19 @@ const exposeProps = computed<PropDef[]>(() => [
       <UndoRedoDiagram />
     </DemoBox>
 
-    <DemoBox :title="t.demoNodeClickTitle" :description="t.demoNodeClickDesc" :code="NodeClickSource">
+    <DemoBox
+      :title="t.demoNodeClickTitle"
+      :description="t.demoNodeClickDesc"
+      :code="NodeClickSource"
+    >
       <NodeClickDiagram />
     </DemoBox>
 
-    <DemoBox :title="t.demoProgrammaticTitle" :description="t.demoProgrammaticDesc" :code="ProgrammaticSource">
+    <DemoBox
+      :title="t.demoProgrammaticTitle"
+      :description="t.demoProgrammaticDesc"
+      :code="ProgrammaticSource"
+    >
       <ProgrammaticDiagram />
     </DemoBox>
 
@@ -120,6 +163,14 @@ const exposeProps = computed<PropDef[]>(() => [
 
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledDiagram />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoOrthogonalTitle"
+      :description="t.demoOrthogonalDesc"
+      :code="OrthogonalSource"
+    >
+      <OrthogonalDiagram />
     </DemoBox>
 
     <template #api>

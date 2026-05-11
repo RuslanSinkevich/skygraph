@@ -9,6 +9,7 @@ import {
 } from 'react'
 import type {
   CSSProperties,
+  DragEvent as ReactDragEvent,
   ForwardedRef,
   MouseEvent as ReactMouseEvent,
   ReactNode,
@@ -78,6 +79,25 @@ export interface DiagramCanvasContextPoint {
   screenX: number
   /** Browser-screen y (`event.clientY`). */
   screenY: number
+}
+
+/**
+ * Argument passed to {@link DiagramProps.onDropNode} when a draggable
+ * HTML5 element is dropped on the canvas. Combines world-space
+ * coordinates (already adjusted for pan / zoom) with the underlying
+ * `DragEvent` so consumers can pull whatever payload they encoded.
+ */
+export interface DiagramDropPoint {
+  /** World-space x where the cursor was released. */
+  x: number
+  /** World-space y where the cursor was released. */
+  y: number
+  /** Browser-screen x (`event.clientX`). */
+  screenX: number
+  /** Browser-screen y (`event.clientY`). */
+  screenY: number
+  /** The original native `DataTransfer` so the consumer can decode the payload. */
+  dataTransfer: DataTransfer | null
 }
 
 export interface DiagramProps {
@@ -220,6 +240,26 @@ export interface DiagramProps {
    * code keeps working unchanged.
    */
   selectionMode?: DiagramSelectionMode
+
+  /**
+   * Fired when an HTML5 drag-and-drop ends on the canvas. The handler
+   * receives world-space coordinates (already adjusted for pan / zoom)
+   * plus the raw `DataTransfer` so the consumer can decode whatever
+   * payload it set on `dragStart`.
+   *
+   * The wrapper automatically wires `onDragOver = preventDefault` so
+   * drop targets work without extra config. Passing `undefined` leaves
+   * the canvas inert.
+   */
+  onDropNode?: (point: DiagramDropPoint) => void
+  /**
+   * Comma-separated list of MIME types accepted by the canvas. When the
+   * dragged payload doesn't include any of these types, the drop is
+   * ignored (the cursor falls back to "no-drop"). Defaults to
+   * `['application/x-sg-node']` — the convention used by Skygraph
+   * palette items. Pass `'*'` (string) or `null` to accept everything.
+   */
+  dropTypes?: readonly string[] | '*' | null
 }
 
 interface ViewState {
@@ -292,6 +332,8 @@ function buildEdgePath(
   start: Point,
   end: Point,
   obstacles: readonly AABB[] | undefined,
+  sourceBounds: AABB | undefined,
+  targetBounds: AABB | undefined,
   routerOpts: DiagramProps['routingOptions'],
 ): string {
   switch (edge.routing) {
@@ -301,6 +343,8 @@ function buildEdgePath(
         gridSize: routerOpts?.gridSize,
         inflate: routerOpts?.inflate,
         maxNodes: routerOpts?.maxNodes,
+        sourceBounds,
+        targetBounds,
       })
       return pointsToPath(points)
     }
@@ -374,6 +418,8 @@ function DiagramInner(
     defaultSelection,
     onSelectionChange,
     selectionMode = 'single',
+    onDropNode,
+    dropTypes,
   }: DiagramProps,
   forwardedRef: ForwardedRef<DiagramRef>,
 ) {
@@ -699,6 +745,57 @@ function DiagramInner(
     }
   }
 
+  // ─── HTML5 drag-and-drop (palette → canvas) ───────────────────────────────
+  // The wrapper accepts drops by default — see `onDropNode` / `dropTypes`.
+  // `dragover` MUST `preventDefault` for the browser to fire `drop` and
+  // for the cursor to switch out of "no-drop".
+  const acceptedTypes = useMemo<readonly string[] | null>(() => {
+    if (dropTypes === '*' || dropTypes === null) return null
+    if (dropTypes === undefined) return ['application/x-sg-node']
+    return dropTypes
+  }, [dropTypes])
+
+  const dropEnabled = !!onDropNode
+
+  function dragHasAcceptedType(e: ReactDragEvent<HTMLDivElement>): boolean {
+    if (!acceptedTypes) return true
+    const types = e.dataTransfer?.types
+    if (!types || types.length === 0) return false
+    for (const t of acceptedTypes) {
+      // `types` is a DOMStringList in some browsers; `includes` works on the proxy too.
+      for (let i = 0; i < types.length; i++) {
+        if (types[i] === t) return true
+      }
+    }
+    return false
+  }
+
+  function handleDragOver(e: ReactDragEvent<HTMLDivElement>) {
+    if (!dropEnabled) return
+    if (!dragHasAcceptedType(e)) return
+    e.preventDefault()
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy'
+  }
+
+  function handleDrop(e: ReactDragEvent<HTMLDivElement>) {
+    if (!onDropNode) return
+    if (!dragHasAcceptedType(e)) return
+    e.preventDefault()
+    const rect = wrapperRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const sx = e.clientX - rect.left
+    const sy = e.clientY - rect.top
+    const wx = (sx - view.panX) / (view.zoom || 1)
+    const wy = (sy - view.panY) / (view.zoom || 1)
+    onDropNode({
+      x: wx,
+      y: wy,
+      screenX: e.clientX,
+      screenY: e.clientY,
+      dataTransfer: e.dataTransfer,
+    })
+  }
+
   // ─── Context menu plumbing ────────────────────────────────────────────────
   function handleWrapperContextMenu(e: ReactMouseEvent<HTMLDivElement>) {
     if (!onCanvasContextMenu) return
@@ -824,7 +921,10 @@ function DiagramInner(
           : undefined
       }
       onContextMenu={onCanvasContextMenu ? handleWrapperContextMenu : undefined}
+      onDragOver={dropEnabled ? handleDragOver : undefined}
+      onDrop={dropEnabled ? handleDrop : undefined}
       data-selection-mode={selectionMode}
+      data-sg-drop={dropEnabled ? 'true' : undefined}
     >
       <div
         className={unstyled ? undefined : 'sg-diagram-canvas'}
@@ -850,7 +950,8 @@ function DiagramInner(
             renderEdge(
               graph,
               edge,
-              routeAroundNodes ? boundsById : null,
+              boundsById,
+              routeAroundNodes,
               routingOptions,
               edgesInteractive,
               edgesInteractive ? handleEdgeContextMenu(edge) : undefined,
@@ -950,7 +1051,8 @@ function DiagramInner(
 function renderEdge(
   graph: GraphEngine,
   edge: GraphEdge,
-  boundsById: ReadonlyMap<NodeId, AABB> | null,
+  boundsById: ReadonlyMap<NodeId, AABB>,
+  routeAroundNodes: boolean,
   routerOpts: DiagramProps['routingOptions'],
   interactive: boolean,
   onContextMenu: ((e: ReactMouseEvent<SVGPathElement>) => void) | undefined,
@@ -962,9 +1064,10 @@ function renderEdge(
   if (!a || !b) return null
 
   // Build the obstacle list (every node except this edge's two endpoints).
-  // We only do this for `orthogonal` routing — straight/manual ignore it.
+  // We only do this for `orthogonal` routing AND only when `routeAroundNodes`
+  // is on — straight/manual ignore it.
   let obstacles: AABB[] | undefined
-  if (boundsById && edge.routing === 'orthogonal') {
+  if (routeAroundNodes && edge.routing === 'orthogonal') {
     const skip = new Set<NodeId>([edge.from.node, edge.to.node])
     obstacles = []
     for (const [id, bb] of boundsById) {
@@ -972,7 +1075,14 @@ function renderEdge(
     }
   }
 
-  const d = buildEdgePath(edge, a, b, obstacles, routerOpts)
+  // Always pass source/target bounds for orthogonal routing — the router
+  // uses them to pick the side of each rectangle nearest to the other
+  // endpoint, so edges exit from the closest face instead of from a
+  // corner-anchor like `s = 0.25` (NE) / `s = 0.75` (SW).
+  const sourceBounds = edge.routing === 'orthogonal' ? boundsById.get(edge.from.node) : undefined
+  const targetBounds = edge.routing === 'orthogonal' ? boundsById.get(edge.to.node) : undefined
+
+  const d = buildEdgePath(edge, a, b, obstacles, sourceBounds, targetBounds, routerOpts)
 
   if (!interactive) {
     return (
