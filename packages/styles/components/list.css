@@ -72,6 +72,81 @@
   background: var(--sg-color-bg-hover);
 }
 
+/*
+ * Когда пользователь использует `<List.Item>` (или `<sg-list-item>`),
+ * у него уже есть класс `.sg-list-item`. Снаружи обёртка из `renderItemWrapper`
+ * тоже получает `.sg-list-item` (нужен для голых `<div>`-renderItem'ов в Basic/
+ * Sizes/Slots demo). Чтобы при двойной обёртке не удваивались padding/border/
+ * hover, сбрасываем стили внутреннего `.sg-list-item` и растягиваем его на
+ * ширину flex-родителя.
+ */
+.sg-list-item .sg-list-item {
+  padding: 0;
+  border: none;
+  background: transparent;
+  flex: 1;
+  min-width: 0;
+}
+
+.sg-list-item .sg-list-item:hover {
+  background: transparent;
+}
+
+/* ---- Item modifiers ---- */
+.sg-list-item-hoverable {
+  cursor: pointer;
+}
+
+.sg-list-item-selectable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sg-list-item-selected,
+.sg-list-item-selected:hover {
+  background: var(--sg-color-primary-bg, rgba(22, 119, 255, 0.08));
+}
+
+.sg-list-item-dragging {
+  opacity: 0.5;
+}
+
+.sg-list-item-drop-target {
+  box-shadow: inset 0 2px 0 0 var(--sg-color-primary);
+}
+
+/* ---- Virtual scroll ----
+ *
+ * Внутренний контент virtual-режима полностью `position: absolute` (каждая
+ * строка — на своём `top = index * itemHeight`). В flex-контексте (например,
+ * `.demo-box-preview { display: flex }`) и `.sg-list`, и
+ * `.sg-list-virtual-container` без контента в потоке схлопываются до 0 ширины.
+ * Явный `width: 100%` на корне (через модификатор `.sg-list-virtual`) и на
+ * самом scroll-контейнере гарантирует, что они растянутся на всю доступную
+ * ширину родителя.
+ */
+.sg-list-virtual {
+  width: 100%;
+}
+
+.sg-list-virtual-container {
+  width: 100%;
+}
+
+/* ---- Drag handle ---- */
+.sg-list-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  margin-right: var(--sg-padding-sm);
+  color: var(--sg-color-text-secondary);
+  cursor: grab;
+  user-select: none;
+}
+
+.sg-list-drag-handle:active {
+  cursor: grabbing;
+}
+
 .sg-list-item-main {
   flex: 1;
   min-width: 0;
@@ -202,32 +277,66 @@
  * media-override. Так мы обходимся без `!important`.
  */
 @media (max-width: 575px) {
-  .sg-list-grid-xs-1 { --sg-list-grid-columns: repeat(1, 1fr); }
-  .sg-list-grid-xs-2 { --sg-list-grid-columns: repeat(2, 1fr); }
-  .sg-list-grid-xs-3 { --sg-list-grid-columns: repeat(3, 1fr); }
+  .sg-list-grid-xs-1 {
+    --sg-list-grid-columns: repeat(1, 1fr);
+  }
+  .sg-list-grid-xs-2 {
+    --sg-list-grid-columns: repeat(2, 1fr);
+  }
+  .sg-list-grid-xs-3 {
+    --sg-list-grid-columns: repeat(3, 1fr);
+  }
 }
 
 @media (min-width: 576px) and (max-width: 767px) {
-  .sg-list-grid-sm-1 { --sg-list-grid-columns: repeat(1, 1fr); }
-  .sg-list-grid-sm-2 { --sg-list-grid-columns: repeat(2, 1fr); }
-  .sg-list-grid-sm-3 { --sg-list-grid-columns: repeat(3, 1fr); }
-  .sg-list-grid-sm-4 { --sg-list-grid-columns: repeat(4, 1fr); }
+  .sg-list-grid-sm-1 {
+    --sg-list-grid-columns: repeat(1, 1fr);
+  }
+  .sg-list-grid-sm-2 {
+    --sg-list-grid-columns: repeat(2, 1fr);
+  }
+  .sg-list-grid-sm-3 {
+    --sg-list-grid-columns: repeat(3, 1fr);
+  }
+  .sg-list-grid-sm-4 {
+    --sg-list-grid-columns: repeat(4, 1fr);
+  }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
-  .sg-list-grid-md-1 { --sg-list-grid-columns: repeat(1, 1fr); }
-  .sg-list-grid-md-2 { --sg-list-grid-columns: repeat(2, 1fr); }
-  .sg-list-grid-md-3 { --sg-list-grid-columns: repeat(3, 1fr); }
-  .sg-list-grid-md-4 { --sg-list-grid-columns: repeat(4, 1fr); }
-  .sg-list-grid-md-6 { --sg-list-grid-columns: repeat(6, 1fr); }
+  .sg-list-grid-md-1 {
+    --sg-list-grid-columns: repeat(1, 1fr);
+  }
+  .sg-list-grid-md-2 {
+    --sg-list-grid-columns: repeat(2, 1fr);
+  }
+  .sg-list-grid-md-3 {
+    --sg-list-grid-columns: repeat(3, 1fr);
+  }
+  .sg-list-grid-md-4 {
+    --sg-list-grid-columns: repeat(4, 1fr);
+  }
+  .sg-list-grid-md-6 {
+    --sg-list-grid-columns: repeat(6, 1fr);
+  }
 }
 
 @media (min-width: 992px) {
-  .sg-list-grid-lg-1 { --sg-list-grid-columns: repeat(1, 1fr); }
-  .sg-list-grid-lg-2 { --sg-list-grid-columns: repeat(2, 1fr); }
-  .sg-list-grid-lg-3 { --sg-list-grid-columns: repeat(3, 1fr); }
-  .sg-list-grid-lg-4 { --sg-list-grid-columns: repeat(4, 1fr); }
-  .sg-list-grid-lg-6 { --sg-list-grid-columns: repeat(6, 1fr); }
+  .sg-list-grid-lg-1 {
+    --sg-list-grid-columns: repeat(1, 1fr);
+  }
+  .sg-list-grid-lg-2 {
+    --sg-list-grid-columns: repeat(2, 1fr);
+  }
+  .sg-list-grid-lg-3 {
+    --sg-list-grid-columns: repeat(3, 1fr);
+  }
+  .sg-list-grid-lg-4 {
+    --sg-list-grid-columns: repeat(4, 1fr);
+  }
+  .sg-list-grid-lg-6 {
+    --sg-list-grid-columns: repeat(6, 1fr);
+  }
 }
 
 /* ---- Load more ---- */

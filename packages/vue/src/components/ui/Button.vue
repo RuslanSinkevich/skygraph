@@ -91,11 +91,7 @@ function handleClick(evt: MouseEvent) {
     :aria-busy="loading || undefined"
     @click="handleClick"
   >
-    <span
-      v-if="loading"
-      class="sg-button-spin sg-spin sg-spin-small"
-      aria-hidden="true"
-    />
+    <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
     <slot name="icon" />
     <slot />
   </button>

@@ -26,6 +26,8 @@ export interface DatePickerProps {
   open?: boolean
   /** Disables interaction. */
   disabled?: boolean
+  /** Shows a loading spinner and disables interaction. */
+  loading?: boolean
   /** Size token. */
   size?: 'small' | 'middle' | 'large'
   /** Strips built-in styling. */
@@ -40,6 +42,7 @@ const props = withDefaults(defineProps<DatePickerProps>(), {
   allowClear: true,
   size: 'middle',
   disabled: false,
+  loading: false,
 })
 
 const emit = defineEmits<{
@@ -49,14 +52,30 @@ const emit = defineEmits<{
 }>()
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ]
 const DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
-function pad(n: number) { return String(n).padStart(2, '0') }
+function pad(n: number) {
+  return String(n).padStart(2, '0')
+}
 function isSameDay(a: Date, b: Date) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  )
 }
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
@@ -81,14 +100,24 @@ function formatDate(d: Date | null, fmt: string): string {
     .replace('ss', pad(d.getSeconds()))
 }
 
-const fmt = computed(() => props.format ?? (
-  props.showTime ? 'YYYY-MM-DD HH:mm:ss'
-  : props.picker === 'month' ? 'YYYY-MM'
-  : props.picker === 'year' ? 'YYYY'
-  : 'YYYY-MM-DD'
-))
+const fmt = computed(
+  () =>
+    props.format ??
+    (props.showTime
+      ? 'YYYY-MM-DD HH:mm:ss'
+      : props.picker === 'month'
+        ? 'YYYY-MM'
+        : props.picker === 'year'
+          ? 'YYYY'
+          : 'YYYY-MM-DD'),
+)
 
-const initial = props.modelValue !== undefined ? toValidDate(props.modelValue) : (props.value !== undefined ? toValidDate(props.value) : toValidDate(props.defaultValue))
+const initial =
+  props.modelValue !== undefined
+    ? toValidDate(props.modelValue)
+    : props.value !== undefined
+      ? toValidDate(props.value)
+      : toValidDate(props.defaultValue)
 const internal = ref<Date | null>(initial)
 watch(
   () => props.modelValue ?? props.value,
@@ -144,7 +173,7 @@ function handleToday() {
 }
 
 function openDropdown() {
-  if (props.disabled) return
+  if (props.disabled || props.loading) return
   setOpen(true)
 }
 
@@ -157,7 +186,11 @@ function handleOutside(e: MouseEvent) {
 onMounted(() => document.addEventListener('mousedown', handleOutside))
 onBeforeUnmount(() => document.removeEventListener('mousedown', handleOutside))
 
-interface DayCell { date: Date; day: number; inMonth: boolean }
+interface DayCell {
+  date: Date
+  day: number
+  inMonth: boolean
+}
 
 const weeks = computed<DayCell[][]>(() => {
   const y = viewYear.value
@@ -182,15 +215,19 @@ const weeks = computed<DayCell[][]>(() => {
 })
 
 const monthLabel = computed(() => `${MONTH_NAMES[viewMonth.value]} ${viewYear.value}`)
-const displayText = computed(() => current.value ? formatDate(current.value, fmt.value) : '')
+const displayText = computed(() => (current.value ? formatDate(current.value, fmt.value) : ''))
 
 function nextMonth() {
-  if (viewMonth.value === 11) { viewMonth.value = 0; viewYear.value++ }
-  else viewMonth.value++
+  if (viewMonth.value === 11) {
+    viewMonth.value = 0
+    viewYear.value++
+  } else viewMonth.value++
 }
 function prevMonth() {
-  if (viewMonth.value === 0) { viewMonth.value = 11; viewYear.value-- }
-  else viewMonth.value--
+  if (viewMonth.value === 0) {
+    viewMonth.value = 11
+    viewYear.value--
+  } else viewMonth.value--
 }
 
 function cellClass(cell: DayCell) {
@@ -203,7 +240,9 @@ function cellClass(cell: DayCell) {
     selected ? 'sg-dp-cell-selected' : '',
     today ? 'sg-dp-cell-today' : '',
     disabled ? 'sg-dp-cell-disabled' : '',
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 }
 
 const wrapperCls = computed(() =>
@@ -213,7 +252,8 @@ const wrapperCls = computed(() =>
         'sg-datepicker',
         `sg-datepicker-${props.size}`,
         isOpen.value ? 'sg-datepicker-open' : '',
-        props.disabled ? 'sg-datepicker-disabled' : '',
+        props.disabled || props.loading ? 'sg-datepicker-disabled' : '',
+        props.loading ? 'sg-datepicker-loading' : '',
       ]
         .filter(Boolean)
         .join(' '),
@@ -234,7 +274,10 @@ const wrapperCls = computed(() =>
         {{ displayText || placeholder }}
       </span>
       <span class="sg-datepicker-suffix">
-        <span v-if="allowClear && current" class="sg-datepicker-clear" @click="handleClear">×</span>
+        <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
+        <span v-else-if="allowClear && current" class="sg-datepicker-clear" @click="handleClear"
+          >×</span
+        >
       </span>
     </div>
     <div v-if="isOpen" class="sg-dp-dropdown">

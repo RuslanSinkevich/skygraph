@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, watch, onBeforeUnmount, onMounted } from 'vue'
 
+let selectUid = 0
+function genId() {
+  return `sg-select-${++selectUid}`
+}
+
 export interface SelectOption {
   label: string
   value: string | number
   disabled?: boolean
+  loading?: boolean
 }
 
 export interface SelectProps {
@@ -22,6 +28,8 @@ export interface SelectProps {
   multiple?: boolean
   /** Disables editing. */
   disabled?: boolean
+  /** Shows a loading spinner and disables interaction. */
+  loading?: boolean
   /** Size token. */
   size?: 'small' | 'middle' | 'large'
   /** Strips built-in styling (renders native <select>). */
@@ -31,9 +39,11 @@ export interface SelectProps {
 const props = withDefaults(defineProps<SelectProps>(), {
   placeholder: 'Select...',
   multiple: false,
-  size: 'middle',
   disabled: false,
+  loading: false,
+  size: 'middle',
 })
+const listboxId = genId()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string | number | (string | number)[]): void
@@ -61,23 +71,21 @@ watch(
 )
 
 const current = computed<string | number | (string | number)[]>(
-  () => (props.modelValue ?? props.value ?? internal.value),
+  () => props.modelValue ?? props.value ?? internal.value,
 )
 
 const currentSingle = computed(() =>
   props.multiple ? undefined : (current.value as string | number | undefined),
 )
 const currentMultiple = computed<(string | number)[]>(() =>
-  props.multiple ? (current.value as (string | number)[]) ?? [] : [],
+  props.multiple ? ((current.value as (string | number)[]) ?? []) : [],
 )
 
 const selectedOption = computed(() =>
   props.multiple ? undefined : props.options.find((o) => o.value === currentSingle.value),
 )
 const selectedOptions = computed(() =>
-  props.multiple
-    ? props.options.filter((o) => currentMultiple.value.includes(o.value))
-    : [],
+  props.multiple ? props.options.filter((o) => currentMultiple.value.includes(o.value)) : [],
 )
 
 function emitValue(v: typeof internal.value) {
@@ -87,7 +95,7 @@ function emitValue(v: typeof internal.value) {
 }
 
 function handleSelect(opt: SelectOption) {
-  if (opt.disabled) return
+  if (opt.disabled || opt.loading) return
   if (props.multiple) {
     const exists = currentMultiple.value.includes(opt.value)
     const next = exists
@@ -102,9 +110,11 @@ function handleSelect(opt: SelectOption) {
 
 function handleRemoveTag(val: string | number, e: Event) {
   e.stopPropagation()
-  if (props.disabled) return
+  if (props.disabled || props.loading) return
   emitValue(currentMultiple.value.filter((v) => v !== val))
 }
+
+const isDisabled = computed(() => props.disabled || props.loading)
 
 function isOptionSelected(opt: SelectOption) {
   return props.multiple
@@ -127,7 +137,8 @@ const wrapperClass = computed(() =>
     `sg-select-${props.size}`,
     props.multiple ? 'sg-select-multiple' : '',
     open.value ? 'sg-select-open' : '',
-    props.disabled ? 'sg-select-disabled' : '',
+    isDisabled.value ? 'sg-select-disabled' : '',
+    props.loading ? 'sg-select-loading' : '',
   ]
     .filter(Boolean)
     .join(' '),
@@ -156,36 +167,31 @@ function onNativeChange(e: Event) {
     v-if="unstyled"
     :multiple="multiple"
     :value="multiple ? (currentMultiple as unknown as string) : (currentSingle as string)"
-    :disabled="disabled"
+    :disabled="isDisabled"
     @change="onNativeChange"
     @blur="emit('blur')"
   >
     <option v-if="!multiple && !selectedOption" value="">{{ placeholder }}</option>
-    <option
-      v-for="opt in options"
-      :key="opt.value"
-      :value="opt.value"
-      :disabled="opt.disabled"
-    >{{ opt.label }}</option>
+    <option v-for="opt in options" :key="opt.value" :value="opt.value" :disabled="opt.disabled">
+      {{ opt.label }}
+    </option>
   </select>
-  <div
-    v-else
-    ref="wrapperRef"
-    :class="wrapperClass"
-    @blur="emit('blur')"
-  >
+  <div v-else ref="wrapperRef" :class="wrapperClass" @blur="emit('blur')">
     <div
       class="sg-select-selector"
       role="combobox"
       :aria-expanded="open"
       aria-haspopup="listbox"
+      :aria-controls="listboxId"
       :aria-multiselectable="multiple || undefined"
-      :aria-disabled="disabled || undefined"
-      :tabindex="disabled ? -1 : 0"
-      @click="!disabled && (open = !open)"
+      :aria-disabled="isDisabled || undefined"
+      :tabindex="isDisabled ? -1 : 0"
+      @click="!isDisabled && (open = !open)"
     >
       <template v-if="multiple">
-        <span v-if="selectedOptions.length === 0" class="sg-select-placeholder">{{ placeholder }}</span>
+        <span v-if="selectedOptions.length === 0" class="sg-select-placeholder">{{
+          placeholder
+        }}</span>
         <span v-else class="sg-select-tags">
           <span v-for="opt in selectedOptions" :key="opt.value" class="sg-select-tag">
             <span class="sg-select-tag-label">{{ opt.label }}</span>
@@ -195,7 +201,9 @@ function onNativeChange(e: Event) {
               :aria-label="`Remove ${opt.label}`"
               tabindex="-1"
               @click="(e) => handleRemoveTag(opt.value, e)"
-            >×</button>
+            >
+              ×
+            </button>
           </span>
         </span>
       </template>
@@ -204,9 +212,16 @@ function onNativeChange(e: Event) {
           {{ selectedOption?.label ?? placeholder }}
         </span>
       </template>
-      <span class="sg-select-arrow">{{ open ? '▲' : '▼' }}</span>
+      <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
+      <span v-else class="sg-select-arrow">{{ open ? '▲' : '▼' }}</span>
     </div>
-    <div v-if="open" class="sg-select-dropdown" role="listbox">
+    <div
+      v-if="open"
+      :id="listboxId"
+      class="sg-select-dropdown"
+      role="listbox"
+      :aria-multiselectable="multiple || undefined"
+    >
       <div
         v-for="opt in options"
         :key="opt.value"
@@ -215,11 +230,13 @@ function onNativeChange(e: Event) {
         :class="[
           'sg-select-option',
           isOptionSelected(opt) ? 'sg-select-option-selected' : '',
-          opt.disabled ? 'sg-select-option-disabled' : '',
+          opt.disabled || opt.loading ? 'sg-select-option-disabled' : '',
+          opt.loading ? 'sg-select-option-loading' : '',
         ]"
         @click="handleSelect(opt)"
       >
         <span>{{ opt.label }}</span>
+        <span v-if="opt.loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
       </div>
     </div>
   </div>

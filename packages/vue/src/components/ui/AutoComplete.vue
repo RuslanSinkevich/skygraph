@@ -21,6 +21,8 @@ export interface AutoCompleteProps {
   placeholder?: string
   /** Disables editing. */
   disabled?: boolean
+  /** Shows a loading spinner and disables interaction. */
+  loading?: boolean
   /** Size token. */
   size?: 'small' | 'middle' | 'large'
   /** Strips built-in styling. */
@@ -28,9 +30,12 @@ export interface AutoCompleteProps {
 }
 
 const props = withDefaults(defineProps<AutoCompleteProps>(), {
-  size: 'middle',
   disabled: false,
+  loading: false,
+  size: 'middle',
 })
+
+const isDisabled = computed(() => props.disabled || props.loading)
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
@@ -87,7 +92,13 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', handleOutside))
 const wrapperClass = computed(() =>
   props.unstyled
     ? ''
-    : ['sg-autocomplete', `sg-autocomplete-${props.size}`].filter(Boolean).join(' '),
+    : [
+        'sg-autocomplete',
+        `sg-autocomplete-${props.size}`,
+        props.loading ? 'sg-autocomplete-loading' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
 )
 </script>
 
@@ -102,11 +113,12 @@ const wrapperClass = computed(() =>
         :class="unstyled ? '' : `sg-input sg-input-${size}`"
         :value="current"
         :placeholder="placeholder"
-        :disabled="disabled"
+        :disabled="isDisabled"
         @input="handleInput"
         @focus="open = true"
         @blur="emit('blur')"
       />
+      <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
     </span>
     <div v-if="open && filtered.length > 0" :class="unstyled ? '' : 'sg-autocomplete-dropdown'">
       <div
@@ -114,7 +126,9 @@ const wrapperClass = computed(() =>
         :key="opt.value"
         :class="unstyled ? '' : 'sg-autocomplete-option'"
         @mousedown="handleSelect(opt)"
-      >{{ opt.label ?? opt.value }}</div>
+      >
+        {{ opt.label ?? opt.value }}
+      </div>
     </div>
   </div>
 </template>

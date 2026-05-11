@@ -12,12 +12,15 @@ export interface CheckboxProps {
   indeterminate?: boolean
   /** Disables interaction. */
   disabled?: boolean
+  /** Shows a loading spinner and disables interaction. */
+  loading?: boolean
   /** Strips built-in styling. */
   unstyled?: boolean
 }
 
 const props = withDefaults(defineProps<CheckboxProps>(), {
   disabled: false,
+  loading: false,
 })
 
 const emit = defineEmits<{
@@ -59,7 +62,13 @@ function onChange(e: Event) {
 const wrapperClass = computed(() =>
   props.unstyled
     ? ''
-    : ['sg-checkbox', props.disabled ? 'sg-checkbox-disabled' : ''].filter(Boolean).join(' '),
+    : [
+        'sg-checkbox',
+        props.disabled || props.loading ? 'sg-checkbox-disabled' : '',
+        props.loading ? 'sg-checkbox-loading' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
 )
 
 const slots = useSlots()
@@ -74,11 +83,12 @@ const hasDefaultSlot = computed(() => slots.default !== undefined)
       :class="unstyled ? '' : 'sg-checkbox-input'"
       :aria-checked="current"
       :checked="current"
-      :disabled="disabled"
+      :disabled="disabled || loading"
       @change="onChange"
     />
     <span v-if="hasDefaultSlot" :class="unstyled ? '' : 'sg-checkbox-label'">
       <slot />
     </span>
+    <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
   </label>
 </template>

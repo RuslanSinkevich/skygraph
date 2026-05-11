@@ -10,6 +10,8 @@ export interface SwitchProps {
   defaultChecked?: boolean
   /** Disables interaction. */
   disabled?: boolean
+  /** Shows a loading spinner and disables interaction. */
+  loading?: boolean
   /** Size token. */
   size?: 'small' | 'middle' | 'large'
   /** Strips built-in styling. */
@@ -18,6 +20,7 @@ export interface SwitchProps {
 
 const props = withDefaults(defineProps<SwitchProps>(), {
   disabled: false,
+  loading: false,
   size: 'middle',
 })
 
@@ -43,7 +46,7 @@ watch(
 const isChecked = computed(() => props.modelValue ?? props.checked ?? internal.value)
 
 function handleClick() {
-  if (props.disabled) return
+  if (props.disabled || props.loading) return
   const next = !isChecked.value
   internal.value = next
   emit('update:modelValue', next)
@@ -56,7 +59,8 @@ const classes = computed(() =>
     'sg-switch',
     `sg-switch-${switchSizeClass.value}`,
     isChecked.value ? 'sg-switch-checked' : '',
-    props.disabled ? 'sg-switch-disabled' : '',
+    props.disabled || props.loading ? 'sg-switch-disabled' : '',
+    props.loading ? 'sg-switch-loading' : '',
   ]
     .filter(Boolean)
     .join(' '),
@@ -67,19 +71,25 @@ const classes = computed(() =>
   <button
     role="switch"
     :aria-checked="isChecked"
-    :disabled="disabled"
+    :disabled="disabled || loading"
     :class="unstyled ? '' : classes"
     type="button"
     @click="handleClick"
   >
     <template v-if="unstyled">
-      <slot v-if="isChecked" name="checkedChildren" />
-      <slot v-else name="unCheckedChildren" />
+      <span v-if="loading" class="sg-spin sg-spin-small" aria-hidden="true" />
+      <template v-else>
+        <slot v-if="isChecked" name="checkedChildren" />
+        <slot v-else name="unCheckedChildren" />
+      </template>
     </template>
     <template v-else>
       <span class="sg-switch-inner">
-        <slot v-if="isChecked" name="checkedChildren" />
-        <slot v-else name="unCheckedChildren" />
+        <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
+        <template v-else>
+          <slot v-if="isChecked" name="checkedChildren" />
+          <slot v-else name="unCheckedChildren" />
+        </template>
       </span>
       <span class="sg-switch-handle" />
     </template>

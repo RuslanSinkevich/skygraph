@@ -63,7 +63,9 @@ const emit = defineEmits<{
   (e: 'remove', file: UploadFile): void
 }>()
 
-const internal = ref<UploadFile[]>(props.modelValue ?? props.fileList ?? props.defaultFileList ?? [])
+const internal = ref<UploadFile[]>(
+  props.modelValue ?? props.fileList ?? props.defaultFileList ?? [],
+)
 watch(
   () => props.modelValue ?? props.fileList,
   (v) => {
@@ -150,7 +152,9 @@ function onDragOver(e: DragEvent) {
   if (props.disabled) return
   isDragging.value = true
 }
-function onDragLeave() { isDragging.value = false }
+function onDragLeave() {
+  isDragging.value = false
+}
 
 function onInputChange(e: Event) {
   const target = e.target as HTMLInputElement
@@ -182,7 +186,7 @@ const wrapperCls = computed(() =>
       :multiple="multiple"
       :accept="accept"
       :disabled="disabled"
-      style="display:none"
+      style="display: none"
       @change="onInputChange"
     />
     <div
@@ -206,11 +210,24 @@ const wrapperCls = computed(() =>
       </slot>
     </div>
     <ul v-if="showUploadList && files.length > 0" class="sg-upload-list">
-      <li v-for="file in files" :key="file.uid" :class="['sg-upload-list-item', `sg-upload-list-item-${file.status}`]">
+      <li
+        v-for="file in files"
+        :key="file.uid"
+        :class="['sg-upload-list-item', `sg-upload-list-item-${file.status}`]"
+      >
         <span class="sg-upload-list-item-name">{{ file.name }}</span>
-        <span v-if="file.status === 'uploading'" class="sg-upload-list-item-progress">{{ file.percent ?? 0 }}%</span>
+        <span
+          v-if="file.status === 'uploading' && !unstyled"
+          class="sg-spin sg-spin-small"
+          aria-hidden="true"
+        />
+        <span v-if="file.status === 'uploading'" class="sg-upload-list-item-progress"
+          >{{ file.percent ?? 0 }}%</span
+        >
         <span class="sg-upload-list-item-actions">
-          <button type="button" class="sg-upload-list-item-remove" @click="handleRemove(file)">×</button>
+          <button type="button" class="sg-upload-list-item-remove" @click="handleRemove(file)">
+            ×
+          </button>
         </span>
       </li>
     </ul>

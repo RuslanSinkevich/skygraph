@@ -20,6 +20,8 @@ export interface RadioGroupProps {
   direction?: 'horizontal' | 'vertical'
   /** Disables all options. */
   disabled?: boolean
+  /** Shows a loading spinner next to the selected option and disables interaction. */
+  loading?: boolean
   /** Strips built-in styling. */
   unstyled?: boolean
 }
@@ -27,6 +29,7 @@ export interface RadioGroupProps {
 const props = withDefaults(defineProps<RadioGroupProps>(), {
   direction: 'horizontal',
   disabled: false,
+  loading: false,
 })
 
 const emit = defineEmits<{
@@ -48,7 +51,7 @@ watch(
 const current = computed(() => props.modelValue ?? props.value ?? internal.value)
 
 function select(opt: RadioOption) {
-  if (opt.disabled || props.disabled) return
+  if (opt.disabled || props.disabled || props.loading) return
   internal.value = opt.value
   emit('update:modelValue', opt.value)
   emit('change', opt.value)
@@ -57,7 +60,13 @@ function select(opt: RadioOption) {
 const groupClass = computed(() =>
   props.unstyled
     ? ''
-    : ['sg-radio-group', `sg-radio-group-${props.direction}`].filter(Boolean).join(' '),
+    : [
+        'sg-radio-group',
+        `sg-radio-group-${props.direction}`,
+        props.loading ? 'sg-radio-group-loading' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
 )
 </script>
 
@@ -72,7 +81,7 @@ const groupClass = computed(() =>
           : [
               'sg-radio',
               current === opt.value ? 'sg-radio-checked' : '',
-              opt.disabled || disabled ? 'sg-radio-disabled' : '',
+              opt.disabled || disabled || loading ? 'sg-radio-disabled' : '',
             ]
               .filter(Boolean)
               .join(' ')
@@ -84,10 +93,15 @@ const groupClass = computed(() =>
         :class="unstyled ? '' : 'sg-radio-input'"
         :aria-checked="current === opt.value"
         :checked="current === opt.value"
-        :disabled="opt.disabled || disabled"
+        :disabled="opt.disabled || disabled || loading"
         @change="select(opt)"
       />
       <span :class="unstyled ? '' : 'sg-radio-label'">{{ opt.label }}</span>
+      <span
+        v-if="loading && current === opt.value && !unstyled"
+        class="sg-spin sg-spin-small"
+        aria-hidden="true"
+      />
     </label>
   </div>
 </template>

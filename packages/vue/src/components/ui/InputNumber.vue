@@ -20,6 +20,8 @@ export interface InputNumberProps {
   placeholder?: string
   /** Disables editing. */
   disabled?: boolean
+  /** Shows a loading spinner. */
+  loading?: boolean
   /** Size token. */
   size?: 'small' | 'middle' | 'large'
   /** Strips built-in styling. */
@@ -30,6 +32,7 @@ const props = withDefaults(defineProps<InputNumberProps>(), {
   step: 1,
   size: 'middle',
   disabled: false,
+  loading: false,
 })
 
 const emit = defineEmits<{
@@ -38,8 +41,7 @@ const emit = defineEmits<{
   (e: 'blur'): void
 }>()
 
-const initial: number | null =
-  props.modelValue ?? props.value ?? props.defaultValue ?? null
+const initial: number | null = props.modelValue ?? props.value ?? props.defaultValue ?? null
 const internalValue = ref<number | null>(initial)
 
 watch(
@@ -54,7 +56,15 @@ const currentValue = computed<number | null>(
 )
 
 const wrapperClass = computed(() =>
-  props.unstyled ? '' : ['sg-input-number', `sg-input-number-${props.size}`].join(' '),
+  props.unstyled
+    ? ''
+    : [
+        'sg-input-number',
+        `sg-input-number-${props.size}`,
+        props.loading ? 'sg-input-number-loading' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
 )
 
 function clamp(v: number): number {
@@ -85,12 +95,12 @@ function onInput(e: Event) {
 }
 
 function increment() {
-  if (props.disabled) return
+  if (props.disabled || props.loading) return
   update((currentValue.value ?? 0) + props.step)
 }
 
 function decrement() {
-  if (props.disabled) return
+  if (props.disabled || props.loading) return
   update((currentValue.value ?? 0) - props.step)
 }
 
@@ -106,10 +116,12 @@ const maxDisabled = computed(
   <span :class="wrapperClass">
     <button
       :class="unstyled ? '' : 'sg-input-number-btn sg-input-number-minus'"
-      :disabled="disabled || minDisabled"
+      :disabled="disabled || loading || minDisabled"
       tabindex="-1"
       @click="decrement"
-    >−</button>
+    >
+      −
+    </button>
     <input
       type="text"
       inputmode="numeric"
@@ -120,15 +132,18 @@ const maxDisabled = computed(
       :class="unstyled ? '' : 'sg-input-number-input'"
       :value="currentValue ?? ''"
       :placeholder="placeholder"
-      :disabled="disabled"
+      :disabled="disabled || loading"
       @input="onInput"
       @blur="emit('blur')"
     />
     <button
       :class="unstyled ? '' : 'sg-input-number-btn sg-input-number-plus'"
-      :disabled="disabled || maxDisabled"
+      :disabled="disabled || loading || maxDisabled"
       tabindex="-1"
       @click="increment"
-    >+</button>
+    >
+      +
+    </button>
+    <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
   </span>
 </template>

@@ -25,7 +25,7 @@ describe('SgTable', () => {
       },
     })
     const wrapper = mount(Wrapper)
-    const rows = wrapper.findAll('tbody tr')
+    const rows = wrapper.findAll('.sg-table-row-clickable')
     expect(rows.length).toBe(3)
     expect(wrapper.text()).toContain('Alice')
     expect(wrapper.text()).toContain('Engineer')
@@ -52,15 +52,15 @@ describe('SgTable', () => {
       },
     })
     const wrapper = mount(Wrapper)
-    const ageHeader = wrapper.findAll('th.sg-table-header-cell-sortable')[1]
+    const ageHeader = wrapper.findAll('.sg-table-th-sortable')[1]
     await ageHeader.trigger('click')
-    let firstCell = wrapper.findAll('tbody tr')[0].findAll('td')[1]
+    let firstCell = wrapper.findAll('.sg-table-row-clickable')[0].findAll('.sg-table-td')[1]
     expect(firstCell.text()).toBe('25') // asc
     await ageHeader.trigger('click')
-    firstCell = wrapper.findAll('tbody tr')[0].findAll('td')[1]
+    firstCell = wrapper.findAll('.sg-table-row-clickable')[0].findAll('.sg-table-td')[1]
     expect(firstCell.text()).toBe('35') // desc
     await ageHeader.trigger('click')
-    firstCell = wrapper.findAll('tbody tr')[0].findAll('td')[1]
+    firstCell = wrapper.findAll('.sg-table-row-clickable')[0].findAll('.sg-table-td')[1]
     expect(firstCell.text()).toBe('30') // back to original order (insertion)
   })
 
@@ -73,11 +73,11 @@ describe('SgTable', () => {
       },
     })
     const wrapper = mount(Wrapper)
-    expect(wrapper.findAll('tbody tr').length).toBe(3)
+    expect(wrapper.findAll('.sg-table-row-clickable').length).toBe(3)
     const input = wrapper.find('.sg-table-search-input')
     await input.setValue('Bob')
     await nextTick()
-    const rows = wrapper.findAll('tbody tr')
+    const rows = wrapper.findAll('.sg-table-row-clickable')
     expect(rows.length).toBe(1)
     expect(rows[0].text()).toContain('Bob')
   })
@@ -103,7 +103,7 @@ describe('SgTable', () => {
       template: `<SgTable :columns="cols" :data="data" :row-selection="rowSelection" />`,
     })
     const wrapper = mount(Wrapper)
-    const cb = wrapper.findAll('tbody input[type="checkbox"]')[0]
+    const cb = wrapper.findAll('.sg-table-row-clickable input[type="checkbox"]')[0]
     await cb.trigger('change')
     expect(lastChange).not.toBeNull()
     expect(lastChange!.keys).toEqual(['1'])
@@ -122,11 +122,11 @@ describe('SgTable', () => {
       },
     })
     const wrapper = mount(Wrapper)
-    expect(wrapper.findAll('tbody tr').length).toBe(10)
+    expect(wrapper.findAll('.sg-table-row-clickable').length).toBe(10)
     const next = wrapper.find('.sg-table-pagination-next')
     await next.trigger('click')
     await nextTick()
-    expect(wrapper.findAll('tbody tr').length).toBe(10)
+    expect(wrapper.findAll('.sg-table-row-clickable').length).toBe(10)
     // Should now show users from page 2
     expect(wrapper.text()).toContain('User 10')
   })
@@ -150,11 +150,11 @@ describe('SgTable', () => {
       },
     })
     const wrapper = mount(Wrapper)
-    expect(wrapper.findAll('tbody tr').length).toBe(3)
+    expect(wrapper.findAll('.sg-table-row-clickable').length).toBe(3)
     const select = wrapper.find('.sg-table-filter-select')
     await select.setValue('Engineer')
     await nextTick()
-    const rows = wrapper.findAll('tbody tr')
+    const rows = wrapper.findAll('.sg-table-row-clickable')
     expect(rows.length).toBe(1)
     expect(rows[0].text()).toContain('Engineer')
   })
@@ -174,7 +174,7 @@ describe('SgTable', () => {
       },
     })
     const wrapper = mount(Wrapper)
-    const row = wrapper.findAll('tbody tr')[0]
+    const row = wrapper.findAll('.sg-table-row-clickable')[0]
     await row.trigger('click')
     expect(captured.value?.id).toBe('1')
   })

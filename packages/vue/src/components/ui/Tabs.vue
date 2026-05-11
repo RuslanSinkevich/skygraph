@@ -48,9 +48,7 @@ defineSlots<{
 const { resolvedSize } = useConfigWithDefaults({ size: undefined }, {})
 const realSize = computed<SizeType>(() => props.size ?? resolvedSize.value)
 
-const internal = ref(
-  props.activeKey ?? props.defaultActiveKey ?? props.items[0]?.key ?? '',
-)
+const internal = ref(props.activeKey ?? props.defaultActiveKey ?? props.items[0]?.key ?? '')
 const currentKey = computed(() => props.activeKey ?? internal.value)
 const activeItem = computed(() => props.items.find((i) => i.key === currentKey.value))
 
@@ -131,7 +129,7 @@ const rootClasses = computed(() =>
         @keydown="onKeyDown($event, item)"
       >
         <slot name="tab" :item="item">{{ item.label }}</slot>
-        <span v-if="item.loading" class="sg-spin sg-spin-small" aria-hidden="true" />
+        <span v-if="item.loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
       </div>
     </div>
     <div class="sg-tabs-content" role="tabpanel">

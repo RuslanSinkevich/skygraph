@@ -16,6 +16,8 @@ export interface ButtonProps {
   disabled?: boolean
   /** Shows a loading spinner and disables interaction. */
   loading?: boolean
+  /** Strips built-in styles when true. */
+  unstyled?: boolean
 }
 
 const props = withDefaults(defineProps<ButtonProps>(), {
@@ -26,6 +28,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   block: false,
   disabled: false,
   loading: false,
+  unstyled: false,
 })
 
 const emit = defineEmits<{
@@ -37,8 +40,9 @@ defineSlots<{
   icon(props: Record<string, never>): unknown
 }>()
 
-const classes = computed(() =>
-  [
+const classes = computed(() => {
+  if (props.unstyled) return ''
+  return [
     'sg-button',
     `sg-button-${props.type}`,
     `sg-button-${props.size}`,
@@ -47,8 +51,8 @@ const classes = computed(() =>
     props.loading ? 'sg-button-loading' : '',
   ]
     .filter(Boolean)
-    .join(' '),
-)
+    .join(' ')
+})
 
 const isDisabled = computed(() => props.disabled || props.loading)
 
@@ -68,10 +72,10 @@ function handleClick(evt: MouseEvent) {
     :class="classes"
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
-    :aria-busy="loading"
+    :aria-busy="loading || undefined"
     @click="handleClick"
   >
-    <span v-if="loading" class="sg-button-spin sg-spin sg-spin-small" aria-hidden="true" />
+    <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
     <slot name="icon" />
     <slot />
   </button>

@@ -60,7 +60,6 @@ const wrapperClasses = computed(() =>
         `sg-input-wrapper-${props.size}`,
         props.loading ? 'sg-input-wrapper-loading' : '',
         props.readOnly ? 'sg-input-wrapper-readonly' : '',
-        props.disabled ? 'sg-input-wrapper-disabled' : '',
         props.status ? `sg-input-wrapper-status-${props.status}` : '',
       ]
         .filter(Boolean)
@@ -128,13 +127,10 @@ const hasSuffix = computed(() => Boolean(slots.suffix))
       @focus="onFocus"
       @blur="onBlur"
     />
-    <button
-      v-if="showClear"
-      type="button"
-      class="sg-input-clear"
-      aria-label="Clear"
-      @click="clear"
-    >×</button>
+    <button v-if="showClear" type="button" class="sg-input-clear" aria-label="Clear" @click="clear">
+      ×
+    </button>
+    <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
     <span v-if="hasSuffix" class="sg-input-suffix">
       <slot name="suffix" />
     </span>

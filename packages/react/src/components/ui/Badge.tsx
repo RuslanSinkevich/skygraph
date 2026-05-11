@@ -41,13 +41,14 @@ export function Badge({
   unstyled,
 }: BadgeProps) {
   const hasCount = count !== undefined && (count > 0 || showZero)
-  const displayCount = hasCount
-    ? count! > overflowCount ? `${overflowCount}+` : `${count}`
-    : null
+  const displayCount = hasCount ? (count! > overflowCount ? `${overflowCount}+` : `${count}`) : null
 
   if (unstyled) {
     return (
-      <span className={className} style={{ position: 'relative', display: 'inline-block', ...style }}>
+      <span
+        className={className}
+        style={{ position: 'relative', display: 'inline-block', ...style }}
+      >
         {children}
         {(dot || hasCount) && <sup>{displayCount}</sup>}
         {status && <span>{text}</span>}
@@ -67,15 +68,22 @@ export function Badge({
     )
   }
 
-  const offsetStyle: React.CSSProperties | undefined = offset
-    ? { right: -offset[0], marginTop: offset[1] }
-    : undefined
+  const isStandalone = !children && (hasCount || dot)
+  const offsetStyle: React.CSSProperties | undefined =
+    offset && !isStandalone ? { right: -offset[0], marginTop: offset[1] } : undefined
 
   return (
-    <span className={['sg-badge', className].filter(Boolean).join(' ')}>
+    <span
+      className={['sg-badge', isStandalone && 'sg-badge-standalone', className]
+        .filter(Boolean)
+        .join(' ')}
+    >
       {children}
       {dot && !hasCount && (
-        <sup className="sg-badge-dot" style={{ ...offsetStyle, ...(color ? { background: color } : {}) }} />
+        <sup
+          className="sg-badge-dot"
+          style={{ ...offsetStyle, ...(color ? { background: color } : {}) }}
+        />
       )}
       {hasCount && (
         <sup

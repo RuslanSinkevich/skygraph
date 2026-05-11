@@ -20,6 +20,8 @@ export interface TextareaProps {
   id?: string
   /** Disables editing. */
   disabled?: boolean
+  /** Shows a loading spinner. */
+  loading?: boolean
   /** Size token. */
   size?: 'small' | 'middle' | 'large'
   /** Strips built-in styling. */
@@ -30,6 +32,7 @@ const props = withDefaults(defineProps<TextareaProps>(), {
   rows: 4,
   size: 'middle',
   disabled: false,
+  loading: false,
 })
 
 const emit = defineEmits<{
@@ -53,7 +56,13 @@ const currentValue = computed(() => props.modelValue ?? props.value ?? internalV
 const wrapperClass = computed(() =>
   props.unstyled
     ? ''
-    : ['sg-textarea-wrapper', `sg-textarea-${props.size}`].filter(Boolean).join(' '),
+    : [
+        'sg-textarea-wrapper',
+        `sg-textarea-${props.size}`,
+        props.loading ? 'sg-textarea-wrapper-loading' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
 )
 
 function onInput(e: Event) {
@@ -76,12 +85,13 @@ function onInput(e: Event) {
       :value="currentValue"
       :placeholder="placeholder"
       :rows="rows"
-      :disabled="disabled"
-      :aria-disabled="disabled"
+      :disabled="disabled || loading"
+      :aria-disabled="disabled || loading"
       @input="onInput"
       @blur="emit('blur')"
       @focus="emit('focus')"
     />
+    <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
     <span v-if="showCount && !unstyled" class="sg-textarea-count">
       {{ currentValue.length }}{{ maxLength ? ` / ${maxLength}` : '' }}
     </span>

@@ -1,10 +1,6 @@
 <script setup lang="ts" generic="T">
 import { computed, ref, useSlots } from 'vue'
-import type {
-  ListProps,
-  ListClassNames,
-  ListStyles,
-} from './types'
+import type { ListProps, ListClassNames, ListStyles } from './types'
 
 const props = withDefaults(defineProps<ListProps<T>>(), {
   loading: false,
@@ -50,9 +46,7 @@ const dropIndex = ref<number | null>(null)
 const scrollTop = ref(0)
 const virtualEl = ref<HTMLDivElement | null>(null)
 
-const selectedKeys = computed<number[]>(
-  () => props.selectedKeys ?? internalSelectedKeys.value,
-)
+const selectedKeys = computed<number[]>(() => props.selectedKeys ?? internalSelectedKeys.value)
 
 const pageSize = computed(() =>
   props.pagination ? (props.pagination.pageSize ?? 10) : props.dataSource.length,
@@ -95,7 +89,11 @@ function handleItemClick(item: T, index: number, e: MouseEvent) {
   }
 
   internalSelectedKeys.value = next
-  emit('selectionChange', next, next.map((k) => props.dataSource[k]))
+  emit(
+    'selectionChange',
+    next,
+    next.map((k) => props.dataSource[k]),
+  )
 }
 
 function handleDragStart(e: DragEvent, index: number) {
@@ -178,11 +176,13 @@ function rowCls(item: T, index: number): string {
   const isSelected = props.selectable && selectedKeys.value.includes(index)
   const isDragging = dragIndex.value === index
   const isDropTarget = dropIndex.value === index && dragIndex.value !== index
-  const extra = typeof props.rowClassName === 'function'
-    ? props.rowClassName(item, index)
-    : (props.rowClassName ?? '')
+  const extra =
+    typeof props.rowClassName === 'function'
+      ? props.rowClassName(item, index)
+      : (props.rowClassName ?? '')
 
   return [
+    'sg-list-item',
     props.selectable ? 'sg-list-item-selectable' : '',
     isSelected ? 'sg-list-item-selected' : '',
     props.hoverable ? 'sg-list-item-hoverable' : '',
@@ -190,7 +190,9 @@ function rowCls(item: T, index: number): string {
     isDropTarget ? 'sg-list-item-drop-target' : '',
     sCls.value.item ?? '',
     extra,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 }
 
 const wrapperClass = computed(() => {
@@ -206,7 +208,9 @@ const wrapperClass = computed(() => {
     props.draggable ? 'sg-list-draggable' : '',
     gridResponsiveClass.value,
     sCls.value.root ?? '',
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 })
 
 const itemsContainerClass = computed(() =>
@@ -232,7 +236,7 @@ defineExpose({
     </div>
 
     <div v-if="loading" class="sg-list-loading-indicator" role="status" aria-live="polite">
-      <span class="sg-spin sg-spin-default" aria-label="Loading" />
+      <span v-if="!unstyled" class="sg-spin sg-spin-default" aria-label="Loading" />
     </div>
 
     <div
@@ -251,7 +255,9 @@ defineExpose({
       @scroll="handleVirtualScroll"
     >
       <div :style="{ height: `${virtualSlice.totalHeight}px`, position: 'relative' }">
-        <div :style="{ position: 'absolute', top: `${virtualSlice.offsetTop}px`, left: 0, right: 0 }">
+        <div
+          :style="{ position: 'absolute', top: `${virtualSlice.offsetTop}px`, left: 0, right: 0 }"
+        >
           <div
             v-for="(item, i) in paginatedData.slice(virtualSlice.startIndex, virtualSlice.endIndex)"
             :key="virtualSlice.startIndex + i"
@@ -274,7 +280,7 @@ defineExpose({
 
     <div
       v-else
-      :class="(grid || sCls.items) ? itemsContainerClass : undefined"
+      :class="grid || sCls.items ? itemsContainerClass : undefined"
       :style="grid ? { ...gridStyle, ...sSty.items } : sSty.items"
     >
       <div

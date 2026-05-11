@@ -33,6 +33,9 @@ const emit = defineEmits<{
   (e: 'change', value: number): void
 }>()
 
+const ariaLabel = 'Rating'
+const starLabel = (n: number) => `${n} star${n > 1 ? 's' : ''}`
+
 const internal = ref<number>(props.modelValue ?? props.value ?? props.defaultValue)
 const hoverValue = ref<number | null>(null)
 
@@ -97,30 +100,27 @@ const wrapperClass = computed(() =>
 function classFor(starIndex: number) {
   const isFull = display.value >= starIndex
   const isHalf = props.allowHalf && display.value >= starIndex - 0.5 && display.value < starIndex
-  return [
-    'sg-rate-star',
-    isFull ? 'sg-rate-star-full' : '',
-    isHalf ? 'sg-rate-star-half' : '',
-  ]
+  return ['sg-rate-star', isFull ? 'sg-rate-star-full' : '', isHalf ? 'sg-rate-star-half' : '']
     .filter(Boolean)
     .join(' ')
 }
 </script>
 
 <template>
-  <div :class="wrapperClass" role="radiogroup" aria-label="Rating">
+  <div :class="wrapperClass" role="radiogroup" :aria-label="ariaLabel">
     <span
       v-for="i in count"
       :key="i"
       :class="unstyled ? '' : classFor(i)"
       role="radio"
       :aria-checked="display >= i"
-      :aria-label="`${i} star${i > 1 ? 's' : ''}`"
+      :aria-label="starLabel(i)"
       :tabindex="disabled ? -1 : 0"
       @click="(e) => clickStar(i, e)"
       @mousemove="(e) => hoverStar(i, e)"
       @mouseleave="!disabled && (hoverValue = null)"
       @keydown="(e) => onKey(i, e)"
-    >{{ character }}</span>
+      >{{ character }}</span
+    >
   </div>
 </template>

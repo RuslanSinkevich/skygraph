@@ -33,17 +33,17 @@ defineSlots<{
 const slots = useSlots()
 const hasChildren = computed(() => Boolean(slots.default))
 
-const hasCount = computed(
-  () => props.count !== undefined && (props.count > 0 || props.showZero),
-)
+const hasCount = computed(() => props.count !== undefined && (props.count > 0 || props.showZero))
 
 const displayCount = computed(() => {
   if (!hasCount.value) return null
   return props.count! > props.overflowCount ? `${props.overflowCount}+` : `${props.count}`
 })
 
+const isStandalone = computed(() => !hasChildren.value && (hasCount.value || Boolean(props.dot)))
+
 const offsetStyle = computed<CSSProperties | undefined>(() =>
-  props.offset
+  props.offset && !isStandalone.value
     ? { right: `${-props.offset[0]}px`, marginTop: `${props.offset[1]}px` }
     : undefined,
 )
@@ -54,25 +54,16 @@ const colorStyle = computed<CSSProperties | undefined>(() =>
 </script>
 
 <template>
-  <span
-    v-if="unstyled"
-    style="position: relative; display: inline-block"
-  >
+  <span v-if="unstyled" style="position: relative; display: inline-block">
     <slot />
     <sup v-if="dot || hasCount">{{ displayCount }}</sup>
     <span v-if="status">{{ text }}</span>
   </span>
-  <span
-    v-else-if="status && !hasChildren"
-    class="sg-badge-status"
-  >
-    <span
-      :class="`sg-badge-status-dot sg-badge-status-${status}`"
-      :style="colorStyle"
-    />
+  <span v-else-if="status && !hasChildren" class="sg-badge-status">
+    <span :class="`sg-badge-status-dot sg-badge-status-${status}`" :style="colorStyle" />
     <span v-if="text" class="sg-badge-status-text">{{ text }}</span>
   </span>
-  <span v-else class="sg-badge">
+  <span v-else :class="['sg-badge', isStandalone ? 'sg-badge-standalone' : null]">
     <slot />
     <sup
       v-if="dot && !hasCount"

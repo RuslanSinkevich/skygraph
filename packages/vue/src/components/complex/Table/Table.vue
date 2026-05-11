@@ -27,7 +27,12 @@ const emit = defineEmits<{
 defineSlots<{
   toolbar(props: Record<string, never>): unknown
   empty(props: Record<string, never>): unknown
-  cell(props: { column: TableColumn; row: Record<string, unknown>; id: RowId; value: unknown }): unknown
+  cell(props: {
+    column: TableColumn
+    row: Record<string, unknown>
+    id: RowId
+    value: unknown
+  }): unknown
 }>()
 
 const slots = useSlots()
@@ -38,7 +43,18 @@ const sSty = computed(() => props.styles ?? {})
 
 const visibleColumns = computed(() => props.columns.filter((c) => !c.hidden))
 
-const { table, visibleRows, tableState, setSort, clearSort, addFilter, clearFilters, setPage, setFilterFn, refresh } = useTable({
+const {
+  table,
+  visibleRows,
+  tableState,
+  setSort,
+  clearSort,
+  addFilter,
+  clearFilters,
+  setPage,
+  setFilterFn,
+  refresh,
+} = useTable({
   pageSize: props.pageSize,
   data: props.data,
 })
@@ -97,15 +113,10 @@ function handleSortClick(column: TableColumn) {
   emit('sortChange', column.key, next)
 }
 
-const sortIndicator = (column: TableColumn): string => {
-  if (!column.sortable) return ''
-  const cur = currentSort.value
-  if (!cur || cur.column !== column.key) return ''
-  return cur.direction === 'asc' ? localeFull.value.sortAsc : localeFull.value.sortDesc
-}
-
 const internalSelected = ref<RowId[]>([])
-const selectedKeys = computed<RowId[]>(() => props.rowSelection?.selectedKeys ?? internalSelected.value)
+const selectedKeys = computed<RowId[]>(
+  () => props.rowSelection?.selectedKeys ?? internalSelected.value,
+)
 const selectedSet = computed<Set<RowId>>(() => new Set(selectedKeys.value))
 
 function toggleRowSelected(id: RowId) {
@@ -150,11 +161,13 @@ function toggleSelectAll() {
 
 function rowCls(row: { id: RowId; data: Record<string, unknown> }): string {
   const base = sCls.value.row ?? ''
-  const extra = typeof props.rowClassName === 'function'
-    ? props.rowClassName(row.data, row.id)
-    : (props.rowClassName ?? '')
+  const extra =
+    typeof props.rowClassName === 'function'
+      ? props.rowClassName(row.data, row.id)
+      : (props.rowClassName ?? '')
   const selected = selectedSet.value.has(row.id) ? 'sg-table-row-selected' : ''
-  return ['sg-table-row', base, extra, selected].filter(Boolean).join(' ')
+  const clickable = 'sg-table-row-clickable'
+  return ['sg-table-row', clickable, base, extra, selected].filter(Boolean).join(' ')
 }
 
 function handleRowClick(row: { id: RowId; data: Record<string, unknown> }) {
@@ -164,15 +177,41 @@ function handleRowClick(row: { id: RowId; data: Record<string, unknown> }) {
 const wrapperClass = computed(() => {
   if (props.unstyled) return ''
   return [
-    'sg-table',
+    'sg-table-wrapper',
+    'sg-table-hoverable',
     `sg-table-${props.size}`,
     props.bordered ? 'sg-table-bordered' : '',
     props.sticky ? 'sg-table-sticky' : '',
     sCls.value.root ?? '',
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 })
 
-const totalPages = computed(() => Math.max(1, Math.ceil(tableState.value.totalRows / (props.pageSize ?? Math.max(1, tableState.value.totalRows)))))
+const SELECTION_COL_WIDTH = '48px'
+
+const gridTemplateColumns = computed(() => {
+  const parts: string[] = []
+  if (props.rowSelection) parts.push(SELECTION_COL_WIDTH)
+  for (const col of visibleColumns.value) {
+    parts.push(col.width ? `${col.width}px` : 'minmax(0, 1fr)')
+  }
+  return parts.join(' ')
+})
+
+const gridStyle = computed(() => ({
+  gridTemplateColumns: gridTemplateColumns.value,
+  ...(sSty.value.grid ?? {}),
+}))
+
+const totalPages = computed(() =>
+  Math.max(
+    1,
+    Math.ceil(
+      tableState.value.totalRows / (props.pageSize ?? Math.max(1, tableState.value.totalRows)),
+    ),
+  ),
+)
 
 function gotoPage(page: number) {
   if (page < 1 || page > totalPages.value) return
@@ -214,7 +253,7 @@ defineExpose({
       <input
         v-if="searchable"
         v-model="searchQuery"
-        class="sg-table-search-input"
+        class="sg-input sg-input-small sg-table-search-input"
         type="search"
         :placeholder="localeFull.searchPlaceholder"
         :aria-label="localeFull.searchPlaceholder"
@@ -226,113 +265,180 @@ defineExpose({
       :class="['sg-table-scroll', sCls.scroll].filter(Boolean).join(' ') || undefined"
       :style="sSty.scroll"
     >
-      <table
+      <div
         :class="['sg-table-grid', sCls.grid].filter(Boolean).join(' ') || undefined"
-        :style="sSty.grid"
+        :style="gridStyle"
         role="table"
       >
-        <thead>
-          <tr :class="['sg-table-header-row', sCls.headerRow].filter(Boolean).join(' ') || undefined">
-            <th
-              v-if="rowSelection"
-              class="sg-table-header-cell sg-table-cell-selection"
-              scope="col"
-            >
-              <input
-                v-if="rowSelection.type !== 'radio'"
-                type="checkbox"
-                :checked="allCurrentPageSelected"
-                :indeterminate.prop="someCurrentPageSelected"
-                aria-label="Select all"
-                @change="toggleSelectAll"
-              />
-            </th>
-            <th
-              v-for="col in visibleColumns"
-              :key="col.key"
-              :class="[
-                'sg-table-header-cell',
-                col.sortable ? 'sg-table-header-cell-sortable' : '',
-                col.align ? `sg-table-cell-align-${col.align}` : '',
-                sCls.headerCell,
-              ].filter(Boolean).join(' ') || undefined"
-              :style="{ width: col.width ? `${col.width}px` : undefined, ...sSty.headerCell }"
-              :role="col.sortable ? 'columnheader' : undefined"
-              :aria-sort="
-                currentSort && currentSort.column === col.key
-                  ? currentSort.direction === 'asc'
-                    ? 'ascending'
-                    : 'descending'
-                  : col.sortable
-                    ? 'none'
-                    : undefined
-              "
-              @click="handleSortClick(col)"
-            >
-              <span class="sg-table-header-cell-content">
-                {{ col.title }}
-                <span v-if="col.sortable" class="sg-table-sort-indicator">{{ sortIndicator(col) }}</span>
-              </span>
-              <span v-if="col.filters && col.filters.length > 0" class="sg-table-filter-trigger">
-                <select
-                  class="sg-table-filter-select"
-                  :aria-label="`Filter ${col.title}`"
-                  @click.stop
-                  @change="(e: Event) => applyColumnFilter(col, (e.target as HTMLSelectElement).value || null)"
-                >
-                  <option value="">All</option>
-                  <option v-for="f in col.filters" :key="String(f.value)" :value="String(f.value)">{{ f.text }}</option>
-                </select>
-              </span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="visibleRows.length === 0">
-            <td
-              :colspan="visibleColumns.length + (rowSelection ? 1 : 0)"
-              :class="['sg-table-empty', sCls.empty].filter(Boolean).join(' ') || undefined"
-              :style="sSty.empty"
-            >
-              <slot name="empty">{{ localeFull.emptyText }}</slot>
-            </td>
-          </tr>
-          <tr
-            v-for="row in visibleRows"
-            :key="String(row.id)"
-            :class="rowCls(row) || undefined"
-            @click="handleRowClick(row)"
+        <div
+          :class="
+            ['sg-table-row', 'sg-table-header-row', sCls.headerRow].filter(Boolean).join(' ') ||
+            undefined
+          "
+          role="row"
+          style="display: contents"
+        >
+          <div v-if="rowSelection" class="sg-table-th sg-table-cell-selection" role="columnheader">
+            <input
+              v-if="rowSelection.type !== 'radio'"
+              type="checkbox"
+              :checked="allCurrentPageSelected"
+              :indeterminate.prop="someCurrentPageSelected"
+              aria-label="Select all"
+              @change="toggleSelectAll"
+            />
+          </div>
+          <div
+            v-for="col in visibleColumns"
+            :key="col.key"
+            :class="
+              ['sg-table-th', col.sortable ? 'sg-table-th-sortable' : '', sCls.headerCell]
+                .filter(Boolean)
+                .join(' ') || undefined
+            "
+            :style="{
+              ...(col.align
+                ? {
+                    justifyContent:
+                      col.align === 'center'
+                        ? 'center'
+                        : col.align === 'right'
+                          ? 'flex-end'
+                          : 'flex-start',
+                  }
+                : {}),
+              ...(sSty.headerCell ?? {}),
+            }"
+            role="columnheader"
+            :aria-sort="
+              currentSort && currentSort.column === col.key
+                ? currentSort.direction === 'asc'
+                  ? 'ascending'
+                  : 'descending'
+                : col.sortable
+                  ? 'none'
+                  : undefined
+            "
+            @click="handleSortClick(col)"
           >
-            <td
-              v-if="rowSelection"
-              class="sg-table-cell sg-table-cell-selection"
-              @click.stop
-            >
-              <input
-                :type="rowSelection.type === 'radio' ? 'radio' : 'checkbox'"
-                :checked="selectedSet.has(row.id)"
-                :name="rowSelection.type === 'radio' ? 'sg-table-row-radio' : undefined"
-                :aria-label="`Select row ${String(row.id)}`"
-                @change="() => toggleRowSelected(row.id)"
-              />
-            </td>
-            <td
-              v-for="col in visibleColumns"
-              :key="col.key"
-              :class="[
-                'sg-table-cell',
-                col.align ? `sg-table-cell-align-${col.align}` : '',
-                sCls.bodyCell,
-              ].filter(Boolean).join(' ') || undefined"
-              :style="sSty.bodyCell"
-            >
-              <slot name="cell" :column="col" :row="row.data" :id="row.id" :value="row.data[col.key]">
-                {{ row.data[col.key] }}
-              </slot>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            <span class="sg-table-th-content">
+              <span>{{ col.title }}</span>
+              <span v-if="col.sortable" class="sg-table-sort-arrows">
+                <span
+                  :class="
+                    [
+                      'sg-table-sort-asc',
+                      currentSort &&
+                      currentSort.column === col.key &&
+                      currentSort.direction === 'asc'
+                        ? 'sg-table-sort-current'
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
+                  "
+                  >{{ localeFull.sortAsc }}</span
+                >
+                <span
+                  :class="
+                    [
+                      'sg-table-sort-desc',
+                      currentSort &&
+                      currentSort.column === col.key &&
+                      currentSort.direction === 'desc'
+                        ? 'sg-table-sort-current'
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
+                  "
+                  >{{ localeFull.sortDesc }}</span
+                >
+              </span>
+            </span>
+            <span v-if="col.filters && col.filters.length > 0" class="sg-table-filter-trigger">
+              <select
+                class="sg-table-filter-select"
+                :aria-label="`Filter ${col.title}`"
+                @click.stop
+                @change="
+                  (e: Event) =>
+                    applyColumnFilter(col, (e.target as HTMLSelectElement).value || null)
+                "
+              >
+                <option value="">All</option>
+                <option v-for="f in col.filters" :key="String(f.value)" :value="String(f.value)">
+                  {{ f.text }}
+                </option>
+              </select>
+            </span>
+          </div>
+        </div>
+
+        <div
+          v-if="visibleRows.length === 0"
+          class="sg-table-row sg-table-row-empty"
+          role="row"
+          style="display: contents"
+        >
+          <div
+            :class="
+              ['sg-table-td', 'sg-table-empty', sCls.empty].filter(Boolean).join(' ') || undefined
+            "
+            :style="{ gridColumn: '1 / -1', ...(sSty.empty ?? {}) }"
+            role="cell"
+          >
+            <slot name="empty">{{ localeFull.emptyText }}</slot>
+          </div>
+        </div>
+
+        <div
+          v-for="row in visibleRows"
+          :key="String(row.id)"
+          :class="rowCls(row) || undefined"
+          role="row"
+          style="display: contents"
+          @click="handleRowClick(row)"
+        >
+          <div
+            v-if="rowSelection"
+            class="sg-table-td sg-table-cell-selection"
+            role="cell"
+            @click.stop
+          >
+            <input
+              :type="rowSelection.type === 'radio' ? 'radio' : 'checkbox'"
+              :checked="selectedSet.has(row.id)"
+              :name="rowSelection.type === 'radio' ? 'sg-table-row-radio' : undefined"
+              :aria-label="`Select row ${String(row.id)}`"
+              @change="() => toggleRowSelected(row.id)"
+            />
+          </div>
+          <div
+            v-for="col in visibleColumns"
+            :key="col.key"
+            :class="['sg-table-td', sCls.bodyCell].filter(Boolean).join(' ') || undefined"
+            :style="{
+              ...(col.align
+                ? {
+                    justifyContent:
+                      col.align === 'center'
+                        ? 'center'
+                        : col.align === 'right'
+                          ? 'flex-end'
+                          : 'flex-start',
+                  }
+                : {}),
+              ...(sSty.bodyCell ?? {}),
+            }"
+            role="cell"
+          >
+            <slot name="cell" :column="col" :row="row.data" :id="row.id" :value="row.data[col.key]">
+              {{ row.data[col.key] }}
+            </slot>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div
@@ -340,22 +446,28 @@ defineExpose({
       :class="['sg-table-pagination', sCls.pagination].filter(Boolean).join(' ') || undefined"
       :style="sSty.pagination"
     >
-      <span class="sg-table-pagination-info">
+      <span class="sg-table-pagination-total">
         {{ localeFull.totalRows(tableState.totalRows) }}
       </span>
-      <button
-        type="button"
-        class="sg-table-pagination-prev"
-        :disabled="tableState.page <= 1"
-        @click="gotoPage(tableState.page - 1)"
-      >‹</button>
-      <span class="sg-table-pagination-page">{{ tableState.page }} / {{ totalPages }}</span>
-      <button
-        type="button"
-        class="sg-table-pagination-next"
-        :disabled="tableState.page >= totalPages"
-        @click="gotoPage(tableState.page + 1)"
-      >›</button>
+      <span class="sg-table-pagination-controls">
+        <button
+          type="button"
+          class="sg-table-toolbar-btn sg-table-pagination-prev"
+          :disabled="tableState.page <= 1"
+          @click="gotoPage(tableState.page - 1)"
+        >
+          ‹
+        </button>
+        <span class="sg-table-pagination-page">{{ tableState.page }} / {{ totalPages }}</span>
+        <button
+          type="button"
+          class="sg-table-toolbar-btn sg-table-pagination-next"
+          :disabled="tableState.page >= totalPages"
+          @click="gotoPage(tableState.page + 1)"
+        >
+          ›
+        </button>
+      </span>
     </div>
   </div>
 </template>

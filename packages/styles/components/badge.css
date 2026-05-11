@@ -4,6 +4,23 @@
   line-height: 1;
 }
 
+/* Standalone mode: count/dot rendered without a wrapped child.
+   Lays out the indicator inline instead of as an absolute overlay so it
+   does not get clipped by parents (table cells, flex rows, etc.). */
+.sg-badge-standalone {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  line-height: var(--sg-line-height);
+}
+
+.sg-badge-standalone > .sg-badge-count,
+.sg-badge-standalone > .sg-badge-dot {
+  position: static;
+  transform: none;
+  box-shadow: none;
+}
+
 .sg-badge-count {
   position: absolute;
   top: 0;
@@ -52,10 +69,18 @@
   flex-shrink: 0;
 }
 
-.sg-badge-status-success { background: var(--sg-color-success); }
-.sg-badge-status-error { background: var(--sg-color-error); }
-.sg-badge-status-warning { background: var(--sg-color-warning); }
-.sg-badge-status-default { background: var(--sg-color-text-disabled); }
+.sg-badge-status-success {
+  background: var(--sg-color-success);
+}
+.sg-badge-status-error {
+  background: var(--sg-color-error);
+}
+.sg-badge-status-warning {
+  background: var(--sg-color-warning);
+}
+.sg-badge-status-default {
+  background: var(--sg-color-text-disabled);
+}
 
 .sg-badge-status-processing {
   background: var(--sg-color-primary);
@@ -63,8 +88,12 @@
 }
 
 @keyframes sg-badge-processing {
-  0% { box-shadow: 0 0 0 0 var(--sg-color-primary); }
-  100% { box-shadow: 0 0 0 4px transparent; }
+  0% {
+    box-shadow: 0 0 0 0 var(--sg-color-primary);
+  }
+  100% {
+    box-shadow: 0 0 0 4px transparent;
+  }
 }
 
 .sg-badge-status-text {

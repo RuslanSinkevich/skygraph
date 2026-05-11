@@ -30,6 +30,8 @@ export interface TimePickerProps {
   open?: boolean
   /** Disables interaction. */
   disabled?: boolean
+  /** Shows a loading spinner and disables interaction. */
+  loading?: boolean
   /** Size token. */
   size?: 'small' | 'middle' | 'large'
   /** Strips built-in styling. */
@@ -47,6 +49,7 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
   allowClear: true,
   size: 'middle',
   disabled: false,
+  loading: false,
 })
 
 const emit = defineEmits<{
@@ -55,13 +58,19 @@ const emit = defineEmits<{
   (e: 'openChange', open: boolean): void
 }>()
 
-function pad(n: number) { return String(n).padStart(2, '0') }
+function pad(n: number) {
+  return String(n).padStart(2, '0')
+}
 
 function formatTime(h: number, m: number, s: number, fmt: string, use12: boolean): string {
   if (use12) {
     const period = h >= 12 ? 'PM' : 'AM'
     const h12 = h % 12 || 12
-    return fmt.replace('hh', pad(h12)).replace('mm', pad(m)).replace('ss', pad(s)).replace('A', period)
+    return fmt
+      .replace('hh', pad(h12))
+      .replace('mm', pad(m))
+      .replace('ss', pad(s))
+      .replace('A', period)
   }
   return fmt.replace('HH', pad(h)).replace('mm', pad(m)).replace('ss', pad(s))
 }
@@ -81,7 +90,9 @@ function parseTime(str: string): { h: number; m: number; s: number } | null {
   return { h, m, s }
 }
 
-const fmt = computed(() => props.format ?? (props.use12Hours ? 'hh:mm:ss A' : (props.showSecond ? 'HH:mm:ss' : 'HH:mm')))
+const fmt = computed(
+  () => props.format ?? (props.use12Hours ? 'hh:mm:ss A' : props.showSecond ? 'HH:mm:ss' : 'HH:mm'),
+)
 const internal = ref<string>(props.modelValue ?? props.value ?? props.defaultValue ?? '')
 watch(
   () => props.modelValue ?? props.value,
@@ -101,7 +112,11 @@ const second = ref(parsed.value?.s ?? 0)
 
 watch(current, (v) => {
   const p = parseTime(v)
-  if (p) { hour.value = p.h; minute.value = p.m; second.value = p.s }
+  if (p) {
+    hour.value = p.h
+    minute.value = p.m
+    second.value = p.s
+  }
 })
 
 const wrapperRef = ref<HTMLDivElement | null>(null)
@@ -126,7 +141,7 @@ const seconds = computed(() => {
   return arr
 })
 
-const displayHour = computed(() => props.use12Hours ? (hour.value % 12 || 12) : hour.value)
+const displayHour = computed(() => (props.use12Hours ? hour.value % 12 || 12 : hour.value))
 
 function setOpen(v: boolean) {
   internalOpen.value = v
@@ -142,13 +157,25 @@ function commit(h: number, m: number, s: number) {
 
 function setH(h: number) {
   const real = props.use12Hours
-    ? (h === 12 ? (hour.value >= 12 ? 12 : 0) : (hour.value >= 12 ? h + 12 : h))
+    ? h === 12
+      ? hour.value >= 12
+        ? 12
+        : 0
+      : hour.value >= 12
+        ? h + 12
+        : h
     : h
   hour.value = real
   commit(real, minute.value, second.value)
 }
-function setM(m: number) { minute.value = m; commit(hour.value, m, second.value) }
-function setS(s: number) { second.value = s; commit(hour.value, minute.value, s) }
+function setM(m: number) {
+  minute.value = m
+  commit(hour.value, m, second.value)
+}
+function setS(s: number) {
+  second.value = s
+  commit(hour.value, minute.value, s)
+}
 
 function handleNow() {
   const now = new Date()
@@ -167,7 +194,7 @@ function handleClear(e: MouseEvent) {
 }
 
 function openDropdown() {
-  if (props.disabled) return
+  if (props.disabled || props.loading) return
   setOpen(true)
 }
 
@@ -187,7 +214,8 @@ const wrapperCls = computed(() =>
         'sg-timepicker',
         `sg-timepicker-${props.size}`,
         isOpen.value ? 'sg-timepicker-open' : '',
-        props.disabled ? 'sg-timepicker-disabled' : '',
+        props.disabled || props.loading ? 'sg-timepicker-disabled' : '',
+        props.loading ? 'sg-timepicker-loading' : '',
       ]
         .filter(Boolean)
         .join(' '),
@@ -221,7 +249,10 @@ function setPm() {
     >
       <span :class="current ? '' : 'sg-timepicker-placeholder'">{{ current || placeholder }}</span>
       <span class="sg-timepicker-suffix">
-        <span v-if="allowClear && current" class="sg-timepicker-clear" @click="handleClear">×</span>
+        <span v-if="loading && !unstyled" class="sg-spin sg-spin-small" aria-hidden="true" />
+        <span v-else-if="allowClear && current" class="sg-timepicker-clear" @click="handleClear"
+          >×</span
+        >
       </span>
     </div>
     <div v-if="isOpen" class="sg-tp-dropdown">
@@ -233,7 +264,9 @@ function setPm() {
             :data-active="n === displayHour"
             :class="['sg-tp-cell', n === displayHour ? 'sg-tp-cell-active' : '']"
             @click="setH(n)"
-          >{{ pad(n) }}</div>
+          >
+            {{ pad(n) }}
+          </div>
         </div>
         <div class="sg-tp-col">
           <div
@@ -242,7 +275,9 @@ function setPm() {
             :data-active="n === minute"
             :class="['sg-tp-cell', n === minute ? 'sg-tp-cell-active' : '']"
             @click="setM(n)"
-          >{{ pad(n) }}</div>
+          >
+            {{ pad(n) }}
+          </div>
         </div>
         <div v-if="showSecond" class="sg-tp-col">
           <div
@@ -251,11 +286,15 @@ function setPm() {
             :data-active="n === second"
             :class="['sg-tp-cell', n === second ? 'sg-tp-cell-active' : '']"
             @click="setS(n)"
-          >{{ pad(n) }}</div>
+          >
+            {{ pad(n) }}
+          </div>
         </div>
         <div v-if="use12Hours" class="sg-tp-col sg-tp-col-ampm">
           <div :class="['sg-tp-cell', hour < 12 ? 'sg-tp-cell-active' : '']" @click="setAm">AM</div>
-          <div :class="['sg-tp-cell', hour >= 12 ? 'sg-tp-cell-active' : '']" @click="setPm">PM</div>
+          <div :class="['sg-tp-cell', hour >= 12 ? 'sg-tp-cell-active' : '']" @click="setPm">
+            PM
+          </div>
         </div>
       </div>
       <div v-if="showNow" class="sg-tp-footer">

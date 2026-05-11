@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import type { SizeType } from '../../types'
+import { useConfigWithDefaults } from './ConfigProvider.vue'
 
 export interface MentionOption {
   value: string
@@ -22,17 +24,21 @@ export interface MentionsProps {
   rows?: number
   /** Mention suggestion options. */
   options?: MentionOption[]
+  /** Vertical position of the suggestion dropdown relative to the field. */
+  placement?: 'top' | 'bottom'
   /** Disables interaction. */
   disabled?: boolean
+  /** Component size. */
+  size?: SizeType
   /** Strips built-in styling. */
   unstyled?: boolean
 }
 
 const props = withDefaults(defineProps<MentionsProps>(), {
   prefix: '@',
-  rows: 4,
-  disabled: false,
+  rows: 3,
   options: () => [],
+  placement: 'bottom',
 })
 
 const emit = defineEmits<{
@@ -41,6 +47,8 @@ const emit = defineEmits<{
   (e: 'search', text: string, prefix: string): void
   (e: 'select', option: MentionOption, prefix: string): void
 }>()
+
+const { resolvedSize, resolvedDisabled } = useConfigWithDefaults(props, {})
 
 const internal = ref<string>(props.modelValue ?? props.value ?? props.defaultValue ?? '')
 watch(
@@ -54,8 +62,10 @@ const current = computed(() => props.modelValue ?? props.value ?? internal.value
 const showSuggest = ref(false)
 const search = ref('')
 const activePrefix = ref('')
-const cursorPos = ref(0)
+const startIndex = ref(0)
+const activeIndex = ref(0)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
+const dropdownRef = ref<HTMLDivElement | null>(null)
 
 const prefixes = computed(() => (Array.isArray(props.prefix) ? props.prefix : [props.prefix]))
 
@@ -67,19 +77,23 @@ function handleInput(e: Event) {
   emit('change', v)
 
   const pos = target.selectionStart ?? v.length
-  cursorPos.value = pos
   const before = v.slice(0, pos)
 
   for (const p of prefixes.value) {
     const idx = before.lastIndexOf(p)
     if (idx >= 0) {
-      const between = before.slice(idx + p.length)
-      if (!/\s/.test(between)) {
-        activePrefix.value = p
-        search.value = between
-        showSuggest.value = true
-        emit('search', between, p)
-        return
+      const charBefore = idx > 0 ? before[idx - 1] : ' '
+      if (charBefore === ' ' || charBefore === '\n' || idx === 0) {
+        const between = before.slice(idx + p.length)
+        if (!between.includes(' ')) {
+          activePrefix.value = p
+          search.value = between
+          startIndex.value = idx
+          showSuggest.value = true
+          activeIndex.value = 0
+          emit('search', between, p)
+          return
+        }
       }
     }
   }
@@ -87,18 +101,18 @@ function handleInput(e: Event) {
 }
 
 const filteredOptions = computed(() =>
-  props.options.filter((o) => !search.value || o.value.toLowerCase().includes(search.value.toLowerCase())),
+  props.options.filter(
+    (o) => !search.value || (o.label ?? o.value).toLowerCase().includes(search.value.toLowerCase()),
+  ),
 )
 
 function selectOption(opt: MentionOption) {
   if (opt.disabled) return
   const v = current.value
-  const pos = cursorPos.value
-  const before = v.slice(0, pos)
-  const after = v.slice(pos)
-  const idx = before.lastIndexOf(activePrefix.value)
-  const newBefore = before.slice(0, idx) + activePrefix.value + opt.value + ' '
-  const newValue = newBefore + after
+  const before = v.slice(0, startIndex.value)
+  const after = v.slice(startIndex.value + activePrefix.value.length + search.value.length)
+  const insertText = `${activePrefix.value}${opt.value} `
+  const newValue = before + insertText + after
   internal.value = newValue
   emit('update:modelValue', newValue)
   emit('change', newValue)
@@ -106,15 +120,58 @@ function selectOption(opt: MentionOption) {
   showSuggest.value = false
   void nextTick(() => {
     if (textareaRef.value) {
-      const newPos = newBefore.length
+      const newPos = before.length + insertText.length
       textareaRef.value.focus()
       textareaRef.value.setSelectionRange(newPos, newPos)
     }
   })
 }
 
+function handleKeyDown(e: KeyboardEvent) {
+  if (!showSuggest.value || filteredOptions.value.length === 0) return
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    activeIndex.value = (activeIndex.value + 1) % filteredOptions.value.length
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    activeIndex.value =
+      (activeIndex.value - 1 + filteredOptions.value.length) % filteredOptions.value.length
+  } else if (e.key === 'Enter') {
+    e.preventDefault()
+    selectOption(filteredOptions.value[activeIndex.value])
+  } else if (e.key === 'Escape') {
+    showSuggest.value = false
+  }
+}
+
+function onClickOutside(e: MouseEvent) {
+  if (
+    dropdownRef.value &&
+    !dropdownRef.value.contains(e.target as Node) &&
+    textareaRef.value &&
+    !textareaRef.value.contains(e.target as Node)
+  ) {
+    showSuggest.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('mousedown', onClickOutside)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', onClickOutside)
+})
+
 const wrapperCls = computed(() =>
-  props.unstyled ? '' : ['sg-mentions', props.disabled ? 'sg-mentions-disabled' : ''].filter(Boolean).join(' '),
+  props.unstyled
+    ? ''
+    : [
+        'sg-mentions',
+        `sg-mentions-${resolvedSize.value}`,
+        resolvedDisabled.value ? 'sg-mentions-disabled' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
 )
 </script>
 
@@ -122,23 +179,41 @@ const wrapperCls = computed(() =>
   <div :class="wrapperCls">
     <textarea
       ref="textareaRef"
-      class="sg-mentions-textarea"
+      :class="unstyled ? '' : 'sg-input sg-textarea'"
       :value="current"
       :placeholder="placeholder"
       :rows="rows"
-      :disabled="disabled"
+      :disabled="resolvedDisabled"
       @input="handleInput"
+      @keydown="handleKeyDown"
     />
-    <ul v-if="showSuggest && filteredOptions.length" class="sg-mentions-dropdown">
-      <li
-        v-for="opt in filteredOptions"
+    <div
+      v-if="showSuggest && filteredOptions.length"
+      ref="dropdownRef"
+      :class="unstyled ? '' : `sg-mentions-dropdown sg-mentions-dropdown-${placement}`"
+      role="listbox"
+    >
+      <div
+        v-for="(opt, i) in filteredOptions"
         :key="opt.value"
-        :class="[
-          'sg-mentions-option',
-          opt.disabled ? 'sg-mentions-option-disabled' : '',
-        ]"
+        :class="
+          unstyled
+            ? ''
+            : [
+                'sg-mentions-option',
+                i === activeIndex ? 'sg-mentions-option-active' : '',
+                opt.disabled ? 'sg-mentions-option-disabled' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')
+        "
+        role="option"
+        :aria-selected="i === activeIndex"
         @mousedown.prevent="selectOption(opt)"
-      >{{ opt.label ?? opt.value }}</li>
-    </ul>
+        @mouseenter="activeIndex = i"
+      >
+        {{ opt.label ?? opt.value }}
+      </div>
+    </div>
   </div>
 </template>
