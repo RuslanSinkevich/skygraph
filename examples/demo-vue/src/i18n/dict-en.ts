@@ -22,6 +22,14 @@ export const en: DemoDict = {
     visualization: 'Visualization',
     guide: 'Guide',
   },
+  menuItems: {
+    gettingStarted: 'Getting Started',
+    stylingShowcase: 'Styling Showcase',
+    theming: 'Theming',
+    designTokens: 'Design Tokens',
+    coreApi: 'Core API',
+    configProvider: 'ConfigProvider',
+  },
   header: {
     navComponents: 'Components',
     navHome: 'Home',
@@ -117,5 +125,140 @@ export const en: DemoDict = {
       'Add @skygraph/vue and @skygraph/styles, import the stylesheet once, and start composing.',
     quickInstallCopy: 'Copy',
     quickInstallCopied: 'Copied',
+  },
+
+  roadmap: {
+    title: 'Roadmap',
+    lead: 'Live snapshot of TODO.md. Closed items are tagged with the round that landed them; open items are candidates for upcoming streams.',
+    statClosed: 'closed',
+    statOpen: 'open',
+    statTotal: 'total',
+    sourceLabel: 'Source: TODO.md',
+    emptyLabel: 'No items.',
+  },
+
+  about: {
+    title: 'About SkyGraph',
+    lead1:
+      'SkyGraph is a TypeScript-first reactive UI library — a path-based core, six domain engines and 78+ styled components, all driven by CSS variables with zero runtime cost.',
+    lead2:
+      'It is the UI substrate for the Sky platform, designed to feed the same component contract into multiple framework adapters: React today, Vue and Angular next.',
+    lead3:
+      'No styled-components, no CSS-in-JS runtime, no proprietary build steps — only standards: TypeScript, CSS variables, native DOM events.',
+    versionLabel: 'Version',
+    licenseLabel: 'License',
+    licenseValue: 'MIT',
+    architectureLink: 'Architecture →',
+    skyPlatformTitle: 'Sky platform',
+    skyPlatformLead: 'Three coupled projects sharing one design system and one data model.',
+    skycodeTitle: 'Skycode',
+    skycodeDesc: 'AI-augmented IDE — VS Code fork with the Skycode assistant.',
+    skyforkTitle: 'SkyFork',
+    skyforkDesc: 'Codebase orchestration — branch hub, agent runner, automation.',
+    skygraphTitle: 'SkyGraph',
+    skygraphDesc: 'This library — the UI / data foundation underneath every Sky surface.',
+    multiFrameworkTitle: 'Multi-framework — coming soon',
+    multiFrameworkLead:
+      'The core engine and the styling contract are framework-agnostic. Adapters in flight:',
+    multiFrameworkVue: 'Vue 3 — Composition-API bindings on top of the core store.',
+    multiFrameworkAngular: 'Angular — signals-based store integration, same components.',
+  },
+
+  gettingStarted: {
+    title: 'Getting Started',
+    lead: 'Install SkyGraph, import the stylesheet once, and start composing reactive Vue 3 components. Same DOM contract as the React adapter, idiomatic Composition-API surface.',
+    installation: 'Installation',
+    installLeadNpm: 'Install the core engine and the Vue adapter via npm:',
+    installLeadPnpm: 'Or via pnpm:',
+    importStyles: 'Import styles',
+    importStylesLead:
+      'Import the prebuilt stylesheet once at the entry of your app (e.g. main.ts):',
+    importStylesNote1: 'All components emit CSS variables you can override at any scope (',
+    importStylesNote2Theming: 'see Theming',
+    basicForm: 'Basic form',
+    basicFormLead: 'Build a typed form with built-in validation and submit handling:',
+    individualComponents: 'Individual components',
+    individualComponentsLead: 'Or just use the styled components on their own:',
+    whatsNext: "What's next",
+    cardThemingTitle: 'Theming',
+    cardThemingDesc: 'Override CSS variables to reskin the whole app or a single subtree.',
+    cardCoreApiTitle: 'Core API',
+    cardCoreApiDesc: 'Drive forms, tables and trees with the path-based reactive store.',
+    cardComponentsTitle: 'Browse components',
+    cardComponentsDesc: '50+ ready-to-use components: Button, Input, Table, Tree and more.',
+  },
+
+  theming: {
+    title: 'Theming',
+    lead: 'SkyGraph uses a 3-layer CSS variable system. Override any layer to create your own theme — no build step, no JS runtime cost.',
+    threeLayersHeading: 'Three Layers',
+    colLayer: 'Layer',
+    colPrefix: 'Prefix',
+    colPurpose: 'Purpose',
+    layerPalette: 'Palette',
+    layerPalettePurpose: 'Stable colour ramps (blue-1…blue-10, gray, red, green, orange).',
+    layerSemantic: 'Semantic',
+    layerSemanticPurpose:
+      'Tokens for surfaces, text, primary, success / error / warning. Toggled by data-sg-theme.',
+    layerComponent: 'Component',
+    layerComponentPurpose: 'Per-component overrides — Button height, Input radius, Table padding…',
+    layersFooter:
+      'Override at the deepest layer that fits: change a palette ramp to re-skin everything, a semantic token to swap brand colour, a component token to tune one widget.',
+    darkModeHeading: 'Dark mode',
+    darkModeLead: 'Switch the whole app between light and dark by toggling one attribute:',
+    darkModeNote: 'Wire it up to a switch, persist in localStorage, that is it:',
+    customThemeHeading: 'Custom theme',
+    customThemeLead:
+      'Override semantic tokens to ship a brand theme without rebuilding components:',
+    customThemeFooter:
+      'Tokens cascade — primary buttons, focus rings, badges and table sort indicators all pick up the new colour automatically.',
+    perComponentHeading: 'Component tokens',
+    perComponentLead:
+      'Each component exposes its own tokens. Override globally for a brand-wide change or scope to a subtree:',
+    slotsHeading: 'Slots',
+    slotsLead:
+      'For deeper customisation, every complex component lets you classNames each slot — table rows, list items, modal header — and swap CSS without forking the component:',
+    headlessHeading: 'Headless mode',
+    headlessLead: 'Pass `unstyled` to drop the .sg-* classes and bring your own CSS:',
+    headlessFooter:
+      'Behaviour, accessibility and reactivity are preserved. Style is 100% yours — useful for full-bespoke designs that still need a robust core.',
+  },
+
+  coreApi: {
+    title: 'Core API',
+    lead: 'The framework-agnostic engine that powers every SkyGraph adapter. A path-based reactive store with batched updates, typed bindings and domain engines for forms, tables, trees and graphs.',
+    sectionStore: 'createCore — reactive store',
+    sectionStoreLead:
+      'Path-based reactive store. Set, subscribe, batch — fine-grained reactivity without re-render waterfalls.',
+    sectionEngines: 'Domain engines',
+    sectionEnginesLead:
+      'Specialised engines built on top of the core: forms, tables, trees, graphs and a virtualisation primitive.',
+    sectionTyped: 'Typed core',
+    sectionTypedLead:
+      'Wrap a core in a typed proxy to get autocomplete and compile-time safety on every set/get/subscribe call.',
+    sectionMiddleware: 'Middleware',
+    sectionMiddlewareLead:
+      'Plug logging, freeze, devtools or your own middleware into the store via core.use().',
+    sectionGraph: 'Graph engine',
+    sectionGraphLead:
+      'A topology-aware reactive graph: nodes, edges, ports, anchors. Powers Diagram, Dashboard and the routing primitives.',
+  },
+
+  guideStub: {
+    seeReactDocs: 'See the React reference for the full content →',
+    stylingShowcaseTitle: 'Styling Showcase',
+    stylingShowcaseLead:
+      'A gallery of every styling recipe SkyGraph supports — palette, semantic and component tokens, slot overrides, conditional rows, dark scopes, headless modals. Vue port pending.',
+    designTokensTitle: 'Design Tokens',
+    designTokensLead:
+      'Searchable index of every public --sg-* variable SkyGraph exposes. Vue port pending — the React reference covers the full token catalogue.',
+    configProviderTitle: 'ConfigProvider',
+    configProviderLead:
+      'Scope size / disabled / locale / bordered defaults to a subtree. The component-level demo is available under Components → ConfigProvider.',
+  },
+
+  frameworkSwitcher: {
+    label: 'Framework',
+    comingSoonTitle: 'Coming soon',
   },
 }

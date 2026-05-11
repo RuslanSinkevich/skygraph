@@ -1,8 +1,9 @@
 <script setup lang="ts">
 /**
- * Vue-side delta vs React: steps are clickable by default — `@change`
- * always fires, no opt-in. Pair with prev / next buttons for a full
- * wizard surface.
+ * Steps become clickable when a `@change` listener is attached (React
+ * parity). Use `:clickable="true"` to force-enable the affordance even
+ * without a listener. Pair with prev / next buttons for a full wizard
+ * surface.
  */
 import { ref } from 'vue'
 import { SgSteps, SgButton } from '@skygraph/vue'

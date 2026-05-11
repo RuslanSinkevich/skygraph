@@ -1,16 +1,19 @@
 /**
  * English source of truth for Calendar doc page strings (Vue port).
  *
- * Vue parity gaps vs React (see `findings/T-Vue-Demo-Forms.md`
+ * Vue parity gaps vs React (see `findings/T-Vue-Components-Functional-Fixes.md`
  * → `calendar-vue-feature-gaps`):
- * - no `fullscreen` toggle (Vue always renders the same compact table)
  * - no `multipleSelection` / `multipleValue` API
  * - no `rangeSelection` / `rangeValue` API
  * - no `cellRender` / `headerRender` slots
  * - no `locale` prop (English-only month/day labels)
- * - no `maxEvents` cap, no `event.color` / `event.key` (Vue uses
- *   `id` / `title` / `type` shape, renders all events as plain rows)
- * - `mode="year"` is accepted but renders the same month grid
+ * - no keyboard navigation
+ *
+ * What works (Wave 3.5 fixes):
+ * - month + year mode with mode switch and select-header
+ * - event dots with `max-events` overflow indicator
+ * - `fullscreen` toggle, "Today" footer button
+ * - `show-week-numbers`, `week-start-day`, `disabled-date`
  *
  * Other locales must provide the same keys (see `ru.ts`).
  */
@@ -21,11 +24,11 @@ export const calendarDocEn = {
   crumbCalendar: 'Calendar',
 
   pageLead:
-    'Month-grid calendar with optional events, week numbers, weekStart override and disabled-day predicate. Compact-style — no fullscreen toggle.',
+    'Month + year calendar with event dots, week numbers, weekStart override and disabled-day predicate. Compact or fullscreen layout.',
   pageWhen1: 'As a month view inside an admin dashboard or scheduler.',
   pageWhen2: 'When you need lightweight per-day event markers.',
   pageWhen3:
-    'For range / multiple selection, custom cells, locale or fullscreen layouts — see the React Calendar (Vue parity is pending).',
+    'For range / multiple selection, custom cells, locale or keyboard navigation — see the React Calendar (Vue parity is pending).',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Default month grid with today highlighted.',
@@ -33,7 +36,7 @@ export const calendarDocEn = {
   demoControlledDesc: 'Parent owns the selected date with v-model.',
   demoEventsTitle: 'Events',
   demoEventsDesc:
-    'Each cell lists matching events. Vue uses `{ id, title, type }`, no `maxEvents` overflow.',
+    'Each cell renders coloured dots per event. `max-events` caps the count, overflow collapses into `+N`.',
   demoWeekStartTitle: 'Week starts Monday',
   demoWeekStartDesc: '`week-start-day="1"` rotates the weekday columns.',
   demoWeekNumbersTitle: 'Week numbers',
@@ -42,7 +45,7 @@ export const calendarDocEn = {
   demoDisabledDatesDesc: 'Gray out past days + weekends.',
   demoYearModeTitle: 'Year mode',
   demoYearModeDesc:
-    '`mode="year"` is accepted, but the current Vue grid is the same as `month` (gap).',
+    '`mode="year"` shows a 12-month overview; clicking a month jumps back to the month grid.',
   demoTokensOverrideTitle: 'Tokens override',
   demoTokensOverrideDesc: 'Scope global tokens on a wrapper to re-skin.',
   demoUnstyledTitle: 'Unstyled',
@@ -55,7 +58,7 @@ export const calendarDocEn = {
   propModelValue: 'v-model binding (Vue idiom)',
   propValue: 'Compat alias for `modelValue` — selected date',
   propDefaultValue: 'Initial date when uncontrolled',
-  propMode: 'Display mode (Vue: only `month` is fully implemented)',
+  propMode: "Display mode ('month' | 'year')",
   propEvents: 'Event markers per date',
   propWeekStartDay: '0 = Sunday … 6 = Saturday',
   propShowWeekNumbers: 'Show ISO week column',
@@ -67,7 +70,7 @@ export const calendarDocEn = {
 
   eventId: 'Stable identifier (used for v-for `:key`)',
   eventDate: 'Event date',
-  eventTitle: 'Short label shown on the cell',
+  eventTitle: 'Tooltip shown on the dot',
   eventType: 'Free-form tag for grouping/filtering',
 
   cssHint:

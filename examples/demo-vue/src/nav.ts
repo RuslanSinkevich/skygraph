@@ -96,6 +96,30 @@ export function buildComponentsSidebar(t: DemoDict): SidebarSection[] {
 }
 
 /**
+ * Guide sidebar — mirrors `examples/demo/src/App.tsx#buildGuideSidebar`.
+ *
+ * Six entries 1:1 with the React reference. Sidebar keys (`guide/...`)
+ * mirror router paths so the existing `routeToKey` / `keyToRoute` helpers
+ * work unchanged. Wave 3.4 stub pages are listed alongside the full ports
+ * so the future React-parity smoke test can compare both demos by key.
+ */
+export function buildGuideSidebar(t: DemoDict): SidebarSection[] {
+  return [
+    {
+      title: t.menuSections.guide,
+      items: [
+        { key: 'guide/getting-started', label: t.menuItems.gettingStarted },
+        { key: 'guide/styling-showcase', label: t.menuItems.stylingShowcase },
+        { key: 'guide/theming', label: t.menuItems.theming },
+        { key: 'guide/design-tokens', label: t.menuItems.designTokens },
+        { key: 'guide/core-api', label: t.menuItems.coreApi },
+        { key: 'guide/config-provider', label: t.menuItems.configProvider },
+      ],
+    },
+  ]
+}
+
+/**
  * Map sidebar `key` → router path. Sidebar keys mirror the React-demo
  * (`components/button`); router paths are absolute (`/components/button`).
  */

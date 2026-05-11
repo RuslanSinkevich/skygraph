@@ -58,6 +58,16 @@ const EventTimelineDemo = () => import('../demos/EventTimelineDemo.vue')
 const ResourceCalendarDemo = () => import('../demos/ResourceCalendarDemo.vue')
 const SchemaFormEditorDemo = () => import('../demos/SchemaFormEditorDemo.vue')
 
+// ── Wave 3.4: top-level pages + guide section ──────────────────────────
+const Roadmap = () => import('../pages/Roadmap.vue')
+const About = () => import('../pages/About.vue')
+const GuideGettingStarted = () => import('../guide/GettingStarted.vue')
+const GuideStylingShowcase = () => import('../guide/StylingShowcase.vue')
+const GuideTheming = () => import('../guide/Theming.vue')
+const GuideDesignTokens = () => import('../guide/DesignTokens.vue')
+const GuideCoreApi = () => import('../guide/CoreApi.vue')
+const GuideConfigProvider = () => import('../guide/ConfigProviderGuide.vue')
+
 const routes: RouteRecord[] = [
   { path: '/', component: Landing },
   { path: '/components/button', component: ButtonDemo },
@@ -115,6 +125,15 @@ const routes: RouteRecord[] = [
   { path: '/components/event-timeline', component: EventTimelineDemo },
   { path: '/components/resource-calendar', component: ResourceCalendarDemo },
   { path: '/components/schema-form-editor', component: SchemaFormEditorDemo },
+
+  { path: '/roadmap', component: Roadmap },
+  { path: '/about', component: About },
+  { path: '/guide/getting-started', component: GuideGettingStarted },
+  { path: '/guide/styling-showcase', component: GuideStylingShowcase },
+  { path: '/guide/theming', component: GuideTheming },
+  { path: '/guide/design-tokens', component: GuideDesignTokens },
+  { path: '/guide/core-api', component: GuideCoreApi },
+  { path: '/guide/config-provider', component: GuideConfigProvider },
 
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ]

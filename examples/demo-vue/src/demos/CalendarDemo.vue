@@ -6,14 +6,14 @@
  * Vue surface (9 examples): Basic, Controlled, Events, WeekStartMonday,
  * WeekNumbers, DisabledDates, YearMode, TokensOverride, Unstyled.
  *
- * Dropped vs React (see `findings/T-Vue-Demo-Forms.md`
+ * Dropped vs React (see `findings/T-Vue-Components-Functional-Fixes.md`
  * → `calendar-vue-feature-gaps`):
- * - `Card` — no `fullscreen` prop in `SgCalendar`.
  * - `MultipleSelection` — no `multipleSelection` / `multipleValue`.
  * - `RangeSelection` — no `rangeSelection` / `rangeValue`.
  * - `CustomCell` — no `cellRender` slot.
  * - `CustomHeader` — no `headerRender` slot.
  * - `Locale` — no `locale` prop (calendar labels are hardcoded EN).
+ * - no keyboard navigation.
  */
 import { computed } from 'vue'
 import {
@@ -54,13 +54,20 @@ const calendarProps = computed<PropDef[]>(() => [
   {
     name: 'mode',
     description: t.value.propMode,
-    type: "'month' | 'week' | 'year'",
+    type: "'month' | 'year'",
     default: "'month'",
   },
   { name: 'events', description: t.value.propEvents, type: 'CalendarEvent[]' },
+  { name: 'maxEvents', description: 'Cap of event dots per cell', type: 'number', default: '3' },
+  {
+    name: 'fullscreen',
+    description: 'Fullscreen layout with footer',
+    type: 'boolean',
+    default: 'true',
+  },
   { name: 'weekStartDay', description: t.value.propWeekStartDay, type: 'number', default: '0' },
   {
-    name: 'showWeekNumbers',
+    name: 'showWeekNumber',
     description: t.value.propShowWeekNumbers,
     type: 'boolean',
     default: 'false',
@@ -80,7 +87,7 @@ const calendarProps = computed<PropDef[]>(() => [
   {
     name: '@panelChange',
     description: t.value.emitPanelChange,
-    type: "(value: Date, mode: 'month' | 'week' | 'year') => void",
+    type: "(value: Date, mode: 'month' | 'year') => void",
   },
 ])
 
@@ -89,6 +96,7 @@ const eventProps = computed<PropDef[]>(() => [
   { name: 'date', description: t.value.eventDate, type: 'Date' },
   { name: 'title', description: t.value.eventTitle, type: 'string' },
   { name: 'type', description: t.value.eventType, type: 'string' },
+  { name: 'color', description: 'Optional dot color (any CSS color)', type: 'string' },
 ])
 
 const calendarCssVars = computed<CssVarDef[]>(() => [
@@ -200,11 +208,7 @@ const calendarCssVars = computed<CssVarDef[]>(() => [
       <DisabledDatesCalendarDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoYearModeTitle"
-      :description="t.demoYearModeDesc"
-      :code="YearModeSource"
-    >
+    <DemoBox :title="t.demoYearModeTitle" :description="t.demoYearModeDesc" :code="YearModeSource">
       <YearModeCalendarDemo />
     </DemoBox>
 
@@ -216,22 +220,14 @@ const calendarCssVars = computed<CssVarDef[]>(() => [
       <TokensOverrideCalendarDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
+    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledCalendarDemo />
     </DemoBox>
 
     <template #api>
       <PropsTable :title="t.tableCalendarApi" :data="calendarProps" />
       <PropsTable :title="t.tableCalendarEvent" :data="eventProps" />
-      <CssVarsTable
-        :title="t.tableCssVars"
-        :hint="t.cssHint"
-        :data="calendarCssVars"
-      />
+      <CssVarsTable :title="t.tableCssVars" :hint="t.cssHint" :data="calendarCssVars" />
     </template>
   </ComponentDoc>
 </template>

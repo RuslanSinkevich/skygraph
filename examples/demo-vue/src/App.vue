@@ -17,7 +17,8 @@ import { GITHUB_URL } from '@skygraph-examples/shared'
 import { useRoute, useRouter } from './router'
 import { useI18n } from './i18n'
 import { SUPPORTED_LOCALES, type Locale } from './i18n/types'
-import { buildComponentsSidebar, routeToKey } from './nav'
+import { buildComponentsSidebar, buildGuideSidebar, routeToKey } from './nav'
+import FrameworkSwitcher from './components/FrameworkSwitcher.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -37,16 +38,27 @@ const section = computed(() => sectionForRoute(route.value.path))
 
 const navItems = computed<NavItem[]>(() => [
   { key: 'components', label: t.value.header.navComponents, href: '#/components/button' },
+  { key: 'guide', label: t.value.header.navGuide, href: '#/guide/getting-started' },
+  { key: 'roadmap', label: t.value.header.navRoadmap, href: '#/roadmap' },
+  { key: 'about', label: t.value.header.navAbout, href: '#/about' },
   { key: 'github', label: t.value.header.navGithub, href: GITHUB_URL, external: true },
 ])
 
 const componentsSidebar = computed<SidebarSection[]>(() => buildComponentsSidebar(t.value))
+const guideSidebar = computed<SidebarSection[]>(() => buildGuideSidebar(t.value))
+
+const sidebarSections = computed<SidebarSection[] | null>(() => {
+  if (section.value === 'components') return componentsSidebar.value
+  if (section.value === 'guide') return guideSidebar.value
+  return null
+})
 
 const filteredSidebar = computed<SidebarSection[]>(() => {
-  if (section.value !== 'components') return []
+  const sections = sidebarSections.value
+  if (!sections) return []
   const q = search.value.trim().toLowerCase()
-  if (!q) return componentsSidebar.value
-  return componentsSidebar.value
+  if (!q) return sections
+  return sections
     .map((s) => ({
       ...s,
       items: s.items.filter((i) => i.label.toLowerCase().includes(q)),
@@ -54,14 +66,17 @@ const filteredSidebar = computed<SidebarSection[]>(() => {
     .filter((s) => s.items.length > 0)
 })
 
-const showSidebar = computed(() => section.value === 'components')
+const showSidebar = computed(() => section.value === 'components' || section.value === 'guide')
 
 const headerActive = computed<string | null>(() => {
   if (section.value === 'components') return 'components'
+  if (section.value === 'guide') return 'guide'
+  if (section.value === 'roadmap') return 'roadmap'
+  if (section.value === 'about') return 'about'
   return null
 })
 
-const showSearch = computed(() => section.value === 'components')
+const showSearch = computed(() => section.value === 'components' || section.value === 'guide')
 
 const languageOptions = computed<LanguageOption[]>(() =>
   SUPPORTED_LOCALES.map((code) => ({
@@ -74,7 +89,12 @@ const languageOptions = computed<LanguageOption[]>(() =>
 const footerColumns = computed<FooterColumn[]>(() => [
   {
     title: t.value.footer.columnDocs,
-    links: [{ label: t.value.footer.linkComponents, href: '#/components/button' }],
+    links: [
+      { label: t.value.footer.linkGettingStarted, href: '#/guide/getting-started' },
+      { label: t.value.footer.linkComponents, href: '#/components/button' },
+      { label: t.value.footer.linkTheming, href: '#/guide/theming' },
+      { label: t.value.footer.linkCoreApi, href: '#/guide/core-api' },
+    ],
   },
   {
     title: t.value.footer.columnResources,
@@ -110,6 +130,8 @@ const footerColumns = computed<FooterColumn[]>(() => [
   {
     title: t.value.footer.columnProject,
     links: [
+      { label: t.value.footer.linkAbout, href: '#/about' },
+      { label: t.value.footer.linkRoadmap, href: '#/roadmap' },
       {
         label: t.value.footer.linkLicense,
         href: `${GITHUB_URL}/blob/master/LICENSE`,
@@ -173,6 +195,7 @@ const sidebarActive = computed<string | null>(() => routeToKey(route.value.path)
         @update:search-value="search = $event"
       >
         <template #extras>
+          <FrameworkSwitcher active="vue" />
           <LanguageSwitcher
             :options="languageOptions"
             :active="locale"

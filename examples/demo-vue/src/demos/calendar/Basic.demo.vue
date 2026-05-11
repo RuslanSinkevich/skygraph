@@ -1,11 +1,9 @@
 <script setup lang="ts">
 /**
- * Default month grid, uncontrolled. Header shows month/year title with
- * prev/next nav arrows; clicking a day selects it.
- *
- * Vue delta: `SgCalendar` has no `fullscreen` toggle (always renders the
- * same compact-style table). See `findings/T-Vue-Demo-Forms.md` →
- * `calendar-vue-feature-gaps`.
+ * Default month grid, uncontrolled. Header shows month/year selects and
+ * prev/next nav arrows; mode-switch toggles between month and year views.
+ * Clicking a day selects it; the "Today" button in the footer resets the
+ * selection to today.
  */
 import { SgCalendar } from '@skygraph/vue'
 </script>

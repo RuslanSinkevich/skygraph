@@ -3,8 +3,8 @@ import type { StepItem } from '@skygraph/vue'
 /**
  * Shared step lists for the Vue demos.
  *
- * Vue-side delta vs React: `StepItem` has no `icon` field — see the
- * doc strings for the omitted `CustomIcon` example.
+ * `StepItem` exposes `icon?: string` for simple emoji/text icons, or
+ * use the named `icon` slot for richer content (see CustomIcon doc).
  */
 export const basicSteps: StepItem[] = [
   { title: 'Finished', description: 'Kick-off meeting complete.' },

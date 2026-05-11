@@ -25,6 +25,19 @@ export interface DemoDict {
     visualization: string
     guide: string
   }
+  /**
+   * Sidebar entry labels for the Guide section. 1:1 with React
+   * `examples/demo/src/i18n/types.ts#menuItems`. Wave 3.4 ports only the
+   * 6 guide labels — `overview` is React-only and intentionally omitted.
+   */
+  menuItems: {
+    gettingStarted: string
+    stylingShowcase: string
+    theming: string
+    designTokens: string
+    coreApi: string
+    configProvider: string
+  }
   header: {
     navComponents: string
     navHome: string
@@ -128,5 +141,142 @@ export interface DemoDict {
     quickInstallDesc: string
     quickInstallCopy: string
     quickInstallCopied: string
+  }
+
+  /**
+   * Roadmap page (`/roadmap`). 1:1 with React
+   * `examples/demo/src/i18n/types.ts#roadmap`.
+   */
+  roadmap: {
+    title: string
+    lead: string
+    statClosed: string
+    statOpen: string
+    statTotal: string
+    sourceLabel: string
+    emptyLabel: string
+  }
+
+  /**
+   * About page (`/about`). 1:1 with React
+   * `examples/demo/src/i18n/types.ts#about`. Vue surface intentionally
+   * mirrors the same labels; no Vue-specific copy.
+   */
+  about: {
+    title: string
+    lead1: string
+    lead2: string
+    lead3: string
+    versionLabel: string
+    licenseLabel: string
+    licenseValue: string
+    architectureLink: string
+    skyPlatformTitle: string
+    skyPlatformLead: string
+    skycodeTitle: string
+    skycodeDesc: string
+    skyforkTitle: string
+    skyforkDesc: string
+    skygraphTitle: string
+    skygraphDesc: string
+    multiFrameworkTitle: string
+    multiFrameworkLead: string
+    multiFrameworkVue: string
+    multiFrameworkAngular: string
+  }
+
+  /** Getting Started guide (`/guide/getting-started`). */
+  gettingStarted: {
+    title: string
+    lead: string
+    installation: string
+    installLeadNpm: string
+    installLeadPnpm: string
+    importStyles: string
+    importStylesLead: string
+    importStylesNote1: string
+    importStylesNote2Theming: string
+    basicForm: string
+    basicFormLead: string
+    individualComponents: string
+    individualComponentsLead: string
+    whatsNext: string
+    cardThemingTitle: string
+    cardThemingDesc: string
+    cardCoreApiTitle: string
+    cardCoreApiDesc: string
+    cardComponentsTitle: string
+    cardComponentsDesc: string
+  }
+
+  /** Theming guide (`/guide/theming`). */
+  theming: {
+    title: string
+    lead: string
+    threeLayersHeading: string
+    colLayer: string
+    colPrefix: string
+    colPurpose: string
+    layerPalette: string
+    layerPalettePurpose: string
+    layerSemantic: string
+    layerSemanticPurpose: string
+    layerComponent: string
+    layerComponentPurpose: string
+    layersFooter: string
+    darkModeHeading: string
+    darkModeLead: string
+    darkModeNote: string
+    customThemeHeading: string
+    customThemeLead: string
+    customThemeFooter: string
+    perComponentHeading: string
+    perComponentLead: string
+    slotsHeading: string
+    slotsLead: string
+    headlessHeading: string
+    headlessLead: string
+    headlessFooter: string
+  }
+
+  /** Core API guide (`/guide/core-api`). */
+  coreApi: {
+    title: string
+    lead: string
+    sectionStore: string
+    sectionStoreLead: string
+    sectionEngines: string
+    sectionEnginesLead: string
+    sectionTyped: string
+    sectionTypedLead: string
+    sectionMiddleware: string
+    sectionMiddlewareLead: string
+    sectionGraph: string
+    sectionGraphLead: string
+  }
+
+  /**
+   * Stub guide pages — Vue-side parity is structural only. Full ports of
+   * `StylingShowcasePage`, `DesignTokensPage` and `ConfigProviderDemo`
+   * (the embedded guide variant) are out of scope for Wave 3.4 — see
+   * `docs/_streams/findings/T-Vue-Demo-Header-Parity.md#guide-stubs`.
+   */
+  guideStub: {
+    seeReactDocs: string
+    stylingShowcaseTitle: string
+    stylingShowcaseLead: string
+    designTokensTitle: string
+    designTokensLead: string
+    configProviderTitle: string
+    configProviderLead: string
+  }
+
+  /**
+   * `<FrameworkSwitcher>` — used in the topbar `extras` slot. Visual
+   * parity with `examples/demo/src/components/FrameworkSwitcher.tsx`.
+   */
+  frameworkSwitcher: {
+    label: string
+    comingSoonTitle: string
   }
 }

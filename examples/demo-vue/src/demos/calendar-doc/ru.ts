@@ -10,11 +10,11 @@ export const calendarDocRu: { [K in keyof typeof calendarDocEn]: string } = {
   crumbCalendar: 'Calendar',
 
   pageLead:
-    'Месячный календарь с опциональными событиями, номерами недель, weekStart-настройкой и предикатом disabled-дней. Компактная выкладка — без fullscreen.',
+    'Календарь month + year с маркерами событий, номерами недель, weekStart-настройкой и предикатом disabled-дней. Компактная или fullscreen-выкладка.',
   pageWhen1: 'Как месячный обзор внутри admin-дашборда или планировщика.',
   pageWhen2: 'Когда нужны лёгкие маркеры событий по дням.',
   pageWhen3:
-    'Для range / multiple selection, кастомных ячеек, локали или fullscreen — используйте React-версию (Vue-паритет в работе).',
+    'Для range / multiple selection, кастомных ячеек, локали или клавиатурной навигации — используйте React-версию (Vue-паритет в работе).',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Сетка месяца, сегодня подсвечен.',
@@ -22,7 +22,7 @@ export const calendarDocRu: { [K in keyof typeof calendarDocEn]: string } = {
   demoControlledDesc: 'Родитель владеет выбранной датой через v-model.',
   demoEventsTitle: 'События',
   demoEventsDesc:
-    'Каждая ячейка перечисляет совпавшие события. Vue использует `{ id, title, type }`, без `maxEvents`-overflow.',
+    'Каждая ячейка показывает цветные точки событий. `max-events` ограничивает их количество, остаток сворачивается в `+N`.',
   demoWeekStartTitle: 'Неделя с понедельника',
   demoWeekStartDesc: '`week-start-day="1"` ротейтит колонки дней недели.',
   demoWeekNumbersTitle: 'Номера недель',
@@ -31,7 +31,7 @@ export const calendarDocRu: { [K in keyof typeof calendarDocEn]: string } = {
   demoDisabledDatesDesc: 'Серим прошлые дни и выходные.',
   demoYearModeTitle: 'Year-режим',
   demoYearModeDesc:
-    '`mode="year"` принимается, но Vue-сетка та же, что и `month` (gap).',
+    '`mode="year"` показывает обзор из 12 месяцев; клик по месяцу возвращает в сетку дней.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc: 'Скоуп глобальных токенов на обёртке для перекраски.',
   demoUnstyledTitle: 'Unstyled',
@@ -44,7 +44,7 @@ export const calendarDocRu: { [K in keyof typeof calendarDocEn]: string } = {
   propModelValue: 'Привязка через v-model (Vue-идиома)',
   propValue: 'Совместимый алиас для `modelValue` — выбранная дата',
   propDefaultValue: 'Начальная дата в неуправляемом режиме',
-  propMode: 'Режим отображения (в Vue полностью реализован только `month`)',
+  propMode: "Режим отображения ('month' | 'year')",
   propEvents: 'Маркеры событий по датам',
   propWeekStartDay: '0 = воскресенье … 6 = суббота',
   propShowWeekNumbers: 'Колонка ISO-недель',
@@ -56,7 +56,7 @@ export const calendarDocRu: { [K in keyof typeof calendarDocEn]: string } = {
 
   eventId: 'Стабильный идентификатор (для v-for `:key`)',
   eventDate: 'Дата события',
-  eventTitle: 'Короткая подпись в ячейке',
+  eventTitle: 'Подпись (tooltip) на точке события',
   eventType: 'Свободный тег для группировки/фильтрации',
 
   cssHint:

@@ -837,4 +837,36 @@ a {
   border-bottom: 1px solid var(--sg-color-border-secondary);
 }
 
+/* ── "What's next" cards (Getting Started page) ─────────────────────── */
+
+.doc-card-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.doc-next-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius, 6px);
+  color: var(--sg-color-text);
+  text-decoration: none;
+  transition: all 0.15s;
+  background: var(--sg-color-bg);
+}
+
+.doc-next-card:hover {
+  border-color: var(--sg-color-primary);
+  box-shadow: var(--sg-shadow-sm);
+}
+
+.doc-next-card span {
+  font-size: 12px;
+  color: var(--sg-color-text-secondary);
+}
+
 /* === END:   ported from examples/demo/src/app.css === */
