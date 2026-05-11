@@ -136,7 +136,7 @@ actions, селекция, парность React↔Vue, visual polish CSS. Ни
 - 3.3b → `packages/vue/src/components/**` (кроме `complex/Diagram/**`) + точечно `packages/styles/components/*.css` (кроме `diagram.css`)
 - 3.3c → `packages/{vue,react}/src/components/complex/Diagram/**` + `packages/core/src/engines/graph/**` + `packages/styles/components/diagram.css` + `examples/showcases/src/showcases/workflow-editor/**`
 
-### Волна 3.4 — паритет шапки и страниц demo-vue (1 таб, **параллельно с Wave 4.2**)
+### Волна 3.4 — паритет шапки и страниц demo-vue (1 таб, **параллельно с Wave 3.5 и Wave 4.2**)
 
 После Wave 3.3 контент в demo-vue паритетен с React по компонентам и
 обёрткам, но верхнее меню всё ещё короткое: только Components + GitHub.
@@ -151,13 +151,30 @@ FrameworkSwitcher.
 
 Карта: `docs/_streams/wave-3/T-Vue-Demo-Header-Parity.md`.
 
-### Волна 3.3 — пост-миграционный QA (1 таб, после 3.3a + 3.3b + 3.3c + 3.4)
+### Волна 3.5 — точечный bugfix Vue-компонентов и удаление хардкода (1 таб, **параллельно с Wave 3.4 и Wave 4.2**)
+
+Пользовательские жалобы после 3.3a/b: ColorPicker/DatePicker/TimePicker
+не открываются (попап-логика); Calendar/Upload/Transfer/Steps/Segmented
+сломана разметка/стили; Table/ResourceCalendar расходятся с React в
+демо-части и визуально. Сквозной аудит — внутри сложных Sg-компонентов
+не должно быть хардкод нативных тегов (`<input>`/`<button>`/`<select>`/
+`<a>`/`<svg>`/самописный pagination/empty/spinner) там, где есть готовый
+`Sg*`-аналог.
+
+| ID | Назначение |
+|---|---|
+| T-Vue-Components-Functional-Fixes | Починить попапы (ColorPicker/DatePicker/TimePicker), разметку (Calendar/Upload/Transfer/Steps/Segmented), сложные (Table/ResourceCalendar). Удалить хардкод во всех 10 компонентах и их демо-страницах. Эталон — React 1:1, никакого изобретательства. |
+
+Карта: `docs/_streams/wave-3/T-Vue-Components-Functional-Fixes.md`.
+
+### Волна 3.3 — пост-миграционный QA (1 таб, после 3.3a + 3.3b + 3.3c + 3.4 + 3.5)
 
 Один независимый стрим **после** мержа всех воркеров 3.2 и **после
-закрытия 3.3a + 3.3b + 3.3c**. Делает полный аудит demo-vue (стили,
-отображение, консоль, визуальный паритет с React). К этому моменту
-обёртки демо, DOM компонентов пакета и Diagram уже паритетны — аудит
-ловит только остаточные расхождения в страницах `demos/<comp>/**`.
+закрытия 3.3a + 3.3b + 3.3c + 3.4 + 3.5**. Делает полный аудит demo-vue
+(стили, отображение, консоль, визуальный паритет с React). К этому
+моменту обёртки демо, DOM компонентов пакета, Diagram, шапка/страницы
+demo-vue и точечные bugfix перечисленных компонентов уже паритетны —
+аудит ловит только остаточные расхождения в страницах `demos/<comp>/**`.
 
 | ID | Назначение |
 |---|---|
@@ -186,6 +203,8 @@ FrameworkSwitcher.
 | `examples/demo-vue/src/demos/components/*.vue` (порт классов/DOM React 1:1), `examples/demo-vue/src/style.css` (порт правил `.demo-box*` / `.doc-*` / `.demo-props-*` из `examples/demo/src/app.css`), `examples/demo-vue/src/i18n/{types.ts,dict-en.ts,dict-ru.ts}` (секции `demoBox`, `propsTable`) | T-Vue-Demo-Wrappers-Parity |
 | `packages/vue/src/components/**` (DOM/класcы/aria-паритет с React, без слома API, **исключая `complex/Diagram/**`**), точечно `packages/styles/components/*.css` (только Vue-специфичные правила, общие — finding, **исключая `diagram.css`**) | T-Vue-Components-DOM-Parity |
 | `packages/{vue,react}/src/components/complex/Diagram/**`, `packages/core/src/engines/graph/**`, `packages/styles/components/diagram.css`, `examples/showcases/src/showcases/workflow-editor/**`, точечно `examples/demo-vue/src/demos/diagram/**` и `examples/demo/src/demos/diagram/**` | T-Diagram-Polish |
+| `examples/demo-vue/src/{App.vue, nav.ts, router/**, i18n/**, pages/Roadmap.vue, pages/About.vue, guide/**, components/FrameworkSwitcher.vue}` | T-Vue-Demo-Header-Parity |
+| `packages/vue/src/components/ui/{ColorPicker,DatePicker,TimePicker,Calendar,Upload,Transfer,Segmented,Steps}.vue`, `packages/vue/src/components/complex/{Table,ResourceCalendar}/**`, `packages/vue/src/__tests__/components/{table,colorpicker,datepicker,timepicker,calendar,upload,transfer,segmented,steps,resource-calendar}.test.ts`, `examples/demo-vue/src/demos/{colorpicker,datepicker,timepicker,calendar,upload,transfer,segmented,steps,table,resource-calendar}/**` + соответствующие `<Comp>Demo.vue` и `<comp>-doc/`, точечно `packages/styles/components/{color-picker,date-picker,time-picker,calendar,upload,transfer,segmented,steps,table,resource-calendar}.css` | T-Vue-Components-Functional-Fixes |
 | `docs/_streams/audit/vue-demo-postmigration-audit.md` (новый/append), при необходимости `docs/_streams/audit/screenshots/postmigration/**` | T-Vue-Demo-PostMigration-Audit |
 | `examples/demo-vue/src/demos/**/*.vue` (фиксы отображения после миграции; **`demos/components/*` уже фиксирован 3.3a — не трогать без явной причины**), `examples/demo-vue/src/style.css`, `examples/demo-vue/src/styles/**`, `examples/_shared-vue/src/layout/styles.css`, `examples/demo-vue/src/pages/Landing.vue` + `landing.css` | T-Vue-Demo-PostMigration-Audit |
 
@@ -237,7 +256,7 @@ FrameworkSwitcher.
 ## 6. Зависимости волн
 
 ```
-Волна 1 (закрыта) → Волна 2 (закрыта) → Волна 3.1 → Волна 3.2 (5 параллельных табов) → Волна 3.3a + 3.3b + 3.3c (параллельно) → Волна 3.3 (1 таб, пост-QA)
+Волна 1 (закрыта) → Волна 2 (закрыта) → Волна 3.1 → Волна 3.2 (5 параллельных табов) → Волна 3.3a + 3.3b + 3.3c (параллельно) → Волна 3.4 + 3.5 + 4.2 (параллельно) → Волна 3.3 (1 таб, пост-QA)
 ```
 
 Запускать 3.2 **до** окончания 3.1 — нельзя: воркеры будут вручную
@@ -251,9 +270,13 @@ FrameworkSwitcher.
 `packages/vue/src/components/**` без Diagram vs
 Diagram-граф во всех пакетах) не пересекаются.
 
-Запускать 3.3 **до** закрытия 3.3a + 3.3b + 3.3c — нельзя:
-PostMigration-Audit будет видеть «не паритетный» визуал и попытается
-чинить чужие зоны.
+3.4, 3.5 и 4.2 — **параллельные**: зоны
+(`demo-vue` shell+pages vs `packages/vue` 10 компонентов + их demo
+страницы vs `packages/angular` + `demo-angular`) не пересекаются.
+
+Запускать 3.3 **до** закрытия 3.3a + 3.3b + 3.3c + 3.4 + 3.5 —
+нельзя: PostMigration-Audit будет видеть «не паритетный» визуал и
+попытается чинить чужие зоны.
 
 ---
 
@@ -298,4 +321,6 @@ PostMigration-Audit будет видеть «не паритетный» виз
 | `docs/_streams/wave-3/T-Vue-Demo-Wrappers-Parity.md` |
 | `docs/_streams/wave-3/T-Vue-Components-DOM-Parity.md` |
 | `docs/_streams/wave-3/T-Diagram-Polish.md` |
+| `docs/_streams/wave-3/T-Vue-Demo-Header-Parity.md` |
+| `docs/_streams/wave-3/T-Vue-Components-Functional-Fixes.md` |
 | `docs/_streams/wave-3/T-Vue-Demo-PostMigration-Audit.md` |
