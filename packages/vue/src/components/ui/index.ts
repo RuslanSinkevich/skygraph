@@ -91,28 +91,8 @@ export type { DescriptionsProps, DescriptionsItem } from './Descriptions.vue'
 export { default as SgCollapse } from './Collapse.vue'
 export type { CollapseProps, CollapseItem } from './Collapse.vue'
 
-export { default as SgInputPassword } from './InputPassword.vue'
-export type { InputPasswordProps, PasswordStrength } from './InputPassword.vue'
-
-export { default as SgSearchInput } from './SearchInput.vue'
-export type { SearchInputProps } from './SearchInput.vue'
-
-export { default as SgTagInput } from './TagInput.vue'
-export type { TagInputProps } from './TagInput.vue'
-
-export { default as SgPinInput } from './PinInput.vue'
-export type { PinInputProps } from './PinInput.vue'
-
-export { default as SgInlineEdit } from './InlineEdit.vue'
-export type { InlineEditProps } from './InlineEdit.vue'
-
-export { default as SgInputGroup } from './InputGroup.vue'
-export type { InputGroupProps } from './InputGroup.vue'
-
-export type {
-  InputPasswordLocale,
-  SearchInputLocale,
-  TagInputLocale,
-  PinInputLocale,
-  InlineEditLocale,
-} from '../../types'
+// Note: SgInputPassword / SgSearchInput / SgTagInput / SgPinInput /
+// SgInlineEdit / SgInputGroup are exported directly from the package
+// entry (`packages/vue/src/index.ts`) — they don't need to participate
+// in this internal `components/ui` barrel which feeds the public
+// primitives re-export and the `ui-*.test.ts` suites.

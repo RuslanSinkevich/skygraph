@@ -29,6 +29,11 @@ export const buttonDocRu: { [K in keyof typeof buttonDocEn]: string } = {
   demoTokensDesc: 'Скоуп `--sg-btn-*` для локальной формы (pill, крупнее, компактнее).',
   demoBrandTitle: 'Бренд в скоупе',
   demoBrandDesc: 'Переопределите `--sg-color-primary*` для поддерева.',
+  demoUnstyledTitle: 'Без стилей',
+  demoUnstyledDesc:
+    '`unstyled` сохраняет семантику кнопки (htmlType, disabled, aria-busy), но убирает все классы `sg-button-*`.',
+
+  propUnstyled: 'Убирает все классы `sg-button-*`; семантика (disabled, aria-busy) сохраняется.',
 
   tableButtonApi: 'API Button',
   tableCssVars: 'CSS-переменные',

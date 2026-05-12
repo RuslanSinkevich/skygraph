@@ -2,14 +2,10 @@
 /**
  * `ButtonDemo` — aggregator for the Button component page.
  *
- * Mirrors `examples/demo/src/demos/ButtonDemo.tsx` 1:1, with two
- * Vue-specific deltas (see `docs/_streams/decisions/T-Vue-Demo-Foundation.md`):
- *   1. `Unstyled.demo.vue` — skipped because `SgButton` has no
- *      `unstyled` prop (`packages/vue/**` is read-only for Wave 3).
- *      `findings/T-Vue-Demo-Foundation.md` → `button-unstyled-skipped`.
- *   2. `propsData` lists Vue-only props `danger` and `block` and
- *      reflects the Vue contract (no `className` / `style` / `onClick`
- *      props — Vue uses fallthrough class/style and `@click` emit).
+ * Mirrors `examples/demo/src/demos/ButtonDemo.tsx` 1:1 (8/8 demos).
+ * `propsData` lists Vue-only props `danger` and `block` and reflects
+ * the Vue contract (no `className` / `style` / `onClick` props —
+ * Vue uses fallthrough class/style and `@click` emit).
  */
 import { computed } from 'vue'
 import {
@@ -37,6 +33,8 @@ import ComponentTokensButton from './button/ComponentTokens.demo.vue'
 import ComponentTokensSource from './button/ComponentTokens.demo.vue?raw'
 import ScopedBrandButton from './button/ScopedBrand.demo.vue'
 import ScopedBrandSource from './button/ScopedBrand.demo.vue?raw'
+import UnstyledButton from './button/Unstyled.demo.vue'
+import UnstyledSource from './button/Unstyled.demo.vue?raw'
 
 const t = useButtonDocStrings()
 
@@ -70,6 +68,12 @@ const buttonProps = computed<PropDef[]>(() => [
   {
     name: 'loading',
     description: t.value.propLoading,
+    type: 'boolean',
+    default: 'false',
+  },
+  {
+    name: 'unstyled',
+    description: t.value.propUnstyled,
     type: 'boolean',
     default: 'false',
   },
@@ -186,6 +190,10 @@ const buttonCssVars = computed<CssVarDef[]>(() => [
 
     <DemoBox :title="t.demoBrandTitle" :description="t.demoBrandDesc" :code="ScopedBrandSource">
       <ScopedBrandButton />
+    </DemoBox>
+
+    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
+      <UnstyledButton />
     </DemoBox>
 
     <template #api>

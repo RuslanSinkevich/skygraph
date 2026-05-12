@@ -21,17 +21,42 @@ export const formDocRu: FormDocStrings = {
   demoLayoutITitle: 'Layout — inline',
   demoLayoutIDesc: 'Бары фильтров и поиска, где все поля в одной строке.',
   demoRequiredMarkTitle: 'Маркер обязательности',
-  demoRequiredMarkDesc: 'Звёздочка (дефолт), без маркера, либо «(optional)» — инвертированная схема.',
+  demoRequiredMarkDesc:
+    'Звёздочка (дефолт), без маркера, либо «(optional)» — инвертированная схема.',
   demoSizesTitle: 'Размеры',
-  demoSizesDesc: 'small / middle / large распространяется на все вложенные контролы через контекст.',
+  demoSizesDesc:
+    'small / middle / large распространяется на все вложенные контролы через контекст.',
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: 'disabled на форме отключает все контролы одной командой.',
   demoNestedTitle: 'Вложенные поля',
   demoNestedDesc: 'Dotted-имена автоматически складываются во вложенные объекты в дереве значений.',
   demoControlsTitle: 'Галерея контролов',
-  demoControlsDesc: 'Select, RadioGroup, Switch, Checkbox, InputNumber, Slider — единый паттерн default-slot.',
+  demoControlsDesc:
+    'Select, RadioGroup, Switch, Checkbox, InputNumber, Slider — единый паттерн default-slot.',
   demoCompositionTitle: 'Распределённая композиция',
-  demoCompositionDesc: 'Три вложенных компонента делят один form-контекст — никакого drilling-а значений.',
+  demoCompositionDesc:
+    'Три вложенных компонента делят один form-контекст — никакого drilling-а значений.',
+
+  demoAsyncTitle: 'Асинхронная валидация',
+  demoAsyncDesc:
+    'Валидатор может вернуть Promise; поле показывает loading-состояние пока он pending.',
+  demoDependentTitle: 'Зависимые поля',
+  demoDependentDesc:
+    '`dependencies` ревалидирует поле при изменении соседей — классика confirm-password.',
+  demoFieldStatusTitle: 'Кастомный статус поля',
+  demoFieldStatusDesc:
+    '`validateStatus` красит success / warning / error / validating от внешнего источника.',
+  demoLiveWatchTitle: 'Live watch',
+  demoLiveWatchDesc:
+    '`useWatch(core, path)` подписывается только на одно поле — соседи не ререндерятся.',
+  demoLoginCardTitle: 'Карточка логина',
+  demoLoginCardDesc: 'Реальный стиль: центрированная карта-обёртка, форма остаётся семантической.',
+  demoSearchBarTitle: 'Бар поиска',
+  demoSearchBarDesc: 'Inline-фильтр из текста / select / даты в одной строке.',
+  demoSchemaBasicTitle: 'SchemaForm — базовая',
+  demoSchemaBasicDesc: '`<SgSchemaForm>` строит поля, дефолты и правила из JSON Schema.',
+  demoSchemaLayoutTitle: 'SchemaForm — layout',
+  demoSchemaLayoutDesc: 'Horizontal + small и inline + disabled на одной и той же схеме.',
 
   tableFormApi: 'API формы',
   tableFieldApi: 'API поля',

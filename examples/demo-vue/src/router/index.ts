@@ -5,7 +5,6 @@ const Landing = () => import('../pages/Landing.vue')
 const ButtonDemo = () => import('../demos/ButtonDemo.vue')
 const InputDemo = () => import('../demos/InputDemo.vue')
 const InputNumberDemo = () => import('../demos/InputNumberDemo.vue')
-const TextareaDemo = () => import('../demos/TextareaDemo.vue')
 const SelectDemo = () => import('../demos/SelectDemo.vue')
 const CheckboxDemo = () => import('../demos/CheckboxDemo.vue')
 const RadioDemo = () => import('../demos/RadioDemo.vue')
@@ -73,7 +72,6 @@ const routes: RouteRecord[] = [
   { path: '/components/button', component: ButtonDemo },
   { path: '/components/input', component: InputDemo },
   { path: '/components/inputnumber', component: InputNumberDemo },
-  { path: '/components/textarea', component: TextareaDemo },
   { path: '/components/select', component: SelectDemo },
   { path: '/components/checkbox', component: CheckboxDemo },
   { path: '/components/radio', component: RadioDemo },

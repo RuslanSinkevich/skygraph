@@ -9,11 +9,13 @@ export const formDocEn = {
   crumbForm: 'Form',
   pageLead:
     'Schema-less form engine: dotted field names, rule-based validation, layout/size context, distributed composition. Works the same in plain forms and in dynamic field arrays.',
-  pageWhen1: 'You collect data from a user and need validation, layout, focus management out of the box.',
+  pageWhen1:
+    'You collect data from a user and need validation, layout, focus management out of the box.',
   pageWhen2: 'You want one form context that flows through arbitrarily nested components.',
 
   demoBasicTitle: 'Basic',
-  demoBasicDesc: 'Multi-field form with submit handler. Default-slot exposes value/onChange/onBlur per field.',
+  demoBasicDesc:
+    'Multi-field form with submit handler. Default-slot exposes value/onChange/onBlur per field.',
   demoValidationTitle: 'Validation rules',
   demoValidationDesc: 'Required, length, regex and custom validators with per-rule messages.',
   demoLayoutVTitle: 'Layout — vertical',
@@ -31,9 +33,32 @@ export const formDocEn = {
   demoNestedTitle: 'Nested fields',
   demoNestedDesc: 'Dotted names auto-store into nested objects on the form value tree.',
   demoControlsTitle: 'Control gallery',
-  demoControlsDesc: 'Select, RadioGroup, Switch, Checkbox, InputNumber, Slider — all wired through the same default-slot pattern.',
+  demoControlsDesc:
+    'Select, RadioGroup, Switch, Checkbox, InputNumber, Slider — all wired through the same default-slot pattern.',
   demoCompositionTitle: 'Distributed composition',
-  demoCompositionDesc: 'Three nested components share one form context — no prop-drilling of values.',
+  demoCompositionDesc:
+    'Three nested components share one form context — no prop-drilling of values.',
+
+  demoAsyncTitle: 'Async validation',
+  demoAsyncDesc:
+    'Validators may return a Promise; the field shows the loading state while pending.',
+  demoDependentTitle: 'Dependent fields',
+  demoDependentDesc:
+    '`dependencies` re-validates a field when listed siblings change — classic confirm-password.',
+  demoFieldStatusTitle: 'Custom field status',
+  demoFieldStatusDesc:
+    '`validateStatus` paints success / warning / error / validating from external sources.',
+  demoLiveWatchTitle: 'Live watch',
+  demoLiveWatchDesc:
+    '`useWatch(core, path)` subscribes only to one field — zero re-renders for siblings.',
+  demoLoginCardTitle: 'Login card',
+  demoLoginCardDesc: 'Real-world styling: centred card wrapper, semantic form untouched.',
+  demoSearchBarTitle: 'Search bar',
+  demoSearchBarDesc: 'Inline layout filter row with mixed text / select / date controls.',
+  demoSchemaBasicTitle: 'SchemaForm — basic',
+  demoSchemaBasicDesc: '`<SgSchemaForm>` derives fields, defaults and rules from a JSON Schema.',
+  demoSchemaLayoutTitle: 'SchemaForm — layout',
+  demoSchemaLayoutDesc: 'Horizontal + small, and inline + disabled, sharing the same schema.',
 
   tableFormApi: 'Form API',
   tableFieldApi: 'Field API',

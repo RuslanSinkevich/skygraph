@@ -25,7 +25,6 @@ export function buildComponentsSidebar(t: DemoDict): SidebarSection[] {
       items: [
         { key: 'components/input', label: 'Input' },
         { key: 'components/inputnumber', label: 'InputNumber' },
-        { key: 'components/textarea', label: 'Textarea' },
         { key: 'components/select', label: 'Select' },
         { key: 'components/autocomplete', label: 'AutoComplete' },
         { key: 'components/treeselect', label: 'TreeSelect' },

@@ -31,6 +31,11 @@ export const buttonDocEn = {
   demoTokensDesc: 'Scope --sg-btn-* for a local reshape (pills, chunky, compact).',
   demoBrandTitle: 'Scoped brand',
   demoBrandDesc: 'Override --sg-color-primary* to rebrand a subtree.',
+  demoUnstyledTitle: 'Unstyled',
+  demoUnstyledDesc:
+    '`unstyled` keeps button semantics — htmlType, disabled, aria-busy — but drops every `sg-button-*` class.',
+
+  propUnstyled: 'Drop all `sg-button-*` classes; keep semantics (disabled, aria-busy).',
 
   tableButtonApi: 'Button API',
   tableCssVars: 'CSS Variables',
