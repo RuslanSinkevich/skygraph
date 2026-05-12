@@ -2,6 +2,7 @@ import type React from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import '@skygraph/styles'
 import './app.css'
+import './components/DemoTOC/demo-toc.css'
 import '@skygraph-examples/shared-react/layout/styles.css'
 import {
   AppShell,
@@ -286,7 +287,12 @@ function buildGuideSidebar(t: DemoDict): SidebarSection[] {
 // ---------------------------------------------------------------------------
 
 function getHashRoute(): string {
-  const h = window.location.hash.replace(/^#\/?/, '')
+  // The DemoTOC encodes a section anchor as `~<section-id>` because the
+  // app already owns the leading hash for routing. Strip that suffix
+  // before resolving the route so the route never depends on which
+  // demo block is active.
+  const raw = window.location.hash.replace(/^#\/?/, '')
+  const h = raw.split('~')[0]
   if (!h) return 'landing'
   if (h === 'overview') return 'landing'
   if (LEGACY_GUIDE_KEYS[h]) return LEGACY_GUIDE_KEYS[h]

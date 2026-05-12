@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { useI18n } from '../i18n'
+import { useDemoTOC } from './DemoTOC'
 
 export interface DemoBoxProps {
   title: string
@@ -27,6 +28,10 @@ export function DemoBox({
   const [open, setOpen] = useState(defaultOpen)
   const [copied, setCopied] = useState(false)
   const codeRef = useRef<HTMLPreElement>(null)
+  // Wire up the page-level TOC. No-op when used outside a
+  // <DemoTOCProvider>, which is what guide pages and StylingShowcase
+  // currently rely on.
+  const { id, ref: rootRef } = useDemoTOC(title)
   const hasCode = typeof code === 'string' && code.trim().length > 0
 
   const copy = async () => {
@@ -41,7 +46,7 @@ export function DemoBox({
   }
 
   return (
-    <div className="demo-box">
+    <div className="demo-box" id={id} ref={rootRef}>
       <div
         className={[
           'demo-box-preview',

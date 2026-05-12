@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useI18n } from '../i18n'
+import { DemoTOC, DemoTOCProvider } from './DemoTOC'
 
 export interface ComponentDocProps {
   title: string
@@ -25,41 +26,48 @@ export function ComponentDoc({
 }: ComponentDocProps) {
   const { t } = useI18n()
   return (
-    <section className="doc-page">
-      {crumbs && crumbs.length > 0 && (
-        <div className="doc-crumbs">
-          {crumbs.map((c, i) => (
-            <span key={i} className="doc-crumb">
-              {c}
-              {i < crumbs.length - 1 && <span className="doc-crumb-sep">/</span>}
-            </span>
-          ))}
-        </div>
-      )}
+    <DemoTOCProvider>
+      <div className="doc-with-toc">
+        <section className="doc-page">
+          {crumbs && crumbs.length > 0 && (
+            <div className="doc-crumbs">
+              {crumbs.map((c, i) => (
+                <span key={i} className="doc-crumb">
+                  {c}
+                  {i < crumbs.length - 1 && <span className="doc-crumb-sep">/</span>}
+                </span>
+              ))}
+            </div>
+          )}
 
-      <header className="doc-header">
-        <h1 className="doc-component-title">
-          {title}
-          {badge && <span className="doc-badge">{badge}</span>}
-        </h1>
-        <p className="doc-lead">{description}</p>
-      </header>
+          <header className="doc-header">
+            <h1 className="doc-component-title">
+              {title}
+              {badge && <span className="doc-badge">{badge}</span>}
+            </h1>
+            <p className="doc-lead">{description}</p>
+          </header>
 
-      {whenToUse && whenToUse.length > 0 && (
-        <div className="doc-when-to-use">
-          <h2>{t.componentDoc.whenToUse}</h2>
-          <ul>
-            {whenToUse.map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+          {whenToUse && whenToUse.length > 0 && (
+            <div className="doc-when-to-use">
+              <h2>{t.componentDoc.whenToUse}</h2>
+              <ul>
+                {whenToUse.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-      {notes && <div className="doc-notes">{notes}</div>}
+          {notes && <div className="doc-notes">{notes}</div>}
 
-      <h2>{t.componentDoc.examples}</h2>
-      <div className="doc-demos">{children}</div>
-    </section>
+          <h2>{t.componentDoc.examples}</h2>
+          <div className="doc-demos">{children}</div>
+        </section>
+        <aside className="doc-toc-aside">
+          <DemoTOC />
+        </aside>
+      </div>
+    </DemoTOCProvider>
   )
 }
