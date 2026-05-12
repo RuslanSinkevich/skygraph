@@ -18,6 +18,7 @@ import { describe, it, expect } from 'vitest'
 import { Component } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { provideSgConfig } from '../src/lib/config/provide-sg-config'
+import { en_US, ru_RU, zh_CN, de_DE, fr_FR, es_ES } from '../src/lib/locales'
 import { SgButtonComponent } from '../src/lib/components/ui/button/sg-button.component'
 import { SgSpinComponent } from '../src/lib/components/ui/spin/sg-spin.component'
 import { SgConfigProviderComponent } from '../src/lib/config/sg-config-provider.component'
@@ -80,6 +81,7 @@ import {
   SgTreeComponent,
   type SgTreeDataNode,
 } from '../src/lib/components/complex/tree/sg-tree.component'
+import { SgTransitionDirective } from '../src/lib/components/ui/transition/sg-transition.directive'
 
 // ────────────────────────────────────────────────────────────────────────────
 // Helpers — DOM shape extractor.
@@ -1347,6 +1349,109 @@ class TreeHost {
     },
   ]
 }
+
+// ────────────────────────────────────────────────────────────────────────────
+// Wave 5.3 — Transition directive parity. The directive applies enter
+// classes synchronously when `visible` flips to true; the rAF-driven
+// final classes can't be deterministically asserted under jsdom, so
+// the test only checks the first-frame contract.
+
+import { signal as ngSignal } from '@angular/core'
+
+@Component({
+  standalone: true,
+  imports: [SgTransitionDirective],
+  template: `<div [sgTransition]="visible()" name="sg-fade"></div>`,
+})
+class TransitionToggleHost {
+  visible = ngSignal(false)
+}
+
+describe('SgTransition directive — class contract', () => {
+  it('idle on first render, enters when toggled to true, leaves on toggle back', () => {
+    const fixture = TestBed.createComponent(TransitionToggleHost)
+    fixture.detectChanges()
+    const div = (fixture.nativeElement as HTMLElement).querySelector('div')!
+
+    // Initial render — no animation classes yet (matches React Transition).
+    expect(div.classList.contains('sg-fade-enter-from')).toBe(false)
+    expect(div.classList.contains('sg-fade-leave-from')).toBe(false)
+
+    fixture.componentInstance.visible.set(true)
+    fixture.detectChanges()
+    expect(div.classList.contains('sg-fade-enter-from')).toBe(true)
+    expect(div.classList.contains('sg-fade-enter-active')).toBe(true)
+
+    fixture.componentInstance.visible.set(false)
+    fixture.detectChanges()
+    expect(div.classList.contains('sg-fade-enter-from')).toBe(false)
+    expect(div.classList.contains('sg-fade-leave-from')).toBe(true)
+    expect(div.classList.contains('sg-fade-leave-active')).toBe(true)
+  })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// Locale parity — all six React presets must have an Angular twin with
+// the same shape (keyed top-level groups). Wave 5.3 added zh_CN, de_DE,
+// fr_FR, es_ES alongside the existing en_US / ru_RU.
+// ────────────────────────────────────────────────────────────────────────────
+
+describe('Locale presets — parity surface', () => {
+  const presets = { en_US, ru_RU, zh_CN, de_DE, fr_FR, es_ES }
+  const expectedTopKeys = [
+    'empty',
+    'pagination',
+    'popconfirm',
+    'modal',
+    'form',
+    'upload',
+    'transfer',
+    'calendar',
+    'inputPassword',
+    'searchInput',
+    'inlineEdit',
+    'tagInput',
+    'drawer',
+    'notification',
+    'tag',
+    'spin',
+    'skeleton',
+    'breadcrumb',
+    'carousel',
+    'rate',
+    'charts',
+    'datePicker',
+    'cascader',
+    'treeSelect',
+    'dashboard',
+    'gantt',
+    'resourceCalendar',
+    'timeline',
+    'schemaFormEditor',
+  ] as const
+
+  for (const [name, preset] of Object.entries(presets)) {
+    it(`${name} exposes the same top-level groups as en_US`, () => {
+      const keys = Object.keys(preset).sort()
+      const expected = [...expectedTopKeys].sort()
+      expect(keys).toEqual(expected)
+    })
+  }
+
+  it('all presets expose the React-shaped sub-keys', () => {
+    for (const preset of Object.values(presets)) {
+      expect(preset.empty?.description).toBeTypeOf('string')
+      expect(preset.pagination?.totalPrefix).toBeTypeOf('string')
+      expect(preset.modal?.okText).toBeTypeOf('string')
+      expect(preset.calendar?.monthNames?.length).toBe(12)
+      expect(preset.calendar?.dayNames?.length).toBe(7)
+      expect(typeof preset.tagInput?.removeTag).toBe('function')
+      expect(typeof preset.rate?.star).toBe('function')
+      expect(typeof preset.carousel?.slide).toBe('function')
+      expect(typeof preset.resourceCalendar?.capacity).toBe('function')
+    }
+  })
+})
 
 describe('CSS contract parity — Wave 4.2 Batch E (complex)', () => {
   it('SgList', () => {

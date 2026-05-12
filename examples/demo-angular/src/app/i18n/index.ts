@@ -1,0 +1,5 @@
+export { I18nService } from './i18n.service'
+export { en } from './dict-en'
+export { ru } from './dict-ru'
+export { DEFAULT_LOCALE, SUPPORTED_LOCALES } from './types'
+export type { Locale, DemoDict } from './types'

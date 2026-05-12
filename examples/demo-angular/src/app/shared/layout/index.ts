@@ -1,0 +1,8 @@
+export { AppShellComponent, type AppShellSection } from './app-shell.component'
+export { AppShellService } from './app-shell.service'
+export { HeaderComponent, type NavItem } from './header.component'
+export { SidebarComponent, type SidebarSection, type SidebarItem } from './sidebar.component'
+export { FooterComponent, type FooterColumn, type FooterLink } from './footer.component'
+export { ThemeSwitcherComponent } from './theme-switcher.component'
+export { LanguageSwitcherComponent, type LanguageOption } from './language-switcher.component'
+export { FrameworkSwitcherComponent } from './framework-switcher.component'

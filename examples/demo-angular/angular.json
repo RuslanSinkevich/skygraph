@@ -21,7 +21,10 @@
             "assets": [],
             "styles": ["src/styles.css"],
             "scripts": [],
-            "outputHashing": "all"
+            "outputHashing": "all",
+            "loader": {
+              ".md": "text"
+            }
           },
           "configurations": {
             "production": {
@@ -44,7 +47,8 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "outputHashing": "none"
             }
           },
           "defaultConfiguration": "production"
@@ -61,7 +65,7 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "port": 5175
+            "port": 5177
           }
         }
       }

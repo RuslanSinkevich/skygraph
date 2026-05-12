@@ -1,12 +1,19 @@
 @import '@skygraph/styles/index.css';
 
+/* The xshell-* layout chrome is shared across React, Vue and Angular
+ * demos so they look identical. Pulled by relative path because
+ * demo-angular isn't a TS dependent of `_shared-react` (CSS imports
+ * resolve through the Angular esbuild pipeline). */
+@import '../../_shared-react/src/layout/styles.css';
+
+/* ── Demo-app surface tokens (keep for legacy components/_shared/page.styles.ts) */
 :root {
-  --sg-demo-bg: #f5f7fa;
-  --sg-demo-text: #1f2937;
-  --sg-demo-muted: #6b7280;
-  --sg-demo-card: #ffffff;
-  --sg-demo-border: #e5e7eb;
-  --sg-demo-accent: #2563eb;
+  --sg-demo-bg: var(--sg-color-bg);
+  --sg-demo-text: var(--sg-color-text);
+  --sg-demo-muted: var(--sg-color-text-secondary);
+  --sg-demo-card: var(--sg-color-bg);
+  --sg-demo-border: var(--sg-color-border);
+  --sg-demo-accent: var(--sg-color-primary);
 }
 
 * {
@@ -18,15 +25,324 @@ body {
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  color: var(--sg-demo-text);
-  background: var(--sg-demo-bg);
+  color: var(--sg-color-text);
+  background: var(--sg-color-bg);
 }
 
 a {
-  color: var(--sg-demo-accent);
+  color: var(--sg-color-primary);
   text-decoration: none;
 }
 
 a:hover {
   text-decoration: underline;
+}
+
+/* ── Doc-page styles (Guide / ComponentDoc) ─────────────────────────── */
+
+.doc-page {
+  max-width: 1120px;
+  padding-top: 24px;
+}
+
+.doc-page h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.doc-page h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 36px 0 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--sg-color-border-secondary, var(--sg-color-border));
+}
+
+.doc-page h2:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.doc-page p {
+  line-height: 1.7;
+  margin-bottom: 12px;
+  color: var(--sg-color-text-secondary);
+}
+
+.doc-lead {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.doc-page code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.88em;
+  padding: 2px 6px;
+  background: var(--sg-color-bg-secondary);
+  border-radius: 4px;
+}
+
+.doc-code {
+  background: var(--sg-color-bg-secondary);
+  border: 1px solid var(--sg-color-border-secondary, var(--sg-color-border));
+  border-radius: var(--sg-border-radius, 6px);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.doc-code code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: var(--sg-color-text);
+  white-space: pre;
+}
+
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.doc-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--sg-color-bg-secondary);
+  border-bottom: 2px solid var(--sg-color-border-secondary, var(--sg-color-border));
+  font-weight: 600;
+  color: var(--sg-color-text);
+}
+
+.doc-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sg-color-border-secondary, var(--sg-color-border));
+  color: var(--sg-color-text-secondary);
+  vertical-align: top;
+}
+
+.doc-table td code {
+  font-size: 12px;
+}
+
+.doc-link {
+  color: var(--sg-color-primary);
+  text-decoration: none;
+}
+
+.doc-link:hover {
+  text-decoration: underline;
+}
+
+/* ── ComponentDoc page ─────────────────────────────────────────────── */
+
+.doc-component-title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.doc-when-to-use {
+  margin: 18px 0 10px;
+  padding: 14px 18px;
+  border: 1px solid var(--sg-color-border-secondary, var(--sg-color-border));
+  border-radius: var(--sg-border-radius, 6px);
+  background: var(--sg-color-bg-secondary);
+}
+
+.doc-when-to-use h2 {
+  font-size: 14px;
+  margin: 0 0 6px;
+  padding: 0;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+}
+
+.doc-when-to-use ul {
+  padding-left: 20px;
+  margin: 4px 0 0;
+}
+
+.doc-when-to-use li {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--sg-color-text-secondary);
+}
+
+.doc-demos {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+/* ── DemoBox ────────────────────────────────────────────────────────── */
+
+.demo-box {
+  border: 1px solid var(--sg-color-border-secondary, var(--sg-color-border));
+  border-radius: var(--sg-border-radius, 6px);
+  background: var(--sg-color-bg);
+  transition: border-color 0.2s;
+}
+
+.demo-box:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--sg-color-primary) 40%,
+    var(--sg-color-border-secondary, var(--sg-color-border)) 60%
+  );
+}
+
+.demo-box-preview {
+  padding: 36px 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  border-radius: var(--sg-border-radius, 6px) var(--sg-border-radius, 6px) 0 0;
+  min-height: 64px;
+  background: linear-gradient(
+    180deg,
+    var(--sg-color-bg) 0%,
+    color-mix(in srgb, var(--sg-color-bg) 92%, var(--sg-color-primary) 8%) 100%
+  );
+}
+
+.demo-box-preview-flush {
+  padding: 0;
+  min-height: 0;
+  background: var(--sg-color-bg);
+}
+
+.demo-box-preview-vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.demo-box-meta {
+  padding: 14px 24px;
+  border-top: 1px dashed var(--sg-color-border-secondary, var(--sg-color-border));
+  background: var(--sg-color-bg);
+  position: relative;
+}
+
+.demo-box-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sg-color-text);
+  margin-bottom: 2px;
+}
+
+.demo-box-description {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--sg-color-text-secondary);
+}
+
+.demo-box-actions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  border-top: 1px dashed var(--sg-color-border-secondary, var(--sg-color-border));
+  padding: 6px 10px;
+}
+
+.demo-box-action {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.demo-box-action:hover {
+  color: var(--sg-color-primary);
+  background: var(--sg-color-bg-hover);
+}
+
+.demo-box-action:focus-visible {
+  outline: 2px solid var(--sg-color-primary);
+  outline-offset: -1px;
+}
+
+.demo-box-code {
+  border-top: 1px solid var(--sg-color-border-secondary, var(--sg-color-border));
+  background: var(--sg-color-bg-secondary);
+  overflow-x: auto;
+  border-radius: 0 0 var(--sg-border-radius, 6px) var(--sg-border-radius, 6px);
+}
+
+.demo-box-code pre {
+  margin: 0;
+  padding: 18px 24px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.demo-box-code code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: var(--sg-color-text);
+  white-space: pre;
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* ── PropsTable ─────────────────────────────────────────────────────── */
+
+.demo-props-section {
+  margin-top: 32px;
+  margin-bottom: 24px;
+}
+
+.demo-props-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--sg-color-border-secondary, var(--sg-color-border));
+}
+
+/* ── "What's next" cards (Getting Started) ──────────────────────────── */
+
+.doc-card-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.doc-next-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--sg-color-border-secondary, var(--sg-color-border));
+  border-radius: var(--sg-border-radius, 6px);
+  color: var(--sg-color-text);
+  text-decoration: none;
+  transition: all 0.15s;
+  background: var(--sg-color-bg);
+}
+
+.doc-next-card:hover {
+  border-color: var(--sg-color-primary);
+  box-shadow: var(--sg-shadow-sm);
+}
+
+.doc-next-card span {
+  font-size: 12px;
+  color: var(--sg-color-text-secondary);
 }

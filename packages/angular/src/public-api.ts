@@ -66,3 +66,6 @@ export * from './lib/components/ui/timeline'
 // Wave 4.2 — Batch E: complex (best-effort)
 export * from './lib/components/complex/list'
 export * from './lib/components/complex/tree'
+
+// Wave 5.3 — additional UI primitives
+export * from './lib/components/ui/transition'

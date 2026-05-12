@@ -1,11 +1,63 @@
 import { Routes } from '@angular/router'
+import { LandingComponent } from './pages/landing/landing.component'
 
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
+    // Eager: avoids a separate lazy chunk for `/` — some setups never
+    // complete that fetch (eternal tab spinner, no JS console error).
+    component: LandingComponent,
+  },
+
+  // Wave 5.3 — top-level pages (parity with React/Vue demos)
+  {
+    path: 'roadmap',
     loadComponent: () =>
-      import('./pages/landing/landing.component').then((m) => m.LandingComponent),
+      import('./pages/roadmap/roadmap.component').then((m) => m.RoadmapPageComponent),
+  },
+  {
+    path: 'about',
+    loadComponent: () => import('./pages/about/about.component').then((m) => m.AboutPageComponent),
+  },
+
+  // Wave 5.3 — guide pages (mirrors examples/demo-vue/src/guide/*)
+  {
+    path: 'guide',
+    pathMatch: 'full',
+    redirectTo: 'guide/getting-started',
+  },
+  {
+    path: 'guide/getting-started',
+    loadComponent: () =>
+      import('./pages/guide/getting-started.component').then((m) => m.GettingStartedPageComponent),
+  },
+  {
+    path: 'guide/theming',
+    loadComponent: () =>
+      import('./pages/guide/theming.component').then((m) => m.ThemingPageComponent),
+  },
+  {
+    path: 'guide/design-tokens',
+    loadComponent: () =>
+      import('./pages/guide/design-tokens.component').then((m) => m.DesignTokensPageComponent),
+  },
+  {
+    path: 'guide/styling-showcase',
+    loadComponent: () =>
+      import('./pages/guide/styling-showcase.component').then(
+        (m) => m.StylingShowcasePageComponent,
+      ),
+  },
+  {
+    path: 'guide/config-provider',
+    loadComponent: () =>
+      import('./pages/guide/config-provider.component').then((m) => m.ConfigProviderPageComponent),
+  },
+  {
+    path: 'guide/core-api',
+    loadComponent: () =>
+      import('./pages/guide/core-api.component').then((m) => m.CoreApiPageComponent),
   },
 
   // Wave 4.1 — foundation
