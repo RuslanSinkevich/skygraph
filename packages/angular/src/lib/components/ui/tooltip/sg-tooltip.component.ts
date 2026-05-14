@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input, booleanAttribute, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  TemplateRef,
+  booleanAttribute,
+  signal,
+} from '@angular/core'
+import { NgTemplateOutlet } from '@angular/common'
 
 let tooltipUid = 0
 
@@ -21,13 +29,30 @@ let tooltipUid = 0
 @Component({
   selector: 'span[sg-tooltip]',
   standalone: true,
+  imports: [NgTemplateOutlet],
   template: `
     <ng-content></ng-content>
     @if (visible()) {
-      <div [id]="tooltipId" role="tooltip" [class]="'sg-tooltip sg-tooltip-' + placement">
-        <div class="sg-tooltip-content">{{ title }}</div>
-        <div class="sg-tooltip-arrow"></div>
-      </div>
+      @if (_unstyled()) {
+        <div [id]="tooltipId" role="tooltip">
+          @if (titleTemplate) {
+            <ng-container *ngTemplateOutlet="titleTemplate"></ng-container>
+          } @else {
+            {{ title }}
+          }
+        </div>
+      } @else {
+        <div [id]="tooltipId" role="tooltip" [class]="'sg-tooltip sg-tooltip-' + placement">
+          <div class="sg-tooltip-content">
+            @if (titleTemplate) {
+              <ng-container *ngTemplateOutlet="titleTemplate"></ng-container>
+            } @else {
+              {{ title }}
+            }
+          </div>
+          <div class="sg-tooltip-arrow"></div>
+        </div>
+      }
     }
   `,
   host: {
@@ -40,12 +65,15 @@ let tooltipUid = 0
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SgTooltipComponent {
-  private readonly _unstyled = signal<boolean>(false)
+  readonly _unstyled = signal<boolean>(false)
   readonly visible = signal(false)
   readonly tooltipId = `sg-tooltip-${++tooltipUid}`
 
   /** Tooltip text content shown on hover/focus. */
   @Input() title = ''
+
+  /** Optional rich-content template — overrides `title` when set. */
+  @Input() titleTemplate?: TemplateRef<unknown>
 
   /** Position relative to the trigger. @default 'top' */
   @Input() placement: 'top' | 'bottom' | 'left' | 'right' = 'top'

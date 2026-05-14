@@ -290,6 +290,15 @@ export class SgColorPickerComponent {
   @Input('aria-label') ariaLabel?: string
   @Input('aria-labelledby') ariaLabelledBy?: string
 
+  private readonly _unstyled = signal<boolean>(false)
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
   @Output() readonly valueChange = new EventEmitter<string>()
   @Output() readonly openChange = new EventEmitter<boolean>()
 
@@ -299,15 +308,16 @@ export class SgColorPickerComponent {
 
   readonly isInteractiveDisabled = computed(() => this._disabled() || (this.cfg.disabled ?? false))
 
-  readonly classes = computed(() =>
-    [
+  readonly classes = computed(() => {
+    if (this._unstyled()) return ''
+    return [
       'sg-colorpicker-wrapper',
       `sg-colorpicker-${this.resolvedSize()}`,
       this.isInteractiveDisabled() ? 'sg-colorpicker-disabled' : '',
     ]
       .filter(Boolean)
-      .join(' '),
-  )
+      .join(' ')
+  })
 
   readonly satBackground = computed(() => {
     const hue = hsvToHex(this.hsv().h, 1, 1)

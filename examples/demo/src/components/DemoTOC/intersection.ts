@@ -32,7 +32,7 @@ const ROOT_MARGIN = `${ROOT_MARGIN_TOP} 0% ${ROOT_MARGIN_BOTTOM} 0%`
  * highlight doesn't strobe through intermediate sections.
  */
 export function useActiveSection(
-  items: DemoTOCItem[],
+  items: readonly DemoTOCItem[],
   activeId: string | null,
   setActiveId: (id: string | null) => void,
   isManualScrollRef: { readonly current: boolean },

@@ -27,36 +27,56 @@ import { SgButtonComponent } from '../button'
   standalone: true,
   imports: [SgButtonComponent],
   template: `
-    <div (click)="onTriggerClick()" [attr.aria-describedby]="open() ? popconfirmId : null">
-      <ng-content></ng-content>
-    </div>
-    @if (open()) {
-      <div
-        [id]="popconfirmId"
-        role="alertdialog"
-        [class]="'sg-popconfirm sg-popconfirm-' + placement"
-      >
-        <div class="sg-popconfirm-arrow"></div>
-        <div class="sg-popconfirm-inner">
-          <div class="sg-popconfirm-title">
-            <span class="sg-popconfirm-icon">⚠</span>
-            {{ title }}
-          </div>
+    @if (_unstyled()) {
+      <div (click)="onTriggerClick()" [attr.aria-describedby]="open() ? popconfirmId : null">
+        <ng-content></ng-content>
+      </div>
+      @if (open()) {
+        <div [id]="popconfirmId" role="alertdialog">
+          <div>{{ title }}</div>
           @if (description) {
-            <div class="sg-popconfirm-description">{{ description }}</div>
+            <div>{{ description }}</div>
           }
-          <div class="sg-popconfirm-buttons">
-            <button sg-button size="small" (click)="onCancel()">{{ resolvedCancelText() }}</button>
-            <button sg-button size="small" type="primary" (click)="onConfirm()">
-              {{ resolvedOkText() }}
-            </button>
+          <button type="button" (click)="onCancel()">{{ resolvedCancelText() }}</button>
+          <button type="button" (click)="onConfirm()">{{ resolvedOkText() }}</button>
+        </div>
+      }
+    } @else {
+      <div (click)="onTriggerClick()" [attr.aria-describedby]="open() ? popconfirmId : null">
+        <ng-content></ng-content>
+      </div>
+      @if (open()) {
+        <div
+          [id]="popconfirmId"
+          role="alertdialog"
+          [class]="'sg-popconfirm sg-popconfirm-' + placement"
+        >
+          <div class="sg-popconfirm-arrow"></div>
+          <div class="sg-popconfirm-inner">
+            <div class="sg-popconfirm-title">
+              <span class="sg-popconfirm-icon">⚠</span>
+              {{ title }}
+            </div>
+            @if (description) {
+              <div class="sg-popconfirm-description">{{ description }}</div>
+            }
+            <div class="sg-popconfirm-buttons">
+              <button sg-button size="small" (click)="onCancel()">
+                {{ resolvedCancelText() }}
+              </button>
+              <button sg-button size="small" type="primary" (click)="onConfirm()">
+                {{ resolvedOkText() }}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      }
     }
   `,
   host: {
-    class: 'sg-popconfirm-wrapper',
+    '[class]': 'hostClasses()',
+    '[style.display]': "'inline-block'",
+    '[style.position]': "'relative'",
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -64,6 +84,8 @@ export class SgPopconfirmComponent {
   private readonly cfg = injectSgConfig()
   private readonly el = inject(ElementRef<HTMLElement>)
   private readonly _open = signal(false)
+  protected readonly _unstyled = signal<boolean>(false)
+  protected readonly _className = signal<string>('')
 
   readonly popconfirmId = 'sg-popconfirm-' + Math.random().toString(36).slice(2, 8)
 
@@ -73,6 +95,22 @@ export class SgPopconfirmComponent {
   @Input() cancelText?: string
   @Input() placement: 'top' | 'bottom' | 'left' | 'right' = 'top'
   @Input({ transform: booleanAttribute }) disabled = false
+
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
+  @Input()
+  get className(): string {
+    return this._className()
+  }
+  set className(v: string) {
+    this._className.set(v ?? '')
+  }
 
   @Output() readonly confirm = new EventEmitter<void>()
   @Output() readonly cancel = new EventEmitter<void>()
@@ -85,6 +123,11 @@ export class SgPopconfirmComponent {
   readonly resolvedCancelText = computed(
     () => this.cancelText ?? this.cfg.locale?.popconfirm?.cancelText ?? 'No',
   )
+
+  readonly hostClasses = computed(() => {
+    if (this._unstyled()) return this._className()
+    return ['sg-popconfirm-wrapper', this._className()].filter(Boolean).join(' ')
+  })
 
   onTriggerClick(): void {
     if (!this.disabled) this._open.update((v) => !v)

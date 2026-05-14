@@ -10,11 +10,10 @@ export const transferDocRu: { [K in keyof typeof transferDocEn]: string } = {
   crumbTransfer: 'Transfer',
   pageLead:
     'Двухколоночный shuttle для выбора подмножества элементов. Встроенный поиск, per-row disabled, one-way режим и темизация через CSS-токены.',
-  pageWhen1:
-    'Когда нужно разделить набор на «доступно» и «выбрано» — права роли, теги, аудитория.',
+  pageWhen1: 'Когда нужно разделить набор на «доступно» и «выбрано» — права роли, теги, аудитория.',
   pageWhen2: 'Когда multi-Select слишком тесный, а порядок не важен.',
   pageWhen3:
-    'Для расширенных лейблов (title + description) — пользуйтесь React Transfer; в Vue пока рендерится только `title` (gap).',
+    'Для расширенных лейблов (title + description) — используйте слот `item`, он получает целый TransferItem.',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Управление через `v-model` / `target-keys`.',
@@ -24,12 +23,12 @@ export const transferDocRu: { [K in keyof typeof transferDocEn]: string } = {
   demoOneWayDesc: 'Скрываем кнопку move-left.',
   demoTitlesTitle: 'Заголовки',
   demoTitlesDesc: 'Свои заголовки колонок.',
+  demoCustomRenderTitle: 'Кастомный рендер',
+  demoCustomRenderDesc: 'Слот `item` подменяет дефолтную подпись более насыщенным лейблом.',
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: 'Контрол целиком + per-row `disabled`.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc: 'Перекрашиваем панели через глобальную палитру.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Снимаем классы-якоря; семантика остаётся.',
 
   tableTransferApi: 'API Transfer',
   tableTransferItem: 'TransferItem',
@@ -43,6 +42,7 @@ export const transferDocRu: { [K in keyof typeof transferDocEn]: string } = {
   propTitles: 'Заголовки колонок [source, target]',
   propOneWay: 'Скрыть кнопку move-left — элементы только в target',
   propDisabled: 'Disable обеих колонок (наследуется от `ConfigProvider`)',
+  propItemSlot: 'Кастомный рендер строки — получает `{ item, side }`',
   propUnstyled: 'Снять все sg-transfer-* классы',
   emitUpdateModelValue: 'Срабатывает с новыми target-keys (v-model)',
   emitChange: 'Срабатывает после move: `(keys, direction, moveKeys)`',
@@ -50,7 +50,7 @@ export const transferDocRu: { [K in keyof typeof transferDocEn]: string } = {
 
   itemKey: 'Стабильный id — наличие в `target-keys` определяет колонку',
   itemTitle: 'Основная подпись + текст для поиска',
-  itemDescription: 'Вторая строка — Vue её не использует (нет `render` slot)',
+  itemDescription: 'Вторая строка — отображается через слот `item`',
   itemDisabled: 'Исключить из выбора / bulk-move',
 
   cssHint:

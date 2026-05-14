@@ -57,6 +57,15 @@ export const formDocRu: FormDocStrings = {
   demoSchemaBasicDesc: '`<SgSchemaForm>` строит поля, дефолты и правила из JSON Schema.',
   demoSchemaLayoutTitle: 'SchemaForm — layout',
   demoSchemaLayoutDesc: 'Horizontal + small и inline + disabled на одной и той же схеме.',
+  demoFormListTitle: 'FormList — динамический',
+  demoFormListDesc:
+    '`<SgFormList>` регистрирует массивный путь и отдаёт операции `add` / `remove` / `move`; дочерние поля адресуют свои слоты через dotted-пути.',
+  demoProgrammaticTitle: 'Программное управление',
+  demoProgrammaticDesc:
+    'Управляйте формой императивно через `useForm()` — вызывайте `reset`, `setFieldsValue`, `validateFields`, `submit` извне `<SgForm>`.',
+  demoProfileSettingsTitle: 'Настройки профиля',
+  demoProfileSettingsDesc:
+    'Многосекционная форма с двухколоночной сеткой, switch-ами, date picker и upload — всё через единый form-контекст.',
 
   tableFormApi: 'API формы',
   tableFieldApi: 'API поля',

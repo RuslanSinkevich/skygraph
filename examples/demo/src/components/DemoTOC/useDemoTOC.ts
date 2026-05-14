@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { Ref } from 'react'
 
 import { useDemoTOCContext } from './DemoTOCContext'
 import { slugify } from './slugify'
@@ -14,8 +15,15 @@ export interface UseDemoTOCResult {
    * appear in the TOC).
    */
   id: string | undefined
-  /** Ref to spread onto the DemoBox root. */
-  ref: React.RefObject<HTMLDivElement | null>
+  /**
+   * Callback ref to spread onto the DemoBox root. Works the same as a
+   * regular `useRef` object on the JSX side — React accepts either — but
+   * routes the underlying element through `useState`, which lets the
+   * hook compute the disambiguated id during render without breaking
+   * the React 19 lint rule that forbids reading `ref.current` outside
+   * an effect.
+   */
+  ref: Ref<HTMLDivElement>
   /**
    * True when a `<DemoTOCProvider>` is mounted above. DemoBox doesn't
    * branch on this — it's exposed for tests and for future widgets
@@ -43,27 +51,35 @@ export interface UseDemoTOCResult {
  */
 export function useDemoTOC(title: string | undefined): UseDemoTOCResult {
   const ctx = useDemoTOCContext()
-  const ref = useRef<HTMLDivElement>(null)
   // IMPORTANT: depend on stable `register` only — the whole context
   // value changes whenever `activeId` updates; listing `ctx` here
-  // re-ran the effect every scroll/highlight tick, causing register →
-  // setVersion → infinite re-render ("Maximum update depth exceeded").
+  // would re-run the registration effect every scroll/highlight tick.
   const register = ctx?.register
+  const items = ctx?.items
+
+  // Callback ref → state. Reading `ref.current` during render is
+  // forbidden by `react-hooks/refs`; threading the element through
+  // state instead keeps everything inside render-pure useMemo. React
+  // calls the callback once with the node on mount and once with
+  // `null` on unmount, so we get clean register / unregister via
+  // useEffect.
+  const [el, setEl] = useState<HTMLDivElement | null>(null)
+  const ref = useCallback<(node: HTMLDivElement | null) => void>((node) => {
+    setEl(node)
+  }, [])
 
   const baseSlug = useMemo(() => (title ? slugify(title) : ''), [title])
 
   useEffect(() => {
-    if (!register || !title || !baseSlug) return
-    const el = ref.current
-    if (!el) return
-    // The provider bumps its own version on register, which updates
-    // the context value and re-renders this consumer — that's how the
-    // disambiguated id gets read back via `getIdFor` on the next
-    // paint. No local state bump needed here.
+    if (!register || !title || !baseSlug || !el) return
     return register({ element: el, title, baseSlug })
-  }, [register, title, baseSlug])
+  }, [register, title, baseSlug, el])
 
-  const resolvedId = ctx?.getIdFor(ref.current) ?? null
+  const resolvedId = useMemo(() => {
+    if (!items || !el) return undefined
+    return items.find((it) => it.element === el)?.id
+  }, [items, el])
+
   const id = !title || !baseSlug ? undefined : (resolvedId ?? baseSlug)
 
   return { id, ref, inTOC: ctx !== null }

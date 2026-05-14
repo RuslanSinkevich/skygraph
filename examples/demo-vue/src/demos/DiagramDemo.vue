@@ -1,11 +1,9 @@
 <script setup lang="ts">
 /**
- * Diagram aggregator. After T-Diagram-Polish (Wave 3.3c) Vue's
- * `SgDiagram` is on parity with React: routing, `routeAroundNodes`,
- * lasso, `*ContextMenu`, hover-actions, snap-to-grid, DnD, panable /
- * zoomable. Legacy v0 props (`draggableNodes`, `panZoom`,
- * `selectedNodeIds`) still work as deprecated aliases — see
- * `decisions/T-Diagram-Polish.md` D2.
+ * Diagram aggregator — 1:1 parity with React (12 examples).
+ *
+ * Routing (orthogonal / bezier), pan / zoom, snap-to-grid, OBB, lasso /
+ * multi-select, hover-actions and the three context-menu callbacks.
  */
 import { computed } from 'vue'
 import { ComponentDoc, DemoBox, PropsTable, type PropDef } from './components'
@@ -13,30 +11,28 @@ import { useDiagramDocStrings } from './diagram-doc/useStrings'
 
 import BasicDiagram from './diagram/Basic.demo.vue'
 import BasicSource from './diagram/Basic.demo.vue?raw'
-import CustomNodeDiagram from './diagram/CustomNode.demo.vue'
-import CustomNodeSource from './diagram/CustomNode.demo.vue?raw'
 import DraggableDiagram from './diagram/Draggable.demo.vue'
 import DraggableSource from './diagram/Draggable.demo.vue?raw'
-import PanZoomDiagram from './diagram/PanZoom.demo.vue'
-import PanZoomSource from './diagram/PanZoom.demo.vue?raw'
-import SelectionDiagram from './diagram/Selection.demo.vue'
-import SelectionSource from './diagram/Selection.demo.vue?raw'
-import MultiSelectDiagram from './diagram/MultiSelect.demo.vue'
-import MultiSelectSource from './diagram/MultiSelect.demo.vue?raw'
-import UndoRedoDiagram from './diagram/UndoRedo.demo.vue'
-import UndoRedoSource from './diagram/UndoRedo.demo.vue?raw'
-import NodeClickDiagram from './diagram/NodeClick.demo.vue'
-import NodeClickSource from './diagram/NodeClick.demo.vue?raw'
-import ProgrammaticDiagram from './diagram/ProgrammaticEdit.demo.vue'
-import ProgrammaticSource from './diagram/ProgrammaticEdit.demo.vue?raw'
-import PrintDiagram from './diagram/Print.demo.vue'
-import PrintSource from './diagram/Print.demo.vue?raw'
-import LargeDiagram from './diagram/LargeGraph.demo.vue'
-import LargeSource from './diagram/LargeGraph.demo.vue?raw'
-import UnstyledDiagram from './diagram/Unstyled.demo.vue'
-import UnstyledSource from './diagram/Unstyled.demo.vue?raw'
+import ZoomableDiagram from './diagram/Zoomable.demo.vue'
+import ZoomableSource from './diagram/Zoomable.demo.vue?raw'
+import PannableDiagram from './diagram/Pannable.demo.vue'
+import PannableSource from './diagram/Pannable.demo.vue?raw'
+import SnapToGridDiagram from './diagram/SnapToGrid.demo.vue'
+import SnapToGridSource from './diagram/SnapToGrid.demo.vue?raw'
+import BezierDiagram from './diagram/Bezier.demo.vue'
+import BezierSource from './diagram/Bezier.demo.vue?raw'
 import OrthogonalDiagram from './diagram/OrthogonalRouting.demo.vue'
 import OrthogonalSource from './diagram/OrthogonalRouting.demo.vue?raw'
+import UndoRedoDiagram from './diagram/UndoRedo.demo.vue'
+import UndoRedoSource from './diagram/UndoRedo.demo.vue?raw'
+import ContextMenuDiagram from './diagram/ContextMenu.demo.vue'
+import ContextMenuSource from './diagram/ContextMenu.demo.vue?raw'
+import MultiSelectDiagram from './diagram/MultiSelect.demo.vue'
+import MultiSelectSource from './diagram/MultiSelect.demo.vue?raw'
+import OBBDiagram from './diagram/OBB.demo.vue'
+import OBBSource from './diagram/OBB.demo.vue?raw'
+import LargeDiagram from './diagram/LargeGraph.demo.vue'
+import LargeSource from './diagram/LargeGraph.demo.vue?raw'
 
 const t = useDiagramDocStrings()
 
@@ -49,29 +45,56 @@ const diagramProps = computed<PropDef[]>(() => [
   { name: 'style', description: t.value.propStyle, type: 'CSSProperties' },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
   {
-    name: 'draggableNodes',
-    description: t.value.propDraggableNodes,
-    type: 'boolean',
-    default: 'true',
+    name: 'draggable',
+    description: t.value.propDraggable,
+    type: 'boolean | (id, x, y) => void',
+    default: 'false',
   },
-  { name: 'panZoom', description: t.value.propPanZoom, type: 'boolean', default: 'true' },
+  { name: 'zoomable', description: t.value.propZoomable, type: 'boolean', default: 'false' },
+  { name: 'panable', description: t.value.propPanable, type: 'boolean', default: 'false' },
+  { name: 'snapToGrid', description: t.value.propSnapToGrid, type: 'number' },
+  {
+    name: 'routeAroundNodes',
+    description: t.value.propRouteAroundNodes,
+    type: 'boolean',
+    default: 'false',
+  },
+  {
+    name: 'routingOptions',
+    description: t.value.propRoutingOptions,
+    type: '{ gridSize?; inflate?; maxNodes?; cornerRadius?; curvature? }',
+  },
+  { name: 'edgeArrows', description: t.value.propEdgeArrows, type: 'boolean', default: 'true' },
   {
     name: 'selectionMode',
     description: t.value.propSelectionMode,
-    type: "'single' | 'multi'",
+    type: "'single' | 'multi' | 'lasso'",
     default: "'single'",
   },
-  { name: 'selectedNodeIds', description: t.value.propSelectedNodeIds, type: 'NodeId[]' },
+  { name: 'selection', description: t.value.propSelection, type: 'NodeId[]' },
+  { name: 'nodeActions', description: t.value.propNodeActions, type: 'DiagramNodeAction[]' },
+  { name: 'edgeActions', description: t.value.propEdgeActions, type: 'DiagramEdgeAction[]' },
   { name: 'fileName', description: t.value.propFileName, type: 'string', default: "'diagram'" },
-  {
-    name: '@node-click',
-    description: t.value.propEmitNodeClick,
-    type: '(p: { id, node, event }) => void',
-  },
+  { name: '#node', description: t.value.slotNode, type: 'slot ({ node })' },
   {
     name: '@selection-change',
     description: t.value.propEmitSelectionChange,
     type: '(ids: NodeId[]) => void',
+  },
+  {
+    name: '@node-context-menu',
+    description: t.value.propEmitNodeContextMenu,
+    type: '(p: { event, node }) => void',
+  },
+  {
+    name: '@edge-context-menu',
+    description: t.value.propEmitEdgeContextMenu,
+    type: '(p: { event, edge }) => void',
+  },
+  {
+    name: '@canvas-context-menu',
+    description: t.value.propEmitCanvasContextMenu,
+    type: '(p: { event, point }) => void',
   },
 ])
 
@@ -96,15 +119,6 @@ const exposeProps = computed<PropDef[]>(() => [
     <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource">
       <BasicDiagram />
     </DemoBox>
-
-    <DemoBox
-      :title="t.demoCustomNodeTitle"
-      :description="t.demoCustomNodeDesc"
-      :code="CustomNodeSource"
-    >
-      <CustomNodeDiagram />
-    </DemoBox>
-
     <DemoBox
       :title="t.demoDraggableTitle"
       :description="t.demoDraggableDesc"
@@ -112,19 +126,39 @@ const exposeProps = computed<PropDef[]>(() => [
     >
       <DraggableDiagram />
     </DemoBox>
-
-    <DemoBox :title="t.demoPanZoomTitle" :description="t.demoPanZoomDesc" :code="PanZoomSource">
-      <PanZoomDiagram />
+    <DemoBox :title="t.demoZoomableTitle" :description="t.demoZoomableDesc" :code="ZoomableSource">
+      <ZoomableDiagram />
     </DemoBox>
-
+    <DemoBox :title="t.demoPannableTitle" :description="t.demoPannableDesc" :code="PannableSource">
+      <PannableDiagram />
+    </DemoBox>
     <DemoBox
-      :title="t.demoSelectionTitle"
-      :description="t.demoSelectionDesc"
-      :code="SelectionSource"
+      :title="t.demoSnapToGridTitle"
+      :description="t.demoSnapToGridDesc"
+      :code="SnapToGridSource"
     >
-      <SelectionDiagram />
+      <SnapToGridDiagram />
     </DemoBox>
-
+    <DemoBox :title="t.demoBezierTitle" :description="t.demoBezierDesc" :code="BezierSource">
+      <BezierDiagram />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoOrthogonalTitle"
+      :description="t.demoOrthogonalDesc"
+      :code="OrthogonalSource"
+    >
+      <OrthogonalDiagram />
+    </DemoBox>
+    <DemoBox :title="t.demoUndoRedoTitle" :description="t.demoUndoRedoDesc" :code="UndoRedoSource">
+      <UndoRedoDiagram />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoContextMenuTitle"
+      :description="t.demoContextMenuDesc"
+      :code="ContextMenuSource"
+    >
+      <ContextMenuDiagram />
+    </DemoBox>
     <DemoBox
       :title="t.demoMultiSelectTitle"
       :description="t.demoMultiSelectDesc"
@@ -132,45 +166,11 @@ const exposeProps = computed<PropDef[]>(() => [
     >
       <MultiSelectDiagram />
     </DemoBox>
-
-    <DemoBox :title="t.demoUndoRedoTitle" :description="t.demoUndoRedoDesc" :code="UndoRedoSource">
-      <UndoRedoDiagram />
+    <DemoBox :title="t.demoOBBTitle" :description="t.demoOBBDesc" :code="OBBSource">
+      <OBBDiagram />
     </DemoBox>
-
-    <DemoBox
-      :title="t.demoNodeClickTitle"
-      :description="t.demoNodeClickDesc"
-      :code="NodeClickSource"
-    >
-      <NodeClickDiagram />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoProgrammaticTitle"
-      :description="t.demoProgrammaticDesc"
-      :code="ProgrammaticSource"
-    >
-      <ProgrammaticDiagram />
-    </DemoBox>
-
-    <DemoBox :title="t.demoPrintTitle" :description="t.demoPrintDesc" :code="PrintSource">
-      <PrintDiagram />
-    </DemoBox>
-
     <DemoBox :title="t.demoLargeTitle" :description="t.demoLargeDesc" :code="LargeSource">
       <LargeDiagram />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledDiagram />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoOrthogonalTitle"
-      :description="t.demoOrthogonalDesc"
-      :code="OrthogonalSource"
-    >
-      <OrthogonalDiagram />
     </DemoBox>
 
     <template #api>

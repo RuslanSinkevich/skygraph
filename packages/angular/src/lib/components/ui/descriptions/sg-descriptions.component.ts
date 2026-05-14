@@ -28,39 +28,39 @@ export interface SgDescriptionsItem {
   standalone: true,
   template: `
     @if (title) {
-      <div class="sg-descriptions-title">{{ title }}</div>
+      <div [class]="titleClass()">{{ title }}</div>
     }
-    <table class="sg-descriptions-table">
+    <table [class]="tableClass()">
       <tbody>
         @for (row of rows(); let ri = $index; track ri) {
           @if (layout === 'vertical') {
-            <tr class="sg-descriptions-row">
+            <tr [class]="rowClass()">
               @for (item of row; let ci = $index; track item.key ?? ci) {
-                <th class="sg-descriptions-item-label" [attr.colSpan]="item.span ?? 1">
+                <th [class]="labelClass()" [attr.colSpan]="item.span ?? 1">
                   {{ item.label }}
                   @if (colon) {
-                    <span class="sg-descriptions-colon">:</span>
+                    <span [class]="colonClass()">:</span>
                   }
                 </th>
               }
             </tr>
-            <tr class="sg-descriptions-row">
+            <tr [class]="rowClass()">
               @for (item of row; let ci = $index; track item.key ?? ci) {
-                <td class="sg-descriptions-item-content" [attr.colSpan]="item.span ?? 1">
+                <td [class]="contentClass()" [attr.colSpan]="item.span ?? 1">
                   {{ item.value }}
                 </td>
               }
             </tr>
           } @else {
-            <tr class="sg-descriptions-row">
+            <tr [class]="rowClass()">
               @for (item of row; let ci = $index; track item.key ?? ci) {
-                <th class="sg-descriptions-item-label">
+                <th [class]="labelClass()">
                   {{ item.label }}
                   @if (colon) {
-                    <span class="sg-descriptions-colon">:</span>
+                    <span [class]="colonClass()">:</span>
                   }
                 </th>
-                <td class="sg-descriptions-item-content" [attr.colSpan]="item.span ?? 1">
+                <td [class]="contentClass()" [attr.colSpan]="item.span ?? 1">
                   {{ item.value }}
                 </td>
               }
@@ -79,6 +79,8 @@ export interface SgDescriptionsItem {
 export class SgDescriptionsComponent {
   private readonly cfg = injectSgConfig()
   private readonly _size = signal<SizeType | undefined>(undefined)
+  private readonly _unstyled = signal<boolean>(false)
+  private readonly _className = signal<string>('')
 
   @Input() title?: string
   @Input({ required: true }) items: SgDescriptionsItem[] = []
@@ -95,20 +97,46 @@ export class SgDescriptionsComponent {
     this._size.set(v)
   }
 
+  /** Drop every sg-descriptions-* class — keep DOM structure only. */
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
+  @Input()
+  get className(): string {
+    return this._className()
+  }
+  set className(v: string) {
+    this._className.set(v ?? '')
+  }
+
   readonly resolvedSize = computed(() => {
     const s = this._size() ?? this.cfg.size ?? 'middle'
     return s === 'small' ? 'small' : 'default'
   })
 
-  readonly classes = computed(() =>
-    [
+  readonly classes = computed(() => {
+    if (this._unstyled()) return this._className()
+    return [
       'sg-descriptions',
       `sg-descriptions-${this.resolvedSize()}`,
       this.bordered ? 'sg-descriptions-bordered' : '',
+      this._className(),
     ]
       .filter(Boolean)
-      .join(' '),
-  )
+      .join(' ')
+  })
+
+  readonly titleClass = computed(() => (this._unstyled() ? '' : 'sg-descriptions-title'))
+  readonly tableClass = computed(() => (this._unstyled() ? '' : 'sg-descriptions-table'))
+  readonly rowClass = computed(() => (this._unstyled() ? '' : 'sg-descriptions-row'))
+  readonly labelClass = computed(() => (this._unstyled() ? '' : 'sg-descriptions-item-label'))
+  readonly contentClass = computed(() => (this._unstyled() ? '' : 'sg-descriptions-item-content'))
+  readonly colonClass = computed(() => (this._unstyled() ? '' : 'sg-descriptions-colon'))
 
   readonly rows = computed(() => {
     const out: SgDescriptionsItem[][] = []

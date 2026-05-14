@@ -1478,3 +1478,41 @@ describe('CSS contract parity — Wave 4.2 Batch E (complex)', () => {
     expect(root.attrs['aria-expanded']).toBe('true')
   })
 })
+
+// ────────────────────────────────────────────────────────────────────────────
+// Wave 5.3 — print utility parity. Same `@page` + `<title>` + `.sg-print-root`
+// shape as `packages/react/src/utils/print/printElement.ts`. Only the pure
+// `buildPageRule` / `buildPrintHtml` paths are unit-tested here (the
+// `printElement` side-effects on `window.open` are e2e-only).
+// ────────────────────────────────────────────────────────────────────────────
+
+import { buildPageRule, buildPrintHtml } from '../src/lib/utils/print'
+
+describe('Print utility — parity with @skygraph/react', () => {
+  it('buildPageRule emits the same @page block as React (defaults + override)', () => {
+    expect(buildPageRule()).toBe('@page { size: A4 portrait; margin: 1cm; }')
+    expect(
+      buildPageRule({ pageSize: 'Letter', orientation: 'landscape', margins: '10mm 20mm' }),
+    ).toBe('@page { size: Letter landscape; margin: 10mm 20mm; }')
+  })
+
+  it('buildPrintHtml escapes title and wraps fragment with .sg-print-root', () => {
+    const html = buildPrintHtml('<p>x</p>', { fileName: 'rep<ort>".pdf' }, null)
+    expect(html).toContain('<title>rep&lt;ort&gt;&quot;.pdf</title>')
+    expect(html).toContain('<div class="sg-print-root">')
+    expect(html).toContain('<p>x</p>')
+    expect(html).toContain('@page { size: A4 portrait; margin: 1cm; }')
+  })
+
+  it('buildPrintHtml applies transform:scale when scale!==1', () => {
+    const html = buildPrintHtml('<p>x</p>', { scale: 0.75 }, null)
+    expect(html).toContain('transform: scale(0.75)')
+    expect(html).toContain('transform-origin: 0 0')
+  })
+
+  it('buildPrintHtml appends customStyles after SkyGraph defaults', () => {
+    const html = buildPrintHtml('<p>x</p>', { customStyles: '.x{color:red}' }, null)
+    const idx = html.indexOf('.x{color:red}')
+    expect(idx).toBeGreaterThan(html.indexOf('.sg-print-root { width: 100%; }'))
+  })
+})

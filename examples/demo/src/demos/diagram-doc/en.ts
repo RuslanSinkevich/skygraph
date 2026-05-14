@@ -37,7 +37,11 @@ export const diagramDocEn = {
 
   demoOrthogonalTitle: 'Orthogonal routing',
   demoOrthogonalDesc:
-    'A*-based router with obstacle avoidance — edges detour around every other node rather than cutting through them.',
+    'A*-based router with obstacle avoidance — edges detour around every other node rather than cutting through them. Corners are rounded so right-angle bends read as deliberate, not jagged.',
+
+  demoBezierTitle: 'Bezier curves',
+  demoBezierDesc:
+    'Cubic-Bezier edges whose control handles extend perpendicular to the nearest face of each node, in the spirit of React Flow / draw.io. Arrow markers track the line colour through hover and selected states.',
 
   demoUndoRedoTitle: 'Undo / Redo',
   demoUndoRedoDesc:
@@ -75,6 +79,9 @@ export const diagramDocEn = {
   propPanable: 'Middle-button drag + plain wheel pan',
   propSnapToGrid: 'Snap drag results to a world-units grid',
   propRouteAroundNodes: 'A*-based obstacle avoidance for orthogonal edges',
+  propRoutingOptions:
+    'Router tuning — `gridSize` / `inflate` / `maxNodes` for A*, `cornerRadius` for orthogonal corners (default 8), `curvature` for bezier (default 0.25).',
+  propEdgeArrows: 'Draw a directional arrow on every edge target end.',
   propSelection: 'Controlled selection: array of node ids',
   propSelectionMode: '`single` (legacy) / `multi` (Ctrl+click) / `lasso`',
   propOnSelectionChange: 'Fired when the selection set changes',

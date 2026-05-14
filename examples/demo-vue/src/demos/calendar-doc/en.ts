@@ -1,19 +1,8 @@
 /**
  * English source of truth for Calendar doc page strings (Vue port).
- *
- * Vue parity gaps vs React (see `findings/T-Vue-Components-Functional-Fixes.md`
- * → `calendar-vue-feature-gaps`):
- * - no `multipleSelection` / `multipleValue` API
- * - no `rangeSelection` / `rangeValue` API
- * - no `cellRender` / `headerRender` slots
- * - no `locale` prop (English-only month/day labels)
- * - no keyboard navigation
- *
- * What works (Wave 3.5 fixes):
- * - month + year mode with mode switch and select-header
- * - event dots with `max-events` overflow indicator
- * - `fullscreen` toggle, "Today" footer button
- * - `show-week-numbers`, `week-start-day`, `disabled-date`
+ * Mirrors `examples/demo/src/demos/calendar-doc/en.ts` 1:1 — Vue now
+ * supports the full surface: range/multiple selection, custom cells and
+ * headers (slots), locale strings.
  *
  * Other locales must provide the same keys (see `ru.ts`).
  */
@@ -24,28 +13,43 @@ export const calendarDocEn = {
   crumbCalendar: 'Calendar',
 
   pageLead:
-    'Month + year calendar with event dots, week numbers, weekStart override and disabled-day predicate. Compact or fullscreen layout.',
+    'Month + year calendar with event dots, week numbers, weekStart override and disabled-day predicate. Compact or fullscreen layout; range + multi selection out of the box.',
   pageWhen1: 'As a month view inside an admin dashboard or scheduler.',
   pageWhen2: 'When you need lightweight per-day event markers.',
   pageWhen3:
-    'For range / multiple selection, custom cells, locale or keyboard navigation — see the React Calendar (Vue parity is pending).',
+    'When users need to pick a range, multiple dates, or you want to fully customise the chrome via `#header` / `#cell` slots.',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Default month grid with today highlighted.',
+  demoCardTitle: 'Card layout',
+  demoCardDesc: '`:fullscreen="false"` collapses the calendar into a compact card.',
   demoControlledTitle: 'Controlled',
   demoControlledDesc: 'Parent owns the selected date with v-model.',
-  demoEventsTitle: 'Events',
-  demoEventsDesc:
-    'Each cell renders coloured dots per event. `max-events` caps the count, overflow collapses into `+N`.',
-  demoWeekStartTitle: 'Week starts Monday',
-  demoWeekStartDesc: '`week-start-day="1"` rotates the weekday columns.',
-  demoWeekNumbersTitle: 'Week numbers',
-  demoWeekNumbersDesc: 'ISO week column with Monday-first layout.',
   demoDisabledDatesTitle: 'Disabled dates',
-  demoDisabledDatesDesc: 'Gray out past days + weekends.',
+  demoDisabledDatesDesc: 'Gray out past days + weekends with `disabled-date`.',
   demoYearModeTitle: 'Year mode',
   demoYearModeDesc:
     '`mode="year"` shows a 12-month overview; clicking a month jumps back to the month grid.',
+  demoWeekNumbersTitle: 'Week numbers',
+  demoWeekNumbersDesc: 'ISO week column with Monday-first layout.',
+  demoRangeSelectionTitle: 'Range selection',
+  demoRangeSelectionDesc:
+    '`range-selection` flips the grid — first click pins the start, the second commits the end and highlights the span.',
+  demoMultipleSelectionTitle: 'Multiple selection',
+  demoMultipleSelectionDesc:
+    '`multiple-selection` toggles dates on click — ideal for "pick every working day this month".',
+  demoEventsTitle: 'Events',
+  demoEventsDesc:
+    'Each cell renders coloured dots per event. `max-events` caps the count, overflow collapses into `+N`.',
+  demoCustomCellTitle: 'Custom cell',
+  demoCustomCellDesc:
+    'The `#cell` slot injects arbitrary content beneath the day number — capacity dots, badges, etc.',
+  demoCustomHeaderTitle: 'Custom header',
+  demoCustomHeaderDesc:
+    'Override the entire chrome via the `#header` slot — receive panel `value`, `type`, `onChange`, `onTypeChange`.',
+  demoLocaleTitle: 'Locale',
+  demoLocaleDesc:
+    'Pass a `locale` with localised month + day names, today button and week column header.',
   demoTokensOverrideTitle: 'Tokens override',
   demoTokensOverrideDesc: 'Scope global tokens on a wrapper to re-skin.',
   demoUnstyledTitle: 'Unstyled',
@@ -63,10 +67,20 @@ export const calendarDocEn = {
   propWeekStartDay: '0 = Sunday … 6 = Saturday',
   propShowWeekNumbers: 'Show ISO week column',
   propDisabledDate: 'Block interaction on specific dates',
+  propLocale: 'Override month / day names + today button copy',
+  propRangeSelection: 'Switch the grid to a two-tap range selector',
+  propRangeValue: 'Controlled `[start, end]` range (use with `@range-change`)',
+  propMultipleSelection: 'Toggle multiple dates on click',
+  propMultipleValue: 'Controlled list of dates (use with `@multiple-change`)',
+  propHeaderSlot:
+    'Custom chrome — `#header` slot, receives `{ value, type, onChange, onTypeChange }`',
+  propCellSlot: 'Extra content per cell — `#cell` slot, receives `{ date, type }`',
   propUnstyled: 'Drop SkyGraph wrapper class — semantics only',
   emitUpdateModelValue: 'Emitted on date pick (v-model)',
   emitSelect: 'Emitted on any cell selection',
   emitPanelChange: 'Emitted when visible panel or mode changes',
+  emitRangeChange: 'Emitted with the next `[start, end]` tuple',
+  emitMultipleChange: 'Emitted with the next array of selected dates',
 
   eventId: 'Stable identifier (used for v-for `:key`)',
   eventDate: 'Event date',

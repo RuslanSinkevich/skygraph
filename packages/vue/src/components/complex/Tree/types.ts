@@ -32,6 +32,32 @@ export interface DropInfo {
   dropPosition: -1 | 0 | 1
 }
 
+export interface EditInfo {
+  key: TreeKey
+  node: TreeNodeData
+  value: string
+  oldValue: string
+}
+
+export type TreeNodeStatus = 'default' | 'success' | 'warning' | 'error' | 'info'
+
+export interface TreeNodeAction {
+  /** Action identifier (also a Vue list key). */
+  key: string
+  /** Button icon (string or VNode-compatible render). */
+  icon?: string
+  /** Tooltip / aria-label text. */
+  title?: string
+  /** Click handler receiving the node and key. */
+  onClick: (node: TreeNodeData, key: TreeKey) => void
+  /** Hides the action for nodes where this returns false. */
+  visible?: (node: TreeNodeData) => boolean
+  /** Disables the action per node (boolean or predicate). */
+  disabled?: boolean | ((node: TreeNodeData) => boolean)
+  /** Destructive styling. */
+  danger?: boolean
+}
+
 export interface TreeLocale {
   emptyText?: string
   loadingText?: string
@@ -91,7 +117,11 @@ export interface TreeProps {
   /** Enables drag handles per node or per node predicate. @default false */
   draggable?: boolean | ((node: TreeNodeData) => boolean)
   /** Validates whether a drop is allowed. */
-  allowDrop?: (info: { dragNode: TreeNodeData; dropNode: TreeNodeData; dropPosition: -1 | 0 | 1 }) => boolean
+  allowDrop?: (info: {
+    dragNode: TreeNodeData
+    dropNode: TreeNodeData
+    dropPosition: -1 | 0 | 1
+  }) => boolean
 
   /** Loads children asynchronously. */
   loadData?: (node: TreeNodeData) => Promise<void>
@@ -140,4 +170,13 @@ export interface TreeProps {
 
   /** Renders semantic tree without Skygraph styles. */
   unstyled?: boolean
+
+  /** Maps a node to a status color variant (paints status dot + left border). */
+  nodeStatus?: (node: TreeNodeData) => TreeNodeStatus
+  /** Inline action buttons on node rows, rendered on hover. */
+  actions?: TreeNodeAction[]
+  /** Enables inline title editing per node or predicate. @default false */
+  editable?: boolean | ((node: TreeNodeData) => boolean)
+  /** Renders guide lines between levels. @default false */
+  showLine?: boolean
 }

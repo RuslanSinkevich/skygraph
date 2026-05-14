@@ -6,7 +6,7 @@ export const eventTimelineDocRu: { [K in keyof typeof eventTimelineDocEn]: strin
   crumbDataDisplay: 'Отображение данных',
   crumbEventTimeline: 'EventTimeline',
   pageLead:
-    'Хронологический поток событий с опциональной группировкой (день / месяц / год) и горизонтальной либо вертикальной ориентацией. Сортировка по `date` выполняется автоматически; маркеры и содержимое полностью кастомизируются.',
+    'Хронологический поток событий с опциональной группировкой (день / месяц / год) и горизонтальной либо вертикальной ориентацией. Сортировка по `date` выполняется автоматически; маркеры и содержимое полностью кастомизируются через слоты.',
   pageWhen1:
     'Когда у событий есть реальная `Date` и нужно расположить их во времени (история релизов, milestone-ы проекта, audit log).',
   pageWhen2:
@@ -14,15 +14,12 @@ export const eventTimelineDocRu: { [K in keyof typeof eventTimelineDocEn]: strin
   pageWhen3:
     'Для пошаговых упорядоченных списков без дат используйте `Timeline` (более простой примитив).',
 
-  demoVerticalTitle: 'Вертикальный, дефолтная группировка',
+  demoVerticalTitle: 'Вертикальный, группировка по месяцу',
   demoVerticalDesc:
-    'События сортируются по дате, разделители отмечают границы дней. Точки берут `color` из события; цвет по умолчанию — `--sg-color-primary`.',
-  demoHorizontalTitle: 'Горизонтальный',
+    'События сортируются по дате, разделители отмечают границы месяцев. Точки берут `color` из события; цвет по умолчанию — `--sg-color-primary`.',
+  demoHorizontalTitle: 'Горизонтальный, группировка по году',
   demoHorizontalDesc:
-    'Трек идёт слева направо; удобно для release notes / changelog.',
-  demoMonthTitle: 'Группировка по месяцу',
-  demoMonthDesc:
-    'Более крупная группировка для длинных диапазонов. `group-by="month"` группирует подряд идущие события по границе месяца.',
+    'Трек идёт слева направо; слот `#event` перекрывает дефолтное тело и рисует карточку. Удобно для release notes / changelog.',
 
   tableEventTimelineApi: 'API EventTimeline',
   tableEventApi: 'TimelineEvent',
@@ -30,11 +27,17 @@ export const eventTimelineDocRu: { [K in keyof typeof eventTimelineDocEn]: strin
 
   propEvents: 'События для отрисовки (внутри сортируются по `date`)',
   propOrientation: 'Ориентация трека',
-  propGroupBy: 'Группировать подряд идущие события одного бакета; между группами рисуется разделитель (граница в UTC)',
+  propGroupBy:
+    'Группировать подряд идущие события одного бакета; между группами рисуется разделитель (граница в UTC)',
+  propRenderMarker: 'Слот кастомного маркера — заменяет точку по умолчанию для события',
+  propRenderEvent: 'Слот кастомного содержимого — заменяет дефолтные `title` + `description`',
   propUnstyled: 'Убрать дефолтные классы sg-event-timeline-*',
+  propClassName: 'className корневой обёртки',
+  propStyle: 'Инлайн-стиль корневой обёртки',
 
   propEventId: 'Стабильный id (Vue key + `data-event-id`)',
-  propEventDate: 'Дата события — `Date` или epoch ms. Используется для позиционирования и группировки',
+  propEventDate:
+    'Дата события — `Date` или epoch ms. Используется для позиционирования и группировки',
   propEventTitle: 'Заголовок маркера (обычно короткий)',
   propEventDescription: 'Опциональное вторичное описание под заголовком',
   propEventColor: 'Опциональный цвет заливки точки (перекрывает токен)',

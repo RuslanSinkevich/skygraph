@@ -12,5 +12,12 @@ export type {
   SortConfig,
   ColumnFilter,
   FilterOperator,
+  ExpandableConfig,
+  TreeConfig,
+  SummaryCell,
+  VirtualConfig,
+  CellSpan,
+  AggregateType,
+  FilterDropdownSlotProps,
 } from './types'
 export { DEFAULT_TABLE_LOCALE } from './types'

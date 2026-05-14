@@ -1,25 +1,49 @@
 <script setup lang="ts">
 /**
- * Default vertical orientation, grouped by day.
- * Mirrors React `examples/demo/src/demos/timeline/Events.demo.tsx` in spirit.
+ * Vertical event stream grouped by month. Each event has a colored
+ * dot, title and description; dividers mark new month buckets.
  */
 import { SgEventTimeline } from '@skygraph/vue'
 import type { TimelineEvent } from '@skygraph/vue'
 
-function date(s: string) {
-  return new Date(s)
-}
-
 const events: TimelineEvent[] = [
-  { id: '1', date: date('2026-04-12T08:30'), title: 'Repo created', description: 'Project bootstrap' },
-  { id: '2', date: date('2026-04-12T14:00'), title: 'CI pipeline added' },
-  { id: '3', date: date('2026-04-15T11:00'), title: 'First release', color: 'var(--sg-color-success)' },
-  { id: '4', date: date('2026-04-22T10:00'), title: 'Schema v2', description: 'Breaking change' },
-  { id: '5', date: date('2026-05-01T16:00'), title: 'New theme', color: 'var(--sg-color-warning)' },
-  { id: '6', date: date('2026-05-05T09:00'), title: 'Performance pass' },
+  {
+    id: 'kickoff',
+    date: Date.UTC(2026, 0, 12),
+    title: 'Project kickoff',
+    description: 'Stakeholders aligned, scope locked.',
+    color: '#52c41a',
+  },
+  {
+    id: 'design',
+    date: Date.UTC(2026, 0, 25),
+    title: 'Design review',
+    description: 'Mocks signed off; component inventory ready.',
+  },
+  {
+    id: 'alpha',
+    date: Date.UTC(2026, 1, 10),
+    title: 'Alpha release',
+    description: 'Internal users start dogfooding.',
+    color: '#1677ff',
+  },
+  {
+    id: 'beta',
+    date: Date.UTC(2026, 2, 5),
+    title: 'Beta opens',
+    description: 'External waiting list invited.',
+    color: '#722ed1',
+  },
+  {
+    id: 'launch',
+    date: Date.UTC(2026, 3, 1),
+    title: 'GA launch',
+    description: 'Public release with marketing push.',
+    color: '#faad14',
+  },
 ]
 </script>
 
 <template>
-  <SgEventTimeline :events="events" />
+  <SgEventTimeline :events="events" group-by="month" />
 </template>

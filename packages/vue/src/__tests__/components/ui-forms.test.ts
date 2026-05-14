@@ -477,14 +477,14 @@ describe('SgCascader', () => {
 
   it('opens dropdown on click', async () => {
     const w = mount(SgCascader, { props: { options }, attachTo: document.body })
-    await w.find('.sg-cascader-input').trigger('click')
+    await w.find('.sg-cascader-selector').trigger('click')
     expect(w.classes().some((c) => c.includes('open'))).toBe(true)
     w.unmount()
   })
 
   it('selecting a leaf emits update:modelValue', async () => {
     const w = mount(SgCascader, { props: { options }, attachTo: document.body })
-    await w.find('.sg-cascader-input').trigger('click')
+    await w.find('.sg-cascader-selector').trigger('click')
     const items = w.findAll('.sg-cascader-menu-item')
     await items[0].trigger('click')
     const updated = w.findAll('.sg-cascader-menu-item')

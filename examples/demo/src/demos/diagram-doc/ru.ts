@@ -36,6 +36,10 @@ export const diagramDocRu: { [K in keyof typeof diagramDocEn]: string } = {
   demoSnapToGridDesc:
     '`snapToGrid={20}` округляет координаты по концу drag к шагу 20 world-юнитов и подключает соответствующий CSS-фон с сеткой.',
 
+  demoBezierTitle: 'Bezier-кривые',
+  demoBezierDesc:
+    'Кубические Bezier-рёбра — управляющие точки уходят перпендикулярно ближайшей грани каждой ноды, как в React Flow / draw.io. Маркер-стрелка автоматически следует за цветом линии при hover и выделении.',
+
   demoOrthogonalTitle: 'Ортогональная маршрутизация',
   demoOrthogonalDesc:
     'A*-маршрутизатор с обходом препятствий — рёбра огибают другие узлы, а не проходят сквозь них.',
@@ -76,6 +80,9 @@ export const diagramDocRu: { [K in keyof typeof diagramDocEn]: string } = {
   propPanable: 'Средняя кнопка drag + колесо pan',
   propSnapToGrid: 'Привязка результата drag к сетке (world-юниты)',
   propRouteAroundNodes: 'A*-обход препятствий для ортогональных рёбер',
+  propRoutingOptions:
+    'Настройки маршрутизации — `gridSize` / `inflate` / `maxNodes` для A*, `cornerRadius` для скруглений (по умолчанию 8), `curvature` для bezier (по умолчанию 0.25).',
+  propEdgeArrows: 'Рисовать стрелку на конце каждого ребра.',
   propSelection: 'Управляемый selection: массив id узлов',
   propSelectionMode: '`single` (legacy) / `multi` (Ctrl+click) / `lasso`',
   propOnSelectionChange: 'Срабатывает при изменении selection',

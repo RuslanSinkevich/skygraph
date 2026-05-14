@@ -1,10 +1,7 @@
 <script setup lang="ts">
 /**
  * `SegmentedDemo` — aggregator for the Segmented component page.
- *
- * Mirrors `examples/demo/src/demos/SegmentedDemo.tsx` with one
- * Vue-specific delta: the `WithIcons` example is skipped because
- * `SegmentedOption` in `@skygraph/vue` has no `icon` field.
+ * Mirrors `examples/demo/src/demos/SegmentedDemo.tsx` 1:1 (8/8).
  */
 import { computed } from 'vue'
 import {
@@ -22,6 +19,8 @@ import BasicSegmented from './segmented/Basic.demo.vue'
 import BasicSource from './segmented/Basic.demo.vue?raw'
 import ControlledSegmented from './segmented/Controlled.demo.vue'
 import ControlledSource from './segmented/Controlled.demo.vue?raw'
+import WithIconsSegmented from './segmented/WithIcons.demo.vue'
+import WithIconsSource from './segmented/WithIcons.demo.vue?raw'
 import BlockSegmented from './segmented/Block.demo.vue'
 import BlockSource from './segmented/Block.demo.vue?raw'
 import DisabledSegmented from './segmented/Disabled.demo.vue'
@@ -39,7 +38,7 @@ const segmentedProps = computed<PropDef[]>(() => [
   {
     name: 'options',
     description: t.value.propOptions,
-    type: "string[] | { label: string; value: string; disabled?: boolean }[]",
+    type: 'string[] | { label: string; value: string; icon?: string; disabled?: boolean }[]',
     required: true,
   },
   { name: 'value', description: t.value.propValue, type: 'string' },
@@ -116,12 +115,7 @@ const segmentedCssVars = computed<CssVarDef[]>(() => [
     :description="t.pageLead"
     :when-to-use="[t.pageWhen1, t.pageWhen2]"
   >
-    <DemoBox
-      :title="t.demoBasicTitle"
-      :description="t.demoBasicDesc"
-      :code="BasicSource"
-      vertical
-    >
+    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource" vertical>
       <BasicSegmented />
     </DemoBox>
 
@@ -135,11 +129,15 @@ const segmentedCssVars = computed<CssVarDef[]>(() => [
     </DemoBox>
 
     <DemoBox
-      :title="t.demoBlockTitle"
-      :description="t.demoBlockDesc"
-      :code="BlockSource"
+      :title="t.demoWithIconsTitle"
+      :description="t.demoWithIconsDesc"
+      :code="WithIconsSource"
       vertical
     >
+      <WithIconsSegmented />
+    </DemoBox>
+
+    <DemoBox :title="t.demoBlockTitle" :description="t.demoBlockDesc" :code="BlockSource" vertical>
       <BlockSegmented />
     </DemoBox>
 
@@ -152,12 +150,7 @@ const segmentedCssVars = computed<CssVarDef[]>(() => [
       <DisabledSegmented />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoSizesTitle"
-      :description="t.demoSizesDesc"
-      :code="SizesSource"
-      vertical
-    >
+    <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource" vertical>
       <SizesSegmented />
     </DemoBox>
 

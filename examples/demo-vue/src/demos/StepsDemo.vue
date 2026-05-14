@@ -1,12 +1,7 @@
 <script setup lang="ts">
 /**
  * `StepsDemo` — aggregator for the Steps component page.
- *
- * Mirrors `examples/demo/src/demos/StepsDemo.tsx` with two
- * Vue-specific deltas:
- *   - `StepItem.title`/`description` are `string` (React: `ReactNode`).
- *   - `StepItem.icon` does not exist in `@skygraph/vue`; the React
- *     `CustomIcon.demo` cannot be reproduced 1:1 and is skipped.
+ * Mirrors `examples/demo/src/demos/StepsDemo.tsx` 1:1 (9/9).
  */
 import { computed } from 'vue'
 import {
@@ -28,6 +23,8 @@ import VerticalSteps from './steps/Vertical.demo.vue'
 import VerticalSource from './steps/Vertical.demo.vue?raw'
 import ErrorStatusSteps from './steps/ErrorStatus.demo.vue'
 import ErrorStatusSource from './steps/ErrorStatus.demo.vue?raw'
+import CustomIconSteps from './steps/CustomIcon.demo.vue'
+import CustomIconSource from './steps/CustomIcon.demo.vue?raw'
 import SizesSteps from './steps/Sizes.demo.vue'
 import SizesSource from './steps/Sizes.demo.vue?raw'
 import NavigationSteps from './steps/Navigation.demo.vue'
@@ -66,6 +63,7 @@ const stepsProps = computed<PropDef[]>(() => [
 const stepItemProps = computed<PropDef[]>(() => [
   { name: 'title', description: t.value.itemTitle, type: 'string', required: true },
   { name: 'description', description: t.value.itemDescription, type: 'string' },
+  { name: 'icon', description: t.value.itemIcon, type: 'string' },
   {
     name: 'status',
     description: t.value.itemStatus,
@@ -122,12 +120,7 @@ const stepsCssVars = computed<CssVarDef[]>(() => [
     :description="t.pageLead"
     :when-to-use="[t.pageWhen1, t.pageWhen2]"
   >
-    <DemoBox
-      :title="t.demoBasicTitle"
-      :description="t.demoBasicDesc"
-      :code="BasicSource"
-      vertical
-    >
+    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource" vertical>
       <BasicSteps />
     </DemoBox>
 
@@ -159,11 +152,15 @@ const stepsCssVars = computed<CssVarDef[]>(() => [
     </DemoBox>
 
     <DemoBox
-      :title="t.demoSizesTitle"
-      :description="t.demoSizesDesc"
-      :code="SizesSource"
+      :title="t.demoCustomIconTitle"
+      :description="t.demoCustomIconDesc"
+      :code="CustomIconSource"
       vertical
     >
+      <CustomIconSteps />
+    </DemoBox>
+
+    <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource" vertical>
       <SizesSteps />
     </DemoBox>
 

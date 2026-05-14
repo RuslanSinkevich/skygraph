@@ -82,6 +82,36 @@ export interface InlineEditLocale {
   cancel?: string
 }
 
+/** Locale strings for {@link SgCalendar} and the DatePicker calendar grid. */
+export interface CalendarLocale {
+  /** Twelve month names, January first. */
+  monthNames?: string[]
+  /** Seven short day names, Sunday first. */
+  dayNames?: string[]
+  /** Label of the “Today” footer button. */
+  today?: string
+  /** Label of the “Now” footer button. */
+  now?: string
+  /** Short label for the optional week column. */
+  week?: string
+  /** Aria label / tooltip for the previous-year navigation button. */
+  prevYear?: string
+  /** Aria label / tooltip for the next-year navigation button. */
+  nextYear?: string
+  /** Aria label / tooltip for the previous-month navigation button. */
+  prevMonth?: string
+  /** Aria label / tooltip for the next-month navigation button. */
+  nextMonth?: string
+}
+
+/** Locale strings shared by {@link SgDatePicker} / {@link SgRangePicker}. */
+export interface DatePickerLocale {
+  prevYear?: string
+  nextYear?: string
+  prevMonth?: string
+  nextMonth?: string
+}
+
 /** Root locale object that aggregates all component-level locales. */
 export interface SgLocale {
   modal?: ModalLocale
@@ -93,4 +123,6 @@ export interface SgLocale {
   tagInput?: TagInputLocale
   pinInput?: PinInputLocale
   inlineEdit?: InlineEditLocale
+  calendar?: CalendarLocale
+  datePicker?: DatePickerLocale
 }

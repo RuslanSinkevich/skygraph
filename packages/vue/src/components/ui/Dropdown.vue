@@ -52,6 +52,8 @@ const emit = defineEmits<{
 
 defineSlots<{
   default(props: Record<string, never>): unknown
+  /** Custom row renderer (replaces `item.label` rendering). */
+  item(props: { item: DropdownItem; index: number; focused: boolean }): unknown
 }>()
 
 const { resolvedDisabled } = useConfigWithDefaults({ disabled: undefined }, {})
@@ -165,26 +167,18 @@ const menuClasses = computed(() => `sg-dropdown sg-dropdown-${props.placement}`)
 </script>
 
 <template>
-  <div
-    v-if="unstyled"
-    ref="wrapperRef"
-    style="position: relative; display: inline-block"
-  >
-    <div
-      @click="handleClick"
-      @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave"
-    >
+  <div v-if="unstyled" ref="wrapperRef" style="position: relative; display: inline-block">
+    <div @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
       <slot />
     </div>
-    <div
-      v-if="open"
-      @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave"
-    >
-      <template v-for="item in items" :key="item.key">
+    <div v-if="open" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+      <template v-for="(item, idx) in items" :key="item.key">
         <hr v-if="item.divider" />
-        <div v-else @click="handleSelect(item)">{{ item.label }}</div>
+        <div v-else @click="handleSelect(item)">
+          <slot name="item" :item="item" :index="idx" :focused="idx === focusedIndex">
+            {{ item.label }}
+          </slot>
+        </div>
       </template>
     </div>
   </div>
@@ -215,11 +209,7 @@ const menuClasses = computed(() => `sg-dropdown sg-dropdown-${props.placement}`)
         @mouseleave="handleMouseLeave"
       >
         <template v-for="(item, idx) in items" :key="item.key">
-          <div
-            v-if="item.divider"
-            class="sg-dropdown-divider"
-            role="separator"
-          />
+          <div v-if="item.divider" class="sg-dropdown-divider" role="separator" />
           <div
             v-else
             role="menuitem"
@@ -231,7 +221,9 @@ const menuClasses = computed(() => `sg-dropdown sg-dropdown-${props.placement}`)
             ]"
             @click="handleSelect(item)"
           >
-            {{ item.label }}
+            <slot name="item" :item="item" :index="idx" :focused="idx === focusedIndex">
+              {{ item.label }}
+            </slot>
           </div>
         </template>
       </div>

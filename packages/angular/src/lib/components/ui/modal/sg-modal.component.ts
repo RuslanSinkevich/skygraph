@@ -27,35 +27,22 @@ import { SgButtonComponent } from '../button'
   imports: [SgButtonComponent],
   template: `
     @if (open) {
-      <div class="sg-modal-mask" (click)="onMaskClick()">
+      @if (_unstyled()) {
         <div
-          class="sg-modal"
-          [style.--sg-modal-width]="widthCss()"
-          (click)="$event.stopPropagation()"
+          [class]="_className()"
           role="dialog"
           aria-modal="true"
           [attr.aria-labelledby]="title ? titleId : null"
           [attr.aria-describedby]="bodyId"
         >
-          <div class="sg-modal-header">
-            @if (title) {
-              <div class="sg-modal-title" [id]="titleId">{{ title }}</div>
-            }
-            <button
-              sg-button
-              type="text"
-              class="sg-modal-close"
-              [attr.aria-label]="closeAriaLabel()"
-              (click)="closeChange.emit()"
-            >
-              ×
-            </button>
-          </div>
-          <div class="sg-modal-body" [id]="bodyId">
+          @if (title) {
+            <div [id]="titleId">{{ title }}</div>
+          }
+          <div [id]="bodyId">
             <ng-content></ng-content>
           </div>
           @if (showFooter()) {
-            <div class="sg-modal-footer">
+            <div>
               @if (showDefaultFooter()) {
                 <button sg-button [disabled]="confirmLoading" (click)="closeChange.emit()">
                   {{ resolvedCancelText() }}
@@ -68,14 +55,69 @@ import { SgButtonComponent } from '../button'
               }
             </div>
           }
+          <button
+            sg-button
+            type="text"
+            unstyled
+            [attr.aria-label]="closeAriaLabel()"
+            (click)="closeChange.emit()"
+          >
+            x
+          </button>
         </div>
-      </div>
+      } @else {
+        <div class="sg-modal-mask" (click)="onMaskClick()">
+          <div
+            [class]="modalClasses()"
+            [style.--sg-modal-width]="widthCss()"
+            (click)="$event.stopPropagation()"
+            role="dialog"
+            aria-modal="true"
+            [attr.aria-labelledby]="title ? titleId : null"
+            [attr.aria-describedby]="bodyId"
+          >
+            <div class="sg-modal-header">
+              @if (title) {
+                <div class="sg-modal-title" [id]="titleId">{{ title }}</div>
+              }
+              <button
+                sg-button
+                type="text"
+                class="sg-modal-close"
+                [attr.aria-label]="closeAriaLabel()"
+                (click)="closeChange.emit()"
+              >
+                ×
+              </button>
+            </div>
+            <div class="sg-modal-body" [id]="bodyId">
+              <ng-content></ng-content>
+            </div>
+            @if (showFooter()) {
+              <div class="sg-modal-footer">
+                @if (showDefaultFooter()) {
+                  <button sg-button [disabled]="confirmLoading" (click)="closeChange.emit()">
+                    {{ resolvedCancelText() }}
+                  </button>
+                  <button sg-button [type]="okType" [loading]="confirmLoading" (click)="ok.emit()">
+                    {{ resolvedOkText() }}
+                  </button>
+                } @else {
+                  <ng-content select="[sg-modal-footer]"></ng-content>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SgModalComponent {
   private readonly cfg = injectSgConfig()
+  protected readonly _unstyled = signal<boolean>(false)
+  protected readonly _className = signal<string>('')
 
   readonly titleId = 'sg-modal-title-' + Math.random().toString(36).slice(2, 8)
   readonly bodyId = 'sg-modal-body-' + Math.random().toString(36).slice(2, 8)
@@ -94,6 +136,22 @@ export class SgModalComponent {
   /** Show the default footer (defaults to true when `(ok)` is observed). */
   @Input({ transform: booleanAttribute }) showOk = false
 
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
+  @Input()
+  get className(): string {
+    return this._className()
+  }
+  set className(v: string) {
+    this._className.set(v ?? '')
+  }
+
   @Output() readonly closeChange = new EventEmitter<void>()
   @Output() readonly ok = new EventEmitter<void>()
 
@@ -106,6 +164,8 @@ export class SgModalComponent {
   readonly widthCss = computed(() =>
     typeof this.width === 'number' ? `${this.width}px` : this.width,
   )
+
+  readonly modalClasses = computed(() => ['sg-modal', this._className()].filter(Boolean).join(' '))
 
   showFooter(): boolean {
     return !this.hideFooter && (this.customFooter || this.showOk || this.ok.observed)

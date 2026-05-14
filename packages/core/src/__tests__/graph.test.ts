@@ -1,7 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { createCore } from '../Core'
 import { createGraph } from '../engines/graph/GraphEngine'
-import { routeOrthogonal, pointsToPath } from '../engines/graph/router'
+import {
+  routeOrthogonal,
+  pointsToPath,
+  pointsToRoundedPath,
+  getBezierPath,
+  nearestSide,
+} from '../engines/graph/router'
 import { aabbFromOBB, obbContainsPoint } from '../engines/graph/obb'
 import type { AABB, Outline } from '../engines/graph/types'
 
@@ -477,6 +483,98 @@ describe('Orthogonal routing', () => {
 
   it('pointsToPath handles single point (just M)', () => {
     expect(pointsToPath([[3, 4]])).toBe('M 3 4 ')
+  })
+
+  // ─── pointsToRoundedPath ──────────────────────────────────────────────────
+
+  it('pointsToRoundedPath with radius=0 matches pointsToPath', () => {
+    const pts = [
+      [0, 0],
+      [10, 0],
+      [10, 10],
+    ] as const
+    expect(pointsToRoundedPath(pts, 0)).toBe(pointsToPath(pts))
+  })
+
+  it('pointsToRoundedPath emits a quadratic curve at each interior bend', () => {
+    const d = pointsToRoundedPath(
+      [
+        [0, 0],
+        [10, 0],
+        [10, 10],
+      ],
+      4,
+    )
+    // Two straight segments and one Q in between — exact tokens checked
+    // to lock the round-trip down.
+    expect(d).toBe('M 0 0 L 6 0 Q 10 0 10 4 L 10 10')
+  })
+
+  it('pointsToRoundedPath clamps the radius to half of the shortest neighbouring segment', () => {
+    // Both segments are 4 units → max possible radius is 2; we ask for
+    // 100 and expect it to be clamped without overshooting.
+    const d = pointsToRoundedPath(
+      [
+        [0, 0],
+        [4, 0],
+        [4, 4],
+      ],
+      100,
+    )
+    expect(d).toBe('M 0 0 L 2 0 Q 4 0 4 2 L 4 4')
+  })
+
+  it('pointsToRoundedPath skips bend rounding on collinear / near-zero corners', () => {
+    // Collinear points → no bend; rounded path equals straight one.
+    const pts = [
+      [0, 0],
+      [5, 0],
+      [10, 0],
+    ] as const
+    const d = pointsToRoundedPath(pts, 4)
+    expect(d).toBe('M 0 0 L 5 0 L 10 0')
+  })
+
+  // ─── getBezierPath ────────────────────────────────────────────────────────
+
+  it('getBezierPath emits M ... C ... with control handles perpendicular to each side', () => {
+    const d = getBezierPath({
+      source: [0, 0],
+      sourceSide: 'right',
+      target: [200, 100],
+      targetSide: 'left',
+      curvature: 0.25,
+    })
+    // Source exits horizontally to the right; control1.y === source.y === 0.
+    // Target enters horizontally from the left; control2.y === target.y === 100.
+    expect(d).toMatch(/^M 0 0 C 100 0 100 100 200 100$/)
+  })
+
+  it('getBezierPath default curvature falls back to 0.25', () => {
+    const a = getBezierPath({
+      source: [0, 0],
+      sourceSide: 'right',
+      target: [200, 100],
+      targetSide: 'left',
+    })
+    const b = getBezierPath({
+      source: [0, 0],
+      sourceSide: 'right',
+      target: [200, 100],
+      targetSide: 'left',
+      curvature: 0.25,
+    })
+    expect(a).toBe(b)
+  })
+
+  // ─── nearestSide ──────────────────────────────────────────────────────────
+
+  it('nearestSide returns the face closest to the opposite endpoint', () => {
+    const box = { x: 0, y: 0, w: 100, h: 50 }
+    expect(nearestSide(box, [200, 25])).toBe('right')
+    expect(nearestSide(box, [-50, 25])).toBe('left')
+    expect(nearestSide(box, [50, 200])).toBe('bottom')
+    expect(nearestSide(box, [50, -50])).toBe('top')
   })
 })
 

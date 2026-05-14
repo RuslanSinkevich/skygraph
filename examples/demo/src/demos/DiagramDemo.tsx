@@ -16,6 +16,8 @@ import { SnapToGridDiagram } from './diagram/SnapToGrid.demo'
 import SnapToGridSource from './diagram/SnapToGrid.demo?raw'
 import { OrthogonalRoutingDiagram } from './diagram/OrthogonalRouting.demo'
 import OrthogonalRoutingSource from './diagram/OrthogonalRouting.demo?raw'
+import { BezierDiagram } from './diagram/Bezier.demo'
+import BezierSource from './diagram/Bezier.demo?raw'
 import { UndoRedoDiagram } from './diagram/UndoRedo.demo'
 import UndoRedoSource from './diagram/UndoRedo.demo?raw'
 import { ContextMenuDiagram } from './diagram/ContextMenu.demo'
@@ -54,6 +56,17 @@ export function DiagramDemo() {
         description: t.propRouteAroundNodes,
         type: 'boolean',
         default: 'false',
+      },
+      {
+        name: 'routingOptions',
+        description: t.propRoutingOptions,
+        type: '{ gridSize?; inflate?; maxNodes?; cornerRadius?; curvature? }',
+      },
+      {
+        name: 'edgeArrows',
+        description: t.propEdgeArrows,
+        type: 'boolean',
+        default: 'true',
       },
       {
         name: 'selectionMode',
@@ -130,6 +143,10 @@ export function DiagramDemo() {
         code={SnapToGridSource}
       >
         <SnapToGridDiagram />
+      </DemoBox>
+
+      <DemoBox title={t.demoBezierTitle} description={t.demoBezierDesc} code={BezierSource}>
+        <BezierDiagram />
       </DemoBox>
 
       <DemoBox

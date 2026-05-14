@@ -1,14 +1,7 @@
 <script setup lang="ts">
 /**
  * `CascaderDemo` — aggregator for the Cascader component page.
- *
- * Mirrors `examples/demo/src/demos/CascaderDemo.tsx` (12 examples → 10
- * here). Vue deltas — see `findings/T-Vue-Demo-Forms.md` →
- * `cascader-feature-gaps-in-vue`:
- *   - `Multiple` and `AsyncLoad` demos dropped (no `multiple`,
- *     `loadData`, `maxTagCount`).
- *   - `Search` shows boolean form only (no `{ filter }` overload).
- *   - `CustomRender` is string-only (no VNode `displayRender`).
+ * 1:1 with `examples/demo/src/demos/CascaderDemo.tsx` (12 examples).
  */
 import { computed } from 'vue'
 import {
@@ -31,12 +24,16 @@ import ChangeOnSelectCascaderDemo from './cascader/ChangeOnSelect.demo.vue'
 import ChangeOnSelectSource from './cascader/ChangeOnSelect.demo.vue?raw'
 import SearchCascaderDemo from './cascader/Search.demo.vue'
 import SearchSource from './cascader/Search.demo.vue?raw'
+import MultipleCascaderDemo from './cascader/Multiple.demo.vue'
+import MultipleSource from './cascader/Multiple.demo.vue?raw'
 import SizesCascaderDemo from './cascader/Sizes.demo.vue'
 import SizesSource from './cascader/Sizes.demo.vue?raw'
 import DisabledCascaderDemo from './cascader/Disabled.demo.vue'
 import DisabledSource from './cascader/Disabled.demo.vue?raw'
 import CustomRenderCascaderDemo from './cascader/CustomRender.demo.vue'
 import CustomRenderSource from './cascader/CustomRender.demo.vue?raw'
+import AsyncLoadCascaderDemo from './cascader/AsyncLoad.demo.vue'
+import AsyncLoadSource from './cascader/AsyncLoad.demo.vue?raw'
 import TokensOverrideCascaderDemo from './cascader/TokensOverride.demo.vue'
 import TokensOverrideSource from './cascader/TokensOverride.demo.vue?raw'
 import UnstyledCascaderDemo from './cascader/Unstyled.demo.vue'
@@ -69,7 +66,7 @@ const cascaderProps = computed<PropDef[]>(() => [
   {
     name: 'showSearch',
     description: t.value.propShowSearch,
-    type: 'boolean',
+    type: 'boolean | { filter? }',
     default: 'false',
   },
   {
@@ -87,7 +84,14 @@ const cascaderProps = computed<PropDef[]>(() => [
   {
     name: 'displayRender',
     description: t.value.propDisplayRender,
-    type: '(labels: string[]) => string',
+    type: '(labels, selectedOptions) => string',
+  },
+  { name: 'multiple', description: t.value.propMultiple, type: 'boolean', default: 'false' },
+  { name: 'maxTagCount', description: t.value.propMaxTagCount, type: 'number' },
+  {
+    name: 'loadData',
+    description: t.value.propLoadData,
+    type: '(selectedOptions: CascaderOption[]) => void',
   },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
   {
@@ -107,6 +111,7 @@ const optionProps = computed<PropDef[]>(() => [
   { name: 'label', description: t.value.optionLabel, type: 'string' },
   { name: 'children', description: t.value.optionChildren, type: 'CascaderOption[]' },
   { name: 'disabled', description: t.value.optionDisabled, type: 'boolean' },
+  { name: 'isLeaf', description: t.value.optionIsLeaf, type: 'boolean' },
 ])
 
 const cascaderCssVars = computed<CssVarDef[]>(() => [
@@ -228,6 +233,10 @@ const cascaderCssVars = computed<CssVarDef[]>(() => [
       <SearchCascaderDemo />
     </DemoBox>
 
+    <DemoBox :title="t.demoMultipleTitle" :description="t.demoMultipleDesc" :code="MultipleSource">
+      <MultipleCascaderDemo />
+    </DemoBox>
+
     <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource">
       <SizesCascaderDemo />
     </DemoBox>
@@ -245,6 +254,14 @@ const cascaderCssVars = computed<CssVarDef[]>(() => [
     </DemoBox>
 
     <DemoBox
+      :title="t.demoAsyncLoadTitle"
+      :description="t.demoAsyncLoadDesc"
+      :code="AsyncLoadSource"
+    >
+      <AsyncLoadCascaderDemo />
+    </DemoBox>
+
+    <DemoBox
       :title="t.demoTokensOverrideTitle"
       :description="t.demoTokensOverrideDesc"
       :code="TokensOverrideSource"
@@ -252,22 +269,14 @@ const cascaderCssVars = computed<CssVarDef[]>(() => [
       <TokensOverrideCascaderDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
+    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledCascaderDemo />
     </DemoBox>
 
     <template #api>
       <PropsTable :title="t.tableCascaderApi" :data="cascaderProps" />
       <PropsTable :title="t.tableOption" :data="optionProps" />
-      <CssVarsTable
-        :title="t.tableCssVars"
-        :hint="t.cssHint"
-        :data="cascaderCssVars"
-      />
+      <CssVarsTable :title="t.tableCssVars" :hint="t.cssHint" :data="cascaderCssVars" />
     </template>
   </ComponentDoc>
 </template>

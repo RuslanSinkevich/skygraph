@@ -1,11 +1,6 @@
 /**
  * English source of truth for Select doc page strings.
  * Other locales must provide the same keys (see `ru.ts`).
- *
- * Mirrors `examples/demo/src/demos/select-doc/en.ts`. Vue side has no
- * `loading` prop on `SgSelect` and no `loading` flag on `SelectOption`
- * (see `findings/T-Vue-Demo-Forms.md` → `select-loading-not-in-vue`),
- * so the React `propLoading` / `propOptionLoading` keys are dropped.
  */
 export const selectDocEn = {
   pageTitle: 'Select',
@@ -26,9 +21,9 @@ export const selectDocEn = {
   demoSizesDesc: 'Small / middle / large — match your form density.',
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: 'Disable the whole control or single options.',
-  demoEmptyTitle: 'Async / disabled rows',
-  demoEmptyDesc:
-    'Disabled + empty options stand in for "loading" until SgSelect grows a `loading` prop.',
+  demoLoadingTitle: 'Loading',
+  demoLoadingDesc:
+    '`loading` disables input and shows a spinner; per-option `loading` marks rows as "still syncing".',
   demoNumericTitle: 'Numeric values',
   demoNumericDesc: '`value` preserves number types (important for IDs).',
   demoTokensTitle: 'Tokens override',
@@ -48,6 +43,7 @@ export const selectDocEn = {
   propMultiple: 'Multi-select mode (Vue-only super-set of React API)',
   propSize: 'Control size (propagates from ConfigProvider)',
   propDisabled: 'Disables the selector',
+  propLoading: 'Show a spinner inside the control and block input',
   propUnstyled: 'Render the native <select> with no styling',
   emitUpdateModelValue: 'Fires when the selection changes',
   emitChange: 'Mirror of `update:modelValue`',
@@ -56,6 +52,7 @@ export const selectDocEn = {
   propOptionLabel: 'Display text',
   propOptionValue: 'Value submitted on change',
   propOptionDisabled: 'Make this option unselectable',
+  propOptionLoading: 'Marks the option as "still syncing" — visually muted, click is ignored',
 
   cssHint:
     'Select inherits the Input tokens plus its own dropdown panel variables (background, shadow, highlight).',

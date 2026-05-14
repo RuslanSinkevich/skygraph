@@ -8,6 +8,7 @@ import {
   type Component,
   type PropType,
   type VNode,
+  type VNodeChild,
 } from 'vue'
 
 export interface MenuItem {
@@ -15,6 +16,11 @@ export interface MenuItem {
   key: string
   /** Visible label. */
   label: string
+  /**
+   * Optional leading icon. Accepts any VNode (e.g. created with `h()` or `<component :is>`).
+   * Aligns left of the label and inherits the item colour state.
+   */
+  icon?: VNodeChild
   /** When true, the item cannot be activated. */
   disabled?: boolean
   /** When true, styles the item as a destructive action. */
@@ -110,9 +116,7 @@ const StyledMenuItem: Component = defineComponent({
     let timer: ReturnType<typeof setTimeout> | undefined
     onBeforeUnmount(() => timer && clearTimeout(timer))
 
-    const hasChildren = computed(
-      () => !!(p.item.children && p.item.children.length > 0),
-    )
+    const hasChildren = computed(() => !!(p.item.children && p.item.children.length > 0))
     const isSelected = computed(() => p.selectedKeys.includes(p.item.key))
     const isInlineOpen = computed(() => p.openKeys.includes(p.item.key))
     const showPopover = computed(() => p.mode !== 'inline' && hasChildren.value)
@@ -140,9 +144,7 @@ const StyledMenuItem: Component = defineComponent({
     )
 
     const paddingLeft = computed(() => {
-      return p.mode === 'inline' && !p.inlineCollapsed
-        ? `${24 + p.depth * 24}px`
-        : undefined
+      return p.mode === 'inline' && !p.inlineCollapsed ? `${24 + p.depth * 24}px` : undefined
     })
 
     function handleMouseEnter() {
@@ -218,6 +220,13 @@ const StyledMenuItem: Component = defineComponent({
             onFocus: () => p.onFocusKey(p.item.key),
           },
           [
+            p.item.icon != null
+              ? h(
+                  'span',
+                  { class: 'sg-menu-item-icon', 'aria-hidden': 'true' },
+                  { default: () => p.item.icon },
+                )
+              : null,
             !(p.inlineCollapsed && p.depth === 0)
               ? h('span', { class: 'sg-menu-item-label' }, p.item.label)
               : null,
@@ -243,10 +252,7 @@ const StyledMenuItem: Component = defineComponent({
           h(
             'ul',
             {
-              class: [
-                'sg-menu-inline-sub',
-                isInlineOpen.value ? 'sg-menu-inline-sub-open' : '',
-              ]
+              class: ['sg-menu-inline-sub', isInlineOpen.value ? 'sg-menu-inline-sub-open' : '']
                 .filter(Boolean)
                 .join(' '),
               role: 'menu',
@@ -327,17 +333,13 @@ export default defineComponent({
   },
   emits: ['select', 'openChange'],
   setup(props, { emit }) {
-    const internalSelected = ref<string[]>(
-      props.selectedKeys ?? props.defaultSelectedKeys,
-    )
+    const internalSelected = ref<string[]>(props.selectedKeys ?? props.defaultSelectedKeys)
     const internalOpen = ref<string[]>(props.openKeys ?? props.defaultOpenKeys)
 
     const currentSelected = computed(() => props.selectedKeys ?? internalSelected.value)
     const currentOpen = computed(() => props.openKeys ?? internalOpen.value)
 
-    const navigable = computed(() =>
-      collectNavigable(props.items, currentOpen.value, props.mode),
-    )
+    const navigable = computed(() => collectNavigable(props.items, currentOpen.value, props.mode))
 
     const initialActive =
       currentSelected.value.find((k) => navigable.value.some((n) => n.key === k)) ??
@@ -364,9 +366,7 @@ export default defineComponent({
 
     function focusKey(key: string) {
       activeKey.value = key
-      const el = rootRef.value?.querySelector<HTMLElement>(
-        `[data-menu-key="${CSS.escape(key)}"]`,
-      )
+      const el = rootRef.value?.querySelector<HTMLElement>(`[data-menu-key="${CSS.escape(key)}"]`)
       el?.focus()
     }
 
@@ -428,9 +428,7 @@ export default defineComponent({
             e.preventDefault()
             if (!currentOpen.value.includes(current.key)) toggleOpen(current.key)
             else {
-              const first = current.children.find(
-                (c) => !c.disabled && c.type !== 'divider',
-              )
+              const first = current.children.find((c) => !c.disabled && c.type !== 'divider')
               if (first) focusKey(first.key)
             }
           }
@@ -450,11 +448,7 @@ export default defineComponent({
             return
           }
           const parent = findParentKey(props.items, activeKey.value)
-          if (
-            parent &&
-            isInlineParentOf(parent, activeKey.value) &&
-            props.mode === 'inline'
-          ) {
+          if (parent && isInlineParentOf(parent, activeKey.value) && props.mode === 'inline') {
             e.preventDefault()
             focusKey(parent)
           }
@@ -463,11 +457,7 @@ export default defineComponent({
         case 'Escape': {
           const current = findByKey(props.items, activeKey.value)
           const parent = findParentKey(props.items, activeKey.value)
-          if (
-            parent &&
-            props.mode === 'inline' &&
-            currentOpen.value.includes(parent)
-          ) {
+          if (parent && props.mode === 'inline' && currentOpen.value.includes(parent)) {
             e.preventDefault()
             toggleOpen(parent)
             focusKey(parent)

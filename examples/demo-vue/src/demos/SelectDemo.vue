@@ -1,11 +1,7 @@
 <script setup lang="ts">
 /**
  * `SelectDemo` — aggregator for the Select component page.
- *
- * Mirrors `examples/demo/src/demos/SelectDemo.tsx` (8 examples). Vue
- * delta: the React `Loading` example becomes `EmptyState` because
- * `SgSelect` has no `loading` prop yet (see `findings/T-Vue-Demo-Forms.md`
- * → `select-loading-not-in-vue`).
+ * Mirrors `examples/demo/src/demos/SelectDemo.tsx` 1:1 (8/8).
  */
 import { computed } from 'vue'
 import {
@@ -26,8 +22,8 @@ import SizesSelect from './select/Sizes.demo.vue'
 import SizesSource from './select/Sizes.demo.vue?raw'
 import DisabledSelect from './select/Disabled.demo.vue'
 import DisabledSource from './select/Disabled.demo.vue?raw'
-import EmptyStateSelect from './select/EmptyState.demo.vue'
-import EmptyStateSource from './select/EmptyState.demo.vue?raw'
+import LoadingSelect from './select/Loading.demo.vue'
+import LoadingSource from './select/Loading.demo.vue?raw'
 import NumericValuesSelect from './select/NumericValues.demo.vue'
 import NumericValuesSource from './select/NumericValues.demo.vue?raw'
 import TokensOverrideSelect from './select/TokensOverride.demo.vue'
@@ -68,6 +64,7 @@ const selectProps = computed<PropDef[]>(() => [
     default: "'middle'",
   },
   { name: 'disabled', description: t.value.propDisabled, type: 'boolean', default: 'false' },
+  { name: 'loading', description: t.value.propLoading, type: 'boolean', default: 'false' },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
   {
     name: '@update:modelValue',
@@ -91,10 +88,20 @@ const optionProps = computed<PropDef[]>(() => [
     type: 'boolean',
     default: 'false',
   },
+  {
+    name: 'loading',
+    description: t.value.propOptionLoading,
+    type: 'boolean',
+    default: 'false',
+  },
 ])
 
 const selectCssVars = computed<CssVarDef[]>(() => [
-  { name: 'sg-input-height', default: 'var(--sg-height-md)', description: t.value.cssSgInputHeight },
+  {
+    name: 'sg-input-height',
+    default: 'var(--sg-height-md)',
+    description: t.value.cssSgInputHeight,
+  },
   {
     name: 'sg-input-padding',
     default: 'var(--sg-padding-xs) var(--sg-padding-md)',
@@ -173,8 +180,8 @@ const selectCssVars = computed<CssVarDef[]>(() => [
       <DisabledSelect />
     </DemoBox>
 
-    <DemoBox :title="t.demoEmptyTitle" :description="t.demoEmptyDesc" :code="EmptyStateSource">
-      <EmptyStateSelect />
+    <DemoBox :title="t.demoLoadingTitle" :description="t.demoLoadingDesc" :code="LoadingSource">
+      <LoadingSelect />
     </DemoBox>
 
     <DemoBox

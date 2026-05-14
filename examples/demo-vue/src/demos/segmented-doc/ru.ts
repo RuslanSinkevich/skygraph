@@ -8,8 +8,7 @@ export const segmentedDocRu: { [K in keyof typeof segmentedDocEn]: string } = {
   pageBadge: 'Ввод данных',
   crumbCategory: 'Ввод данных',
   crumbSegmented: 'Segmented',
-  pageLead:
-    'Селектор взаимоисключающих опций. Легче, чем Tabs, богаче, чем Radio Group.',
+  pageLead: 'Селектор взаимоисключающих опций. Легче, чем Tabs, богаче, чем Radio Group.',
   pageWhen1: 'Небольшой фиксированный набор взаимоисключающих режимов или представлений.',
   pageWhen2:
     'Вместо Tabs, когда опций мало, они плоские и показываются inline (фильтры, переключатели вида).',
@@ -19,6 +18,8 @@ export const segmentedDocRu: { [K in keyof typeof segmentedDocEn]: string } = {
   demoControlledTitle: 'Управляемый',
   demoControlledDesc:
     'Управляйте выбором из state, чтобы интегрировать с URL, reducer или формами.',
+  demoWithIconsTitle: 'С иконками',
+  demoWithIconsDesc: 'Поле `icon` на опции (или слот `icon`) — для более насыщенных сегментов.',
   demoBlockTitle: 'Block',
   demoBlockDesc: 'Растягивает по ширине контейнера для full-width тулбаров.',
   demoDisabledTitle: 'Отключено',
@@ -33,7 +34,7 @@ export const segmentedDocRu: { [K in keyof typeof segmentedDocEn]: string } = {
   tableSegmentedApi: 'API Segmented',
   tableCssVars: 'CSS-переменные',
 
-  propOptions: 'Определения сегментов — строки или объекты с label/value/disabled',
+  propOptions: 'Определения сегментов — строки или объекты с label/value/icon/disabled',
   propValue: 'Управляемое выбранное значение',
   propDefaultValue: 'Начальное значение в неуправляемом режиме (по умолчанию — первая опция)',
   propBlock: 'Растянуть на всю ширину контейнера',

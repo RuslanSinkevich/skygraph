@@ -14,15 +14,12 @@ export const ganttDocRu: { [K in keyof typeof ganttDocEn]: string } = {
   pageWhen3:
     'Когда одни и те же данные нужно показывать в разных масштабах (день / неделя / месяц / квартал) без перерисовки источника.',
 
-  demoBasicTitle: 'Базовый — шкала days',
+  demoBasicTitle: 'Базовый — шкала day',
   demoBasicDesc:
-    'Пять задач с прогресс-барами по дневной шкале. Перетащите полосу чтобы передвинуть (snap по дням), потяните за правый край — продлить дедлайн.',
-  demoResourcesTitle: 'С ресурсами',
-  demoResourcesDesc:
-    'Группировка задач по дорожкам ресурсов (Anna / Boris / Clara). `resourceId` у задачи привязывает её к строке.',
-  demoScaleTitle: 'Шкала weeks',
+    'Перетащите полосу чтобы передвинуть (snap по дням), потяните за правый край — продлить дедлайн. Стрелки зависимостей обновляются вживую через `routeOrthogonal`.',
+  demoScaleTitle: 'Переключатель шкалы',
   demoScaleDesc:
-    'Шире колонки, реже tick-и. Полосы остаются привязанными к своим датам — меняется только ширина колонки и шаг snap при drag.',
+    'Переключение гранулярности оси времени в рантайме. Полосы остаются привязанными к своим датам — меняется только ширина колонки и шаг snap.',
 
   tableGanttApi: 'API Gantt',
   tableTaskApi: 'GanttTask',
@@ -30,9 +27,11 @@ export const ganttDocRu: { [K in keyof typeof ganttDocEn]: string } = {
   tableCssVars: 'CSS-переменные',
 
   propTasks: 'Задачи, отображаемые как полосы',
-  propResources: 'Дорожки для вертикальной группировки. Если не задано — каждая задача в своей строке в порядке источника',
+  propResources:
+    'Дорожки для вертикальной группировки. Если не задано — каждая задача в своей строке в порядке источника',
   propScale: 'Гранулярность временной оси. Определяет header-tick-и и шаг snap при drag/resize',
-  propRange: 'Видимое временное окно. Если не задано — выводится из `min(start)` / `max(end)` с отступом в один шаг `scale`',
+  propRange:
+    'Видимое временное окно. Если не задано — выводится из `min(start)` / `max(end)` с отступом в один шаг `scale`',
   propRowHeight: 'Высота строки в пикселях',
   propColumnWidth: 'Ширина одного шага `scale` в пикселях (день, неделя, ...)',
   propSidebarWidth: 'Ширина левой панели (списка задач / ресурсов)',
@@ -49,7 +48,8 @@ export const ganttDocRu: { [K in keyof typeof ganttDocEn]: string } = {
   propTaskProgress: 'Прогресс `0..1`. Когда задан — рисуется внутренняя полоса прогресса',
   propTaskParentId: 'Id родительской задачи (для группировки / иерархии). Зарезервировано для v1+',
   propTaskDependencies: 'Id восходящих задач; в текущую задачу рисуется стрелка зависимости',
-  propTaskResourceId: 'Id дорожки (соответствует `GanttResource.id`) — задача закреплена за дорожкой',
+  propTaskResourceId:
+    'Id дорожки (соответствует `GanttResource.id`) — задача закреплена за дорожкой',
   propTaskColor: 'Сплошной цвет заливки полосы. По умолчанию — токен',
 
   propResourceId: 'Стабильный id (сопоставляется с `GanttTask.resourceId`)',

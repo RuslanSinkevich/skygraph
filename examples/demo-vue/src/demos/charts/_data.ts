@@ -87,6 +87,26 @@ export function weeklyTrafficByDevice(seed = 19): DemoDataset {
   }
 }
 
+export function priceSeries(seed = 23): DemoDataset {
+  const rnd = mulberry32(seed)
+  const cats = Array.from({ length: 14 }, (_, i) => `Day ${i + 1}`)
+  return {
+    categories: cats,
+    series: [
+      {
+        id: 'btc',
+        label: 'BTC',
+        values: cats.map((_, i) => Math.round(28000 + i * 220 + (rnd() - 0.5) * 1400)),
+      },
+      {
+        id: 'eth',
+        label: 'ETH',
+        values: cats.map((_, i) => Math.round(1800 + i * 12 + (rnd() - 0.5) * 110)),
+      },
+    ],
+  }
+}
+
 export function fivePalettes(seed = 31): DemoDataset {
   const rnd = mulberry32(seed)
   const cats = Array.from({ length: 12 }, (_, i) => `${i + 1}`)

@@ -180,12 +180,14 @@ const sidebarActive = computed<string | null>(() => routeToKey(route.value.path)
 
 <template>
   <!--
-    `:key` forces AppShell to remount when sidebar visibility flips. Without
-    it `useSlots()` inside AppShell isn't reactive to `v-if` on `#sidebar`,
-    so the aside is missing on first navigation from landing → components
-    until a page reload triggers a fresh mount.
+    `:key` forces AppShell to remount whenever the section changes.
+    `useSlots()` inside the shared AppShell isn't reactive to a `v-if`
+    flipping on `#sidebar`, so without a key the aside would be missing on
+    first navigation from landing → components. Keying by `section ?? 'none'`
+    (not just by sidebar visibility) also covers the same-shape transitions
+    components ↔ guide where the sidebar contents — not just presence — change.
   -->
-  <AppShell :section="section" :key="showSidebar ? 'with-sidebar' : 'no-sidebar'">
+  <AppShell :section="section" :key="section ?? 'none'">
     <template #header>
       <Header
         brand="SkyGraph"

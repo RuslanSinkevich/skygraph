@@ -1,16 +1,7 @@
 <script setup lang="ts">
 /**
  * `TransferDemo` — aggregator for the Transfer component page.
- *
- * Mirrors `examples/demo/src/demos/TransferDemo.tsx` (7 examples).
- * Vue surface (7 examples): Basic, Search, OneWay, Titles, Disabled,
- * TokensOverride, Unstyled.
- *
- * Vue delta (see `findings/T-Vue-Demo-Forms.md`
- * → `transfer-vue-feature-gaps`):
- * - React's `CustomRender` demo dropped — `SgTransfer` has no
- *   `render` prop / row scoped slot. `Unstyled` added in its place
- *   to keep the same demo count.
+ * Mirrors `examples/demo/src/demos/TransferDemo.tsx` 1:1 (7/7).
  */
 import { computed } from 'vue'
 import {
@@ -31,12 +22,12 @@ import OneWayTransferDemo from './transfer/OneWay.demo.vue'
 import OneWaySource from './transfer/OneWay.demo.vue?raw'
 import TitlesTransferDemo from './transfer/Titles.demo.vue'
 import TitlesSource from './transfer/Titles.demo.vue?raw'
+import CustomRenderTransferDemo from './transfer/CustomRender.demo.vue'
+import CustomRenderSource from './transfer/CustomRender.demo.vue?raw'
 import DisabledTransferDemo from './transfer/Disabled.demo.vue'
 import DisabledSource from './transfer/Disabled.demo.vue?raw'
 import TokensOverrideTransferDemo from './transfer/TokensOverride.demo.vue'
 import TokensOverrideSource from './transfer/TokensOverride.demo.vue?raw'
-import UnstyledTransferDemo from './transfer/Unstyled.demo.vue'
-import UnstyledSource from './transfer/Unstyled.demo.vue?raw'
 
 const t = useTransferDocStrings()
 
@@ -63,6 +54,7 @@ const transferProps = computed<PropDef[]>(() => [
   },
   { name: 'oneWay', description: t.value.propOneWay, type: 'boolean', default: 'false' },
   { name: 'disabled', description: t.value.propDisabled, type: 'boolean', default: 'false' },
+  { name: '#item', description: t.value.propItemSlot, type: 'slot' },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
   {
     name: '@update:modelValue',
@@ -166,10 +158,14 @@ const transferCssVars = computed<CssVarDef[]>(() => [
     </DemoBox>
 
     <DemoBox
-      :title="t.demoDisabledTitle"
-      :description="t.demoDisabledDesc"
-      :code="DisabledSource"
+      :title="t.demoCustomRenderTitle"
+      :description="t.demoCustomRenderDesc"
+      :code="CustomRenderSource"
     >
+      <CustomRenderTransferDemo />
+    </DemoBox>
+
+    <DemoBox :title="t.demoDisabledTitle" :description="t.demoDisabledDesc" :code="DisabledSource">
       <DisabledTransferDemo />
     </DemoBox>
 
@@ -181,22 +177,10 @@ const transferCssVars = computed<CssVarDef[]>(() => [
       <TokensOverrideTransferDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
-      <UnstyledTransferDemo />
-    </DemoBox>
-
     <template #api>
       <PropsTable :title="t.tableTransferApi" :data="transferProps" />
       <PropsTable :title="t.tableTransferItem" :data="itemProps" />
-      <CssVarsTable
-        :title="t.tableCssVars"
-        :hint="t.cssHint"
-        :data="transferCssVars"
-      />
+      <CssVarsTable :title="t.tableCssVars" :hint="t.cssHint" :data="transferCssVars" />
     </template>
   </ComponentDoc>
 </template>

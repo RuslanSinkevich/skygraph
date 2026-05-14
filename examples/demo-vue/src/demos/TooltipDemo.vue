@@ -1,11 +1,7 @@
 <script setup lang="ts">
 /**
  * `TooltipDemo` — aggregator for the Tooltip component page.
- *
- * Mirrors `examples/demo/src/demos/TooltipDemo.tsx`, with one skip:
- * `RichContent.demo` — `SgTooltip.title` is `string` only (no slot
- * for JSX content). See `findings/T-Vue-Demo-Display.md` →
- * `tooltip-rich-content-no-vue`. 6/7 examples migrated.
+ * Mirrors `examples/demo/src/demos/TooltipDemo.tsx` 1:1 (7/7).
  */
 import { computed } from 'vue'
 import {
@@ -23,6 +19,8 @@ import BasicTooltip from './tooltip/Basic.demo.vue'
 import BasicSource from './tooltip/Basic.demo.vue?raw'
 import PlacementTooltip from './tooltip/Placement.demo.vue'
 import PlacementSource from './tooltip/Placement.demo.vue?raw'
+import RichContentTooltip from './tooltip/RichContent.demo.vue'
+import RichContentSource from './tooltip/RichContent.demo.vue?raw'
 import OnDisabledTooltip from './tooltip/OnDisabled.demo.vue'
 import OnDisabledSource from './tooltip/OnDisabled.demo.vue?raw'
 import OnIconTooltip from './tooltip/OnIcon.demo.vue'
@@ -35,7 +33,7 @@ import UnstyledSource from './tooltip/Unstyled.demo.vue?raw'
 const t = useTooltipDocStrings()
 
 const tooltipProps = computed<PropDef[]>(() => [
-  { name: 'title', description: t.value.propTitle, type: 'string', required: true },
+  { name: 'title', description: t.value.propTitle, type: 'string' },
   {
     name: 'placement',
     description: t.value.propPlacement,
@@ -43,6 +41,7 @@ const tooltipProps = computed<PropDef[]>(() => [
     default: "'top'",
   },
   { name: '#default', description: t.value.propChildren, type: 'slot' },
+  { name: '#title', description: t.value.propTitleSlot, type: 'slot' },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
 ])
 
@@ -78,6 +77,10 @@ const tooltipCssVars = computed<CssVarDef[]>(() => [
       :code="PlacementSource"
     >
       <PlacementTooltip />
+    </DemoBox>
+
+    <DemoBox :title="t.demoRichTitle" :description="t.demoRichDesc" :code="RichContentSource">
+      <RichContentTooltip />
     </DemoBox>
 
     <DemoBox

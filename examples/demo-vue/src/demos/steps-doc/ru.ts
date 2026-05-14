@@ -21,6 +21,8 @@ export const stepsDocRu: { [K in keyof typeof stepsDocEn]: string } = {
   demoVerticalDesc: 'Стек для сайдбаров и высоких визардов.',
   demoErrorTitle: 'Статус ошибки',
   demoErrorDesc: '`status` отдельного шага перебивает `current`.',
+  demoCustomIconTitle: 'Своя иконка',
+  demoCustomIconDesc: 'Заменить автогенерируемое число своим символом через `item.icon`.',
   demoSizesTitle: 'Размеры',
   demoSizesDesc: '`small` и кольца иконки по умолчанию.',
   demoNavigationTitle: 'Navigation',
@@ -40,13 +42,16 @@ export const stepsDocRu: { [K in keyof typeof stepsDocEn]: string } = {
   propCurrent: 'Индекс активного шага (с 0)',
   propItems: 'Упорядоченные шаги',
   propDirection: 'Направление раскладки',
-  propType: 'Визуальный вариант — default (нумерованные) или navigation (подчёркивание как у вкладок)',
+  propType:
+    'Визуальный вариант — default (нумерованные) или navigation (подчёркивание как у вкладок)',
   propSize: 'Пресет иконки / шрифта — наследуется от ConfigProvider',
   propUnstyled: 'Убрать все стили sg-steps-*; `data-status` на каждой строке остаётся',
   emitChange: 'Срабатывает при клике на шаг. В Vue всегда подписан (шаги кликабельны по умолчанию)',
 
   itemTitle: 'Основной заголовок шага',
   itemDescription: 'Вторая строка под заголовком',
+  itemIcon:
+    'Кастомный символ иконки (emoji / unicode / короткая подпись) — для богатого контента используйте слот `#icon`',
   itemStatus: 'Принудительный статус (перебивает выведенный из `current`)',
 
   cssPrimary: 'Заливка текущего шага и цвет завершённого хвоста / кольца',

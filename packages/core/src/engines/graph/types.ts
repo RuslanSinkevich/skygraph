@@ -164,8 +164,19 @@ export interface GraphEdge {
   from: EdgeEndpoint
   /** Target endpoint. */
   to: EdgeEndpoint
-  /** Routing hint. v0 only supports `straight`; orthogonal routing is a later stream. */
-  routing: 'straight' | 'orthogonal' | 'manual'
+  /**
+   * Routing hint:
+   *   • `straight`   — single L line between the two anchors.
+   *   • `orthogonal` — axis-aligned polyline (right-angled). Combined
+   *                    with `routeAroundNodes` in `<Diagram>` the
+   *                    router avoids other nodes via A*. The visual
+   *                    layer also draws rounded corners.
+   *   • `bezier`     — single cubic Bezier curve. Control handles
+   *                    extend perpendicular to each node's nearest
+   *                    side, matching React Flow's `getBezierPath`.
+   *   • `manual`     — explicit waypoint polyline.
+   */
+  routing: 'straight' | 'orthogonal' | 'bezier' | 'manual'
   /** Optional waypoints for `manual` routing (in world coordinates). */
   waypoints?: readonly Point[]
   /** Optional application payload. */
@@ -216,7 +227,7 @@ export interface EdgeInit {
   from: EdgeEndpoint
   to: EdgeEndpoint
   /** Routing strategy. Defaults to `'straight'`. */
-  routing?: 'straight' | 'orthogonal' | 'manual'
+  routing?: 'straight' | 'orthogonal' | 'bezier' | 'manual'
   waypoints?: readonly Point[]
   data?: unknown
 }

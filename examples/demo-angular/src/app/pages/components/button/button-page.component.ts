@@ -15,106 +15,259 @@ const TYPES_SOURCE = `<button sg-button>Default</button>
 <button sg-button type="text">Text</button>
 <button sg-button type="link">Link</button>`
 
-const SIZES_SOURCE = `<button sg-button type="primary" size="small">Small</button>
-<button sg-button type="primary">Middle (default)</button>
-<button sg-button type="primary" size="large">Large</button>`
+const SIZES_SOURCE = `<button sg-button size="small">Small</button>
+<button sg-button type="primary" size="small">Small primary</button>
+<button sg-button>Middle</button>
+<button sg-button type="primary">Middle primary</button>
+<button sg-button size="large">Large</button>
+<button sg-button type="primary" size="large">Large primary</button>`
 
-const LOADING_SOURCE = `<button sg-button type="primary" [loading]="true">Loading</button>
-<button sg-button [loading]="true">Default loading</button>`
+const LOADING_SOURCE = `<button sg-button [loading]="true">Default loading</button>
+<button sg-button type="primary" [loading]="true">Primary loading</button>
+<button sg-button type="dashed" [loading]="true">Dashed loading</button>
 
-const DISABLED_SOURCE = `<button sg-button type="primary" [disabled]="true">Disabled</button>
-<button sg-button [disabled]="true">Default disabled</button>
-<button sg-button type="text" [disabled]="true">Text disabled</button>`
+<!-- Controlled: submit pattern -->
+<button
+  sg-button
+  type="primary"
+  [loading]="saving()"
+  (click)="save()"
+>
+  {{ saving() ? 'Saving…' : 'Click me' }}
+</button>`
 
-const DANGER_SOURCE = `<button sg-button type="default" [danger]="true">Delete</button>
-<button sg-button type="primary" [danger]="true">Delete (primary)</button>
-<button sg-button type="text" [danger]="true">Delete (text)</button>`
+const DISABLED_SOURCE = `<button sg-button [disabled]="true">Default</button>
+<button sg-button type="primary" [disabled]="true">Primary</button>
+<button sg-button type="dashed" [disabled]="true">Dashed</button>
+<button sg-button type="text" [disabled]="true">Text</button>
+<button sg-button type="link" [disabled]="true">Link</button>`
 
-const BLOCK_SOURCE = `<button sg-button type="primary" [block]="true">Full-width primary</button>
-<button sg-button [block]="true">Full-width default</button>`
+const ICON_SOURCE = `<button sg-button type="primary">
+  <span aria-hidden="true">＋</span>
+  New project
+</button>
+<button sg-button>
+  <span aria-hidden="true">⟳</span>
+  Refresh
+</button>
+<button sg-button type="text">
+  <span aria-hidden="true">⌫</span>
+  Remove
+</button>
+<button sg-button size="small" aria-label="Search">
+  <span aria-hidden="true">🔍</span>
+</button>`
 
-const CLICK_SOURCE = `import { Component, signal } from '@angular/core'
-import { SgButtonComponent } from '@skygraph/angular'
+const TOKENS_SOURCE = `<style>
+  .pill-scope {
+    --sg-btn-height: 42px;
+    --sg-btn-radius: 999px;
+    --sg-btn-font-size: 14px;
+    --sg-btn-padding: 0 22px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+</style>
+<div class="pill-scope">
+  <button sg-button type="primary">Pill primary</button>
+  <button sg-button>Pill default</button>
+  <button sg-button type="dashed">Pill dashed</button>
+</div>`
 
-@Component({
-  standalone: true,
-  imports: [SgButtonComponent],
-  template: \`
-    <button sg-button (click)="inc()">Click me</button>
-    <span>{{ clicks() }} click(s)</span>
-  \`,
-})
-export class ClickHostComponent {
-  readonly clicks = signal(0)
-  inc() { this.clicks.update((n) => n + 1) }
-}`
+const BRAND_SOURCE = `<style>
+  .green-scope {
+    --sg-color-primary: #16a34a;
+    --sg-color-primary-hover: #15803d;
+    --sg-color-primary-active: #14532d;
+    --sg-color-primary-bg: #dcfce7;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+</style>
+<div class="green-scope">
+  <button sg-button type="primary">Primary (green)</button>
+  <button sg-button>Default</button>
+  <button sg-button type="link">Link</button>
+</div>`
+
+const UNSTYLED_SOURCE = `<style>
+  .demo-pill-btn {
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 24px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .demo-pill-btn:hover { filter: brightness(1.1); }
+  .demo-pill-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+<button sg-button [unstyled]="true" className="demo-pill-btn">Custom pill</button>
+<button sg-button [unstyled]="true" [disabled]="true" className="demo-pill-btn">Disabled pill</button>
+<button sg-button [unstyled]="true" [loading]="true" className="demo-pill-btn">Loading pill</button>`
 
 const BUTTON_PROPS: PropDef[] = [
   {
     name: 'type',
-    description: 'Visual variant.',
+    description: 'Visual variant',
     type: "'default' | 'primary' | 'dashed' | 'text' | 'link'",
     default: "'default'",
   },
   {
     name: 'size',
-    description: 'Button size.',
+    description: 'Button size (inherits from ConfigProvider)',
     type: "'small' | 'middle' | 'large'",
     default: "'middle'",
   },
-  { name: 'disabled', description: 'Disables the button.', type: 'boolean', default: 'false' },
+  {
+    name: 'disabled',
+    description: 'Disable the button (also inherits from ConfigProvider)',
+    type: 'boolean',
+    default: 'false',
+  },
   {
     name: 'loading',
-    description: 'Shows a spin indicator and forces aria-busy/disabled.',
+    description: 'Show an inline Spin; sets aria-busy and blocks clicks',
     type: 'boolean',
     default: 'false',
   },
   {
     name: 'danger',
-    description: 'Switches to the danger color palette.',
+    description: 'Switches to the danger palette',
     type: 'boolean',
     default: 'false',
   },
   {
     name: 'block',
-    description: 'Stretches the button to fill the parent width.',
+    description: 'Stretches the button to fill the parent width',
     type: 'boolean',
     default: 'false',
   },
   {
     name: 'htmlType',
-    description: 'Underlying HTML `type` attribute (button only).',
+    description: 'Native HTML button type attribute',
     type: "'button' | 'submit' | 'reset'",
     default: "'button'",
   },
   {
+    name: '(click)',
+    description: 'Click event',
+    type: 'EventEmitter<MouseEvent>',
+  },
+  {
+    name: 'className',
+    description: 'Extra class on the root button element',
+    type: 'string',
+  },
+  {
     name: 'unstyled',
-    description: 'Drops .sg-button-* classes — bring your own CSS.',
+    description: 'Drop all sg-button-* classes (keeps aria / disabled / loading semantics)',
     type: 'boolean',
     default: 'false',
   },
-  { name: '(click)', description: 'Click event.', type: 'EventEmitter<MouseEvent>' },
 ]
 
 const BUTTON_CSS_VARS: CssVarDef[] = [
   {
     name: 'sg-btn-height',
     default: 'var(--sg-height-md)',
-    description: 'Button height (matches size).',
+    description: 'Button height (local token — falls back to the global size scale)',
   },
-  { name: 'sg-btn-padding', default: '0 var(--sg-padding-md)', description: 'Horizontal padding.' },
-  { name: 'sg-btn-radius', default: 'var(--sg-border-radius)', description: 'Border radius.' },
-  { name: 'sg-btn-font-size', default: 'var(--sg-font-size)', description: 'Font size.' },
-  { name: 'sg-btn-bg', default: 'transparent', description: 'Default background.' },
-  { name: 'sg-btn-color', default: 'var(--sg-color-text)', description: 'Default text color.' },
+  {
+    name: 'sg-btn-padding',
+    default: '0 var(--sg-padding-md)',
+    description: 'Horizontal padding',
+  },
+  {
+    name: 'sg-btn-radius',
+    default: 'var(--sg-border-radius)',
+    description: 'Corner radius — bump to 999px for pill buttons',
+  },
+  {
+    name: 'sg-btn-font-size',
+    default: 'var(--sg-font-size)',
+    description: 'Label font size',
+  },
+  {
+    name: 'sg-btn-bg',
+    default: 'transparent',
+    description: 'Background (primary overrides to `--sg-color-primary`)',
+  },
+  {
+    name: 'sg-btn-color',
+    default: 'var(--sg-color-text)',
+    description: 'Label colour',
+  },
   {
     name: 'sg-btn-border',
     default: 'var(--sg-color-border)',
-    description: 'Default border color.',
+    description: 'Border colour',
   },
-  { name: 'sg-color-primary', default: '#1677ff', description: 'Primary palette base.' },
-  { name: 'sg-color-primary-hover', default: '#4096ff', description: 'Primary hover color.' },
-  { name: 'sg-color-primary-active', default: '#0958d9', description: 'Primary pressed color.' },
+  {
+    name: 'sg-color-primary',
+    default: '#1677ff',
+    description: '`type="primary" | "link"` base colour + focus ring',
+  },
+  {
+    name: 'sg-color-primary-hover',
+    default: '#4096ff',
+    description: 'Hover colour for primary / link / default',
+  },
+  {
+    name: 'sg-color-primary-active',
+    default: '#0958d9',
+    description: 'Active / pressed colour',
+  },
+  {
+    name: 'sg-color-primary-bg',
+    default: '#e6f4ff',
+    description: 'Focus ring glow',
+  },
+  {
+    name: 'sg-color-white',
+    default: '#ffffff',
+    description: 'Label colour on `type="primary"`',
+  },
+  {
+    name: 'sg-color-bg-hover',
+    default: 'rgba(0, 0, 0, 0.04)',
+    description: '`type="text"` hover background',
+  },
+  {
+    name: 'sg-color-bg-disabled',
+    default: 'rgba(0, 0, 0, 0.04)',
+    description: 'Disabled background',
+  },
+  {
+    name: 'sg-color-text-disabled',
+    default: 'rgba(0, 0, 0, 0.25)',
+    description: 'Disabled label colour',
+  },
+  {
+    name: 'sg-height-sm',
+    default: '24px',
+    description: '`size="small"` height (via `--sg-btn-height`)',
+  },
+  { name: 'sg-height-md', default: '32px', description: '`size="middle"` height' },
+  { name: 'sg-height-lg', default: '40px', description: '`size="large"` height' },
+  { name: 'sg-padding-xs', default: '4px', description: 'Gap between icon and label' },
+  { name: 'sg-padding-sm', default: '8px', description: '`size="small"` horizontal padding' },
+  { name: 'sg-padding-md', default: '12px', description: '`size="middle"` horizontal padding' },
+  { name: 'sg-padding-lg', default: '16px', description: '`size="large"` horizontal padding' },
+  {
+    name: 'sg-transition-duration',
+    default: '180ms',
+    description: 'Hover / focus transition',
+  },
+  {
+    name: 'sg-transition-timing',
+    default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+    description: 'Shared easing',
+  },
 ]
 
 @Component({
@@ -130,17 +283,17 @@ const BUTTON_CSS_VARS: CssVarDef[] = [
   template: `
     <sg-component-doc
       title="Button"
-      description="Trigger an action — submit a form, open a dialog, navigate. Visual style is controlled by 'type'; size, danger, block, loading and disabled states are independent inputs."
+      badge="General"
       [crumbs]="['General', 'Button']"
+      description="Trigger actions. Five visual types, three sizes, loading / disabled states, headless mode, and a dense set of component-local tokens."
       [whenToUse]="[
-        'For primary actions — Submit, Save, Continue.',
-        'For destructive actions — pair with the danger palette.',
-        'For navigation — prefer type=\\'link\\' over a styled <a>.',
+        'A button means an operation — clicking it triggers business logic.',
+        'Use primary for the call to action, default for secondary, dashed for &quot;add&quot;, text / link for inline toolbars.',
       ]"
     >
       <sg-demo-box
         title="Types"
-        description="Five visual variants. The default is unstyled-looking — use type=primary for the page's primary action."
+        description="Default, primary, dashed, text, link."
         [code]="typesSource"
       >
         <button sg-button>Default</button>
@@ -150,88 +303,164 @@ const BUTTON_CSS_VARS: CssVarDef[] = [
         <button sg-button type="link">Link</button>
       </sg-demo-box>
 
-      <sg-demo-box
-        title="Sizes"
-        description="Three sizes. 'middle' is the default; size cascades from provideSgConfig() / SgConfigProvider when not set."
-        [code]="sizesSource"
-      >
-        <button sg-button type="primary" size="small">Small</button>
-        <button sg-button type="primary">Middle (default)</button>
-        <button sg-button type="primary" size="large">Large</button>
+      <sg-demo-box title="Sizes" description="Small, middle, large." [code]="sizesSource">
+        <button sg-button size="small">Small</button>
+        <button sg-button type="primary" size="small">Small primary</button>
+        <button sg-button>Middle</button>
+        <button sg-button type="primary">Middle primary</button>
+        <button sg-button size="large">Large</button>
+        <button sg-button type="primary" size="large">Large primary</button>
       </sg-demo-box>
 
       <sg-demo-box
         title="Loading"
-        description="Inserts an inline sg-spin and sets aria-busy/disabled so the button cannot be re-clicked."
+        description="Inline Spin + aria-busy + blocked clicks."
         [code]="loadingSource"
       >
-        <button sg-button type="primary" [loading]="true">Loading</button>
         <button sg-button [loading]="true">Default loading</button>
+        <button sg-button type="primary" [loading]="true">Primary loading</button>
+        <button sg-button type="dashed" [loading]="true">Dashed loading</button>
+        <button sg-button type="primary" [loading]="saving()" (click)="save()">
+          {{ saving() ? 'Saving…' : 'Click me' }}
+        </button>
       </sg-demo-box>
 
       <sg-demo-box
         title="Disabled"
-        description="Sets aria-disabled and prevents clicks. Style mirrors the React adapter."
+        description="Dim + aria-disabled across every variant."
         [code]="disabledSource"
       >
-        <button sg-button type="primary" [disabled]="true">Disabled</button>
-        <button sg-button [disabled]="true">Default disabled</button>
-        <button sg-button type="text" [disabled]="true">Text disabled</button>
+        <button sg-button [disabled]="true">Default</button>
+        <button sg-button type="primary" [disabled]="true">Primary</button>
+        <button sg-button type="dashed" [disabled]="true">Dashed</button>
+        <button sg-button type="text" [disabled]="true">Text</button>
+        <button sg-button type="link" [disabled]="true">Link</button>
       </sg-demo-box>
 
       <sg-demo-box
-        title="Danger"
-        description="Switches the button to the destructive palette. Combine with type for variants."
-        [code]="dangerSource"
+        title="With icon"
+        description="Flex gap keeps icon + label aligned at every size."
+        [code]="iconSource"
       >
-        <button sg-button type="default" [danger]="true">Delete</button>
-        <button sg-button type="primary" [danger]="true">Delete (primary)</button>
-        <button sg-button type="text" [danger]="true">Delete (text)</button>
+        <button sg-button type="primary">
+          <span aria-hidden="true">＋</span>
+          New project
+        </button>
+        <button sg-button>
+          <span aria-hidden="true">⟳</span>
+          Refresh
+        </button>
+        <button sg-button type="text">
+          <span aria-hidden="true">⌫</span>
+          Remove
+        </button>
+        <button sg-button size="small" aria-label="Search">
+          <span aria-hidden="true">🔍</span>
+        </button>
       </sg-demo-box>
 
       <sg-demo-box
-        title="Block"
-        description="Full-width button — useful in mobile forms and CTA blocks."
-        [code]="blockSource"
+        title="Component tokens"
+        description="Scope --sg-btn-* for a local reshape (pills, chunky, compact)."
+        [code]="tokensSource"
       >
-        <button sg-button type="primary" [block]="true">Full-width primary</button>
-        <button sg-button [block]="true">Full-width default</button>
+        <div class="pill-scope">
+          <button sg-button type="primary">Pill primary</button>
+          <button sg-button>Pill default</button>
+          <button sg-button type="dashed">Pill dashed</button>
+        </div>
       </sg-demo-box>
 
       <sg-demo-box
-        title="Click event"
-        description="Standard Angular (click) emitter. Combine with signals for reactive counters."
-        [code]="clickSource"
+        title="Scoped brand"
+        description="Override --sg-color-primary* to rebrand a subtree."
+        [code]="brandSource"
       >
-        <button sg-button (click)="inc()">Click me</button>
-        <span style="margin-left:10px;font-size:13px;color:var(--sg-color-text-secondary)">
-          {{ clicks() }} click{{ clicks() === 1 ? '' : 's' }}
-        </span>
+        <div class="green-scope">
+          <button sg-button type="primary">Primary (green)</button>
+          <button sg-button>Default</button>
+          <button sg-button type="link">Link</button>
+        </div>
       </sg-demo-box>
 
-      <sg-props-table [data]="buttonProps"></sg-props-table>
+      <sg-demo-box
+        title="Unstyled"
+        description="Drop all CSS, keep the button semantics."
+        [code]="unstyledSource"
+      >
+        <button sg-button [unstyled]="true" className="demo-pill-btn">Custom pill</button>
+        <button sg-button [unstyled]="true" [disabled]="true" className="demo-pill-btn">
+          Disabled pill
+        </button>
+        <button sg-button [unstyled]="true" [loading]="true" className="demo-pill-btn">
+          Loading pill
+        </button>
+      </sg-demo-box>
+
+      <sg-props-table title="Button API" [data]="buttonProps"></sg-props-table>
       <sg-css-vars-table
         [data]="buttonCssVars"
-        hint="Override these tokens per scope to retheme buttons without forking the component."
+        hint="Button defines its own --sg-btn-* scope (height / padding / radius / font-size / bg / color / border) — override those on a wrapper for shape changes. The colour palette is pulled from the global --sg-color-primary* + --sg-color-text* tokens, so rebrand via the primary palette."
       ></sg-css-vars-table>
     </sg-component-doc>
   `,
+  styles: [
+    `
+      :host ::ng-deep .pill-scope {
+        --sg-btn-height: 42px;
+        --sg-btn-radius: 999px;
+        --sg-btn-font-size: 14px;
+        --sg-btn-padding: 0 22px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      :host ::ng-deep .green-scope {
+        --sg-color-primary: #16a34a;
+        --sg-color-primary-hover: #15803d;
+        --sg-color-primary-active: #14532d;
+        --sg-color-primary-bg: #dcfce7;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      :host ::ng-deep .demo-pill-btn {
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 24px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      :host ::ng-deep .demo-pill-btn:hover {
+        filter: brightness(1.1);
+      }
+      :host ::ng-deep .demo-pill-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ButtonPageComponent {
-  readonly clicks = signal(0)
+  protected readonly saving = signal(false)
 
   protected readonly typesSource = TYPES_SOURCE
   protected readonly sizesSource = SIZES_SOURCE
   protected readonly loadingSource = LOADING_SOURCE
   protected readonly disabledSource = DISABLED_SOURCE
-  protected readonly dangerSource = DANGER_SOURCE
-  protected readonly blockSource = BLOCK_SOURCE
-  protected readonly clickSource = CLICK_SOURCE
+  protected readonly iconSource = ICON_SOURCE
+  protected readonly tokensSource = TOKENS_SOURCE
+  protected readonly brandSource = BRAND_SOURCE
+  protected readonly unstyledSource = UNSTYLED_SOURCE
   protected readonly buttonProps = BUTTON_PROPS
   protected readonly buttonCssVars = BUTTON_CSS_VARS
 
-  inc(): void {
-    this.clicks.update((n) => n + 1)
+  protected save(): void {
+    this.saving.set(true)
+    setTimeout(() => this.saving.set(false), 1500)
   }
 }

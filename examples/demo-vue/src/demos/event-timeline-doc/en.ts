@@ -1,7 +1,8 @@
 /**
  * English source of truth for EventTimeline doc page strings.
- * Mirrors `examples/demo/src/demos/event-timeline-doc/en.ts`. Vue side has
- * 3 demos vs React 2 (carta §D, «Vue шире»; not shrunk).
+ * Mirrors `examples/demo/src/demos/event-timeline-doc/en.ts` 1:1 with
+ * 2 demos: vertical grouped-by-month + horizontal grouped-by-year with
+ * a custom `event` slot.
  */
 export const eventTimelineDocEn = {
   pageTitle: 'EventTimeline',
@@ -9,7 +10,7 @@ export const eventTimelineDocEn = {
   crumbDataDisplay: 'Data Display',
   crumbEventTimeline: 'EventTimeline',
   pageLead:
-    'Chronological event stream with optional grouping (day / month / year) and horizontal or vertical orientation. Events are sorted by `date`; markers and content are fully customisable.',
+    'Chronological event stream with optional grouping (day / month / year) and horizontal or vertical orientation. Events are sorted by `date`; markers and content are fully customisable via slots.',
   pageWhen1:
     'When events have a real `Date` and you want them positioned in time (release history, project milestones, audit log).',
   pageWhen2:
@@ -17,15 +18,12 @@ export const eventTimelineDocEn = {
   pageWhen3:
     'For step-by-step ordered lists without dates, use `Timeline` (the simpler primitive) instead.',
 
-  demoVerticalTitle: 'Vertical, default grouping',
+  demoVerticalTitle: 'Vertical, grouped by month',
   demoVerticalDesc:
-    'Events sorted by date, dividers mark new day buckets. Dots inherit `color` per event; default colour comes from `--sg-color-primary`.',
-  demoHorizontalTitle: 'Horizontal',
+    'Events sorted by date, dividers mark new month buckets. Dots inherit `color` per event; default colour comes from `--sg-color-primary`.',
+  demoHorizontalTitle: 'Horizontal, grouped by year',
   demoHorizontalDesc:
-    'Track flows left-to-right; useful for release notes / changelog views.',
-  demoMonthTitle: 'Group by month',
-  demoMonthDesc:
-    'Coarser grouping for long ranges. Set `group-by="month"` to bucket consecutive events by month boundary.',
+    'Track flows left-to-right; the `#event` slot overrides the default body for a card-like marker. Useful for release notes / changelogs.',
 
   tableEventTimelineApi: 'EventTimeline API',
   tableEventApi: 'TimelineEvent',
@@ -33,8 +31,14 @@ export const eventTimelineDocEn = {
 
   propEvents: 'Events to render (sorted internally by `date`)',
   propOrientation: 'Track orientation',
-  propGroupBy: 'Group consecutive events sharing the same bucket; renders a divider between groups (UTC boundary)',
+  propGroupBy:
+    'Group consecutive events sharing the same bucket; renders a divider between groups (UTC boundary)',
+  propRenderMarker: 'Custom marker renderer — replaces the default dot for each event',
+  propRenderEvent:
+    'Custom event-content renderer — replaces the default `title` + `description` block',
   propUnstyled: 'Drop default sg-event-timeline-* classes',
+  propClassName: 'Root wrapper className',
+  propStyle: 'Root wrapper inline style',
 
   propEventId: 'Stable id (used as Vue key + `data-event-id`)',
   propEventDate: 'Event date — `Date` or epoch ms. Drives positioning AND grouping',

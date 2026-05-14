@@ -92,12 +92,28 @@ export interface DiagramProps {
    */
   routeAroundNodes?: boolean
 
-  /** Tuning knobs forwarded to `routeOrthogonal`. */
+  /**
+   * Tuning knobs forwarded to the edge router. `gridSize` / `inflate` /
+   * `maxNodes` apply to `routing: 'orthogonal'`; `cornerRadius` controls
+   * rounded orthogonal corners (default `8`, set `0` for sharp);
+   * `curvature` controls `routing: 'bezier'` (default `0.25`).
+   */
   routingOptions?: {
     gridSize?: number
     inflate?: number
     maxNodes?: number
+    cornerRadius?: number
+    curvature?: number
   }
+
+  /**
+   * Draw arrow markers on every edge's target end. Defaults to `true`
+   * — matches the visual norm of mainstream diagram libraries. Pass
+   * `false` for plain undirected lines.
+   *
+   * @default true
+   */
+  edgeArrows?: boolean
 
   /**
    * Selection management mode (parity with React).

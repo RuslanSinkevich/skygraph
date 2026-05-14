@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input, computed, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  booleanAttribute,
+  computed,
+  signal,
+} from '@angular/core'
 import { injectSgConfig } from '../../../config/inject-sg-config'
 import type { SizeType } from '../../../types'
 
@@ -26,19 +33,19 @@ const SIZE_MAP: Record<string, number> = {
   standalone: true,
   template: `
     @if (src) {
-      <img class="sg-avatar-image" [src]="src" [alt]="alt || ''" />
+      <img [class]="imgClass()" [src]="src" [alt]="alt || ''" />
     } @else {
-      <span class="sg-avatar-text">
+      <span [class]="textClass()">
         <ng-content></ng-content>
       </span>
     }
   `,
   host: {
     '[class]': 'classes()',
-    '[style.width.px]': 'px()',
-    '[style.height.px]': 'px()',
-    '[style.lineHeight.px]': 'px()',
-    '[style.fontSize.px]': 'fontSize()',
+    '[style.width.px]': 'hostPx()',
+    '[style.height.px]': 'hostPx()',
+    '[style.lineHeight.px]': 'hostPx()',
+    '[style.fontSize.px]': 'hostFontSize()',
     role: 'img',
     '[attr.aria-label]': 'ariaLabel || null',
   },
@@ -48,6 +55,7 @@ export class SgAvatarComponent {
   private readonly cfg = injectSgConfig()
   private readonly _size = signal<SizeType | number | undefined>(undefined)
   private readonly _shape = signal<'circle' | 'square'>('circle')
+  private readonly _unstyled = signal<boolean>(false)
 
   @Input() src?: string
   @Input() alt?: string
@@ -72,6 +80,15 @@ export class SgAvatarComponent {
     this._size.set(v == null ? undefined : v)
   }
 
+  /** Strip all sg-avatar-* classes and the inline sizing. */
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
   readonly resolvedSize = computed<SizeType | number>(
     () => this._size() ?? this.cfg.size ?? 'middle',
   )
@@ -88,9 +105,14 @@ export class SgAvatarComponent {
     return SIZE_MAP[this.avatarSizeToken()] ?? 32
   })
 
+  readonly hostPx = computed(() => (this._unstyled() ? null : this.px()))
+
   readonly fontSize = computed(() => (this.src ? null : Math.round(this.px() * 0.45)))
 
+  readonly hostFontSize = computed(() => (this._unstyled() ? null : this.fontSize()))
+
   readonly classes = computed(() => {
+    if (this._unstyled()) return ''
     const parts = [
       'sg-avatar',
       `sg-avatar-${this._shape()}`,
@@ -98,4 +120,7 @@ export class SgAvatarComponent {
     ]
     return parts.filter(Boolean).join(' ')
   })
+
+  readonly imgClass = computed(() => (this._unstyled() ? '' : 'sg-avatar-image'))
+  readonly textClass = computed(() => (this._unstyled() ? '' : 'sg-avatar-text'))
 }

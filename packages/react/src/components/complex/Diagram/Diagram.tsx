@@ -12,10 +12,18 @@ import type {
   DragEvent as ReactDragEvent,
   ForwardedRef,
   MouseEvent as ReactMouseEvent,
+  PointerEvent as ReactPointerEvent,
   ReactNode,
   WheelEvent as ReactWheelEvent,
 } from 'react'
-import { routeOrthogonal, pointsToPath } from '@skygraph/core'
+import {
+  routeOrthogonal,
+  pointsToPath,
+  pointsToRoundedPath,
+  getBezierPath,
+  nearestSide,
+} from '@skygraph/core'
+import type { Side } from '@skygraph/core'
 import type {
   AABB,
   Anchor,
@@ -167,15 +175,32 @@ export interface DiagramProps {
    */
   routeAroundNodes?: boolean
   /**
-   * Tuning knobs forwarded to the orthogonal router when
-   * `routeAroundNodes` is on. See the `routeOrthogonal` router options
-   * (from `@skygraph/core`).
+   * Tuning knobs forwarded to the edge router. `gridSize` / `inflate` /
+   * `maxNodes` only apply to `routing: 'orthogonal'` when
+   * `routeAroundNodes` is on (see `routeOrthogonal` in `@skygraph/core`).
+   *
+   *   • `cornerRadius` — radius of rounded corners on orthogonal
+   *     edges. Defaults to `8` world units. Pass `0` for sharp
+   *     right-angle corners.
+   *   • `curvature` — control-handle intensity for `routing: 'bezier'`.
+   *     Defaults to React Flow's `0.25`. Range: `0..1`.
    */
   routingOptions?: {
     gridSize?: number
     inflate?: number
     maxNodes?: number
+    cornerRadius?: number
+    curvature?: number
   }
+  /**
+   * When `true`, every rendered edge gets an arrow marker on its target
+   * end (matches the visual norm of mainstream diagram libraries).
+   * The marker reuses the edge stroke colour through `currentColor`
+   * so hover / selected styles propagate automatically.
+   *
+   * @default true
+   */
+  edgeArrows?: boolean
   /**
    * Включает поддержку печати через `ref.print()`. Если `true` — без
    * визуальных изменений; объект `{ fileName }` задаёт имя popup-окна
@@ -327,6 +352,13 @@ function defaultRenderNode(node: GraphNode): ReactNode {
   return <span className="sg-diagram-node-label">{node.id}</span>
 }
 
+/**
+ * Default corner radius for rounded orthogonal corners. Matches the
+ * value React Flow uses (`5px`) which gives a visible smoothing
+ * without rounding the path into mush.
+ */
+const ORTHOGONAL_CORNER_RADIUS = 8
+
 function buildEdgePath(
   edge: GraphEdge,
   start: Point,
@@ -346,7 +378,22 @@ function buildEdgePath(
         sourceBounds,
         targetBounds,
       })
-      return pointsToPath(points)
+      return pointsToRoundedPath(points, routerOpts?.cornerRadius ?? ORTHOGONAL_CORNER_RADIUS)
+    }
+    case 'bezier': {
+      // Pick the exit/enter side from each endpoint's AABB. When the
+      // bounds aren't available (rare — only happens for nodes with
+      // exotic outlines) the curve falls back to "right → left",
+      // which still looks reasonable for horizontal layouts.
+      const sourceSide: Side = sourceBounds ? nearestSide(sourceBounds, end) : 'right'
+      const targetSide: Side = targetBounds ? nearestSide(targetBounds, start) : 'left'
+      return getBezierPath({
+        source: start,
+        sourceSide,
+        target: end,
+        targetSide,
+        curvature: routerOpts?.curvature,
+      })
     }
     case 'manual': {
       const wp = edge.waypoints ?? []
@@ -420,6 +467,7 @@ function DiagramInner(
     selectionMode = 'single',
     onDropNode,
     dropTypes,
+    edgeArrows = true,
   }: DiagramProps,
   forwardedRef: ForwardedRef<DiagramRef>,
 ) {
@@ -525,8 +573,25 @@ function DiagramInner(
   }
 
   // ─── Drag state (single + multi) ──────────────────────────────────────────
+  //
+  // The drag pipeline is built on Pointer Events rather than the older
+  // mousedown / window-mousemove dance. The rationale:
+  //
+  //   • Pointer Events unify mouse / touch / pen so the same path
+  //     handles trackpads, touchscreens, drawing tablets and Mac
+  //     "right-click via two-finger tap" — these all delivered the
+  //     mouse fallback erratically, which is the "не у всех работает"
+  //     symptom users were hitting on Macs and tablets.
+  //   • `setPointerCapture` guarantees `pointermove` / `pointerup`
+  //     keep firing on the original target even if the cursor leaves
+  //     the wrapper or the user releases over another window.
+  //   • Browser drag-and-drop (HTML5 DnD) and Pointer Events never
+  //     conflict on the same element — we already wire `onDragOver` /
+  //     `onDrop` on the wrapper for palette → canvas drops.
   interface DragSession {
     primaryId: NodeId
+    pointerId: number
+    target: HTMLElement
     startX: number
     startY: number
     startZoom: number
@@ -536,6 +601,9 @@ function DiagramInner(
   }
   const dragRef = useRef<DragSession | null>(null)
   const [draggingId, setDraggingId] = useState<NodeId | null>(null)
+
+  /** Pointer movement (in CSS pixels) before a click "counts" as a drag. */
+  const DRAG_THRESHOLD_PX = 0.5
 
   function applyMove(id: NodeId, x: number, y: number) {
     let nx = x
@@ -548,51 +616,10 @@ function DiagramInner(
     else graph.moveNode(id, nx, ny)
   }
 
-  function startDrag(
-    primaryId: NodeId,
-    members: Array<{ id: NodeId; x0: number; y0: number }>,
-    e: ReactMouseEvent<HTMLDivElement>,
-  ) {
-    dragRef.current = {
-      primaryId,
-      startX: e.clientX,
-      startY: e.clientY,
-      startZoom: view.zoom,
-      members,
-      moved: false,
-    }
-    setDraggingId(primaryId)
-
-    const onMove = (ev: MouseEvent) => {
-      const d = dragRef.current
-      if (!d) return
-      const dx = (ev.clientX - d.startX) / d.startZoom
-      const dy = (ev.clientY - d.startY) / d.startZoom
-      if (!d.moved && (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5)) d.moved = true
-      // Group commits into a single transaction so undo restores the whole
-      // multi-drag rather than one node at a time.
-      if (d.members.length > 1) {
-        graph.transaction(() => {
-          for (const m of d.members) applyMove(m.id, m.x0 + dx, m.y0 + dy)
-        })
-      } else {
-        const m = d.members[0]!
-        applyMove(m.id, m.x0 + dx, m.y0 + dy)
-      }
-    }
-    const onUp = () => {
-      dragRef.current = null
-      setDraggingId(null)
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('mouseup', onUp)
-    }
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseup', onUp)
-  }
-
-  function handleNodeMouseDown(id: NodeId) {
-    return (e: ReactMouseEvent<HTMLDivElement>) => {
+  function handleNodePointerDown(id: NodeId) {
+    return (e: ReactPointerEvent<HTMLDivElement>) => {
       // Left button only — middle is reserved for pan, right is context menu.
+      // Touch / pen always report `button === 0`.
       if (e.button !== 0) return
 
       const node = graph.getNode(id)
@@ -629,9 +656,82 @@ function DiagramInner(
         })
         .filter((m): m is { id: NodeId; x0: number; y0: number } => m !== null)
 
-      startDrag(id, members, e)
+      const target = e.currentTarget
+      // Capture the pointer on the node element so subsequent
+      // `pointermove` / `pointerup` keep reaching us even if the user
+      // drags fast or releases outside the wrapper. Without capture,
+      // touch pointers commonly "escape" once the finger leaves the
+      // initial element bounds, which is the root cause of the "drag
+      // freezes" reports on Android/iOS.
+      try {
+        target.setPointerCapture(e.pointerId)
+      } catch {
+        // Some browsers throw if the pointer is already released — the
+        // session is still valid, we just lose capture; ignore.
+      }
+
+      dragRef.current = {
+        primaryId: id,
+        pointerId: e.pointerId,
+        target,
+        startX: e.clientX,
+        startY: e.clientY,
+        startZoom: view.zoom,
+        members,
+        moved: false,
+      }
+      setDraggingId(id)
     }
   }
+
+  function handleNodePointerMove(e: ReactPointerEvent<HTMLDivElement>) {
+    const d = dragRef.current
+    if (!d || d.pointerId !== e.pointerId) return
+    const dx = (e.clientX - d.startX) / d.startZoom
+    const dy = (e.clientY - d.startY) / d.startZoom
+    if (!d.moved && (Math.abs(dx) > DRAG_THRESHOLD_PX || Math.abs(dy) > DRAG_THRESHOLD_PX)) {
+      d.moved = true
+    }
+    // Group commits into a single transaction so undo restores the whole
+    // multi-drag rather than one node at a time.
+    if (d.members.length > 1) {
+      graph.transaction(() => {
+        for (const m of d.members) applyMove(m.id, m.x0 + dx, m.y0 + dy)
+      })
+    } else {
+      const m = d.members[0]!
+      applyMove(m.id, m.x0 + dx, m.y0 + dy)
+    }
+  }
+
+  function endDrag(e: ReactPointerEvent<HTMLDivElement>) {
+    const d = dragRef.current
+    if (!d || d.pointerId !== e.pointerId) return
+    try {
+      d.target.releasePointerCapture(d.pointerId)
+    } catch {
+      // Already released — ignore.
+    }
+    dragRef.current = null
+    setDraggingId(null)
+  }
+
+  // Safety net — if the component unmounts mid-drag, the captured
+  // pointer would otherwise linger and the next click on the same
+  // element would behave oddly.
+  useEffect(() => {
+    return () => {
+      const d = dragRef.current
+      if (d) {
+        try {
+          d.target.releasePointerCapture(d.pointerId)
+        } catch {
+          // pointer might already be gone — nothing to do
+        }
+        dragRef.current = null
+      }
+    }
+  }, [])
 
   // ─── Wheel: zoom (Ctrl) / pan (plain) ────────────────────────────────────
   function handleWheel(e: ReactWheelEvent<HTMLDivElement>) {
@@ -672,69 +772,64 @@ function DiagramInner(
     viewRef.current = view
   }, [view])
 
-  function startLasso(e: ReactMouseEvent<HTMLDivElement>) {
+  // Wrapper-level pointer session (lasso OR middle-button pan). We
+  // keep one session at a time — both gestures emit `pointerdown` from
+  // the same target so swapping modes is just a discriminator.
+  type WrapperSession =
+    | { kind: 'lasso'; pointerId: number }
+    | { kind: 'pan'; pointerId: number; startX: number; startY: number; panX: number; panY: number }
+  const wrapperSessionRef = useRef<WrapperSession | null>(null)
+
+  function startLasso(e: ReactPointerEvent<HTMLDivElement>) {
     const rect = wrapperRef.current?.getBoundingClientRect()
     if (!rect) return
     const sx = e.clientX - rect.left
     const sy = e.clientY - rect.top
     e.preventDefault()
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      // ignored — capture is best-effort
+    }
     lassoRef.current = {
       startX: sx,
       startY: sy,
       initial: currentSelection,
       additive: e.shiftKey || e.ctrlKey || e.metaKey,
     }
+    wrapperSessionRef.current = { kind: 'lasso', pointerId: e.pointerId }
     setLasso({ x: sx, y: sy, w: 0, h: 0 })
-
-    const onMove = (ev: MouseEvent) => {
-      const r = wrapperRef.current?.getBoundingClientRect()
-      const l = lassoRef.current
-      if (!r || !l) return
-      const cx = ev.clientX - r.left
-      const cy = ev.clientY - r.top
-      const screen = rectFromCorners(l.startX, l.startY, cx, cy)
-      setLasso(screen)
-      const world = screenRectToWorld(screen, viewRef.current)
-      const hits = nodesInBox(boundsByIdRef.current, world)
-      const next = l.additive ? Array.from(new Set([...l.initial, ...hits])) : hits
-      commitSelection(next)
-    }
-    const onUp = () => {
-      lassoRef.current = null
-      setLasso(null)
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('mouseup', onUp)
-    }
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseup', onUp)
   }
 
-  // ─── Wrapper mousedown: middle-pan / lasso / clear-selection ──────────────
-  function handleWrapperMouseDown(e: ReactMouseEvent<HTMLDivElement>) {
+  function startPan(e: ReactPointerEvent<HTMLDivElement>) {
+    e.preventDefault()
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      // ignored
+    }
+    wrapperSessionRef.current = {
+      kind: 'pan',
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      panX: view.panX,
+      panY: view.panY,
+    }
+  }
+
+  // ─── Wrapper pointerdown: middle-pan / lasso / clear-selection ────────────
+  function handleWrapperPointerDown(e: ReactPointerEvent<HTMLDivElement>) {
     if (panable && e.button === 1) {
-      e.preventDefault()
-      const start = { x: e.clientX, y: e.clientY, panX: view.panX, panY: view.panY }
-      const onMove = (ev: MouseEvent) => {
-        setView((v) => ({
-          ...v,
-          panX: start.panX + (ev.clientX - start.x),
-          panY: start.panY + (ev.clientY - start.y),
-        }))
-      }
-      const onUp = () => {
-        window.removeEventListener('mousemove', onMove)
-        window.removeEventListener('mouseup', onUp)
-      }
-      window.addEventListener('mousemove', onMove)
-      window.addEventListener('mouseup', onUp)
+      startPan(e)
       return
     }
 
     if (e.button !== 0) return
 
     // Empty-canvas left click — only meaningful when selection management
-    // is active. The mousedown originates on the wrapper / canvas, never on
-    // a node (those stop propagation in `handleNodeMouseDown`).
+    // is active. The pointerdown originates on the wrapper / canvas, never
+    // on a node (those stop propagation in `handleNodePointerDown`).
     if (selectionMode === 'lasso') {
       startLasso(e)
       return
@@ -742,6 +837,44 @@ function DiagramInner(
     if (selectionMode === 'multi' && currentSelection.length > 0) {
       // Shift / Ctrl preserve the current selection; plain click clears.
       if (!(e.shiftKey || e.ctrlKey || e.metaKey)) commitSelection([])
+    }
+  }
+
+  function handleWrapperPointerMove(e: ReactPointerEvent<HTMLDivElement>) {
+    const s = wrapperSessionRef.current
+    if (!s || s.pointerId !== e.pointerId) return
+    if (s.kind === 'pan') {
+      const dx = e.clientX - s.startX
+      const dy = e.clientY - s.startY
+      setView((v) => ({ ...v, panX: s.panX + dx, panY: s.panY + dy }))
+      return
+    }
+    // lasso
+    const r = wrapperRef.current?.getBoundingClientRect()
+    const l = lassoRef.current
+    if (!r || !l) return
+    const cx = e.clientX - r.left
+    const cy = e.clientY - r.top
+    const screen = rectFromCorners(l.startX, l.startY, cx, cy)
+    setLasso(screen)
+    const world = screenRectToWorld(screen, viewRef.current)
+    const hits = nodesInBox(boundsByIdRef.current, world)
+    const next = l.additive ? Array.from(new Set([...l.initial, ...hits])) : hits
+    commitSelection(next)
+  }
+
+  function handleWrapperPointerUp(e: ReactPointerEvent<HTMLDivElement>) {
+    const s = wrapperSessionRef.current
+    if (!s || s.pointerId !== e.pointerId) return
+    try {
+      e.currentTarget.releasePointerCapture(s.pointerId)
+    } catch {
+      // ignored
+    }
+    wrapperSessionRef.current = null
+    if (s.kind === 'lasso') {
+      lassoRef.current = null
+      setLasso(null)
     }
   }
 
@@ -915,10 +1048,16 @@ function DiagramInner(
       className={wrapperClass}
       style={wrapperStyle}
       onWheel={zoomable || panable ? handleWheel : undefined}
-      onMouseDown={
+      onPointerDown={
         panable || selectionMode === 'lasso' || selectionMode === 'multi'
-          ? handleWrapperMouseDown
+          ? handleWrapperPointerDown
           : undefined
+      }
+      onPointerMove={panable || selectionMode === 'lasso' ? handleWrapperPointerMove : undefined}
+      onPointerUp={panable || selectionMode === 'lasso' ? handleWrapperPointerUp : undefined}
+      onPointerCancel={panable || selectionMode === 'lasso' ? handleWrapperPointerUp : undefined}
+      onLostPointerCapture={
+        panable || selectionMode === 'lasso' ? handleWrapperPointerUp : undefined
       }
       onContextMenu={onCanvasContextMenu ? handleWrapperContextMenu : undefined}
       onDragOver={dropEnabled ? handleDragOver : undefined}
@@ -940,12 +1079,62 @@ function DiagramInner(
           style={{
             position: 'absolute',
             inset: 0,
-            // Children with explicit `pointer-events: stroke` override and
-            // become hit-targets even when the SVG itself is transparent.
-            pointerEvents: edgesInteractive ? 'none' : 'none',
+            // The SVG layer never grabs pointer events itself — only
+            // its child `path[data-edge-hit]` elements opt in via
+            // `pointer-events: stroke` so nodes underneath stay
+            // interactive across edge gaps.
+            pointerEvents: 'none',
           }}
           aria-hidden="true"
         >
+          {/*
+           * Marker defs — one arrow per visual state. We keep them
+           * on every diagram (cheap; one defs block, zero render
+           * cost when `edgeArrows={false}`) and let CSS swap them
+           * out via the marker-end attribute on the path.
+           *
+           * The arrow shape uses `context-stroke` so it inherits
+           * the edge's stroke colour automatically when supported,
+           * with a `fill` fallback for browsers that lack it. The
+           * marker viewport is 10×10 with `refX={9}` so the arrow
+           * tip lands on the path's endpoint instead of overshooting.
+           */}
+          {edgeArrows && (
+            <defs>
+              <marker
+                id="sg-diagram-arrow"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse"
+                markerUnits="userSpaceOnUse"
+              >
+                <path
+                  d="M 0 0 L 10 5 L 0 10 Z"
+                  fill="context-stroke"
+                  className="sg-diagram-arrow-fill"
+                />
+              </marker>
+              <marker
+                id="sg-diagram-arrow-hover"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+                markerUnits="userSpaceOnUse"
+              >
+                <path
+                  d="M 0 0 L 10 5 L 0 10 Z"
+                  fill="context-stroke"
+                  className="sg-diagram-arrow-fill"
+                />
+              </marker>
+            </defs>
+          )}
           {edges.map((edge) =>
             renderEdge(
               graph,
@@ -954,6 +1143,7 @@ function DiagramInner(
               routeAroundNodes,
               routingOptions,
               edgesInteractive,
+              edgeArrows,
               edgesInteractive ? handleEdgeContextMenu(edge) : undefined,
               hasEdgeActions ? () => showEdgeHover(String(edge.id)) : undefined,
               hasEdgeActions ? () => hideEdgeHover() : undefined,
@@ -990,9 +1180,13 @@ function DiagramInner(
                 cursor: draggable ? (isDragging ? 'grabbing' : 'grab') : undefined,
                 userSelect: draggable ? 'none' : undefined,
               }}
-              onMouseDown={
-                draggable || selectionMode !== 'single' ? handleNodeMouseDown(node.id) : undefined
+              onPointerDown={
+                draggable || selectionMode !== 'single' ? handleNodePointerDown(node.id) : undefined
               }
+              onPointerMove={draggable ? handleNodePointerMove : undefined}
+              onPointerUp={draggable ? endDrag : undefined}
+              onPointerCancel={draggable ? endDrag : undefined}
+              onLostPointerCapture={draggable ? endDrag : undefined}
               onContextMenu={onNodeContextMenu ? handleNodeContextMenu(node) : undefined}
               onMouseEnter={hasNodeActions ? () => showNodeHover(node.id) : undefined}
               onMouseLeave={hasNodeActions ? () => hideNodeHover() : undefined}
@@ -1055,6 +1249,7 @@ function renderEdge(
   routeAroundNodes: boolean,
   routerOpts: DiagramProps['routingOptions'],
   interactive: boolean,
+  arrows: boolean,
   onContextMenu: ((e: ReactMouseEvent<SVGPathElement>) => void) | undefined,
   onMouseEnter: (() => void) | undefined,
   onMouseLeave: (() => void) | undefined,
@@ -1075,14 +1270,17 @@ function renderEdge(
     }
   }
 
-  // Always pass source/target bounds for orthogonal routing — the router
-  // uses them to pick the side of each rectangle nearest to the other
-  // endpoint, so edges exit from the closest face instead of from a
-  // corner-anchor like `s = 0.25` (NE) / `s = 0.75` (SW).
-  const sourceBounds = edge.routing === 'orthogonal' ? boundsById.get(edge.from.node) : undefined
-  const targetBounds = edge.routing === 'orthogonal' ? boundsById.get(edge.to.node) : undefined
+  // Always pass source/target bounds for orthogonal/bezier routing —
+  // the router uses them to pick the side of each rectangle nearest
+  // to the other endpoint, so edges exit from the closest face instead
+  // of from a corner-anchor like `s = 0.25` / `s = 0.75`.
+  const needsBounds = edge.routing === 'orthogonal' || edge.routing === 'bezier'
+  const sourceBounds = needsBounds ? boundsById.get(edge.from.node) : undefined
+  const targetBounds = needsBounds ? boundsById.get(edge.to.node) : undefined
 
   const d = buildEdgePath(edge, a, b, obstacles, sourceBounds, targetBounds, routerOpts)
+
+  const markerEnd = arrows ? 'url(#sg-diagram-arrow)' : undefined
 
   if (!interactive) {
     return (
@@ -1091,6 +1289,7 @@ function renderEdge(
         d={d}
         className={`sg-diagram-edge sg-diagram-edge-${edge.routing}`}
         fill="none"
+        markerEnd={markerEnd}
         data-edge-id={edge.id}
         data-obstacle-count={obstacles ? obstacles.length : 0}
       />
@@ -1105,7 +1304,8 @@ function renderEdge(
         className="sg-diagram-edge-hit"
         fill="none"
         stroke="transparent"
-        strokeWidth={12}
+        strokeWidth={16}
+        data-edge-hit="true"
         style={{ pointerEvents: 'stroke', cursor: onContextMenu ? 'context-menu' : undefined }}
         onContextMenu={onContextMenu}
         onMouseEnter={onMouseEnter}
@@ -1115,6 +1315,7 @@ function renderEdge(
         d={d}
         className={`sg-diagram-edge sg-diagram-edge-${edge.routing}`}
         fill="none"
+        markerEnd={markerEnd}
         data-edge-id={edge.id}
         data-obstacle-count={obstacles ? obstacles.length : 0}
         style={{ pointerEvents: 'none' }}

@@ -11,15 +11,12 @@ export const resourceCalendarDocRu: { [K in keyof typeof resourceCalendarDocEn]:
   pageWhen2: 'Визуально показать конфликты расписания без своей clash-логики.',
   pageWhen3: 'В паре с availability rules — запретить работу вне рабочих часов.',
 
-  demoWeekTitle: 'Шкала weeks',
-  demoWeekDesc:
-    'Дефолт `scale="week"` — дневные колонки над одной неделей, три ресурса, пять assignment-ов.',
-  demoDayTitle: 'Шкала day',
-  demoDayDesc:
-    'Колонки по часам при `scale="day"`. Удобно для планирования смен внутри одного дня.',
-  demoInteractiveTitle: 'Интерактив — drag и resize',
-  demoInteractiveDesc:
-    'Полосы становятся click-and-drag (move) и edge-drag (resize). `@assignmentChange` срабатывает после каждой коммитнутой правки.',
+  demoBasicTitle: 'Базовый',
+  demoBasicDesc:
+    'Перетащить полосу — переместить (snap к дню), потянуть за край — изменить размер. Два пересечения у Bob отображаются как штрихованный красный блок-конфликт.',
+  demoWithCapacityTitle: 'С capacity',
+  demoWithCapacityDesc:
+    '`capacityPerSlot=2` у комнаты. Три одновременных брони ломают over-capacity — `@conflict` срабатывает и панель снизу синхронно отражает список.',
 
   tableCalendarApi: 'API ResourceCalendar',
   tableCssVars: 'CSS-переменные',

@@ -22,9 +22,9 @@ export const selectDocRu: { [K in keyof typeof selectDocEn]: string } = {
   demoSizesDesc: 'Small / middle / large — под плотность вашей формы.',
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: 'Отключить весь контрол или отдельные опции.',
-  demoEmptyTitle: 'Async / disabled-строки',
-  demoEmptyDesc:
-    'Disabled + пустой список опций заменяют «loading», пока у SgSelect нет prop `loading`.',
+  demoLoadingTitle: 'Загрузка',
+  demoLoadingDesc:
+    '`loading` блокирует ввод и показывает спиннер; `loading` у опции отмечает её как «синхронизируется».',
   demoNumericTitle: 'Числовые значения',
   demoNumericDesc: '`value` сохраняет числовые типы (важно для ID).',
   demoTokensTitle: 'Переопределение токенов',
@@ -44,6 +44,7 @@ export const selectDocRu: { [K in keyof typeof selectDocEn]: string } = {
   propMultiple: 'Multi-select (Vue-only расширение API)',
   propSize: 'Размер контрола (наследуется от ConfigProvider)',
   propDisabled: 'Отключить селектор',
+  propLoading: 'Показать спиннер внутри контрола и заблокировать ввод',
   propUnstyled: 'Отрисовать нативный <select> без стилей',
   emitUpdateModelValue: 'Срабатывает при изменении выбора',
   emitChange: 'Дубликат `update:modelValue`',
@@ -52,6 +53,8 @@ export const selectDocRu: { [K in keyof typeof selectDocEn]: string } = {
   propOptionLabel: 'Отображаемый текст',
   propOptionValue: 'Значение, передаваемое в onChange',
   propOptionDisabled: 'Сделать опцию невыбираемой',
+  propOptionLoading:
+    'Отметить опцию как «синхронизируется» — визуально приглушена, клик игнорируется',
 
   cssHint:
     'Select наследует токены Input плюс свои переменные панели выпадающего списка (фон, тень, подсветка).',

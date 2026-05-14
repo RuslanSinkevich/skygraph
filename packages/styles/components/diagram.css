@@ -61,6 +61,15 @@
   cursor: crosshair;
 }
 
+/* Suppress native scroll/pinch when lasso selection is active — the
+ * wrapper owns those gestures via Pointer Events. Single-selection
+ * canvases keep native scroll behaviour because they don't intercept
+ * empty-canvas drags. */
+.sg-diagram[data-selection-mode='lasso'],
+.sg-diagram[data-selection-mode='multi'] {
+  touch-action: none;
+}
+
 /* When the canvas accepts DnD drops (palette → canvas) and the user is
  * mid-drag, highlight the border so the drop target is obvious. The
  * `data-sg-drop="true"` attribute is set by `<Diagram>` whenever an
@@ -111,6 +120,12 @@
   color: var(--sg-color-text);
   box-shadow: var(--sg-diagram-node-shadow);
   user-select: none;
+  /* `touch-action: none` is essential for Pointer Events + touch: it
+   * tells the browser to suppress the default scroll / pinch-zoom
+   * gesture on this element so our drag handler keeps receiving
+   * `pointermove` events past the first ~10 px. Without it touchscreens
+   * eat the drag the moment they decide it "looks like" a scroll. */
+  touch-action: none;
   /* `transform` is animated for the dragging-lift effect; keep the
    * box-shadow + border-color transitions in lock-step so the change
    * feels like a single response rather than three discrete swaps. */
@@ -205,7 +220,8 @@
 
 .sg-diagram-edge {
   stroke: var(--sg-diagram-edge-color);
-  stroke-width: 1.5;
+  stroke-width: 1.75;
+  fill: none;
   /* `linejoin` keeps orthogonal-routed edges crisp at corners; `linecap`
    * rounds the start/end so an edge feels finished where it meets the
    * node border instead of clipping abruptly. */
@@ -216,10 +232,23 @@
     stroke-width var(--sg-transition-fast);
 }
 
+/* Bezier edges read better with a touch more weight — the curve
+ * naturally thins at the inflection point, which makes the same
+ * stroke-width look lighter than its orthogonal counterpart. */
+.sg-diagram-edge-bezier {
+  stroke-width: 2;
+}
+
+/* Dashed for manual-routed waypoints — visually distinguishes a hand-
+ * drawn polyline from auto-routed ones. */
+.sg-diagram-edge-manual {
+  stroke-dasharray: 6 4;
+}
+
 .sg-diagram-edge-hit:hover + .sg-diagram-edge,
 g[data-edge-id]:hover .sg-diagram-edge {
   stroke: var(--sg-diagram-edge-hover-stroke);
-  stroke-width: 2.25;
+  stroke-width: 2.5;
 }
 
 /* Highlight edges connected to a selected node when the selection is
@@ -229,6 +258,29 @@ g[data-edge-id]:hover .sg-diagram-edge {
 g[data-edge-id]:focus-within .sg-diagram-edge {
   stroke: var(--sg-diagram-edge-color-selected);
   stroke-width: 2.5;
+}
+
+/* ─── Arrow markers ─────────────────────────────────────────────────── */
+/*
+ * SVG markers don't inherit `stroke` from the path automatically — the
+ * `context-stroke` keyword in the marker `fill` solves it where
+ * supported, and the fallback below keeps Firefox / Safari < TP rendering
+ * the arrow in the right colour by using `currentColor`.
+ *
+ * `.sg-diagram-edges` carries `currentColor` from the token so the arrow
+ * inherits the default colour; per-state overrides (`:hover`) below adjust
+ * `currentColor` so the arrow lights up together with the line.
+ */
+.sg-diagram-edges {
+  color: var(--sg-diagram-edge-color);
+}
+
+.sg-diagram-arrow-fill {
+  fill: currentColor;
+}
+
+g[data-edge-id]:hover {
+  color: var(--sg-diagram-edge-hover-stroke);
 }
 
 /* ─── Hover mini-toolbar ─────────────────────────────────────────────── */

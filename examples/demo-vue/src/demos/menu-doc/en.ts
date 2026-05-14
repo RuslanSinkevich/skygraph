@@ -1,10 +1,6 @@
 /**
  * English source of truth for Menu doc page strings.
  * Other locales must provide the same keys (see `ru.ts`).
- *
- * Vue-side delta vs React: `MenuItem.icon` does not exist in
- * `@skygraph/vue` (label is a `string`), so the `WithIcons.demo` is
- * skipped and `itemIcon` doc key is omitted. See findings.
  */
 export const menuDocEn = {
   pageTitle: 'Menu',
@@ -24,6 +20,8 @@ export const menuDocEn = {
   demoInlineDesc: 'Submenus expand in place — best for deep trees.',
   demoControlledTitle: 'Controlled',
   demoControlledDesc: 'Own selectedKeys/openKeys from the outside.',
+  demoIconsTitle: 'With icons',
+  demoIconsDesc: 'Every MenuItem accepts an `icon` VNode — produce it with `h()`.',
   demoGroupsTitle: 'Groups, dividers & danger',
   demoGroupsDesc: 'Structured menus with destructive actions.',
   demoCollapsedTitle: 'Collapsed rail',
@@ -56,6 +54,7 @@ export const menuDocEn = {
 
   itemKey: 'Unique id (selection + open-key tracking)',
   itemLabel: 'Display label (string)',
+  itemIcon: 'Optional leading icon (VNode produced via `h()` or `<component :is>`)',
   itemDisabled: 'Dim + block activation',
   itemDanger: 'Apply error color (destructive action)',
   itemChildren: 'Nested items (creates a submenu)',

@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import SgForm from '../Form/Form.vue'
 import SgField from '../Form/Field.vue'
 import SgAutoField from './AutoField.vue'
+import SgButton from '../../ui/Button.vue'
 import { useForm, type UseFormReturn } from '../../../composables/useForm'
 import {
   jsonSchemaToFields,
@@ -83,7 +84,7 @@ const formInstance = computed(() => props.form ?? internalForm)
       />
     </SgField>
     <slot>
-      <button type="submit" class="sg-button sg-button-primary">{{ submitText }}</button>
+      <SgButton type="primary" html-type="submit">{{ submitText }}</SgButton>
     </slot>
   </SgForm>
 </template>

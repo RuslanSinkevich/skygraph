@@ -27,9 +27,10 @@ export const timelineDocEn = {
   demoCustomColorDesc: '`color` tints the default ring.',
   demoCustomDotTitle: 'Custom dot',
   demoCustomDotDesc:
-    '`dot` replaces the ring (Vue: string only — emoji works).',
+    'The scoped `#dot` slot replaces the ring with any VNode (emoji, icon, letter badge).',
   demoPendingTitle: 'Pending',
-  demoPendingDesc: '`pending` adds a muted tail (Vue: no `pendingDot` — see findings).',
+  demoPendingDesc:
+    '`pending` adds a muted tail; use the `#dot` slot with `isPending` to override the marker (analogue of React `pendingDot`).',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global colour tokens to repaint a whole timeline.',
   demoUnstyledTitle: 'Unstyled',
@@ -46,11 +47,16 @@ export const timelineDocEn = {
   propPending: 'Pending tail — `string` for custom copy, `true` for empty',
   propReverse: 'Reverse visual order',
   propUnstyled: 'Drop sg-timeline-* classes — render a plain `<ul>`',
+  propContentSlot:
+    'Per-item content override; `isPending` is `true` for the synthetic pending tail',
+  propLabelSlot: 'Per-item label override (replaces `item.label`)',
+  propDotSlot:
+    'Per-item dot override; `isPending` is `true` for the synthetic pending tail — analogue of React `pendingDot`',
 
-  itemContent: 'Main body text',
-  itemLabel: 'Optional label text (visible in `alternate` mode)',
+  itemContent: 'Main body text (use `#content` slot for VNodes)',
+  itemLabel: 'Optional label text (use `#label` slot for VNodes; visible in `alternate` mode)',
   itemColor: 'Border / text colour for the default ring',
-  itemDot: 'Custom marker text (Vue: string only — see findings)',
+  itemDot: 'Custom marker text (use `#dot` slot for VNodes)',
   itemPosition: 'Force this item to one side (`left` / `right`)',
 
   cssPrimary: 'Default ring colour',

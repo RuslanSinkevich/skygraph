@@ -102,6 +102,15 @@ export class SgSwitchComponent {
   @Input() checkedChildren?: string
   @Input() unCheckedChildren?: string
 
+  private readonly _unstyled = signal<boolean>(false)
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
   @Output() readonly valueChange = new EventEmitter<boolean>()
 
   readonly isChecked = computed(() => this._value() ?? this._internal())
@@ -116,6 +125,7 @@ export class SgSwitchComponent {
   })
 
   readonly classes = computed(() => {
+    if (this._unstyled()) return ''
     const parts = [
       'sg-switch',
       `sg-switch-${this.switchSizeClass()}`,

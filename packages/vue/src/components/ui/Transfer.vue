@@ -74,6 +74,10 @@ const emit = defineEmits<{
   (e: 'search', direction: 'left' | 'right', value: string): void
 }>()
 
+defineSlots<{
+  item(props: { item: TransferItem; side: 'left' | 'right' }): unknown
+}>()
+
 const mergedLocale = computed<Required<TransferLocale>>(() => ({
   ...DEFAULT_LOCALE,
   ...(props.locale ?? {}),
@@ -302,7 +306,9 @@ function itemCls(item: TransferItem, selected: string[]): string {
               @click.stop
               @change="() => toggleItem(item, 'left')"
             />
-            <span :class="unstyled ? '' : 'sg-transfer-list-item-text'">{{ item.title }}</span>
+            <span :class="unstyled ? '' : 'sg-transfer-list-item-text'">
+              <slot name="item" :item="item" side="left">{{ item.title }}</slot>
+            </span>
           </li>
         </ul>
       </div>
@@ -381,7 +387,9 @@ function itemCls(item: TransferItem, selected: string[]): string {
               @click.stop
               @change="() => toggleItem(item, 'right')"
             />
-            <span :class="unstyled ? '' : 'sg-transfer-list-item-text'">{{ item.title }}</span>
+            <span :class="unstyled ? '' : 'sg-transfer-list-item-text'">
+              <slot name="item" :item="item" side="right">{{ item.title }}</slot>
+            </span>
           </li>
         </ul>
       </div>

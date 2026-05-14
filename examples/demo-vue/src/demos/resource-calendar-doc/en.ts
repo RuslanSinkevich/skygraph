@@ -1,7 +1,7 @@
 /**
- * English source of truth for ResourceCalendar doc page strings.
- * Mirrors React `examples/demo/src/demos/ResourceCalendarDemo.tsx`. Vue is
- * wider than React (3 demos vs 2; carta §D, «Vue шире»).
+ * English source of truth for ResourceCalendar doc page strings. 1:1 with
+ * React `examples/demo/src/demos/ResourceCalendarDemo.tsx` — two demos:
+ * Basic and WithCapacity.
  */
 export const resourceCalendarDocEn = {
   pageTitle: 'Resource Calendar',
@@ -14,15 +14,12 @@ export const resourceCalendarDocEn = {
   pageWhen2: 'Surface scheduling conflicts visually without building bespoke clash logic.',
   pageWhen3: 'Pair with availability rules to prevent off-hours work.',
 
-  demoWeekTitle: 'Week scale',
-  demoWeekDesc:
-    'Default `scale="week"` — daily columns over a single week, three resources, five assignments.',
-  demoDayTitle: 'Day scale',
-  demoDayDesc:
-    'Hour-level columns with `scale="day"`. Useful for shift planning inside a single day.',
-  demoInteractiveTitle: 'Interactive — drag and resize',
-  demoInteractiveDesc:
-    'Bars become click-and-drag (move) and edge-drag (resize). `@assignmentChange` fires after every committed change so you can patch state.',
+  demoBasicTitle: 'Basic',
+  demoBasicDesc:
+    'Drag bars to move (snap to day), drag edges to resize. Two overlapping bookings on Bob show up as a hatched red `conflict` block until separated.',
+  demoWithCapacityTitle: 'With capacity',
+  demoWithCapacityDesc:
+    '`capacityPerSlot=2` on the room. Three concurrent bookings trip the over-capacity rule — `@conflict` fires and the panel below mirrors the live list.',
 
   tableCalendarApi: 'ResourceCalendar API',
   tableCssVars: 'CSS Variables',

@@ -55,6 +55,8 @@ const emit = defineEmits<{
   (e: 'update:checkedKeys', keys: TreeKey[]): void
   (e: 'update:selectedKeys', keys: TreeKey[]): void
   (e: 'update:searchValue', value: string): void
+  (e: 'edit', info: import('./types').EditInfo): void
+  (e: 'editCancel', key: TreeKey): void
 }>()
 
 const localeFull = computed(() => ({ ...DEFAULT_TREE_LOCALE, ...props.locale }))
@@ -268,7 +270,10 @@ function handleDrop(e: DragEvent, key: TreeKey) {
   const dropNode = tree.getNode(key)
   if (!dragNode || !dropNode) return
 
-  if (props.allowDrop && !props.allowDrop({ dragNode, dropNode, dropPosition: dropPosition.value })) {
+  if (
+    props.allowDrop &&
+    !props.allowDrop({ dragNode, dropNode, dropPosition: dropPosition.value })
+  ) {
     dragKey.value = null
     dropKey.value = null
     return
@@ -288,6 +293,25 @@ function handleRightClick(evt: MouseEvent, node: TreeNodeData) {
 function isDraggable(node: TreeNodeData): boolean {
   if (typeof props.draggable === 'function') return props.draggable(node)
   return !!props.draggable
+}
+
+function isEditable(node: TreeNodeData): boolean {
+  if (typeof props.editable === 'function') return props.editable(node)
+  return !!props.editable
+}
+
+function nodeStatusFor(node: TreeNodeData): import('./types').TreeNodeStatus | undefined {
+  return props.nodeStatus ? props.nodeStatus(node) : undefined
+}
+
+function handleEdit(key: TreeKey, value: string, oldValue: string) {
+  const node = tree.getNode(key)
+  if (!node) return
+  emit('edit', { key, node, value, oldValue })
+}
+
+function handleEditCancel(key: TreeKey) {
+  emit('editCancel', key)
 }
 
 const containerRef = useTemplateRef<HTMLDivElement>('containerEl')
@@ -411,7 +435,10 @@ const visibleSlice = computed<{ nodes: typeof flatNodes.value; startIndex: numbe
 const virtualOffset = computed(() => visibleSlice.value.startIndex * itemHeight)
 const totalHeight = computed(() => flatNodes.value.length * itemHeight)
 const virtualBottomPad = computed(() =>
-  Math.max(0, totalHeight.value - virtualOffset.value - visibleSlice.value.nodes.length * itemHeight),
+  Math.max(
+    0,
+    totalHeight.value - virtualOffset.value - visibleSlice.value.nodes.length * itemHeight,
+  ),
 )
 
 watch(
@@ -464,7 +491,10 @@ const wrapperClass = computed(() => {
     props.directory ? 'sg-tree-directory' : '',
     props.disabled ? 'sg-tree-disabled' : '',
     props.animated ? 'sg-tree-animated' : '',
-  ].filter(Boolean).join(' ')
+    props.showLine ? 'sg-tree-show-line' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 })
 
 defineExpose({
@@ -493,7 +523,9 @@ defineExpose({
         class="sg-tree-search-clear"
         aria-label="Clear search"
         @click="applySearch('')"
-      >×</button>
+      >
+        ×
+      </button>
     </div>
 
     <div v-if="showToolbar" class="sg-tree-toolbar">
@@ -503,13 +535,17 @@ defineExpose({
           class="sg-tree-toolbar-btn"
           :title="localeFull.expandAllText"
           @click="handleExpandAll"
-        >⊞</button>
+        >
+          ⊞
+        </button>
         <button
           type="button"
           class="sg-tree-toolbar-btn"
           :title="localeFull.collapseAllText"
           @click="handleCollapseAll"
-        >⊟</button>
+        >
+          ⊟
+        </button>
         <template v-if="checkable">
           <span class="sg-tree-toolbar-divider" />
           <button
@@ -517,13 +553,17 @@ defineExpose({
             class="sg-tree-toolbar-btn"
             :title="localeFull.checkAllText"
             @click="handleCheckAll"
-          >☑</button>
+          >
+            ☑
+          </button>
           <button
             type="button"
             class="sg-tree-toolbar-btn"
             :title="localeFull.uncheckAllText"
             @click="handleUncheckAll"
-          >☐</button>
+          >
+            ☐
+          </button>
         </template>
       </div>
     </div>
@@ -572,6 +612,9 @@ defineExpose({
           :drag-key="dragKey"
           :search-value="highlightSearch ? searchValue : ''"
           :t="localeFull"
+          :status="nodeStatusFor(item.node)"
+          :actions="actions"
+          :editable="isEditable(item.node)"
           :unstyled="unstyled"
           @expand="handleExpand"
           @check="handleCheck"
@@ -584,17 +627,13 @@ defineExpose({
           @right-click="handleRightClick"
           @load-data="handleLoadData"
           @focus-node="setFocusedKey"
+          @edit="handleEdit"
+          @edit-cancel="handleEditCancel"
         />
       </div>
     </div>
 
-    <div
-      v-else
-      ref="treeEl"
-      tabindex="0"
-      role="tree"
-      @keydown="handleKeyDown"
-    >
+    <div v-else ref="treeEl" tabindex="0" role="tree" @keydown="handleKeyDown">
       <TreeNodeRow
         v-for="item in flatNodes"
         :key="item.key"
@@ -620,6 +659,9 @@ defineExpose({
         :drag-key="dragKey"
         :search-value="highlightSearch ? searchValue : ''"
         :t="localeFull"
+        :status="nodeStatusFor(item.node)"
+        :actions="actions"
+        :editable="isEditable(item.node)"
         :unstyled="unstyled"
         @expand="handleExpand"
         @check="handleCheck"
@@ -632,6 +674,8 @@ defineExpose({
         @right-click="handleRightClick"
         @load-data="handleLoadData"
         @focus-node="setFocusedKey"
+        @edit="handleEdit"
+        @edit-cancel="handleEditCancel"
       />
     </div>
   </div>

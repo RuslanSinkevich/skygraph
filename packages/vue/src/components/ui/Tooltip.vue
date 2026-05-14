@@ -8,8 +8,12 @@ function genId() {
 }
 
 export interface TooltipProps {
-  /** Content shown in the tooltip. */
-  title: string
+  /**
+   * Plain-text content shown in the tooltip.
+   * For rich content, use the `title` slot instead — when present, the slot
+   * takes precedence and may render any VNodes.
+   */
+  title?: string
   /** Tooltip position relative to the trigger. @default 'top' */
   placement?: 'top' | 'bottom' | 'left' | 'right'
   /** Strips built-in styles when true. */
@@ -18,10 +22,12 @@ export interface TooltipProps {
 
 withDefaults(defineProps<TooltipProps>(), {
   placement: 'top',
+  title: '',
 })
 
 defineSlots<{
   default(props: Record<string, never>): unknown
+  title(props: Record<string, never>): unknown
 }>()
 
 const visible = ref(false)
@@ -52,7 +58,9 @@ function hide() {
     >
       <slot />
     </span>
-    <span v-if="visible" :id="tooltipId" role="tooltip">{{ title }}</span>
+    <span v-if="visible" :id="tooltipId" role="tooltip">
+      <slot name="title">{{ title }}</slot>
+    </span>
   </span>
   <span
     v-else
@@ -61,16 +69,14 @@ function hide() {
     @mouseenter="show"
     @mouseleave="hide"
   >
-    <span
-      style="display: inline-block"
-      @focusin="show"
-      @focusout="hide"
-    >
+    <span style="display: inline-block" @focusin="show" @focusout="hide">
       <slot />
     </span>
     <SgTransition :visible="visible" name="sg-fade">
       <span :id="tooltipId" role="tooltip" :class="`sg-tooltip sg-tooltip-${placement}`">
-        <span class="sg-tooltip-content">{{ title }}</span>
+        <span class="sg-tooltip-content">
+          <slot name="title">{{ title }}</slot>
+        </span>
         <span class="sg-tooltip-arrow" />
       </span>
     </SgTransition>

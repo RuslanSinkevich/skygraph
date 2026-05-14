@@ -10,6 +10,29 @@ export interface CalendarEvent {
   color?: string
 }
 
+export interface CalendarLocale {
+  /** 12 entries from January to December. */
+  monthNames?: string[]
+  /** 7 entries — Sunday first; reordered internally by `weekStartDay`. */
+  dayNames?: string[]
+  /** Label for the "Today" footer button. */
+  today?: string
+  /** Header for the optional ISO week column. */
+  week?: string
+}
+
+export interface CalendarHeaderSlotProps {
+  value: Date
+  type: 'month' | 'year'
+  onChange: (date: Date) => void
+  onTypeChange: (type: 'month' | 'year') => void
+}
+
+export interface CalendarCellSlotProps {
+  date: Date
+  type: 'date' | 'month'
+}
+
 export interface CalendarProps {
   /** v-model binding (Vue idiom) — the currently selected date. */
   modelValue?: Date
@@ -36,6 +59,20 @@ export interface CalendarProps {
   fullscreen?: boolean
   /** Disabled-day predicate. */
   disabledDate?: (d: Date) => boolean
+  /** Locale strings — overrides defaults. */
+  locale?: CalendarLocale
+  /** Enable range selection mode. */
+  rangeSelection?: boolean
+  /** Controlled range value `[start, end]`. */
+  rangeValue?: [Date | null, Date | null]
+  /** Default range when uncontrolled. */
+  defaultRangeValue?: [Date | null, Date | null]
+  /** Enable multiple-date selection. */
+  multipleSelection?: boolean
+  /** Controlled array of multi-selected dates. */
+  multipleValue?: Date[]
+  /** Default multi-selected dates when uncontrolled. */
+  defaultMultipleValue?: Date[]
   /** Strips built-in styling. */
   unstyled?: boolean
 }
@@ -47,6 +84,8 @@ const props = withDefaults(defineProps<CalendarProps>(), {
   showWeekNumbers: false,
   fullscreen: true,
   maxEvents: 3,
+  rangeSelection: false,
+  multipleSelection: false,
 })
 
 const emit = defineEmits<{
@@ -55,9 +94,18 @@ const emit = defineEmits<{
   (e: 'panelChange', value: Date, mode: 'month' | 'year'): void
   (e: 'modeChange', mode: 'month' | 'year'): void
   (e: 'change', value: Date): void
+  (e: 'rangeChange', range: [Date | null, Date | null]): void
+  (e: 'multipleChange', dates: Date[]): void
 }>()
 
-const MONTH_NAMES = [
+defineSlots<{
+  /** Custom header renderer; receives panel value + mode + handlers. */
+  header(props: CalendarHeaderSlotProps): unknown
+  /** Extra content inside a day or month cell. */
+  cell(props: CalendarCellSlotProps): unknown
+}>()
+
+const DEFAULT_MONTH_NAMES = [
   'January',
   'February',
   'March',
@@ -71,7 +119,12 @@ const MONTH_NAMES = [
   'November',
   'December',
 ]
-const DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+const DEFAULT_DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+
+const monthNames = computed(() => props.locale?.monthNames ?? DEFAULT_MONTH_NAMES)
+const dayNamesBase = computed(() => props.locale?.dayNames ?? DEFAULT_DAY_NAMES)
+const todayLabel = computed(() => props.locale?.today ?? 'Today')
+const weekLabel = computed(() => props.locale?.week ?? 'W')
 
 const internal = ref<Date>(props.modelValue ?? props.value ?? props.defaultValue ?? new Date())
 watch(
@@ -81,6 +134,28 @@ watch(
   },
 )
 const current = computed(() => props.modelValue ?? props.value ?? internal.value)
+
+const internalRange = ref<[Date | null, Date | null]>(
+  (props.rangeValue ?? props.defaultRangeValue ?? [null, null]) as [Date | null, Date | null],
+)
+watch(
+  () => props.rangeValue,
+  (v) => {
+    if (v !== undefined) internalRange.value = [...v] as [Date | null, Date | null]
+  },
+)
+const rangeState = computed<[Date | null, Date | null]>(
+  () => (props.rangeValue ?? internalRange.value) as [Date | null, Date | null],
+)
+
+const internalMulti = ref<Date[]>([...(props.multipleValue ?? props.defaultMultipleValue ?? [])])
+watch(
+  () => props.multipleValue,
+  (v) => {
+    if (v !== undefined) internalMulti.value = [...v]
+  },
+)
+const multiState = computed<Date[]>(() => props.multipleValue ?? internalMulti.value)
 
 const internalMode = ref<'month' | 'year'>(props.mode)
 watch(
@@ -113,6 +188,23 @@ function getISOWeekNumber(date: Date): number {
   d.setUTCDate(d.getUTCDate() + 4 - dayNum)
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
   return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+}
+function isBetween(date: Date, start: Date, end: Date): boolean {
+  const t = date.getTime()
+  const s = Math.min(start.getTime(), end.getTime())
+  const e = Math.max(start.getTime(), end.getTime())
+  return t >= s && t <= e
+}
+function isRangeStart(date: Date, start: Date | null, end: Date | null): boolean {
+  if (!start) return false
+  if (!end) return isSameDay(date, start)
+  const s = start.getTime() <= end.getTime() ? start : end
+  return isSameDay(date, s)
+}
+function isRangeEnd(date: Date, start: Date | null, end: Date | null): boolean {
+  if (!start || !end) return false
+  const e = start.getTime() <= end.getTime() ? end : start
+  return isSameDay(date, e)
 }
 
 const showWeek = computed(() => props.showWeekNumber || props.showWeekNumbers)
@@ -168,13 +260,47 @@ function eventsForDate(d: Date): CalendarEvent[] {
   return (props.events ?? []).filter((ev) => isSameDay(ev.date, d))
 }
 
-function selectDate(d: Date) {
-  if (props.disabledDate?.(d)) return
+function commitSingle(d: Date) {
   internal.value = d
   panelDate.value = d
   emit('update:modelValue', d)
   emit('select', d)
   emit('change', d)
+}
+
+function commitRange(next: [Date | null, Date | null]) {
+  internalRange.value = next
+  emit('rangeChange', next)
+}
+
+function commitMultiple(next: Date[]) {
+  internalMulti.value = next
+  emit('multipleChange', next)
+}
+
+function selectDate(d: Date) {
+  if (props.disabledDate?.(d)) return
+
+  if (props.rangeSelection) {
+    const [start, end] = rangeState.value
+    if (!start || (start && end)) {
+      commitRange([d, null])
+    } else {
+      commitRange([start, d])
+    }
+    return
+  }
+
+  if (props.multipleSelection) {
+    const exists = multiState.value.some((dd) => isSameDay(dd, d))
+    const next = exists
+      ? multiState.value.filter((dd) => !isSameDay(dd, d))
+      : [...multiState.value, d]
+    commitMultiple(next)
+    return
+  }
+
+  commitSingle(d)
 }
 
 function selectMonth(monthIdx: number) {
@@ -227,8 +353,9 @@ function handleYearSelectChange(e: Event) {
 }
 
 const dayNames = computed(() => {
+  const base = dayNamesBase.value
   const arr: string[] = []
-  for (let i = 0; i < 7; i++) arr.push(DAY_NAMES[(props.weekStartDay + i) % 7])
+  for (let i = 0; i < 7; i++) arr.push(base[(props.weekStartDay + i) % 7])
   return arr
 })
 
@@ -245,11 +372,29 @@ const wrapperCls = computed(() =>
 )
 
 function cellClasses(cell: DayCell) {
+  const [rStart, rEnd] = rangeState.value
+  const isRangeMode = props.rangeSelection
+  const inRange = isRangeMode && rStart && rEnd ? isBetween(cell.date, rStart, rEnd) : false
+  const rangeStart = isRangeMode ? isRangeStart(cell.date, rStart, rEnd) : false
+  const rangeEnd = isRangeMode ? isRangeEnd(cell.date, rStart, rEnd) : false
+
+  const isMulti = props.multipleSelection
+    ? multiState.value.some((d) => isSameDay(d, cell.date))
+    : false
+
+  const isSelected =
+    !isRangeMode && !props.multipleSelection
+      ? isSameDay(cell.date, current.value)
+      : rangeStart || rangeEnd || isMulti
+
   return [
     'sg-calendar-cell',
     cell.inMonth ? '' : 'sg-calendar-cell-outside',
     isToday(cell.date) ? 'sg-calendar-cell-today' : '',
-    isSameDay(cell.date, current.value) ? 'sg-calendar-cell-selected' : '',
+    isSelected ? 'sg-calendar-cell-selected' : '',
+    inRange ? 'sg-calendar-cell-in-range' : '',
+    rangeStart ? 'sg-calendar-cell-range-start' : '',
+    rangeEnd ? 'sg-calendar-cell-range-end' : '',
     props.disabledDate?.(cell.date) ? 'sg-calendar-cell-disabled' : '',
   ]
     .filter(Boolean)
@@ -266,102 +411,115 @@ function monthCellClasses(monthIdx: number) {
     .filter(Boolean)
     .join(' ')
 }
+
+function onHeaderChange(d: Date) {
+  panelDate.value = d
+  emit('panelChange', d, currentMode.value)
+}
 </script>
 
 <template>
   <div :class="wrapperCls">
-    <div class="sg-calendar-header">
-      <div class="sg-calendar-header-left">
-        <button
-          type="button"
-          class="sg-calendar-nav-btn"
-          title="Previous year"
-          aria-label="Previous year"
-          @click="shiftYear(-1)"
-        >
-          &laquo;
-        </button>
-        <button
-          v-if="currentMode === 'month'"
-          type="button"
-          class="sg-calendar-nav-btn"
-          title="Previous month"
-          aria-label="Previous month"
-          @click="shiftMonth(-1)"
-        >
-          &lsaquo;
-        </button>
-      </div>
-
-      <div class="sg-calendar-header-center">
-        <select
-          class="sg-calendar-month-select"
-          aria-label="Month"
-          :value="panelMonth"
-          @change="handleMonthSelectChange"
-        >
-          <option v-for="(name, i) in MONTH_NAMES" :key="i" :value="i">{{ name }}</option>
-        </select>
-        <select
-          class="sg-calendar-year-select"
-          aria-label="Year"
-          :value="panelYear"
-          @change="handleYearSelectChange"
-        >
-          <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}</option>
-        </select>
-        <div class="sg-calendar-mode-switch">
+    <slot
+      name="header"
+      :value="panelDate"
+      :type="currentMode"
+      :on-change="onHeaderChange"
+      :on-type-change="setMode"
+    >
+      <div class="sg-calendar-header">
+        <div class="sg-calendar-header-left">
           <button
             type="button"
-            :class="[
-              'sg-calendar-mode-btn',
-              currentMode === 'month' ? 'sg-calendar-mode-btn-active' : '',
-            ]"
-            @click="setMode('month')"
+            class="sg-calendar-nav-btn"
+            title="Previous year"
+            aria-label="Previous year"
+            @click="shiftYear(-1)"
           >
-            Month
+            &laquo;
+          </button>
+          <button
+            v-if="currentMode === 'month'"
+            type="button"
+            class="sg-calendar-nav-btn"
+            title="Previous month"
+            aria-label="Previous month"
+            @click="shiftMonth(-1)"
+          >
+            &lsaquo;
+          </button>
+        </div>
+
+        <div class="sg-calendar-header-center">
+          <select
+            class="sg-calendar-month-select"
+            aria-label="Month"
+            :value="panelMonth"
+            @change="handleMonthSelectChange"
+          >
+            <option v-for="(name, i) in monthNames" :key="i" :value="i">{{ name }}</option>
+          </select>
+          <select
+            class="sg-calendar-year-select"
+            aria-label="Year"
+            :value="panelYear"
+            @change="handleYearSelectChange"
+          >
+            <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}</option>
+          </select>
+          <div class="sg-calendar-mode-switch">
+            <button
+              type="button"
+              :class="[
+                'sg-calendar-mode-btn',
+                currentMode === 'month' ? 'sg-calendar-mode-btn-active' : '',
+              ]"
+              @click="setMode('month')"
+            >
+              Month
+            </button>
+            <button
+              type="button"
+              :class="[
+                'sg-calendar-mode-btn',
+                currentMode === 'year' ? 'sg-calendar-mode-btn-active' : '',
+              ]"
+              @click="setMode('year')"
+            >
+              Year
+            </button>
+          </div>
+        </div>
+
+        <div class="sg-calendar-header-right">
+          <button
+            v-if="currentMode === 'month'"
+            type="button"
+            class="sg-calendar-nav-btn"
+            title="Next month"
+            aria-label="Next month"
+            @click="shiftMonth(1)"
+          >
+            &rsaquo;
           </button>
           <button
             type="button"
-            :class="[
-              'sg-calendar-mode-btn',
-              currentMode === 'year' ? 'sg-calendar-mode-btn-active' : '',
-            ]"
-            @click="setMode('year')"
+            class="sg-calendar-nav-btn"
+            title="Next year"
+            aria-label="Next year"
+            @click="shiftYear(1)"
           >
-            Year
+            &raquo;
           </button>
         </div>
       </div>
-
-      <div class="sg-calendar-header-right">
-        <button
-          v-if="currentMode === 'month'"
-          type="button"
-          class="sg-calendar-nav-btn"
-          title="Next month"
-          aria-label="Next month"
-          @click="shiftMonth(1)"
-        >
-          &rsaquo;
-        </button>
-        <button
-          type="button"
-          class="sg-calendar-nav-btn"
-          title="Next year"
-          aria-label="Next year"
-          @click="shiftYear(1)"
-        >
-          &raquo;
-        </button>
-      </div>
-    </div>
+    </slot>
 
     <div class="sg-calendar-body">
       <table v-if="currentMode === 'month'" class="sg-calendar-table">
         <thead>
           <tr>
-            <th v-if="showWeek" class="sg-calendar-week-header">W</th>
+            <th v-if="showWeek" class="sg-calendar-week-header">{{ weekLabel }}</th>
             <th v-for="d in dayNames" :key="d" class="sg-calendar-day-header">{{ d }}</th>
           </tr>
         </thead>
@@ -378,6 +536,7 @@ function monthCellClasses(monthIdx: number) {
             >
               <div class="sg-calendar-cell-inner">
                 <span class="sg-calendar-cell-date">{{ cell.day }}</span>
+                <slot name="cell" :date="cell.date" type="date" />
                 <div v-if="eventsForDate(cell.date).length > 0" class="sg-calendar-cell-events">
                   <span
                     v-for="(ev, i) in eventsForDate(cell.date).slice(0, maxEvents)"
@@ -400,20 +559,23 @@ function monthCellClasses(monthIdx: number) {
 
       <div v-else class="sg-calendar-month-grid">
         <div
-          v-for="(name, i) in MONTH_NAMES"
+          v-for="(name, i) in monthNames"
           :key="i"
           :class="monthCellClasses(i)"
           @click="selectMonth(i)"
         >
           <div class="sg-calendar-month-cell-inner">
             <span class="sg-calendar-month-cell-name">{{ name }}</span>
+            <slot name="cell" :date="new Date(panelYear, i, 1)" type="month" />
           </div>
         </div>
       </div>
     </div>
 
     <div v-if="fullscreen" class="sg-calendar-footer">
-      <button type="button" class="sg-calendar-today-btn" @click="handleToday">Today</button>
+      <button type="button" class="sg-calendar-today-btn" @click="handleToday">
+        {{ todayLabel }}
+      </button>
     </div>
   </div>
 </template>

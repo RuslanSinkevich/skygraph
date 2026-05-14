@@ -69,3 +69,6 @@ export * from './lib/components/complex/tree'
 
 // Wave 5.3 — additional UI primitives
 export * from './lib/components/ui/transition'
+
+// Wave 5.3 — print utility (1:1 port of `@skygraph/react`'s print utils)
+export * from './lib/utils/print'

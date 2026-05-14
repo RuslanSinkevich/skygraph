@@ -100,12 +100,15 @@ export const en: DemoDict = {
     colDescription: 'Description',
   },
   landing: {
-    title: 'SkyGraph for Angular',
+    title: 'SkyGraph',
     lead: 'A framework-agnostic UI kit with an Angular adapter — standalone components, signals, and the new control flow on top of @skygraph/core.',
+    heroInstall: 'npm install @skygraph/core @skygraph/angular @skygraph/styles',
     statComponents: 'Components',
     statComposables: 'Standalone',
     statTests: 'Tests',
     statEngines: 'Engines',
+    statRuntimeCss: 'Run-time CSS',
+    statRuntimeCssValue: '0 kB',
     ctaPrimary: 'Browse components',
     ctaSecondary: 'Read source',
     featureReactiveTitle: 'Reactive core',
@@ -120,11 +123,21 @@ export const en: DemoDict = {
     featureMultiTitle: 'Same DOM, same CSS',
     featureMultiDesc:
       'Angular components emit the exact same .sg-* classes as the React adapter — themes and showcases work everywhere.',
+    featureStandaloneTitle: 'Standalone + signals',
+    featureStandaloneDesc:
+      'Every component is standalone with OnPush change detection and signal-based inputs. No NgModules. New @if / @for control flow throughout.',
+    featureEnginesTitle: 'Domain engines',
+    featureEnginesDesc:
+      'Form, table, tree, graph and virtualisation engines built on top of the core store. Reuse them with useTable / useTree / useGraph composables.',
     quickInstallTitle: 'Quick install',
     quickInstallDesc:
       'Add @skygraph/angular and @skygraph/styles, import the stylesheet once, and wire provideSgConfig() at the application root.',
+    quickInstallSub: 'Two packages, one stylesheet — no extra config.',
     quickInstallCopy: 'Copy',
     quickInstallCopied: 'Copied',
+    quickInstallNpmTitle: 'npm',
+    quickInstallMinimalTitle: 'main.ts',
+    quickInstallMinimalSub: 'Bootstrap with provideSgConfig() at the root.',
   },
   roadmap: {
     title: 'Roadmap',

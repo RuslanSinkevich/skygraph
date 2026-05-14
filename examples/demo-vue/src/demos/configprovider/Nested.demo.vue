@@ -4,18 +4,10 @@ import { SgButton, SgConfigProvider, SgInput } from '@skygraph/vue'
 
 <template>
   <SgConfigProvider size="large">
-    <div style="display: flex; flex-direction: column; gap: 16px">
+    <div class="demo-stack">
       <section>
-        <h4
-          style="
-            margin: 0 0 8px;
-            font-size: 13px;
-            color: var(--sg-color-text-tertiary);
-          "
-        >
-          Outer provider — size="large"
-        </h4>
-        <div style="display: flex; gap: 8px">
+        <h4 class="demo-section-label">Outer provider — size="large"</h4>
+        <div class="demo-row">
           <SgButton type="primary">Outer</SgButton>
           <SgInput placeholder="Large input" :style="{ width: '200px' }" />
         </div>
@@ -23,16 +15,8 @@ import { SgButton, SgConfigProvider, SgInput } from '@skygraph/vue'
 
       <SgConfigProvider size="small">
         <section>
-          <h4
-            style="
-              margin: 0 0 8px;
-              font-size: 13px;
-              color: var(--sg-color-text-tertiary);
-            "
-          >
-            Inner provider — size="small" overrides
-          </h4>
-          <div style="display: flex; gap: 8px">
+          <h4 class="demo-section-label">Inner provider — size="small" overrides</h4>
+          <div class="demo-row">
             <SgButton type="primary">Inner</SgButton>
             <SgInput placeholder="Small input" :style="{ width: '200px' }" />
           </div>
@@ -40,26 +24,29 @@ import { SgButton, SgConfigProvider, SgInput } from '@skygraph/vue'
       </SgConfigProvider>
 
       <section>
-        <h4
-          style="
-            margin: 0 0 8px;
-            font-size: 13px;
-            color: var(--sg-color-text-tertiary);
-          "
-        >
-          Per-component prop always wins
-        </h4>
-        <div style="display: flex; gap: 8px">
-          <SgButton type="primary" size="small">
-            Explicit size="small"
-          </SgButton>
-          <SgInput
-            size="middle"
-            placeholder="Explicit middle"
-            :style="{ width: '200px' }"
-          />
+        <h4 class="demo-section-label">Per-component prop always wins</h4>
+        <div class="demo-row">
+          <SgButton type="primary" size="small"> Explicit size="small" </SgButton>
+          <SgInput size="middle" placeholder="Explicit middle" :style="{ width: '200px' }" />
         </div>
       </section>
     </div>
   </SgConfigProvider>
 </template>
+
+<style scoped>
+.demo-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.demo-row {
+  display: flex;
+  gap: 8px;
+}
+.demo-section-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--sg-color-text-tertiary);
+}
+</style>

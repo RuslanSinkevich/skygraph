@@ -112,10 +112,13 @@ export interface DemoDict {
   landing: {
     title: string
     lead: string
+    heroInstall: string
     statComponents: string
     statComposables: string
     statTests: string
     statEngines: string
+    statRuntimeCss: string
+    statRuntimeCssValue: string
     ctaPrimary: string
     ctaSecondary: string
     featureReactiveTitle: string
@@ -126,10 +129,18 @@ export interface DemoDict {
     featureA11yDesc: string
     featureMultiTitle: string
     featureMultiDesc: string
+    featureStandaloneTitle: string
+    featureStandaloneDesc: string
+    featureEnginesTitle: string
+    featureEnginesDesc: string
     quickInstallTitle: string
     quickInstallDesc: string
+    quickInstallSub: string
     quickInstallCopy: string
     quickInstallCopied: string
+    quickInstallNpmTitle: string
+    quickInstallMinimalTitle: string
+    quickInstallMinimalSub: string
   }
   roadmap: {
     title: string

@@ -7,7 +7,7 @@
  * See `findings/T-Vue-Demo-Complex.md` → `dashboard-no-widget-actions-api`.
  */
 import { ref } from 'vue'
-import { SgDashboard, SgLineChart } from '@skygraph/vue'
+import { SgDashboard, SgLineChart, SgButton } from '@skygraph/vue'
 import type { DashboardWidget } from '@skygraph/vue'
 
 const log = ref<string[]>([])
@@ -52,33 +52,31 @@ const actionsForKpi = ['refresh', 'export', 'pin'] as const
           v-if="widget.id === 'visits'"
           style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px"
         >
-          <button
+          <SgButton
             v-for="a in actionsForVisits"
             :key="a"
-            type="button"
-            class="sg-button sg-button-text sg-button-sm"
-            :style="
-              a === 'archive' ? { color: 'var(--sg-color-error)' } : undefined
-            "
+            type="text"
+            size="small"
+            :danger="a === 'archive'"
             @click="append(`${a}: ${widget.id}`)"
           >
             {{ a }}
-          </button>
+          </SgButton>
         </div>
 
         <div
           v-else-if="widget.id === 'kpi'"
           style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px"
         >
-          <button
+          <SgButton
             v-for="a in actionsForKpi"
             :key="a"
-            type="button"
-            class="sg-button sg-button-text sg-button-sm"
+            type="text"
+            size="small"
             @click="append(`${a}: ${widget.id}`)"
           >
             {{ a }}
-          </button>
+          </SgButton>
         </div>
       </template>
     </SgDashboard>

@@ -2,12 +2,10 @@
  * English source of truth for Diagram doc page strings (Vue).
  * Other locales must provide the same keys (see `ru.ts`).
  *
- * After T-Diagram-Polish (Wave 3.3c) Vue's `SgDiagram` is on parity
- * with React: `routing`, `routeAroundNodes`, lasso, hover-actions, DnD,
- * `panable`/`zoomable`, `snapToGrid`, `*ContextMenu` and OBB-aware
- * router are all available. Legacy v0 props (`draggableNodes`,
- * `panZoom`, `selectedNodeIds`) remain as deprecated aliases — see
- * `decisions/T-Diagram-Polish.md` D2.
+ * 1:1 demo parity with React (12 examples). All major features —
+ * routing (orthogonal / bezier / obstacle-aware A*), pan / zoom,
+ * snap-to-grid, OBB-aware geometry, multi / lasso selection, hover
+ * actions and `*ContextMenu` callbacks — are first-class on `SgDiagram`.
  */
 export const diagramDocEn = {
   pageTitle: 'Diagram',
@@ -15,7 +13,7 @@ export const diagramDocEn = {
   crumbDataDisplay: 'Data Display',
   crumbDiagram: 'Diagram',
   pageLead:
-    'Visual layer for GraphEngine — DOM nodes + SVG-overlay edges, driven by `useGraph()`. Supports drag-and-drop, wheel zoom, canvas pan, single / multi selection and a single-method imperative `print()` API.',
+    'Visual layer for GraphEngine — DOM nodes + SVG-overlay edges, driven by `useGraph()`. Supports drag-and-drop, wheel zoom, canvas pan, single / multi / lasso selection, snap-to-grid, OBB rotation, and an imperative `print()` API.',
   pageWhen1: 'Render a flowchart / org chart / dependency graph backed by reactive state.',
   pageWhen2:
     'Build a Visio-like editor where the topology lives in `@skygraph/core` and the visual layer is a thin Vue projection.',
@@ -25,54 +23,37 @@ export const diagramDocEn = {
   demoBasicTitle: 'Basic',
   demoBasicDesc:
     'Three rect nodes with two straight edges. Edges resolve to outline anchors via stable IDs (`nw`, `ne`, `se`, `sw`).',
-
-  demoCustomNodeTitle: 'Custom node',
-  demoCustomNodeDesc:
-    'Use the `#node` slot to render a custom card per node — Vue idiom for React `renderNode={...}`.',
-
   demoDraggableTitle: 'Draggable',
-  demoDraggableDesc:
-    'Click and drag any node. `draggableNodes` is `true` by default; pass `false` to lock positions.',
-
-  demoPanZoomTitle: 'Pan + zoom',
-  demoPanZoomDesc:
-    'Vue exposes a single `panZoom` flag (default `true`) — wheel zooms, canvas-drag pans. React keeps `zoomable` / `panable` separate; both modes collapse here.',
-
-  demoSelectionTitle: 'Single selection',
-  demoSelectionDesc:
-    'Click a node — the previous selection is replaced. The `selection-change` event emits the latest id list.',
-
-  demoMultiSelectTitle: 'Multi-select (Ctrl+click)',
-  demoMultiSelectDesc:
-    '`selectionMode="multi"` toggles individual nodes on `Ctrl+click` / `Shift+click`. Lasso-select is React-only for now.',
-
+  demoDraggableDesc: 'Click and drag any node — `draggable` enables the built-in mover.',
+  demoZoomableTitle: 'Zoomable',
+  demoZoomableDesc: 'Hold `Ctrl` (or `⌘` on macOS) and scroll the wheel to zoom in / out.',
+  demoPannableTitle: 'Pannable',
+  demoPannableDesc:
+    'Middle-button drag pans, plain wheel scrolls. Combined with `zoomable` keeps `Ctrl + wheel` for zoom.',
+  demoSnapToGridTitle: 'Snap to grid',
+  demoSnapToGridDesc:
+    '`snap-to-grid="20"` rounds drag-end coords to multiples of 20 world units and turns on the grid background.',
+  demoBezierTitle: 'Bezier routing',
+  demoBezierDesc:
+    'Cubic-Bezier edges with control handles perpendicular to the nearest face — drag nodes to see curves re-fit.',
+  demoOrthogonalTitle: 'Orthogonal routing (obstacle-aware)',
+  demoOrthogonalDesc:
+    'Pass `route-around-nodes` to feed every other node as an obstacle into the A*-based router; edges detour rather than cutting through.',
   demoUndoRedoTitle: 'Undo / Redo',
   demoUndoRedoDesc:
     'Built-in history on `GraphEngine`. Drag the nodes, then `Ctrl+Z` / `Ctrl+Shift+Z` (or use the buttons) to walk the timeline.',
-
-  demoNodeClickTitle: 'Node click event',
-  demoNodeClickDesc:
-    '`@node-click` emits `{ id, node, event }` for each node click — handy for inspectors, preview panes or analytics.',
-
-  demoProgrammaticTitle: 'Programmatic edit',
-  demoProgrammaticDesc:
-    'Add / delete nodes from outside the canvas. Replaces the React context-menu pattern; the `GraphEngine` API is identical.',
-
-  demoPrintTitle: 'Print',
-  demoPrintDesc:
-    'Imperative `print()` ref-method, mirroring React `DiagramRef.print()`. Honours the `fileName` prop as the document base name.',
-
+  demoContextMenuTitle: 'Context menu',
+  demoContextMenuDesc:
+    '`@node-context-menu` / `@edge-context-menu` / `@canvas-context-menu` events open a custom floating menu.',
+  demoMultiSelectTitle: 'Multi-select (Ctrl+click)',
+  demoMultiSelectDesc:
+    '`selection-mode="multi"` toggles individual nodes on `Ctrl+click` / `Shift+click`. Use `lasso` for rubber-band selection.',
+  demoOBBTitle: 'Rotated nodes (OBB)',
+  demoOBBDesc:
+    'Every transform carries a non-zero `rot`; the engine still derives correct AABBs via OBB projection so routing keeps working.',
   demoLargeTitle: 'Large graph (200 / 400)',
   demoLargeDesc:
-    'Stress test: 200 nodes and 400 random straight edges. Mutations are batched through `graph.transaction()` so reactivity emits one update for the whole insert.',
-
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc:
-    'Drop the default `.sg-diagram*` classes via `unstyled`. The DOM structure stays the same — bring your own design system.',
-
-  demoOrthogonalTitle: 'Orthogonal routing (obstacle-aware)',
-  demoOrthogonalDesc:
-    'Pass `routeAroundNodes` to feed every other node as an obstacle into the A*-based router, and watch edges detour around them rather than cutting through. The router also exits / enters each node from the side nearest to the other endpoint (T-Diagram-Polish 3.3c).',
+    'Stress test: 200 nodes and 400 random straight edges. Mutations batched through `graph.transaction()`.',
 
   tableDiagramApi: 'Diagram API',
   tableUseGraphApi: 'useGraph(options) Options',
@@ -85,13 +66,23 @@ export const diagramDocEn = {
   propClassName: 'Root className',
   propStyle: 'Root inline style',
   propUnstyled: 'Drop default sg-diagram classes',
-  propDraggableNodes: 'Allow dragging nodes by their wrappers',
-  propPanZoom: 'Wheel zoom + canvas-drag pan',
-  propSelectionMode: '`single` (replace) or `multi` (Ctrl+click toggle)',
-  propSelectedNodeIds: 'Controlled selected ids',
+  propDraggable: 'Allow click-and-drag to move nodes',
+  propZoomable: 'Wheel zoom (`Ctrl + wheel`)',
+  propPanable: 'Plain wheel scrolls + middle-button drag',
+  propSnapToGrid: 'Snap drag-end coords to multiples of N world units',
+  propRouteAroundNodes: 'Use other nodes as obstacles for the orthogonal router',
+  propRoutingOptions: 'A*-router knobs (gridSize, inflate, maxNodes, cornerRadius, curvature)',
+  propEdgeArrows: 'Draw arrow markers on every edge end (defaults to true)',
+  propSelectionMode: '`single` (replace), `multi` (Ctrl+click), or `lasso` (rubber-band)',
+  propSelection: 'Controlled selected ids',
+  propNodeActions: 'Hover mini-toolbar above each node',
+  propEdgeActions: 'Hover mini-toolbar next to each edge',
   propFileName: 'Base filename for `ref.print()`',
-  propEmitNodeClick: 'Fired on each node click — `{ id, node, event }`',
+  slotNode: 'Render a custom node body — Vue idiom for React `renderNode`',
   propEmitSelectionChange: 'Fired when the selection set changes',
+  propEmitNodeContextMenu: 'Right-click on a node — `{ event, node }`',
+  propEmitEdgeContextMenu: 'Right-click on an edge — `{ event, edge }`',
+  propEmitCanvasContextMenu: 'Right-click on empty canvas — `{ event, point }`',
 
   propUseGraphCore: 'Bring your own Core instance (cross-engine coordination)',
   propUseGraphName: 'Optional debug name for the engine',

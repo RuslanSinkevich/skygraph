@@ -11,10 +11,37 @@ import {
 } from './types'
 import ChartLegend from './ChartLegend.vue'
 import ChartAxes from './ChartAxes.vue'
+import ChartCrosshair, { type ChartCrosshairPoint } from './ChartCrosshair.vue'
+import ChartBrush, {
+  resolveBrushConfig,
+  type ChartBrushConfig,
+  type ChartBrushRange,
+} from './ChartBrush.vue'
+
+/**
+ * Crosshair behaviour toggle for {@link LineChart}. When `true`, a vertical
+ * guide line + per-series tooltip appears on hover.
+ */
+export type LineChartCrosshair =
+  | boolean
+  | {
+      /** Custom formatter for tooltip numeric values. */
+      valueFormatter?: (value: number) => string
+    }
 
 interface LineChartProps extends BaseChartProps {
   markers?: boolean
   strokeWidth?: number
+  /**
+   * Hover crosshair with vertical guide line and per-series tooltip.
+   * @default false
+   */
+  crosshair?: LineChartCrosshair
+  /**
+   * Brush for drag-selecting an X range. `true` — uncontrolled with empty
+   * starting value; object — `ChartBrushConfig`. See `ChartBrush`.
+   */
+  brush?: boolean | ChartBrushConfig
 }
 
 const props = withDefaults(defineProps<LineChartProps>(), {
@@ -25,6 +52,7 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   strokeWidth: 2,
   legend: false,
   fileName: 'chart',
+  crosshair: false,
 })
 
 const rootRef = ref<HTMLDivElement | null>(null)
@@ -85,10 +113,76 @@ const markerPoints = computed(() =>
   props.series.flatMap((s, i) => {
     const color = colorForSeries(s, i)
     return s.values
-      .map((v, idx) => (v == null ? null : { id: `${s.id}-${idx}`, color, x: xCoord(idx), y: yCoord(v) }))
+      .map((v, idx) =>
+        v == null ? null : { id: `${s.id}-${idx}`, color, x: xCoord(idx), y: yCoord(v) },
+      )
       .filter(Boolean) as { id: string; color: string; x: number; y: number }[]
   }),
 )
+
+const crosshairEnabled = computed(() => props.crosshair !== false && props.categories.length > 0)
+const crosshairFmt = computed(() =>
+  typeof props.crosshair === 'object' && props.crosshair !== null
+    ? props.crosshair.valueFormatter
+    : undefined,
+)
+const hoverIdx = ref<number | null>(null)
+
+function handleSvgMouseMove(e: MouseEvent) {
+  if (!crosshairEnabled.value) return
+  const svg = e.currentTarget as SVGSVGElement
+  const rect = svg.getBoundingClientRect()
+  if (rect.width === 0) return
+  const localX = ((e.clientX - rect.left) / rect.width) * viewW.value
+  const n = props.categories.length
+  if (n === 1) {
+    hoverIdx.value = 0
+    return
+  }
+  const xStep = plotW.value / (n - 1)
+  if (xStep <= 0) {
+    hoverIdx.value = null
+    return
+  }
+  const rawIdx = Math.round((localX - plotX.value) / xStep)
+  if (rawIdx < 0 || rawIdx >= n) {
+    hoverIdx.value = null
+    return
+  }
+  hoverIdx.value = rawIdx
+}
+
+function handleSvgMouseLeave() {
+  if (crosshairEnabled.value) hoverIdx.value = null
+}
+
+const crosshairPoints = computed<ChartCrosshairPoint[]>(() => {
+  const idx = hoverIdx.value
+  if (idx === null) return []
+  const out: ChartCrosshairPoint[] = []
+  props.series.forEach((s, sIdx) => {
+    const v = s.values[idx]
+    if (v === null || v === undefined) return
+    out.push({
+      label: s.label,
+      value: v,
+      color: colorForSeries(s, sIdx),
+      y: yCoord(v),
+    })
+  })
+  return out
+})
+
+const brushConfig = computed(() => resolveBrushConfig(props.brush))
+const isBrushControlled = computed(() => brushConfig.value != null && 'range' in brushConfig.value)
+const internalBrushRange = ref<ChartBrushRange | null>(brushConfig.value?.defaultRange ?? null)
+const effectiveBrushRange = computed<ChartBrushRange | null>(() =>
+  isBrushControlled.value ? (brushConfig.value!.range ?? null) : internalBrushRange.value,
+)
+function handleBrushChange(next: ChartBrushRange | null) {
+  if (!isBrushControlled.value) internalBrushRange.value = next
+  brushConfig.value?.onRangeChange?.(next)
+}
 
 defineExpose({
   print: (opts: { fileName?: string } = {}) => {
@@ -120,6 +214,8 @@ defineExpose({
       :height="props.height"
       role="img"
       aria-label="Line chart"
+      @mousemove="crosshairEnabled ? handleSvgMouseMove($event) : undefined"
+      @mouseleave="crosshairEnabled ? handleSvgMouseLeave() : undefined"
     >
       <ChartAxes
         :x="plotX"
@@ -148,15 +244,33 @@ defineExpose({
         </template>
       </g>
       <g v-if="props.markers" class="sg-chart-line-markers">
-        <circle
-          v-for="m in markerPoints"
-          :key="m.id"
-          :cx="m.x"
-          :cy="m.y"
-          r="3"
-          :fill="m.color"
-        />
+        <circle v-for="m in markerPoints" :key="m.id" :cx="m.x" :cy="m.y" r="3" :fill="m.color" />
       </g>
+      <ChartCrosshair
+        v-if="crosshairEnabled && hoverIdx !== null && crosshairPoints.length > 0"
+        :x="xCoord(hoverIdx)"
+        :plot-x="plotX"
+        :plot-y="plotY"
+        :plot-h="plotH"
+        :plot-w="plotW"
+        :category="props.categories[hoverIdx]"
+        :points="crosshairPoints"
+        :unstyled="props.unstyled"
+        :value-formatter="crosshairFmt"
+      />
+      <ChartBrush
+        v-if="brushConfig"
+        :plot-x="plotX"
+        :plot-y="plotY"
+        :plot-w="plotW"
+        :plot-h="plotH"
+        :category-count="props.categories.length"
+        :range="effectiveBrushRange"
+        :unstyled="props.unstyled"
+        :fill="brushConfig.fill"
+        :disabled="brushConfig.disabled"
+        @change="handleBrushChange"
+      />
     </svg>
     <ChartLegend v-if="props.legend" :series="props.series" :unstyled="props.unstyled" />
   </div>

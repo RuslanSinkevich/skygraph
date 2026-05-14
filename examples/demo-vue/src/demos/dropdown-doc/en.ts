@@ -1,10 +1,7 @@
 /**
  * English source of truth for Dropdown doc page strings.
- * Other locales must provide the same keys (see `ru.ts`).
- *
- * Vue-side delta vs React: `DropdownItem.label` is a `string` — no
- * ReactNode rich rows. The `RichItems.demo` is skipped (see findings).
- * Trigger is a default slot, not a `children` prop.
+ * Other locales must provide the same keys (see `ru.ts`). 1:1 with React's
+ * DropdownDemo (8 demos). Rich rows use the `#item` scoped slot.
  */
 export const dropdownDocEn = {
   pageTitle: 'Dropdown',
@@ -22,6 +19,9 @@ export const dropdownDocEn = {
   demoTriggerDesc: 'Click for action menus, hover for chrome.',
   demoPlacementTitle: 'Placement',
   demoPlacementDesc: 'Four corners — pick what fits the viewport.',
+  demoRichItemsTitle: 'Rich items',
+  demoRichItemsDesc:
+    'Render any VNode per row via the `#item` slot — icon + title + shortcut, dividers between sections.',
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: "Menu can't open; @select is suppressed.",
   demoKeyboardTitle: 'Keyboard',

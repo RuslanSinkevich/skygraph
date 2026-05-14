@@ -1,11 +1,6 @@
 /**
  * English source of truth for Breadcrumb doc page strings.
  * Other locales must provide the same keys (see `ru.ts`).
- *
- * Vue-side delta vs React: `BreadcrumbItem` is `{ title: string; href? }`,
- * has no `onClick`-on-item or rich-`title`-node — the parent `Breadcrumb`
- * emits `@itemClick`. `WithIcons` and `Dropdown` examples are skipped
- * (see findings).
  */
 export const breadcrumbDocEn = {
   pageTitle: 'Breadcrumb',
@@ -15,7 +10,7 @@ export const breadcrumbDocEn = {
   pageLead:
     'Hierarchical location indicator. The last segment is non-interactive and marks the current page; everything before it is linked.',
   pageWhen1: 'Three or more levels of hierarchy where users need a way back to a parent.',
-  pageWhen2: "Long pages where the page title alone doesn\u2019t tell you where you are.",
+  pageWhen2: 'Long pages where the page title alone doesn\u2019t tell you where you are.',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Trail with two links + a current page.',
@@ -23,6 +18,10 @@ export const breadcrumbDocEn = {
   demoSeparatorDesc: 'Plain string — character, chevron, dot.',
   demoOnClickTitle: 'itemClick handlers',
   demoOnClickDesc: 'Preempt navigation for SPA routers via the @itemClick emit.',
+  demoIconsTitle: 'With icons',
+  demoIconsDesc: 'Use the `item` slot to combine icons with text labels.',
+  demoDropdownTitle: 'With dropdown',
+  demoDropdownDesc: 'Embed an `SgDropdown` inside the `item` slot to jump between siblings.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope the text palette + `--sg-color-primary` to rebrand.',
   demoUnstyledTitle: 'Unstyled',
@@ -37,6 +36,7 @@ export const breadcrumbDocEn = {
 
   propItems: 'Ordered trail from root to current page',
   propSeparator: 'String rendered between segments',
+  propItemSlot: 'Custom segment renderer (receives `{ item, index }`)',
   propUnstyled: 'Drop sg-breadcrumb-* classes (nav + a11y stay)',
   emitItemClick: 'Emitted when a segment is clicked (passes item + index)',
 

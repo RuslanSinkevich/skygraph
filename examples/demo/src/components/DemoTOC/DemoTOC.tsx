@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
 import { useActiveSection } from './intersection'
 import { useDemoTOCContext } from './DemoTOCContext'
@@ -6,11 +6,36 @@ import type { DemoTOCItem } from './DemoTOCContext'
 import { useDemoTOCStrings } from './strings'
 
 /**
+ * Stable empty list reused when the provider is missing — sharing one
+ * object reference keeps useEffect / useCallback deps in `DemoTOC`
+ * from changing on every render.
+ */
+const EMPTY_ITEMS: readonly DemoTOCItem[] = Object.freeze([])
+const NOOP_MANUAL_REF: { readonly current: boolean } = { current: false }
+
+/**
  * Top offset applied when scrolling to a section. The AppShell sticky
  * header is 56px tall; we add a little breathing room so the section
  * title isn't kissing the header edge after the scroll lands.
  */
 const SCROLL_OFFSET_PX = 72
+
+/**
+ * Honour the user's "reduced motion" preference — falls back to
+ * instant jumps when the OS asks for less animation. Re-read on every
+ * call so toggling the setting takes effect immediately without
+ * forcing a re-render.
+ */
+function prefersReducedMotion(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return false
+  }
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+function scrollBehavior(): ScrollBehavior {
+  return prefersReducedMotion() ? 'auto' : 'smooth'
+}
 
 /**
  * Section sub-delimiter inside `window.location.hash`.
@@ -81,10 +106,13 @@ export function DemoTOC() {
   const ctx = useDemoTOCContext()
   const strings = useDemoTOCStrings()
 
-  const items: DemoTOCItem[] = ctx?.items ?? []
+  // Pull a stable items reference: `ctx?.items ?? []` would mint a
+  // fresh `[]` on every render and re-trigger every downstream
+  // effect/callback. The frozen shared array fixes that.
+  const items: readonly DemoTOCItem[] = useMemo(() => ctx?.items ?? EMPTY_ITEMS, [ctx?.items])
   const activeId = ctx?.activeId ?? null
   const setActiveId = ctx?.setActiveId
-  const isManualScrollRef = ctx?.isManualScrollRef ?? { current: false }
+  const isManualScrollRef = ctx?.isManualScrollRef ?? NOOP_MANUAL_REF
   const beginManualScroll = ctx?.beginManualScroll
 
   useActiveSection(items, activeId, setActiveId ?? noop, isManualScrollRef)
@@ -96,7 +124,7 @@ export function DemoTOC() {
       beginManualScroll?.()
       setActiveId?.(id)
       const top = target.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET_PX
-      window.scrollTo({ top, behavior: 'smooth' })
+      window.scrollTo({ top, behavior: scrollBehavior() })
     },
     [beginManualScroll, setActiveId],
   )
@@ -133,7 +161,7 @@ export function DemoTOC() {
     (event: React.MouseEvent<HTMLAnchorElement>) => {
       event.preventDefault()
       beginManualScroll?.()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      window.scrollTo({ top: 0, behavior: scrollBehavior() })
       if (items.length > 0) setActiveId?.(items[0].id)
       if (typeof window !== 'undefined' && window.history?.replaceState) {
         window.history.replaceState(null, '', buildSectionUrl(null))
@@ -160,7 +188,7 @@ export function DemoTOC() {
                 href={buildSectionHref(item.id)}
                 className={'demo-toc-item' + (isActive ? ' demo-toc-item-active' : '')}
                 onClick={(e) => handleClick(e, item.id)}
-                aria-current={isActive ? 'true' : undefined}
+                aria-current={isActive ? 'location' : undefined}
               >
                 {item.title}
               </a>

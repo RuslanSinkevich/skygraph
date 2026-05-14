@@ -224,6 +224,23 @@ describe('SgTable', () => {
     expect(wrapper.find('.sg-table-pagination-next').exists()).toBe(false)
   })
 
+  it('loading renders mask overlay and adds sg-table-loading class', () => {
+    const wrapper = mount(SgTable, {
+      props: { columns: sampleColumns, data: sampleData, loading: true },
+    })
+    expect(wrapper.find('.sg-table-loading').exists()).toBe(true)
+    expect(wrapper.find('.sg-table-loading-mask').exists()).toBe(true)
+    expect(wrapper.find('.sg-table-loading-mask .sg-spin').exists()).toBe(true)
+  })
+
+  it('loading=false (default) does not render mask', () => {
+    const wrapper = mount(SgTable, {
+      props: { columns: sampleColumns, data: sampleData },
+    })
+    expect(wrapper.find('.sg-table-loading').exists()).toBe(false)
+    expect(wrapper.find('.sg-table-loading-mask').exists()).toBe(false)
+  })
+
   it('cell slot allows custom rendering', () => {
     const Wrapper = defineComponent({
       components: { SgTable },

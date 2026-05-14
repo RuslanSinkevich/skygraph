@@ -3,16 +3,9 @@
  * `DatePickerDemo` — aggregator for the DatePicker component page.
  *
  * Mirrors `examples/demo/src/demos/DatePickerDemo.tsx` (11 examples).
- * Vue surface (8 examples): Basic, Formats, PickerModes, WithTime,
- * DisabledDates, Sizes, TokensOverride, Unstyled.
- *
- * Dropped vs React (see `findings/T-Vue-Demo-Forms.md`
- * → `datepicker-vue-feature-gaps`):
- * - `Range` + `RangePresets` — no `SgRangePicker` in `@skygraph/vue`.
- * - `Presets` — no `presets` sidebar prop.
- * - `RussianLocale` — no locale support.
- * - `picker="week"` and `ShowTimeConfig` are also missing (folded into
- *   `PickerModes` / `WithTime` notes).
+ * Vue surface (11 examples): Basic, Formats, PickerModes, WithTime,
+ * RussianLocale, DisabledDates, Presets, Sizes, Range, RangePresets,
+ * TokensOverride — 1:1 with React.
  */
 import { computed } from 'vue'
 import {
@@ -33,14 +26,20 @@ import PickerModesDatePickerDemo from './datepicker/PickerModes.demo.vue'
 import PickerModesSource from './datepicker/PickerModes.demo.vue?raw'
 import WithTimeDatePickerDemo from './datepicker/WithTime.demo.vue'
 import WithTimeSource from './datepicker/WithTime.demo.vue?raw'
+import RussianLocaleDatePickerDemo from './datepicker/RussianLocale.demo.vue'
+import RussianLocaleSource from './datepicker/RussianLocale.demo.vue?raw'
 import DisabledDatesDatePickerDemo from './datepicker/DisabledDates.demo.vue'
 import DisabledDatesSource from './datepicker/DisabledDates.demo.vue?raw'
+import PresetsDatePickerDemo from './datepicker/Presets.demo.vue'
+import PresetsSource from './datepicker/Presets.demo.vue?raw'
 import SizesDatePickerDemo from './datepicker/Sizes.demo.vue'
 import SizesSource from './datepicker/Sizes.demo.vue?raw'
+import RangeDatePickerDemo from './datepicker/Range.demo.vue'
+import RangeSource from './datepicker/Range.demo.vue?raw'
+import RangePresetsDatePickerDemo from './datepicker/RangePresets.demo.vue'
+import RangePresetsSource from './datepicker/RangePresets.demo.vue?raw'
 import TokensOverrideDatePickerDemo from './datepicker/TokensOverride.demo.vue'
 import TokensOverrideSource from './datepicker/TokensOverride.demo.vue?raw'
-import UnstyledDatePickerDemo from './datepicker/Unstyled.demo.vue'
-import UnstyledSource from './datepicker/Unstyled.demo.vue?raw'
 
 const t = useDatePickerDocStrings()
 
@@ -48,14 +47,43 @@ const datePickerProps = computed<PropDef[]>(() => [
   { name: 'modelValue', description: t.value.propModelValue, type: 'Date | null' },
   { name: 'value', description: t.value.propValue, type: 'Date | null' },
   { name: 'defaultValue', description: t.value.propDefaultValue, type: 'Date' },
-  { name: 'placeholder', description: t.value.propPlaceholder, type: 'string', default: "'Select date'" },
+  {
+    name: 'placeholder',
+    description: t.value.propPlaceholder,
+    type: 'string',
+    default: "'Select date'",
+  },
   { name: 'format', description: t.value.propFormat, type: 'string' },
-  { name: 'picker', description: t.value.propPicker, type: "'date' | 'month' | 'year'", default: "'date'" },
-  { name: 'showTime', description: t.value.propShowTime, type: 'boolean', default: 'false' },
+  {
+    name: 'picker',
+    description: t.value.propPicker,
+    type: "'date' | 'month' | 'year'",
+    default: "'date'",
+  },
+  {
+    name: 'showTime',
+    description: t.value.propShowTime,
+    type: 'boolean | ShowTimeConfig',
+    default: 'false',
+  },
   { name: 'showToday', description: t.value.propShowToday, type: 'boolean', default: 'true' },
+  { name: 'showNow', description: t.value.propShowNow, type: 'boolean', default: 'false' },
   { name: 'allowClear', description: t.value.propAllowClear, type: 'boolean', default: 'true' },
   { name: 'disabledDate', description: t.value.propDisabledDate, type: '(date: Date) => boolean' },
+  { name: 'presets', description: t.value.propPresets, type: 'DatePreset[]' },
+  {
+    name: 'placement',
+    description: t.value.propPlacement,
+    type: "'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'",
+    default: "'bottomLeft'",
+  },
   { name: 'open', description: t.value.propOpen, type: 'boolean' },
+  {
+    name: 'inputReadOnly',
+    description: t.value.propInputReadOnly,
+    type: 'boolean',
+    default: 'false',
+  },
   { name: 'disabled', description: t.value.propDisabled, type: 'boolean', default: 'false' },
   {
     name: 'size',
@@ -77,9 +105,72 @@ const datePickerProps = computed<PropDef[]>(() => [
   { name: '@openChange', description: t.value.emitOpenChange, type: '(open: boolean) => void' },
 ])
 
+const rangePickerProps = computed<PropDef[]>(() => [
+  {
+    name: 'modelValue',
+    description: t.value.propRangeValue,
+    type: '[Date | null, Date | null]',
+  },
+  {
+    name: 'value',
+    description: t.value.propRangeValue,
+    type: '[Date | null, Date | null]',
+  },
+  { name: 'defaultValue', description: t.value.propRangeDefaultValue, type: '[Date, Date]' },
+  { name: 'placeholder', description: t.value.propRangePlaceholder, type: '[string, string]' },
+  { name: 'format', description: t.value.propRangeFormat, type: 'string' },
+  {
+    name: 'showTime',
+    description: t.value.propRangeShowTime,
+    type: 'boolean | ShowTimeConfig',
+    default: 'false',
+  },
+  {
+    name: 'allowClear',
+    description: t.value.propRangeAllowClear,
+    type: 'boolean',
+    default: 'true',
+  },
+  {
+    name: 'disabledDate',
+    description: t.value.propRangeDisabledDate,
+    type: '(date: Date) => boolean',
+  },
+  { name: 'presets', description: t.value.propRangePresets, type: 'DatePreset[]' },
+  { name: 'separator', description: t.value.propRangeSeparator, type: 'string', default: "'→'" },
+  {
+    name: 'placement',
+    description: t.value.propRangePlacement,
+    type: "'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'",
+    default: "'bottomLeft'",
+  },
+  {
+    name: '@update:modelValue',
+    description: t.value.emitRangeUpdateModelValue,
+    type: '(dates: [Date | null, Date | null]) => void',
+  },
+  {
+    name: '@change',
+    description: t.value.emitRangeChange,
+    type: '(dates, [startStr, endStr]) => void',
+  },
+])
+
+const showTimeProps = computed<PropDef[]>(() => [
+  { name: 'format', description: t.value.propTimeFormat, type: 'string' },
+  { name: 'hourStep', description: t.value.propTimeHourStep, type: 'number', default: '1' },
+  { name: 'minuteStep', description: t.value.propTimeMinuteStep, type: 'number', default: '1' },
+  { name: 'secondStep', description: t.value.propTimeSecondStep, type: 'number', default: '1' },
+  { name: 'defaultValue', description: t.value.propTimeDefaultValue, type: 'Date' },
+])
+
 const datePickerCssVars = computed<CssVarDef[]>(() => [
   { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.value.cssSgColorPrimary },
-  { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: t.value.cssSgColorPrimaryBg },
+  {
+    name: 'sg-color-primary-bg',
+    default: 'var(--sg-blue-1)',
+    description: t.value.cssSgColorPrimaryBg,
+  },
   {
     name: 'sg-color-primary-hover',
     default: 'var(--sg-blue-5)',
@@ -154,6 +245,14 @@ const datePickerCssVars = computed<CssVarDef[]>(() => [
     </DemoBox>
 
     <DemoBox
+      :title="t.demoRussianLocaleTitle"
+      :description="t.demoRussianLocaleDesc"
+      :code="RussianLocaleSource"
+    >
+      <RussianLocaleDatePickerDemo />
+    </DemoBox>
+
+    <DemoBox
       :title="t.demoDisabledDatesTitle"
       :description="t.demoDisabledDatesDesc"
       :code="DisabledDatesSource"
@@ -161,8 +260,24 @@ const datePickerCssVars = computed<CssVarDef[]>(() => [
       <DisabledDatesDatePickerDemo />
     </DemoBox>
 
+    <DemoBox :title="t.demoPresetsTitle" :description="t.demoPresetsDesc" :code="PresetsSource">
+      <PresetsDatePickerDemo />
+    </DemoBox>
+
     <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource">
       <SizesDatePickerDemo />
+    </DemoBox>
+
+    <DemoBox :title="t.demoRangeTitle" :description="t.demoRangeDesc" :code="RangeSource">
+      <RangeDatePickerDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoRangePresetsTitle"
+      :description="t.demoRangePresetsDesc"
+      :code="RangePresetsSource"
+    >
+      <RangePresetsDatePickerDemo />
     </DemoBox>
 
     <DemoBox
@@ -173,21 +288,11 @@ const datePickerCssVars = computed<CssVarDef[]>(() => [
       <TokensOverrideDatePickerDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
-      <UnstyledDatePickerDemo />
-    </DemoBox>
-
     <template #api>
       <PropsTable :title="t.tableDatePickerApi" :data="datePickerProps" />
-      <CssVarsTable
-        :title="t.tableCssVars"
-        :hint="t.cssHint"
-        :data="datePickerCssVars"
-      />
+      <PropsTable :title="t.tableRangePickerApi" :data="rangePickerProps" />
+      <PropsTable :title="t.tableShowTimeConfig" :data="showTimeProps" />
+      <CssVarsTable :title="t.tableCssVars" :hint="t.cssHint" :data="datePickerCssVars" />
     </template>
   </ComponentDoc>
 </template>

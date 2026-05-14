@@ -10,28 +10,43 @@ export const calendarDocRu: { [K in keyof typeof calendarDocEn]: string } = {
   crumbCalendar: 'Calendar',
 
   pageLead:
-    'Календарь month + year с маркерами событий, номерами недель, weekStart-настройкой и предикатом disabled-дней. Компактная или fullscreen-выкладка.',
+    'Календарь month + year с маркерами событий, номерами недель, weekStart-настройкой и предикатом disabled-дней. Компактная или fullscreen-выкладка; range + multi выбор из коробки.',
   pageWhen1: 'Как месячный обзор внутри admin-дашборда или планировщика.',
   pageWhen2: 'Когда нужны лёгкие маркеры событий по дням.',
   pageWhen3:
-    'Для range / multiple selection, кастомных ячеек, локали или клавиатурной навигации — используйте React-версию (Vue-паритет в работе).',
+    'Когда нужно выбрать диапазон, несколько дат или полностью кастомизировать chrome через слоты `#header` / `#cell`.',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Сетка месяца, сегодня подсвечен.',
+  demoCardTitle: 'Карточка',
+  demoCardDesc: '`:fullscreen="false"` сворачивает календарь в компактную карточку.',
   demoControlledTitle: 'Управляемый',
   demoControlledDesc: 'Родитель владеет выбранной датой через v-model.',
-  demoEventsTitle: 'События',
-  demoEventsDesc:
-    'Каждая ячейка показывает цветные точки событий. `max-events` ограничивает их количество, остаток сворачивается в `+N`.',
-  demoWeekStartTitle: 'Неделя с понедельника',
-  demoWeekStartDesc: '`week-start-day="1"` ротейтит колонки дней недели.',
-  demoWeekNumbersTitle: 'Номера недель',
-  demoWeekNumbersDesc: 'Колонка ISO-недель + неделя с понедельника.',
   demoDisabledDatesTitle: 'Отключённые даты',
-  demoDisabledDatesDesc: 'Серим прошлые дни и выходные.',
+  demoDisabledDatesDesc: 'Серим прошлые дни и выходные через `disabled-date`.',
   demoYearModeTitle: 'Year-режим',
   demoYearModeDesc:
     '`mode="year"` показывает обзор из 12 месяцев; клик по месяцу возвращает в сетку дней.',
+  demoWeekNumbersTitle: 'Номера недель',
+  demoWeekNumbersDesc: 'Колонка ISO-недель + неделя с понедельника.',
+  demoRangeSelectionTitle: 'Выбор диапазона',
+  demoRangeSelectionDesc:
+    '`range-selection` превращает сетку в two-tap выбор: первый клик — старт, второй — конец, между ними подсветка.',
+  demoMultipleSelectionTitle: 'Множественный выбор',
+  demoMultipleSelectionDesc:
+    '`multiple-selection` тогглит даты по клику — идеально для «выбрать все рабочие дни месяца».',
+  demoEventsTitle: 'События',
+  demoEventsDesc:
+    'Каждая ячейка показывает цветные точки событий. `max-events` ограничивает их количество, остаток сворачивается в `+N`.',
+  demoCustomCellTitle: 'Кастомная ячейка',
+  demoCustomCellDesc:
+    'Слот `#cell` вставляет любой контент под номером дня — капасити-точки, бейджи и т. п.',
+  demoCustomHeaderTitle: 'Кастомная шапка',
+  demoCustomHeaderDesc:
+    'Полностью свой chrome через слот `#header`: получаешь `{ value, type, onChange, onTypeChange }`.',
+  demoLocaleTitle: 'Локализация',
+  demoLocaleDesc:
+    'Передай `locale` с локализованными именами месяцев/дней, кнопкой today и заголовком колонки недели.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc: 'Скоуп глобальных токенов на обёртке для перекраски.',
   demoUnstyledTitle: 'Unstyled',
@@ -49,10 +64,20 @@ export const calendarDocRu: { [K in keyof typeof calendarDocEn]: string } = {
   propWeekStartDay: '0 = воскресенье … 6 = суббота',
   propShowWeekNumbers: 'Колонка ISO-недель',
   propDisabledDate: 'Блокировка взаимодействия для конкретных дат',
+  propLocale: 'Переопределение имён месяцев / дней + текста кнопки today',
+  propRangeSelection: 'Переключает сетку в two-tap выбор диапазона',
+  propRangeValue: 'Управляемый `[start, end]` (используется с `@range-change`)',
+  propMultipleSelection: 'Тогглить несколько дат по клику',
+  propMultipleValue: 'Управляемый массив дат (используется с `@multiple-change`)',
+  propHeaderSlot:
+    'Свой chrome — слот `#header`, получает `{ value, type, onChange, onTypeChange }`',
+  propCellSlot: 'Доп. контент в ячейке — слот `#cell`, получает `{ date, type }`',
   propUnstyled: 'Снять SkyGraph-обёртку — только семантика',
   emitUpdateModelValue: 'Срабатывает при выборе даты (v-model)',
   emitSelect: 'Срабатывает при выборе любой ячейки',
   emitPanelChange: 'Срабатывает при смене видимой панели/режима',
+  emitRangeChange: 'Срабатывает с очередным `[start, end]`',
+  emitMultipleChange: 'Срабатывает с очередным массивом выбранных дат',
 
   eventId: 'Стабильный идентификатор (для v-for `:key`)',
   eventDate: 'Дата события',

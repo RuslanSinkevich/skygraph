@@ -66,6 +66,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/components/button/button-page.component').then((m) => m.ButtonPageComponent),
   },
+  {
+    path: 'components/spin',
+    loadComponent: () =>
+      import('./pages/components/spin/spin-page.component').then((m) => m.SpinPageComponent),
+  },
 
   // Wave 4.2 — Batch A: UI primitives
   {

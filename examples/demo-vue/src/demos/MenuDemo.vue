@@ -1,12 +1,7 @@
 <script setup lang="ts">
 /**
  * `MenuDemo` — aggregator for the Menu component page.
- *
- * Mirrors `examples/demo/src/demos/MenuDemo.tsx` with one delta:
- * `WithIcons.demo.vue` is **skipped** because Vue `MenuItem` has no
- * `icon` prop (`packages/vue/**` is read-only for Wave 3 — see
- * findings entry `menu-with-icons-skipped`). 9 of 10 React examples
- * are ported (≥ N-1 from the parity rule).
+ * Mirrors `examples/demo/src/demos/MenuDemo.tsx` 1:1 (10/10).
  */
 import { computed } from 'vue'
 import {
@@ -28,6 +23,8 @@ import InlineMenu from './menu/Inline.demo.vue'
 import InlineSource from './menu/Inline.demo.vue?raw'
 import ControlledMenu from './menu/Controlled.demo.vue'
 import ControlledSource from './menu/Controlled.demo.vue?raw'
+import WithIconsMenu from './menu/WithIcons.demo.vue'
+import WithIconsSource from './menu/WithIcons.demo.vue?raw'
 import GroupsDividersMenu from './menu/GroupsDividers.demo.vue'
 import GroupsDividersSource from './menu/GroupsDividers.demo.vue?raw'
 import CollapsedMenu from './menu/Collapsed.demo.vue'
@@ -50,11 +47,26 @@ const menuProps = computed<PropDef[]>(() => [
     default: "'vertical'",
   },
   { name: 'selectedKeys', description: t.value.propSelectedKeys, type: 'string[]' },
-  { name: 'defaultSelectedKeys', description: t.value.propDefaultSelectedKeys, type: 'string[]', default: '[]' },
+  {
+    name: 'defaultSelectedKeys',
+    description: t.value.propDefaultSelectedKeys,
+    type: 'string[]',
+    default: '[]',
+  },
   { name: 'openKeys', description: t.value.propOpenKeys, type: 'string[]' },
-  { name: 'defaultOpenKeys', description: t.value.propDefaultOpenKeys, type: 'string[]', default: '[]' },
+  {
+    name: 'defaultOpenKeys',
+    description: t.value.propDefaultOpenKeys,
+    type: 'string[]',
+    default: '[]',
+  },
   { name: 'theme', description: t.value.propTheme, type: "'light' | 'dark'", default: "'light'" },
-  { name: 'inlineCollapsed', description: t.value.propInlineCollapsed, type: 'boolean', default: 'false' },
+  {
+    name: 'inlineCollapsed',
+    description: t.value.propInlineCollapsed,
+    type: 'boolean',
+    default: 'false',
+  },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
   {
     name: '@select',
@@ -67,6 +79,7 @@ const menuProps = computed<PropDef[]>(() => [
 const menuItemProps = computed<PropDef[]>(() => [
   { name: 'key', description: t.value.itemKey, type: 'string', required: true },
   { name: 'label', description: t.value.itemLabel, type: 'string', required: true },
+  { name: 'icon', description: t.value.itemIcon, type: 'VNodeChild' },
   { name: 'disabled', description: t.value.itemDisabled, type: 'boolean' },
   { name: 'danger', description: t.value.itemDanger, type: 'boolean' },
   { name: 'children', description: t.value.itemChildren, type: 'MenuItem[]' },
@@ -76,19 +89,43 @@ const menuItemProps = computed<PropDef[]>(() => [
 const menuCssVars = computed<CssVarDef[]>(() => [
   { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.value.cssPrimary },
   { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: t.value.cssPrimaryBg },
-  { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: t.value.cssPrimaryHover },
+  {
+    name: 'sg-color-primary-hover',
+    default: 'var(--sg-blue-5)',
+    description: t.value.cssPrimaryHover,
+  },
   { name: 'sg-color-bg-container', default: '#ffffff', description: t.value.cssBgContainer },
   { name: 'sg-color-bg-elevated', default: '#ffffff', description: t.value.cssBgElevated },
   { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: t.value.cssBgHover },
   { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.value.cssText },
-  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.value.cssTextSecondary },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.value.cssTextTertiary },
-  { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.value.cssTextDisabled },
-  { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: t.value.cssBorderSecondary },
+  {
+    name: 'sg-color-text-secondary',
+    default: 'rgba(0, 0, 0, 0.65)',
+    description: t.value.cssTextSecondary,
+  },
+  {
+    name: 'sg-color-text-tertiary',
+    default: 'rgba(0, 0, 0, 0.45)',
+    description: t.value.cssTextTertiary,
+  },
+  {
+    name: 'sg-color-text-disabled',
+    default: 'rgba(0, 0, 0, 0.25)',
+    description: t.value.cssTextDisabled,
+  },
+  {
+    name: 'sg-color-border-secondary',
+    default: 'var(--sg-gray-4)',
+    description: t.value.cssBorderSecondary,
+  },
   { name: 'sg-color-error', default: 'var(--sg-red-5)', description: t.value.cssError },
   { name: 'sg-color-error-bg', default: 'var(--sg-red-1)', description: t.value.cssErrorBg },
   { name: 'sg-border-radius-lg', default: '8px', description: t.value.cssBorderRadiusLg },
-  { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0, 0, 0, 0.08)', description: t.value.cssShadowLg },
+  {
+    name: 'sg-shadow-lg',
+    default: '0 6px 16px rgba(0, 0, 0, 0.08)',
+    description: t.value.cssShadowLg,
+  },
   { name: 'sg-font-size', default: '14px', description: t.value.cssFontSize },
   { name: 'sg-font-size-lg', default: '16px', description: t.value.cssFontSizeLg },
   { name: 'sg-font-size-sm', default: '12px', description: t.value.cssFontSizeSm },
@@ -120,25 +157,48 @@ const menuCssVars = computed<CssVarDef[]>(() => [
     <DemoBox :title="t.demoVerticalTitle" :description="t.demoVerticalDesc" :code="VerticalSource">
       <VerticalMenu />
     </DemoBox>
-    <DemoBox :title="t.demoHorizontalTitle" :description="t.demoHorizontalDesc" :code="HorizontalSource">
+    <DemoBox
+      :title="t.demoHorizontalTitle"
+      :description="t.demoHorizontalDesc"
+      :code="HorizontalSource"
+    >
       <HorizontalMenu />
     </DemoBox>
     <DemoBox :title="t.demoInlineTitle" :description="t.demoInlineDesc" :code="InlineSource">
       <InlineMenu />
     </DemoBox>
-    <DemoBox :title="t.demoControlledTitle" :description="t.demoControlledDesc" :code="ControlledSource">
+    <DemoBox
+      :title="t.demoControlledTitle"
+      :description="t.demoControlledDesc"
+      :code="ControlledSource"
+    >
       <ControlledMenu />
     </DemoBox>
-    <DemoBox :title="t.demoGroupsTitle" :description="t.demoGroupsDesc" :code="GroupsDividersSource">
+    <DemoBox :title="t.demoIconsTitle" :description="t.demoIconsDesc" :code="WithIconsSource">
+      <WithIconsMenu />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoGroupsTitle"
+      :description="t.demoGroupsDesc"
+      :code="GroupsDividersSource"
+    >
       <GroupsDividersMenu />
     </DemoBox>
-    <DemoBox :title="t.demoCollapsedTitle" :description="t.demoCollapsedDesc" :code="CollapsedSource">
+    <DemoBox
+      :title="t.demoCollapsedTitle"
+      :description="t.demoCollapsedDesc"
+      :code="CollapsedSource"
+    >
       <CollapsedMenu />
     </DemoBox>
     <DemoBox :title="t.demoDarkTitle" :description="t.demoDarkDesc" :code="DarkThemeSource">
       <DarkThemeMenu />
     </DemoBox>
-    <DemoBox :title="t.demoTokensTitle" :description="t.demoTokensDesc" :code="TokensOverrideSource">
+    <DemoBox
+      :title="t.demoTokensTitle"
+      :description="t.demoTokensDesc"
+      :code="TokensOverrideSource"
+    >
       <TokensOverrideMenu />
     </DemoBox>
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">

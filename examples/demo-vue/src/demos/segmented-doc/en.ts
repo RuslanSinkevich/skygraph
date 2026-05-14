@@ -1,10 +1,6 @@
 /**
  * English source of truth for Segmented doc page strings.
  * Other locales must provide the same keys (see `ru.ts`).
- *
- * Vue-side delta vs React: `SegmentedOption` does not have an `icon`
- * field — the React `WithIcons.demo` cannot be reproduced 1:1 and is
- * skipped in the Vue port.
  */
 export const segmentedDocEn = {
   pageTitle: 'Segmented',
@@ -19,8 +15,9 @@ export const segmentedDocEn = {
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Pass an array of strings and let Segmented do the rest.',
   demoControlledTitle: 'Controlled',
-  demoControlledDesc:
-    'Drive the selection from state to integrate with URLs, reducers or forms.',
+  demoControlledDesc: 'Drive the selection from state to integrate with URLs, reducers or forms.',
+  demoWithIconsTitle: 'With icons',
+  demoWithIconsDesc: 'Pass `icon` on each option (or use the `icon` slot) for richer segments.',
   demoBlockTitle: 'Block',
   demoBlockDesc: 'Stretch to container width for full-width toolbars.',
   demoDisabledTitle: 'Disabled',
@@ -35,7 +32,7 @@ export const segmentedDocEn = {
   tableSegmentedApi: 'Segmented API',
   tableCssVars: 'CSS Variables',
 
-  propOptions: 'Segment definitions — plain strings or objects with label/value/disabled',
+  propOptions: 'Segment definitions — plain strings or objects with label/value/icon/disabled',
   propValue: 'Controlled selected value',
   propDefaultValue: 'Uncontrolled initial value (falls back to first option)',
   propBlock: 'Stretch to the full width of the container',

@@ -11,8 +11,7 @@ export const cascaderDocRu: { [K in keyof typeof cascaderDocEn]: string } = {
   crumbCascader: 'Cascader',
   pageLead:
     'Колоночный picker для упорядоченных иерархических данных: регион → город → район, таксономия → подкатегория → тег и т. д.',
-  pageWhen1:
-    'Когда значение — путь, а не одиночный узел (область + город + район).',
+  pageWhen1: 'Когда значение — путь, а не одиночный узел (область + город + район).',
   pageWhen2:
     'Когда опции образуют чёткую иерархию и колонка-за-колонкой быстрее, чем глубокое дерево.',
   pageWhen3:
@@ -28,17 +27,21 @@ export const cascaderDocRu: { [K in keyof typeof cascaderDocEn]: string } = {
   demoChangeOnSelectDesc: 'Commit на каждом уровне, не только на leaf.',
   demoSearchTitle: 'Поиск',
   demoSearchDesc:
-    'Встроенный поиск. Vue принимает `show-search` только как boolean — кастомного фильтра пока нет.',
+    'Встроенный поиск. `{ filter }` подменяет матчер по умолчанию (также допустимо boolean для простых случаев).',
+  demoMultipleTitle: 'Multiple',
+  demoMultipleDesc:
+    '`multiple` хранит каждый зафиксированный путь как удаляемый tag; `max-tag-count` сворачивает overflow.',
   demoSizesTitle: 'Размеры',
   demoSizesDesc: 'Small / middle / large — в одном ритме с Input + Select.',
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: 'Отключить весь контрол или отдельные опции.',
   demoCustomRenderTitle: 'Кастомный триггер',
-  demoCustomRenderDesc:
-    'Заменить лейбл по умолчанию. Vue принимает форматтер `(labels) => string` (без VNode).',
+  demoCustomRenderDesc: 'Заменить лейбл триггера форматтером `(labels, options) => string`.',
+  demoAsyncLoadTitle: 'Async-загрузка',
+  demoAsyncLoadDesc:
+    'Пометь узел `isLeaf: false`; по клику cascader вызывает `load-data(selectedOptions)` и показывает спиннер, пока children не подгрузятся.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc:
-    'Скоуп глобальных токенов на обёртке для перекраски одного Cascader.',
+  demoTokensOverrideDesc: 'Скоуп глобальных токенов на обёртке для перекраски одного Cascader.',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Только семантика — оформляете своими CSS.',
 
@@ -54,19 +57,22 @@ export const cascaderDocRu: { [K in keyof typeof cascaderDocEn]: string } = {
   propAllowClear: 'Показывать кнопку очистки (×) при наличии значения',
   propDisabled: 'Отключить весь cascader',
   propSize: 'Согласовано с Input/Select',
-  propShowSearch: 'Включить поиск в дропдауне (только boolean)',
+  propShowSearch: 'Включить поиск; `{ filter }` подменяет матчер по умолчанию',
   propExpandTrigger: 'Открывать следующую колонку по клику или hover',
   propChangeOnSelect: 'Commit на каждом уровне, не только на leaf',
-  propDisplayRender: 'Кастомный форматтер лейбла триггера `(labels) => string`',
+  propDisplayRender: 'Кастомный форматтер лейбла триггера `(labels, options) => string`',
+  propMultiple: 'Разрешить несколько leaf-путей как удаляемые tag-и',
+  propMaxTagCount: 'Максимум видимых tag-ов в режиме `multiple` перед "+N"',
+  propLoadData: 'Async-загрузчик children `(selectedOptions) => void`',
   propUnstyled: 'Убрать классы SkyGraph — оставить только семантику',
   emitUpdateModelValue: 'Эмитится со следующим путём (используется `v-model`)',
-  emitChange:
-    'Эмитится `(value, selectedOptions)` — полный путь + resolved option chain',
+  emitChange: 'Эмитится `(value, selectedOptions)` — полный путь + resolved option chain',
 
   optionValue: 'Стабильное значение этого уровня',
   optionLabel: 'Подпись (строка)',
   optionChildren: 'Вложенные опции',
   optionDisabled: 'Затемнить и блокировать выбор',
+  optionIsLeaf: 'Установи `false`, чтобы пометить async-children (работает с `load-data`)',
 
   cssHint:
     'У Cascader нет компонентных токенов — он полностью построен на глобальной палитре. Для перекраски — скоуп глобалов на обёртке.',

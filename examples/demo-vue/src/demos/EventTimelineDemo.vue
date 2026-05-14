@@ -1,8 +1,9 @@
 <script setup lang="ts">
 /**
  * EventTimeline aggregator (Wave 3.2 / Tab D).
- * Vue is wider than React: 3 demos vs 2 (carta §D, «Vue шире», don't shrink).
- * Mirrors React `examples/demo/src/demos/EventTimelineDemo.tsx`.
+ * 1:1 with React `examples/demo/src/demos/EventTimelineDemo.tsx`:
+ *   - Events (vertical, groupBy="month", colored dots)
+ *   - Horizontal (orientation="horizontal", custom `event` slot)
  */
 import { computed } from 'vue'
 import {
@@ -19,16 +20,23 @@ import VerticalEt from './event-timeline/Vertical.demo.vue'
 import VerticalSource from './event-timeline/Vertical.demo.vue?raw'
 import HorizontalEt from './event-timeline/Horizontal.demo.vue'
 import HorizontalSource from './event-timeline/Horizontal.demo.vue?raw'
-import MonthGroupEt from './event-timeline/MonthGroup.demo.vue'
-import MonthGroupSource from './event-timeline/MonthGroup.demo.vue?raw'
 
 const t = useEventTimelineDocStrings()
 
 const eventTimelineProps = computed<PropDef[]>(() => [
   { name: 'events', description: t.value.propEvents, type: 'TimelineEvent[]', required: true },
-  { name: 'orientation', description: t.value.propOrientation, type: "'horizontal' | 'vertical'", default: "'vertical'" },
+  {
+    name: 'orientation',
+    description: t.value.propOrientation,
+    type: "'horizontal' | 'vertical'",
+    default: "'vertical'",
+  },
   { name: 'groupBy', description: t.value.propGroupBy, type: "'day' | 'month' | 'year'" },
+  { name: '#marker', description: t.value.propRenderMarker, type: 'slot({ event })' },
+  { name: '#event', description: t.value.propRenderEvent, type: 'slot({ event })' },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
+  { name: 'className', description: t.value.propClassName, type: 'string' },
+  { name: 'style', description: t.value.propStyle, type: 'CSSProperties' },
 ])
 
 const eventProps = computed<PropDef[]>(() => [
@@ -42,10 +50,22 @@ const eventProps = computed<PropDef[]>(() => [
 const eventTimelineCssVars = computed<CssVarDef[]>(() => [
   { name: 'sg-color-primary', default: '#1677ff', description: t.value.cssSgColorPrimary },
   { name: 'sg-color-bg', default: '#ffffff', description: t.value.cssSgColorBg },
-  { name: 'sg-color-border-secondary', default: '#f0f0f0', description: t.value.cssSgColorBorderSecondary },
+  {
+    name: 'sg-color-border-secondary',
+    default: '#f0f0f0',
+    description: t.value.cssSgColorBorderSecondary,
+  },
   { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.value.cssSgColorText },
-  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.value.cssSgColorTextSecondary },
-  { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.value.cssSgColorTextTertiary },
+  {
+    name: 'sg-color-text-secondary',
+    default: 'rgba(0, 0, 0, 0.65)',
+    description: t.value.cssSgColorTextSecondary,
+  },
+  {
+    name: 'sg-color-text-tertiary',
+    default: 'rgba(0, 0, 0, 0.45)',
+    description: t.value.cssSgColorTextTertiary,
+  },
   { name: 'sg-font-size', default: '14px', description: t.value.cssSgFontSize },
   { name: 'sg-font-size-sm', default: '12px', description: t.value.cssSgFontSizeSm },
   { name: 'sg-line-height', default: '1.57', description: t.value.cssSgLineHeight },
@@ -70,12 +90,12 @@ const eventTimelineCssVars = computed<CssVarDef[]>(() => [
       <VerticalEt />
     </DemoBox>
 
-    <DemoBox :title="t.demoHorizontalTitle" :description="t.demoHorizontalDesc" :code="HorizontalSource">
+    <DemoBox
+      :title="t.demoHorizontalTitle"
+      :description="t.demoHorizontalDesc"
+      :code="HorizontalSource"
+    >
       <HorizontalEt />
-    </DemoBox>
-
-    <DemoBox :title="t.demoMonthTitle" :description="t.demoMonthDesc" :code="MonthGroupSource">
-      <MonthGroupEt />
     </DemoBox>
 
     <template #api>

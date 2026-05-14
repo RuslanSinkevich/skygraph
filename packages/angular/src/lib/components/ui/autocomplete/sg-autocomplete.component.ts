@@ -112,6 +112,15 @@ export class SgAutoCompleteComponent {
     this._size.set(v)
   }
 
+  protected readonly _unstyled = signal<boolean>(false)
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
   @Output() readonly valueChange = new EventEmitter<string>()
   @Output() readonly searchChange = new EventEmitter<string>()
   @Output() readonly optionSelect = new EventEmitter<SgAutoCompleteOption>()
@@ -120,15 +129,16 @@ export class SgAutoCompleteComponent {
   readonly resolvedDisabled = computed(() => this._disabled() ?? this.cfg.disabled ?? false)
   readonly resolvedSize = computed(() => this._size() ?? this.cfg.size ?? 'middle')
 
-  readonly classes = computed(() =>
-    [
+  readonly classes = computed(() => {
+    if (this._unstyled()) return ''
+    return [
       'sg-autocomplete',
       `sg-autocomplete-${this.resolvedSize()}`,
       this.loading ? 'sg-autocomplete-loading' : '',
     ]
       .filter(Boolean)
-      .join(' '),
-  )
+      .join(' ')
+  })
 
   readonly currentValue = computed(() => this._value() ?? this._internal())
 

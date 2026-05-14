@@ -29,8 +29,7 @@ export const chartsDocRu: ChartsDocStrings = {
   demoMultiSeriesTitle: 'Multi-series palette',
   demoMultiSeriesDesc: 'Пять серий, дефолтные токены палитры.',
   demoStackedTitle: 'Stacked vs pre-aggregated',
-  demoStackedDesc:
-    '`stacked` на AreaChart vs те же данные предагрегированные (cumulative sums).',
+  demoStackedDesc: '`stacked` на AreaChart vs те же данные предагрегированные (cumulative sums).',
   demoAnimationsTitle: 'Анимации + Replay',
   demoAnimationsDesc:
     'CSS-анимация на маунт с custom duration. Replay меняет `:key`, чтобы перепроиграть.',
@@ -44,8 +43,10 @@ export const chartsDocRu: ChartsDocStrings = {
     'Right-click по чипу серии — скрыть / показать или скопировать в CSV. Собирается на уровне демо.',
   demoResponsiveTitle: 'Responsive container',
   demoResponsiveDesc: 'Тяните угол чтобы изменить размер. SVG sizing держит точки на сетке.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Сбросить классы `sg-chart*` — приносите собственный дизайн вокруг голого SVG.',
+  demoCrosshairTitle: 'Crosshair-тултип',
+  demoCrosshairDesc: 'Вертикальная гайд-линия + per-series тултип с форматированными значениями.',
+  demoBrushTitle: 'Brush-выделение',
+  demoBrushDesc: 'Перетащите внутри plot — выделение `[from, to]` по X. Double-click — сброс.',
 
   tableCommonApi: 'Общий API графиков',
   tableLineExtras: 'LineChart-доп',
@@ -71,6 +72,8 @@ export const chartsDocRu: ChartsDocStrings = {
 
   propMarkers: 'Маркеры в точках (LineChart)',
   propStrokeWidth: 'Толщина линии / контура (Line/Area)',
+  propCrosshair: 'Hover-кросхэйр с гайдом и per-series-тултипом (LineChart)',
+  propBrush: 'Brush-выделение по X (`true`, controlled или с конфигом)',
 
   propGroupGap: 'Зазор между группами (0..1 шага категории) — BarChart',
   propBarGap: 'Зазор между барами в группе (0..1 слота) — BarChart',

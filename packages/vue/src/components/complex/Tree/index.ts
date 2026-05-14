@@ -11,5 +11,8 @@ export type {
   ExpandInfo,
   DragInfo,
   DropInfo,
+  EditInfo,
+  TreeNodeStatus,
+  TreeNodeAction,
 } from './types'
 export { DEFAULT_TREE_LOCALE, DEFAULT_INDENT, NODE_HEIGHT } from './types'

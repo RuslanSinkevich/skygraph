@@ -1,11 +1,5 @@
 export { createCore } from './Core'
-export type {
-  Core,
-  WriteEvent,
-  WriteSource,
-  NextFn,
-  Middleware,
-} from './types'
+export type { Core, WriteEvent, WriteSource, NextFn, Middleware } from './types'
 
 export {
   loggerMiddleware,
@@ -14,17 +8,10 @@ export {
   validationMiddleware,
 } from './middleware/index'
 
-export type {
-  Validator,
-  ValidationMiddlewareOptions,
-} from './middleware/index'
+export type { Validator, ValidationMiddlewareOptions } from './middleware/index'
 
 export { createHistory } from './plugins/history'
-export type {
-  HistoryPlugin,
-  HistoryEntry,
-  HistoryOptions,
-} from './plugins/history'
+export type { HistoryPlugin, HistoryEntry, HistoryOptions } from './plugins/history'
 
 export { createVirtual, createMeasureCache } from './engines/virtual/index'
 export type {
@@ -74,6 +61,9 @@ export {
   createGraph,
   routeOrthogonal,
   pointsToPath,
+  pointsToRoundedPath,
+  getBezierPath,
+  nearestSide,
   aabbFromOBB,
   obbCorners,
   obbContainsPoint,
@@ -99,6 +89,8 @@ export type {
   Outline,
   Point,
   RouteOrthogonalOptions,
+  BezierPathOptions,
+  Side,
 } from './engines/graph/index'
 
 export {
@@ -135,11 +127,7 @@ export type {
   TreeFieldNames,
 } from './engines/tree/index'
 
-export {
-  createCalendar,
-  detectConflicts,
-  isAvailable,
-} from './engines/calendar/index'
+export { createCalendar, detectConflicts, isAvailable } from './engines/calendar/index'
 export type {
   Assignment as CalendarAssignment,
   AssignmentStatus as CalendarAssignmentStatus,

@@ -2,6 +2,46 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, act, renderHook, fireEvent } from '@testing-library/react'
 import { Diagram, useGraph } from '../index'
 
+/**
+ * Dispatch a `pointer*` event on a target. jsdom's `PointerEvent`
+ * constructor silently drops `clientX` / `clientY` / `button`, so we
+ * dispatch a `MouseEvent` typed as `pointer*` instead — React's
+ * synthetic-event layer extracts the relevant fields from the native
+ * event regardless of its constructor name. Mirrors the trick used in
+ * the Dashboard test suite.
+ *
+ * `pointerId` is forced to a deterministic value because jsdom's
+ * `MouseEvent` has no pointerId field — the diagram component matches
+ * pointerdown ↔ pointermove ↔ pointerup pairs by that id, so we need
+ * one that stays constant across the three calls.
+ */
+function firePointerEvent(
+  target: EventTarget,
+  type: 'pointerdown' | 'pointermove' | 'pointerup' | 'pointercancel',
+  init: {
+    clientX?: number
+    clientY?: number
+    button?: number
+    ctrlKey?: boolean
+    pointerId?: number
+  } = {},
+) {
+  const ev = new MouseEvent(type, {
+    clientX: init.clientX ?? 0,
+    clientY: init.clientY ?? 0,
+    button: init.button ?? 0,
+    ctrlKey: init.ctrlKey ?? false,
+    bubbles: true,
+    cancelable: true,
+  })
+  // Patch a pointerId onto the synthetic event. React's
+  // `SyntheticPointerEvent` exposes `pointerId` straight off the
+  // native event, so this is enough to make the production code's
+  // pairing logic happy.
+  Object.defineProperty(ev, 'pointerId', { value: init.pointerId ?? 1 })
+  target.dispatchEvent(ev)
+}
+
 describe('useGraph hook', () => {
   it('returns a stable graph reference and an empty initial state', () => {
     const { result, rerender } = renderHook(() => useGraph())
@@ -184,17 +224,55 @@ describe('Diagram component', () => {
     // segments (≥ 1 bend) — not just a clean L-route.
     const lCount = (d.match(/L /g) ?? []).length
     expect(lCount).toBeGreaterThanOrEqual(2)
-    // Every interior bend remains axis-aligned (no diagonals between
-    // consecutive coords).
-    const coords = d
-      .split(/[ML]\s+/g)
-      .filter(Boolean)
-      .map((p) => p.trim().split(/\s+/).map(Number) as [number, number])
-    for (let i = 1; i < coords.length; i++) {
-      const [x0, y0] = coords[i - 1]!
-      const [x1, y1] = coords[i]!
-      // axis-aligned segment: at least one coordinate matches
-      expect(x0 === x1 || y0 === y1).toBe(true)
+    // The orthogonal polyline is rendered with rounded corners
+    // (`pointsToRoundedPath`): straight runs are `L` commands and each
+    // bend becomes a short quadratic curve (`Q cx cy x y`). We assert
+    // that every `L` segment is still axis-aligned (no diagonals) and
+    // that any `Q` keeps the same property between its control / end
+    // points.
+    const tokens = d.split(/\s+/).filter((t) => t.length > 0)
+    type Cmd =
+      | { kind: 'M' | 'L'; x: number; y: number }
+      | { kind: 'Q'; cx: number; cy: number; x: number; y: number }
+    const cmds: Cmd[] = []
+    for (let i = 0; i < tokens.length; ) {
+      const k = tokens[i]!
+      if (k === 'M' || k === 'L') {
+        cmds.push({ kind: k, x: Number(tokens[i + 1]), y: Number(tokens[i + 2]) })
+        i += 3
+      } else if (k === 'Q') {
+        cmds.push({
+          kind: 'Q',
+          cx: Number(tokens[i + 1]),
+          cy: Number(tokens[i + 2]),
+          x: Number(tokens[i + 3]),
+          y: Number(tokens[i + 4]),
+        })
+        i += 5
+      } else {
+        // Unrecognised path command — fail fast with a helpful message.
+        throw new Error(`Unexpected token in orthogonal path: ${k}`)
+      }
+    }
+    let prev: { x: number; y: number } | null = null
+    for (const cmd of cmds) {
+      if (cmd.kind === 'M') {
+        prev = { x: cmd.x, y: cmd.y }
+        continue
+      }
+      if (cmd.kind === 'L') {
+        if (prev) expect(prev.x === cmd.x || prev.y === cmd.y).toBe(true)
+        prev = { x: cmd.x, y: cmd.y }
+      } else {
+        // Q: control + end. The router rounds a 90° corner, so the
+        // control point sits ON the corner — meaning one axis matches
+        // the previous endpoint and the other matches the Q endpoint.
+        if (prev) {
+          expect(prev.x === cmd.cx || prev.y === cmd.cy).toBe(true)
+          expect(cmd.cx === cmd.x || cmd.cy === cmd.y).toBe(true)
+        }
+        prev = { x: cmd.x, y: cmd.y }
+      }
     }
   })
 
@@ -301,9 +379,11 @@ describe('Diagram component', () => {
     const wrapper = container.querySelector('.sg-diagram') as HTMLElement
     const canvas = container.querySelector('.sg-diagram-canvas') as HTMLElement
 
-    fireEvent.mouseDown(wrapper, { button: 1, clientX: 100, clientY: 100 })
-    fireEvent.mouseMove(window, { clientX: 140, clientY: 170 })
-    fireEvent.mouseUp(window)
+    act(() => {
+      firePointerEvent(wrapper, 'pointerdown', { button: 1, clientX: 100, clientY: 100 })
+      firePointerEvent(wrapper, 'pointermove', { clientX: 140, clientY: 170 })
+      firePointerEvent(wrapper, 'pointerup', { clientX: 140, clientY: 170 })
+    })
 
     expect(Number(canvas.dataset.panX)).toBe(40)
     expect(Number(canvas.dataset.panY)).toBe(70)
@@ -342,10 +422,9 @@ describe('Diagram component', () => {
     )
     const nodeEl = container.querySelector('[data-node-id="a"]') as HTMLElement
 
-    fireEvent.mouseDown(nodeEl, { button: 0, clientX: 0, clientY: 0 })
-    // Move 27 px right, 13 px down — should snap to (20, 20).
-    fireEvent.mouseMove(window, { clientX: 27, clientY: 13 })
-    fireEvent.mouseUp(window)
+    firePointerEvent(nodeEl, 'pointerdown', { button: 0, clientX: 0, clientY: 0 })
+    firePointerEvent(nodeEl, 'pointermove', { clientX: 27, clientY: 13 })
+    firePointerEvent(nodeEl, 'pointerup', { clientX: 27, clientY: 13 })
 
     const node = result.current.graph.getNode('a')!
     expect(node.transform.x % 20).toBe(0)
@@ -515,11 +594,15 @@ describe('Diagram — selection / multi-select', () => {
       />,
     )
     const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
-    fireEvent.mouseDown(nodeA, { button: 0, ctrlKey: true })
+    act(() => {
+      firePointerEvent(nodeA, 'pointerdown', { button: 0, ctrlKey: true })
+    })
     expect(onSelectionChange).toHaveBeenCalledWith(['a'])
 
     const nodeB = container.querySelector('[data-node-id="b"]') as HTMLElement
-    fireEvent.mouseDown(nodeB, { button: 0, ctrlKey: true })
+    act(() => {
+      firePointerEvent(nodeB, 'pointerdown', { button: 0, ctrlKey: true })
+    })
     expect(onSelectionChange).toHaveBeenLastCalledWith(['a', 'b'])
   })
 
@@ -536,7 +619,7 @@ describe('Diagram — selection / multi-select', () => {
       />,
     )
     const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
-    fireEvent.mouseDown(nodeA, { button: 0, ctrlKey: true })
+    firePointerEvent(nodeA, 'pointerdown', { button: 0, ctrlKey: true })
     expect(onSelectionChange).toHaveBeenLastCalledWith(['b'])
   })
 
@@ -564,10 +647,10 @@ describe('Diagram — selection / multi-select', () => {
     const wrapper = container.querySelector('.sg-diagram') as HTMLElement
     // jsdom returns zeroed getBoundingClientRect; treat clientX/Y as
     // wrapper-local coords. Pan/zoom are 0/1 by default.
-    fireEvent.mouseDown(wrapper, { button: 0, clientX: -10, clientY: -10 })
+    firePointerEvent(wrapper, 'pointerdown', { button: 0, clientX: -10, clientY: -10 })
     // Drag to (300, 50) — should cover a and b but not c.
-    fireEvent.mouseMove(window, { clientX: 300, clientY: 50 })
-    fireEvent.mouseUp(window)
+    firePointerEvent(wrapper, 'pointermove', { clientX: 300, clientY: 50 })
+    firePointerEvent(wrapper, 'pointerup', { clientX: 300, clientY: 50 })
 
     expect(onSelectionChange).toHaveBeenCalled()
     const last = onSelectionChange.mock.calls.at(-1)![0] as string[]
@@ -598,9 +681,9 @@ describe('Diagram — selection / multi-select', () => {
       />,
     )
     const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
-    fireEvent.mouseDown(nodeA, { button: 0, clientX: 0, clientY: 0 })
-    fireEvent.mouseMove(window, { clientX: 30, clientY: 20 })
-    fireEvent.mouseUp(window)
+    firePointerEvent(nodeA, 'pointerdown', { button: 0, clientX: 0, clientY: 0 })
+    firePointerEvent(nodeA, 'pointermove', { clientX: 30, clientY: 20 })
+    firePointerEvent(nodeA, 'pointerup', { clientX: 30, clientY: 20 })
 
     const a = result.current.graph.getNode('a')!
     const b = result.current.graph.getNode('b')!
@@ -623,7 +706,7 @@ describe('Diagram — selection / multi-select', () => {
       />,
     )
     const wrapper = container.querySelector('.sg-diagram') as HTMLElement
-    fireEvent.mouseDown(wrapper, { button: 0, clientX: 5, clientY: 5 })
+    firePointerEvent(wrapper, 'pointerdown', { button: 0, clientX: 5, clientY: 5 })
     expect(onSelectionChange).toHaveBeenLastCalledWith([])
   })
 
@@ -647,13 +730,13 @@ describe('Diagram — selection / multi-select', () => {
     )
     const nodeA = container.querySelector('[data-node-id="a"]') as HTMLElement
     // Ctrl+click in single mode: does not change selection.
-    fireEvent.mouseDown(nodeA, { button: 0, ctrlKey: true, clientX: 0, clientY: 0 })
-    fireEvent.mouseUp(window)
+    firePointerEvent(nodeA, 'pointerdown', { button: 0, ctrlKey: true, clientX: 0, clientY: 0 })
+    firePointerEvent(nodeA, 'pointerup', { clientX: 0, clientY: 0 })
     expect(onSelectionChange).not.toHaveBeenCalled()
     // Drag still works.
-    fireEvent.mouseDown(nodeA, { button: 0, clientX: 0, clientY: 0 })
-    fireEvent.mouseMove(window, { clientX: 17, clientY: 9 })
-    fireEvent.mouseUp(window)
+    firePointerEvent(nodeA, 'pointerdown', { button: 0, clientX: 0, clientY: 0 })
+    firePointerEvent(nodeA, 'pointermove', { clientX: 17, clientY: 9 })
+    firePointerEvent(nodeA, 'pointerup', { clientX: 17, clientY: 9 })
     expect(result.current.graph.getNode('a')!.transform.x).toBe(17)
   })
 })

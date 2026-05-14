@@ -100,12 +100,15 @@ export const ru: DemoDict = {
     colDescription: 'Описание',
   },
   landing: {
-    title: 'SkyGraph для Angular',
+    title: 'SkyGraph',
     lead: 'Фреймворк-агностичная UI-библиотека с Angular-адаптером — standalone-компоненты, signals и новый control flow поверх @skygraph/core.',
+    heroInstall: 'npm install @skygraph/core @skygraph/angular @skygraph/styles',
     statComponents: 'компонентов',
     statComposables: 'standalone',
     statTests: 'тестов',
     statEngines: 'движков',
+    statRuntimeCss: 'Run-time CSS',
+    statRuntimeCssValue: '0 kB',
     ctaPrimary: 'Открыть компоненты',
     ctaSecondary: 'Исходники',
     featureReactiveTitle: 'Реактивное ядро',
@@ -120,11 +123,21 @@ export const ru: DemoDict = {
     featureMultiTitle: 'Тот же DOM, тот же CSS',
     featureMultiDesc:
       'Angular-компоненты выдают ровно те же .sg-* классы, что и React-адаптер — темы и шоукейсы работают везде.',
+    featureStandaloneTitle: 'Standalone + signals',
+    featureStandaloneDesc:
+      'Все компоненты standalone, OnPush, signal-инпуты. Без NgModule. Везде новый control flow @if / @for.',
+    featureEnginesTitle: 'Domain-движки',
+    featureEnginesDesc:
+      'Движки форм, таблиц, деревьев, графа и виртуализации поверх core-store. Используются через useTable / useTree / useGraph.',
     quickInstallTitle: 'Быстрая установка',
     quickInstallDesc:
       'Добавьте @skygraph/angular и @skygraph/styles, импортируйте стили один раз и подключите provideSgConfig() при бутстрапе.',
+    quickInstallSub: 'Два пакета, один стилевой файл — без лишней настройки.',
     quickInstallCopy: 'Копировать',
     quickInstallCopied: 'Скопировано',
+    quickInstallNpmTitle: 'npm',
+    quickInstallMinimalTitle: 'main.ts',
+    quickInstallMinimalSub: 'Поднимаем provideSgConfig() в корне приложения.',
   },
   roadmap: {
     title: 'Roadmap',

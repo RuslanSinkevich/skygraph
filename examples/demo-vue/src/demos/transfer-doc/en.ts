@@ -1,11 +1,5 @@
 /**
  * English source of truth for Transfer doc page strings (Vue port).
- *
- * Vue parity gaps vs React (see `findings/T-Vue-Demo-Forms.md`
- * → `transfer-vue-feature-gaps`):
- * - no `render` prop / row scoped slot — labels are plain title text
- * - no `listStyle` prop
- *
  * Other locales must provide the same keys (see `ru.ts`).
  */
 export const transferDocEn = {
@@ -19,7 +13,7 @@ export const transferDocEn = {
     'When you need to split a set into "available" and "selected" — e.g. role permissions, tag selection, audience targeting.',
   pageWhen2: "When a multi-Select feels too crowded and reordering isn't important.",
   pageWhen3:
-    'For rich row labels (title + description), use the React Transfer — Vue currently renders `title` only (gap).',
+    'For rich row labels (title + description), use the `item` slot — it receives the full TransferItem.',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Controlled via `v-model` / `target-keys`.',
@@ -29,12 +23,12 @@ export const transferDocEn = {
   demoOneWayDesc: 'Hide the move-left button.',
   demoTitlesTitle: 'Titles',
   demoTitlesDesc: 'Custom column headers.',
+  demoCustomRenderTitle: 'Custom render',
+  demoCustomRenderDesc: 'Use the `item` slot to swap the default title for a richer label.',
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: 'Whole control + per-row `disabled`.',
   demoTokensOverrideTitle: 'Tokens override',
   demoTokensOverrideDesc: 'Rebrand panels via the global palette.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Strip the wrapper class hooks; semantics stay intact.',
 
   tableTransferApi: 'Transfer API',
   tableTransferItem: 'TransferItem',
@@ -48,6 +42,7 @@ export const transferDocEn = {
   propTitles: 'Column headers for [source, target]',
   propOneWay: 'Hide the move-left button — items only flow to the target',
   propDisabled: 'Disable both lists (also inherits from `ConfigProvider`)',
+  propItemSlot: 'Custom row renderer — receives `{ item, side }`',
   propUnstyled: 'Drop every sg-transfer-* class',
   emitUpdateModelValue: 'Emitted with the new target-keys (v-model)',
   emitChange: 'Fires after a move with `(keys, direction, moveKeys)`',
@@ -55,7 +50,7 @@ export const transferDocEn = {
 
   itemKey: 'Stable identifier — presence in `target-keys` determines side',
   itemTitle: 'Primary label + default search text',
-  itemDescription: 'Secondary line — Vue ignores it (no `render` slot yet)',
+  itemDescription: 'Secondary line — surfaced via the `item` slot',
   itemDisabled: 'Exclude from selection / bulk move',
 
   cssHint:

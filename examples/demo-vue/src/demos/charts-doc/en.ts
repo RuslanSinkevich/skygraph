@@ -2,11 +2,8 @@
  * English source of truth for Charts doc page strings (Vue).
  * Other locales must provide the same keys (see `ru.ts`).
  *
- * Vue Charts trim a few React-only knobs:
- * - no `crosshair` / `brush` props on the main charts (use the
- *   stand-alone `SgChartCrosshair` / `SgChartBrush` for ad-hoc compose);
- * - no `onSeriesContextMenu` (compose menus at the demo level);
- * - PieChart uses `categories + series` instead of `data: [{id,label,value}]`.
+ * 1:1 demo parity with React (`crosshair` and `brush` are now first-class
+ * props on `SgLineChart` / `SgAreaChart`).
  *
  * No CssVarsTable here (parity with React — see carta §C).
  */
@@ -18,7 +15,7 @@ export const chartsDocEn = {
   pageLead:
     'Lightweight SVG charts (LineChart / BarChart / AreaChart / PieChart) with axes, legend, animations, print and PNG export. Theming via Skygraph CSS tokens.',
   pageWhen1:
-    "Render light KPI / sparkline / time-series visualisations without pulling in a third-party charting library.",
+    'Render light KPI / sparkline / time-series visualisations without pulling in a third-party charting library.',
   pageWhen2:
     'Build the visual layer of a dashboard where richer interactivity (selection, drill-down) lives in your app.',
   pageWhen3:
@@ -47,7 +44,8 @@ export const chartsDocEn = {
   demoAnimationsDesc:
     'Pure-CSS mount animation with custom duration. The replay button bumps `:key` to re-mount.',
   demoRealtimeTitle: 'Realtime sliding window',
-  demoRealtimeDesc: '30-pt window, ticks every 500 ms. Animation off so the draw-in does not replay.',
+  demoRealtimeDesc:
+    '30-pt window, ticks every 500 ms. Animation off so the draw-in does not replay.',
   demoHoverActionsTitle: 'Hover toolbar (Print / PNG / custom)',
   demoHoverActionsDesc:
     'Toolbar composed around the chart. Print uses `chartRef.print()`; PNG via `downloadSvgAsPng()`.',
@@ -55,9 +53,12 @@ export const chartsDocEn = {
   demoContextMenuDesc:
     'Right-click a series chip to hide / show it or copy its values as CSV. Composed at the demo level.',
   demoResponsiveTitle: 'Responsive container',
-  demoResponsiveDesc: 'Drag the bottom-right corner to resize. SVG sizing keeps points pinned to the grid.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop `sg-chart*` classes — bring your own design system around the bare SVG.',
+  demoResponsiveDesc:
+    'Drag the bottom-right corner to resize. SVG sizing keeps points pinned to the grid.',
+  demoCrosshairTitle: 'Crosshair tooltip',
+  demoCrosshairDesc: 'Vertical guide + per-series tooltip with formatted values.',
+  demoBrushTitle: 'Brush selection',
+  demoBrushDesc: 'Drag inside the plot to brush a `[from, to]` X range; double-click to reset.',
 
   tableCommonApi: 'Common Chart API',
   tableLineExtras: 'LineChart Extras',
@@ -83,6 +84,8 @@ export const chartsDocEn = {
 
   propMarkers: 'Show dot markers at each point (LineChart)',
   propStrokeWidth: 'Line / area stroke width in pixels',
+  propCrosshair: 'Hover crosshair with vertical guide and per-series tooltip (LineChart)',
+  propBrush: 'Brush selection over X range (`true`, controlled or with config)',
 
   propGroupGap: 'Gap between groups (0..1 of category step) — BarChart',
   propBarGap: 'Gap between bars within a group (0..1 of slot) — BarChart',

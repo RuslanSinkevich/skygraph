@@ -25,13 +25,12 @@ export const timelineDocRu: TimelineDocStrings = {
   demoCustomColorDesc: '`color` подкрашивает дефолтное кольцо.',
   demoCustomDotTitle: 'Кастомный dot',
   demoCustomDotDesc:
-    '`dot` заменяет кольцо (Vue: только строка — emoji работает).',
+    'Scoped-слот `#dot` заменяет кольцо любой VNode (emoji, иконка, буквенный бейдж).',
   demoPendingTitle: 'Pending',
   demoPendingDesc:
-    '`pending` добавляет приглушённый хвост (Vue: нет `pendingDot` — см. findings).',
+    '`pending` добавляет приглушённый хвост; через слот `#dot` с `isPending` можно подменить маркер (аналог React `pendingDot`).',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc:
-    'Локально переопределяем глобальные цветовые токены для всей timeline.',
+  demoTokensDesc: 'Локально переопределяем глобальные цветовые токены для всей timeline.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: '`unstyled` рендерит «голый» `<ul>` — без оси / коннектора.',
 
@@ -46,11 +45,15 @@ export const timelineDocRu: TimelineDocStrings = {
   propPending: 'Хвост — `string` для текста, `true` для пустого placeholder-а',
   propReverse: 'Перевернуть визуальный порядок',
   propUnstyled: 'Снять sg-timeline-* классы — `<ul>` без оси',
+  propContentSlot: 'Override содержимого per-item; `isPending` = `true` для синтетического хвоста',
+  propLabelSlot: 'Override `label` per-item (заменяет `item.label`)',
+  propDotSlot:
+    'Override маркера per-item; `isPending` = `true` для хвоста — аналог React `pendingDot`',
 
-  itemContent: 'Основной текст',
-  itemLabel: 'Опциональный label (виден в `alternate` mode)',
+  itemContent: 'Основной текст (для VNode — слот `#content`)',
+  itemLabel: 'Опциональный label (для VNode — слот `#label`; виден в `alternate` mode)',
   itemColor: 'Цвет рамки / текста для дефолтного кольца',
-  itemDot: 'Кастомный маркер (Vue: только строка — см. findings)',
+  itemDot: 'Кастомный маркер (для VNode — слот `#dot`)',
   itemPosition: 'Зафиксировать сторону (`left` / `right`)',
 
   cssPrimary: 'Цвет дефолтного кольца',

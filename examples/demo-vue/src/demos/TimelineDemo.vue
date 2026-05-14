@@ -2,16 +2,15 @@
 /**
  * `TimelineDemo` — aggregator for the Timeline component page.
  *
- * Mirrors `examples/demo/src/demos/TimelineDemo.tsx` (10 examples).
- * Vue-specific deltas:
- *   - `TimelineItem.content` instead of React's `children`
- *   - `TimelineItem.dot` is `string` only — see findings
- *     (`timeline-rich-dot-no-vue`)
- *   - no `pendingDot` prop — pending element renders the default
- *     ring; see findings (`timeline-pending-dot-no-vue`)
- *
- * React `Events` and `Horizontal` demos use the separate
- * `EventTimeline` component (Tab D), so they are out of scope.
+ * 1:1 with `examples/demo/src/demos/TimelineDemo.tsx`:
+ *   - Same 10 demos in the same order.
+ *   - `TimelineItem.content` / `dot` / `label` accept strings (backwards
+ *     compatible), and the `#content` / `#dot` / `#label` scoped slots
+ *     accept any VNode (analogue of React's `ReactNode`).
+ *   - The `#dot` slot exposes `isPending` so callers can render the
+ *     equivalent of React's `pendingDot` prop.
+ *   - React's `Events` and `Horizontal` demos are part of the separate
+ *     EventTimeline page.
  */
 import { computed } from 'vue'
 import {
@@ -27,20 +26,20 @@ import { useTimelineDocStrings } from './timeline-doc/useStrings'
 
 import BasicTimeline from './timeline/Basic.demo.vue'
 import BasicSource from './timeline/Basic.demo.vue?raw'
-import ReverseTimeline from './timeline/Reverse.demo.vue'
-import ReverseSource from './timeline/Reverse.demo.vue?raw'
 import RightModeTimeline from './timeline/RightMode.demo.vue'
 import RightModeSource from './timeline/RightMode.demo.vue?raw'
 import AlternateTimeline from './timeline/Alternate.demo.vue'
 import AlternateSource from './timeline/Alternate.demo.vue?raw'
 import WithLabelTimeline from './timeline/WithLabel.demo.vue'
 import WithLabelSource from './timeline/WithLabel.demo.vue?raw'
-import CustomColorTimeline from './timeline/CustomColor.demo.vue'
-import CustomColorSource from './timeline/CustomColor.demo.vue?raw'
-import CustomDotTimeline from './timeline/CustomDot.demo.vue'
-import CustomDotSource from './timeline/CustomDot.demo.vue?raw'
 import PendingTimeline from './timeline/Pending.demo.vue'
 import PendingSource from './timeline/Pending.demo.vue?raw'
+import ReverseTimeline from './timeline/Reverse.demo.vue'
+import ReverseSource from './timeline/Reverse.demo.vue?raw'
+import CustomDotTimeline from './timeline/CustomDot.demo.vue'
+import CustomDotSource from './timeline/CustomDot.demo.vue?raw'
+import CustomColorTimeline from './timeline/CustomColor.demo.vue'
+import CustomColorSource from './timeline/CustomColor.demo.vue?raw'
 import TokensOverrideTimeline from './timeline/TokensOverride.demo.vue'
 import TokensOverrideSource from './timeline/TokensOverride.demo.vue?raw'
 import UnstyledTimeline from './timeline/Unstyled.demo.vue'
@@ -59,6 +58,13 @@ const timelineProps = computed<PropDef[]>(() => [
   { name: 'pending', description: t.value.propPending, type: 'string | boolean' },
   { name: 'reverse', description: t.value.propReverse, type: 'boolean', default: 'false' },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
+  {
+    name: '#content',
+    description: t.value.propContentSlot,
+    type: 'slot({ item, index, isPending })',
+  },
+  { name: '#label', description: t.value.propLabelSlot, type: 'slot({ item, index })' },
+  { name: '#dot', description: t.value.propDotSlot, type: 'slot({ item, index, isPending })' },
 ])
 
 const timelineItemProps = computed<PropDef[]>(() => [
@@ -103,10 +109,6 @@ const timelineCssVars = computed<CssVarDef[]>(() => [
       <BasicTimeline />
     </DemoBox>
 
-    <DemoBox :title="t.demoReverseTitle" :description="t.demoReverseDesc" :code="ReverseSource">
-      <ReverseTimeline />
-    </DemoBox>
-
     <DemoBox
       :title="t.demoRightModeTitle"
       :description="t.demoRightModeDesc"
@@ -131,12 +133,12 @@ const timelineCssVars = computed<CssVarDef[]>(() => [
       <WithLabelTimeline />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoCustomColorTitle"
-      :description="t.demoCustomColorDesc"
-      :code="CustomColorSource"
-    >
-      <CustomColorTimeline />
+    <DemoBox :title="t.demoPendingTitle" :description="t.demoPendingDesc" :code="PendingSource">
+      <PendingTimeline />
+    </DemoBox>
+
+    <DemoBox :title="t.demoReverseTitle" :description="t.demoReverseDesc" :code="ReverseSource">
+      <ReverseTimeline />
     </DemoBox>
 
     <DemoBox
@@ -147,8 +149,12 @@ const timelineCssVars = computed<CssVarDef[]>(() => [
       <CustomDotTimeline />
     </DemoBox>
 
-    <DemoBox :title="t.demoPendingTitle" :description="t.demoPendingDesc" :code="PendingSource">
-      <PendingTimeline />
+    <DemoBox
+      :title="t.demoCustomColorTitle"
+      :description="t.demoCustomColorDesc"
+      :code="CustomColorSource"
+    >
+      <CustomColorTimeline />
     </DemoBox>
 
     <DemoBox

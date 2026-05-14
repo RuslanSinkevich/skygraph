@@ -35,35 +35,52 @@ export interface SgCollapseItem {
   selector: 'div[sg-collapse]',
   standalone: true,
   template: `
-    @for (item of items; track item.key) {
-      <div [class]="panelClass(item)">
-        <div
-          class="sg-collapse-header"
-          role="button"
-          [attr.tabindex]="item.disabled ? -1 : 0"
+    @if (_unstyled()) {
+      @for (item of items; track item.key) {
+        <button
+          type="button"
           [attr.aria-expanded]="isActive(item.key)"
+          [attr.tabindex]="item.disabled ? -1 : 0"
+          [attr.disabled]="item.disabled ? '' : null"
           (click)="toggle(item)"
-          (keydown.enter)="toggle(item); $event.preventDefault()"
-          (keydown.space)="toggle(item); $event.preventDefault()"
         >
-          @if (expandIconPosition === 'start' && item.showArrow !== false) {
-            <span [class]="arrowClass(item)"></span>
-          }
-          <span class="sg-collapse-header-text">{{ item.label }}</span>
-          @if (expandIconPosition === 'end' && item.showArrow !== false) {
-            <span [class]="arrowClass(item)"></span>
-          }
-          @if (item.extra) {
-            <span class="sg-collapse-extra">{{ item.extra }}</span>
-          }
+          {{ item.label }}
+        </button>
+        @if (isActive(item.key)) {
+          <div>{{ item.content }}</div>
+        }
+      }
+    } @else {
+      @for (item of items; track item.key) {
+        <div [class]="panelClass(item)">
+          <div
+            class="sg-collapse-header"
+            role="button"
+            [attr.tabindex]="item.disabled ? -1 : 0"
+            [attr.aria-expanded]="isActive(item.key)"
+            (click)="toggle(item)"
+            (keydown.enter)="toggle(item); $event.preventDefault()"
+            (keydown.space)="toggle(item); $event.preventDefault()"
+          >
+            @if (expandIconPosition === 'start' && item.showArrow !== false) {
+              <span [class]="arrowClass(item)"></span>
+            }
+            <span class="sg-collapse-header-text">{{ item.label }}</span>
+            @if (expandIconPosition === 'end' && item.showArrow !== false) {
+              <span [class]="arrowClass(item)"></span>
+            }
+            @if (item.extra) {
+              <span class="sg-collapse-extra">{{ item.extra }}</span>
+            }
+          </div>
+          <div
+            class="sg-collapse-content"
+            [style.--sg-collapse-content-max-height]="isActive(item.key) ? 'none' : '0px'"
+          >
+            <div class="sg-collapse-content-inner">{{ item.content }}</div>
+          </div>
         </div>
-        <div
-          class="sg-collapse-content"
-          [style.--sg-collapse-content-max-height]="isActive(item.key) ? 'none' : '0px'"
-        >
-          <div class="sg-collapse-content-inner">{{ item.content }}</div>
-        </div>
-      </div>
+      }
     }
   `,
   host: {
@@ -76,6 +93,8 @@ export class SgCollapseComponent {
   private readonly _internal = signal<string[]>([])
   private readonly _active = signal<string[] | undefined>(undefined)
   private readonly _size = signal<SizeType | undefined>(undefined)
+  protected readonly _unstyled = signal<boolean>(false)
+  private readonly _className = signal<string>('')
 
   @Input({ required: true }) items: SgCollapseItem[] = []
 
@@ -100,6 +119,22 @@ export class SgCollapseComponent {
   @Input({ transform: booleanAttribute }) ghost = false
   @Input() expandIconPosition: 'start' | 'end' = 'start'
 
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
+  @Input()
+  get className(): string {
+    return this._className()
+  }
+  set className(v: string) {
+    this._className.set(v ?? '')
+  }
+
   @Input()
   get size(): SizeType | undefined {
     return this._size()
@@ -112,16 +147,18 @@ export class SgCollapseComponent {
 
   readonly resolvedSize = computed(() => this._size() ?? this.cfg.size ?? 'middle')
 
-  readonly classes = computed(() =>
-    [
+  readonly classes = computed(() => {
+    if (this._unstyled()) return this._className()
+    return [
       'sg-collapse',
       this.bordered ? 'sg-collapse-bordered' : '',
       this.ghost ? 'sg-collapse-ghost' : '',
       `sg-collapse-${this.resolvedSize()}`,
+      this._className(),
     ]
       .filter(Boolean)
-      .join(' '),
-  )
+      .join(' ')
+  })
 
   current(): string[] {
     return this._active() ?? this._internal()

@@ -36,6 +36,12 @@ export interface TimePickerProps {
   size?: 'small' | 'middle' | 'large'
   /** Strips built-in styling. */
   unstyled?: boolean
+  /** Hour values to disable in the hour column. */
+  disabledHours?: () => number[]
+  /** Minute values to disable for the currently picked hour. */
+  disabledMinutes?: (hour: number) => number[]
+  /** Second values to disable for the currently picked hour + minute. */
+  disabledSeconds?: (hour: number, minute: number) => number[]
 }
 
 const props = withDefaults(defineProps<TimePickerProps>(), {
@@ -145,6 +151,12 @@ const seconds = computed(() => {
   return arr
 })
 
+const disabledHourSet = computed(() => new Set(props.disabledHours?.() ?? []))
+const disabledMinuteSet = computed(() => new Set(props.disabledMinutes?.(hour.value) ?? []))
+const disabledSecondSet = computed(
+  () => new Set(props.disabledSeconds?.(hour.value, minute.value) ?? []),
+)
+
 const displayHour = computed(() => (props.use12Hours ? hour.value % 12 || 12 : hour.value))
 
 function setOpen(v: boolean) {
@@ -160,6 +172,7 @@ function commit(h: number, m: number, s: number) {
 }
 
 function setH(h: number) {
+  if (disabledHourSet.value.has(props.use12Hours ? h : h)) return
   const real = props.use12Hours
     ? h === 12
       ? hour.value >= 12
@@ -173,10 +186,12 @@ function setH(h: number) {
   commit(real, minute.value, second.value)
 }
 function setM(m: number) {
+  if (disabledMinuteSet.value.has(m)) return
   minute.value = m
   commit(hour.value, m, second.value)
 }
 function setS(s: number) {
+  if (disabledSecondSet.value.has(s)) return
   second.value = s
   commit(hour.value, minute.value, s)
 }
@@ -312,7 +327,13 @@ function setPm() {
             v-for="n in hours"
             :key="n"
             :data-active="n === displayHour"
-            :class="['sg-tp-cell', n === displayHour ? 'sg-tp-cell-active' : '']"
+            :data-disabled="disabledHourSet.has(n)"
+            :class="[
+              'sg-tp-cell',
+              n === displayHour ? 'sg-tp-cell-active' : '',
+              disabledHourSet.has(n) ? 'sg-tp-cell-disabled' : '',
+            ]"
+            :aria-disabled="disabledHourSet.has(n)"
             @click="setH(n)"
           >
             {{ pad(n) }}
@@ -323,7 +344,13 @@ function setPm() {
             v-for="n in minutes"
             :key="n"
             :data-active="n === minute"
-            :class="['sg-tp-cell', n === minute ? 'sg-tp-cell-active' : '']"
+            :data-disabled="disabledMinuteSet.has(n)"
+            :class="[
+              'sg-tp-cell',
+              n === minute ? 'sg-tp-cell-active' : '',
+              disabledMinuteSet.has(n) ? 'sg-tp-cell-disabled' : '',
+            ]"
+            :aria-disabled="disabledMinuteSet.has(n)"
             @click="setM(n)"
           >
             {{ pad(n) }}
@@ -334,7 +361,13 @@ function setPm() {
             v-for="n in seconds"
             :key="n"
             :data-active="n === second"
-            :class="['sg-tp-cell', n === second ? 'sg-tp-cell-active' : '']"
+            :data-disabled="disabledSecondSet.has(n)"
+            :class="[
+              'sg-tp-cell',
+              n === second ? 'sg-tp-cell-active' : '',
+              disabledSecondSet.has(n) ? 'sg-tp-cell-disabled' : '',
+            ]"
+            :aria-disabled="disabledSecondSet.has(n)"
             @click="setS(n)"
           >
             {{ pad(n) }}

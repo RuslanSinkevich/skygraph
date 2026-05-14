@@ -59,6 +59,15 @@ export const formDocEn = {
   demoSchemaBasicDesc: '`<SgSchemaForm>` derives fields, defaults and rules from a JSON Schema.',
   demoSchemaLayoutTitle: 'SchemaForm — layout',
   demoSchemaLayoutDesc: 'Horizontal + small, and inline + disabled, sharing the same schema.',
+  demoFormListTitle: 'FormList — dynamic',
+  demoFormListDesc:
+    '`<SgFormList>` registers an array path and exposes `add` / `remove` / `move` operations; each child field addresses its slot via dotted paths.',
+  demoProgrammaticTitle: 'Programmatic control',
+  demoProgrammaticDesc:
+    'Drive a form imperatively via `useForm()` — call `reset`, `setFieldsValue`, `validateFields`, `submit` from outside `<SgForm>`.',
+  demoProfileSettingsTitle: 'Profile settings',
+  demoProfileSettingsDesc:
+    'Multi-section form with two-column grid, switches, date picker and upload — all wired through the same form context.',
 
   tableFormApi: 'Form API',
   tableFieldApi: 'Field API',

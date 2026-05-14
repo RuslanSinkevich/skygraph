@@ -21,6 +21,8 @@ export const menuDocRu: { [K in keyof typeof menuDocEn]: string } = {
   demoInlineDesc: 'Сабменю раскрываются на месте — лучший вариант для глубоких деревьев.',
   demoControlledTitle: 'Контролируемый',
   demoControlledDesc: 'Управляйте selectedKeys / openKeys снаружи.',
+  demoIconsTitle: 'С иконками',
+  demoIconsDesc: 'У каждого MenuItem есть `icon` (VNode) — создавайте через `h()`.',
   demoGroupsTitle: 'Группы, разделители и danger',
   demoGroupsDesc: 'Структурированные меню с деструктивными действиями.',
   demoCollapsedTitle: 'Свёрнутый рейл',
@@ -53,12 +55,14 @@ export const menuDocRu: { [K in keyof typeof menuDocEn]: string } = {
 
   itemKey: 'Уникальный id (отслеживание выбора и открытых ключей)',
   itemLabel: 'Подпись для отображения (string)',
+  itemIcon: 'Лидирующая иконка (VNode через `h()` или `<component :is>`)',
   itemDisabled: 'Затемнение и запрет активации',
   itemDanger: 'Применить цвет ошибки (деструктивное действие)',
   itemChildren: 'Вложенные элементы (создают сабменю)',
   itemType: "'group' — секция с заголовком; 'divider' — горизонтальная линия",
 
-  cssPrimary: 'Текст выбранного элемента, фон выбранного в тёмной теме, горизонтальное подчёркивание',
+  cssPrimary:
+    'Текст выбранного элемента, фон выбранного в тёмной теме, горизонтальное подчёркивание',
   cssPrimaryBg: 'Фон выбранного элемента (светлая тема)',
   cssPrimaryHover: 'Подчёркивание при наведении (горизонтальный режим)',
   cssBgContainer: 'Фон поверхности меню',

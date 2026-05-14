@@ -1,14 +1,26 @@
 <script setup lang="ts">
 /**
- * Click on a `sortable` column header to cycle asc → desc → none.
- * `name` and `team` are sortable in this demo.
+ * Click a sortable header to toggle: asc → desc → unsorted. Built-in
+ * single-column sort (Vue surface does not ship composite sorts yet —
+ * see findings/T-Vue-Demo-Complex.md).
  */
-import { SgTable } from '@skygraph/vue'
-import { makeUserRows, userColumns } from './_data'
+import { SgTable, type TableColumn } from '@skygraph/vue'
+import { people } from './_data'
 
-const data = makeUserRows(7)
+const columns: TableColumn[] = [
+  { key: 'name', title: 'Name', sortable: true, width: 180 },
+  { key: 'age', title: 'Age', sortable: true, width: 90, align: 'center' },
+  { key: 'city', title: 'City', sortable: true, width: 130 },
+  { key: 'role', title: 'Role', sortable: true, width: 130 },
+  { key: 'salary', title: 'Salary', sortable: true, width: 120, align: 'right' },
+]
 </script>
 
 <template>
-  <SgTable :columns="userColumns" :data="data" />
+  <SgTable :columns="columns" :data="people" :page-size="6">
+    <template #cell="{ column, value }">
+      <template v-if="column.key === 'salary'">${{ Number(value).toLocaleString() }}</template>
+      <template v-else>{{ value }}</template>
+    </template>
+  </SgTable>
 </template>

@@ -1,7 +1,7 @@
 /**
  * English source of truth for Gantt doc page strings.
- * Mirrors `examples/demo/src/demos/gantt-doc/en.ts`. Vue side is wider
- * than React (3 demos vs 2; carta §D — «Vue шире», don't shrink).
+ * Mirrors `examples/demo/src/demos/gantt-doc/en.ts` — same 2 demos, in the
+ * same order.
  */
 export const ganttDocEn = {
   pageTitle: 'Gantt',
@@ -19,13 +19,10 @@ export const ganttDocEn = {
 
   demoBasicTitle: 'Basic — day scale',
   demoBasicDesc:
-    'Five tasks with progress bars on the day axis. Drag bars to move (snap to whole days), resize the right edge to extend the deadline.',
-  demoResourcesTitle: 'With resources',
-  demoResourcesDesc:
-    'Group tasks by resource lane (Anna / Boris / Clara). Use `resourceId` on each task to pin it to a row.',
-  demoScaleTitle: 'Week scale',
+    'Drag bars to move them along the day axis (snaps to whole days), drag the right edge to extend the deadline. Dependency arrows follow tasks live via `routeOrthogonal`.',
+  demoScaleTitle: 'Scale switcher',
   demoScaleDesc:
-    'Wider columns, fewer ticks. Bars stay anchored to their dates — only the column width and the snap step change.',
+    'Switch the time-axis granularity at runtime. Bars stay anchored to their dates — only the column width and the snap step change.',
 
   tableGanttApi: 'Gantt API',
   tableTaskApi: 'GanttTask',
@@ -33,9 +30,11 @@ export const ganttDocEn = {
   tableCssVars: 'CSS Variables',
 
   propTasks: 'Tasks rendered as bars',
-  propResources: 'Lanes used for vertical grouping. If omitted, every task gets its own row in source order',
+  propResources:
+    'Lanes used for vertical grouping. If omitted, every task gets its own row in source order',
   propScale: 'Time-axis granularity. Drives header ticks and the drag/resize snap step',
-  propRange: 'Visible time window. If omitted, derived from `min(start)` / `max(end)` with one `scale`-step of padding',
+  propRange:
+    'Visible time window. If omitted, derived from `min(start)` / `max(end)` with one `scale`-step of padding',
   propRowHeight: 'Row height in pixels',
   propColumnWidth: 'Pixel width of one `scale` step (one day, one week, ...)',
   propSidebarWidth: 'Width of the left rail (task / resource list)',

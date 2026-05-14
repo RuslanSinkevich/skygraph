@@ -271,6 +271,17 @@
   border-color: var(--sg-color-primary);
 }
 
+.sg-calendar-cell-in-range {
+  background: var(--sg-color-primary-bg);
+}
+
+.sg-calendar-cell-range-start .sg-calendar-cell-date,
+.sg-calendar-cell-range-end .sg-calendar-cell-date {
+  background: var(--sg-color-primary);
+  color: var(--sg-color-white);
+  border-color: var(--sg-color-primary);
+}
+
 .sg-calendar-cell-disabled {
   color: var(--sg-color-text-disabled);
   cursor: not-allowed;

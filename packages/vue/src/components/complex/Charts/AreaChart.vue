@@ -11,6 +11,11 @@ import {
 } from './types'
 import ChartLegend from './ChartLegend.vue'
 import ChartAxes from './ChartAxes.vue'
+import ChartBrush, {
+  resolveBrushConfig,
+  type ChartBrushConfig,
+  type ChartBrushRange,
+} from './ChartBrush.vue'
 
 interface AreaChartProps extends BaseChartProps {
   /** Stack series cumulatively. @default false */
@@ -19,6 +24,11 @@ interface AreaChartProps extends BaseChartProps {
   fillOpacity?: number
   /** Stroke width. @default 2 */
   strokeWidth?: number
+  /**
+   * Brush for drag-selecting an X range. `true` — uncontrolled with empty
+   * starting value; object — `ChartBrushConfig`.
+   */
+  brush?: boolean | ChartBrushConfig
 }
 
 const props = withDefaults(defineProps<AreaChartProps>(), {
@@ -123,6 +133,17 @@ const areaPaths = computed(() =>
   }),
 )
 
+const brushConfig = computed(() => resolveBrushConfig(props.brush))
+const isBrushControlled = computed(() => brushConfig.value != null && 'range' in brushConfig.value)
+const internalBrushRange = ref<ChartBrushRange | null>(brushConfig.value?.defaultRange ?? null)
+const effectiveBrushRange = computed<ChartBrushRange | null>(() =>
+  isBrushControlled.value ? (brushConfig.value!.range ?? null) : internalBrushRange.value,
+)
+function handleBrushChange(next: ChartBrushRange | null) {
+  if (!isBrushControlled.value) internalBrushRange.value = next
+  brushConfig.value?.onRangeChange?.(next)
+}
+
 defineExpose({
   print: (opts: { fileName?: string } = {}) => {
     const el = rootRef.value
@@ -183,6 +204,19 @@ defineExpose({
           vector-effect="non-scaling-stroke"
         />
       </g>
+      <ChartBrush
+        v-if="brushConfig"
+        :plot-x="plotX"
+        :plot-y="plotY"
+        :plot-w="plotW"
+        :plot-h="plotH"
+        :category-count="props.categories.length"
+        :range="effectiveBrushRange"
+        :unstyled="props.unstyled"
+        :fill="brushConfig.fill"
+        :disabled="brushConfig.disabled"
+        @change="handleBrushChange"
+      />
     </svg>
     <ChartLegend v-if="props.legend" :series="props.series" :unstyled="props.unstyled" />
   </div>

@@ -2,10 +2,7 @@
  * English source of truth for Tree doc page strings (Vue).
  * Other locales must provide the same keys (see `ru.ts`).
  *
- * Vue `SgTree` is narrower than React: no `showLine`, `actions`,
- * `nodeStatus`, `editable`, `showIcon`. Examples are scoped to the
- * current Vue API surface — see
- * `findings/T-Vue-Demo-Complex.md` → `tree-vue-narrower-than-react`.
+ * 1:1 parity with React's `examples/demo/src/demos/tree-doc/en.ts`.
  */
 export const treeDocEn = {
   pageTitle: 'Tree',
@@ -13,37 +10,35 @@ export const treeDocEn = {
   crumbDataDisplay: 'Data Display',
   crumbTree: 'Tree',
   pageLead:
-    'Hierarchical viewer with checkable, draggable, searchable, virtual-scroll and directory modes — driven by a `treeData` array of `{ key, title, children }`.',
-  pageWhen1: 'Folder structures, org charts, navigation trees, build/deploy status views.',
-  pageWhen2: 'Multi-select pickers driven by hierarchical data (`checkable`).',
-  pageWhen3: 'For huge datasets (1 000+ nodes) set `height` for windowed virtual scroll.',
+    'Rich hierarchical list with checks, selection, drag & drop, search, inline editing, virtual scroll, and directory mode.',
+  pageWhen1: 'For file explorers, org charts, nested taxonomies, build/deploy status views.',
+  pageWhen2: 'When you need multi-select with parent/child cascading (`checkable`).',
+  pageWhen3: 'For huge datasets (1000+ nodes) set `height` for virtual scrolling.',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Default expand/collapse + click-to-select.',
   demoCheckableTitle: 'Checkable',
   demoCheckableDesc: 'Checkboxes cascade to descendants.',
-  demoCheckStrictlyTitle: 'Check strictly',
-  demoCheckStrictlyDesc: 'Decouple parent/child checks for permission/role pickers.',
+  demoShowLineTitle: 'Show line',
+  demoShowLineDesc: 'Guide lines between levels.',
   demoDirectoryTitle: 'Directory',
-  demoDirectoryDesc: 'Filesystem-explorer styling — folder click expands.',
+  demoDirectoryDesc: 'Filesystem-explorer styling.',
   demoSearchTitle: 'Search',
   demoSearchDesc: 'Built-in filter with match highlighting.',
   demoToolbarTitle: 'Toolbar',
-  demoToolbarDesc: 'Expand / collapse / check-all / uncheck-all bulk controls.',
+  demoToolbarDesc: 'Expand / collapse / check-all controls.',
+  demoActionsTitle: 'Row actions',
+  demoActionsDesc: 'Icon buttons that appear on hover.',
+  demoNodeStatusTitle: 'Node status',
+  demoNodeStatusDesc: 'Per-node status dot + left border.',
   demoDraggableTitle: 'Drag & drop',
-  demoDraggableDesc: 'Rearrange nodes via native HTML5 DnD; `@drop` reports `dropPosition`.',
-  demoBlockNodeTitle: 'Block node',
-  demoBlockNodeDesc: 'Whole row is the click target — bigger hit area.',
-  demoMultipleTitle: 'Multi-select',
-  demoMultipleDesc: '`multiple` lets `Ctrl+click` toggle several nodes.',
-  demoLoadableTitle: 'Lazy load',
-  demoLoadableDesc: '`loadData(node)` resolves children on demand.',
+  demoDraggableDesc: 'Rearrange nodes via native HTML5 DnD.',
+  demoEditableTitle: 'Inline edit',
+  demoEditableDesc: 'Double-click a title to rename.',
   demoVirtualTitle: 'Virtual scroll',
-  demoVirtualDesc: '1 000 nodes, only visible rows rendered (`height` enables it).',
+  demoVirtualDesc: '1 000 nodes, only visible rows rendered.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope `--sg-color-primary` or `data-sg-theme` to skin one Tree.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Keep semantics + keyboard nav, drop Skygraph styles.',
+  demoTokensDesc: 'Scope --sg-color-primary or data-sg-theme to skin one Tree.',
 
   tableTreeApi: 'Tree API',
   tableTreeNodeData: 'TreeNodeData',
@@ -57,6 +52,7 @@ export const treeDocEn = {
   propMultiple: 'Allow multiple selected nodes',
   propDefaultExpandAll: 'Expand every parent on mount (uncontrolled)',
   propAutoExpandParent: 'Expand ancestors of focused / matched nodes',
+  propShowLine: 'Render guide lines between levels',
   propBlockNode: 'Whole row is clickable for selection',
   propDirectory: 'Filesystem-explorer look (filled selection)',
   propDraggable: 'Enable HTML5 DnD per node or predicate',
@@ -64,6 +60,9 @@ export const treeDocEn = {
   propShowSearch: 'Render the built-in filter bar',
   propHighlightSearch: 'Highlight matched text in titles',
   propShowToolbar: 'Expand / collapse / check-all controls',
+  propEditable: 'Inline-edit titles (double-click)',
+  propActions: 'Per-row action buttons',
+  propNodeStatus: 'Per-node status variant',
   propIndentSize: 'Horizontal indent per level (px)',
   propHeight: 'Enable windowed virtual scroll at this viewport height',
   propVirtual: 'Use virtual scroll when height is set',
@@ -73,9 +72,10 @@ export const treeDocEn = {
   propEmitCheck: '`@check` — emitted when checked-set changes',
   propEmitSelect: '`@select` — emitted when selection changes',
   propEmitDrop: '`@drop` — emitted on a successful HTML5 drop',
+  propEmitEdit: '`@edit` — emitted when an inline rename is committed',
 
   nodeKey: 'Unique identifier',
-  nodeTitle: 'Display label',
+  nodeTitle: 'Display label (VNode)',
   nodeChildren: 'Nested child nodes',
   nodeDisabled: 'Grey out, block selection/check',
   nodeSelectable: 'Per-node selection enable',
@@ -84,7 +84,7 @@ export const treeDocEn = {
   nodeIcon: 'Custom leading icon',
 
   cssHint:
-    'Tree has no component-specific tokens — it is fully driven by global tokens. Override `--sg-color-primary`, `--sg-color-bg-hover`, `--sg-color-border` to re-skin.',
+    'Tree has no component-specific tokens — it is fully driven by global tokens. Override --sg-color-primary, --sg-color-bg-hover, and --sg-color-border to re-skin.',
 
   cssSgColorPrimary: 'Selected title color, switcher hover, focus outline, drop indicator',
   cssSgColorPrimaryBg: 'Selected row background, drop-inside tint',
@@ -92,8 +92,11 @@ export const treeDocEn = {
   cssSgColorText: 'Default node title color',
   cssSgColorTextSecondary: 'Switcher + action button color',
   cssSgColorTextTertiary: 'Empty state + leaf switcher',
-  cssSgColorTextDisabled: 'Disabled node title',
-  cssSgColorBorder: 'Toolbar divider, search input border, virtual scrollbar',
+  cssSgColorTextDisabled: 'Disabled node title + disabled actions',
+  cssSgColorBorder: 'Toolbar divider, search input border, guide lines, virtual scrollbar',
+  cssSgColorSuccess: 'nodeStatus="success" dot + left border',
+  cssSgColorWarning: 'nodeStatus="warning" dot + left border',
+  cssSgColorError: 'nodeStatus="error" dot + search match color',
   cssSgBorderRadiusSm: 'Node row + title radius',
   cssSgFontSize: 'Title font size',
 } as const

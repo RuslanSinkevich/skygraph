@@ -56,6 +56,13 @@ export type {
   TableLocale,
   RowSelectionConfig,
   FilterOperator,
+  ExpandableConfig as TableExpandableConfig,
+  TreeConfig as TableTreeConfig,
+  SummaryCell as TableSummaryCell,
+  VirtualConfig as TableVirtualConfig,
+  CellSpan as TableCellSpan,
+  AggregateType as TableAggregateType,
+  FilterDropdownSlotProps as TableFilterDropdownSlotProps,
 } from './components/complex/Table'
 
 export {
@@ -74,6 +81,9 @@ export type {
   ExpandInfo,
   DragInfo,
   DropInfo,
+  EditInfo as TreeEditInfo,
+  TreeNodeStatus,
+  TreeNodeAction,
 } from './components/complex/Tree'
 
 export { SgList } from './components/complex/List'
@@ -173,6 +183,10 @@ export type {
   DiagramSelectionMode,
   DiagramExpose,
   DiagramNodeRenderProps,
+  DiagramNodeAction,
+  DiagramEdgeAction,
+  DiagramCanvasContextPoint,
+  DiagramDropPoint,
 } from './components/complex/Diagram'
 
 export { SgDashboard, SgDashboardEditor } from './components/complex/Dashboard'
@@ -340,19 +354,39 @@ export { default as SgColorPicker } from './components/ui/ColorPicker.vue'
 export type { ColorPickerProps } from './components/ui/ColorPicker.vue'
 
 export { default as SgDatePicker } from './components/ui/DatePicker.vue'
-export type { DatePickerProps } from './components/ui/DatePicker.vue'
+export type {
+  DatePickerProps,
+  DatePreset,
+  ShowTimeConfig,
+  DatePickerMode,
+} from './components/ui/DatePicker.vue'
+
+export { default as SgRangePicker } from './components/ui/RangePicker.vue'
+export type { RangePickerProps } from './components/ui/RangePicker.vue'
 
 export { default as SgTimePicker } from './components/ui/TimePicker.vue'
 export type { TimePickerProps } from './components/ui/TimePicker.vue'
+export { default as SgTimeRangePicker } from './components/ui/TimeRangePicker.vue'
+export type { TimeRangePickerProps } from './components/ui/TimeRangePicker.vue'
 
 export { default as SgCalendar } from './components/ui/Calendar.vue'
-export type { CalendarProps, CalendarEvent } from './components/ui/Calendar.vue'
+export type {
+  CalendarProps,
+  CalendarEvent,
+  CalendarLocale,
+  CalendarHeaderSlotProps,
+  CalendarCellSlotProps,
+} from './components/ui/Calendar.vue'
 
 export { default as SgUpload } from './components/ui/Upload.vue'
 export type { UploadProps, UploadFile } from './components/ui/Upload.vue'
 
 export { default as SgCascader } from './components/ui/Cascader.vue'
-export type { CascaderProps, CascaderOption } from './components/ui/Cascader.vue'
+export type {
+  CascaderProps,
+  CascaderOption,
+  CascaderSearchFilter,
+} from './components/ui/Cascader.vue'
 
 export { default as SgTreeSelect } from './components/ui/TreeSelect.vue'
 export type { TreeSelectProps, TreeSelectNode } from './components/ui/TreeSelect.vue'
@@ -450,6 +484,8 @@ export type {
   TagInputLocale,
   PinInputLocale,
   InlineEditLocale,
+  CalendarLocale as SgCalendarLocale,
+  DatePickerLocale,
 } from './types'
 
 // Locale presets (ConfigProvider)

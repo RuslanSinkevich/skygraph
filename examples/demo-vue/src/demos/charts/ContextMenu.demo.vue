@@ -29,7 +29,7 @@ onUnmounted(() => {
 
 const visibleSeries = computed(() => data.series.filter((s) => !hidden.value.includes(s.id)))
 const target = computed(() =>
-  menu.value ? data.series.find((s) => s.id === menu.value!.seriesId) ?? null : null,
+  menu.value ? (data.series.find((s) => s.id === menu.value!.seriesId) ?? null) : null,
 )
 
 function showToast(text: string) {
@@ -85,7 +85,14 @@ async function handleCopyCsv() {
         }"
         @contextmenu.prevent="(e) => (menu = { seriesId: s.id, x: e.clientX, y: e.clientY })"
       >
-        <span :style="{ width: '10px', height: '10px', borderRadius: '2px', background: colorForSeries(s, idx) }" />
+        <span
+          :style="{
+            width: '10px',
+            height: '10px',
+            borderRadius: '2px',
+            background: colorForSeries(s, idx),
+          }"
+        />
         {{ s.label }}
       </span>
     </div>
@@ -136,26 +143,29 @@ async function handleCopyCsv() {
       <button
         v-if="hidden.includes(target.id)"
         type="button"
-        style="padding: 6px 10px; text-align: left; background: transparent; border: none; cursor: pointer; font-size: 13px"
+        class="demo-ctx-menu-item"
         @click="handleShow"
       >
         Show series
       </button>
-      <button
-        v-else
-        type="button"
-        style="padding: 6px 10px; text-align: left; background: transparent; border: none; cursor: pointer; font-size: 13px"
-        @click="handleHide"
-      >
+      <button v-else type="button" class="demo-ctx-menu-item" @click="handleHide">
         Hide series
       </button>
-      <button
-        type="button"
-        style="padding: 6px 10px; text-align: left; background: transparent; border: none; cursor: pointer; font-size: 13px"
-        @click="handleCopyCsv"
-      >
-        Copy as CSV
-      </button>
+      <button type="button" class="demo-ctx-menu-item" @click="handleCopyCsv">Copy as CSV</button>
     </div>
   </div>
 </template>
+
+<style scoped>
+.demo-ctx-menu-item {
+  padding: 6px 10px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+}
+.demo-ctx-menu-item:hover {
+  background: var(--sg-color-bg-hover);
+}
+</style>

@@ -2,11 +2,9 @@
  * English source of truth for Cascader doc page strings.
  * Other locales must provide the same keys (see `ru.ts`).
  *
- * Mirrors `examples/demo/src/demos/cascader-doc/en.ts`. Vue side has
- * several gaps (no `multiple`, no `loadData`, `displayRender` is
- * string-only, `showSearch` boolean-only, no `maxTagCount`) — see
- * `findings/T-Vue-Demo-Forms.md` → `cascader-feature-gaps-in-vue`.
- * The `Multiple` and `AsyncLoad` demos are dropped.
+ * Mirrors `examples/demo/src/demos/cascader-doc/en.ts` 1:1 — `multiple`,
+ * `maxTagCount`, `loadData`, and the `{ filter }` form of `showSearch`
+ * are all supported in Vue as well.
  */
 export const cascaderDocEn = {
   pageTitle: 'Cascader',
@@ -31,17 +29,22 @@ export const cascaderDocEn = {
   demoChangeOnSelectDesc: 'Commit on every level, not only on leaf.',
   demoSearchTitle: 'Search',
   demoSearchDesc:
-    'Built-in search box. Vue exposes `show-search` as boolean only — no custom filter overload yet.',
+    'Built-in search box. Pass `{ filter }` to override the default path matcher (also boolean for simple cases).',
+  demoMultipleTitle: 'Multiple',
+  demoMultipleDesc:
+    '`multiple` keeps every committed path as a removable tag; `max-tag-count` collapses overflow.',
   demoSizesTitle: 'Sizes',
   demoSizesDesc: 'Small / middle / large — matches Input + Select tokens.',
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: 'Disable the whole control or individual options.',
   demoCustomRenderTitle: 'Custom trigger',
   demoCustomRenderDesc:
-    'Replace the default label. Vue accepts a `(labels) => string` formatter (no VNode override yet).',
+    'Replace the default trigger label with a `(labels, options) => string` formatter.',
+  demoAsyncLoadTitle: 'Async load',
+  demoAsyncLoadDesc:
+    'Mark a node `isLeaf: false`; on click the cascader calls `load-data(selectedOptions)` and renders a loading spinner until children are populated.',
   demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc:
-    'Scope global tokens on a wrapper to re-skin a single Cascader.',
+  demoTokensOverrideDesc: 'Scope global tokens on a wrapper to re-skin a single Cascader.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Semantics only — paint with your own CSS.',
 
@@ -57,19 +60,22 @@ export const cascaderDocEn = {
   propAllowClear: 'Show clear (×) button when a value is set',
   propDisabled: 'Disable the whole cascader',
   propSize: 'Matches Input/Select size tokens',
-  propShowSearch: 'Enable the search box at the top of the dropdown (boolean only)',
+  propShowSearch: 'Enable the search box; `{ filter }` overrides the default matcher',
   propExpandTrigger: 'Open the next column on click or hover',
   propChangeOnSelect: 'Commit on every level, not only on leaf',
-  propDisplayRender: 'Custom trigger label formatter `(labels) => string`',
+  propDisplayRender: 'Custom trigger label formatter `(labels, options) => string`',
+  propMultiple: 'Allow several leaf paths as removable tags',
+  propMaxTagCount: 'Max visible tags in `multiple` mode before "+N" summary',
+  propLoadData: 'Async children loader `(selectedOptions) => void`',
   propUnstyled: 'Drop every SkyGraph class — keep only semantics',
   emitUpdateModelValue: 'Fires with the next value path (used by `v-model`)',
-  emitChange:
-    'Fires with `(value, selectedOptions)` — full path + resolved option chain',
+  emitChange: 'Fires with `(value, selectedOptions)` — full path + resolved option chain',
 
   optionValue: 'Stable value for this level',
   optionLabel: 'Display label (string)',
   optionChildren: 'Nested options',
   optionDisabled: 'Dim & block selection',
+  optionIsLeaf: 'Set to `false` to advertise async children (works with `load-data`)',
 
   cssHint:
     'Cascader has no component-scoped tokens — it is fully driven by the global palette. Override the globals on a scoped wrapper to re-skin a single instance.',

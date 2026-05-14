@@ -1,19 +1,7 @@
 <script setup lang="ts">
 /**
  * `CalendarDemo` — aggregator for the Calendar component page.
- *
- * Mirrors `examples/demo/src/demos/CalendarDemo.tsx` (14 examples).
- * Vue surface (9 examples): Basic, Controlled, Events, WeekStartMonday,
- * WeekNumbers, DisabledDates, YearMode, TokensOverride, Unstyled.
- *
- * Dropped vs React (see `findings/T-Vue-Components-Functional-Fixes.md`
- * → `calendar-vue-feature-gaps`):
- * - `MultipleSelection` — no `multipleSelection` / `multipleValue`.
- * - `RangeSelection` — no `rangeSelection` / `rangeValue`.
- * - `CustomCell` — no `cellRender` slot.
- * - `CustomHeader` — no `headerRender` slot.
- * - `Locale` — no `locale` prop (calendar labels are hardcoded EN).
- * - no keyboard navigation.
+ * 1:1 with `examples/demo/src/demos/CalendarDemo.tsx` (14 examples).
  */
 import { computed } from 'vue'
 import {
@@ -28,18 +16,28 @@ import { useCalendarDocStrings } from './calendar-doc/useStrings'
 
 import BasicCalendarDemo from './calendar/Basic.demo.vue'
 import BasicSource from './calendar/Basic.demo.vue?raw'
+import CardCalendarDemo from './calendar/Card.demo.vue'
+import CardSource from './calendar/Card.demo.vue?raw'
 import ControlledCalendarDemo from './calendar/Controlled.demo.vue'
 import ControlledSource from './calendar/Controlled.demo.vue?raw'
-import EventsCalendarDemo from './calendar/Events.demo.vue'
-import EventsSource from './calendar/Events.demo.vue?raw'
-import WeekStartMondayCalendarDemo from './calendar/WeekStartMonday.demo.vue'
-import WeekStartMondaySource from './calendar/WeekStartMonday.demo.vue?raw'
-import WeekNumbersCalendarDemo from './calendar/WeekNumbers.demo.vue'
-import WeekNumbersSource from './calendar/WeekNumbers.demo.vue?raw'
 import DisabledDatesCalendarDemo from './calendar/DisabledDates.demo.vue'
 import DisabledDatesSource from './calendar/DisabledDates.demo.vue?raw'
 import YearModeCalendarDemo from './calendar/YearMode.demo.vue'
 import YearModeSource from './calendar/YearMode.demo.vue?raw'
+import WeekNumbersCalendarDemo from './calendar/WeekNumbers.demo.vue'
+import WeekNumbersSource from './calendar/WeekNumbers.demo.vue?raw'
+import RangeSelectionCalendarDemo from './calendar/RangeSelection.demo.vue'
+import RangeSelectionSource from './calendar/RangeSelection.demo.vue?raw'
+import MultipleSelectionCalendarDemo from './calendar/MultipleSelection.demo.vue'
+import MultipleSelectionSource from './calendar/MultipleSelection.demo.vue?raw'
+import EventsCalendarDemo from './calendar/Events.demo.vue'
+import EventsSource from './calendar/Events.demo.vue?raw'
+import CustomCellCalendarDemo from './calendar/CustomCell.demo.vue'
+import CustomCellSource from './calendar/CustomCell.demo.vue?raw'
+import CustomHeaderCalendarDemo from './calendar/CustomHeader.demo.vue'
+import CustomHeaderSource from './calendar/CustomHeader.demo.vue?raw'
+import LocaleCalendarDemo from './calendar/Locale.demo.vue'
+import LocaleSource from './calendar/Locale.demo.vue?raw'
 import TokensOverrideCalendarDemo from './calendar/TokensOverride.demo.vue'
 import TokensOverrideSource from './calendar/TokensOverride.demo.vue?raw'
 import UnstyledCalendarDemo from './calendar/Unstyled.demo.vue'
@@ -57,14 +55,14 @@ const calendarProps = computed<PropDef[]>(() => [
     type: "'month' | 'year'",
     default: "'month'",
   },
-  { name: 'events', description: t.value.propEvents, type: 'CalendarEvent[]' },
-  { name: 'maxEvents', description: 'Cap of event dots per cell', type: 'number', default: '3' },
   {
     name: 'fullscreen',
     description: 'Fullscreen layout with footer',
     type: 'boolean',
     default: 'true',
   },
+  { name: 'events', description: t.value.propEvents, type: 'CalendarEvent[]' },
+  { name: 'maxEvents', description: 'Cap of event dots per cell', type: 'number', default: '3' },
   { name: 'weekStartDay', description: t.value.propWeekStartDay, type: 'number', default: '0' },
   {
     name: 'showWeekNumber',
@@ -77,6 +75,23 @@ const calendarProps = computed<PropDef[]>(() => [
     description: t.value.propDisabledDate,
     type: '(date: Date) => boolean',
   },
+  { name: 'locale', description: t.value.propLocale, type: 'CalendarLocale' },
+  {
+    name: 'rangeSelection',
+    description: t.value.propRangeSelection,
+    type: 'boolean',
+    default: 'false',
+  },
+  { name: 'rangeValue', description: t.value.propRangeValue, type: '[Date | null, Date | null]' },
+  {
+    name: 'multipleSelection',
+    description: t.value.propMultipleSelection,
+    type: 'boolean',
+    default: 'false',
+  },
+  { name: 'multipleValue', description: t.value.propMultipleValue, type: 'Date[]' },
+  { name: '#header', description: t.value.propHeaderSlot, type: 'slot' },
+  { name: '#cell', description: t.value.propCellSlot, type: 'slot' },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
   {
     name: '@update:modelValue',
@@ -88,6 +103,16 @@ const calendarProps = computed<PropDef[]>(() => [
     name: '@panelChange',
     description: t.value.emitPanelChange,
     type: "(value: Date, mode: 'month' | 'year') => void",
+  },
+  {
+    name: '@rangeChange',
+    description: t.value.emitRangeChange,
+    type: '(range: [Date | null, Date | null]) => void',
+  },
+  {
+    name: '@multipleChange',
+    description: t.value.emitMultipleChange,
+    type: '(dates: Date[]) => void',
   },
 ])
 
@@ -172,32 +197,16 @@ const calendarCssVars = computed<CssVarDef[]>(() => [
       <BasicCalendarDemo />
     </DemoBox>
 
+    <DemoBox :title="t.demoCardTitle" :description="t.demoCardDesc" :code="CardSource">
+      <CardCalendarDemo />
+    </DemoBox>
+
     <DemoBox
       :title="t.demoControlledTitle"
       :description="t.demoControlledDesc"
       :code="ControlledSource"
     >
       <ControlledCalendarDemo />
-    </DemoBox>
-
-    <DemoBox :title="t.demoEventsTitle" :description="t.demoEventsDesc" :code="EventsSource">
-      <EventsCalendarDemo />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoWeekStartTitle"
-      :description="t.demoWeekStartDesc"
-      :code="WeekStartMondaySource"
-    >
-      <WeekStartMondayCalendarDemo />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoWeekNumbersTitle"
-      :description="t.demoWeekNumbersDesc"
-      :code="WeekNumbersSource"
-    >
-      <WeekNumbersCalendarDemo />
     </DemoBox>
 
     <DemoBox
@@ -210,6 +219,54 @@ const calendarCssVars = computed<CssVarDef[]>(() => [
 
     <DemoBox :title="t.demoYearModeTitle" :description="t.demoYearModeDesc" :code="YearModeSource">
       <YearModeCalendarDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoWeekNumbersTitle"
+      :description="t.demoWeekNumbersDesc"
+      :code="WeekNumbersSource"
+    >
+      <WeekNumbersCalendarDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoRangeSelectionTitle"
+      :description="t.demoRangeSelectionDesc"
+      :code="RangeSelectionSource"
+    >
+      <RangeSelectionCalendarDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoMultipleSelectionTitle"
+      :description="t.demoMultipleSelectionDesc"
+      :code="MultipleSelectionSource"
+    >
+      <MultipleSelectionCalendarDemo />
+    </DemoBox>
+
+    <DemoBox :title="t.demoEventsTitle" :description="t.demoEventsDesc" :code="EventsSource">
+      <EventsCalendarDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoCustomCellTitle"
+      :description="t.demoCustomCellDesc"
+      :code="CustomCellSource"
+    >
+      <CustomCellCalendarDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoCustomHeaderTitle"
+      :description="t.demoCustomHeaderDesc"
+      :code="CustomHeaderSource"
+    >
+      <CustomHeaderCalendarDemo />
+    </DemoBox>
+
+    <DemoBox :title="t.demoLocaleTitle" :description="t.demoLocaleDesc" :code="LocaleSource">
+      <LocaleCalendarDemo />
     </DemoBox>
 
     <DemoBox

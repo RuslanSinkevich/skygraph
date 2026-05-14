@@ -53,10 +53,10 @@ export interface SgUploadFile {
       }
     </div>
     @if (fileList && fileList.length > 0) {
-      <div class="sg-upload-list">
+      <div [class]="listClass()">
         @for (file of fileList; track file.uid) {
-          <div [class]="'sg-upload-item sg-upload-item-' + file.status">
-            <span class="sg-upload-item-name">
+          <div [class]="itemClass(file.status)">
+            <span [class]="itemNameClass()">
               @if (file.status === 'uploading') {
                 <span
                   class="sg-spin sg-spin-small"
@@ -70,7 +70,7 @@ export interface SgUploadFile {
             @if (file.status !== 'uploading') {
               <button
                 type="button"
-                class="sg-upload-item-remove"
+                [class]="itemRemoveClass()"
                 [attr.aria-label]="removeLabel() + ': ' + file.name"
                 (click)="onRemoveClick(file)"
               >
@@ -102,6 +102,8 @@ export class SgUploadComponent {
   @Input() maxCount?: number
   @Input({ transform: booleanAttribute }) loading = false
 
+  protected readonly _unstyled = signal<boolean>(false)
+
   @Input({ transform: booleanAttribute })
   get disabled(): boolean {
     return this.resolvedDisabled()
@@ -110,14 +112,29 @@ export class SgUploadComponent {
     this._disabled.set(v)
   }
 
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
   @Output() readonly upload = new EventEmitter<File[]>()
   @Output() readonly remove = new EventEmitter<SgUploadFile>()
 
   readonly resolvedDisabled = computed(() => this._disabled() ?? this.cfg.disabled ?? false)
 
-  readonly classes = computed(() =>
-    ['sg-upload', this.loading ? 'sg-upload-loading' : ''].filter(Boolean).join(' '),
-  )
+  readonly classes = computed(() => {
+    if (this._unstyled()) return ''
+    return ['sg-upload', this.loading ? 'sg-upload-loading' : ''].filter(Boolean).join(' ')
+  })
+
+  readonly listClass = computed(() => (this._unstyled() ? '' : 'sg-upload-list'))
+  readonly itemClass = (status: string): string =>
+    this._unstyled() ? '' : `sg-upload-item sg-upload-item-${status}`
+  readonly itemNameClass = computed(() => (this._unstyled() ? '' : 'sg-upload-item-name'))
+  readonly itemRemoveClass = computed(() => (this._unstyled() ? '' : 'sg-upload-item-remove'))
 
   readonly uploadText = computed(() => this.cfg.locale?.upload?.uploadText ?? 'Upload')
   readonly removeLabel = computed(() => this.cfg.locale?.upload?.removeFile ?? 'Remove file')

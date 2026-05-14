@@ -1,10 +1,9 @@
 <script setup lang="ts">
 /**
- * Charts aggregator (Wave 3.2 / Tab D).
- * 14/15 React demos covered (no `Crosshair` / `Brush` direct props on
- * Vue charts — use stand-alone `SgChartCrosshair` / `SgChartBrush`).
+ * Charts aggregator — 1:1 parity with React (15 examples).
  *
- * No CssVarsTable — parity with React (carta §C).
+ * Includes hover Crosshair (LineChart) and Brush selection (AreaChart),
+ * realtime updates, context menu, responsive measure, and CSS animations.
  */
 import { computed } from 'vue'
 import { ComponentDoc, DemoBox, PropsTable, type PropDef } from './components'
@@ -22,12 +21,16 @@ import WithAxesChart from './charts/WithAxes.demo.vue'
 import WithAxesSource from './charts/WithAxes.demo.vue?raw'
 import WithLegendChart from './charts/WithLegend.demo.vue'
 import WithLegendSource from './charts/WithLegend.demo.vue?raw'
-import MultiSeriesChart from './charts/MultiSeries.demo.vue'
-import MultiSeriesSource from './charts/MultiSeries.demo.vue?raw'
-import StackedChart from './charts/Stacked.demo.vue'
-import StackedSource from './charts/Stacked.demo.vue?raw'
 import AnimationsChart from './charts/Animations.demo.vue'
 import AnimationsSource from './charts/Animations.demo.vue?raw'
+import CrosshairChart from './charts/Crosshair.demo.vue'
+import CrosshairSource from './charts/Crosshair.demo.vue?raw'
+import BrushChart from './charts/Brush.demo.vue'
+import BrushSource from './charts/Brush.demo.vue?raw'
+import StackedChart from './charts/Stacked.demo.vue'
+import StackedSource from './charts/Stacked.demo.vue?raw'
+import MultiSeriesChart from './charts/MultiSeries.demo.vue'
+import MultiSeriesSource from './charts/MultiSeries.demo.vue?raw'
 import RealtimeChart from './charts/Realtime.demo.vue'
 import RealtimeSource from './charts/Realtime.demo.vue?raw'
 import HoverActionsChart from './charts/HoverActions.demo.vue'
@@ -36,13 +39,16 @@ import ContextMenuChart from './charts/ContextMenu.demo.vue'
 import ContextMenuSource from './charts/ContextMenu.demo.vue?raw'
 import ResponsiveChart from './charts/Responsive.demo.vue'
 import ResponsiveSource from './charts/Responsive.demo.vue?raw'
-import UnstyledChart from './charts/Unstyled.demo.vue'
-import UnstyledSource from './charts/Unstyled.demo.vue?raw'
 
 const t = useChartsDocStrings()
 
 const commonProps = computed<PropDef[]>(() => [
-  { name: 'categories', description: t.value.propCategories, type: 'ChartCategory[]', required: true },
+  {
+    name: 'categories',
+    description: t.value.propCategories,
+    type: 'ChartCategory[]',
+    required: true,
+  },
   { name: 'series', description: t.value.propSeries, type: 'ChartSeries[]', required: true },
   { name: 'width', description: t.value.propWidth, type: 'number | string', default: "'100%'" },
   { name: 'height', description: t.value.propHeight, type: 'number', default: '200' },
@@ -60,6 +66,13 @@ const commonProps = computed<PropDef[]>(() => [
 const lineExtras = computed<PropDef[]>(() => [
   { name: 'markers', description: t.value.propMarkers, type: 'boolean', default: 'true' },
   { name: 'strokeWidth', description: t.value.propStrokeWidth, type: 'number', default: '2' },
+  {
+    name: 'crosshair',
+    description: t.value.propCrosshair,
+    type: 'boolean | { valueFormatter }',
+    default: 'false',
+  },
+  { name: 'brush', description: t.value.propBrush, type: 'boolean | ChartBrushConfig' },
 ])
 
 const barExtras = computed<PropDef[]>(() => [
@@ -71,6 +84,7 @@ const areaExtras = computed<PropDef[]>(() => [
   { name: 'stacked', description: t.value.propStacked, type: 'boolean', default: 'false' },
   { name: 'strokeWidth', description: t.value.propStrokeWidth, type: 'number', default: '2' },
   { name: 'fillOpacity', description: t.value.propFillOpacity, type: 'number', default: '0.25' },
+  { name: 'brush', description: t.value.propBrush, type: 'boolean | ChartBrushConfig' },
 ])
 
 const pieExtras = computed<PropDef[]>(() => [
@@ -117,29 +131,56 @@ const exposeProps = computed<PropDef[]>(() => [
     <DemoBox :title="t.demoLegendTitle" :description="t.demoLegendDesc" :code="WithLegendSource">
       <WithLegendChart />
     </DemoBox>
-    <DemoBox :title="t.demoMultiSeriesTitle" :description="t.demoMultiSeriesDesc" :code="MultiSeriesSource">
-      <MultiSeriesChart />
+    <DemoBox
+      :title="t.demoAnimationsTitle"
+      :description="t.demoAnimationsDesc"
+      :code="AnimationsSource"
+    >
+      <AnimationsChart />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoCrosshairTitle"
+      :description="t.demoCrosshairDesc"
+      :code="CrosshairSource"
+    >
+      <CrosshairChart />
+    </DemoBox>
+    <DemoBox :title="t.demoBrushTitle" :description="t.demoBrushDesc" :code="BrushSource">
+      <BrushChart />
     </DemoBox>
     <DemoBox :title="t.demoStackedTitle" :description="t.demoStackedDesc" :code="StackedSource">
       <StackedChart />
     </DemoBox>
-    <DemoBox :title="t.demoAnimationsTitle" :description="t.demoAnimationsDesc" :code="AnimationsSource">
-      <AnimationsChart />
+    <DemoBox
+      :title="t.demoMultiSeriesTitle"
+      :description="t.demoMultiSeriesDesc"
+      :code="MultiSeriesSource"
+    >
+      <MultiSeriesChart />
     </DemoBox>
     <DemoBox :title="t.demoRealtimeTitle" :description="t.demoRealtimeDesc" :code="RealtimeSource">
       <RealtimeChart />
     </DemoBox>
-    <DemoBox :title="t.demoHoverActionsTitle" :description="t.demoHoverActionsDesc" :code="HoverActionsSource">
+    <DemoBox
+      :title="t.demoHoverActionsTitle"
+      :description="t.demoHoverActionsDesc"
+      :code="HoverActionsSource"
+    >
       <HoverActionsChart />
     </DemoBox>
-    <DemoBox :title="t.demoContextMenuTitle" :description="t.demoContextMenuDesc" :code="ContextMenuSource">
+    <DemoBox
+      :title="t.demoContextMenuTitle"
+      :description="t.demoContextMenuDesc"
+      :code="ContextMenuSource"
+    >
       <ContextMenuChart />
     </DemoBox>
-    <DemoBox :title="t.demoResponsiveTitle" :description="t.demoResponsiveDesc" :code="ResponsiveSource">
+    <DemoBox
+      :title="t.demoResponsiveTitle"
+      :description="t.demoResponsiveDesc"
+      :code="ResponsiveSource"
+    >
       <ResponsiveChart />
-    </DemoBox>
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledChart />
     </DemoBox>
 
     <template #api>

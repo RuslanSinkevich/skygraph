@@ -1,4 +1,5 @@
 export { default as SgLineChart } from './LineChart.vue'
+export type { LineChartCrosshair } from './LineChart.vue'
 export { default as SgBarChart } from './BarChart.vue'
 export { default as SgAreaChart } from './AreaChart.vue'
 export { default as SgPieChart } from './PieChart.vue'

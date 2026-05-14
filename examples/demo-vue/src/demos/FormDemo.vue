@@ -2,21 +2,15 @@
 /**
  * `FormDemo` — aggregator for the Form component page.
  *
- * Mirrors `examples/demo/src/demos/FormDemo.tsx` in spirit. 19 of 22
- * React demos ported. Still deferred: FormListDynamic (needs richer
- * `SgFormList` slots), ProfileSettings (depends on grid layout helpers
- * already in the demo CSS), ProgrammaticControl (needs an external
- * `useForm` instance that exposes the same surface as React's hook —
- * already wired but the demo itself isn't ported yet). See
- * `docs/_streams/findings/T-Vue-Demo-Complex.md → form-deferred-examples`.
+ * 1:1 with `examples/demo/src/demos/FormDemo.tsx` (22 demos).
  */
 import { computed } from 'vue'
 import { ComponentDoc, DemoBox, PropsTable, type PropDef } from './components'
 
 import { useFormDocStrings } from './form-doc/useStrings'
 
-import BasicForm from './form/Basic.demo.vue'
-import BasicSource from './form/Basic.demo.vue?raw'
+import BasicForm from './form/BasicForm.demo.vue'
+import BasicSource from './form/BasicForm.demo.vue?raw'
 import ValidationForm from './form/ValidationRules.demo.vue'
 import ValidationSource from './form/ValidationRules.demo.vue?raw'
 import LayoutVForm from './form/LayoutVertical.demo.vue'
@@ -29,12 +23,12 @@ import RequiredMarkForm from './form/RequiredMark.demo.vue'
 import RequiredMarkSource from './form/RequiredMark.demo.vue?raw'
 import SizesForm from './form/FormSizes.demo.vue'
 import SizesSource from './form/FormSizes.demo.vue?raw'
-import DisabledForm from './form/Disabled.demo.vue'
-import DisabledSource from './form/Disabled.demo.vue?raw'
+import DisabledForm from './form/DisabledForm.demo.vue'
+import DisabledSource from './form/DisabledForm.demo.vue?raw'
 import NestedForm from './form/NestedFields.demo.vue'
 import NestedSource from './form/NestedFields.demo.vue?raw'
-import ControlsForm from './form/Controls.demo.vue'
-import ControlsSource from './form/Controls.demo.vue?raw'
+import ControlsForm from './form/FormControls.demo.vue'
+import ControlsSource from './form/FormControls.demo.vue?raw'
 import CompositionForm from './form/DistributedComposition.demo.vue'
 import CompositionSource from './form/DistributedComposition.demo.vue?raw'
 import AsyncForm from './form/AsyncValidation.demo.vue'
@@ -53,6 +47,12 @@ import SchemaBasicForm from './form/SchemaFormBasic.demo.vue'
 import SchemaBasicSource from './form/SchemaFormBasic.demo.vue?raw'
 import SchemaLayoutForm from './form/SchemaFormLayout.demo.vue'
 import SchemaLayoutSource from './form/SchemaFormLayout.demo.vue?raw'
+import FormListDynamicForm from './form/FormListDynamic.demo.vue'
+import FormListDynamicSource from './form/FormListDynamic.demo.vue?raw'
+import ProgrammaticControlForm from './form/ProgrammaticControl.demo.vue'
+import ProgrammaticControlSource from './form/ProgrammaticControl.demo.vue?raw'
+import ProfileSettingsForm from './form/ProfileSettings.demo.vue'
+import ProfileSettingsSource from './form/ProfileSettings.demo.vue?raw'
 
 const t = useFormDocStrings()
 
@@ -164,6 +164,16 @@ const fieldProps = computed<PropDef[]>(() => [
     >
       <ValidationForm />
     </DemoBox>
+    <DemoBox
+      :title="t.demoDependentTitle"
+      :description="t.demoDependentDesc"
+      :code="DependentSource"
+    >
+      <DependentForm />
+    </DemoBox>
+    <DemoBox :title="t.demoAsyncTitle" :description="t.demoAsyncDesc" :code="AsyncSource">
+      <AsyncForm />
+    </DemoBox>
     <DemoBox :title="t.demoLayoutVTitle" :description="t.demoLayoutVDesc" :code="LayoutVSource">
       <LayoutVForm />
     </DemoBox>
@@ -186,11 +196,25 @@ const fieldProps = computed<PropDef[]>(() => [
     <DemoBox :title="t.demoDisabledTitle" :description="t.demoDisabledDesc" :code="DisabledSource">
       <DisabledForm />
     </DemoBox>
-    <DemoBox :title="t.demoNestedTitle" :description="t.demoNestedDesc" :code="NestedSource">
-      <NestedForm />
-    </DemoBox>
     <DemoBox :title="t.demoControlsTitle" :description="t.demoControlsDesc" :code="ControlsSource">
       <ControlsForm />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoFieldStatusTitle"
+      :description="t.demoFieldStatusDesc"
+      :code="FieldStatusSource"
+    >
+      <FieldStatusForm />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoFormListTitle"
+      :description="t.demoFormListDesc"
+      :code="FormListDynamicSource"
+    >
+      <FormListDynamicForm />
+    </DemoBox>
+    <DemoBox :title="t.demoNestedTitle" :description="t.demoNestedDesc" :code="NestedSource">
+      <NestedForm />
     </DemoBox>
     <DemoBox
       :title="t.demoCompositionTitle"
@@ -199,22 +223,12 @@ const fieldProps = computed<PropDef[]>(() => [
     >
       <CompositionForm />
     </DemoBox>
-    <DemoBox :title="t.demoAsyncTitle" :description="t.demoAsyncDesc" :code="AsyncSource">
-      <AsyncForm />
-    </DemoBox>
     <DemoBox
-      :title="t.demoDependentTitle"
-      :description="t.demoDependentDesc"
-      :code="DependentSource"
+      :title="t.demoProgrammaticTitle"
+      :description="t.demoProgrammaticDesc"
+      :code="ProgrammaticControlSource"
     >
-      <DependentForm />
-    </DemoBox>
-    <DemoBox
-      :title="t.demoFieldStatusTitle"
-      :description="t.demoFieldStatusDesc"
-      :code="FieldStatusSource"
-    >
-      <FieldStatusForm />
+      <ProgrammaticControlForm />
     </DemoBox>
     <DemoBox
       :title="t.demoLiveWatchTitle"
@@ -236,6 +250,13 @@ const fieldProps = computed<PropDef[]>(() => [
       :code="SearchBarSource"
     >
       <SearchBarForm />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoProfileSettingsTitle"
+      :description="t.demoProfileSettingsDesc"
+      :code="ProfileSettingsSource"
+    >
+      <ProfileSettingsForm />
     </DemoBox>
     <DemoBox
       :title="t.demoSchemaBasicTitle"

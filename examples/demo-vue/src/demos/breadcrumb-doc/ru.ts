@@ -19,6 +19,11 @@ export const breadcrumbDocRu: { [K in keyof typeof breadcrumbDocEn]: string } = 
   demoSeparatorDesc: 'Обычная строка — символ, шеврон, точка.',
   demoOnClickTitle: 'Обработчик itemClick',
   demoOnClickDesc: 'Перехват навигации для SPA-роутеров через эмит @itemClick.',
+  demoIconsTitle: 'С иконками',
+  demoIconsDesc: 'Слот `item` позволяет добавить иконки рядом с подписью.',
+  demoDropdownTitle: 'С дропдауном',
+  demoDropdownDesc:
+    'Встройте `SgDropdown` внутрь слота `item`, чтобы переключаться между соседями.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоупите палитру текста и `--sg-color-primary` для ребрендинга.',
   demoUnstyledTitle: 'Без стилей',
@@ -33,6 +38,7 @@ export const breadcrumbDocRu: { [K in keyof typeof breadcrumbDocEn]: string } = 
 
   propItems: 'Упорядоченная цепочка от корня до текущей страницы',
   propSeparator: 'Строка, отрисованная между сегментами',
+  propItemSlot: 'Кастомный рендер сегмента (получает `{ item, index }`)',
   propUnstyled: 'Убрать классы sg-breadcrumb-* (nav и a11y остаются)',
   emitItemClick: 'Срабатывает при клике по сегменту (передаёт item + index)',
 

@@ -17,7 +17,10 @@
  */
 import { computed, getCurrentInstance, onBeforeUnmount, ref, watch } from 'vue'
 import {
+  getBezierPath,
+  nearestSide,
   pointsToPath,
+  pointsToRoundedPath,
   routeOrthogonal,
   type AABB,
   type Anchor,
@@ -28,6 +31,7 @@ import {
   type GraphNode,
   type NodeId,
   type Point,
+  type Side,
 } from '@skygraph/core'
 import { printElement } from '../../../utils/print'
 import type { PrintOptions } from '../../../utils/print'
@@ -50,8 +54,14 @@ const props = withDefaults(defineProps<DiagramProps>(), {
   routeAroundNodes: false,
   selectionMode: 'single',
   fileName: 'diagram',
+  edgeArrows: true,
   // Legacy aliases default to undefined so we can detect "explicitly set".
 })
+
+/** Default corner radius for rounded orthogonal corners. */
+const ORTHOGONAL_CORNER_RADIUS = 8
+/** Movement threshold (CSS px) before a pointer interaction counts as a drag. */
+const DRAG_THRESHOLD_PX = 0.5
 
 const emit = defineEmits<{
   (e: 'node-click', payload: { id: NodeId; node: GraphNode; event: MouseEvent }): void
@@ -195,7 +205,21 @@ function buildEdgePath(
         sourceBounds,
         targetBounds,
       })
-      return pointsToPath(pts)
+      return pointsToRoundedPath(
+        pts,
+        props.routingOptions?.cornerRadius ?? ORTHOGONAL_CORNER_RADIUS,
+      )
+    }
+    case 'bezier': {
+      const sourceSide: Side = sourceBounds ? nearestSide(sourceBounds, end) : 'right'
+      const targetSide: Side = targetBounds ? nearestSide(targetBounds, start) : 'left'
+      return getBezierPath({
+        source: start,
+        sourceSide,
+        target: end,
+        targetSide,
+        curvature: props.routingOptions?.curvature,
+      })
     }
     case 'manual': {
       const wp = edge.waypoints ?? []
@@ -230,8 +254,9 @@ const renderedEdges = computed<RenderedEdge[]>(() => {
         if (!skip.has(id)) obstacles.push(bb)
       }
     }
-    const sb = edge.routing === 'orthogonal' ? map.get(edge.from.node) : undefined
-    const tb = edge.routing === 'orthogonal' ? map.get(edge.to.node) : undefined
+    const needsBounds = edge.routing === 'orthogonal' || edge.routing === 'bezier'
+    const sb = needsBounds ? map.get(edge.from.node) : undefined
+    const tb = needsBounds ? map.get(edge.to.node) : undefined
     out.push({
       id: String(edge.id),
       d: buildEdgePath(edge, a, b, obstacles, sb, tb),
@@ -243,9 +268,17 @@ const renderedEdges = computed<RenderedEdge[]>(() => {
   return out
 })
 
-// ─── Drag state ────────────────────────────────────────────────────────────
+// ─── Drag state (Pointer Events) ──────────────────────────────────────────
+//
+// Pointer Events replaced the old `mousedown` + window-mousemove dance
+// for parity with React. The win for Vue is the same: touchscreens,
+// trackpads and pen tablets all funnel through one code path, and
+// `setPointerCapture` guarantees pointermove / pointerup keep firing
+// even after the cursor exits the wrapper.
 interface DragSession {
   primaryId: NodeId
+  pointerId: number
+  target: HTMLElement
   startX: number
   startY: number
   startZoom: number
@@ -267,13 +300,21 @@ function applyMove(id: NodeId, x: number, y: number) {
   else props.graph.moveNode(id, nx, ny)
 }
 
-function startDrag(
+function beginDrag(
   primaryId: NodeId,
   members: Array<{ id: NodeId; x0: number; y0: number }>,
-  e: MouseEvent,
+  e: PointerEvent,
 ) {
+  const target = e.currentTarget as HTMLElement
+  try {
+    target.setPointerCapture(e.pointerId)
+  } catch {
+    // Best-effort — proceed without capture if the browser refuses.
+  }
   dragRef = {
     primaryId,
+    pointerId: e.pointerId,
+    target,
     startX: e.clientX,
     startY: e.clientY,
     startZoom: view.value.zoom || 1,
@@ -281,29 +322,34 @@ function startDrag(
     moved: false,
   }
   draggingId.value = primaryId
+}
 
-  const onMove = (ev: MouseEvent) => {
-    if (!dragRef) return
-    const dx = (ev.clientX - dragRef.startX) / dragRef.startZoom
-    const dy = (ev.clientY - dragRef.startY) / dragRef.startZoom
-    if (!dragRef.moved && (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5)) dragRef.moved = true
-    if (dragRef.members.length > 1) {
-      props.graph.transaction(() => {
-        for (const m of dragRef!.members) applyMove(m.id, m.x0 + dx, m.y0 + dy)
-      })
-    } else {
-      const m = dragRef.members[0]!
-      applyMove(m.id, m.x0 + dx, m.y0 + dy)
-    }
+function onNodePointerMove(e: PointerEvent) {
+  if (!dragRef || dragRef.pointerId !== e.pointerId) return
+  const dx = (e.clientX - dragRef.startX) / dragRef.startZoom
+  const dy = (e.clientY - dragRef.startY) / dragRef.startZoom
+  if (!dragRef.moved && (Math.abs(dx) > DRAG_THRESHOLD_PX || Math.abs(dy) > DRAG_THRESHOLD_PX)) {
+    dragRef.moved = true
   }
-  const onUp = () => {
-    dragRef = null
-    draggingId.value = null
-    window.removeEventListener('mousemove', onMove)
-    window.removeEventListener('mouseup', onUp)
+  if (dragRef.members.length > 1) {
+    props.graph.transaction(() => {
+      for (const m of dragRef!.members) applyMove(m.id, m.x0 + dx, m.y0 + dy)
+    })
+  } else {
+    const m = dragRef.members[0]!
+    applyMove(m.id, m.x0 + dx, m.y0 + dy)
   }
-  window.addEventListener('mousemove', onMove)
-  window.addEventListener('mouseup', onUp)
+}
+
+function endNodeDrag(e: PointerEvent) {
+  if (!dragRef || dragRef.pointerId !== e.pointerId) return
+  try {
+    dragRef.target.releasePointerCapture(dragRef.pointerId)
+  } catch {
+    // Pointer might already be released — ignore.
+  }
+  dragRef = null
+  draggingId.value = null
 }
 
 function toggleSelection(arr: readonly NodeId[], id: NodeId): NodeId[] {
@@ -314,7 +360,7 @@ function toggleSelection(arr: readonly NodeId[], id: NodeId): NodeId[] {
   return next as NodeId[]
 }
 
-function onNodeMouseDown(e: MouseEvent, node: GraphNode) {
+function onNodePointerDown(e: PointerEvent, node: GraphNode) {
   if (e.button !== 0) return
   const multiCapable = props.selectionMode !== 'single'
   const isCtrl = e.ctrlKey || e.metaKey
@@ -345,7 +391,7 @@ function onNodeMouseDown(e: MouseEvent, node: GraphNode) {
     })
     .filter((m): m is { id: NodeId; x0: number; y0: number } => m !== null)
 
-  startDrag(node.id, members, e)
+  beginDrag(node.id, members, e)
 }
 
 function onNodeClick(e: MouseEvent, node: GraphNode) {
@@ -429,60 +475,55 @@ function nodesInBox(world: ScreenRect): NodeId[] {
   return out
 }
 
-function startLasso(e: MouseEvent) {
+// Wrapper pointer session (lasso OR middle-button pan). One session
+// at a time — both originate from the wrapper's `pointerdown`.
+type WrapperSession =
+  | { kind: 'lasso'; pointerId: number }
+  | { kind: 'pan'; pointerId: number; startX: number; startY: number; panX: number; panY: number }
+let wrapperSession: WrapperSession | null = null
+
+function startLasso(e: PointerEvent) {
   const rect = rootRef.value?.getBoundingClientRect()
   if (!rect) return
   const sx = e.clientX - rect.left
   const sy = e.clientY - rect.top
   e.preventDefault()
+  try {
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+  } catch {
+    // best-effort
+  }
   lassoRef = {
     startX: sx,
     startY: sy,
     initial: currentSelection.value,
     additive: e.shiftKey || e.ctrlKey || e.metaKey,
   }
+  wrapperSession = { kind: 'lasso', pointerId: e.pointerId }
   lasso.value = { x: sx, y: sy, w: 0, h: 0 }
-
-  const onMove = (ev: MouseEvent) => {
-    const r = rootRef.value?.getBoundingClientRect()
-    if (!r || !lassoRef) return
-    const cx = ev.clientX - r.left
-    const cy = ev.clientY - r.top
-    const screen = rectFromCorners(lassoRef.startX, lassoRef.startY, cx, cy)
-    lasso.value = screen
-    const world = screenRectToWorld(screen)
-    const hits = nodesInBox(world)
-    const next = lassoRef.additive ? Array.from(new Set([...lassoRef.initial, ...hits])) : hits
-    commitSelection(next)
-  }
-  const onUp = () => {
-    lassoRef = null
-    lasso.value = null
-    window.removeEventListener('mousemove', onMove)
-    window.removeEventListener('mouseup', onUp)
-  }
-  window.addEventListener('mousemove', onMove)
-  window.addEventListener('mouseup', onUp)
 }
 
-// ─── Wrapper mousedown: middle-pan / lasso / clear-selection ──────────────
-function onWrapperMouseDown(e: MouseEvent) {
+function startPan(e: PointerEvent) {
+  e.preventDefault()
+  try {
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+  } catch {
+    // best-effort
+  }
+  wrapperSession = {
+    kind: 'pan',
+    pointerId: e.pointerId,
+    startX: e.clientX,
+    startY: e.clientY,
+    panX: view.value.panX,
+    panY: view.value.panY,
+  }
+}
+
+// ─── Wrapper pointerdown: middle-pan / lasso / clear-selection ────────────
+function onWrapperPointerDown(e: PointerEvent) {
   if (effectivePanable.value && e.button === 1) {
-    e.preventDefault()
-    const start = { x: e.clientX, y: e.clientY, panX: view.value.panX, panY: view.value.panY }
-    const onMove = (ev: MouseEvent) => {
-      view.value = {
-        ...view.value,
-        panX: start.panX + (ev.clientX - start.x),
-        panY: start.panY + (ev.clientY - start.y),
-      }
-    }
-    const onUp = () => {
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('mouseup', onUp)
-    }
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseup', onUp)
+    startPan(e)
     return
   }
 
@@ -498,6 +539,43 @@ function onWrapperMouseDown(e: MouseEvent) {
   if (props.selectionMode === 'multi' && currentSelection.value.length > 0) {
     if (!(e.shiftKey || e.ctrlKey || e.metaKey)) commitSelection([])
   }
+}
+
+function onWrapperPointerMove(e: PointerEvent) {
+  if (!wrapperSession || wrapperSession.pointerId !== e.pointerId) return
+  if (wrapperSession.kind === 'pan') {
+    const s = wrapperSession
+    view.value = {
+      ...view.value,
+      panX: s.panX + (e.clientX - s.startX),
+      panY: s.panY + (e.clientY - s.startY),
+    }
+    return
+  }
+  const r = rootRef.value?.getBoundingClientRect()
+  if (!r || !lassoRef) return
+  const cx = e.clientX - r.left
+  const cy = e.clientY - r.top
+  const screen = rectFromCorners(lassoRef.startX, lassoRef.startY, cx, cy)
+  lasso.value = screen
+  const world = screenRectToWorld(screen)
+  const hits = nodesInBox(world)
+  const next = lassoRef.additive ? Array.from(new Set([...lassoRef.initial, ...hits])) : hits
+  commitSelection(next)
+}
+
+function onWrapperPointerUp(e: PointerEvent) {
+  if (!wrapperSession || wrapperSession.pointerId !== e.pointerId) return
+  try {
+    ;(e.currentTarget as HTMLElement).releasePointerCapture(wrapperSession.pointerId)
+  } catch {
+    // best-effort
+  }
+  if (wrapperSession.kind === 'lasso') {
+    lassoRef = null
+    lasso.value = null
+  }
+  wrapperSession = null
 }
 
 // ─── Canvas click — clear selection on empty space (single mode) ──────────
@@ -661,6 +739,18 @@ onBeforeUnmount(() => {
   clearTimer(nodeHoverHideTimer)
   clearTimer(edgeHoverShowTimer)
   clearTimer(edgeHoverHideTimer)
+  // Release any pointer captures still in flight — without this a
+  // mid-drag unmount could leave the captured pointer attached to the
+  // detached element until the next click anywhere on the page.
+  if (dragRef) {
+    try {
+      dragRef.target.releasePointerCapture(dragRef.pointerId)
+    } catch {
+      // pointer might already be gone
+    }
+    dragRef = null
+  }
+  wrapperSession = null
 })
 
 const hasNodeActions = computed(() => (props.nodeActions?.length ?? 0) > 0)
@@ -789,7 +879,11 @@ defineExpose({
     role="application"
     aria-label="Diagram"
     @wheel="effectiveZoomable || effectivePanable ? onWheel($event) : undefined"
-    @mousedown="onWrapperMouseDown"
+    @pointerdown="onWrapperPointerDown"
+    @pointermove="onWrapperPointerMove"
+    @pointerup="onWrapperPointerUp"
+    @pointercancel="onWrapperPointerUp"
+    @lostpointercapture="onWrapperPointerUp"
     @contextmenu="onWrapperContextMenu"
     @dragover="dropEnabled ? onDragOver($event) : undefined"
     @drop="dropEnabled ? onDrop($event) : undefined"
@@ -814,6 +908,39 @@ defineExpose({
         }"
         aria-hidden="true"
       >
+        <!--
+          Marker defs — one regular and one slightly enlarged arrow for the
+          hover state. We always render them when `edgeArrows` is on (cheap;
+          zero render cost otherwise) and let CSS swap the marker-end
+          attribute on the path. `context-stroke` inherits the edge stroke
+          colour automatically when supported.
+        -->
+        <defs v-if="props.edgeArrows">
+          <marker
+            id="sg-diagram-arrow"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+            markerUnits="userSpaceOnUse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 Z" fill="context-stroke" class="sg-diagram-arrow-fill" />
+          </marker>
+          <marker
+            id="sg-diagram-arrow-hover"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="8"
+            markerHeight="8"
+            orient="auto-start-reverse"
+            markerUnits="userSpaceOnUse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 Z" fill="context-stroke" class="sg-diagram-arrow-fill" />
+          </marker>
+        </defs>
         <template v-for="ep in renderedEdges" :key="ep.id">
           <g v-if="edgesInteractive" :data-edge-id="ep.id">
             <path
@@ -821,7 +948,8 @@ defineExpose({
               class="sg-diagram-edge-hit"
               fill="none"
               stroke="transparent"
-              :stroke-width="12"
+              :stroke-width="16"
+              data-edge-hit="true"
               :style="{ pointerEvents: 'stroke', cursor: 'context-menu' }"
               @contextmenu="onEdgeContextMenu($event, ep.raw)"
               @mouseenter="showEdgeHover(ep.id)"
@@ -832,6 +960,7 @@ defineExpose({
               :class="`sg-diagram-edge sg-diagram-edge-${ep.routing}`"
               fill="none"
               :data-edge-id="ep.id"
+              :marker-end="props.edgeArrows ? 'url(#sg-diagram-arrow)' : undefined"
               :style="{ pointerEvents: 'none' }"
             />
           </g>
@@ -841,6 +970,7 @@ defineExpose({
             :class="`sg-diagram-edge sg-diagram-edge-${ep.routing}`"
             fill="none"
             :data-edge-id="ep.id"
+            :marker-end="props.edgeArrows ? 'url(#sg-diagram-arrow)' : undefined"
           />
         </template>
       </svg>
@@ -853,7 +983,11 @@ defineExpose({
         :data-sg-dragging="draggingId === node.id ? 'true' : undefined"
         :class="nodeClassFor(node)"
         :style="nodeStyleFor(node)"
-        @mousedown="onNodeMouseDown($event, node)"
+        @pointerdown="onNodePointerDown($event, node)"
+        @pointermove="effectiveDraggable ? onNodePointerMove($event) : undefined"
+        @pointerup="effectiveDraggable ? endNodeDrag($event) : undefined"
+        @pointercancel="effectiveDraggable ? endNodeDrag($event) : undefined"
+        @lostpointercapture="effectiveDraggable ? endNodeDrag($event) : undefined"
         @click="onNodeClick($event, node)"
         @contextmenu="onNodeContextMenu($event, node)"
         @mouseenter="hasNodeActions ? showNodeHover(node.id) : undefined"

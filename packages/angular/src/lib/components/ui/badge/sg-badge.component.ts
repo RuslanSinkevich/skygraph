@@ -28,18 +28,15 @@ import {
   standalone: true,
   template: `
     @if (statusOnly()) {
-      <span
-        [class]="'sg-badge-status-dot sg-badge-status-' + status"
-        [style.background]="color || null"
-      ></span>
+      <span [class]="statusDotClass()" [style.background]="color || null"></span>
       @if (text) {
-        <span class="sg-badge-status-text">{{ text }}</span>
+        <span [class]="statusTextClass()">{{ text }}</span>
       }
     } @else {
       <ng-content></ng-content>
       @if (dot && !hasCount()) {
         <sup
-          class="sg-badge-dot"
+          [class]="dotClass()"
           [style.right]="offsetRight()"
           [style.marginTop]="offsetMargin()"
           [style.background]="color || null"
@@ -47,7 +44,7 @@ import {
       }
       @if (hasCount()) {
         <sup
-          class="sg-badge-count"
+          [class]="countClass()"
           [style.right]="offsetRight()"
           [style.marginTop]="offsetMargin()"
           [style.background]="color || null"
@@ -133,6 +130,17 @@ export class SgBadgeComponent {
     this._hasContent.set(!v)
   }
 
+  protected readonly _unstyled = signal<boolean>(false)
+
+  /** Drop every sg-badge-* class; keep DOM structure only. */
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
   readonly hasCount = computed(() => {
     const c = this._count()
     return c !== undefined && (c > 0 || this._showZero())
@@ -149,6 +157,7 @@ export class SgBadgeComponent {
   readonly isStandalone = computed(() => !this._hasContent() && (this.hasCount() || this._dot()))
 
   readonly classes = computed(() => {
+    if (this._unstyled()) return ''
     if (this.statusOnly()) return 'sg-badge-status'
     return ['sg-badge', this.isStandalone() ? 'sg-badge-standalone' : ''].filter(Boolean).join(' ')
   })
@@ -159,4 +168,11 @@ export class SgBadgeComponent {
   readonly offsetMargin = computed(() =>
     this.offset && !this.isStandalone() ? `${this.offset[1]}px` : null,
   )
+
+  readonly statusDotClass = computed(() =>
+    this._unstyled() ? '' : `sg-badge-status-dot sg-badge-status-${this.status}`,
+  )
+  readonly statusTextClass = computed(() => (this._unstyled() ? '' : 'sg-badge-status-text'))
+  readonly dotClass = computed(() => (this._unstyled() ? '' : 'sg-badge-dot'))
+  readonly countClass = computed(() => (this._unstyled() ? '' : 'sg-badge-count'))
 }

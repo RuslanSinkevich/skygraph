@@ -19,6 +19,9 @@ export const dropdownDocRu: { [K in keyof typeof dropdownDocEn]: string } = {
   demoTriggerDesc: 'Click для меню действий, hover для chrome.',
   demoPlacementTitle: 'Расположение',
   demoPlacementDesc: 'Четыре угла — выберите тот, что попадает во вьюпорт.',
+  demoRichItemsTitle: 'Богатые строки',
+  demoRichItemsDesc:
+    'Любой VNode на строку через слот `#item` — иконка + название + горячая клавиша, разделители между секциями.',
   demoDisabledTitle: 'Отключено',
   demoDisabledDesc: 'Меню не открывается; @select не вызывается.',
   demoKeyboardTitle: 'Клавиатура',

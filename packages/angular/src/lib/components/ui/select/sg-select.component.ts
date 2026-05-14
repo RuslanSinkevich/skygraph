@@ -130,6 +130,7 @@ export class SgSelectComponent {
   protected readonly _ctrlMulti = signal<(string | number)[] | undefined>(undefined)
   protected readonly _disabled = signal<boolean | undefined>(undefined)
   protected readonly _size = signal<SizeType | undefined>(undefined)
+  protected readonly _unstyled = signal<boolean>(false)
 
   readonly listboxId = 'sg-select-' + Math.random().toString(36).slice(2, 8)
 
@@ -180,6 +181,14 @@ export class SgSelectComponent {
     this._size.set(v)
   }
 
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
   @Output() readonly valueChange = new EventEmitter<string | number | (string | number)[]>()
   @Output() readonly blurEvent = new EventEmitter<void>()
 
@@ -189,8 +198,9 @@ export class SgSelectComponent {
 
   readonly resolvedSize = computed(() => this._size() ?? this.cfg.size ?? 'middle')
 
-  readonly classes = computed(() =>
-    [
+  readonly classes = computed(() => {
+    if (this._unstyled()) return ''
+    return [
       'sg-select',
       `sg-select-${this.resolvedSize()}`,
       this.multiple ? 'sg-select-multiple' : '',
@@ -199,8 +209,8 @@ export class SgSelectComponent {
       this.loading ? 'sg-select-loading' : '',
     ]
       .filter(Boolean)
-      .join(' '),
-  )
+      .join(' ')
+  })
 
   protected currentSingle(): string | number | undefined {
     return this._ctrlSingle() ?? this._internalSingle()

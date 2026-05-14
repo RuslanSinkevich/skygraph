@@ -1,10 +1,6 @@
 /**
  * English source of truth for Steps doc page strings.
  * Other locales must provide the same keys (see `ru.ts`).
- *
- * Vue-side delta vs React: `StepItem.title` and `description` are
- * `string` only (React uses `ReactNode`). There is no `icon` field —
- * the React `CustomIcon.demo` cannot be reproduced 1:1 and is skipped.
  */
 export const stepsDocEn = {
   pageTitle: 'Steps',
@@ -24,6 +20,8 @@ export const stepsDocEn = {
   demoVerticalDesc: 'Stack for sidebars and tall wizards.',
   demoErrorTitle: 'Error status',
   demoErrorDesc: 'Per-item `status` overrides `current`.',
+  demoCustomIconTitle: 'Custom icon',
+  demoCustomIconDesc: 'Override the auto-generated number with your own glyph via `item.icon`.',
   demoSizesTitle: 'Sizes',
   demoSizesDesc: '`small` and default icon rings.',
   demoNavigationTitle: 'Navigation',
@@ -50,6 +48,7 @@ export const stepsDocEn = {
 
   itemTitle: 'Primary step title',
   itemDescription: 'Secondary line below the title',
+  itemIcon: 'Custom icon glyph (emoji / unicode / short label) — use `#icon` slot for rich content',
   itemStatus: 'Force a status (overrides the one derived from `current`)',
 
   cssPrimary: 'Fill for the current step + finished tail / ring colour',

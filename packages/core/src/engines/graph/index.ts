@@ -1,6 +1,12 @@
 export { createGraph } from './GraphEngine'
-export { routeOrthogonal, pointsToPath } from './router'
-export type { RouteOrthogonalOptions } from './router'
+export {
+  routeOrthogonal,
+  pointsToPath,
+  pointsToRoundedPath,
+  getBezierPath,
+  nearestSide,
+} from './router'
+export type { RouteOrthogonalOptions, BezierPathOptions, Side } from './router'
 export { aabbFromOBB, obbCorners, obbContainsPoint } from './obb'
 
 export type {

@@ -2,16 +2,9 @@
 /**
  * `TimePickerDemo` — aggregator for the TimePicker component page.
  *
- * Mirrors `examples/demo/src/demos/TimePickerDemo.tsx` (9 examples).
- * Vue surface (7 examples): Basic, Format, Steps, Sizes, States,
- * TokensOverride, Unstyled.
- *
- * Dropped vs React (see `findings/T-Vue-Demo-Forms.md`
- * → `timepicker-vue-feature-gaps`):
- * - `Range` — no `SgTimeRangePicker` companion.
- * - `DisabledSlots` — no `disabledHours` / `disabledMinutes` predicates.
- * - `States.loading` — no `loading` prop (folded into `States` with a
- *   `disabled` + side-label simulation).
+ * 1:1 with `examples/demo/src/demos/TimePickerDemo.tsx` (9 examples):
+ *   Basic, Format, Steps, DisabledSlots, Range, Sizes, States,
+ *   TokensOverride, Unstyled.
  */
 import { computed } from 'vue'
 import {
@@ -30,6 +23,10 @@ import FormatTimePickerDemo from './timepicker/Format.demo.vue'
 import FormatSource from './timepicker/Format.demo.vue?raw'
 import StepsTimePickerDemo from './timepicker/Steps.demo.vue'
 import StepsSource from './timepicker/Steps.demo.vue?raw'
+import DisabledSlotsTimePickerDemo from './timepicker/DisabledSlots.demo.vue'
+import DisabledSlotsSource from './timepicker/DisabledSlots.demo.vue?raw'
+import RangeTimePickerDemo from './timepicker/Range.demo.vue'
+import RangeSource from './timepicker/Range.demo.vue?raw'
 import SizesTimePickerDemo from './timepicker/Sizes.demo.vue'
 import SizesSource from './timepicker/Sizes.demo.vue?raw'
 import StatesTimePickerDemo from './timepicker/States.demo.vue'
@@ -59,8 +56,20 @@ const timePickerProps = computed<PropDef[]>(() => [
   { name: 'showSecond', description: t.value.propShowSecond, type: 'boolean', default: 'true' },
   { name: 'showNow', description: t.value.propShowNow, type: 'boolean', default: 'true' },
   { name: 'allowClear', description: t.value.propAllowClear, type: 'boolean', default: 'true' },
+  { name: 'disabledHours', description: t.value.propDisabledHours, type: '() => number[]' },
+  {
+    name: 'disabledMinutes',
+    description: t.value.propDisabledMinutes,
+    type: '(hour: number) => number[]',
+  },
+  {
+    name: 'disabledSeconds',
+    description: t.value.propDisabledSeconds,
+    type: '(hour, minute) => number[]',
+  },
   { name: 'open', description: t.value.propOpen, type: 'boolean' },
   { name: 'disabled', description: t.value.propDisabled, type: 'boolean', default: 'false' },
+  { name: 'loading', description: t.value.propLoading, type: 'boolean', default: 'false' },
   {
     name: 'size',
     description: t.value.propSize,
@@ -75,6 +84,66 @@ const timePickerProps = computed<PropDef[]>(() => [
   },
   { name: '@change', description: t.value.emitChange, type: '(value: string) => void' },
   { name: '@openChange', description: t.value.emitOpenChange, type: '(open: boolean) => void' },
+])
+
+const timeRangePickerProps = computed<PropDef[]>(() => [
+  { name: 'modelValue', description: t.value.propRangeValue, type: '[string, string]' },
+  { name: 'value', description: t.value.propRangeValue, type: '[string, string]' },
+  { name: 'defaultValue', description: t.value.propRangeDefaultValue, type: '[string, string]' },
+  {
+    name: 'placeholder',
+    description: t.value.propRangePlaceholder,
+    type: '[string, string]',
+    default: "['Start', 'End']",
+  },
+  { name: 'format', description: t.value.propRangeFormat, type: 'string' },
+  {
+    name: 'use12Hours',
+    description: t.value.propRangeUse12Hours,
+    type: 'boolean',
+    default: 'false',
+  },
+  { name: 'hourStep', description: t.value.propRangeHourStep, type: 'number', default: '1' },
+  { name: 'minuteStep', description: t.value.propRangeMinuteStep, type: 'number', default: '1' },
+  { name: 'secondStep', description: t.value.propRangeSecondStep, type: 'number', default: '1' },
+  {
+    name: 'showSecond',
+    description: t.value.propRangeShowSecond,
+    type: 'boolean',
+    default: 'true',
+  },
+  {
+    name: 'allowClear',
+    description: t.value.propRangeAllowClear,
+    type: 'boolean',
+    default: 'true',
+  },
+  { name: 'separator', description: t.value.propRangeSeparator, type: 'string', default: "'→'" },
+  { name: 'open', description: t.value.propRangeOpen, type: 'boolean' },
+  { name: 'disabled', description: t.value.propRangeDisabled, type: 'boolean', default: 'false' },
+  { name: 'loading', description: t.value.propRangeLoading, type: 'boolean', default: 'false' },
+  {
+    name: 'size',
+    description: t.value.propRangeSize,
+    type: "'small' | 'middle' | 'large'",
+    default: "'middle'",
+  },
+  { name: 'unstyled', description: t.value.propRangeUnstyled, type: 'boolean', default: 'false' },
+  {
+    name: '@update:modelValue',
+    description: t.value.emitRangeUpdate,
+    type: '(value: [string, string]) => void',
+  },
+  {
+    name: '@change',
+    description: t.value.emitRangeChange,
+    type: '(value: [string, string]) => void',
+  },
+  {
+    name: '@openChange',
+    description: t.value.emitRangeOpenChange,
+    type: '(open: boolean) => void',
+  },
 ])
 
 const timePickerCssVars = computed<CssVarDef[]>(() => [
@@ -169,6 +238,18 @@ const timePickerCssVars = computed<CssVarDef[]>(() => [
       <StepsTimePickerDemo />
     </DemoBox>
 
+    <DemoBox
+      :title="t.demoDisabledSlotsTitle"
+      :description="t.demoDisabledSlotsDesc"
+      :code="DisabledSlotsSource"
+    >
+      <DisabledSlotsTimePickerDemo />
+    </DemoBox>
+
+    <DemoBox :title="t.demoRangeTitle" :description="t.demoRangeDesc" :code="RangeSource">
+      <RangeTimePickerDemo />
+    </DemoBox>
+
     <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource">
       <SizesTimePickerDemo />
     </DemoBox>
@@ -185,21 +266,14 @@ const timePickerCssVars = computed<CssVarDef[]>(() => [
       <TokensOverrideTimePickerDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
+    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledTimePickerDemo />
     </DemoBox>
 
     <template #api>
       <PropsTable :title="t.tableTimePickerApi" :data="timePickerProps" />
-      <CssVarsTable
-        :title="t.tableCssVars"
-        :hint="t.cssHint"
-        :data="timePickerCssVars"
-      />
+      <PropsTable :title="t.tableTimeRangePickerApi" :data="timeRangePickerProps" />
+      <CssVarsTable :title="t.tableCssVars" :hint="t.cssHint" :data="timePickerCssVars" />
     </template>
   </ComponentDoc>
 </template>

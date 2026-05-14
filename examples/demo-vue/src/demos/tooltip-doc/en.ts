@@ -1,16 +1,11 @@
 /**
  * English source of truth for Tooltip doc page strings.
  * Other locales must provide the same keys (see `ru.ts`).
- *
- * Vue-specific: `title` is `string` (no slot for rich JSX content),
- * so the React `RichContentTooltip` example is skipped (see findings
- * `tooltip-rich-content-no-vue`). Strings for that demo are kept in
- * the dictionary so adding the slot in the future doesn't break TS.
  */
 export const tooltipDocEn = {
   pageTitle: 'Tooltip',
   pageLead:
-    'Hover-triggered help text with four placement options. ARIA describedby is wired automatically. Vue accepts a string `title` (no rich content slot yet — see findings).',
+    'Hover-triggered help text with four placement options. ARIA describedby is wired automatically. Pass a string via `title` or supply rich markup through the `title` slot.',
   pageWhen1: 'Explain an icon or a truncated label on hover.',
   pageWhen2: 'Surface the reason behind a disabled action.',
   pageWhen3: 'Show a keyboard shortcut or a full-text value that was clipped.',
@@ -19,6 +14,8 @@ export const tooltipDocEn = {
   demoBasicDesc: 'Hover a child to see the tip.',
   demoPlacementTitle: 'Placement',
   demoPlacementDesc: 'Four sides, no auto-flip — pick what fits your layout.',
+  demoRichTitle: 'Rich content',
+  demoRichDesc: 'Use the `title` slot for headings, descriptions, or compact layouts.',
   demoDisabledTitle: 'On a disabled element',
   demoDisabledDesc: 'Tooltip listens on its wrapper, so disabled children still reveal the tip.',
   demoIconTitle: 'On an info icon',
@@ -34,7 +31,8 @@ export const tooltipDocEn = {
   cssHint:
     'Tooltip owns two dedicated tokens — `--sg-color-tooltip-bg` and `--sg-color-tooltip-text`. Everything else (padding, radius, shadow, z-index) comes from global tokens. Override them on a scoping wrapper to restyle without touching the global theme.',
 
-  propTitle: 'Tooltip text content (Vue: string only)',
+  propTitle: 'Plain-text tip body (use the `title` slot for rich content)',
+  propTitleSlot: 'Rich tooltip body — takes precedence over the `title` prop when present',
   propPlacement: 'Side of the trigger to show the tip',
   propChildren: 'Single element the Tooltip wraps (Vue: default slot)',
   propUnstyled: 'Drop sg-tooltip-* classes (headless mode)',

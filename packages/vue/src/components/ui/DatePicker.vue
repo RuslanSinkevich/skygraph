@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useConfig } from './ConfigProvider.vue'
 
 export type DatePickerMode = 'date' | 'month' | 'year'
 
@@ -19,8 +20,8 @@ export interface ShowTimeConfig {
 export interface DatePreset {
   /** Label shown in the sidebar. */
   label: string
-  /** Date applied when picked. */
-  value: Date
+  /** Date applied when picked (or a `[start, end]` tuple for range presets). */
+  value: Date | [Date, Date]
 }
 
 export interface DatePickerProps {
@@ -87,7 +88,7 @@ const emit = defineEmits<{
   (e: 'calendarChange', value: Date | null): void
 }>()
 
-const MONTH_NAMES = [
+const DEFAULT_MONTH_NAMES = [
   'January',
   'February',
   'March',
@@ -101,7 +102,20 @@ const MONTH_NAMES = [
   'November',
   'December',
 ]
-const DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+const DEFAULT_DAY_NAMES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+
+const config = useConfig()
+const monthNames = computed(() => config.value.locale?.calendar?.monthNames ?? DEFAULT_MONTH_NAMES)
+const dayNames = computed(() => config.value.locale?.calendar?.dayNames ?? DEFAULT_DAY_NAMES)
+const todayBtnLabel = computed(() => config.value.locale?.calendar?.today ?? 'Today')
+const nowBtnLabel = computed(() => config.value.locale?.calendar?.now ?? 'Now')
+const okBtnLabel = computed(() => config.value.locale?.modal?.okText ?? 'OK')
+const prevYearLabel = computed(() => config.value.locale?.datePicker?.prevYear ?? 'Previous year')
+const nextYearLabel = computed(() => config.value.locale?.datePicker?.nextYear ?? 'Next year')
+const prevMonthLabel = computed(
+  () => config.value.locale?.datePicker?.prevMonth ?? 'Previous month',
+)
+const nextMonthLabel = computed(() => config.value.locale?.datePicker?.nextMonth ?? 'Next month')
 
 function pad(n: number) {
   return String(n).padStart(2, '0')
@@ -326,7 +340,8 @@ function handleClear(e: MouseEvent) {
 }
 
 function handlePresetSelect(p: DatePreset) {
-  commit(p.value)
+  const single = Array.isArray(p.value) ? p.value[0] : p.value
+  commit(single)
   setOpen(false)
 }
 
@@ -396,7 +411,7 @@ const weeks = computed<DayCell[][]>(() => {
   return out
 })
 
-const monthLabel = computed(() => `${MONTH_NAMES[viewMonth.value]} ${viewYear.value}`)
+const monthLabel = computed(() => `${monthNames.value[viewMonth.value]} ${viewYear.value}`)
 const displayText = computed(() => {
   if (isInputting.value) return inputText.value
   return current.value ? formatDate(current.value, fmt.value) : ''
@@ -588,8 +603,8 @@ watch([isOpen, () => tempTime.value], async () => {
               <button
                 type="button"
                 class="sg-dp-nav-btn"
-                title="Previous year"
-                aria-label="Previous year"
+                :title="prevYearLabel"
+                :aria-label="prevYearLabel"
                 @click="shiftYear(-1)"
               >
                 &laquo;
@@ -597,8 +612,8 @@ watch([isOpen, () => tempTime.value], async () => {
               <button
                 type="button"
                 class="sg-dp-nav-btn"
-                title="Previous month"
-                aria-label="Previous month"
+                :title="prevMonthLabel"
+                :aria-label="prevMonthLabel"
                 @click="shiftMonth(-1)"
               >
                 &lsaquo;
@@ -615,8 +630,8 @@ watch([isOpen, () => tempTime.value], async () => {
               <button
                 type="button"
                 class="sg-dp-nav-btn"
-                title="Next month"
-                aria-label="Next month"
+                :title="nextMonthLabel"
+                :aria-label="nextMonthLabel"
                 @click="shiftMonth(1)"
               >
                 &rsaquo;
@@ -624,8 +639,8 @@ watch([isOpen, () => tempTime.value], async () => {
               <button
                 type="button"
                 class="sg-dp-nav-btn"
-                title="Next year"
-                aria-label="Next year"
+                :title="nextYearLabel"
+                :aria-label="nextYearLabel"
                 @click="shiftYear(1)"
               >
                 &raquo;
@@ -634,7 +649,7 @@ watch([isOpen, () => tempTime.value], async () => {
             <table class="sg-dp-table">
               <thead>
                 <tr>
-                  <th v-for="d in DAY_NAMES" :key="d" class="sg-dp-th">{{ d }}</th>
+                  <th v-for="d in dayNames" :key="d" class="sg-dp-th">{{ d }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -657,8 +672,8 @@ watch([isOpen, () => tempTime.value], async () => {
               <button
                 type="button"
                 class="sg-dp-nav-btn"
-                title="Previous year"
-                aria-label="Previous year"
+                :title="prevYearLabel"
+                :aria-label="prevYearLabel"
                 @click="shiftYear(-1)"
               >
                 &laquo;
@@ -667,8 +682,8 @@ watch([isOpen, () => tempTime.value], async () => {
               <button
                 type="button"
                 class="sg-dp-nav-btn"
-                title="Next year"
-                aria-label="Next year"
+                :title="nextYearLabel"
+                :aria-label="nextYearLabel"
                 @click="shiftYear(1)"
               >
                 &raquo;
@@ -676,7 +691,7 @@ watch([isOpen, () => tempTime.value], async () => {
             </div>
             <div class="sg-dp-month-grid">
               <div
-                v-for="(name, i) in MONTH_NAMES"
+                v-for="(name, i) in monthNames"
                 :key="i"
                 :class="
                   [
@@ -703,8 +718,8 @@ watch([isOpen, () => tempTime.value], async () => {
               <button
                 type="button"
                 class="sg-dp-nav-btn"
-                title="Previous decade"
-                aria-label="Previous decade"
+                :title="prevYearLabel"
+                :aria-label="prevYearLabel"
                 @click="shiftYear(-10)"
               >
                 &laquo;
@@ -715,8 +730,8 @@ watch([isOpen, () => tempTime.value], async () => {
               <button
                 type="button"
                 class="sg-dp-nav-btn"
-                title="Next decade"
-                aria-label="Next decade"
+                :title="nextYearLabel"
+                :aria-label="nextYearLabel"
                 @click="shiftYear(10)"
               >
                 &raquo;
@@ -796,7 +811,7 @@ watch([isOpen, () => tempTime.value], async () => {
                 class="sg-dp-footer-btn sg-dp-today-btn"
                 @click="handleToday"
               >
-                Today
+                {{ todayBtnLabel }}
               </button>
               <button
                 v-if="showNow && hasTime"
@@ -804,7 +819,7 @@ watch([isOpen, () => tempTime.value], async () => {
                 class="sg-dp-footer-btn sg-dp-now-btn"
                 @click="handleNow"
               >
-                Now
+                {{ nowBtnLabel }}
               </button>
             </div>
             <div class="sg-dp-footer-end">
@@ -814,7 +829,7 @@ watch([isOpen, () => tempTime.value], async () => {
                 class="sg-dp-footer-btn sg-dp-ok-btn"
                 @click="handleTimeOk"
               >
-                OK
+                {{ okBtnLabel }}
               </button>
             </div>
           </div>

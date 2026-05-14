@@ -1,14 +1,19 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  Directive,
   Input,
+  OnDestroy,
+  TemplateRef,
   booleanAttribute,
   computed,
   contentChildren,
+  effect,
+  inject,
   signal,
 } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { Directive, TemplateRef, inject } from '@angular/core'
 import { injectSgConfig } from '../../../config/inject-sg-config'
 
 /**
@@ -34,40 +39,53 @@ export class SgCarouselSlideDirective {
  *   <ng-template sg-carousel-slide>Slide 2</ng-template>
  * </div>
  * ```
- *
- * `autoplay` is accepted for API parity but is a no-op in 4.2 — see
- * decision D12 / finding F-Carousel-Autoplay.
  */
 @Component({
   selector: 'div[sg-carousel]',
   standalone: true,
   imports: [CommonModule, SgCarouselSlideDirective],
   template: `
-    <div class="sg-carousel-container">
-      <div class="sg-carousel-track">
-        @for (slide of slides(); let i = $index; track i) {
-          <div
-            [class]="slideClass(i)"
-            [attr.aria-hidden]="i !== current()"
-            [style.transform]="
-              effect === 'slide' ? 'translateX(' + (i - current()) * 100 + '%)' : null
-            "
-          >
-            <ng-container [ngTemplateOutlet]="slide.tpl"></ng-container>
-          </div>
-        }
+    @if (_unstyled()) {
+      @if (slides()[current()]; as activeSlide) {
+        <ng-container [ngTemplateOutlet]="activeSlide.tpl"></ng-container>
+      }
+      @if (dots && slides().length > 1) {
+        <div>
+          @for (slide of slides(); let i = $index; track i) {
+            <button type="button" [attr.aria-current]="i === current()" (click)="goTo(i)">
+              {{ i + 1 }}
+            </button>
+          }
+        </div>
+      }
+    } @else {
+      <div class="sg-carousel-container">
+        <div class="sg-carousel-track">
+          @for (slide of slides(); let i = $index; track i) {
+            <div
+              [class]="slideClass(i)"
+              [attr.aria-hidden]="i !== current()"
+              [style.transform]="
+                effect === 'slide' ? 'translateX(' + (i - current()) * 100 + '%)' : null
+              "
+            >
+              <ng-container [ngTemplateOutlet]="slide.tpl"></ng-container>
+            </div>
+          }
+        </div>
       </div>
-    </div>
-    @if (dots && slides().length > 1) {
-      <div [class]="dotsClass()">
-        @for (slide of slides(); let i = $index; track i) {
-          <button
-            [class]="'sg-carousel-dot' + (i === current() ? ' sg-carousel-dot-active' : '')"
-            [attr.aria-label]="slideLabel(i + 1)"
-            (click)="goTo(i)"
-          ></button>
-        }
-      </div>
+      @if (dots && slides().length > 1) {
+        <div [class]="dotsClass()">
+          @for (slide of slides(); let i = $index; track i) {
+            <button
+              type="button"
+              [class]="'sg-carousel-dot' + (i === current() ? ' sg-carousel-dot-active' : '')"
+              [attr.aria-label]="slideLabel(i + 1)"
+              (click)="goTo(i)"
+            ></button>
+          }
+        </div>
+      }
     }
   `,
   host: {
@@ -75,30 +93,92 @@ export class SgCarouselSlideDirective {
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SgCarouselComponent {
+export class SgCarouselComponent implements OnDestroy {
   private readonly cfg = injectSgConfig()
+  private readonly destroyRef = inject(DestroyRef)
   private readonly _current = signal(0)
+  protected readonly _unstyled = signal<boolean>(false)
+  private readonly _className = signal<string>('')
+  private readonly _autoplay = signal<boolean>(false)
+  private readonly _autoplaySpeed = signal<number>(3000)
+  private timer: ReturnType<typeof setInterval> | null = null
 
   readonly slides = contentChildren(SgCarouselSlideDirective)
 
-  /** No-op in 4.2 (see D12 / F-Carousel-Autoplay), kept for API parity. */
-  @Input({ transform: booleanAttribute }) autoplay = false
-  @Input() autoplaySpeed = 3000
+  @Input({ transform: booleanAttribute })
+  get autoplay(): boolean {
+    return this._autoplay()
+  }
+  set autoplay(v: boolean) {
+    this._autoplay.set(v)
+  }
+
+  @Input()
+  get autoplaySpeed(): number {
+    return this._autoplaySpeed()
+  }
+  set autoplaySpeed(v: number) {
+    this._autoplaySpeed.set(typeof v === 'number' ? v : 3000)
+  }
+
   @Input({ transform: booleanAttribute }) dots = true
   @Input() dotPosition: 'top' | 'bottom' | 'left' | 'right' = 'bottom'
   @Input() effect: 'slide' | 'fade' = 'slide'
 
+  @Input({ transform: booleanAttribute })
+  get unstyled(): boolean {
+    return this._unstyled()
+  }
+  set unstyled(v: boolean) {
+    this._unstyled.set(v)
+  }
+
+  @Input()
+  get className(): string {
+    return this._className()
+  }
+  set className(v: string) {
+    this._className.set(v ?? '')
+  }
+
   readonly current = this._current.asReadonly()
 
-  readonly classes = computed(() =>
-    [
+  readonly classes = computed(() => {
+    if (this._unstyled()) return this._className()
+    return [
       'sg-carousel',
       `sg-carousel-dots-${this.dotPosition}`,
       this.dotPosition === 'left' || this.dotPosition === 'right' ? 'sg-carousel-vertical' : '',
+      this._className(),
     ]
       .filter(Boolean)
-      .join(' '),
-  )
+      .join(' ')
+  })
+
+  constructor() {
+    effect(() => {
+      const enabled = this._autoplay()
+      const speed = this._autoplaySpeed()
+      const count = this.slides().length
+      this.stopTimer()
+      if (!enabled || count <= 1) return
+      this.timer = setInterval(() => {
+        this._current.update((c) => (c + 1) % Math.max(this.slides().length, 1))
+      }, speed)
+    })
+    this.destroyRef.onDestroy(() => this.stopTimer())
+  }
+
+  ngOnDestroy(): void {
+    this.stopTimer()
+  }
+
+  private stopTimer(): void {
+    if (this.timer) {
+      clearInterval(this.timer)
+      this.timer = null
+    }
+  }
 
   dotsClass(): string {
     return [

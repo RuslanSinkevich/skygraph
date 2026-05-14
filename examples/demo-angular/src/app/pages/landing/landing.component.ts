@@ -9,9 +9,9 @@ const ENGINE_COUNT = 6
 const STANDALONE_COUNT = 51
 const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph'
 
-const INSTALL_SNIPPET = `pnpm add @skygraph/angular @skygraph/styles
+const INSTALL_SNIPPET = `npm install @skygraph/core @skygraph/angular @skygraph/styles
 # or
-npm install @skygraph/angular @skygraph/styles`
+pnpm add @skygraph/core @skygraph/angular @skygraph/styles`
 
 const MINIMAL_EXAMPLE = `import { bootstrapApplication } from '@angular/platform-browser'
 import { provideSgConfig } from '@skygraph/angular'
@@ -22,27 +22,33 @@ bootstrapApplication(AppComponent, {
   providers: [provideSgConfig({ size: 'middle' })],
 })`
 
+interface Feature {
+  title: string
+  desc: string
+  href: string
+}
+
 /**
- * Landing — Angular port of `examples/demo-vue/src/pages/Landing.vue`
- * (which itself trims the React-side Landing to the slice supported
- * outside React: Hero + Stats + Features + QuickInstall, no
- * WhatsNew / ShowcasesPreview).
+ * Landing — Angular port of `examples/demo/src/pages/Landing/Landing.tsx`.
+ * Same `landing-*` class names, same DOM layout (Hero + 5 stats + 6
+ * features + QuickInstall). The React-only WhatsNew + ShowcasesPreview
+ * sections are intentionally omitted (per Wave 5.3 scope).
  */
 @Component({
   selector: 'sg-landing-page',
   standalone: true,
   template: `
-    <div class="dv-landing">
-      <section class="dv-landing-hero">
-        <h1>{{ i18n.t().landing.title }}</h1>
-        <p class="dv-landing-tagline">{{ i18n.t().app.tagline }}</p>
-        <p class="dv-landing-sub">{{ i18n.t().app.heroSub }}</p>
-        <div class="dv-landing-cta">
-          <button type="button" class="dv-landing-cta-primary" (click)="browse()">
+    <div class="landing">
+      <section class="landing-hero" data-section="hero">
+        <h1>SkyGraph</h1>
+        <p class="landing-hero-tagline">{{ i18n.t().app.tagline }}</p>
+        <p class="landing-hero-sub">{{ i18n.t().app.heroSub }}</p>
+        <div class="landing-cta">
+          <button type="button" class="landing-cta-primary" (click)="browse()">
             {{ i18n.t().landing.ctaPrimary }} →
           </button>
           <a
-            class="dv-landing-cta-secondary"
+            class="landing-cta-secondary"
             [href]="githubUrl"
             target="_blank"
             rel="noreferrer noopener"
@@ -50,71 +56,79 @@ bootstrapApplication(AppComponent, {
             {{ i18n.t().landing.ctaSecondary }}
           </a>
         </div>
-      </section>
-
-      <section class="dv-landing-stats" role="list" aria-label="Project stats">
-        <div class="dv-landing-stat" role="listitem">
-          <span class="dv-landing-stat-num">{{ componentCount }}+</span>
-          <span class="dv-landing-stat-label">{{ i18n.t().landing.statComponents }}</span>
-        </div>
-        <div class="dv-landing-stat" role="listitem">
-          <span class="dv-landing-stat-num">{{ standaloneCount }}</span>
-          <span class="dv-landing-stat-label">{{ i18n.t().landing.statComposables }}</span>
-        </div>
-        <div class="dv-landing-stat" role="listitem">
-          <span class="dv-landing-stat-num">{{ engineCount }}</span>
-          <span class="dv-landing-stat-label">{{ i18n.t().landing.statEngines }}</span>
-        </div>
-        <div class="dv-landing-stat" role="listitem">
-          <span class="dv-landing-stat-num">{{ testCount }}+</span>
-          <span class="dv-landing-stat-label">{{ i18n.t().landing.statTests }}</span>
+        <div class="landing-hero-install">
+          <span class="landing-hero-install-prompt">$</span>
+          {{ i18n.t().landing.heroInstall }}
         </div>
       </section>
 
-      <section class="dv-landing-features">
-        <article class="dv-landing-feature">
-          <h3>{{ i18n.t().landing.featureReactiveTitle }}</h3>
-          <p>{{ i18n.t().landing.featureReactiveDesc }}</p>
-        </article>
-        <article class="dv-landing-feature">
-          <h3>{{ i18n.t().landing.featureZeroRuntimeTitle }}</h3>
-          <p>{{ i18n.t().landing.featureZeroRuntimeDesc }}</p>
-        </article>
-        <article class="dv-landing-feature">
-          <h3>{{ i18n.t().landing.featureA11yTitle }}</h3>
-          <p>{{ i18n.t().landing.featureA11yDesc }}</p>
-        </article>
-        <article class="dv-landing-feature">
-          <h3>{{ i18n.t().landing.featureMultiTitle }}</h3>
-          <p>{{ i18n.t().landing.featureMultiDesc }}</p>
-        </article>
-      </section>
+      <div class="landing-stats" role="list" aria-label="Project stats">
+        <div class="landing-stat" role="listitem">
+          <div class="landing-stat-value">{{ componentCount }}+</div>
+          <div class="landing-stat-label">{{ i18n.t().landing.statComponents }}</div>
+        </div>
+        <div class="landing-stat" role="listitem">
+          <div class="landing-stat-value">{{ testCount }}</div>
+          <div class="landing-stat-label">{{ i18n.t().landing.statTests }}</div>
+        </div>
+        <div class="landing-stat" role="listitem">
+          <div class="landing-stat-value">{{ engineCount }}</div>
+          <div class="landing-stat-label">{{ i18n.t().landing.statEngines }}</div>
+        </div>
+        <div class="landing-stat" role="listitem">
+          <div class="landing-stat-value">{{ standaloneCount }}</div>
+          <div class="landing-stat-label">{{ i18n.t().landing.statComposables }}</div>
+        </div>
+        <div class="landing-stat" role="listitem">
+          <div class="landing-stat-value">{{ i18n.t().landing.statRuntimeCssValue }}</div>
+          <div class="landing-stat-label">{{ i18n.t().landing.statRuntimeCss }}</div>
+        </div>
+      </div>
 
-      <section class="dv-landing-install">
-        <h2 class="dv-landing-section-title">{{ i18n.t().landing.quickInstallTitle }}</h2>
-        <p class="dv-landing-section-sub">{{ i18n.t().landing.quickInstallDesc }}</p>
-        <div class="dv-landing-install-grid">
-          <div class="dv-landing-install-card">
-            <div class="dv-landing-install-card-head">
-              <h3 class="dv-landing-install-card-title">pnpm</h3>
-              <button type="button" class="dv-landing-install-copy" (click)="copyInstall()">
+      <div class="landing-features">
+        @for (f of features(); track f.title) {
+          <button type="button" class="landing-feature" (click)="goto(f.href)">
+            <span class="landing-feature-title">{{ f.title }}</span>
+            <span class="landing-feature-desc">{{ f.desc }}</span>
+          </button>
+        }
+      </div>
+
+      <section class="landing-block">
+        <h2 class="landing-section-title">{{ i18n.t().landing.quickInstallTitle }}</h2>
+        <p class="landing-section-sub">{{ i18n.t().landing.quickInstallDesc }}</p>
+        <div class="landing-install">
+          <div class="landing-install-card">
+            <div class="landing-install-card-head">
+              <div>
+                <h3 class="landing-install-card-title">
+                  {{ i18n.t().landing.quickInstallNpmTitle }}
+                </h3>
+                <p class="landing-install-card-sub">{{ i18n.t().landing.quickInstallSub }}</p>
+              </div>
+              <button type="button" class="landing-install-copy" (click)="copyInstall()">
                 <span aria-hidden="true">{{ installCopied() ? '✓' : '⎘' }}</span>
-                <span>
-                  {{
-                    installCopied()
-                      ? i18n.t().landing.quickInstallCopied
-                      : i18n.t().landing.quickInstallCopy
-                  }}
-                </span>
+                <span>{{
+                  installCopied()
+                    ? i18n.t().landing.quickInstallCopied
+                    : i18n.t().landing.quickInstallCopy
+                }}</span>
               </button>
             </div>
-            <pre class="dv-landing-install-code"><code>{{ installSnippet }}</code></pre>
+            <pre class="landing-install-code"><code>{{ installSnippet }}</code></pre>
           </div>
-          <div class="dv-landing-install-card">
-            <div class="dv-landing-install-card-head">
-              <h3 class="dv-landing-install-card-title">main.ts</h3>
+          <div class="landing-install-card">
+            <div class="landing-install-card-head">
+              <div>
+                <h3 class="landing-install-card-title">
+                  {{ i18n.t().landing.quickInstallMinimalTitle }}
+                </h3>
+                <p class="landing-install-card-sub">
+                  {{ i18n.t().landing.quickInstallMinimalSub }}
+                </p>
+              </div>
             </div>
-            <pre class="dv-landing-install-code"><code>{{ minimalExample }}</code></pre>
+            <pre class="landing-install-code"><code>{{ minimalExample }}</code></pre>
           </div>
         </div>
       </section>
@@ -137,8 +151,48 @@ export class LandingComponent {
 
   protected readonly installCopied = signal(false)
 
-  browse(): void {
+  protected features(): Feature[] {
+    const t = this.i18n.t()
+    return [
+      {
+        title: t.landing.featureReactiveTitle,
+        desc: t.landing.featureReactiveDesc,
+        href: '/guide/core-api',
+      },
+      {
+        title: t.landing.featureEnginesTitle,
+        desc: t.landing.featureEnginesDesc,
+        href: '/guide/core-api',
+      },
+      {
+        title: t.landing.featureStandaloneTitle,
+        desc: t.landing.featureStandaloneDesc,
+        href: '/guide/getting-started',
+      },
+      {
+        title: t.landing.featureA11yTitle,
+        desc: t.landing.featureA11yDesc,
+        href: '/components/button',
+      },
+      {
+        title: t.landing.featureZeroRuntimeTitle,
+        desc: t.landing.featureZeroRuntimeDesc,
+        href: '/guide/theming',
+      },
+      {
+        title: t.landing.featureMultiTitle,
+        desc: t.landing.featureMultiDesc,
+        href: '/about',
+      },
+    ]
+  }
+
+  protected browse(): void {
     void this.router.navigate(['/components/button'])
+  }
+
+  protected goto(href: string): void {
+    void this.router.navigateByUrl(href)
   }
 
   async copyInstall(): Promise<void> {
