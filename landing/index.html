@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>skygraph — live demos</title>
+		<meta name="description" content="skygraph is a multi-framework UI library. Live demos for React and Vue." />
+		<meta name="robots" content="index,follow" />
+		<style>
+			:root {
+				--bg: #0d1117;
+				--bg-elev: #161b22;
+				--bg-hover: #1f2630;
+				--border: #30363d;
+				--border-strong: #484f58;
+				--text: #e6edf3;
+				--text-dim: #8b949e;
+				--accent: #d4a574;
+				--accent-bright: #e8b87f;
+				--mono: 'JetBrains Mono', 'Geist Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+				--sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			}
+
+			* { box-sizing: border-box; margin: 0; padding: 0; }
+
+			html, body {
+				background: var(--bg);
+				color: var(--text);
+				font-family: var(--sans);
+				-webkit-font-smoothing: antialiased;
+				min-height: 100%;
+			}
+
+			body {
+				display: flex;
+				flex-direction: column;
+				min-height: 100vh;
+				padding: clamp(24px, 5vw, 64px);
+			}
+
+			.brand {
+				font-family: var(--mono);
+				font-size: 15px;
+				color: var(--text-dim);
+				letter-spacing: -0.02em;
+				margin-bottom: 8px;
+			}
+
+			.brand .dot { color: var(--accent); }
+
+			h1 {
+				font-family: var(--mono);
+				font-size: clamp(32px, 5vw, 56px);
+				font-weight: 600;
+				letter-spacing: -0.04em;
+				line-height: 1.05;
+				margin-bottom: 16px;
+			}
+
+			.lead {
+				font-size: 17px;
+				line-height: 1.6;
+				color: var(--text-dim);
+				max-width: 640px;
+				margin-bottom: 56px;
+			}
+
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: 16px;
+				max-width: 1100px;
+				margin-bottom: auto;
+			}
+
+			.card {
+				display: flex;
+				flex-direction: column;
+				padding: 28px 24px;
+				background: var(--bg-elev);
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				text-decoration: none;
+				color: var(--text);
+				transition: border-color 0.15s, background 0.15s, transform 0.15s;
+			}
+
+			.card:hover {
+				background: var(--bg-hover);
+				border-color: var(--border-strong);
+				transform: translateY(-2px);
+			}
+
+			.card-tag {
+				font-family: var(--mono);
+				font-size: 11px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				color: var(--accent);
+				margin-bottom: 12px;
+			}
+
+			.card-title {
+				font-family: var(--mono);
+				font-size: 22px;
+				font-weight: 600;
+				letter-spacing: -0.02em;
+				margin-bottom: 8px;
+			}
+
+			.card-desc {
+				font-size: 14px;
+				color: var(--text-dim);
+				line-height: 1.5;
+				margin-bottom: 20px;
+				flex-grow: 1;
+			}
+
+			.card-link {
+				font-family: var(--mono);
+				font-size: 13px;
+				color: var(--accent);
+			}
+
+			.card:hover .card-link { color: var(--accent-bright); }
+
+			footer {
+				margin-top: 80px;
+				padding-top: 24px;
+				border-top: 1px solid var(--border);
+				font-family: var(--mono);
+				font-size: 12px;
+				color: var(--text-dim);
+				display: flex;
+				justify-content: space-between;
+				flex-wrap: wrap;
+				gap: 12px;
+			}
+
+			footer a {
+				color: var(--text-dim);
+				text-decoration: none;
+				border-bottom: 1px dotted var(--border-strong);
+			}
+
+			footer a:hover { color: var(--text); }
+		</style>
+	</head>
+	<body>
+		<div class="brand">skygraph<span class="dot">.</span>ruslansinkevich<span class="dot">.</span>ru</div>
+		<h1>skygraph</h1>
+		<p class="lead">
+			Multi-framework UI library. Common engine, framework-specific bindings. Live demos below.
+		</p>
+
+		<nav class="grid">
+			<a class="card" href="/react/">
+				<div class="card-tag">React</div>
+				<div class="card-title">demo</div>
+				<div class="card-desc">Core demo built with React bindings. Components, theming, interactions.</div>
+				<div class="card-link">open /react/ →</div>
+			</a>
+
+			<a class="card" href="/vue/">
+				<div class="card-tag">Vue</div>
+				<div class="card-title">demo</div>
+				<div class="card-desc">Same engine, Vue bindings. Parity with the React demo above.</div>
+				<div class="card-link">open /vue/ →</div>
+			</a>
+
+			<a class="card" href="/react/showcases/">
+				<div class="card-tag">React</div>
+				<div class="card-title">showcases</div>
+				<div class="card-desc">Extended scenarios and edge cases — variants, dense layouts, stress tests.</div>
+				<div class="card-link">open /react/showcases/ →</div>
+			</a>
+		</nav>
+
+		<footer>
+			<span>© Ruslan Sinkevich</span>
+			<span>built with skygraph — work in progress</span>
+		</footer>
+	</body>
+</html>

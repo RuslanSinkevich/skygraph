@@ -232,7 +232,8 @@ describe('Diagram component', () => {
     // points.
     const tokens = d.split(/\s+/).filter((t) => t.length > 0)
     type Cmd =
-      | { kind: 'M' | 'L'; x: number; y: number }
+      | { kind: 'M'; x: number; y: number }
+      | { kind: 'L'; x: number; y: number }
       | { kind: 'Q'; cx: number; cy: number; x: number; y: number }
     const cmds: Cmd[] = []
     for (let i = 0; i < tokens.length; ) {
