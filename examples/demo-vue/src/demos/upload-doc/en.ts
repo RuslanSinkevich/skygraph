@@ -1,8 +1,7 @@
 /**
  * English source of truth for Upload doc page strings (Vue port).
  *
- * Vue parity gaps vs React (see `findings/T-Vue-Demo-Forms.md`
- * → `upload-vue-feature-gaps`):
+ * Vue parity gaps vs React:
  * - no `loading` prop (no spinner-mode trigger)
  * - no separate `onUpload(file: File[])` callback — Vue handles the
  *   file pipeline internally and exposes `customRequest` instead.
@@ -25,16 +24,15 @@ export const uploadDocEn = {
     'When you need file selection inside a form; pair it with your own upload/progress logic via `custom-request`.',
   pageWhen2:
     'When the built-in list (uploading / done / error / `percent`) is enough for UX feedback.',
-  pageWhen3: 'When you want a branded trigger — `SgUpload` accepts any element via the default slot.',
+  pageWhen3:
+    'When you want a branded trigger — `SgUpload` accepts any element via the default slot.',
 
   demoBasicTitle: 'Basic',
-  demoBasicDesc:
-    'Simulated upload with `uploading → done` transition via `custom-request`.',
+  demoBasicDesc: 'Simulated upload with `uploading → done` transition via `custom-request`.',
   demoMultipleTitle: 'Multiple',
   demoMultipleDesc: 'Pick several files at once, cap via `max-count`.',
   demoAcceptTitle: 'Accept filter',
-  demoAcceptDesc:
-    'Restrict the native picker to specific MIME types or extensions.',
+  demoAcceptDesc: 'Restrict the native picker to specific MIME types or extensions.',
   demoCustomTriggerTitle: 'Custom trigger',
   demoCustomTriggerDesc:
     'Default slot replaces the trigger button — branded card, dashed tile, etc.',
@@ -66,14 +64,11 @@ export const uploadDocEn = {
   propShowUploadList: 'Toggle the built-in list rendering',
   propMaxCount: 'Cap the total list length after multiple-pick',
   propMaxSize: 'Skip files larger than this many bytes',
-  propBeforeUpload:
-    'Pre-upload hook (return false / Promise<false> to skip a file)',
-  propCustomRequest:
-    'Take over transport — receives `{ file, onProgress, onSuccess, onError }`',
+  propBeforeUpload: 'Pre-upload hook (return false / Promise<false> to skip a file)',
+  propCustomRequest: 'Take over transport — receives `{ file, onProgress, onSuccess, onError }`',
   propDisabled: 'Block the trigger entirely',
   propUnstyled: 'Drop SkyGraph wrapper classes — keep only semantics',
-  emitUpdateModelValue:
-    'Emitted whenever the file list changes (v-model)',
+  emitUpdateModelValue: 'Emitted whenever the file list changes (v-model)',
   emitChange: 'Mirror of `update:modelValue` — fires on every list mutation',
   emitRemove: 'Emitted when the user clicks × on a list item',
 

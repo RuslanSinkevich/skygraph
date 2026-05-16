@@ -1,8 +1,7 @@
 /**
  * English source of truth for Dashboard doc page strings.
  * Mirrors `examples/demo/src/demos/dashboard-doc/en.ts`. Vue Dashboard
- * has no `actions` array on widgets (no `WidgetAction` type) — see
- * `findings/T-Vue-Demo-Complex.md` → `dashboard-no-widget-actions-api`.
+ * has no `actions` array on widgets (no `WidgetAction` type).
  * No CssVarsTable for Dashboard (parity with React; carta §C).
  */
 export const dashboardDocEn = {
@@ -62,8 +61,7 @@ export const dashboardDocEn = {
   widgetClassName: 'Widget className',
   widgetStyle: 'Widget inline style',
 
-  editorEmitLayoutChange:
-    'Emitted with the patched widgets array after a drag / resize commit',
+  editorEmitLayoutChange: 'Emitted with the patched widgets array after a drag / resize commit',
   editorDraggable: 'Disable header drag without removing the editor chrome',
   editorResizable: 'Disable the bottom-right resize handle',
   editorMinW: 'Minimum widget width in columns',

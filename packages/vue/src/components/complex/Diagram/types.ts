@@ -6,8 +6,7 @@
  * (routing, lasso, hover-actions, DnD, panable / zoomable, snap-to-grid,
  * routeAroundNodes, *ContextMenu) live alongside the legacy Vue-only
  * props (`draggableNodes`, `panZoom`, `selectedNodeIds`, `fileName`),
- * which remain as deprecated aliases — see
- * `docs/_streams/decisions/T-Diagram-Polish.md` D2.
+ * which remain as deprecated aliases.
  */
 import type { CSSProperties } from 'vue'
 import type { GraphEdge, GraphEngine, GraphNode, GraphState, NodeId } from '@skygraph/core'

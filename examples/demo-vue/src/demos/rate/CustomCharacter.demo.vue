@@ -4,9 +4,8 @@
  * half styling use `color`; colour emoji ignore `color`, so the
  * inactive rows rely on `--sg-rate-symbol-empty-opacity`.
  *
- * Vue `SgRate` accepts a string only (no slot/VNode override yet) — see
- * `findings/T-Vue-Demo-Forms.md` (`rate-character-string-only-in-vue`).
- * The React SVG row is dropped here.
+ * Vue `SgRate` accepts a string only (no slot/VNode override yet), so
+ * the React SVG row is dropped here.
  */
 import { SgRate } from '@skygraph/vue'
 </script>

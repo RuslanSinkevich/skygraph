@@ -3,8 +3,6 @@
  * Vue lacks the React `List.Item` / `List.Item.Meta` compound API —
  * the same row layout (avatar + title + description + actions + extra)
  * is composed inline via the default slot.
- *
- * See `findings/T-Vue-Demo-Complex.md` → `list-no-compound-item-meta`.
  */
 import { SgList, SgAvatar, SgButton, SgTag } from '@skygraph/vue'
 import { users } from './data'

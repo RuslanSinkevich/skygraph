@@ -2,9 +2,7 @@
 /**
  * `disabled` on the group blocks every option. Disable individual
  * options via `options[].disabled`. The Vue `SgRadio` has no `loading`
- * prop yet (see `findings/T-Vue-Demo-Forms.md` →
- * `radio-loading-not-in-vue`); the React-equivalent loading row is
- * dropped here.
+ * prop yet, so the React-equivalent loading row is dropped here.
  */
 import { SgRadio } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'

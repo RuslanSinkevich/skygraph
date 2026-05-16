@@ -3,8 +3,7 @@
  * Other locales must provide the same keys (see `ru.ts`).
  *
  * Mirrors `examples/demo/src/demos/colorpicker-doc/en.ts`. Vue side has
- * `show-text` as boolean only (no function form) — see
- * `findings/T-Vue-Demo-Forms.md` (`colorpicker-showtext-boolean-only-in-vue`).
+ * `show-text` as boolean only (no function form).
  */
 export const colorPickerDocEn = {
   pageTitle: 'ColorPicker',
@@ -13,8 +12,7 @@ export const colorPickerDocEn = {
   crumbColorPicker: 'ColorPicker',
   pageLead:
     'Popover color picker with hex / rgb input and optional preset groups. Supports click / hover triggers and controlled open state.',
-  pageWhen1:
-    'Let users pick brand colours — feed the result straight into `--sg-color-primary`.',
+  pageWhen1: 'Let users pick brand colours — feed the result straight into `--sg-color-primary`.',
   pageWhen2: 'Design-tool style interactions where a swatch + popover is cleaner than a modal.',
   pageWhen3: 'Surveys or configs that accept an arbitrary colour instead of a fixed palette.',
 
@@ -59,7 +57,7 @@ export const colorPickerDocEn = {
   emitOpenChange: 'Fires when the panel opens or closes',
 
   cssHint:
-    "ColorPicker has no component-specific tokens — it composes the global form tokens (trigger) and surface tokens (dropdown). Override them on a wrapper with inline `:style=\"{ '--sg-...': ... }\"` to restyle.",
+    'ColorPicker has no component-specific tokens — it composes the global form tokens (trigger) and surface tokens (dropdown). Override them on a wrapper with inline `:style="{ \'--sg-...\': ... }"` to restyle.',
 
   cssSgColorBorder: 'Trigger border, swatch border, input border inside panel',
   cssSgColorBorderSecondary: 'Dropdown border + swatch outline',

@@ -2,9 +2,8 @@
 /**
  * Every visual state in one place — use this to verify styling
  * overrides cover all cases when theming. The Vue `SgCheckbox` has no
- * `loading` prop yet (see `findings/T-Vue-Demo-Forms.md` →
- * `checkbox-loading-not-in-vue`); the React-equivalent loading row is
- * dropped here.
+ * `loading` prop yet, so the React-equivalent loading row is dropped
+ * here.
  */
 import { SgCheckbox } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'

@@ -3,8 +3,6 @@
  * Per-widget actions — Vue uses inline buttons inside the `#widget`
  * slot (no `actions` array on `DashboardWidget` in `@skygraph/vue`).
  * Captures the same intent as React `WithActions.demo.tsx`.
- *
- * See `findings/T-Vue-Demo-Complex.md` → `dashboard-no-widget-actions-api`.
  */
 import { ref } from 'vue'
 import { SgDashboard, SgLineChart, SgButton } from '@skygraph/vue'

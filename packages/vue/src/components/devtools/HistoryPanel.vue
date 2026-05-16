@@ -10,8 +10,7 @@
  *
  * Locale strings (`Time-Travel`, `Undo`, `Redo`, `Clear`, `No history yet`,
  * `write/writes`) are hard-coded — `SgLocale` does not expose a
- * `devtools.historyPanel` key today. See
- * `docs/_streams/findings/T-Vue-Misc.md` F1.
+ * `devtools.historyPanel` key today.
  */
 import type { CSSProperties } from 'vue'
 import { ref } from 'vue'

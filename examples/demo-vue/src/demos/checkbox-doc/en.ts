@@ -3,8 +3,8 @@
  * Other locales must provide the same keys (see `ru.ts`).
  *
  * Mirrors `examples/demo/src/demos/checkbox-doc/en.ts`. Vue side has no
- * `loading` prop on `SgCheckbox` (see `findings/T-Vue-Demo-Forms.md` →
- * `checkbox-loading-not-in-vue`); the `propLoading` key is dropped.
+ * `loading` prop on `SgCheckbox` yet, so the `propLoading` key is
+ * dropped.
  */
 export const checkboxDocEn = {
   pageTitle: 'Checkbox',

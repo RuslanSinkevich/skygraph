@@ -4,8 +4,6 @@
  * `onSeriesContextMenu` (charts stay composable primitives). The menu
  * is built at the demo level: render legend chips, hook
  * `@contextmenu.prevent`, run mutations on local state.
- *
- * See `findings/T-Vue-Demo-Complex.md` → `charts-no-context-menu-prop`.
  */
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { SgBarChart, colorForSeries } from '@skygraph/vue'

@@ -4,9 +4,8 @@
  *
  * Mirrors `examples/demo/src/demos/SwitchDemo.tsx` (8 examples).
  * Vue delta: `States` shows only the disabled row — `SgSwitch` has no
- * `loading` prop yet (see `findings/T-Vue-Demo-Forms.md` →
- * `switch-loading-not-in-vue`). `AsyncToggle` falls back to
- * `disabled` + side label.
+ * `loading` prop yet. `AsyncToggle` falls back to `disabled` + side
+ * label.
  */
 import { computed } from 'vue'
 import {
@@ -108,11 +107,7 @@ const switchCssVars = computed<CssVarDef[]>(() => [
       <BasicSwitchDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoTextIconTitle"
-      :description="t.demoTextIconDesc"
-      :code="TextIconSource"
-    >
+    <DemoBox :title="t.demoTextIconTitle" :description="t.demoTextIconDesc" :code="TextIconSource">
       <TextIconSwitchDemo />
     </DemoBox>
 
@@ -124,11 +119,7 @@ const switchCssVars = computed<CssVarDef[]>(() => [
       <StatesSwitchDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoAsyncTitle"
-      :description="t.demoAsyncDesc"
-      :code="AsyncToggleSource"
-    >
+    <DemoBox :title="t.demoAsyncTitle" :description="t.demoAsyncDesc" :code="AsyncToggleSource">
       <AsyncToggleSwitchDemo />
     </DemoBox>
 
@@ -144,11 +135,7 @@ const switchCssVars = computed<CssVarDef[]>(() => [
       <TokensOverrideSwitchDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
+    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledSwitchDemo />
     </DemoBox>
 

@@ -3,8 +3,7 @@
  * Other locales must provide the same keys (see `ru.ts`).
  *
  * Mirrors `examples/demo/src/demos/input-doc/en.ts` 1:1; Vue side has
- * no `loading` prop on Textarea (see `findings/T-Vue-Demo-Forms.md` →
- * `textarea-loading-not-in-vue`), so the React-equivalent
+ * no `loading` prop on Textarea yet, so the React-equivalent
  * `propTextareaLoading` key is dropped here.
  */
 export const inputDocEn = {

@@ -19,7 +19,7 @@ export const radioDocEn = {
   demoVerticalDesc: "direction='vertical' for longer labels.",
   demoStatesTitle: 'Disabled states',
   demoStatesDesc:
-    'Per-option `disabled` and group-level `disabled`. Vue `SgRadio` has no `loading` prop yet — see `findings/T-Vue-Demo-Forms.md` (`radio-loading-not-in-vue`).',
+    'Per-option `disabled` and group-level `disabled`. Vue `SgRadio` has no `loading` prop yet.',
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: '`SgRadio` wrapped in `SgField` with required validation.',
   demoTokensTitle: 'Tokens override',

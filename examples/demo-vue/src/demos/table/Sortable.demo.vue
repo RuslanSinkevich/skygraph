@@ -1,8 +1,7 @@
 <script setup lang="ts">
 /**
  * Click a sortable header to toggle: asc → desc → unsorted. Built-in
- * single-column sort (Vue surface does not ship composite sorts yet —
- * see findings/T-Vue-Demo-Complex.md).
+ * single-column sort (Vue surface does not ship composite sorts yet).
  */
 import { SgTable, type TableColumn } from '@skygraph/vue'
 import { people } from './_data'

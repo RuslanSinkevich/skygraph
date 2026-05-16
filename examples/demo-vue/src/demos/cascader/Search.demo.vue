@@ -2,8 +2,7 @@
 /**
  * `show-search` puts a search box at the top of the dropdown. Vue
  * `SgCascader` exposes `showSearch` as a boolean only — the React
- * `{ filter }` overload is not yet supported (see
- * `findings/T-Vue-Demo-Forms.md` → `cascader-feature-gaps-in-vue`).
+ * `{ filter }` overload is not yet supported.
  */
 import { SgCascader } from '@skygraph/vue'
 import { regionOptions } from './data'

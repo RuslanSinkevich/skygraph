@@ -5,8 +5,7 @@
  * The React reference page (`examples/demo/src/demos/StylingShowcasePage.tsx`)
  * is ~900 lines of interactive recipes (palette swatches, slot demos,
  * conditional rows, dark scopes, headless modals, per-feature brand…).
- * Porting it 1:1 is out of scope for this stream — see
- * `docs/_streams/findings/T-Vue-Demo-Header-Parity.md#guide-stubs`.
+ * Porting it 1:1 is out of scope for this stream.
  *
  * This stub keeps the route + sidebar + DOM contract (.doc-page) so the
  * navigation works and the lint contract holds. Full content lands in a

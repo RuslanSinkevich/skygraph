@@ -2,12 +2,10 @@
 /**
  * `TreeSelectDemo` — aggregator for the TreeSelect component page.
  *
- * Mirrors `examples/demo/src/demos/TreeSelectDemo.tsx` (7 examples).
- * Vue deltas — see `findings/T-Vue-Demo-Forms.md` →
- * `treeselect-no-cascade-in-vue` and `treeselect-naming-difference`:
- *   - node fields are `value` / `label` (not `key` / `title`);
- *   - `tree-checkable` does **not** auto-cascade child selection;
- *   - `treeDefaultExpandAll` is replaced by `default-expanded-keys`.
+ * Mirrors `examples/demo/src/demos/TreeSelectDemo.tsx` (7 examples). Since
+ * Stream 4 the Vue `SgTreeSelect` ships React's TreeNodeData (`key` /
+ * `title`) shape, supports `tree-default-expand-all` and cascades subtree
+ * selection through the embedded `SgTree`.
  */
 import { computed } from 'vue'
 import {
@@ -75,8 +73,14 @@ const treeSelectProps = computed<PropDef[]>(() => [
     default: "'Please select'",
   },
   {
-    name: 'defaultExpandedKeys',
-    description: t.value.propDefaultExpandedKeys,
+    name: 'treeDefaultExpandAll',
+    description: t.value.propTreeDefaultExpandAll,
+    type: 'boolean',
+    default: 'false',
+  },
+  {
+    name: 'treeDefaultExpandedKeys',
+    description: t.value.propTreeDefaultExpandedKeys,
     type: '(string | number)[]',
   },
   {
@@ -97,16 +101,10 @@ const treeSelectProps = computed<PropDef[]>(() => [
 ])
 
 const nodeProps = computed<PropDef[]>(() => [
-  { name: 'value', description: t.value.nodeValue, type: 'string | number' },
-  { name: 'label', description: t.value.nodeLabel, type: 'string' },
-  { name: 'children', description: t.value.nodeChildren, type: 'TreeSelectNode[]' },
+  { name: 'key', description: t.value.nodeKey, type: 'string | number' },
+  { name: 'title', description: t.value.nodeTitle, type: 'string' },
+  { name: 'children', description: t.value.nodeChildren, type: 'TreeNodeData[]' },
   { name: 'disabled', description: t.value.nodeDisabled, type: 'boolean', default: 'false' },
-  {
-    name: 'selectable',
-    description: t.value.nodeSelectable,
-    type: 'boolean',
-    default: 'true',
-  },
 ])
 
 const treeSelectCssVars = computed<CssVarDef[]>(() => [
@@ -224,11 +222,7 @@ const treeSelectCssVars = computed<CssVarDef[]>(() => [
     <template #api>
       <PropsTable :title="t.tableTreeSelectApi" :data="treeSelectProps" />
       <PropsTable :title="t.tableTreeNodeData" :data="nodeProps" />
-      <CssVarsTable
-        :title="t.tableCssVars"
-        :hint="t.cssHint"
-        :data="treeSelectCssVars"
-      />
+      <CssVarsTable :title="t.tableCssVars" :hint="t.cssHint" :data="treeSelectCssVars" />
     </template>
   </ComponentDoc>
 </template>

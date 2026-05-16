@@ -3,8 +3,7 @@
  * `disabled` blocks the trigger and any drag interaction.
  *
  * Vue delta: `SgUpload` has no `loading` prop — the React variant that
- * swaps the trigger for a spinner is dropped. See
- * `findings/T-Vue-Demo-Forms.md` → `upload-vue-feature-gaps`.
+ * swaps the trigger for a spinner is dropped.
  */
 import { ref } from 'vue'
 import { SgUpload } from '@skygraph/vue'

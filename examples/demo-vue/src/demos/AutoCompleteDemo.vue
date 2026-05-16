@@ -5,8 +5,7 @@
  * Mirrors `examples/demo/src/demos/AutoCompleteDemo.tsx` (7 examples).
  * Vue delta: `States` shows two disabled rows (no loading), `AsyncSearch`
  * surfaces progress in a side label rather than via `loading` —
- * `SgAutoComplete` lacks `loading` prop, see
- * `findings/T-Vue-Demo-Forms.md` → `autocomplete-loading-not-in-vue`.
+ * `SgAutoComplete` lacks the `loading` prop.
  */
 import { computed } from 'vue'
 import {
@@ -120,19 +119,11 @@ const autoCompleteCssVars = computed<CssVarDef[]>(() => [
       <BasicAutoCompleteDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoEmailTitle"
-      :description="t.demoEmailDesc"
-      :code="EmailDomainsSource"
-    >
+    <DemoBox :title="t.demoEmailTitle" :description="t.demoEmailDesc" :code="EmailDomainsSource">
       <EmailDomainsAutoCompleteDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoAsyncTitle"
-      :description="t.demoAsyncDesc"
-      :code="AsyncSearchSource"
-    >
+    <DemoBox :title="t.demoAsyncTitle" :description="t.demoAsyncDesc" :code="AsyncSearchSource">
       <AsyncSearchAutoCompleteDemo />
     </DemoBox>
 
@@ -152,22 +143,14 @@ const autoCompleteCssVars = computed<CssVarDef[]>(() => [
       <TokensOverrideAutoCompleteDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
+    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledAutoCompleteDemo />
     </DemoBox>
 
     <template #api>
       <PropsTable :title="t.tableAutoCompleteApi" :data="autoCompleteProps" />
       <PropsTable :title="t.tableOptionApi" :data="optionProps" />
-      <CssVarsTable
-        :title="t.tableCssVars"
-        :hint="t.cssHint"
-        :data="autoCompleteCssVars"
-      />
+      <CssVarsTable :title="t.tableCssVars" :hint="t.cssHint" :data="autoCompleteCssVars" />
     </template>
   </ComponentDoc>
 </template>

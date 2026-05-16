@@ -3,8 +3,7 @@
  * Other locales must provide the same keys (see `ru.ts`).
  *
  * Mirrors `examples/demo/src/demos/rate-doc/en.ts`. Vue side accepts
- * `character` only as a string (no slot/VNode), see
- * `findings/T-Vue-Demo-Forms.md` → `rate-character-string-only-in-vue`.
+ * `character` only as a string (no slot/VNode).
  */
 export const rateDocEn = {
   pageTitle: 'Rate',

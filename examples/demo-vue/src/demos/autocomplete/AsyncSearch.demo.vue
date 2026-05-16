@@ -1,9 +1,8 @@
 <script setup lang="ts">
 /**
  * Fire server-side search through `@search`, debouncing rapid
- * keystrokes. Vue `SgAutoComplete` has no `loading` prop yet — see
- * `findings/T-Vue-Demo-Forms.md` (`autocomplete-loading-not-in-vue`).
- * We surface progress in a side label instead of an inline spinner.
+ * keystrokes. Vue `SgAutoComplete` has no `loading` prop yet, so we
+ * surface progress in a side label instead of an inline spinner.
  */
 import { onBeforeUnmount, ref } from 'vue'
 import { SgAutoComplete, type AutoCompleteOption } from '@skygraph/vue'

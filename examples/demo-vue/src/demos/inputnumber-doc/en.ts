@@ -3,8 +3,7 @@
  * Other locales must provide the same keys (see `ru.ts`).
  *
  * Mirrors `examples/demo/src/demos/inputnumber-doc/en.ts` 1:1; Vue side
- * has no `loading` prop on `SgInputNumber` (see
- * `findings/T-Vue-Demo-Forms.md` → `inputnumber-loading-not-in-vue`).
+ * has no `loading` prop on `SgInputNumber` yet.
  */
 export const inputNumberDocEn = {
   pageTitle: 'InputNumber',

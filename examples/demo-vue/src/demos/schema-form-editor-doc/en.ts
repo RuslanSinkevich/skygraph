@@ -3,8 +3,7 @@
  * Other locales must provide the same keys (see `ru.ts`).
  *
  * Mirrors `examples/demo/src/demos/SchemaFormEditorDemo.tsx`. SchemaFormEditor
- * has no `<CssVarsTable>` in React → also none in Vue (parity «снизу вверх»;
- * see `findings/T-Vue-Demo-Foundation.md` → `charts-no-css-vars-react`).
+ * has no `<CssVarsTable>` in React → also none in Vue (parity «снизу вверх»).
  */
 export const schemaFormEditorDocEn = {
   pageTitle: 'SchemaFormEditor',

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 /**
  * List aggregator (Wave 3.2 / Tab D).
- * 14/14 React-Demos covered (no compound `List.Item` API in Vue —
- * see `findings/T-Vue-Demo-Complex.md` → `list-no-compound-item-meta`).
+ * 14/14 React-Demos covered. Vue does not expose a compound
+ * `List.Item` / `List.Item.Meta` API — the same row layout is composed
+ * inline via the default slot.
  */
 import { computed } from 'vue'
 import {
@@ -54,7 +55,12 @@ const listProps = computed<PropDef[]>(() => [
   { name: 'bordered', description: t.value.propBordered, type: 'boolean', default: 'false' },
   { name: 'split', description: t.value.propSplit, type: 'boolean', default: 'true' },
   { name: 'hoverable', description: t.value.propHoverable, type: 'boolean', default: 'true' },
-  { name: 'size', description: t.value.propSize, type: "'small' | 'default' | 'large'", default: "'default'" },
+  {
+    name: 'size',
+    description: t.value.propSize,
+    type: "'small' | 'default' | 'large'",
+    default: "'default'",
+  },
   { name: 'pagination', description: t.value.propPagination, type: 'false | ListPaginationConfig' },
   { name: 'grid', description: t.value.propGrid, type: 'ListGridConfig' },
   { name: 'virtual', description: t.value.propVirtual, type: 'ListVirtualConfig' },
@@ -63,12 +69,20 @@ const listProps = computed<PropDef[]>(() => [
   { name: 'multiSelect', description: t.value.propMultiSelect, type: 'boolean', default: 'false' },
   { name: 'selectedKeys', description: t.value.propSelectedKeys, type: 'number[]' },
   { name: 'defaultSelectedKeys', description: t.value.propDefaultSelectedKeys, type: 'number[]' },
-  { name: '@selectionChange', description: t.value.propEmitSelectionChange, type: '(keys, items) => void' },
+  {
+    name: '@selectionChange',
+    description: t.value.propEmitSelectionChange,
+    type: '(keys, items) => void',
+  },
   { name: 'draggable', description: t.value.propDraggable, type: 'boolean', default: 'false' },
   { name: '@reorder', description: t.value.propEmitReorder, type: '(from, to) => void' },
   { name: '@itemClick', description: t.value.propEmitItemClick, type: '(item, index) => void' },
   { name: '@pageChange', description: t.value.propEmitPageChange, type: '(page, size) => void' },
-  { name: 'rowClassName', description: t.value.propRowClassName, type: 'string | (item, i) => string' },
+  {
+    name: 'rowClassName',
+    description: t.value.propRowClassName,
+    type: 'string | (item, i) => string',
+  },
   { name: 'classNames', description: t.value.propClassNames, type: 'ListClassNames' },
   { name: 'styles', description: t.value.propStyles, type: 'ListStyles' },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
@@ -77,11 +91,23 @@ const listProps = computed<PropDef[]>(() => [
 const listCssVars = computed<CssVarDef[]>(() => [
   { name: 'sg-color-bg', default: '#ffffff', description: t.value.cssSgColorBg },
   { name: 'sg-color-bg-secondary', default: '#fafafa', description: t.value.cssSgColorBgSecondary },
-  { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: t.value.cssSgColorBgHover },
+  {
+    name: 'sg-color-bg-hover',
+    default: 'var(--sg-gray-3)',
+    description: t.value.cssSgColorBgHover,
+  },
   { name: 'sg-color-border', default: 'var(--sg-gray-5)', description: t.value.cssSgColorBorder },
-  { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: t.value.cssSgColorBorderSecondary },
+  {
+    name: 'sg-color-border-secondary',
+    default: 'var(--sg-gray-4)',
+    description: t.value.cssSgColorBorderSecondary,
+  },
   { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.value.cssSgColorText },
-  { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.value.cssSgColorTextSecondary },
+  {
+    name: 'sg-color-text-secondary',
+    default: 'rgba(0, 0, 0, 0.65)',
+    description: t.value.cssSgColorTextSecondary,
+  },
   { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.value.cssSgColorPrimary },
   { name: 'sg-border-radius', default: '6px', description: t.value.cssSgBorderRadius },
   { name: 'sg-font-size', default: '14px', description: t.value.cssSgFontSize },
@@ -93,7 +119,11 @@ const listCssVars = computed<CssVarDef[]>(() => [
   { name: 'sg-padding-lg', default: '16px', description: t.value.cssSgPaddingLg },
   { name: 'sg-padding-xl', default: '20px', description: t.value.cssSgPaddingXl },
   { name: 'sg-margin-xs', default: '4px', description: t.value.cssSgMarginXs },
-  { name: 'sg-transition-duration', default: '0.18s', description: t.value.cssSgTransitionDuration },
+  {
+    name: 'sg-transition-duration',
+    default: '0.18s',
+    description: t.value.cssSgTransitionDuration,
+  },
 ])
 </script>
 
@@ -117,7 +147,11 @@ const listCssVars = computed<CssVarDef[]>(() => [
     <DemoBox :title="t.demoGridTitle" :description="t.demoGridDesc" :code="GridSource">
       <GridList />
     </DemoBox>
-    <DemoBox :title="t.demoPaginationTitle" :description="t.demoPaginationDesc" :code="PaginationSource">
+    <DemoBox
+      :title="t.demoPaginationTitle"
+      :description="t.demoPaginationDesc"
+      :code="PaginationSource"
+    >
       <PaginationList />
     </DemoBox>
     <DemoBox :title="t.demoLoadingTitle" :description="t.demoLoadingDesc" :code="LoadingSource">
@@ -126,22 +160,38 @@ const listCssVars = computed<CssVarDef[]>(() => [
     <DemoBox :title="t.demoEmptyTitle" :description="t.demoEmptyDesc" :code="EmptySource">
       <EmptyList />
     </DemoBox>
-    <DemoBox :title="t.demoSelectableTitle" :description="t.demoSelectableDesc" :code="SelectableSource">
+    <DemoBox
+      :title="t.demoSelectableTitle"
+      :description="t.demoSelectableDesc"
+      :code="SelectableSource"
+    >
       <SelectableList />
     </DemoBox>
-    <DemoBox :title="t.demoDraggableTitle" :description="t.demoDraggableDesc" :code="DraggableSource">
+    <DemoBox
+      :title="t.demoDraggableTitle"
+      :description="t.demoDraggableDesc"
+      :code="DraggableSource"
+    >
       <DraggableList />
     </DemoBox>
     <DemoBox :title="t.demoVirtualTitle" :description="t.demoVirtualDesc" :code="VirtualSource">
       <VirtualList />
     </DemoBox>
-    <DemoBox :title="t.demoRowClassNameTitle" :description="t.demoRowClassNameDesc" :code="RowClassNameSource">
+    <DemoBox
+      :title="t.demoRowClassNameTitle"
+      :description="t.demoRowClassNameDesc"
+      :code="RowClassNameSource"
+    >
       <RowClassNameList />
     </DemoBox>
     <DemoBox :title="t.demoSlotsTitle" :description="t.demoSlotsDesc" :code="SlotsSource">
       <SlotsList />
     </DemoBox>
-    <DemoBox :title="t.demoTokensTitle" :description="t.demoTokensDesc" :code="TokensOverrideSource">
+    <DemoBox
+      :title="t.demoTokensTitle"
+      :description="t.demoTokensDesc"
+      :code="TokensOverrideSource"
+    >
       <TokensOverrideList />
     </DemoBox>
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">

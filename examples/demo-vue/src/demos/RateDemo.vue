@@ -3,9 +3,8 @@
  * `RateDemo` — aggregator for the Rate component page.
  *
  * Mirrors `examples/demo/src/demos/RateDemo.tsx` (8 examples).
- * Vue delta: `CustomCharacter` shows three glyph rows (no SVG/VNode
- * support) — see `findings/T-Vue-Demo-Forms.md` →
- * `rate-character-string-only-in-vue`.
+ * Vue delta: `CustomCharacter` shows three glyph rows — `SgRate`
+ * accepts `character` as a string only (no SVG/VNode support yet).
  */
 import { computed } from 'vue'
 import {
@@ -129,11 +128,7 @@ const rateCssVars = computed<CssVarDef[]>(() => [
       <TokensOverrideRateDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
+    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledRateDemo />
     </DemoBox>
 

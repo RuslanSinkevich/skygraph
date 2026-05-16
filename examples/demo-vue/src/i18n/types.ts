@@ -258,8 +258,7 @@ export interface DemoDict {
   /**
    * Stub guide pages — Vue-side parity is structural only. Full ports of
    * `StylingShowcasePage`, `DesignTokensPage` and `ConfigProviderDemo`
-   * (the embedded guide variant) are out of scope for Wave 3.4 — see
-   * `docs/_streams/findings/T-Vue-Demo-Header-Parity.md#guide-stubs`.
+   * (the embedded guide variant) are out of scope for Wave 3.4.
    */
   guideStub: {
     seeReactDocs: string

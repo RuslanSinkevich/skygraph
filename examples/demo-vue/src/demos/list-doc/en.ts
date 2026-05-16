@@ -3,8 +3,7 @@
  * Other locales must provide the same keys (see `ru.ts`).
  *
  * Vue doesn't expose a compound `List.Item` / `List.Item.Meta` API —
- * the same row layout is composed inline via the default slot. See
- * `findings/T-Vue-Demo-Complex.md` → `list-no-compound-item-meta`.
+ * the same row layout is composed inline via the default slot.
  */
 export const listDocEn = {
   pageTitle: 'List',
@@ -72,8 +71,7 @@ export const listDocEn = {
   propEmitItemClick: '`@itemClick(item, index)` — row click handler',
   propEmitPageChange: '`@pageChange(page, size)` — pagination change',
   propRowClassName: 'Static class or `(item, index) => string` predicate',
-  propClassNames:
-    'Slot classes (root / header / footer / items / item / empty / pagination)',
+  propClassNames: 'Slot classes (root / header / footer / items / item / empty / pagination)',
   propStyles: 'Slot inline styles',
   propUnstyled: 'Drop every sg-list-* style',
 

@@ -5,8 +5,6 @@
  * React-side, this route reuses the component-level demo
  * (`ConfigProviderDemo.tsx`). The Vue equivalent already lives at
  * `/components/configprovider`, so the guide page just defers to it.
- * Full inline guide port is tracked under
- * `docs/_streams/findings/T-Vue-Demo-Header-Parity.md#guide-stubs`.
  */
 import { useI18n } from '../i18n'
 

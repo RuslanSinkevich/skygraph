@@ -6,8 +6,7 @@
  * Vue surface (9 examples): Basic, Multiple, Accept, CustomTrigger,
  * WithProgress, ErrorState, Disabled, TokensOverride, Unstyled.
  *
- * Vue delta (see `findings/T-Vue-Demo-Forms.md`
- * → `upload-vue-feature-gaps`):
+ * Vue parity gaps:
  * - React's `Disabled` demo also showed `loading` — Vue dropped that
  *   row (no `loading` prop in `SgUpload`).
  * - Vue Upload exposes `customRequest` instead of React's
@@ -147,11 +146,7 @@ const uploadCssVars = computed<CssVarDef[]>(() => [
       <BasicUploadDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoMultipleTitle"
-      :description="t.demoMultipleDesc"
-      :code="MultipleSource"
-    >
+    <DemoBox :title="t.demoMultipleTitle" :description="t.demoMultipleDesc" :code="MultipleSource">
       <MultipleUploadDemo />
     </DemoBox>
 
@@ -183,11 +178,7 @@ const uploadCssVars = computed<CssVarDef[]>(() => [
       <ErrorStateUploadDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoDisabledTitle"
-      :description="t.demoDisabledDesc"
-      :code="DisabledSource"
-    >
+    <DemoBox :title="t.demoDisabledTitle" :description="t.demoDisabledDesc" :code="DisabledSource">
       <DisabledUploadDemo />
     </DemoBox>
 
@@ -199,22 +190,14 @@ const uploadCssVars = computed<CssVarDef[]>(() => [
       <TokensOverrideUploadDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
+    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledUploadDemo />
     </DemoBox>
 
     <template #api>
       <PropsTable :title="t.tableUploadApi" :data="uploadProps" />
       <PropsTable :title="t.tableUploadFile" :data="fileProps" />
-      <CssVarsTable
-        :title="t.tableCssVars"
-        :hint="t.cssHint"
-        :data="uploadCssVars"
-      />
+      <CssVarsTable :title="t.tableCssVars" :hint="t.cssHint" :data="uploadCssVars" />
     </template>
   </ComponentDoc>
 </template>

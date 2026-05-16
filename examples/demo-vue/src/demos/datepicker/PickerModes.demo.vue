@@ -1,8 +1,7 @@
 <script setup lang="ts">
 /**
  * `picker` changes the grid granularity: full calendar, months in a year,
- * or years in a decade. Vue delta: no `picker="week"` (see
- * `findings/T-Vue-Demo-Forms.md` → `datepicker-vue-feature-gaps`).
+ * or years in a decade. Vue delta: no `picker="week"` yet.
  */
 import { SgDatePicker } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'

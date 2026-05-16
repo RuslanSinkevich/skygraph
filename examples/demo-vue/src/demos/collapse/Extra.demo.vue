@@ -5,9 +5,7 @@
  *
  * Vue-specific delta: `CollapseItem.extra` is `string` only — the
  * Vue component renders it inside a `<span>`, so React's "rich
- * `ReactNode` extra" (Tag / Button) cannot be ported 1:1. See
- * `docs/_streams/findings/T-Vue-Demo-Display.md` →
- * `collapse-rich-extra-no-vue` for follow-up.
+ * `ReactNode` extra" (Tag / Button) cannot be ported 1:1 yet.
  */
 import { SgCollapse, type CollapseItem } from '@skygraph/vue'
 

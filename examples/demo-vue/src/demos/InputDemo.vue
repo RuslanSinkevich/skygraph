@@ -3,12 +3,11 @@
  * `InputDemo` — aggregator for the Input + Textarea component page.
  *
  * Mirrors `examples/demo/src/demos/InputDemo.tsx` 1:1 (11 examples).
- * Vue-specific deltas (see `decisions/T-Vue-Demo-Forms.md`):
+ * Vue-specific deltas:
  *   - `propsData` describes Vue v-model contract (`modelValue` /
  *     `update:modelValue` instead of `value` / `onChange`).
  *   - Textarea has no `loading` prop in `@skygraph/vue` — the
  *     `TextareaStates` example shows two disabled variants instead.
- *     See `findings/T-Vue-Demo-Forms.md` → `textarea-loading-not-in-vue`.
  */
 import { computed } from 'vue'
 import {
@@ -118,7 +117,11 @@ const textareaProps = computed<PropDef[]>(() => [
 ])
 
 const inputCssVars = computed<CssVarDef[]>(() => [
-  { name: 'sg-input-height', default: 'var(--sg-height-md)', description: t.value.cssSgInputHeight },
+  {
+    name: 'sg-input-height',
+    default: 'var(--sg-height-md)',
+    description: t.value.cssSgInputHeight,
+  },
   {
     name: 'sg-input-padding',
     default: 'var(--sg-padding-xs) var(--sg-padding-md)',

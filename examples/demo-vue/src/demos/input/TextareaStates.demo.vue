@@ -1,9 +1,8 @@
 <script setup lang="ts">
 /**
  * Disabled mirrors the single-line Input. The Vue `SgTextarea` has no
- * `loading` prop yet (see `findings/T-Vue-Demo-Forms.md` →
- * `textarea-loading-not-in-vue`); this demo shows two disabled cases
- * to keep the example useful without mutating `packages/vue/**`.
+ * `loading` prop yet; this demo shows two disabled cases to keep the
+ * example useful without mutating `packages/vue/**`.
  */
 import { SgTextarea } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'

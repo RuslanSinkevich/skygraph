@@ -4,8 +4,7 @@
  *
  * Mirrors `examples/demo/src/demos/RadioDemo.tsx` (6 examples).
  * Vue delta: `DisabledStates` drops the `loading` row — `SgRadio` has
- * no `loading` prop yet (see `findings/T-Vue-Demo-Forms.md` →
- * `radio-loading-not-in-vue`).
+ * no `loading` prop yet.
  */
 import { computed } from 'vue'
 import {

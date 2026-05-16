@@ -1,9 +1,8 @@
 <script setup lang="ts">
 /**
  * Disabled blocks all interaction. The Vue `SgInputNumber` has no
- * `loading` prop yet (see `findings/T-Vue-Demo-Forms.md` →
- * `inputnumber-loading-not-in-vue`); only the disabled variants are
- * shown to keep parity with the available API.
+ * `loading` prop yet; only the disabled variants are shown to keep
+ * parity with the available API.
  */
 import { SgInputNumber } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'

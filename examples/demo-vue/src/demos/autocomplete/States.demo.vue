@@ -1,8 +1,7 @@
 <script setup lang="ts">
 /**
  * `disabled` locks the input. Vue `SgAutoComplete` has no `loading`
- * prop yet (see `findings/T-Vue-Demo-Forms.md` →
- * `autocomplete-loading-not-in-vue`); the loading row is dropped.
+ * prop yet, so the loading row is dropped.
  */
 import { SgAutoComplete } from '@skygraph/vue'
 import { frameworkOptions } from './data'

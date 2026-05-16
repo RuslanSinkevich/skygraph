@@ -2,8 +2,7 @@
 /**
  * `showTime` adds hour/minute columns. Vue delta: `show-time` is
  * boolean-only — granularity (`hourStep`, `minuteStep`) and the "Now"
- * shortcut are not implemented. See `findings/T-Vue-Demo-Forms.md` →
- * `datepicker-vue-feature-gaps`.
+ * shortcut are not implemented yet.
  */
 import { SgDatePicker } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'
@@ -24,12 +23,7 @@ const t = useDemoStrings(STRINGS)
 
 <template>
   <div style="display: grid; gap: 8px; max-width: 320px">
-    <SgDatePicker
-      show-time
-      format="YYYY-MM-DD HH:mm"
-      :placeholder="t.placeholder"
-      allow-clear
-    />
+    <SgDatePicker show-time format="YYYY-MM-DD HH:mm" :placeholder="t.placeholder" allow-clear />
     <span style="font-size: 12px; color: var(--sg-color-text-secondary)">
       {{ t.note }}
     </span>

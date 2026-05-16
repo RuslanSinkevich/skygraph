@@ -2,8 +2,7 @@
 /**
  * Pie + donut. Vue's `SgPieChart` reads `categories` + a single
  * `series` (one entry per slice value) — different shape from React's
- * `data={[{ id, label, value }]}` array. See
- * `findings/T-Vue-Demo-Complex.md` → `pie-categories-vs-data`.
+ * `data={[{ id, label, value }]}` array.
  */
 import { SgPieChart } from '@skygraph/vue'
 
@@ -17,11 +16,6 @@ const statusSeries = [{ id: 'count', label: 'Count', values: [72, 18, 10] }]
 <template>
   <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap">
     <SgPieChart legend :categories="browsers" :series="browserSeries" />
-    <SgPieChart
-      legend
-      :inner-radius="0.55"
-      :categories="status"
-      :series="statusSeries"
-    />
+    <SgPieChart legend :inner-radius="0.55" :categories="status" :series="statusSeries" />
   </div>
 </template>

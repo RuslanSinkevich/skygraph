@@ -3,8 +3,7 @@
  * Other locales must provide the same keys (see `ru.ts`).
  *
  * Mirrors `examples/demo/src/demos/autocomplete-doc/en.ts`. Vue side
- * has no `loading` prop on `SgAutoComplete` — see
- * `findings/T-Vue-Demo-Forms.md` (`autocomplete-loading-not-in-vue`).
+ * has no `loading` prop on `SgAutoComplete` yet.
  */
 export const autoCompleteDocEn = {
   pageTitle: 'AutoComplete',
@@ -14,10 +13,8 @@ export const autoCompleteDocEn = {
   pageLead:
     'Text input with a dropdown of filtered suggestions. The typed string is the committed value — selecting a row just writes it back.',
   pageWhen1: 'Free-form text where a few known values are likely (cities, emails, tags).',
-  pageWhen2:
-    'Email prefixes: auto-append known domains after the user types a local part.',
-  pageWhen3:
-    'Async lookup from a server — emit `@search` and surface progress in a side label.',
+  pageWhen2: 'Email prefixes: auto-append known domains after the user types a local part.',
+  pageWhen3: 'Async lookup from a server — emit `@search` and surface progress in a side label.',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Static suggestions filtered client-side by label.',
@@ -28,8 +25,7 @@ export const autoCompleteDocEn = {
   demoSizesTitle: 'Sizes',
   demoSizesDesc: 'Small / default / large, aligned with Input.',
   demoStatesTitle: 'Disabled states',
-  demoStatesDesc:
-    '`disabled` blocks editing. Vue has no loading state yet (parity gap).',
+  demoStatesDesc: '`disabled` blocks editing. Vue has no loading state yet (parity gap).',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope `--sg-input-*` and global tokens to rebrand one instance.',
   demoUnstyledTitle: 'Unstyled',

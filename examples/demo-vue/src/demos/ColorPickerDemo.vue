@@ -3,9 +3,7 @@
  * `ColorPickerDemo` — aggregator for the ColorPicker component page.
  *
  * Mirrors `examples/demo/src/demos/ColorPickerDemo.tsx` (9 examples).
- * Vue delta: `show-text` is boolean only — see
- * `findings/T-Vue-Demo-Forms.md` →
- * `colorpicker-showtext-boolean-only-in-vue`.
+ * Vue delta: `show-text` is boolean only (no function form).
  */
 import { computed } from 'vue'
 import {
@@ -89,7 +87,11 @@ const colorPickerProps = computed<PropDef[]>(() => [
 ])
 
 const colorPickerCssVars = computed<CssVarDef[]>(() => [
-  { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: t.value.cssSgColorBorder },
+  {
+    name: 'sg-color-border',
+    default: 'rgba(5, 5, 5, 0.06)',
+    description: t.value.cssSgColorBorder,
+  },
   {
     name: 'sg-color-border-secondary',
     default: 'rgba(5, 5, 5, 0.04)',
@@ -205,21 +207,13 @@ const colorPickerCssVars = computed<CssVarDef[]>(() => [
       <TokensOverrideColorPickerDemo />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
+    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledColorPickerDemo />
     </DemoBox>
 
     <template #api>
       <PropsTable :title="t.tableColorPickerApi" :data="colorPickerProps" />
-      <CssVarsTable
-        :title="t.tableCssVars"
-        :hint="t.cssHint"
-        :data="colorPickerCssVars"
-      />
+      <CssVarsTable :title="t.tableCssVars" :hint="t.cssHint" :data="colorPickerCssVars" />
     </template>
   </ComponentDoc>
 </template>

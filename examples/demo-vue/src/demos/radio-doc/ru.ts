@@ -19,8 +19,7 @@ export const radioDocRu: { [K in keyof typeof radioDocEn]: string } = {
   demoVerticalTitle: 'Вертикальный',
   demoVerticalDesc: "direction='vertical' для длинных подписей.",
   demoStatesTitle: 'Disabled-состояния',
-  demoStatesDesc:
-    '`disabled` на уровне опции и группы. У Vue `SgRadio` пока нет prop `loading` — см. `findings/T-Vue-Demo-Forms.md` (`radio-loading-not-in-vue`).',
+  demoStatesDesc: '`disabled` на уровне опции и группы. У Vue `SgRadio` пока нет prop `loading`.',
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: '`SgRadio` в `SgField` с required-валидацией.',
   demoTokensTitle: 'Переопределение токенов',

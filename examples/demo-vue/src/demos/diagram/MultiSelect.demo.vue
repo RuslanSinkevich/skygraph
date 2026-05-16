@@ -2,8 +2,6 @@
 /**
  * Multi-select via `Ctrl+click` (or `Shift+click`). Vue's `selectionMode`
  * exposes `single` and `multi` only — `lasso` is React-only for now.
- *
- * See `findings/T-Vue-Demo-Complex.md` → `diagram-no-lasso`.
  */
 import { onMounted, ref } from 'vue'
 import { SgDiagram, useGraph } from '@skygraph/vue'

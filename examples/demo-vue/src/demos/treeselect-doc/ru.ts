@@ -20,8 +20,7 @@ export const treeSelectDocRu: { [K in keyof typeof treeSelectDocEn]: string } = 
   demoMultipleTitle: 'Multiple',
   demoMultipleDesc: 'Выбор нескольких узлов — selections склеиваются в подпись триггера.',
   demoCheckableTitle: 'Checkable',
-  demoCheckableDesc:
-    'Чекбоксы на каждом узле (без auto-cascade — Vue переключает узлы по одному).',
+  demoCheckableDesc: 'Чекбоксы на каждом узле — отметка родителя каскадно отмечает всё поддерево.',
   demoSearchTitle: 'Поиск',
   demoSearchDesc: 'Фильтр узлов вводом.',
   demoDisabledNodesTitle: 'Disabled-узлы',
@@ -33,21 +32,20 @@ export const treeSelectDocRu: { [K in keyof typeof treeSelectDocEn]: string } = 
     'Скоуп токенов, чтобы тематизировать один TreeSelect, не трогая остальной экран.',
 
   tableTreeSelectApi: 'API TreeSelect',
-  tableTreeNodeData: 'TreeSelectNode',
+  tableTreeNodeData: 'TreeNodeData',
   tableCssVars: 'CSS-переменные',
 
   propTreeData: 'Иерархические узлы',
-  propModelValue:
-    'Выбранное значение(я) (`v-model`); массив при `multiple`',
+  propModelValue: 'Выбранное значение(я) (`v-model`); массив при `multiple`',
   propValue: 'Совместимый псевдоним `modelValue`',
   propDefaultValue: 'Начальный выбор (неуправляемый)',
   propMultiple: 'Включить multi-select',
-  propTreeCheckable: 'Чекбоксы per node (без cascade поддерева)',
+  propTreeCheckable: 'Чекбоксы per node с каскадом по поддереву',
   propShowSearch: 'Показать фильтр-инпут в дропдауне',
   propAllowClear: 'Кнопка очистки при наличии значения',
   propPlaceholder: 'Placeholder при пустом значении',
-  propDefaultExpandedKeys:
-    'Изначально раскрытые ключи (использовать вместо React `treeDefaultExpandAll`)',
+  propTreeDefaultExpandAll: 'Раскрыть все ветки при первом рендере',
+  propTreeDefaultExpandedKeys: 'Изначально раскрытые ключи (перекрывают `treeDefaultExpandAll`)',
   propSize: 'Размер контрола',
   propDisabled: 'Отключить весь селектор',
   propUnstyled: 'Без стилей SkyGraph',
@@ -55,11 +53,10 @@ export const treeSelectDocRu: { [K in keyof typeof treeSelectDocEn]: string } = 
   emitChange: 'Зеркало `update:modelValue`',
   emitSearch: 'Эмитится с текущим текстом поиска',
 
-  nodeValue: 'Уникальный идентификатор, используемый в `model-value`',
-  nodeLabel: 'Подпись (строка)',
+  nodeKey: 'Уникальный идентификатор, используемый в `model-value`',
+  nodeTitle: 'Подпись (строка)',
   nodeChildren: 'Вложенные узлы',
   nodeDisabled: 'Заблокировать выбор узла',
-  nodeSelectable: 'Per-node разрешение выбора',
 
   cssHint:
     'TreeSelect использует Input-токены для контрола; дропдаун — те же overlay/hover-переменные, что Select.',

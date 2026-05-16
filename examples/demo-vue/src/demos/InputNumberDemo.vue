@@ -5,8 +5,7 @@
  * Mirrors `examples/demo/src/demos/InputNumberDemo.tsx` 1:1 (8 examples).
  * Vue-specific delta: `States` shows two disabled inputs; the React
  * "loading" pair is omitted because `SgInputNumber` has no `loading`
- * prop (see `findings/T-Vue-Demo-Forms.md` →
- * `inputnumber-loading-not-in-vue`).
+ * prop yet.
  */
 import { computed } from 'vue'
 import {

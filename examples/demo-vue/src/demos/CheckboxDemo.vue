@@ -3,8 +3,8 @@
  * `CheckboxDemo` — aggregator for the Checkbox component page.
  *
  * Mirrors `examples/demo/src/demos/CheckboxDemo.tsx` (7 examples).
- * Vue delta: `States` shows 5 visual rows (no `loading`); see
- * `findings/T-Vue-Demo-Forms.md` → `checkbox-loading-not-in-vue`.
+ * Vue delta: `States` shows 5 visual rows (no `loading` prop yet on
+ * `SgCheckbox`).
  */
 import { computed } from 'vue'
 import {

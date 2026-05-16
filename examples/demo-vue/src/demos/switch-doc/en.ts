@@ -3,9 +3,8 @@
  * Other locales must provide the same keys (see `ru.ts`).
  *
  * Mirrors `examples/demo/src/demos/switch-doc/en.ts`. Vue side has no
- * `loading` prop on `SgSwitch` (see `findings/T-Vue-Demo-Forms.md` →
- * `switch-loading-not-in-vue`); the `propLoading` key is dropped and
- * the description rephrases "loading" → "disabled".
+ * `loading` prop on `SgSwitch` yet, so the `propLoading` key is dropped
+ * and the description rephrases "loading" → "disabled".
  */
 export const switchDocEn = {
   pageTitle: 'Switch',
@@ -18,14 +17,12 @@ export const switchDocEn = {
     'Flip a single state that takes effect right away (dark mode, notifications, publish state).',
   pageWhen2:
     'Inline in settings rows where a commit-on-click toggle is more natural than a form submit.',
-  pageWhen3:
-    'Reach for Checkbox instead if the value is submitted later as part of a form.',
+  pageWhen3: 'Reach for Checkbox instead if the value is submitted later as part of a form.',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Controlled on/off with v-model and a live readout.',
   demoTextIconTitle: 'Text & icon',
-  demoTextIconDesc:
-    '`#checkedChildren` / `#unCheckedChildren` slots render inside the track.',
+  demoTextIconDesc: '`#checkedChildren` / `#unCheckedChildren` slots render inside the track.',
   demoSizesTitle: 'Sizes',
   demoSizesDesc: '`small` for compact toolbars; default for forms.',
   demoStatesTitle: 'Disabled states',
@@ -36,7 +33,7 @@ export const switchDocEn = {
     'Flip first, gate clicks via `disabled`, surface progress in the side label, roll back on error.',
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc:
-    "Wrap with `<SgField>` and pipe `:model-value` / `@update:model-value` from the slot.",
+    'Wrap with `<SgField>` and pipe `:model-value` / `@update:model-value` from the slot.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global tokens to rebrand a group.',
   demoUnstyledTitle: 'Unstyled',
