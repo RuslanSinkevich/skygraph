@@ -29,6 +29,7 @@ function sectionForRoute(path: string): AppShellSection {
   if (path === '/' || path === '') return 'landing'
   if (path === '/roadmap') return 'roadmap'
   if (path === '/about') return 'about'
+  if (path.startsWith('/showcases')) return 'showcases'
   if (path.startsWith('/components/')) return 'components'
   if (path.startsWith('/guide/')) return 'guide'
   return null
@@ -37,6 +38,7 @@ function sectionForRoute(path: string): AppShellSection {
 const section = computed(() => sectionForRoute(route.value.path))
 
 const navItems = computed<NavItem[]>(() => [
+  { key: 'showcases', label: 'Showcases', href: '#/showcases' },
   { key: 'components', label: t.value.header.navComponents, href: '#/components/button' },
   { key: 'guide', label: t.value.header.navGuide, href: '#/guide/getting-started' },
   { key: 'roadmap', label: t.value.header.navRoadmap, href: '#/roadmap' },
@@ -73,6 +75,7 @@ const headerActive = computed<string | null>(() => {
   if (section.value === 'guide') return 'guide'
   if (section.value === 'roadmap') return 'roadmap'
   if (section.value === 'about') return 'about'
+  if (section.value === 'showcases') return 'showcases'
   return null
 })
 

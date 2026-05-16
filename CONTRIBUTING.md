@@ -6,7 +6,7 @@ Thanks for your interest in contributing!
 
 ```bash
 # Clone the repo
-git clone https://github.com/skygraph/skygraph.git
+git clone https://github.com/RuslanSinkevich/skygraph.git
 cd skygraph
 
 # Install dependencies (requires pnpm)
@@ -28,9 +28,16 @@ pnpm lint
 skygraph/
 ├── packages/
 │   ├── core/          # @skygraph/core — reactive runtime + engines
-│   └── react/         # @skygraph/react — hooks, components, styles
+│   ├── react/         # @skygraph/react — hooks, components
+│   ├── vue/           # @skygraph/vue — composables, components
+│   ├── angular/       # @skygraph/angular — standalone components (planned)
+│   └── styles/        # @skygraph/styles — framework-agnostic CSS
 ├── examples/
-│   └── demo/          # Vite demo app
+│   ├── demo/          # React Ant-style live docs (Vite)
+│   ├── demo-vue/      # Vue 3 mirror of the React demo (Vite)
+│   ├── demo-angular/  # Angular mirror (Analog/Vite)
+│   └── showcases/     # Cross-framework mini-apps
+├── deploy/            # Caddy + Docker scaffold for the live site
 └── docs/              # Documentation
 ```
 

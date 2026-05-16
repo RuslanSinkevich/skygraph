@@ -100,31 +100,63 @@ export const ru: DemoDict = {
     colDescription: 'Описание',
   },
   landing: {
-    title: 'SkyGraph для Vue',
-    lead: 'Фреймворк-агностичная UI-библиотека с Vue 3 адаптером. Композаблы для форм, таблиц, деревьев и графов плюс 27 готовых компонентов.',
-    statComponents: 'компонентов',
-    statComposables: 'композаблов',
-    statTests: 'тестов',
-    statEngines: 'движков',
-    ctaPrimary: 'Открыть компоненты',
-    ctaSecondary: 'Исходники',
-    featureReactiveTitle: 'Реактивное ядро',
-    featureReactiveDesc:
-      'Единый store-engine с адаптерами form / table / tree / graph. Один движок для React и Vue.',
-    featureZeroRuntimeTitle: 'Zero-runtime CSS',
-    featureZeroRuntimeDesc:
-      'Вся стилизация в @skygraph/styles. Никакого CSS-in-JS и runtime-затрат, темизация через CSS-переменные.',
-    featureA11yTitle: 'Доступность из коробки',
-    featureA11yDesc:
-      'Roving tabindex, list navigation, focus trap и корректная ARIA-разметка во всех примитивах.',
-    featureMultiTitle: 'Тот же DOM, тот же CSS',
-    featureMultiDesc:
-      'Vue-компоненты выдают ровно те же .sg-* классы, что и React-адаптер — темы и шоукейсы работают везде.',
-    quickInstallTitle: 'Быстрая установка',
-    quickInstallDesc:
-      'Добавьте @skygraph/vue и @skygraph/styles, импортируйте стили один раз — и можно собирать.',
-    quickInstallCopy: 'Копировать',
-    quickInstallCopied: 'Скопировано',
+    heroTitle: 'Готовый набор UI для Vue 3',
+    heroSub:
+      'SkyGraph — multi-framework UI-библиотека для React и Vue. 78+ компонентов, 12 готовых приложений, светлая и тёмная темы — всё на едином ядре.',
+    ctaPrimary: 'Посмотреть приложения',
+    ctaSecondary: 'Открыть компоненты',
+    heroImageAlt: 'Скриншот демо CRM в светлой теме',
+
+    highlightsTitle: 'Что внутри',
+    highlight1Title: '78+ компонентов',
+    highlight1Desc:
+      'Формы, таблицы, деревья, календари, графики, диаграммы, дашборды. Готовы к проекту.',
+    highlight2Title: '12 готовых приложений',
+    highlight2Desc:
+      'Настоящий CRM, дашборды, редактор процессов, kitchen-sink таблица — с полным исходным кодом.',
+    highlight3Title: 'Светлая и тёмная темы',
+    highlight3Desc:
+      'Темы из коробки. Переключение одним атрибутом, цвета меняются через CSS-переменные.',
+    highlight4Title: 'Open source · MIT',
+    highlight4Desc:
+      'Свободное использование в коммерческих и личных проектах. Открытый код, без телеметрии и vendor lock-in.',
+
+    showcasesTitle: 'Готовые приложения',
+    showcasesSub:
+      'Реальные интерфейсы, собранные целиком из компонентов SkyGraph — фейковые данные, рабочий UI.',
+    showcasesLink: 'Смотреть все приложения →',
+    showcaseCrmTitle: 'CRM',
+    showcaseCrmDesc:
+      'Контакты, сделочный pipeline, лента активности. Drag-and-drop, inline-редактирование.',
+    showcaseDashboardTitle: 'Дашборд операций',
+    showcaseDashboardDesc:
+      'Живой KPI-grid, разные графики, фильтры и drill-down, настраиваемая раскладка.',
+    showcaseWorkflowTitle: 'Редактор процессов',
+    showcaseWorkflowDesc:
+      'Visio-подобные блок-схемы: множественный выбор, lasso, undo/redo, orthogonal routing.',
+    showcaseTableTitle: 'Таблица — всё включено',
+    showcaseTableDesc:
+      'Сортировка, фильтры, группировка, virtual scroll, экспорт и печать на миллионе строк.',
+
+    spotsTitle: 'Сделано для настоящих интерфейсов',
+    spotThemingTitle: 'Тема в один клик',
+    spotThemingDesc:
+      'Каждый компонент читает цвета из CSS-переменных. Тема переключается одним атрибутом, токены легко переопределить под бренд.',
+    spotChartsTitle: 'Графики и диаграммы',
+    spotChartsDesc:
+      'Responsive SVG-графики, интерактивные блок-схемы, настраиваемые tooltip и легенды. Экспорт в SVG/PNG и печать — встроены.',
+    spotFormsTitle: 'Формы с валидацией',
+    spotFormsDesc:
+      'Типизированные формы, валидация по полю, зависимые поля, условные строки. Работает с любым источником данных.',
+
+    installTitle: 'Установка',
+    installLead: 'Для разработчиков — два пакета, один импорт стилей.',
+    installLearnMore: 'Подробнее в Getting Started →',
+
+    footerCtaTitle: 'Хотите попробовать?',
+    footerCtaBody: 'Откройте живые демо-приложения или сразу переходите в каталог компонентов.',
+    footerCtaButton: 'Посмотреть приложения',
+    footerDevHint: 'Для разработчиков: Getting Started · Архитектура · Лицензия (MIT)',
   },
 
   roadmap: {

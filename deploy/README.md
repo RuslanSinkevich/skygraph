@@ -2,9 +2,14 @@
 
 Multi-framework subdirectory deploy:
 
-- `/` — React demo (main)
-- `/vue/` — Vue demo (currently stub: Coming Soon)
+- `/` — landing page (static, `landing/`)
+- `/react/` — React demo (`examples/demo`)
+- `/react/showcases/` — React showcases (`examples/showcases`)
+- `/vue/` — Vue demo (`examples/demo-vue`)
 - `/angular/` — Angular demo (currently stub: Coming Soon)
+
+Production target: <https://skygraph.ruslansinkevich.ru> (Caddy on host,
+static files served from the deploy output).
 
 ## Local build (test)
 
@@ -24,6 +29,10 @@ The script:
    legacy `/skygraph/` base in `vite.config.ts` without modifying source).
 4. Copies `examples/demo/dist` into `deploy/output/`.
 5. Copies stubs into `deploy/output/vue/` and `deploy/output/angular/`.
+
+> Production deploy on the VPS uses `infra/scripts/deploy-skygraph.ps1`
+> (workspace root). It builds React + showcases + Vue and the static
+> landing, then rsyncs the layout above to the server.
 
 ## Docker build
 
@@ -66,10 +75,13 @@ docker run -d --name skygraph \
 deploy/output/
 ├── index.html               (React)
 ├── assets/
-├── vue/index.html           (stub)
+├── vue/index.html           (stub — production uses real Vue build via deploy-skygraph.ps1)
 └── angular/index.html       (stub)
 ```
 
-When Vue/Angular demos are ready, update `deploy/build-all.mjs` to build
-them and copy `dist/` instead of stubs (template lines are already
-present as comments in the script).
+`build-all.mjs` still drops a Vue stub into `vue/` for local sanity
+checks. Real Vue demo is built and copied by the production deploy
+script (`infra/scripts/deploy-skygraph.ps1`). When the Angular demo is
+ready, update `deploy/build-all.mjs` to build it and copy `dist/`
+instead of the stub (template line is already present as a comment in
+the script).

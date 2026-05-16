@@ -232,37 +232,63 @@ export const en: DemoDict = {
   },
 
   landing: {
-    statComponents: 'Components',
-    statTests: 'Tests',
-    statEngines: 'Engines',
-    statShowcases: 'Showcases',
-    statRuntimeCss: 'Runtime CSS',
-    statRuntimeCssValue: '0 KB',
-    ctaPrimary: 'Get started',
-    ctaSecondary: 'Browse showcases',
-    quickInstallTitle: 'Quick install',
-    quickInstallSub: 'Three packages — core engine, React adapter and styles.',
-    minimalExampleTitle: 'Minimal example',
-    minimalExampleSub: 'Reactive form, no providers, no boilerplate.',
-    featureReactiveCoreTitle: 'Reactive core',
-    featureReactiveCoreDesc:
-      'Path-based store, transactions, batched notifies, computed values with cycle detection.',
-    featureEnginesTitle: 'Domain engines',
-    featureEnginesDesc: 'Form, Table, Tree, Virtual, Graph, Calendar — six engines on one store.',
-    featurePrintTitle: 'Print & export',
-    featurePrintDesc: 'ref.print() + SVG/PNG export for Charts, Diagram and Table.',
-    featureChartsTitle: 'Charts UX',
-    featureChartsDesc:
-      'Responsive SVG, brushing, crosshair, animations, hover toolbar, context menu.',
-    featureDiagramTitle: 'Diagram UX',
-    featureDiagramDesc: 'Multi-select, lasso, hover actions, orthogonal routing, undo/redo.',
-    featureStylingTitle: 'Styling contract',
-    featureStylingDesc: 'Three-layer tokens, slots API, dark mode, zero runtime CSS-in-JS.',
-    whatsNewTitle: "What's new",
-    whatsNewLink: 'View full changelog →',
-    showcasesTitle: 'Real-world apps',
-    showcasesSub: 'Mini-applications composed from @skygraph/react — fake data, real components.',
-    showcasesLink: 'View all 12 showcases →',
+    heroTitle: 'A ready-made UI kit for web apps',
+    heroSub:
+      'SkyGraph is a multi-framework UI library for React and Vue. 78+ components, 12 reference apps, dark and light themes — built on a single shared engine.',
+    ctaPrimary: 'See live apps',
+    ctaSecondary: 'Browse components',
+    heroImageAlt: 'Screenshot of the SkyGraph CRM showcase in light mode',
+
+    highlightsTitle: 'What you get',
+    highlight1Title: '78+ components',
+    highlight1Desc:
+      'Forms, tables, trees, calendars, charts, diagrams, dashboards. All ready to drop into a project.',
+    highlight2Title: '12 reference apps',
+    highlight2Desc:
+      'Real CRM, dashboards, workflow editor, kitchen-sink table — full source code included.',
+    highlight3Title: 'Light and dark themes',
+    highlight3Desc:
+      'Themes ship out of the box. Switch with a single attribute, change colors via CSS variables.',
+    highlight4Title: 'Open source · MIT',
+    highlight4Desc:
+      'Use freely in commercial and personal projects. Public source, no telemetry, no lock-in.',
+
+    showcasesTitle: 'Reference apps',
+    showcasesSub:
+      'Real interfaces composed entirely of SkyGraph components — fake data, fully working UI.',
+    showcasesLink: 'View all reference apps →',
+    showcaseCrmTitle: 'CRM',
+    showcaseCrmDesc:
+      'Contacts, deals pipeline, activity timeline. Drag-and-drop board, inline editing.',
+    showcaseDashboardTitle: 'Operations Dashboard',
+    showcaseDashboardDesc:
+      'Live KPI grid, mixed charts, filters and drill-down, customizable layout.',
+    showcaseWorkflowTitle: 'Workflow Editor',
+    showcaseWorkflowDesc:
+      'Visio-style flowcharts with multi-select, lasso, undo/redo and orthogonal routing.',
+    showcaseTableTitle: 'Table — Kitchen Sink',
+    showcaseTableDesc:
+      'Sorting, filtering, grouping, virtual scroll, export and print on a million-row dataset.',
+
+    spotsTitle: 'Built for real interfaces',
+    spotThemingTitle: 'Light and dark in one click',
+    spotThemingDesc:
+      'Each component reads its colors from CSS variables. Switch theme via a single attribute or override individual tokens for your brand.',
+    spotChartsTitle: 'Charts and diagrams',
+    spotChartsDesc:
+      'Responsive SVG charts, interactive flow diagrams, configurable tooltips and legends. SVG/PNG export and print built in.',
+    spotFormsTitle: 'Forms with validation',
+    spotFormsDesc:
+      'Type-safe forms, field-level validation, dependent fields, conditional rows. Works with any data source.',
+
+    installTitle: 'Install',
+    installLead: 'For developers — three packages, one stylesheet import.',
+    installLearnMore: 'Read Getting Started →',
+
+    footerCtaTitle: 'Ready to try it out?',
+    footerCtaBody: 'Open the live reference apps or jump straight to the component catalogue.',
+    footerCtaButton: 'See live apps',
+    footerDevHint: 'For developers: Getting Started · Architecture · License (MIT)',
   },
 
   roadmap: {

@@ -27,9 +27,8 @@ const VISIBLE_HEIGHT = 480
 const SCROLL_FRAMES = 60
 const SCROLL_PIXELS_PER_FRAME = 24
 
-/** Shared SkyGraph DOM (React Table + Vue SgTable). */
-const SG_TABLE_SCROLL_SELECTOR =
-  '[data-sg-table-scroll], .sg-table-virtual, .sg-table-body, .sg-table'
+/** Vertical scroll viewport for SkyGraph Table / SgTable (React + Vue). */
+const SG_TABLE_SCROLL_SELECTOR = '.sg-table-scroll, [data-sg-table-scroll]'
 
 type BenchStrings = DemoDict['benchmarks']
 
@@ -201,7 +200,7 @@ function buildRunner(
         ? SG_TABLE_SCROLL_SELECTOR
         : '.ant-table-body, .ant-table-tbody-virtual-holder',
     )
-    let scrollFps = 0
+    const extras: Record<string, number> = {}
     if (scroller) {
       const frameTimes: number[] = []
       let last = performance.now()
@@ -218,7 +217,7 @@ function buildRunner(
       const avgFrame = frameTimes.length
         ? frameTimes.reduce((s, x) => s + x, 0) / frameTimes.length
         : 16.7
-      scrollFps = avgFrame > 0 ? 1000 / avgFrame : 0
+      extras.scrollFps = avgFrame > 0 ? 1000 / avgFrame : 0
     }
 
     const afterHeap = readHeapMemory()
@@ -227,9 +226,6 @@ function buildRunner(
     host.remove()
     await sleep(16)
 
-    const extras: Record<string, number> = {
-      scrollFps,
-    }
     if (beforeHeap !== null && afterHeap !== null) {
       extras.heapDeltaBytes = Math.max(0, afterHeap - beforeHeap)
     }
@@ -284,7 +280,7 @@ function buildVueRunner(data: { sky: Row[] }, vueCols: VueTableColumn[]): Runner
     const mountMs = performance.now() - t0
 
     const scroller = host.querySelector<HTMLElement>(SG_TABLE_SCROLL_SELECTOR)
-    let scrollFps = 0
+    const extras: Record<string, number> = {}
     if (scroller) {
       const frameTimes: number[] = []
       let last = performance.now()
@@ -301,7 +297,7 @@ function buildVueRunner(data: { sky: Row[] }, vueCols: VueTableColumn[]): Runner
       const avgFrame = frameTimes.length
         ? frameTimes.reduce((s, x) => s + x, 0) / frameTimes.length
         : 16.7
-      scrollFps = avgFrame > 0 ? 1000 / avgFrame : 0
+      extras.scrollFps = avgFrame > 0 ? 1000 / avgFrame : 0
     }
 
     const afterHeap = readHeapMemory()
@@ -310,9 +306,6 @@ function buildVueRunner(data: { sky: Row[] }, vueCols: VueTableColumn[]): Runner
     host.remove()
     await sleep(16)
 
-    const extras: Record<string, number> = {
-      scrollFps,
-    }
     if (beforeHeap !== null && afterHeap !== null) {
       extras.heapDeltaBytes = Math.max(0, afterHeap - beforeHeap)
     }
@@ -498,7 +491,10 @@ export function TableBenchmark() {
           {
             key: 'fps',
             label: b.colScrollFps,
-            extract: (r) => (r.extras?.scrollFps ? formatMetric(r.extras.scrollFps, 'fps') : '—'),
+            extract: (r) =>
+              typeof r.extras?.scrollFps === 'number'
+                ? formatMetric(r.extras.scrollFps, 'fps')
+                : '—',
           },
           {
             key: 'heap',

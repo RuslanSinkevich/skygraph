@@ -15,6 +15,7 @@
     "@skygraph/core": "workspace:*",
     "@skygraph/styles": "workspace:*",
     "@skygraph/vue": "workspace:*",
+    "showcases-vue": "workspace:*",
     "vue": "^3.4.0"
   },
   "devDependencies": {

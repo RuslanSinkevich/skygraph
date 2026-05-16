@@ -110,9 +110,13 @@ remains framework-free forever.
   `FrameworkSwitcher` widget in the React demo header lets the reader
   jump between `/`, `/vue/`, `/angular/` deploy paths.
 - **`deploy/`** ships a Caddy + Docker scaffold to host React/Vue/
-  (Angular stub) under one domain (`deploy/build-all.mjs` builds React
-  with `--base=/`, copies into `deploy/output/`, drops Coming-Soon
-  stubs into `vue/` and `angular/` until those demos are wired in).
+  Angular under one domain. Production deploy
+  (`infra/scripts/deploy-skygraph.ps1`) currently publishes the static
+  landing at `/`, React at `/react/` (+ `/react/showcases/`) and Vue at
+  `/vue/` on `skygraph.ruslansinkevich.ru`; Angular ships as a
+  Coming-Soon stub at `/angular/` until the Angular demo is wired into
+  the deploy pipeline. The local `deploy/build-all.mjs` builds React
+  only and drops stubs into `vue/` and `angular/` for offline checks.
 
 ### Shared demo content (`examples/_shared/`)
 

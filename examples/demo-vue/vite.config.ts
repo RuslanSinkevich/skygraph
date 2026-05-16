@@ -23,6 +23,7 @@ export default defineConfig({
         '../_shared-vue/src/layout/index.ts',
       ),
       '@skygraph-examples/shared-vue': path.resolve(__dirname, '../_shared-vue/src/index.ts'),
+      'showcases-vue': path.resolve(__dirname, '../showcases-vue/src'),
     },
   },
   server: {

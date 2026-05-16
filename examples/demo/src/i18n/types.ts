@@ -236,35 +236,50 @@ export interface DemoDict {
   }
 
   landing: {
-    statComponents: string
-    statTests: string
-    statEngines: string
-    statShowcases: string
-    statRuntimeCss: string
-    statRuntimeCssValue: string
+    heroTitle: string
+    heroSub: string
     ctaPrimary: string
     ctaSecondary: string
-    quickInstallTitle: string
-    quickInstallSub: string
-    minimalExampleTitle: string
-    minimalExampleSub: string
-    featureReactiveCoreTitle: string
-    featureReactiveCoreDesc: string
-    featureEnginesTitle: string
-    featureEnginesDesc: string
-    featurePrintTitle: string
-    featurePrintDesc: string
-    featureChartsTitle: string
-    featureChartsDesc: string
-    featureDiagramTitle: string
-    featureDiagramDesc: string
-    featureStylingTitle: string
-    featureStylingDesc: string
-    whatsNewTitle: string
-    whatsNewLink: string
+    heroImageAlt: string
+
+    highlightsTitle: string
+    highlight1Title: string
+    highlight1Desc: string
+    highlight2Title: string
+    highlight2Desc: string
+    highlight3Title: string
+    highlight3Desc: string
+    highlight4Title: string
+    highlight4Desc: string
+
     showcasesTitle: string
     showcasesSub: string
     showcasesLink: string
+    showcaseCrmTitle: string
+    showcaseCrmDesc: string
+    showcaseDashboardTitle: string
+    showcaseDashboardDesc: string
+    showcaseWorkflowTitle: string
+    showcaseWorkflowDesc: string
+    showcaseTableTitle: string
+    showcaseTableDesc: string
+
+    spotsTitle: string
+    spotThemingTitle: string
+    spotThemingDesc: string
+    spotChartsTitle: string
+    spotChartsDesc: string
+    spotFormsTitle: string
+    spotFormsDesc: string
+
+    installTitle: string
+    installLead: string
+    installLearnMore: string
+
+    footerCtaTitle: string
+    footerCtaBody: string
+    footerCtaButton: string
+    footerDevHint: string
   }
 
   roadmap: {

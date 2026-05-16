@@ -100,31 +100,63 @@ export const en: DemoDict = {
     colDescription: 'Description',
   },
   landing: {
-    title: 'SkyGraph for Vue',
-    lead: 'A framework-agnostic UI kit with a Vue 3 adapter. Composables for forms, tables, trees, graphs and 27 ready-to-use components.',
-    statComponents: 'Components',
-    statComposables: 'Composables',
-    statTests: 'Tests',
-    statEngines: 'Engines',
-    ctaPrimary: 'Browse components',
-    ctaSecondary: 'Read source',
-    featureReactiveTitle: 'Reactive core',
-    featureReactiveDesc:
-      'A single store engine with form / table / tree / graph adapters. Same engine across React and Vue.',
-    featureZeroRuntimeTitle: 'Zero-runtime CSS',
-    featureZeroRuntimeDesc:
-      'All styling lives in @skygraph/styles. No CSS-in-JS, no runtime cost, theming via plain CSS variables.',
-    featureA11yTitle: 'Accessible by default',
-    featureA11yDesc:
-      'Roving tabindex, list navigation, focus traps and ARIA wiring built in to every primitive.',
-    featureMultiTitle: 'Same DOM, same CSS',
-    featureMultiDesc:
-      'Vue components emit the exact same .sg-* classes as the React adapter — themes and showcases work everywhere.',
-    quickInstallTitle: 'Quick install',
-    quickInstallDesc:
-      'Add @skygraph/vue and @skygraph/styles, import the stylesheet once, and start composing.',
-    quickInstallCopy: 'Copy',
-    quickInstallCopied: 'Copied',
+    heroTitle: 'A ready-made UI kit for Vue 3',
+    heroSub:
+      'SkyGraph is a multi-framework UI library for React and Vue. 78+ components, 12 reference apps, dark and light themes — built on a single shared engine.',
+    ctaPrimary: 'See live apps',
+    ctaSecondary: 'Browse components',
+    heroImageAlt: 'Screenshot of the SkyGraph CRM showcase in light mode',
+
+    highlightsTitle: 'What you get',
+    highlight1Title: '78+ components',
+    highlight1Desc:
+      'Forms, tables, trees, calendars, charts, diagrams, dashboards. All ready to drop into a project.',
+    highlight2Title: '12 reference apps',
+    highlight2Desc:
+      'Real CRM, dashboards, workflow editor, kitchen-sink table — full source code included.',
+    highlight3Title: 'Light and dark themes',
+    highlight3Desc:
+      'Themes ship out of the box. Switch with a single attribute, change colors via CSS variables.',
+    highlight4Title: 'Open source · MIT',
+    highlight4Desc:
+      'Use freely in commercial and personal projects. Public source, no telemetry, no lock-in.',
+
+    showcasesTitle: 'Reference apps',
+    showcasesSub:
+      'Real interfaces composed entirely of SkyGraph components — fake data, fully working UI.',
+    showcasesLink: 'View all reference apps →',
+    showcaseCrmTitle: 'CRM',
+    showcaseCrmDesc:
+      'Contacts, deals pipeline, activity timeline. Drag-and-drop board, inline editing.',
+    showcaseDashboardTitle: 'Operations Dashboard',
+    showcaseDashboardDesc:
+      'Live KPI grid, mixed charts, filters and drill-down, customizable layout.',
+    showcaseWorkflowTitle: 'Workflow Editor',
+    showcaseWorkflowDesc:
+      'Visio-style flowcharts with multi-select, lasso, undo/redo and orthogonal routing.',
+    showcaseTableTitle: 'Table — Kitchen Sink',
+    showcaseTableDesc:
+      'Sorting, filtering, grouping, virtual scroll, export and print on a million-row dataset.',
+
+    spotsTitle: 'Built for real interfaces',
+    spotThemingTitle: 'Light and dark in one click',
+    spotThemingDesc:
+      'Each component reads its colors from CSS variables. Switch theme via a single attribute or override individual tokens for your brand.',
+    spotChartsTitle: 'Charts and diagrams',
+    spotChartsDesc:
+      'Responsive SVG charts, interactive flow diagrams, configurable tooltips and legends. SVG/PNG export and print built in.',
+    spotFormsTitle: 'Forms with validation',
+    spotFormsDesc:
+      'Type-safe forms, field-level validation, dependent fields, conditional rows. Works with any data source.',
+
+    installTitle: 'Install',
+    installLead: 'For developers — two packages, one stylesheet import.',
+    installLearnMore: 'Read Getting Started →',
+
+    footerCtaTitle: 'Ready to try it out?',
+    footerCtaBody: 'Open the live reference apps or jump straight to the component catalogue.',
+    footerCtaButton: 'See live apps',
+    footerDevHint: 'For developers: Getting Started · Architecture · License (MIT)',
   },
 
   roadmap: {

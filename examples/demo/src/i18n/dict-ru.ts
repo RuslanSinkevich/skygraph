@@ -234,39 +234,63 @@ export const ru: DemoDict = {
   },
 
   landing: {
-    statComponents: 'Компонентов',
-    statTests: 'Тестов',
-    statEngines: 'Движков',
-    statShowcases: 'Кейсов',
-    statRuntimeCss: 'Runtime CSS',
-    statRuntimeCssValue: '0 КБ',
-    ctaPrimary: 'Быстрый старт',
-    ctaSecondary: 'Смотреть кейсы',
-    quickInstallTitle: 'Быстрая установка',
-    quickInstallSub: 'Три пакета — ядро, React-адаптер и стили.',
-    minimalExampleTitle: 'Минимальный пример',
-    minimalExampleSub: 'Реактивная форма без провайдеров и шаблонного кода.',
-    featureReactiveCoreTitle: 'Реактивное ядро',
-    featureReactiveCoreDesc:
-      'Path-based store, транзакции, batched notifications, computed-значения с детектом циклов.',
-    featureEnginesTitle: 'Предметные движки',
-    featureEnginesDesc:
-      'Form, Table, Tree, Virtual, Graph, Calendar — шесть движков поверх одного store.',
-    featurePrintTitle: 'Печать и экспорт',
-    featurePrintDesc: 'ref.print() + SVG/PNG-экспорт для Charts, Diagram и Table.',
-    featureChartsTitle: 'Charts UX',
-    featureChartsDesc:
-      'Responsive SVG, brushing, crosshair, анимации, hover-тулбар, контекстное меню.',
-    featureDiagramTitle: 'Diagram UX',
-    featureDiagramDesc: 'Множественный выбор, lasso, hover-actions, orthogonal routing, undo/redo.',
-    featureStylingTitle: 'Стилевой контракт',
-    featureStylingDesc: 'Трёхслойные токены, slots API, тёмная тема, zero runtime CSS-in-JS.',
-    whatsNewTitle: 'Что нового',
-    whatsNewLink: 'Полный changelog →',
-    showcasesTitle: 'Реальные приложения',
+    heroTitle: 'Готовый набор UI для веб-приложений',
+    heroSub:
+      'SkyGraph — multi-framework UI-библиотека для React и Vue. 78+ компонентов, 12 готовых приложений, светлая и тёмная темы — всё на едином ядре.',
+    ctaPrimary: 'Посмотреть приложения',
+    ctaSecondary: 'Открыть компоненты',
+    heroImageAlt: 'Скриншот демо CRM в светлой теме',
+
+    highlightsTitle: 'Что внутри',
+    highlight1Title: '78+ компонентов',
+    highlight1Desc:
+      'Формы, таблицы, деревья, календари, графики, диаграммы, дашборды. Готовы к проекту.',
+    highlight2Title: '12 готовых приложений',
+    highlight2Desc:
+      'Настоящий CRM, дашборды, редактор процессов, kitchen-sink таблица — с полным исходным кодом.',
+    highlight3Title: 'Светлая и тёмная темы',
+    highlight3Desc:
+      'Темы из коробки. Переключение одним атрибутом, цвета меняются через CSS-переменные.',
+    highlight4Title: 'Open source · MIT',
+    highlight4Desc:
+      'Свободное использование в коммерческих и личных проектах. Открытый код, без телеметрии и vendor lock-in.',
+
+    showcasesTitle: 'Готовые приложения',
     showcasesSub:
-      'Мини-приложения, собранные на @skygraph/react — фейковые данные, настоящие компоненты.',
-    showcasesLink: 'Смотреть все 12 кейсов →',
+      'Реальные интерфейсы, собранные целиком из компонентов SkyGraph — фейковые данные, рабочий UI.',
+    showcasesLink: 'Смотреть все приложения →',
+    showcaseCrmTitle: 'CRM',
+    showcaseCrmDesc:
+      'Контакты, сделочный pipeline, лента активности. Drag-and-drop, inline-редактирование.',
+    showcaseDashboardTitle: 'Дашборд операций',
+    showcaseDashboardDesc:
+      'Живой KPI-grid, разные графики, фильтры и drill-down, настраиваемая раскладка.',
+    showcaseWorkflowTitle: 'Редактор процессов',
+    showcaseWorkflowDesc:
+      'Visio-подобные блок-схемы: множественный выбор, lasso, undo/redo, orthogonal routing.',
+    showcaseTableTitle: 'Таблица — всё включено',
+    showcaseTableDesc:
+      'Сортировка, фильтры, группировка, virtual scroll, экспорт и печать на миллионе строк.',
+
+    spotsTitle: 'Сделано для настоящих интерфейсов',
+    spotThemingTitle: 'Тема в один клик',
+    spotThemingDesc:
+      'Каждый компонент читает цвета из CSS-переменных. Тема переключается одним атрибутом, токены легко переопределить под бренд.',
+    spotChartsTitle: 'Графики и диаграммы',
+    spotChartsDesc:
+      'Responsive SVG-графики, интерактивные блок-схемы, настраиваемые tooltip и легенды. Экспорт в SVG/PNG и печать — встроены.',
+    spotFormsTitle: 'Формы с валидацией',
+    spotFormsDesc:
+      'Типизированные формы, валидация по полю, зависимые поля, условные строки. Работает с любым источником данных.',
+
+    installTitle: 'Установка',
+    installLead: 'Для разработчиков — три пакета, один импорт стилей.',
+    installLearnMore: 'Подробнее в Getting Started →',
+
+    footerCtaTitle: 'Хотите попробовать?',
+    footerCtaBody: 'Откройте живые демо-приложения или сразу переходите в каталог компонентов.',
+    footerCtaButton: 'Посмотреть приложения',
+    footerDevHint: 'Для разработчиков: Getting Started · Архитектура · Лицензия (MIT)',
   },
 
   roadmap: {

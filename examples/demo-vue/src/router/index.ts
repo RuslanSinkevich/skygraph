@@ -60,6 +60,7 @@ const SchemaFormEditorDemo = () => import('../demos/SchemaFormEditorDemo.vue')
 // ── Wave 3.4: top-level pages + guide section ──────────────────────────
 const Roadmap = () => import('../pages/Roadmap.vue')
 const About = () => import('../pages/About.vue')
+const Showcases = () => import('../pages/Showcases.vue')
 const GuideGettingStarted = () => import('../guide/GettingStarted.vue')
 const GuideStylingShowcase = () => import('../guide/StylingShowcase.vue')
 const GuideTheming = () => import('../guide/Theming.vue')
@@ -126,6 +127,8 @@ const routes: RouteRecord[] = [
 
   { path: '/roadmap', component: Roadmap },
   { path: '/about', component: About },
+  { path: '/showcases', component: Showcases },
+  { path: '/showcases/*', component: Showcases },
   { path: '/guide/getting-started', component: GuideGettingStarted },
   { path: '/guide/styling-showcase', component: GuideStylingShowcase },
   { path: '/guide/theming', component: GuideTheming },

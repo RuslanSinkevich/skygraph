@@ -23,10 +23,15 @@
   "publishConfig": {
     "access": "public"
   },
+  "author": "Ruslan Sinkevich",
+  "homepage": "https://skygraph.ruslansinkevich.ru",
   "repository": {
     "type": "git",
-    "url": "https://github.com/skygraph/skygraph.git",
+    "url": "git+https://github.com/RuslanSinkevich/skygraph.git",
     "directory": "packages/angular"
+  },
+  "bugs": {
+    "url": "https://github.com/RuslanSinkevich/skygraph/issues"
   },
   "keywords": [
     "angular",

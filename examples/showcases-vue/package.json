@@ -1,0 +1,27 @@
+{
+  "name": "showcases-vue",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "typecheck": "vue-tsc -b --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@skygraph-examples/shared": "workspace:*",
+    "@skygraph-examples/shared-vue": "workspace:*",
+    "@skygraph/core": "workspace:*",
+    "@skygraph/vue": "workspace:*",
+    "@skygraph/styles": "workspace:*",
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.0",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "typescript": "~5.9.3",
+    "vite": "^5.4.0",
+    "vue-tsc": "^2.0.0"
+  }
+}

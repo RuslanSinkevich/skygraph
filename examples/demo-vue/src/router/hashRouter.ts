@@ -49,6 +49,14 @@ function readHashPath(): string {
 function matchRecord(records: RouteRecord[], path: string): RouteRecord | null {
   const direct = records.find((r) => r.path === path && !r.path.includes(':'))
   if (direct) return direct
+  // Prefix matching: a record whose path ends with `/*` matches any sub-path.
+  // E.g. `/showcases/*` matches `/showcases/crm`, `/showcases/dashboard`, ...
+  const prefix = records.find((r) => {
+    if (!r.path.endsWith('/*')) return false
+    const head = r.path.slice(0, -2)
+    return path === head || path.startsWith(head + '/')
+  })
+  if (prefix) return prefix
   // Wildcard fallback (path: '/:pathMatch(.*)*' or any path starting with ':')
   const wildcard = records.find((r) => r.path.startsWith('/:') || r.path === '*')
   return wildcard ?? null

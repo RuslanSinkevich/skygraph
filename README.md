@@ -1,6 +1,6 @@
 # SkyGraph
 
-**Reactive UI library with a state graph engine at its core. Multi-framework — React, Vue, (Angular planned).**
+**Reactive UI library with a state graph engine at its core. Multi-framework — React and Vue adapters.**
 
 AntD-level components + reactive state management out of the box. Forms, tables, trees — no boilerplate. CSS Variables, zero runtime, framework-agnostic styles. Pixel-identical components across React and Vue adapters.
 
@@ -91,7 +91,7 @@ The same `.sg-*` classes are emitted on rendered DOM, the same CSS file is loade
 | `@skygraph/vue` | Vue 3 adapter — 14 composables, 52 SFC primitives, 14 complex SFCs. Pixel-identical to React, same `.sg-*` classes. | ~300 KB / ~65 KB gzip (ESM) |
 | `@skygraph/styles` | Framework-agnostic CSS — 91 tokens, light/dark themes, transitions, print, 64 component stylesheets | ~234 KB raw / ~25 KB gzip |
 
-`@skygraph/styles` is shared 1:1 across every adapter (`@skygraph/react`, `@skygraph/vue`, Angular planned) and pulled in transitively (declared in `dependencies`, not `peerDependencies` — installing the adapter is enough). The single import path is `'@skygraph/styles'`; per-component / per-token subpaths live under `@skygraph/styles/...`. The class-name surface is a hard public contract — see [`docs/styling-contract.md`](./docs/styling-contract.md).
+`@skygraph/styles` is shared 1:1 across every adapter (`@skygraph/react`, `@skygraph/vue`) and pulled in transitively (declared in `dependencies`, not `peerDependencies` — installing the adapter is enough). The single import path is `'@skygraph/styles'`; per-component / per-token subpaths live under `@skygraph/styles/...`. The class-name surface is a hard public contract — see [`docs/styling-contract.md`](./docs/styling-contract.md).
 
 ## Architecture
 
@@ -114,18 +114,18 @@ The same `.sg-*` classes are emitted on rendered DOM, the same CSS file is loade
           │
    ┌──────┴───────┬──────────────────┐
    │              │                  │
-@skygraph/react   @skygraph/vue      @skygraph/angular (planned)
-(peer: core +     (peer: core +     
- react)            vue ^3.4)        
-┌──────────────┐  ┌──────────────┐  
-│ hooks +      │  │ composables +│  
-│ ConfigProvi- │  │ provide/     │  
-│ der + 47 ui  │  │ inject + 52  │  
-│ + 17 complex │  │ ui + 14      │  
-│ + adapters   │  │ complex +    │  
-│   (zod / json│  │ adapters     │  
-│    schema)   │  │   (jsonSchema│  
-└──────────────┘  └──────────────┘  
+@skygraph/react   @skygraph/vue
+(peer: core +     (peer: core +
+ react)            vue ^3.4)
+┌──────────────┐  ┌──────────────┐
+│ hooks +      │  │ composables +│
+│ ConfigProvi- │  │ provide/     │
+│ der + 47 ui  │  │ inject + 52  │
+│ + 17 complex │  │ ui + 14      │
+│ + adapters   │  │ complex +    │
+│   (zod / json│  │ adapters     │
+│    schema)   │  │   (jsonSchema│
+└──────────────┘  └──────────────┘
           ▲ side-effect import only
           │
 @skygraph/styles (framework-agnostic CSS, 0 deps)
@@ -250,9 +250,9 @@ pnpm dev
 
 ### Multi-framework deploy
 
-The `deploy/` folder ships a multi-framework subdirectory layout
-(Caddy + Docker) for serving React / Vue / Angular demos under a single
-domain (`/`, `/vue/`, `/angular/`). See [`deploy/README.md`](./deploy/README.md).
+The `deploy/` folder ships a subdirectory layout (Caddy + Docker) for
+serving React and Vue interactive docs under one domain (`/react/`,
+`/vue/`, plus a static landing). See [`deploy/README.md`](./deploy/README.md).
 
 ```bash
 node deploy/build-all.mjs                         # local static build
@@ -261,21 +261,21 @@ docker build -f deploy/Dockerfile -t skygraph .   # containerised
 
 ## Documentation
 
-- [Live Demo](https://skygraph.github.io/skygraph/) — Ant-style interactive docs with code toggle
+- [Live demos](https://skygraph.ruslansinkevich.ru/) — landing + React (`/react/`), Vue (`/vue/`) interactive docs and React showcases (`/react/showcases/`)
 - [Architecture](ARCHITECTURE.md) — immutable design decisions
-- [Multi-framework strategy](docs/multi-framework.md) — React → Vue → Angular contract
+- [Multi-framework strategy](docs/multi-framework.md) — React ↔ Vue adapter contract
 - [Styling contract](docs/styling-contract.md) / [recipes](docs/styling-recipes.md)
 - [Changelog](CHANGELOG.md)
 
-## Sky Platform
+## Author's projects
 
-SkyGraph is part of the **Sky Platform** ecosystem:
+SkyGraph is one of several pet projects by [Ruslan Sinkevich](https://ruslansinkevich.ru/):
 
-- [Skycode](https://github.com/RuslanSinkevich/skycode) — VS Code fork with AI assistant
-- [SkyFork](https://github.com/RuslanSinkevich/skyfork) — Git client
-- [SkyGraph](https://github.com/RuslanSinkevich/skygraph) — Reactive UI library
+- [GitBor](https://gitbor.ru/) — cross-platform desktop Git client (Electron, public repo: [github.com/RuslanSinkevich/gitbor](https://github.com/RuslanSinkevich/gitbor))
+- [SkyGraph](https://skygraph.ruslansinkevich.ru/) — multi-framework reactive UI library (this repo, [github.com/RuslanSinkevich/skygraph](https://github.com/RuslanSinkevich/skygraph))
+- [Skycode](https://github.com/RuslanSinkevich/skycode) — VS Code fork with built-in AI assistant
 
-More at [skycode-ai.ru](https://skycode-ai.ru/about)
+More at [ruslansinkevich.ru](https://ruslansinkevich.ru/).
 
 ## License
 

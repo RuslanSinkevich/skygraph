@@ -1,159 +1,251 @@
 <script setup lang="ts">
 /**
- * Landing — Wave 3.1 rewrite.
+ * Landing — visual parity with `examples/demo/src/pages/Landing/Landing.tsx`.
  *
- * Tries to follow `examples/demo/src/pages/Landing/Landing.tsx` as
- * closely as possible while staying within Vue idioms and the
- * Wave-3 scope. Sections:
- *   1. Hero      — title + tagline + sub + 2 CTA.
- *   2. StatsRow  — 4 counters: Components / Composables / Engines / Tests.
- *   3. FeatureGrid — 4 feature cards (Reactive / Zero-runtime CSS / a11y / Same DOM).
- *   4. QuickInstall — install snippet + minimal example skeleton.
- *
- * Out of scope for Wave 3 (see `docs/_streams/wave-3/CHARTER.md` §2):
- *   - WhatsNew (CHANGELOG parser) — React-only.
- *   - ShowcasesPreview            — no Vue showcases.
+ * Sections, copy, class names, image placeholders all match the React
+ * landing 1:1. Tone is impersonal (no "you"); install block lists the
+ * Vue-flavoured packages (`@skygraph/vue`, not React).
  */
-import { ref } from 'vue'
-import { COMPONENT_COUNT, TEST_COUNT, ENGINE_COUNT, GITHUB_URL } from '@skygraph-examples/shared'
+import { GITHUB_URL } from '@skygraph-examples/shared'
 import { useRouter } from '../router'
 import { useI18n } from '../i18n'
+import ImagePlaceholder from '../components/ImagePlaceholder.vue'
 import './landing.css'
 
 const router = useRouter()
 const { t } = useI18n()
 
-function browse() {
+const INSTALL_COMMAND = 'npm install @skygraph/core @skygraph/vue @skygraph/styles'
+
+/**
+ * Vue Showcases are now embedded inside the Vue demo itself
+ * (`/vue/#/showcases/<key>` in prod, `/#/showcases/<key>` in single-server
+ * dev). The href stays hash-only, so it works in both modes.
+ */
+function showcasesHref(key?: string): string {
+  return key ? `#/showcases/${key}` : '#/showcases'
+}
+
+interface ShowcaseSpec {
+  key: string
+  titleKey:
+    | 'showcaseCrmTitle'
+    | 'showcaseDashboardTitle'
+    | 'showcaseWorkflowTitle'
+    | 'showcaseTableTitle'
+  descKey:
+    | 'showcaseCrmDesc'
+    | 'showcaseDashboardDesc'
+    | 'showcaseWorkflowDesc'
+    | 'showcaseTableDesc'
+  image: string
+  imageDesc: string
+}
+
+const SHOWCASES: ShowcaseSpec[] = [
+  {
+    key: 'crm',
+    titleKey: 'showcaseCrmTitle',
+    descKey: 'showcaseCrmDesc',
+    image: 'crm.png',
+    imageDesc:
+      'CRM showcase: contacts table on the left, deals pipeline board on the right, activity timeline at the bottom. Light theme.',
+  },
+  {
+    key: 'dashboard',
+    titleKey: 'showcaseDashboardTitle',
+    descKey: 'showcaseDashboardDesc',
+    image: 'dashboard.png',
+    imageDesc:
+      'Operations dashboard: 4 KPI cards on top, mixed line/bar chart in the middle, breakdown table at the bottom. Dark theme.',
+  },
+  {
+    key: 'workflow-editor',
+    titleKey: 'showcaseWorkflowTitle',
+    descKey: 'showcaseWorkflowDesc',
+    image: 'workflow.png',
+    imageDesc:
+      'Workflow editor: orthogonal flowchart with start/end blocks and a couple of decision diamonds, inspector panel on the right. Light theme.',
+  },
+  {
+    key: 'table-kitchen-sink',
+    titleKey: 'showcaseTableTitle',
+    descKey: 'showcaseTableDesc',
+    image: 'table.png',
+    imageDesc:
+      'Kitchen-sink table: filter chips above, virtual-scroll grid with grouped rows, totals row at the bottom. Light theme.',
+  },
+]
+
+interface SpotSpec {
+  titleKey: 'spotThemingTitle' | 'spotChartsTitle' | 'spotFormsTitle'
+  descKey: 'spotThemingDesc' | 'spotChartsDesc' | 'spotFormsDesc'
+  image: string
+  imageDesc: string
+  reverse: boolean
+}
+
+const SPOTS: SpotSpec[] = [
+  {
+    titleKey: 'spotThemingTitle',
+    descKey: 'spotThemingDesc',
+    image: 'spot-theming.png',
+    imageDesc:
+      'Side-by-side: same dashboard in light theme on the left and dark theme on the right; theme toggle highlighted between them.',
+    reverse: false,
+  },
+  {
+    titleKey: 'spotChartsTitle',
+    descKey: 'spotChartsDesc',
+    image: 'spot-charts.png',
+    imageDesc:
+      'Composite of two visuals: a responsive area chart with crosshair and tooltip + a small flowchart fragment with a hover toolbar.',
+    reverse: true,
+  },
+  {
+    titleKey: 'spotFormsTitle',
+    descKey: 'spotFormsDesc',
+    image: 'spot-forms.png',
+    imageDesc:
+      'Profile form: required-field hint shown next to an input, dependent country/city fields, validation error inline.',
+    reverse: false,
+  },
+]
+
+const HIGHLIGHTS = [
+  ['highlight1Title', 'highlight1Desc'],
+  ['highlight2Title', 'highlight2Desc'],
+  ['highlight3Title', 'highlight3Desc'],
+  ['highlight4Title', 'highlight4Desc'],
+] as const
+
+function browseComponents() {
   void router.push('/components/button')
 }
 
-/**
- * Composable count is a hard literal until `examples/_shared` exports
- * a `COMPOSABLE_COUNT` constant. See
- * `docs/_streams/findings/T-Vue-Demo-Foundation.md` →
- * `composables-count-hardcode`.
- */
-const COMPOSABLE_COUNT = 14
-
-const INSTALL_SNIPPET = `pnpm add @skygraph/vue @skygraph/styles
-# or
-npm install @skygraph/vue @skygraph/styles`
-
-// All literal `<` are written as `\x3c` so the Vue SFC parser keeps
-// the surrounding `<script setup>` block intact and TypeScript still
-// sees the rest of the setup function.
-const MINIMAL_EXAMPLE =
-  '\x3cscript setup lang="ts">\n' +
-  "import { SgButton, SgInput } from '@skygraph/vue'\n" +
-  "import '@skygraph/styles'\n" +
-  '\n' +
-  "const email = ref('')\n" +
-  '\x3c/script>\n' +
-  '\n' +
-  '\x3ctemplate>\n' +
-  '  \x3cSgInput v-model="email" placeholder="email@example.com" />\n' +
-  '  \x3cSgButton type="primary">Sign in\x3c/SgButton>\n' +
-  '\x3c/template>'
-
-const installCopied = ref(false)
-async function copyInstall() {
-  try {
-    await navigator.clipboard.writeText(INSTALL_SNIPPET)
-    installCopied.value = true
-    setTimeout(() => {
-      installCopied.value = false
-    }, 1600)
-  } catch {
-    // ignore
-  }
+function browseGettingStarted() {
+  void router.push('/guide/getting-started')
 }
 </script>
 
 <template>
-  <div class="dv-landing">
-    <!-- Hero ──────────────────────────────────────────────────────── -->
-    <section class="dv-landing-hero">
-      <h1>{{ t.landing.title }}</h1>
-      <p class="dv-landing-tagline">{{ t.app.tagline }}</p>
-      <p class="dv-landing-sub">{{ t.app.heroSub }}</p>
-      <div class="dv-landing-cta">
-        <button type="button" class="dv-landing-cta-primary" @click="browse">
-          {{ t.landing.ctaPrimary }} →
-        </button>
-        <a
-          class="dv-landing-cta-secondary"
-          :href="GITHUB_URL"
-          target="_blank"
-          rel="noreferrer noopener"
-          >{{ t.landing.ctaSecondary }}</a
+  <div class="landing">
+    <!-- Hero ──────────────────────────────────────────────────────────── -->
+    <section class="landing-hero">
+      <div class="landing-hero-text">
+        <h1>{{ t.landing.heroTitle }}</h1>
+        <p class="landing-hero-sub">{{ t.landing.heroSub }}</p>
+        <div class="landing-cta">
+          <a class="landing-cta-primary" :href="showcasesHref()"> {{ t.landing.ctaPrimary }} → </a>
+          <button type="button" class="landing-cta-secondary" @click="browseComponents">
+            {{ t.landing.ctaSecondary }}
+          </button>
+        </div>
+      </div>
+      <!-- PLACEHOLDER
+           File: examples/demo-vue/public/landing/hero.png
+           Size: 1280×960 (4:3), 2x retina recommended
+           Content: hero shot — composite screenshot of the SkyGraph CRM
+                    showcase in light theme: sidebar + contacts table +
+                    filters on the right.
+      -->
+      <ImagePlaceholder variant="hero" name="hero.png" :description="t.landing.heroImageAlt" />
+    </section>
+
+    <!-- Highlights ───────────────────────────────────────────────────── -->
+    <section>
+      <h2 class="landing-section-title">{{ t.landing.highlightsTitle }}</h2>
+      <div class="landing-highlights">
+        <article
+          v-for="[titleKey, descKey] of HIGHLIGHTS"
+          :key="titleKey"
+          class="landing-highlight"
         >
+          <span class="landing-highlight-title">{{ t.landing[titleKey] }}</span>
+          <span class="landing-highlight-desc">{{ t.landing[descKey] }}</span>
+        </article>
       </div>
     </section>
 
-    <!-- StatsRow ──────────────────────────────────────────────────── -->
-    <section class="dv-landing-stats" role="list" aria-label="Project stats">
-      <div class="dv-landing-stat" role="listitem">
-        <span class="dv-landing-stat-num">{{ COMPONENT_COUNT }}+</span>
-        <span class="dv-landing-stat-label">{{ t.landing.statComponents }}</span>
-      </div>
-      <div class="dv-landing-stat" role="listitem">
-        <span class="dv-landing-stat-num">{{ COMPOSABLE_COUNT }}</span>
-        <span class="dv-landing-stat-label">{{ t.landing.statComposables }}</span>
-      </div>
-      <div class="dv-landing-stat" role="listitem">
-        <span class="dv-landing-stat-num">{{ ENGINE_COUNT }}</span>
-        <span class="dv-landing-stat-label">{{ t.landing.statEngines }}</span>
-      </div>
-      <div class="dv-landing-stat" role="listitem">
-        <span class="dv-landing-stat-num">{{ TEST_COUNT }}+</span>
-        <span class="dv-landing-stat-label">{{ t.landing.statTests }}</span>
-      </div>
-    </section>
-
-    <!-- FeatureGrid ───────────────────────────────────────────────── -->
-    <section class="dv-landing-features">
-      <article class="dv-landing-feature">
-        <h3>{{ t.landing.featureReactiveTitle }}</h3>
-        <p>{{ t.landing.featureReactiveDesc }}</p>
-      </article>
-      <article class="dv-landing-feature">
-        <h3>{{ t.landing.featureZeroRuntimeTitle }}</h3>
-        <p>{{ t.landing.featureZeroRuntimeDesc }}</p>
-      </article>
-      <article class="dv-landing-feature">
-        <h3>{{ t.landing.featureA11yTitle }}</h3>
-        <p>{{ t.landing.featureA11yDesc }}</p>
-      </article>
-      <article class="dv-landing-feature">
-        <h3>{{ t.landing.featureMultiTitle }}</h3>
-        <p>{{ t.landing.featureMultiDesc }}</p>
-      </article>
-    </section>
-
-    <!-- QuickInstall ──────────────────────────────────────────────── -->
-    <section class="dv-landing-install">
-      <h2 class="dv-landing-section-title">{{ t.landing.quickInstallTitle }}</h2>
-      <p class="dv-landing-section-sub">{{ t.landing.quickInstallDesc }}</p>
-      <div class="dv-landing-install-grid">
-        <div class="dv-landing-install-card">
-          <div class="dv-landing-install-card-head">
-            <h3 class="dv-landing-install-card-title">pnpm</h3>
-            <button type="button" class="dv-landing-install-copy" @click="copyInstall">
-              <span aria-hidden>{{ installCopied ? '✓' : '⎘' }}</span>
-              <span>
-                {{ installCopied ? t.landing.quickInstallCopied : t.landing.quickInstallCopy }}
-              </span>
-            </button>
+    <!-- Showcases ────────────────────────────────────────────────────── -->
+    <section>
+      <h2 class="landing-section-title">{{ t.landing.showcasesTitle }}</h2>
+      <p class="landing-section-sub">{{ t.landing.showcasesSub }}</p>
+      <div class="landing-showcases">
+        <a
+          v-for="s of SHOWCASES"
+          :key="s.key"
+          class="landing-showcase"
+          :href="showcasesHref(s.key)"
+        >
+          <!-- PLACEHOLDER
+               File: examples/demo-vue/public/landing/<image>
+               Size: 1280×720 (16:9), 2x retina
+               Content: see imageDesc above. Cropped tightly so the UI
+                        fills the frame; no browser chrome.
+          -->
+          <ImagePlaceholder variant="showcase" :name="s.image" :description="s.imageDesc" />
+          <div class="landing-showcase-body">
+            <span class="landing-showcase-title">{{ t.landing[s.titleKey] }}</span>
+            <span class="landing-showcase-desc">{{ t.landing[s.descKey] }}</span>
           </div>
-          <pre class="dv-landing-install-code"><code>{{ INSTALL_SNIPPET }}</code></pre>
-        </div>
-        <div class="dv-landing-install-card">
-          <div class="dv-landing-install-card-head">
-            <h3 class="dv-landing-install-card-title">Login.vue</h3>
+        </a>
+      </div>
+      <a class="landing-link" :href="showcasesHref()">
+        {{ t.landing.showcasesLink }}
+      </a>
+    </section>
+
+    <!-- Spots ────────────────────────────────────────────────────────── -->
+    <section>
+      <h2 class="landing-section-title">{{ t.landing.spotsTitle }}</h2>
+      <div class="landing-spots">
+        <div
+          v-for="(spot, idx) of SPOTS"
+          :key="idx"
+          :class="['landing-spot', spot.reverse ? 'landing-spot--reverse' : '']"
+        >
+          <div class="landing-spot-text">
+            <h3 class="landing-spot-title">{{ t.landing[spot.titleKey] }}</h3>
+            <p class="landing-spot-desc">{{ t.landing[spot.descKey] }}</p>
           </div>
-          <pre class="dv-landing-install-code"><code>{{ MINIMAL_EXAMPLE }}</code></pre>
+          <!-- PLACEHOLDER
+               File: examples/demo-vue/public/landing/<image>
+               Size: 1280×960 (4:3), 2x retina
+               Content: see imageDesc above. Plain background, no
+                        browser chrome, focus on the relevant UI piece.
+          -->
+          <ImagePlaceholder variant="spot" :name="spot.image" :description="spot.imageDesc" />
         </div>
       </div>
+    </section>
+
+    <!-- Install ──────────────────────────────────────────────────────── -->
+    <section class="landing-install">
+      <h2 class="landing-install-title">{{ t.landing.installTitle }}</h2>
+      <p class="landing-install-lead">{{ t.landing.installLead }}</p>
+      <pre class="landing-install-code"><code>{{ INSTALL_COMMAND }}</code></pre>
+      <a
+        class="landing-install-link"
+        href="#/guide/getting-started"
+        @click.prevent="browseGettingStarted"
+      >
+        {{ t.landing.installLearnMore }}
+      </a>
+    </section>
+
+    <!-- Footer CTA ───────────────────────────────────────────────────── -->
+    <section class="landing-footer-cta">
+      <h2 class="landing-footer-cta-title">{{ t.landing.footerCtaTitle }}</h2>
+      <p class="landing-footer-cta-body">{{ t.landing.footerCtaBody }}</p>
+      <a class="landing-footer-cta-button" :href="showcasesHref()">
+        {{ t.landing.footerCtaButton }} →
+      </a>
+      <p class="landing-footer-cta-hint">
+        {{ t.landing.footerDevHint }}
+        ·
+        <a :href="GITHUB_URL" target="_blank" rel="noreferrer noopener">GitHub</a>
+      </p>
     </section>
   </div>
 </template>

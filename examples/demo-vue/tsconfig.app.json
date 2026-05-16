@@ -18,6 +18,7 @@
       "@skygraph-examples/shared": ["../_shared/src/index.ts"],
       "@skygraph-examples/shared-vue": ["../_shared-vue/src/index.ts"],
       "@skygraph-examples/shared-vue/layout": ["../_shared-vue/src/layout/index.ts"],
+      "showcases-vue/*": ["../showcases-vue/src/*"],
       "vue": ["./node_modules/vue"]
     }
   },
@@ -26,6 +27,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "../_shared-vue/src/**/*.ts",
-    "../_shared-vue/src/**/*.vue"
+    "../_shared-vue/src/**/*.vue",
+    "../showcases-vue/src/**/*.ts",
+    "../showcases-vue/src/**/*.vue"
   ]
 }

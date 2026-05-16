@@ -121,26 +121,50 @@ export interface DemoDict {
     colDescription: string
   }
   landing: {
-    title: string
-    lead: string
-    statComponents: string
-    statComposables: string
-    statTests: string
-    statEngines: string
+    heroTitle: string
+    heroSub: string
     ctaPrimary: string
     ctaSecondary: string
-    featureReactiveTitle: string
-    featureReactiveDesc: string
-    featureZeroRuntimeTitle: string
-    featureZeroRuntimeDesc: string
-    featureA11yTitle: string
-    featureA11yDesc: string
-    featureMultiTitle: string
-    featureMultiDesc: string
-    quickInstallTitle: string
-    quickInstallDesc: string
-    quickInstallCopy: string
-    quickInstallCopied: string
+    heroImageAlt: string
+
+    highlightsTitle: string
+    highlight1Title: string
+    highlight1Desc: string
+    highlight2Title: string
+    highlight2Desc: string
+    highlight3Title: string
+    highlight3Desc: string
+    highlight4Title: string
+    highlight4Desc: string
+
+    showcasesTitle: string
+    showcasesSub: string
+    showcasesLink: string
+    showcaseCrmTitle: string
+    showcaseCrmDesc: string
+    showcaseDashboardTitle: string
+    showcaseDashboardDesc: string
+    showcaseWorkflowTitle: string
+    showcaseWorkflowDesc: string
+    showcaseTableTitle: string
+    showcaseTableDesc: string
+
+    spotsTitle: string
+    spotThemingTitle: string
+    spotThemingDesc: string
+    spotChartsTitle: string
+    spotChartsDesc: string
+    spotFormsTitle: string
+    spotFormsDesc: string
+
+    installTitle: string
+    installLead: string
+    installLearnMore: string
+
+    footerCtaTitle: string
+    footerCtaBody: string
+    footerCtaButton: string
+    footerDevHint: string
   }
 
   /**
