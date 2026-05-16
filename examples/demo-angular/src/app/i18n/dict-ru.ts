@@ -113,7 +113,7 @@ export const ru: DemoDict = {
     ctaSecondary: 'Исходники',
     featureReactiveTitle: 'Реактивное ядро',
     featureReactiveDesc:
-      'Единый store-engine с адаптерами form / table / tree / graph. Один движок для React, Vue и Angular.',
+      'Единый store-engine с адаптерами form / table / tree / graph. Один движок для React и Vue.',
     featureZeroRuntimeTitle: 'Zero-runtime CSS',
     featureZeroRuntimeDesc:
       'Вся стилизация в @skygraph/styles. Никакого CSS-in-JS и runtime-затрат, темизация через CSS-переменные.',
@@ -153,25 +153,30 @@ export const ru: DemoDict = {
     lead1:
       'SkyGraph — TypeScript-first реактивная UI-библиотека: path-based ядро, шесть предметных движков и 78+ стилизованных компонентов на чистых CSS-переменных без рантайма.',
     lead2:
-      'Это UI-фундамент платформы Sky: один и тот же компонентный контракт прокатывается через адаптеры под разные фреймворки — сегодня React, далее Vue и Angular.',
+      'Это UI-фундамент платформы Sky: один и тот же компонентный контракт поставляется через адаптеры для React и Vue — одинаковый DOM и CSS.',
     lead3:
       'Никакого styled-components, никакого CSS-in-JS рантайма, никаких проприетарных шагов сборки — только стандарты: TypeScript, CSS-переменные, нативные DOM-события.',
     versionLabel: 'Версия',
     licenseLabel: 'Лицензия',
     licenseValue: 'MIT',
     architectureLink: 'Архитектура →',
-    skyPlatformTitle: 'Платформа Sky',
-    skyPlatformLead: 'Три связанных проекта на одной дизайн-системе и одной модели данных.',
+    skyPlatformTitle: 'Pet-проекты автора',
+    skyPlatformLead:
+      'Три независимых pet-проекта Руслана Синкевича — developer tools на разных стеках.',
     skycodeTitle: 'Skycode',
-    skycodeDesc: 'AI-IDE — форк VS Code со встроенным ассистентом Skycode.',
-    skyforkTitle: 'SkyFork',
-    skyforkDesc: 'Оркестрация кодовой базы — branch-хаб, agent runner, автоматизация.',
+    skycodeDesc:
+      'Форк VS Code со встроенным AI-ассистентом — агент, 40+ провайдеров моделей, inline diff.',
+    gitborTitle: 'GitBor',
+    gitborDesc:
+      'Кроссплатформенный десктопный Git-клиент на Electron — визуальный граф коммитов, интерактивный rebase, защита данных.',
     skygraphTitle: 'SkyGraph',
-    skygraphDesc: 'Эта библиотека — UI/data-основа любого Sky-интерфейса.',
-    multiFrameworkTitle: 'Multi-framework — скоро',
-    multiFrameworkLead: 'Ядро и стилевой контракт фреймворк-независимы. Адаптеры в работе:',
-    multiFrameworkVue: 'Vue 3 — биндинги Composition API поверх того же ядра.',
-    multiFrameworkAngular: 'Angular — интеграция через signals, те же компоненты.',
+    skygraphDesc: 'Эта библиотека — multi-framework UI на общем headless-ядре.',
+    multiFrameworkTitle: 'Multi-framework',
+    multiFrameworkLead: 'Ядро и стилевой контракт фреймворк-независимы. Готовые адаптеры:',
+    multiFrameworkReact:
+      'React — hooks, ConfigProvider, 47 UI-примитивов + 17 сложных компонентов на том же ядре.',
+    multiFrameworkVue:
+      'Vue 3 — биндинги Composition API, 52 SFC-примитива + 14 сложных — то же ядро, те же `.sg-*` классы.',
   },
   gettingStarted: {
     title: 'Быстрый старт',

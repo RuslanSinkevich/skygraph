@@ -6,6 +6,7 @@ export default defineConfig({
   base: '/react/showcases/',
   plugins: [react()],
   resolve: {
+    dedupe: ['react', 'react-dom'],
     alias: {
       '@skygraph/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
       '@skygraph/react': path.resolve(__dirname, '../../packages/react/src/index.ts'),

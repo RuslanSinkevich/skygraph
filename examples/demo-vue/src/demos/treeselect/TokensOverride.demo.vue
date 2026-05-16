@@ -5,7 +5,7 @@
  */
 import type { CSSProperties } from 'vue'
 import { SgTreeSelect } from '@skygraph/vue'
-import { orgTree, orgTreeAllParentKeys } from './data'
+import { orgTree } from './data'
 import { useDemoStrings } from '../../i18n'
 
 const STRINGS = {
@@ -35,7 +35,7 @@ const soft = {
       <SgTreeSelect
         :tree-data="orgTree"
         multiple
-        :default-expanded-keys="orgTreeAllParentKeys"
+        tree-default-expand-all
         :placeholder="t.green"
         allow-clear
       />
@@ -43,7 +43,7 @@ const soft = {
     <div :style="soft">
       <SgTreeSelect
         :tree-data="orgTree"
-        :default-expanded-keys="orgTreeAllParentKeys"
+        tree-default-expand-all
         :placeholder="t.soft"
         allow-clear
       />

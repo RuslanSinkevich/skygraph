@@ -34,7 +34,9 @@ function downloadPng() {
 </script>
 
 <template>
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px">
+  <div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px"
+  >
     <div
       ref="wrapperRef"
       style="
@@ -86,6 +88,7 @@ function downloadPng() {
         :categories="data.categories"
         :series="data.series"
         :height="220"
+        crosshair
         file-name="monthly-revenue"
         :x-axis="{ tickCount: 6 }"
         :y-axis="{ tickCount: 5, gridLines: true }"
@@ -99,15 +102,30 @@ function downloadPng() {
         background: var(--sg-color-bg-elevated);
       "
     >
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 6px;
+        "
+      >
         <div style="font-size: 12px; color: var(--sg-color-text-secondary)">
           Custom actions — your own buttons composed around the chart
         </div>
         <div style="display: flex; gap: 4px">
-          <button type="button" style="padding: 4px 10px; font-size: 12px; cursor: pointer" @click="refreshData">
+          <button
+            type="button"
+            style="padding: 4px 10px; font-size: 12px; cursor: pointer"
+            @click="refreshData"
+          >
             ↻ Refresh
           </button>
-          <button type="button" style="padding: 4px 10px; font-size: 12px; cursor: pointer" @click="resetData">
+          <button
+            type="button"
+            style="padding: 4px 10px; font-size: 12px; cursor: pointer"
+            @click="resetData"
+          >
             ↺ Reset
           </button>
         </div>
@@ -117,6 +135,7 @@ function downloadPng() {
         :categories="data2.categories"
         :series="data2.series"
         :height="220"
+        crosshair
         :x-axis="{ tickCount: 6 }"
         :y-axis="{ tickCount: 5, gridLines: true }"
       />

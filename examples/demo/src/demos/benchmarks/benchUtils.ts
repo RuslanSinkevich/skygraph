@@ -89,6 +89,15 @@ export function median(values: readonly number[]): number {
   return (sorted[mid - 1]! + sorted[mid]!) / 2
 }
 
+/** Replace `{key}` placeholders in benchmark copy (locale templates). */
+export function benchFill(template: string, vars: Record<string, string | number>): string {
+  let out = template
+  for (const [key, value] of Object.entries(vars)) {
+    out = out.split(`{${key}}`).join(String(value))
+  }
+  return out
+}
+
 /** Format a numeric value with the given unit. */
 export function formatMetric(value: number, unit: BenchResult['unit']): string {
   switch (unit) {

@@ -6,7 +6,10 @@
  */
 import { ref } from 'vue'
 import { SgResourceCalendar } from '@skygraph/vue'
-import type { Assignment, Resource } from '@skygraph/vue'
+import type {
+  ResourceCalendarAssignment as Assignment,
+  ResourceCalendarResource as Resource,
+} from '@skygraph/vue'
 
 const resources: Resource[] = [
   { id: 'room-a', name: 'Meeting Room A', color: '#0ea5e9', capacityPerSlot: 2 },

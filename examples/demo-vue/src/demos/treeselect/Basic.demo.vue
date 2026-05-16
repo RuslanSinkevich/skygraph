@@ -1,12 +1,11 @@
 <script setup lang="ts">
 /**
- * Single-node selection. `model-value` is a node `value` (string or
- * number). Vue lacks `treeDefaultExpandAll`, so we pass the list of
- * parent keys via `default-expanded-keys` to mimic it.
+ * Single-node selection. `model-value` is a node `key` (string or
+ * number). Clicking a non-selectable / disabled node does nothing.
  */
 import { ref } from 'vue'
-import { SgTreeSelect } from '@skygraph/vue'
-import { orgTree, orgTreeAllParentKeys } from './data'
+import { SgTreeSelect, type TreeKey } from '@skygraph/vue'
+import { orgTree } from './data'
 import { useDemoStrings } from '../../i18n'
 
 const STRINGS = {
@@ -15,7 +14,7 @@ const STRINGS = {
 } as const
 
 const t = useDemoStrings(STRINGS)
-const value = ref<string | number | (string | number)[]>('')
+const value = ref<TreeKey | TreeKey[]>('')
 </script>
 
 <template>
@@ -23,7 +22,7 @@ const value = ref<string | number | (string | number)[]>('')
     <SgTreeSelect
       v-model="value"
       :tree-data="orgTree"
-      :default-expanded-keys="orgTreeAllParentKeys"
+      tree-default-expand-all
       :placeholder="t.placeholder"
       allow-clear
     />

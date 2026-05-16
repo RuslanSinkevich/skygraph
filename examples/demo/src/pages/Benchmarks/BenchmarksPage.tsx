@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { TableBenchmark } from '../../demos/benchmarks/TableBenchmark'
 import { FormBenchmark } from '../../demos/benchmarks/FormBenchmark'
 import { LineChartBenchmark } from '../../demos/benchmarks/LineChartBenchmark'
+import { useI18n } from '../../i18n/I18nContext'
 import './benchmarks.css'
 
 type TabKey = 'table' | 'form' | 'chart'
@@ -13,57 +14,56 @@ interface TabDef {
   competitor: string
 }
 
-const TABS: TabDef[] = [
-  {
-    key: 'table',
-    label: 'Table · 100k rows',
-    subtitle: 'Mount + scroll FPS + heap delta',
-    competitor: 'vs antd <Table virtual>',
-  },
-  {
-    key: 'form',
-    label: 'Form · 100 fields',
-    subtitle: 'Mount + per-change + submit bytes',
-    competitor: 'vs react-hook-form + plain inputs',
-  },
-  {
-    key: 'chart',
-    label: 'LineChart · 1k×60',
-    subtitle: 'Median frame time + avg FPS',
-    competitor: 'vs recharts <LineChart>',
-  },
-]
-
 export function BenchmarksPage() {
+  const { t } = useI18n()
+  const b = t.benchmarks
   const [active, setActive] = useState<TabKey>('table')
+
+  const tabs: TabDef[] = useMemo(
+    () => [
+      {
+        key: 'table',
+        label: b.tabTableLabel,
+        subtitle: b.tabTableSubtitle,
+        competitor: b.tabTableVs,
+      },
+      { key: 'form', label: b.tabFormLabel, subtitle: b.tabFormSubtitle, competitor: b.tabFormVs },
+      {
+        key: 'chart',
+        label: b.tabChartLabel,
+        subtitle: b.tabChartSubtitle,
+        competitor: b.tabChartVs,
+      },
+    ],
+    [b],
+  )
 
   return (
     <div className="bench-page">
       <header className="bench-header">
-        <h1 className="bench-title">SkyGraph runtime benchmarks</h1>
+        <h1 className="bench-title">{b.pageTitle}</h1>
         <p className="bench-lead">
-          Side-by-side comparisons against widely-used React libraries on the same data, in the same browser tab. No
-          microbenchmarks: each test mounts a real component tree, measures with{' '}
-          <code>performance.now()</code> + <code>requestAnimationFrame</code>, takes the median of multiple runs after a
-          discarded warm-up.
+          {b.pageLead1} <code>performance.now()</code> {b.pageLead2}{' '}
+          <code>requestAnimationFrame</code>
+          {b.pageLead3}
         </p>
         <div className="bench-disclaimers">
           <div>
-            <strong>Honest reporting.</strong> If SkyGraph is slower in a benchmark, that's what the table shows. We
-            don't tweak methodology to win.
+            <strong>{b.disclaimerHonestTitle}</strong> {b.disclaimerHonestBody}
           </div>
           <div>
-            <strong>Browser-only.</strong> Heap delta is reported only when{' '}
-            <code>performance.memory</code> is exposed (Chromium).
+            <strong>{b.disclaimerBrowserTitle}</strong> {b.disclaimerBrowserBody}
           </div>
           <div>
-            <strong>Trigger-based.</strong> Benchmarks never autorun. Use the <em>Run</em> button on each tab.
+            <strong>{b.disclaimerTriggerTitle}</strong> {b.disclaimerTriggerBeforeRun}
+            <em>{b.runWord}</em>
+            {b.disclaimerTriggerAfterRun}
           </div>
         </div>
       </header>
 
       <nav className="bench-tabs" role="tablist">
-        {TABS.map((tab) => {
+        {tabs.map((tab) => {
           const isActive = tab.key === active
           return (
             <button
@@ -89,23 +89,24 @@ export function BenchmarksPage() {
       </div>
 
       <section className="bench-method-detail">
-        <h2>How to read these numbers</h2>
+        <h2>{b.howToReadTitle}</h2>
         <ul>
           <li>
-            <strong>Median, not mean.</strong> Browser GC and main-thread interruptions create heavy outliers. Median
-            of N runs is what matters for steady-state UX.
+            <strong>{b.howToRead1Strong}</strong> {b.howToRead1Rest}
           </li>
           <li>
-            <strong>Same dataset, same dom host.</strong> Each variant renders into a detached DOM root that is
-            unmounted between runs to release retained nodes.
+            <strong>{b.howToRead2Strong}</strong> {b.howToRead2Rest}
           </li>
           <li>
-            <strong>Single-threaded numbers.</strong> No Web Workers, no React Server Components. Both libraries are
-            measured the way an app developer would actually use them.
+            <strong>{b.howToRead3Strong}</strong> {b.howToRead3Rest}
           </li>
           <li>
-            <strong>Mount uses <code>flushSync</code>.</strong> Both variants commit synchronously so the timestamp
-            captures real layout work, not a deferred React 19 schedule.
+            <strong>
+              {b.howToRead4Strong}
+              <code>flushSync</code>
+              {b.howToRead4BeforeCode}
+            </strong>
+            {b.howToRead4AfterCode}
           </li>
         </ul>
       </section>

@@ -49,6 +49,7 @@ function loadMore() {
     <SgTable
       :columns="columns"
       :data="data"
+      :page-size="data.length"
       :show-pagination="false"
       bordered
       :virtual="virtualCfg"

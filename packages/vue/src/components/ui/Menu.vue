@@ -224,7 +224,10 @@ const StyledMenuItem: Component = defineComponent({
               ? h(
                   'span',
                   { class: 'sg-menu-item-icon', 'aria-hidden': 'true' },
-                  { default: () => p.item.icon },
+                  // Native HTML elements treat the third arg as children
+                  // directly — passing the `{ default }` slot object only
+                  // works for components.
+                  p.item.icon as VNode | VNode[] | string,
                 )
               : null,
             !(p.inlineCollapsed && p.depth === 0)

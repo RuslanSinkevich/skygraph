@@ -35,6 +35,7 @@ const data = monthlyRevenue()
         :series="data.series"
         width="100%"
         :height="220"
+        crosshair
         :x-axis="{ tickCount: 6 }"
         :y-axis="{ tickCount: 5, gridLines: true }"
       />

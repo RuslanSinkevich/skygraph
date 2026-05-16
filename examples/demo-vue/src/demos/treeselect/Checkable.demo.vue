@@ -1,22 +1,21 @@
 <script setup lang="ts">
 /**
- * `tree-checkable` renders checkboxes on every node. Note: Vue
- * `SgTreeSelect` toggles a single node per click — it does **not**
- * cascade selection to children automatically (parity gap, see
- * `findings/T-Vue-Demo-Forms.md` → `treeselect-no-cascade-in-vue`).
+ * `tree-checkable` renders checkboxes on every node and auto-selects
+ * the whole subtree when a parent is ticked. Use this when you need
+ * hierarchical groups rather than individual leaves.
  */
 import { ref } from 'vue'
-import { SgTreeSelect } from '@skygraph/vue'
-import { orgTree, orgTreeAllParentKeys } from './data'
+import { SgTreeSelect, type TreeKey } from '@skygraph/vue'
+import { orgTree } from './data'
 import { useDemoStrings } from '../../i18n'
 
 const STRINGS = {
-  en: { placeholder: 'Tick nodes' },
-  ru: { placeholder: 'Отметьте узлы' },
+  en: { placeholder: 'Tick subtrees' },
+  ru: { placeholder: 'Отметьте поддеревья' },
 } as const
 
 const t = useDemoStrings(STRINGS)
-const value = ref<(string | number)[]>([])
+const value = ref<TreeKey[]>([])
 </script>
 
 <template>
@@ -24,9 +23,8 @@ const value = ref<(string | number)[]>([])
     <SgTreeSelect
       v-model="value"
       :tree-data="orgTree"
-      multiple
       tree-checkable
-      :default-expanded-keys="orgTreeAllParentKeys"
+      tree-default-expand-all
       :placeholder="t.placeholder"
       allow-clear
     />

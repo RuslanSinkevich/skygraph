@@ -19,9 +19,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Lock the cell to a square so 1-, 2- and 3-digit pages render at the
+   * same width — combined with the 7-slot `buildPages` shape this keeps
+   * the strip width identical on every page transition (no layout jump
+   * between page 1 → 8 → 50). */
   min-width: var(--sg-height-md);
+  width: var(--sg-height-md);
   height: var(--sg-height-md);
-  padding: 0 var(--sg-padding-sm);
+  padding: 0 var(--sg-padding-xs);
   border: 1px solid var(--sg-color-border);
   border-radius: var(--sg-border-radius);
   background: var(--sg-color-bg);
@@ -30,6 +35,14 @@
   transition: all var(--sg-transition-duration) var(--sg-transition-timing);
   font-size: var(--sg-font-size);
   line-height: 1;
+}
+
+/* Prev/next still inherit the square base but auto-grow for wider arrow
+ * glyphs / labels on RTL locales. */
+.sg-pagination-prev,
+.sg-pagination-next {
+  width: auto;
+  min-width: var(--sg-height-md);
 }
 
 .sg-pagination-item:hover:not(:disabled) {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onBeforeUnmount, ref, watch, useSlots } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, useSlots } from 'vue'
+import { createVirtual, type VirtualEngine } from '@skygraph/core'
 import { useTable } from '../../../composables/useTable'
 import SgInput from '../../ui/Input.vue'
 import SgCheckbox from '../../ui/Checkbox.vue'
@@ -58,59 +59,62 @@ const sSty = computed(() => props.styles ?? {})
 /* Column flattening + header grid                                            */
 /* -------------------------------------------------------------------------- */
 
-interface HeaderCell {
+interface HeaderCellShape {
   col: TableColumn
   colSpan: number
   rowSpan: number
 }
 
-function getColumnDepth(col: TableColumn): number {
-  if (!col.children || col.children.length === 0) return 1
-  return 1 + Math.max(...col.children.map(getColumnDepth))
+function colDepth(c: TableColumn): number {
+  if (!c.children || c.children.length === 0) return 1
+  return 1 + Math.max(...c.children.map(colDepth))
 }
 
-function getLeafCount(col: TableColumn): number {
-  if (!col.children || col.children.length === 0) return col.hidden ? 0 : 1
-  return col.children.reduce((sum, c) => sum + getLeafCount(c), 0)
+function colLeafCount(c: TableColumn): number {
+  if (!c.children || c.children.length === 0) return c.hidden ? 0 : 1
+  return c.children.reduce((sum, ch) => sum + colLeafCount(ch), 0)
 }
 
-const headerDepth = computed(() => {
-  if (props.columns.length === 0) return 1
-  return Math.max(...props.columns.map(getColumnDepth))
-})
+const hasColumnGroups = computed(() =>
+  props.columns.some((c) => c.children && c.children.length > 0),
+)
+
+const headerDepth = computed(() =>
+  props.columns.length === 0 ? 1 : Math.max(...props.columns.map(colDepth)),
+)
 
 const leafColumns = computed<TableColumn[]>(() => {
   const out: TableColumn[] = []
-  const visit = (col: TableColumn) => {
-    if (col.hidden) return
-    if (!col.children || col.children.length === 0) out.push(col)
-    else col.children.forEach(visit)
+  const visit = (c: TableColumn) => {
+    if (c.hidden) return
+    if (!c.children || c.children.length === 0) out.push(c)
+    else c.children.forEach(visit)
   }
   props.columns.forEach(visit)
   return out
 })
 
-const headerRows = computed<HeaderCell[][]>(() => {
+const headerRows = computed<HeaderCellShape[][]>(() => {
   const depth = headerDepth.value
-  const rows: HeaderCell[][] = Array.from({ length: depth }, () => [])
-  const visit = (col: TableColumn, level: number) => {
-    if (col.hidden) return
-    const hasChildren = !!(col.children && col.children.length > 0)
+  const rows: HeaderCellShape[][] = Array.from({ length: depth }, () => [])
+  const visit = (c: TableColumn, level: number) => {
+    if (c.hidden) return
+    const hasChildren = !!(c.children && c.children.length > 0)
     if (hasChildren) {
-      const span = getLeafCount(col)
+      const span = colLeafCount(c)
       if (span > 0) {
-        rows[level].push({ col, colSpan: span, rowSpan: 1 })
-        col.children!.forEach((c) => visit(c, level + 1))
+        rows[level].push({ col: c, colSpan: span, rowSpan: 1 })
+        c.children!.forEach((ch) => visit(ch, level + 1))
       }
     } else {
-      rows[level].push({ col, colSpan: 1, rowSpan: depth - level })
+      rows[level].push({ col: c, colSpan: 1, rowSpan: depth - level })
     }
   }
   props.columns.forEach((c) => visit(c, 0))
   return rows
 })
 
-const visibleColumns = computed(() => leafColumns.value)
+const columns = computed(() => leafColumns.value)
 
 /* -------------------------------------------------------------------------- */
 /* Engine wiring                                                              */
@@ -149,8 +153,28 @@ watch(
   (next) => {
     table.reset()
     if (next) table.addRows(next)
+    // In virtual mode the engine renders the full dataset — pagination
+    // must be bypassed even if the consumer forgot to lift `pageSize`.
+    if (props.virtual && props.pageSize === undefined && next) {
+      table.setPageSize(next.length || 1)
+    }
     refresh()
   },
+)
+
+// Mirror the data-watch on initial mount so virtual demos that don't set
+// pageSize still see the whole dataset (otherwise visibleRows defaults
+// to the engine's 50-row page and the virtual scroller measures off
+// 50 instead of N rows).
+watch(
+  () => [props.virtual, props.data?.length],
+  () => {
+    if (props.virtual && props.pageSize === undefined && props.data) {
+      table.setPageSize(props.data.length || 1)
+      refresh()
+    }
+  },
+  { immediate: true },
 )
 
 /* -------------------------------------------------------------------------- */
@@ -165,25 +189,6 @@ const searchQuery = computed<string>({
     if (props.searchValue === undefined) internalSearch.value = v
   },
 })
-
-watch(
-  searchQuery,
-  (q) => {
-    if (!q) {
-      setFilterFn(null)
-      return
-    }
-    const lower = q.toLowerCase()
-    setFilterFn((row) => {
-      return visibleColumns.value.some((col) => {
-        const v = row[col.key]
-        if (v === null || v === undefined) return false
-        return String(v).toLowerCase().includes(lower)
-      })
-    })
-  },
-  { immediate: true },
-)
 
 /* -------------------------------------------------------------------------- */
 /* Sorting                                                                    */
@@ -234,9 +239,9 @@ const allCurrentPageSelected = computed(() => {
   return visibleRows.value.every((r) => selectedSet.value.has(r.id))
 })
 
-const someCurrentPageSelected = computed(() => {
-  return !allCurrentPageSelected.value && visibleRows.value.some((r) => selectedSet.value.has(r.id))
-})
+const someCurrentPageSelected = computed(
+  () => !allCurrentPageSelected.value && visibleRows.value.some((r) => selectedSet.value.has(r.id)),
+)
 
 function toggleSelectAll() {
   if (!props.rowSelection) return
@@ -255,7 +260,7 @@ function toggleSelectAll() {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Tree mode (children rows)                                                  */
+/* Tree mode                                                                  */
 /* -------------------------------------------------------------------------- */
 
 interface FlatRow {
@@ -263,7 +268,6 @@ interface FlatRow {
   data: Record<string, unknown>
   depth: number
   hasChildren: boolean
-  parentIds: RowId[]
 }
 
 const treeChildField = computed(() => props.tree?.childrenColumnName ?? 'children')
@@ -271,27 +275,36 @@ const treeIndent = computed(() => props.tree?.indentSize ?? 16)
 
 const treeExpanded = ref<Set<RowId>>(new Set())
 
-function initTreeExpanded() {
-  if (!props.tree) return
-  if (props.tree.defaultExpandAllRows) {
-    const ids = new Set<RowId>()
-    const visit = (rows: Array<{ id: RowId; data: Record<string, unknown> }>) => {
-      for (const r of rows) {
-        const children = (r.data as Record<string, unknown>)[treeChildField.value] as
-          | Array<{ id: RowId; data: Record<string, unknown> }>
-          | undefined
-        if (children && children.length > 0) {
-          ids.add(r.id)
-          visit(children)
-        }
+function collectAllTreeIds(rows: Array<{ id: RowId; data: Record<string, unknown> }>) {
+  const out = new Set<RowId>()
+  const visit = (list: Array<{ id: RowId; data: Record<string, unknown> }>) => {
+    for (const r of list) {
+      const children = r.data[treeChildField.value] as
+        | Array<{ id: RowId; data: Record<string, unknown> }>
+        | undefined
+      if (children && children.length > 0) {
+        out.add(r.id)
+        visit(children)
       }
     }
-    visit(props.data ?? [])
-    treeExpanded.value = ids
+  }
+  visit(rows)
+  return out
+}
+
+function initTreeExpanded() {
+  if (props.tree?.defaultExpandAllRows) {
+    treeExpanded.value = collectAllTreeIds(props.data ?? [])
+  } else {
+    treeExpanded.value = new Set()
   }
 }
 onMounted(initTreeExpanded)
 watch(() => props.tree?.defaultExpandAllRows, initTreeExpanded)
+watch(
+  () => props.data,
+  () => initTreeExpanded(),
+)
 
 function toggleTreeRow(id: RowId) {
   const next = new Set(treeExpanded.value)
@@ -307,28 +320,23 @@ const flatRows = computed<FlatRow[]>(() => {
       data: r.data,
       depth: 0,
       hasChildren: false,
-      parentIds: [],
     }))
   }
   const out: FlatRow[] = []
   const childField = treeChildField.value
-  const visit = (
-    rows: Array<{ id: RowId; data: Record<string, unknown> }>,
-    depth: number,
-    parentIds: RowId[],
-  ) => {
+  const visit = (rows: Array<{ id: RowId; data: Record<string, unknown> }>, depth: number) => {
     for (const r of rows) {
       const children = r.data[childField] as
         | Array<{ id: RowId; data: Record<string, unknown> }>
         | undefined
       const has = !!(children && children.length > 0)
-      out.push({ id: r.id, data: r.data, depth, hasChildren: has, parentIds })
+      out.push({ id: r.id, data: r.data, depth, hasChildren: has })
       if (has && treeExpanded.value.has(r.id)) {
-        visit(children!, depth + 1, [...parentIds, r.id])
+        visit(children!, depth + 1)
       }
     }
   }
-  visit(visibleRows.value, 0, [])
+  visit(visibleRows.value, 0)
   return out
 })
 
@@ -355,8 +363,7 @@ function toggleExpand(id: RowId) {
   const exp = props.expandable
   if (!exp) return
   const wasExpanded = expandedSet.value.has(id)
-  const isControlled = exp.expandedKeys !== undefined
-  if (!isControlled) {
+  if (exp.expandedKeys === undefined) {
     const next = new Set(internalExpanded.value)
     if (wasExpanded) next.delete(id)
     else next.add(id)
@@ -369,82 +376,81 @@ function toggleExpand(id: RowId) {
 function isRowExpandable(row: Record<string, unknown>): boolean {
   const exp = props.expandable
   if (!exp) return false
-  if (exp.rowExpandable) return exp.rowExpandable(row)
-  return true
+  return exp.rowExpandable ? exp.rowExpandable(row) : true
 }
 
 /* -------------------------------------------------------------------------- */
 /* Per-column filters                                                         */
 /* -------------------------------------------------------------------------- */
 
-interface ColumnFilterState {
-  values: unknown[]
-}
+const activeFilters = ref<Map<string, unknown[]>>(new Map())
+const openFilterDropdown = ref<string | null>(null)
 
-const colFilterState = ref<Map<string, ColumnFilterState>>(new Map())
-
-const customFns = ref<Map<string, (row: Record<string, unknown>) => boolean>>(new Map())
-
-function rebuildCustomFilter() {
-  const fns = Array.from(customFns.value.values())
-  if (fns.length === 0 && !searchQuery.value) {
+function rebuildFilters() {
+  const colsWith = columns.value.filter((c) => c.onFilter && activeFilters.value.get(c.key)?.length)
+  const hasSearch = props.searchable && searchQuery.value.length > 0
+  if (colsWith.length === 0 && !hasSearch) {
     setFilterFn(null)
     return
   }
-  const lowerSearch = searchQuery.value.toLowerCase()
+  const lower = hasSearch ? searchQuery.value.toLowerCase() : ''
   setFilterFn((row) => {
-    if (lowerSearch) {
-      const matchSearch = visibleColumns.value.some((col) => {
-        const v = row[col.key]
-        return v != null && String(v).toLowerCase().includes(lowerSearch)
-      })
-      if (!matchSearch) return false
+    for (const col of colsWith) {
+      const vals = activeFilters.value.get(col.key)!
+      const fn = col.onFilter!
+      if (!vals.some((v) => fn(v, row))) return false
     }
-    for (const fn of fns) {
-      if (!fn(row)) return false
+    if (hasSearch) {
+      const match = columns.value.some((c) => {
+        const v = row[c.key]
+        return v != null && String(v).toLowerCase().includes(lower)
+      })
+      if (!match) return false
     }
     return true
   })
 }
 
+watch(
+  searchQuery,
+  () => {
+    rebuildFilters()
+    refresh()
+  },
+  { immediate: true },
+)
+
 function applyColumnFilter(column: TableColumn, values: unknown[]) {
   if (!values || values.length === 0) {
-    colFilterState.value.delete(column.key)
-    customFns.value.delete(column.key)
-    table.removeFilter(column.key)
+    activeFilters.value.delete(column.key)
+    if (!column.onFilter) table.removeFilter(column.key)
   } else {
-    colFilterState.value.set(column.key, { values })
-    if (column.onFilter) {
-      const onFilter = column.onFilter
-      customFns.value.set(column.key, (row) => values.some((v) => onFilter(v, row)))
-    } else {
-      customFns.value.delete(column.key)
+    activeFilters.value.set(column.key, values)
+    if (!column.onFilter) {
       addFilter({ column: column.key, value: values[0], operator: 'eq' })
     }
   }
-  rebuildCustomFilter()
+  activeFilters.value = new Map(activeFilters.value)
+  rebuildFilters()
   refresh()
 }
 
-const openFilterColumn = ref<string | null>(null)
-
 function toggleFilterDropdown(key: string) {
-  openFilterColumn.value = openFilterColumn.value === key ? null : key
+  openFilterDropdown.value = openFilterDropdown.value === key ? null : key
 }
-
 function closeFilterDropdown() {
-  openFilterColumn.value = null
+  openFilterDropdown.value = null
 }
 
-const headerRefs = ref<Map<string, HTMLElement>>(new Map())
-function setHeaderRef(key: string, el: Element | null) {
-  if (el) headerRefs.value.set(key, el as HTMLElement)
-  else headerRefs.value.delete(key)
+const filterDropdownRefs = ref<Map<string, HTMLElement>>(new Map())
+function setFilterDropdownRef(key: string, el: Element | null) {
+  if (el) filterDropdownRefs.value.set(key, el as HTMLElement)
+  else filterDropdownRefs.value.delete(key)
 }
 
 function onDocClick(ev: MouseEvent) {
-  if (!openFilterColumn.value) return
-  const el = headerRefs.value.get(openFilterColumn.value)
+  if (!openFilterDropdown.value) return
+  const el = filterDropdownRefs.value.get(openFilterDropdown.value)
   if (el && el.contains(ev.target as Node)) return
   closeFilterDropdown()
 }
@@ -455,32 +461,27 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onDocClick))
 /* Resizable columns                                                          */
 /* -------------------------------------------------------------------------- */
 
-const resizingKey = ref<string | null>(null)
-let resizeStartX = 0
-let resizeStartWidth = 0
+const resizing = ref<{ key: string; startX: number; startW: number } | null>(null)
 
 function onResizeStart(col: TableColumn, ev: MouseEvent) {
   ev.preventDefault()
   ev.stopPropagation()
-  resizingKey.value = col.key
-  resizeStartX = ev.clientX
-  resizeStartWidth =
-    columnWidths.value[col.key] ??
-    col.width ??
-    headerRefs.value.get(col.key)?.getBoundingClientRect().width ??
-    150
+  const startW = columnWidths.value[col.key] ?? col.width ?? 150
+  resizing.value = { key: col.key, startX: ev.clientX, startW }
   document.addEventListener('mousemove', onResizeMove)
   document.addEventListener('mouseup', onResizeEnd)
 }
+
 function onResizeMove(ev: MouseEvent) {
-  if (!resizingKey.value) return
-  const delta = ev.clientX - resizeStartX
-  const min = props.columns.find((c) => c.key === resizingKey.value)?.minWidth ?? 50
-  const next = Math.max(min, resizeStartWidth + delta)
-  setColumnWidth(resizingKey.value, next)
+  const r = resizing.value
+  if (!r) return
+  const min = props.columns.find((c) => c.key === r.key)?.minWidth ?? 50
+  const next = Math.max(min, r.startW + (ev.clientX - r.startX))
+  setColumnWidth(r.key, next)
 }
+
 function onResizeEnd() {
-  resizingKey.value = null
+  resizing.value = null
   document.removeEventListener('mousemove', onResizeMove)
   document.removeEventListener('mouseup', onResizeEnd)
 }
@@ -505,9 +506,8 @@ function startEdit(id: RowId, key: string, value: unknown) {
 function commitEdit() {
   if (!editingCell.value) return
   const { id, key } = editingCell.value
-  const value = editingValue.value
-  emit('cellEdit', id, key, value)
-  props.onCellEdit?.(id, key, value)
+  emit('cellEdit', id, key, editingValue.value)
+  props.onCellEdit?.(id, key, editingValue.value)
   editingCell.value = null
 }
 
@@ -516,34 +516,49 @@ function cancelEdit() {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Layout / grid template                                                     */
+/* Layout: grid template + fixed offsets                                      */
 /* -------------------------------------------------------------------------- */
 
-const SELECTION_COL_WIDTH = '48px'
-const EXPAND_COL_WIDTH = '40px'
+const DEFAULT_COL_WIDTH = 150
+const MIN_COL_WIDTH = 50
+const EXPAND_COL_WIDTH = 40
+const SELECTION_COL_WIDTH = 48
 
-function colWidth(col: TableColumn): string {
-  const w = columnWidths.value[col.key] ?? col.width
-  if (w) return `${w}px`
-  return 'minmax(0, 1fr)'
+function colWidthPx(col: TableColumn): number {
+  return columnWidths.value[col.key] ?? col.width ?? DEFAULT_COL_WIDTH
 }
 
-const gridTemplateColumns = computed(() => {
+const hasScrollX = computed(() => props.scroll?.x != null)
+
+const hasAutoColumns = computed(() =>
+  columns.value.some((c) => !c.fixed && columnWidths.value[c.key] == null && c.width == null),
+)
+
+const shouldFlexExplicitWidths = computed(() => !hasScrollX.value && !hasAutoColumns.value)
+
+function colTrack(col: TableColumn): string {
+  const resized = columnWidths.value[col.key] != null
+  const w = columnWidths.value[col.key] ?? col.width ?? DEFAULT_COL_WIDTH
+  if (hasScrollX.value) {
+    return col.fixed || resized ? `${w}px` : `${w}px`
+  }
+  if (col.fixed || resized) return `${w}px`
+  if (col.width == null) return `minmax(${MIN_COL_WIDTH}px, 1fr)`
+  if (shouldFlexExplicitWidths.value) return `minmax(${MIN_COL_WIDTH}px, ${w}fr)`
+  return `minmax(${MIN_COL_WIDTH}px, ${w}px)`
+}
+
+const totalLeadingCols = computed(() => (props.expandable ? 1 : 0) + (props.rowSelection ? 1 : 0))
+
+const totalCols = computed(() => totalLeadingCols.value + columns.value.length)
+
+const gridTemplate = computed(() => {
   const parts: string[] = []
-  if (props.expandable) parts.push(EXPAND_COL_WIDTH)
-  if (props.rowSelection) parts.push(SELECTION_COL_WIDTH)
-  for (const col of leafColumns.value) parts.push(colWidth(col))
+  if (props.expandable) parts.push(`${EXPAND_COL_WIDTH}px`)
+  if (props.rowSelection) parts.push(`${SELECTION_COL_WIDTH}px`)
+  for (const col of columns.value) parts.push(colTrack(col))
   return parts.join(' ')
 })
-
-const gridStyle = computed(() => ({
-  gridTemplateColumns: gridTemplateColumns.value,
-  ...(sSty.value.grid ?? {}),
-}))
-
-/* -------------------------------------------------------------------------- */
-/* Fixed columns offsets                                                      */
-/* -------------------------------------------------------------------------- */
 
 interface FixedOffsets {
   left: Record<string, number>
@@ -554,56 +569,45 @@ const fixedOffsets = computed<FixedOffsets>(() => {
   const left: Record<string, number> = {}
   const right: Record<string, number> = {}
   let leftSum = 0
-  if (props.expandable) leftSum += parseInt(EXPAND_COL_WIDTH)
-  if (props.rowSelection) leftSum += parseInt(SELECTION_COL_WIDTH)
-  for (const col of leafColumns.value) {
+  if (props.expandable) leftSum += EXPAND_COL_WIDTH
+  if (props.rowSelection) leftSum += SELECTION_COL_WIDTH
+  for (const col of columns.value) {
     if (col.fixed === 'left') {
       left[col.key] = leftSum
-      leftSum += columnWidths.value[col.key] ?? col.width ?? 150
+      leftSum += colWidthPx(col)
     }
   }
   let rightSum = 0
-  for (const col of [...leafColumns.value].reverse()) {
+  for (const col of [...columns.value].reverse()) {
     if (col.fixed === 'right') {
       right[col.key] = rightSum
-      rightSum += columnWidths.value[col.key] ?? col.width ?? 150
+      rightSum += colWidthPx(col)
     }
   }
   return { left, right }
 })
 
-function colFixedStyle(col: TableColumn) {
+function fixedStyle(col: TableColumn, isHeader = false): Record<string, string | number> {
+  const out: Record<string, string | number> = {}
+  if (col.align) out.textAlign = col.align
   if (col.fixed === 'left') {
-    return {
-      position: 'sticky',
-      left: `${fixedOffsets.value.left[col.key] ?? 0}px`,
-      zIndex: 2,
-      background: 'var(--sg-color-bg-elevated, #fff)',
-    }
+    out.position = 'sticky'
+    out.left = `${fixedOffsets.value.left[col.key] ?? 0}px`
+    out.zIndex = isHeader ? 4 : 2
   }
   if (col.fixed === 'right') {
-    return {
-      position: 'sticky',
-      right: `${fixedOffsets.value.right[col.key] ?? 0}px`,
-      zIndex: 2,
-      background: 'var(--sg-color-bg-elevated, #fff)',
-    }
+    out.position = 'sticky'
+    out.right = `${fixedOffsets.value.right[col.key] ?? 0}px`
+    out.zIndex = isHeader ? 4 : 2
   }
-  return {}
+  return out
 }
 
 /* -------------------------------------------------------------------------- */
 /* Pagination                                                                 */
 /* -------------------------------------------------------------------------- */
 
-const totalPages = computed(() =>
-  Math.max(
-    1,
-    Math.ceil(
-      tableState.value.totalRows / (props.pageSize ?? Math.max(1, tableState.value.totalRows)),
-    ),
-  ),
-)
+const totalPages = computed(() => tableState.value.totalPages)
 
 function gotoPage(page: number) {
   if (page < 1 || page > totalPages.value) return
@@ -623,141 +627,180 @@ function aggregateValue(col: TableColumn): unknown {
   if (!col.aggregate) return null
   const values = visibleRows.value.map((r) => r.data[col.key])
   if (typeof col.aggregate === 'function') return col.aggregate(values)
+  const nums = values.map(Number).filter((n) => !Number.isNaN(n))
+  if (nums.length === 0) return col.aggregate === 'count' ? values.length : '-'
   switch (col.aggregate) {
-    case 'sum': {
-      let s = 0
-      for (const v of values) {
-        const n = Number(v)
-        if (!Number.isNaN(n)) s += n
-      }
-      return s
-    }
-    case 'avg': {
-      let s = 0
-      let c = 0
-      for (const v of values) {
-        const n = Number(v)
-        if (!Number.isNaN(n)) {
-          s += n
-          c += 1
-        }
-      }
-      return c > 0 ? Math.round((s / c) * 100) / 100 : 0
-    }
+    case 'sum':
+      return Math.round(nums.reduce((a, b) => a + b, 0) * 100) / 100
+    case 'avg':
+      return Math.round((nums.reduce((a, b) => a + b, 0) / nums.length) * 100) / 100
     case 'count':
       return values.length
-    case 'min': {
-      let m = Infinity
-      for (const v of values) {
-        const n = Number(v)
-        if (!Number.isNaN(n) && n < m) m = n
-      }
-      return m === Infinity ? 0 : m
-    }
-    case 'max': {
-      let m = -Infinity
-      for (const v of values) {
-        const n = Number(v)
-        if (!Number.isNaN(n) && n > m) m = n
-      }
-      return m === -Infinity ? 0 : m
-    }
+    case 'min':
+      return Math.min(...nums)
+    case 'max':
+      return Math.max(...nums)
   }
   return null
 }
 
 /* -------------------------------------------------------------------------- */
-/* Virtual scroll                                                             */
+/* Virtual scroll (engine-driven, same grid as non-virtual)                   */
 /* -------------------------------------------------------------------------- */
+
+type VirtualRowHeightFn = (row: Record<string, unknown>, id: RowId) => number
 
 const virtualConfig = computed(() => {
   if (!props.virtual) return null
   const v = props.virtual
   const isObj = typeof v === 'object'
   return {
-    rowHeight: isObj ? (v.rowHeight ?? 40) : 40,
+    rowHeight: (isObj ? (v.rowHeight ?? 40) : 40) as number | VirtualRowHeightFn,
     estimateRowHeight: isObj ? v.estimateRowHeight : undefined,
-    overscan: isObj ? (v.overscan ?? 6) : 6,
+    overscan: isObj ? (v.overscan ?? 5) : 5,
     height: isObj ? v.height : undefined,
   }
 })
 
+const virtualEngine = ref<VirtualEngine | null>(null)
 const scrollEl = ref<HTMLElement | null>(null)
 const scrollTop = ref(0)
 const viewportHeight = ref(0)
+const virtualVersion = ref(0)
+
+function buildEstimate(
+  rh: number | VirtualRowHeightFn,
+  est: VirtualRowHeightFn | undefined,
+  rows: FlatRow[],
+): number | ((index: number) => number) {
+  if (typeof rh === 'number' && est == null) return rh
+  const fallback = typeof rh === 'number' ? rh : 40
+  const fn: VirtualRowHeightFn | undefined = est ?? (typeof rh === 'function' ? rh : undefined)
+  if (!fn) return fallback
+  return (index: number) => {
+    const r = rows[index]
+    if (!r) return fallback
+    const v = fn(r.data, r.id)
+    return Number.isFinite(v) && v >= 0 ? v : fallback
+  }
+}
+
+function ensureVirtualEngine() {
+  if (!virtualConfig.value) {
+    virtualEngine.value = null
+    return
+  }
+  if (!virtualEngine.value) {
+    const eng = createVirtual({
+      itemCount: flatRows.value.length,
+      itemHeight: buildEstimate(
+        virtualConfig.value.rowHeight,
+        virtualConfig.value.estimateRowHeight,
+        flatRows.value,
+      ),
+      overscan: virtualConfig.value.overscan,
+    })
+    eng.subscribe(() => {
+      virtualVersion.value++
+    })
+    virtualEngine.value = eng
+  }
+}
+
+watch(virtualConfig, ensureVirtualEngine, { immediate: true })
+
+watch(
+  [flatRows, virtualConfig],
+  () => {
+    const eng = virtualEngine.value
+    const cfg = virtualConfig.value
+    if (!eng || !cfg) return
+    eng.setItemCount(flatRows.value.length)
+    eng.setItemHeight(buildEstimate(cfg.rowHeight, cfg.estimateRowHeight, flatRows.value))
+    // Declarative mode: pre-prime engine with all row heights so totalHeight is accurate.
+    if (typeof cfg.rowHeight === 'function') {
+      const fn = cfg.rowHeight
+      for (let i = 0; i < flatRows.value.length; i++) {
+        const r = flatRows.value[i]
+        if (!r) continue
+        const h = fn(r.data, r.id)
+        if (Number.isFinite(h) && h >= 0) eng.setMeasuredHeight(i, Math.round(h))
+      }
+    }
+  },
+  { deep: false },
+)
 
 function onVirtualScroll(ev: Event) {
   scrollTop.value = (ev.target as HTMLElement).scrollTop
 }
 
-onMounted(() => {
-  if (!virtualConfig.value || !scrollEl.value) return
-  viewportHeight.value =
-    typeof virtualConfig.value.height === 'number'
-      ? virtualConfig.value.height
-      : scrollEl.value.clientHeight || 320
-})
-
-watch(virtualConfig, () => {
-  if (virtualConfig.value && scrollEl.value) {
-    viewportHeight.value =
-      typeof virtualConfig.value.height === 'number'
-        ? virtualConfig.value.height
-        : scrollEl.value.clientHeight || 320
-  }
-})
-
-function rowHeightAt(row: FlatRow): number {
-  const cfg = virtualConfig.value
-  if (!cfg) return 40
-  if (typeof cfg.rowHeight === 'function') return cfg.rowHeight(row.data, row.id)
-  return cfg.rowHeight as number
+function syncViewport() {
+  const el = scrollEl.value
+  if (!el) return
+  viewportHeight.value = el.clientHeight
+  scrollTop.value = el.scrollTop
 }
 
-const virtualWindow = computed(() => {
-  const cfg = virtualConfig.value
-  if (!cfg) return null
-  const rows = flatRows.value
-  let total = 0
-  const offsets: number[] = []
-  for (const r of rows) {
-    offsets.push(total)
-    total += rowHeightAt(r)
+onMounted(() => {
+  if (!virtualConfig.value) return
+  syncViewport()
+  const el = scrollEl.value
+  if (!el) return
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(syncViewport) : null
+  ro?.observe(el)
+  onBeforeUnmount(() => ro?.disconnect())
+})
+
+interface VirtualRange {
+  startIndex: number
+  endIndex: number
+  visibleRows: FlatRow[]
+  topPad: number
+  bottomPad: number
+}
+
+const virtualRange = computed<VirtualRange | null>(() => {
+  // touch virtualVersion to re-run when engine notifies measurements
+  void virtualVersion.value
+  const eng = virtualEngine.value
+  if (!eng || !virtualConfig.value) return null
+  const range = eng.getRange(scrollTop.value, viewportHeight.value || 400)
+  const visible = flatRows.value.slice(range.startIndex, range.endIndex + 1)
+  let visibleSize = 0
+  for (let i = 0; i < visible.length; i++) {
+    visibleSize += eng.getItemSize(range.startIndex + i)
   }
-  const top = scrollTop.value
-  const bottom = top + viewportHeight.value
-  let start = 0
-  while (start < rows.length && offsets[start] + rowHeightAt(rows[start]) < top) start++
-  let end = start
-  while (end < rows.length && offsets[end] < bottom) end++
-  start = Math.max(0, start - cfg.overscan)
-  end = Math.min(rows.length, end + cfg.overscan)
-  return { start, end, totalHeight: total, offsets }
+  const bottom = Math.max(0, range.totalHeight - range.offsetTop - visibleSize)
+  return {
+    startIndex: range.startIndex,
+    endIndex: range.endIndex,
+    visibleRows: visible,
+    topPad: range.offsetTop,
+    bottomPad: bottom,
+  }
 })
 
-const visibleVirtualRows = computed(() => {
-  if (!virtualWindow.value) return null
-  const { start, end, offsets } = virtualWindow.value
-  return flatRows.value.slice(start, end).map((row, i) => ({
-    row,
-    offset: offsets[start + i],
-  }))
-})
+const bodyRows = computed<FlatRow[]>(() =>
+  virtualRange.value ? virtualRange.value.visibleRows : flatRows.value,
+)
+
+const rowIndexOffset = computed(() => (virtualRange.value ? virtualRange.value.startIndex : 0))
 
 /* -------------------------------------------------------------------------- */
-/* Misc layout                                                                */
+/* Layout classes                                                             */
 /* -------------------------------------------------------------------------- */
 
-function rowCls(row: FlatRow, idx: number): string {
-  const base = sCls.value.row ?? ''
+function rowClassFor(row: FlatRow, absIndex: number): string {
   const extra =
     typeof props.rowClassName === 'function'
       ? props.rowClassName(row.data, row.id)
       : (props.rowClassName ?? '')
   const selected = selectedSet.value.has(row.id) ? 'sg-table-row-selected' : ''
-  const striped = props.striped && idx % 2 === 1 ? 'sg-table-row-striped' : ''
-  const clickable = 'sg-table-row-clickable'
-  return ['sg-table-row', clickable, base, extra, selected, striped].filter(Boolean).join(' ')
+  const striped = props.striped && absIndex % 2 === 1 ? 'sg-table-row-striped' : ''
+  return ['sg-table-row', 'sg-table-row-clickable', selected, striped, extra, sCls.value.row ?? '']
+    .filter(Boolean)
+    .join(' ')
 }
 
 function handleRowClick(row: FlatRow) {
@@ -768,38 +811,52 @@ const wrapperClass = computed(() => {
   if (props.unstyled) return ''
   return [
     'sg-table-wrapper',
-    props.highlightOnHover ? 'sg-table-hoverable' : '',
     `sg-table-${props.size}`,
     props.bordered ? 'sg-table-bordered' : '',
-    props.sticky ? 'sg-table-sticky' : '',
+    props.sticky || virtualConfig.value ? 'sg-table-sticky' : '',
     props.loading ? 'sg-table-loading' : '',
     props.striped ? 'sg-table-striped' : '',
+    props.highlightOnHover === false ? '' : 'sg-table-hoverable',
     sCls.value.root ?? '',
   ]
     .filter(Boolean)
     .join(' ')
 })
 
+const scrollClass = computed(() =>
+  ['sg-table-scroll', props.scroll?.x ? 'sg-table-scroll-x' : '', sCls.value.scroll]
+    .filter(Boolean)
+    .join(' '),
+)
+
 const scrollStyle = computed<Record<string, string | number>>(() => {
   const out: Record<string, string | number> = { ...(sSty.value.scroll ?? {}) }
-  if (props.scroll?.x) out.maxWidth = '100%'
-  if (props.scroll?.y) {
-    out.maxHeight = typeof props.scroll.y === 'number' ? `${props.scroll.y}px` : props.scroll.y
-    out.overflowY = 'auto'
-  }
+  if (props.scroll?.x) out.overflowX = 'auto'
   if (virtualConfig.value) {
-    const h = virtualConfig.value.height
-    out.maxHeight = h !== undefined ? (typeof h === 'number' ? `${h}px` : h) : '320px'
-    out.height = out.maxHeight
     out.overflowY = 'auto'
+    const h = virtualConfig.value.height ?? props.scroll?.y ?? 400
+    out.height = typeof h === 'number' ? `${h}px` : h
+  } else if (props.scroll?.y) {
+    out.overflowY = 'auto'
+    out.maxHeight = typeof props.scroll.y === 'number' ? `${props.scroll.y}px` : props.scroll.y
   }
   return out
 })
 
-const innerWidthStyle = computed<Record<string, string>>(() => {
-  if (!props.scroll?.x) return {} as Record<string, string>
-  return { minWidth: typeof props.scroll.x === 'number' ? `${props.scroll.x}px` : props.scroll.x }
+const gridStyle = computed<Record<string, string | number>>(() => {
+  const out: Record<string, string | number> = {
+    gridTemplateColumns: gridTemplate.value,
+    ...(sSty.value.grid ?? {}),
+  }
+  if (props.scroll?.x) {
+    out.minWidth = typeof props.scroll.x === 'number' ? `${props.scroll.x}px` : props.scroll.x
+  }
+  return out
 })
+
+const hasToolbar = computed(() => props.searchable || !!slots.toolbar)
+
+const spacerColumn = computed(() => `1 / ${totalCols.value + 1}`)
 
 defineExpose({
   table,
@@ -807,8 +864,7 @@ defineExpose({
   clearAll: () => {
     clearSort()
     clearFilters()
-    customFns.value.clear()
-    colFilterState.value.clear()
+    activeFilters.value.clear()
     internalSearch.value = ''
   },
 })
@@ -816,8 +872,9 @@ defineExpose({
 
 <template>
   <div :class="wrapperClass || undefined" :style="sSty.root">
+    <!-- Toolbar -->
     <div
-      v-if="searchable || slots.toolbar"
+      v-if="hasToolbar"
       :class="['sg-table-toolbar', sCls.toolbar].filter(Boolean).join(' ') || undefined"
       :style="sSty.toolbar"
     >
@@ -829,100 +886,78 @@ defineExpose({
         :placeholder="localeFull.searchPlaceholder"
         :aria-label="localeFull.searchPlaceholder"
         allow-clear
+        :style="{ maxWidth: '240px' }"
       />
-      <slot name="toolbar" />
+      <div class="sg-table-toolbar-right">
+        <slot name="toolbar" />
+      </div>
     </div>
 
+    <!-- Scroll viewport (owns vertical scroll for virtual / scroll.y) -->
     <div
       ref="scrollEl"
-      :class="['sg-table-scroll', sCls.scroll].filter(Boolean).join(' ') || undefined"
+      :class="scrollClass || undefined"
       :style="scrollStyle"
       :aria-busy="loading || undefined"
       @scroll="onVirtualScroll"
     >
-      <div :style="innerWidthStyle">
-        <div
-          :class="['sg-table-grid', sCls.grid].filter(Boolean).join(' ') || undefined"
-          :style="gridStyle"
-          role="table"
-        >
-          <!-- HEADER (multi-row supported via columnGroups) -->
-          <template v-for="(headerRow, rowIdx) in headerRows" :key="`hr-${rowIdx}`">
+      <div
+        :class="['sg-table-grid', sCls.grid].filter(Boolean).join(' ') || undefined"
+        :style="gridStyle"
+        role="table"
+      >
+        <!-- Header rows -->
+        <template v-for="(headerRow, rowIdx) in headerRows" :key="`hdr-${rowIdx}`">
+          <div
+            :class="['sg-table-header-row', sCls.headerRow].filter(Boolean).join(' ') || undefined"
+            role="row"
+            :style="{ display: 'contents', ...(sSty.headerRow ?? {}) }"
+          >
+            <!-- Expand placeholder header (first header row) -->
             <div
-              :class="
-                ['sg-table-row', 'sg-table-header-row', sCls.headerRow].filter(Boolean).join(' ') ||
-                undefined
-              "
-              role="row"
-              style="display: contents"
+              v-if="rowIdx === 0 && expandable"
+              class="sg-table-th sg-table-cell-expand"
+              role="columnheader"
+              :style="hasColumnGroups ? { gridRow: `span ${headerDepth}` } : {}"
+            />
+            <!-- Selection placeholder header (first header row) -->
+            <div
+              v-if="rowIdx === 0 && rowSelection"
+              class="sg-table-th sg-table-cell-selection"
+              role="columnheader"
+              :style="hasColumnGroups ? { gridRow: `span ${headerDepth}` } : {}"
             >
-              <!-- expand placeholder header -->
-              <div
-                v-if="rowIdx === 0 && expandable"
-                class="sg-table-th sg-table-cell-expand"
-                role="columnheader"
-                :style="{
-                  gridRow: `span ${headerDepth}`,
-                  position: 'sticky',
-                  left: '0',
-                  zIndex: 3,
-                  background: 'var(--sg-color-bg-elevated, #fff)',
-                }"
+              <SgCheckbox
+                v-if="rowSelection.type !== 'radio'"
+                :checked="allCurrentPageSelected"
+                :indeterminate="someCurrentPageSelected"
+                aria-label="Select all"
+                @change="toggleSelectAll"
               />
-              <!-- selection placeholder header -->
+            </div>
+            <template v-for="cell in headerRow" :key="`${rowIdx}-${cell.col.key}`">
               <div
-                v-if="rowIdx === 0 && rowSelection"
-                class="sg-table-th sg-table-cell-selection"
-                role="columnheader"
-                :style="{
-                  gridRow: `span ${headerDepth}`,
-                  ...(expandable
-                    ? {}
-                    : {
-                        position: 'sticky',
-                        left: '0',
-                        zIndex: 3,
-                        background: 'var(--sg-color-bg-elevated, #fff)',
-                      }),
-                }"
-              >
-                <SgCheckbox
-                  v-if="rowSelection.type !== 'radio'"
-                  :checked="allCurrentPageSelected"
-                  :indeterminate="someCurrentPageSelected"
-                  aria-label="Select all"
-                  @change="toggleSelectAll"
-                />
-              </div>
-              <div
-                v-for="cell in headerRow"
-                :key="`${rowIdx}-${cell.col.key}`"
-                :ref="(el) => setHeaderRef(cell.col.key, el as Element | null)"
                 :class="
                   [
                     'sg-table-th',
-                    cell.col.sortable ? 'sg-table-th-sortable' : '',
-                    cell.col.children ? 'sg-table-th-group' : '',
-                    cell.col.fixed ? `sg-table-th-fixed sg-table-th-fixed-${cell.col.fixed}` : '',
+                    cell.col.children && cell.col.children.length > 0
+                      ? 'sg-table-th-group'
+                      : cell.col.sortable
+                        ? 'sg-table-th-sortable'
+                        : '',
+                    cell.col.fixed ? 'sg-table-cell-fixed' : '',
+                    cell.col.fixed ? `sg-table-cell-fixed-${cell.col.fixed}` : '',
                     sCls.headerCell,
                   ]
                     .filter(Boolean)
                     .join(' ') || undefined
                 "
                 :style="{
-                  gridColumn: `span ${cell.colSpan}`,
-                  ...(cell.rowSpan > 1 ? { gridRow: `span ${cell.rowSpan}` } : {}),
-                  ...(cell.col.align
-                    ? {
-                        justifyContent:
-                          cell.col.align === 'center'
-                            ? 'center'
-                            : cell.col.align === 'right'
-                              ? 'flex-end'
-                              : 'flex-start',
-                      }
+                  ...(!(cell.col.children && cell.col.children.length > 0)
+                    ? fixedStyle(cell.col, true)
                     : {}),
-                  ...(colFixedStyle(cell.col) as any),
+                  ...(cell.colSpan > 1 ? { gridColumn: `span ${cell.colSpan}` } : {}),
+                  ...(cell.rowSpan > 1 ? { gridRow: `span ${cell.rowSpan}` } : {}),
                   ...(sSty.headerCell ?? {}),
                 }"
                 role="columnheader"
@@ -935,48 +970,68 @@ defineExpose({
                       ? 'none'
                       : undefined
                 "
-                @click="handleSortClick(cell.col)"
+                @click="
+                  !(cell.col.children && cell.col.children.length > 0) && handleSortClick(cell.col)
+                "
               >
                 <span class="sg-table-th-content">
                   <span>{{ cell.col.title }}</span>
-                  <span v-if="cell.col.sortable" class="sg-table-sort-arrows">
+                  <span
+                    v-if="cell.col.sortable && !(cell.col.children && cell.col.children.length > 0)"
+                    class="sg-table-sort-arrows"
+                  >
                     <span
-                      :class="
-                        [
-                          'sg-table-sort-asc',
+                      class="sg-table-sort-asc"
+                      :class="{
+                        'sg-table-sort-current':
                           currentSort &&
                           currentSort.column === cell.col.key &&
-                          currentSort.direction === 'asc'
-                            ? 'sg-table-sort-current'
-                            : '',
-                        ]
-                          .filter(Boolean)
-                          .join(' ')
-                      "
+                          currentSort.direction === 'asc',
+                      }"
                       >{{ localeFull.sortAsc }}</span
                     >
                     <span
-                      :class="
-                        [
-                          'sg-table-sort-desc',
+                      class="sg-table-sort-desc"
+                      :class="{
+                        'sg-table-sort-current':
                           currentSort &&
                           currentSort.column === cell.col.key &&
-                          currentSort.direction === 'desc'
-                            ? 'sg-table-sort-current'
-                            : '',
-                        ]
-                          .filter(Boolean)
-                          .join(' ')
-                      "
+                          currentSort.direction === 'desc',
+                      }"
                       >{{ localeFull.sortDesc }}</span
                     >
                   </span>
                 </span>
 
-                <!-- preset filters (built-in) -->
+                <!-- preset filters: icon trigger + popup with SgSelect (single-value) -->
                 <span
-                  v-if="cell.col.filters && cell.col.filters.length > 0 && !slots.filterDropdown"
+                  v-if="
+                    cell.col.filters &&
+                    cell.col.filters.length > 0 &&
+                    !slots.filterDropdown &&
+                    !(cell.col.children && cell.col.children.length > 0)
+                  "
                   class="sg-table-filter-trigger"
+                  :class="{
+                    'sg-table-filter-active':
+                      activeFilters.get(cell.col.key) &&
+                      activeFilters.get(cell.col.key)!.length > 0,
+                  }"
+                  role="button"
+                  :aria-label="`Filter ${cell.col.title}`"
+                  @click.stop="toggleFilterDropdown(cell.col.key)"
+                  >▾</span
+                >
+                <div
+                  v-if="
+                    cell.col.filters &&
+                    cell.col.filters.length > 0 &&
+                    !slots.filterDropdown &&
+                    !(cell.col.children && cell.col.children.length > 0)
+                  "
+                  v-show="openFilterDropdown === cell.col.key"
+                  :ref="(el) => setFilterDropdownRef(cell.col.key, el as Element | null)"
+                  class="sg-table-filter-dropdown"
                   @click.stop
                 >
                   <SgSelect
@@ -991,411 +1046,292 @@ defineExpose({
                       })),
                     ]"
                     :aria-label="`Filter ${cell.col.title}`"
-                    @change="(v: unknown) => applyColumnFilter(cell.col, v ? [v as string] : [])"
+                    @change="
+                      (v) => {
+                        applyColumnFilter(cell.col, v ? [v] : [])
+                        closeFilterDropdown()
+                      }
+                    "
                   />
-                </span>
+                </div>
 
-                <!-- custom filter dropdown via slot -->
-                <span v-if="slots.filterDropdown" class="sg-table-filter-trigger" @click.stop>
-                  <button
-                    type="button"
-                    class="sg-table-filter-icon"
-                    :class="{
-                      'sg-table-filter-icon-active': colFilterState.get(cell.col.key),
-                    }"
-                    :aria-label="`Filter ${cell.col.title}`"
-                    @click="toggleFilterDropdown(cell.col.key)"
-                  >
-                    {{ localeFull.filterIcon }}
-                  </button>
-                  <div v-if="openFilterColumn === cell.col.key" class="sg-table-filter-dropdown">
-                    <slot
-                      name="filterDropdown"
-                      :column="cell.col"
-                      :selected-keys="colFilterState.get(cell.col.key)?.values ?? []"
-                      :set-selected-keys="
-                        (keys: unknown[]) => colFilterState.set(cell.col.key, { values: keys })
-                      "
-                      :confirm="
-                        () => {
-                          const v = colFilterState.get(cell.col.key)?.values ?? []
-                          applyColumnFilter(cell.col, v)
-                          closeFilterDropdown()
-                        }
-                      "
-                      :clear-filters="
-                        () => {
-                          applyColumnFilter(cell.col, [])
-                          closeFilterDropdown()
-                        }
-                      "
-                      :close="closeFilterDropdown"
-                    />
-                  </div>
-                </span>
-
+                <!-- custom filter via slot -->
                 <span
-                  v-if="cell.col.resizable"
-                  class="sg-table-resize-handle"
-                  :class="{ 'sg-table-resize-active': resizingKey === cell.col.key }"
-                  @click.stop
-                  @mousedown="onResizeStart(cell.col, $event)"
-                />
-              </div>
-            </div>
-          </template>
-
-          <!-- EMPTY -->
-          <div
-            v-if="flatRows.length === 0"
-            class="sg-table-row sg-table-row-empty"
-            role="row"
-            style="display: contents"
-          >
-            <div
-              :class="
-                ['sg-table-td', 'sg-table-empty', sCls.empty].filter(Boolean).join(' ') || undefined
-              "
-              :style="{ gridColumn: '1 / -1', ...(sSty.empty ?? {}) }"
-              role="cell"
-            >
-              <slot name="empty">{{ localeFull.emptyText }}</slot>
-            </div>
-          </div>
-
-          <!-- BODY (non-virtual) -->
-          <template v-if="!virtualConfig">
-            <template v-for="(row, idx) in flatRows" :key="`r-${row.id}`">
-              <div
-                :class="rowCls(row, idx) || undefined"
-                role="row"
-                style="display: contents"
-                @click="handleRowClick(row)"
-              >
-                <!-- expand cell -->
-                <div
-                  v-if="expandable"
-                  class="sg-table-td sg-table-cell-expand"
-                  role="cell"
-                  :style="{
-                    position: 'sticky',
-                    left: '0',
-                    zIndex: 1,
-                    background: 'inherit',
+                  v-if="
+                    slots.filterDropdown && !(cell.col.children && cell.col.children.length > 0)
+                  "
+                  class="sg-table-filter-trigger"
+                  :class="{
+                    'sg-table-filter-active':
+                      activeFilters.get(cell.col.key) &&
+                      activeFilters.get(cell.col.key)!.length > 0,
                   }"
+                  @click.stop="toggleFilterDropdown(cell.col.key)"
+                  >▾</span
+                >
+                <div
+                  v-if="slots.filterDropdown && openFilterDropdown === cell.col.key"
+                  :ref="(el) => setFilterDropdownRef(cell.col.key, el as Element | null)"
+                  class="sg-table-filter-dropdown"
                   @click.stop
                 >
-                  <button
-                    v-if="isRowExpandable(row.data)"
-                    type="button"
-                    class="sg-table-expand-btn"
-                    :class="{ 'sg-table-expand-btn-open': expandedSet.has(row.id) }"
-                    :aria-expanded="expandedSet.has(row.id)"
-                    :aria-label="expandedSet.has(row.id) ? 'Collapse row' : 'Expand row'"
-                    @click="toggleExpand(row.id)"
-                  >
-                    {{ localeFull.expandIcon }}
-                  </button>
-                </div>
-
-                <!-- selection cell -->
-                <div
-                  v-if="rowSelection"
-                  class="sg-table-td sg-table-cell-selection"
-                  role="cell"
-                  :style="
-                    expandable
-                      ? {}
-                      : {
-                          position: 'sticky',
-                          left: '0',
-                          zIndex: 1,
-                          background: 'inherit',
-                        }
-                  "
-                  @click.stop
-                >
-                  <SgCheckbox
-                    v-if="rowSelection.type !== 'radio'"
-                    :checked="selectedSet.has(row.id)"
-                    :aria-label="`Select row ${String(row.id)}`"
-                    @change="() => toggleRowSelected(row.id)"
-                  />
-                  <input
-                    v-else
-                    type="radio"
-                    class="sg-table-row-radio"
-                    :checked="selectedSet.has(row.id)"
-                    name="sg-table-row-radio"
-                    :aria-label="`Select row ${String(row.id)}`"
-                    @change="() => toggleRowSelected(row.id)"
-                  />
-                </div>
-
-                <div
-                  v-for="(col, cIdx) in visibleColumns"
-                  :key="col.key"
-                  :class="
-                    [
-                      'sg-table-td',
-                      col.fixed ? `sg-table-td-fixed sg-table-td-fixed-${col.fixed}` : '',
-                      col.editable ? 'sg-table-td-editable' : '',
-                      sCls.bodyCell,
-                    ]
-                      .filter(Boolean)
-                      .join(' ') || undefined
-                  "
-                  :style="{
-                    ...(col.align
-                      ? {
-                          justifyContent:
-                            col.align === 'center'
-                              ? 'center'
-                              : col.align === 'right'
-                                ? 'flex-end'
-                                : 'flex-start',
-                        }
-                      : {}),
-                    ...(cIdx === 0 && tree && row.depth > 0
-                      ? { paddingLeft: `${row.depth * treeIndent + 8}px` }
-                      : {}),
-                    ...(colFixedStyle(col) as any),
-                    ...(sSty.bodyCell ?? {}),
-                  }"
-                  role="cell"
-                  @dblclick="
-                    col.editable && onCellEdit
-                      ? startEdit(row.id, col.key, row.data[col.key])
-                      : null
-                  "
-                >
-                  <!-- tree expand button (first column only) -->
-                  <button
-                    v-if="cIdx === 0 && tree && row.hasChildren"
-                    type="button"
-                    class="sg-table-tree-toggle"
-                    :class="{ 'sg-table-tree-toggle-open': treeExpanded.has(row.id) }"
-                    :aria-label="treeExpanded.has(row.id) ? 'Collapse' : 'Expand'"
-                    @click.stop="toggleTreeRow(row.id)"
-                  >
-                    {{ localeFull.expandIcon }}
-                  </button>
-
-                  <span
-                    v-if="editingCell && editingCell.id === row.id && editingCell.key === col.key"
-                    class="sg-table-cell-editor"
-                    @click.stop
-                  >
-                    <input
-                      v-model="editingValue"
-                      class="sg-table-edit-input"
-                      @keydown.enter="commitEdit"
-                      @keydown.esc="cancelEdit"
-                      @blur="commitEdit"
-                    />
-                  </span>
                   <slot
-                    v-else
-                    name="cell"
-                    :column="col"
-                    :row="row.data"
-                    :id="row.id"
-                    :value="row.data[col.key]"
-                  >
-                    {{ row.data[col.key] }}
-                  </slot>
+                    name="filterDropdown"
+                    :column="cell.col"
+                    :selected-keys="activeFilters.get(cell.col.key) ?? []"
+                    :set-selected-keys="(keys: unknown[]) => activeFilters.set(cell.col.key, keys)"
+                    :confirm="
+                      () => {
+                        applyColumnFilter(cell.col, activeFilters.get(cell.col.key) ?? [])
+                        closeFilterDropdown()
+                      }
+                    "
+                    :clear-filters="
+                      () => {
+                        applyColumnFilter(cell.col, [])
+                        closeFilterDropdown()
+                      }
+                    "
+                    :close="closeFilterDropdown"
+                  />
                 </div>
-              </div>
 
-              <!-- expanded row body -->
-              <div
-                v-if="expandable && expandedSet.has(row.id)"
-                class="sg-table-row sg-table-row-expanded"
-                role="row"
-                style="display: contents"
-              >
                 <div
-                  class="sg-table-td sg-table-cell-expanded"
-                  :style="{ gridColumn: '1 / -1' }"
-                  role="cell"
-                >
-                  <slot name="expandedRow" :row="row.data" :id="row.id">
-                    <component :is="expandable.expandedRowRender(row.data, row.id) as any" />
-                  </slot>
-                </div>
+                  v-if="cell.col.resizable && !(cell.col.children && cell.col.children.length > 0)"
+                  class="sg-table-resize-handle"
+                  @click.stop
+                  @mousedown="(ev) => onResizeStart(cell.col, ev)"
+                />
               </div>
             </template>
-          </template>
+          </div>
+        </template>
 
-          <!-- BODY (virtual) -->
-          <template v-else-if="visibleVirtualRows && virtualWindow">
-            <div
-              :style="{
-                gridColumn: '1 / -1',
-                height: `${virtualWindow.totalHeight}px`,
-                position: 'relative',
-              }"
-            >
-              <div
-                v-for="entry in visibleVirtualRows"
-                :key="String(entry.row.id)"
-                :class="
-                  [
-                    'sg-table-row',
-                    'sg-table-row-virtual',
-                    'sg-table-row-clickable',
-                    selectedSet.has(entry.row.id) ? 'sg-table-row-selected' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')
-                "
-                :style="{
-                  position: 'absolute',
-                  top: `${entry.offset}px`,
-                  left: 0,
-                  right: 0,
-                  height: `${rowHeightAt(entry.row)}px`,
-                  display: 'grid',
-                  gridTemplateColumns,
-                }"
-                role="row"
-                @click="handleRowClick(entry.row)"
-              >
-                <div
-                  v-if="expandable"
-                  class="sg-table-td sg-table-cell-expand"
-                  role="cell"
-                  @click.stop
-                />
-                <div
-                  v-if="rowSelection"
-                  class="sg-table-td sg-table-cell-selection"
-                  role="cell"
-                  @click.stop
-                >
-                  <SgCheckbox
-                    v-if="rowSelection.type !== 'radio'"
-                    :checked="selectedSet.has(entry.row.id)"
-                    :aria-label="`Select row ${String(entry.row.id)}`"
-                    @change="() => toggleRowSelected(entry.row.id)"
-                  />
-                </div>
-                <div
-                  v-for="col in visibleColumns"
-                  :key="col.key"
-                  :class="['sg-table-td', sCls.bodyCell].filter(Boolean).join(' ') || undefined"
-                  role="cell"
-                  :style="{
-                    ...(col.align
-                      ? {
-                          justifyContent:
-                            col.align === 'center'
-                              ? 'center'
-                              : col.align === 'right'
-                                ? 'flex-end'
-                                : 'flex-start',
-                        }
-                      : {}),
-                  }"
-                >
-                  <slot
-                    name="cell"
-                    :column="col"
-                    :row="entry.row.data"
-                    :id="entry.row.id"
-                    :value="entry.row.data[col.key]"
-                  >
-                    {{ entry.row.data[col.key] }}
-                  </slot>
-                </div>
-              </div>
-            </div>
-          </template>
-
-          <!-- SUMMARY rows (custom) -->
-          <template v-if="summaryRows.length > 0">
-            <div
-              v-for="(srow, srIdx) in summaryRows"
-              :key="`sr-${srIdx}`"
-              class="sg-table-row sg-table-summary-row"
-              role="row"
-              style="display: contents"
-            >
-              <div v-if="expandable" class="sg-table-td sg-table-summary-cell" role="cell" />
-              <div v-if="rowSelection" class="sg-table-td sg-table-summary-cell" role="cell" />
-              <div
-                v-for="(scell, sIdx) in srow"
-                :key="`sc-${srIdx}-${sIdx}`"
-                class="sg-table-td sg-table-summary-cell"
-                role="cell"
-                :style="{
-                  ...(scell.colSpan && scell.colSpan > 1
-                    ? { gridColumn: `span ${scell.colSpan}` }
-                    : {}),
-                  ...(scell.align
-                    ? {
-                        justifyContent:
-                          scell.align === 'center'
-                            ? 'center'
-                            : scell.align === 'right'
-                              ? 'flex-end'
-                              : 'flex-start',
-                      }
-                    : {}),
-                }"
-              >
-                <component :is="scell.content as any" v-if="typeof scell.content === 'object'" />
-                <template v-else>{{ scell.content }}</template>
-              </div>
-            </div>
-          </template>
-
-          <!-- FOOTER (column aggregates) -->
+        <!-- Empty state -->
+        <div
+          v-if="flatRows.length === 0"
+          class="sg-table-row sg-table-row-empty"
+          role="row"
+          style="display: contents"
+        >
           <div
-            v-if="footer && visibleRows.length > 0"
-            class="sg-table-row sg-table-footer-row"
+            :class="
+              ['sg-table-td', 'sg-table-empty', sCls.empty].filter(Boolean).join(' ') || undefined
+            "
+            :style="{ gridColumn: spacerColumn, ...(sSty.empty ?? {}) }"
+            role="cell"
+          >
+            <slot name="empty">{{ localeFull.emptyText }}</slot>
+          </div>
+        </div>
+
+        <!-- Virtual top spacer -->
+        <div
+          v-if="virtualRange && virtualRange.topPad > 0"
+          :style="{ gridColumn: spacerColumn, height: `${virtualRange.topPad}px` }"
+          role="presentation"
+          aria-hidden="true"
+        />
+
+        <!-- Body rows -->
+        <template v-for="(row, localIdx) in bodyRows" :key="String(row.id)">
+          <div
+            :class="rowClassFor(row, rowIndexOffset + localIdx) || undefined"
+            role="row"
+            :data-sg-virtual-row-index="virtualRange ? rowIndexOffset + localIdx : undefined"
+            style="display: contents"
+            @click="handleRowClick(row)"
+          >
+            <!-- Expand cell -->
+            <div v-if="expandable" class="sg-table-td sg-table-cell-expand" role="cell" @click.stop>
+              <button
+                v-if="isRowExpandable(row.data)"
+                type="button"
+                class="sg-table-expand-btn"
+                :class="{ 'sg-table-expand-open': expandedSet.has(row.id) }"
+                :aria-expanded="expandedSet.has(row.id)"
+                :aria-label="expandedSet.has(row.id) ? 'Collapse row' : 'Expand row'"
+                @click="toggleExpand(row.id)"
+              >
+                {{ localeFull.expandIcon }}
+              </button>
+            </div>
+
+            <!-- Selection cell -->
+            <div
+              v-if="rowSelection"
+              class="sg-table-td sg-table-cell-selection"
+              role="cell"
+              @click.stop
+            >
+              <SgCheckbox
+                v-if="rowSelection.type !== 'radio'"
+                :checked="selectedSet.has(row.id)"
+                :aria-label="`Select row ${String(row.id)}`"
+                @change="() => toggleRowSelected(row.id)"
+              />
+              <input
+                v-else
+                type="radio"
+                class="sg-table-row-radio"
+                :checked="selectedSet.has(row.id)"
+                name="sg-table-row-radio"
+                :aria-label="`Select row ${String(row.id)}`"
+                @change="() => toggleRowSelected(row.id)"
+              />
+            </div>
+
+            <!-- Data cells -->
+            <div
+              v-for="(col, cIdx) in columns"
+              :key="col.key"
+              :class="
+                [
+                  'sg-table-td',
+                  col.fixed ? 'sg-table-cell-fixed' : '',
+                  col.fixed ? `sg-table-cell-fixed-${col.fixed}` : '',
+                  col.editable ? 'sg-table-td-editable' : '',
+                  sCls.bodyCell,
+                ]
+                  .filter(Boolean)
+                  .join(' ') || undefined
+              "
+              :style="{
+                ...fixedStyle(col),
+                ...(cIdx === 0 && tree && row.depth > 0
+                  ? { paddingLeft: `${row.depth * treeIndent + 8}px` }
+                  : {}),
+                ...(sSty.bodyCell ?? {}),
+              }"
+              role="cell"
+              @dblclick="
+                col.editable && onCellEdit ? startEdit(row.id, col.key, row.data[col.key]) : null
+              "
+            >
+              <!-- Tree expand toggle (first data column only) -->
+              <button
+                v-if="cIdx === 0 && tree && row.hasChildren"
+                type="button"
+                class="sg-table-expand-btn"
+                :class="{ 'sg-table-expand-open': treeExpanded.has(row.id) }"
+                :aria-label="treeExpanded.has(row.id) ? 'Collapse' : 'Expand'"
+                @click.stop="toggleTreeRow(row.id)"
+              >
+                {{ localeFull.expandIcon }}
+              </button>
+
+              <span
+                v-if="editingCell && editingCell.id === row.id && editingCell.key === col.key"
+                class="sg-table-cell-content"
+                @click.stop
+              >
+                <input
+                  v-model="editingValue"
+                  class="sg-table-edit-input"
+                  @keydown.enter="commitEdit"
+                  @keydown.esc="cancelEdit"
+                  @blur="commitEdit"
+                />
+              </span>
+              <span v-else class="sg-table-cell-content">
+                <slot
+                  name="cell"
+                  :column="col"
+                  :row="row.data"
+                  :id="row.id"
+                  :value="row.data[col.key]"
+                >
+                  {{ row.data[col.key] }}
+                </slot>
+              </span>
+            </div>
+          </div>
+
+          <!-- Expanded row body -->
+          <div
+            v-if="expandable && expandedSet.has(row.id)"
+            class="sg-table-row sg-table-row-expanded-wrapper"
             role="row"
             style="display: contents"
           >
-            <div v-if="expandable" class="sg-table-td sg-table-footer-cell" role="cell" />
-            <div v-if="rowSelection" class="sg-table-td sg-table-footer-cell" role="cell" />
             <div
-              v-for="col in visibleColumns"
-              :key="`f-${col.key}`"
-              class="sg-table-td sg-table-footer-cell"
+              class="sg-table-td sg-table-expanded-row"
+              :style="{ gridColumn: spacerColumn }"
               role="cell"
-              :style="{
-                ...(col.align
-                  ? {
-                      justifyContent:
-                        col.align === 'center'
-                          ? 'center'
-                          : col.align === 'right'
-                            ? 'flex-end'
-                            : 'flex-start',
-                    }
-                  : {}),
-                ...(colFixedStyle(col) as any),
-              }"
             >
-              <span v-if="col.aggregate">{{ aggregateValue(col) }}</span>
+              <slot name="expandedRow" :row="row.data" :id="row.id">
+                <component :is="expandable.expandedRowRender(row.data, row.id) as any" />
+              </slot>
             </div>
           </div>
+        </template>
+
+        <!-- Virtual bottom spacer -->
+        <div
+          v-if="virtualRange && virtualRange.bottomPad > 0"
+          :style="{ gridColumn: spacerColumn, height: `${virtualRange.bottomPad}px` }"
+          role="presentation"
+          aria-hidden="true"
+        />
+
+        <!-- Footer (column aggregates) -->
+        <div
+          v-if="footer && visibleRows.length > 0"
+          :class="['sg-table-footer-row', sCls.footer].filter(Boolean).join(' ') || undefined"
+          role="row"
+          :style="{ display: 'contents', ...(sSty.footer ?? {}) }"
+        >
+          <div v-if="expandable" class="sg-table-td sg-table-footer-cell" role="cell" />
+          <div v-if="rowSelection" class="sg-table-td sg-table-footer-cell" role="cell" />
+          <div
+            v-for="col in columns"
+            :key="`f-${col.key}`"
+            class="sg-table-td sg-table-footer-cell"
+            role="cell"
+            :style="fixedStyle(col)"
+          >
+            <span v-if="col.aggregate" class="sg-table-aggregate-value">{{
+              aggregateValue(col)
+            }}</span>
+          </div>
         </div>
+
+        <!-- Summary rows (custom) -->
+        <template v-for="(srow, srIdx) in summaryRows" :key="`sum-${srIdx}`">
+          <div class="sg-table-summary-row" role="row" style="display: contents">
+            <div v-if="expandable" class="sg-table-td sg-table-summary-cell" role="cell" />
+            <div v-if="rowSelection" class="sg-table-td sg-table-summary-cell" role="cell" />
+            <div
+              v-for="(scell, sIdx) in srow"
+              :key="`sc-${srIdx}-${sIdx}`"
+              class="sg-table-td sg-table-summary-cell"
+              role="cell"
+              :style="{
+                ...(scell.colSpan && scell.colSpan > 1
+                  ? { gridColumn: `span ${scell.colSpan}` }
+                  : {}),
+                ...(scell.align ? { textAlign: scell.align } : {}),
+              }"
+            >
+              <component
+                :is="scell.content as any"
+                v-if="scell.content && typeof scell.content === 'object'"
+              />
+              <template v-else>{{ scell.content }}</template>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
 
+    <!-- Loading overlay -->
     <div v-if="loading && !unstyled" class="sg-table-loading-mask" role="status" aria-live="polite">
       <SgSpin size="large" :aria-label="localeFull.loadingText" />
     </div>
 
+    <!-- Pagination -->
     <div
-      v-if="
-        showPagination &&
-        pageSize !== undefined &&
-        tableState.totalRows > pageSize &&
-        !virtualConfig
-      "
+      v-if="showPagination && totalPages > 1 && !virtualConfig"
       :class="['sg-table-pagination', sCls.pagination].filter(Boolean).join(' ') || undefined"
       :style="sSty.pagination"
     >
@@ -1406,8 +1342,7 @@ defineExpose({
         class="sg-table-pagination-controls"
         :current="tableState.page"
         :total="tableState.totalRows"
-        :page-size="pageSize"
-        simple
+        :page-size="pageSize ?? tableState.totalRows"
         @change="gotoPage"
       />
     </div>

@@ -42,24 +42,43 @@ function alignUp(t: number, step: number): number {
 
 const computedRange = computed(() => {
   const step = stepMs(props.scale)
-  if (props.range)
-    return {
-      from: props.range.from.getTime(),
-      to: props.range.to.getTime(),
+
+  // Scan the live assignments so the timeline can grow past `props.range`
+  // when the user drag-resizes a bar past the right-hand edge. Without this
+  // the bar would render off-screen and leave the user without any visual
+  // feedback for the resize.
+  let assignmentMin = Infinity
+  let assignmentMax = -Infinity
+  for (const a of props.assignments) {
+    const s = toMs(a.start)
+    const e = toMs(a.end)
+    if (s < assignmentMin) assignmentMin = s
+    if (e > assignmentMax) assignmentMax = e
+  }
+
+  if (props.range) {
+    const rangeFrom = props.range.from.getTime()
+    const rangeTo = props.range.to.getTime()
+    if (props.assignments.length === 0) {
+      return { from: rangeFrom, to: rangeTo }
     }
+    // `range` is treated as the *minimum* viewport — assignments may pull
+    // the visible window further in either direction (aligned to step so
+    // the column grid stays whole).
+    return {
+      from: alignDown(Math.min(rangeFrom, assignmentMin), step),
+      to: alignUp(Math.max(rangeTo, assignmentMax), step),
+    }
+  }
+
   if (props.assignments.length === 0) {
     const now = Date.now()
     return { from: alignDown(now, step), to: alignUp(now + step * 4, step) }
   }
-  let min = Infinity
-  let max = -Infinity
-  for (const a of props.assignments) {
-    const s = toMs(a.start)
-    const e = toMs(a.end)
-    if (s < min) min = s
-    if (e > max) max = e
+  return {
+    from: alignDown(assignmentMin - step, step),
+    to: alignUp(assignmentMax + step, step),
   }
-  return { from: alignDown(min - step, step), to: alignUp(max + step, step) }
 })
 
 const totalMs = computed(() => computedRange.value.to - computedRange.value.from)

@@ -233,22 +233,24 @@ export function Pagination({
   )
 }
 
+/**
+ * Build a 7-slot page strip so the control width stays stable when the
+ * user jumps between pages. Layouts:
+ *   • near start:  [1] [2] [3] [4] [5] [...] [N]
+ *   • middle:      [1] [...] [c-1] [c] [c+1] [...] [N]
+ *   • near end:    [1] [...] [N-4] [N-3] [N-2] [N-1] [N]
+ * Totals < 8 are rendered as a contiguous range — the strip is already
+ * narrow enough that prev/next jumps cannot shift the surrounding layout.
+ */
 function buildPages(current: number, total: number): (number | '...')[] {
   if (total <= 7) {
     return Array.from({ length: total }, (_, i) => i + 1)
   }
-
-  const pages: (number | '...')[] = [1]
-
-  if (current > 3) pages.push('...')
-
-  const start = Math.max(2, current - 1)
-  const end = Math.min(total - 1, current + 1)
-
-  for (let i = start; i <= end; i++) pages.push(i)
-
-  if (current < total - 2) pages.push('...')
-
-  pages.push(total)
-  return pages
+  if (current <= 4) {
+    return [1, 2, 3, 4, 5, '...', total]
+  }
+  if (current >= total - 3) {
+    return [1, '...', total - 4, total - 3, total - 2, total - 1, total]
+  }
+  return [1, '...', current - 1, current, current + 1, '...', total]
 }

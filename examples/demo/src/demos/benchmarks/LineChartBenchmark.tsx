@@ -12,7 +12,9 @@ import {
   Tooltip as RechartsTooltip,
 } from 'recharts'
 
+import { useI18n } from '../../i18n/I18nContext'
 import {
+  benchFill,
   formatMetric,
   nextFrames,
   runVariant,
@@ -58,7 +60,10 @@ function genRechartsData(seed: number): RechartsPoint[] {
   return out
 }
 
-function buildRunner(variant: 'skygraph' | 'recharts'): Runner {
+function buildRunner(
+  variant: 'skygraph' | 'recharts',
+  series: { visits: string; orders: string },
+): Runner {
   return async ({ signal }) => {
     const host = document.createElement('div')
     host.style.position = 'fixed'
@@ -77,8 +82,8 @@ function buildRunner(variant: 'skygraph' | 'recharts'): Runner {
           <SkyLineChart
             categories={cats}
             series={[
-              { id: 'visits', label: 'Visits', values: genValues(0) },
-              { id: 'orders', label: 'Orders', values: genValues(7) },
+              { id: 'visits', label: series.visits, values: genValues(0) },
+              { id: 'orders', label: series.orders, values: genValues(7) },
             ]}
             width={CHART_WIDTH}
             height={CHART_HEIGHT}
@@ -95,8 +100,20 @@ function buildRunner(variant: 'skygraph' | 'recharts'): Runner {
                 <XAxis dataKey="x" />
                 <YAxis />
                 <RechartsTooltip />
-                <Line type="monotone" dataKey="visits" stroke="#3b82f6" dot={false} isAnimationActive={false} />
-                <Line type="monotone" dataKey="orders" stroke="#f97316" dot={false} isAnimationActive={false} />
+                <Line
+                  type="monotone"
+                  dataKey="visits"
+                  stroke="#3b82f6"
+                  dot={false}
+                  isAnimationActive={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="orders"
+                  stroke="#f97316"
+                  dot={false}
+                  isAnimationActive={false}
+                />
               </RechartsLineChart>
             </ResponsiveContainer>
           </div>,
@@ -116,8 +133,8 @@ function buildRunner(variant: 'skygraph' | 'recharts'): Runner {
             <SkyLineChart
               categories={cats}
               series={[
-                { id: 'visits', label: 'Visits', values: genValues(i) },
-                { id: 'orders', label: 'Orders', values: genValues(i * 1.7) },
+                { id: 'visits', label: series.visits, values: genValues(i) },
+                { id: 'orders', label: series.orders, values: genValues(i * 1.7) },
               ]}
               width={CHART_WIDTH}
               height={CHART_HEIGHT}
@@ -134,8 +151,20 @@ function buildRunner(variant: 'skygraph' | 'recharts'): Runner {
                   <XAxis dataKey="x" />
                   <YAxis />
                   <RechartsTooltip />
-                  <Line type="monotone" dataKey="visits" stroke="#3b82f6" dot={false} isAnimationActive={false} />
-                  <Line type="monotone" dataKey="orders" stroke="#f97316" dot={false} isAnimationActive={false} />
+                  <Line
+                    type="monotone"
+                    dataKey="visits"
+                    stroke="#3b82f6"
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="orders"
+                    stroke="#f97316"
+                    dot={false}
+                    isAnimationActive={false}
+                  />
                 </RechartsLineChart>
               </ResponsiveContainer>
             </div>,
@@ -148,7 +177,9 @@ function buildRunner(variant: 'skygraph' | 'recharts'): Runner {
       last = now
     }
 
-    const avgFrame = frameTimes.length ? frameTimes.reduce((s, x) => s + x, 0) / frameTimes.length : 16.7
+    const avgFrame = frameTimes.length
+      ? frameTimes.reduce((s, x) => s + x, 0) / frameTimes.length
+      : 16.7
 
     flushSync(() => root.unmount())
     host.remove()
@@ -163,6 +194,8 @@ function buildRunner(variant: 'skygraph' | 'recharts'): Runner {
 }
 
 export function LineChartBenchmark() {
+  const { t } = useI18n()
+  const b = t.benchmarks
   const [running, setRunning] = useState(false)
   const [progress, setProgress] = useState('')
   const [results, setResults] = useState<BenchResult[]>([])
@@ -170,31 +203,48 @@ export function LineChartBenchmark() {
   const [previewSeed, setPreviewSeed] = useState(0)
   const abortRef = useRef<AbortController | null>(null)
 
+  const seriesLabels = { visits: b.chartVisits, orders: b.chartOrders }
+
   useEffect(() => () => abortRef.current?.abort(), [])
 
   const run = async () => {
     if (running) return
     setRunning(true)
     setResults([])
-    setProgress('Warming up...')
+    setProgress(b.warmingUp)
     abortRef.current = new AbortController()
     const signal = abortRef.current.signal
     try {
       const variants: Array<{ id: string; label: string; runner: Runner }> = [
-        { id: 'skygraph', label: 'SkyGraph <LineChart>', runner: buildRunner('skygraph') },
-        { id: 'recharts', label: 'recharts <LineChart>', runner: buildRunner('recharts') },
+        {
+          id: 'skygraph',
+          label: b.labelSkyChart,
+          runner: buildRunner('skygraph', seriesLabels),
+        },
+        {
+          id: 'recharts',
+          label: b.labelRechartsChart,
+          runner: buildRunner('recharts', seriesLabels),
+        },
       ]
       const out: BenchResult[] = []
       for (const v of variants) {
         if (signal.aborted) throw new Error('aborted')
-        setProgress(`Running ${v.label}...`)
-        const r = await runVariant(v.id, v.label, 'ms', v.runner, { iterations: 3, warmup: 1, sleepMs: 64 }, signal)
+        setProgress(benchFill(b.runningWithLabel, { label: v.label }))
+        const r = await runVariant(
+          v.id,
+          v.label,
+          'ms',
+          v.runner,
+          { iterations: 3, warmup: 1, sleepMs: 64 },
+          signal,
+        )
         out.push(r)
         setResults([...out])
       }
-      setProgress('Done')
+      setProgress(b.done)
     } catch (err) {
-      setProgress(`Error: ${(err as Error).message}`)
+      setProgress(benchFill(b.errorWithMessage, { message: (err as Error).message }))
     } finally {
       setRunning(false)
     }
@@ -203,51 +253,61 @@ export function LineChartBenchmark() {
   const stop = () => {
     abortRef.current?.abort()
     setRunning(false)
-    setProgress('Stopped')
+    setProgress(b.stopped)
   }
+
+  const methodText = benchFill(b.chartMethod, {
+    points: POINTS,
+    updates: UPDATES,
+  })
 
   return (
     <div className="bench-section">
       <div className="bench-controls">
-        <button className="bench-btn bench-btn--primary" type="button" onClick={run} disabled={running}>
-          {running ? 'Running…' : `Run · ${POINTS} pts × ${UPDATES} updates × 4`}
+        <button
+          className="bench-btn bench-btn--primary"
+          type="button"
+          onClick={run}
+          disabled={running}
+        >
+          {running
+            ? b.runningEllipsis
+            : benchFill(b.chartRunIdle, { points: POINTS, updates: UPDATES })}
         </button>
         <button className="bench-btn" type="button" onClick={stop} disabled={!running}>
-          Stop
+          {b.stop}
         </button>
         {progress && <span className="bench-progress">{progress}</span>}
       </div>
 
       <div className="bench-method">
-        <strong>Method.</strong> A line chart with two series of {POINTS} points is mounted, then re-rendered{' '}
-        {UPDATES} times with fresh data using <code>flushSync</code>. We measure the average frame time across the{' '}
-        {UPDATES} update frames and convert to FPS. Both libraries have animations disabled and circular point
-        markers off so we measure path layout + reconciliation, not tween work. We discard the warm-up run and report
-        the median of 3 measured runs.
+        <strong>{b.methodStrong}</strong> {methodText}
       </div>
 
       <ResultsTable
+        variantColumn={b.variantColumn}
+        emptyLabel={b.pressRunEmpty}
         results={results}
         columns={[
-          { key: 'frame', label: 'Median frame', extract: (r) => formatMetric(r.median, 'ms') },
+          { key: 'frame', label: b.colMedianFrame, extract: (r) => formatMetric(r.median, 'ms') },
           {
             key: 'fps',
-            label: 'Avg FPS',
+            label: b.colAvgFps,
             extract: (r) => (r.extras?.fps ? formatMetric(r.extras.fps, 'fps') : '—'),
           },
           {
             key: 'mount',
-            label: 'Mount',
+            label: b.colMount,
             extract: (r) => (r.extras?.mountMs ? formatMetric(r.extras.mountMs, 'ms') : '—'),
           },
-          { key: 'min', label: 'Min frame', extract: (r) => formatMetric(r.min, 'ms') },
-          { key: 'max', label: 'Max frame', extract: (r) => formatMetric(r.max, 'ms') },
+          { key: 'min', label: b.colMinFrame, extract: (r) => formatMetric(r.min, 'ms') },
+          { key: 'max', label: b.colMaxFrame, extract: (r) => formatMetric(r.max, 'ms') },
         ]}
       />
 
       <div className="bench-preview">
         <div className="bench-preview-head">
-          <strong>Live preview</strong>
+          <strong>{b.livePreview}</strong>
           <div className="bench-preview-controls">
             <button
               className="bench-btn"
@@ -255,10 +315,10 @@ export function LineChartBenchmark() {
               onClick={() => setPreviewSeed((s) => s + 1)}
               disabled={running}
             >
-              Tick
+              {b.tick}
             </button>
             <label>
-              Library
+              {b.library}
               <select
                 value={previewVariant}
                 onChange={(e) => setPreviewVariant(e.target.value as 'skygraph' | 'recharts')}
@@ -275,8 +335,8 @@ export function LineChartBenchmark() {
             <SkyLineChart
               categories={genCategories()}
               series={[
-                { id: 'visits', label: 'Visits', values: genValues(previewSeed) },
-                { id: 'orders', label: 'Orders', values: genValues(previewSeed * 1.7) },
+                { id: 'visits', label: seriesLabels.visits, values: genValues(previewSeed) },
+                { id: 'orders', label: seriesLabels.orders, values: genValues(previewSeed * 1.7) },
               ]}
               width={CHART_WIDTH}
               height={CHART_HEIGHT}
@@ -321,16 +381,26 @@ interface ColumnDef {
   extract: (r: BenchResult) => string
 }
 
-function ResultsTable({ results, columns }: { results: BenchResult[]; columns: ColumnDef[] }) {
+function ResultsTable({
+  results,
+  columns,
+  variantColumn,
+  emptyLabel,
+}: {
+  results: BenchResult[]
+  columns: ColumnDef[]
+  variantColumn: string
+  emptyLabel: string
+}) {
   if (results.length === 0) {
-    return <div className="bench-empty">Press Run to collect numbers.</div>
+    return <div className="bench-empty">{emptyLabel}</div>
   }
   return (
     <div className="bench-results">
       <table className="bench-table">
         <thead>
           <tr>
-            <th>Variant</th>
+            <th>{variantColumn}</th>
             {columns.map((c) => (
               <th key={c.key}>{c.label}</th>
             ))}

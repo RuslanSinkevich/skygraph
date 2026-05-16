@@ -54,18 +54,17 @@ export function About() {
           <article className="about-platform-card">
             <div className="about-platform-card-title">
               <span className="about-platform-card-mark" aria-hidden="true" />
-              {t.about.skycodeTitle}
+              <a
+                href="https://gitbor.ru/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-platform-card-link"
+              >
+                {t.about.gitborTitle}
+              </a>
             </div>
-            <div className="about-platform-card-desc">{t.about.skycodeDesc}</div>
-            <div className="about-platform-card-tag">IDE</div>
-          </article>
-          <article className="about-platform-card">
-            <div className="about-platform-card-title">
-              <span className="about-platform-card-mark" aria-hidden="true" />
-              {t.about.skyforkTitle}
-            </div>
-            <div className="about-platform-card-desc">{t.about.skyforkDesc}</div>
-            <div className="about-platform-card-tag">Orchestration</div>
+            <div className="about-platform-card-desc">{t.about.gitborDesc}</div>
+            <div className="about-platform-card-tag">Git client</div>
           </article>
           <article className="about-platform-card about-platform-card--current">
             <div className="about-platform-card-title">
@@ -75,6 +74,21 @@ export function About() {
             <div className="about-platform-card-desc">{t.about.skygraphDesc}</div>
             <div className="about-platform-card-tag">UI library — you are here</div>
           </article>
+          <article className="about-platform-card">
+            <div className="about-platform-card-title">
+              <span className="about-platform-card-mark" aria-hidden="true" />
+              <a
+                href="https://github.com/RuslanSinkevich/skycode"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-platform-card-link"
+              >
+                {t.about.skycodeTitle}
+              </a>
+            </div>
+            <div className="about-platform-card-desc">{t.about.skycodeDesc}</div>
+            <div className="about-platform-card-tag">IDE</div>
+          </article>
         </div>
       </section>
 
@@ -82,8 +96,8 @@ export function About() {
         <h2 className="about-section-title">{t.about.multiFrameworkTitle}</h2>
         <p className="about-section-sub">{t.about.multiFrameworkLead}</p>
         <ul>
+          <li>{t.about.multiFrameworkReact}</li>
           <li>{t.about.multiFrameworkVue}</li>
-          <li>{t.about.multiFrameworkAngular}</li>
         </ul>
       </section>
     </div>

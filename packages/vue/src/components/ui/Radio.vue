@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 export interface RadioOption {
   label: string
@@ -27,9 +27,13 @@ export interface RadioGroupProps {
 }
 
 const props = withDefaults(defineProps<RadioGroupProps>(), {
+  modelValue: undefined,
+  value: undefined,
+  defaultValue: undefined,
   direction: 'horizontal',
   disabled: false,
   loading: false,
+  unstyled: false,
 })
 
 const emit = defineEmits<{
@@ -68,10 +72,31 @@ const groupClass = computed(() =>
         .filter(Boolean)
         .join(' '),
 )
+
+// Inputs are addressed via the wrapper to keep templates clean (one ref per
+// option). Vue 3's `:checked` binding lands as a DOM attribute, not a property,
+// which leaves the radio dot unpainted on the very first mount. Push the
+// state through the property by hand after the patch settles.
+const wrapperRef = ref<HTMLDivElement | null>(null)
+
+function syncInputs() {
+  const el = wrapperRef.value
+  if (!el) return
+  const inputs = el.querySelectorAll<HTMLInputElement>('input[type="radio"]')
+  inputs.forEach((input, idx) => {
+    const opt = props.options[idx]
+    if (!opt) return
+    const desired = current.value === opt.value
+    if (input.checked !== desired) input.checked = desired
+  })
+}
+
+watch([() => current.value, () => props.options], () => syncInputs(), { flush: 'post' })
+onMounted(syncInputs)
 </script>
 
 <template>
-  <div :class="groupClass" role="radiogroup">
+  <div ref="wrapperRef" :class="groupClass" role="radiogroup">
     <label
       v-for="opt in options"
       :key="opt.value"

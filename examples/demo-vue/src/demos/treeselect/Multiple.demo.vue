@@ -1,12 +1,12 @@
 <script setup lang="ts">
 /**
  * `multiple` toggles the value on click. `model-value` becomes an
- * array of node values. Selected nodes are joined into the trigger
- * label.
+ * array of node keys. Selected nodes are rendered as removable tags
+ * inside the trigger.
  */
 import { ref } from 'vue'
-import { SgTreeSelect } from '@skygraph/vue'
-import { orgTree, orgTreeAllParentKeys } from './data'
+import { SgTreeSelect, type TreeKey } from '@skygraph/vue'
+import { orgTree } from './data'
 import { useDemoStrings } from '../../i18n'
 
 const STRINGS = {
@@ -15,7 +15,7 @@ const STRINGS = {
 } as const
 
 const t = useDemoStrings(STRINGS)
-const value = ref<(string | number)[]>([])
+const value = ref<TreeKey[]>([])
 </script>
 
 <template>
@@ -24,7 +24,7 @@ const value = ref<(string | number)[]>([])
       v-model="value"
       :tree-data="orgTree"
       multiple
-      :default-expanded-keys="orgTreeAllParentKeys"
+      tree-default-expand-all
       :placeholder="t.placeholder"
       allow-clear
     />

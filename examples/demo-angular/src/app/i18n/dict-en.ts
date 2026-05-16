@@ -113,7 +113,7 @@ export const en: DemoDict = {
     ctaSecondary: 'Read source',
     featureReactiveTitle: 'Reactive core',
     featureReactiveDesc:
-      'A single store engine with form / table / tree / graph adapters. Same engine across React, Vue and Angular.',
+      'A single store engine with form / table / tree / graph adapters. Same engine across React and Vue.',
     featureZeroRuntimeTitle: 'Zero-runtime CSS',
     featureZeroRuntimeDesc:
       'All styling lives in @skygraph/styles. No CSS-in-JS, no runtime cost, theming via plain CSS variables.',
@@ -153,26 +153,31 @@ export const en: DemoDict = {
     lead1:
       'SkyGraph is a TypeScript-first reactive UI library — a path-based core, six domain engines and 78+ styled components, all driven by CSS variables with zero runtime cost.',
     lead2:
-      'It is the UI substrate for the Sky platform, designed to feed the same component contract into multiple framework adapters: React today, Vue and Angular next.',
+      'It is the UI substrate for the Sky platform: the same component contract ships through adapters for React and Vue — pixel-identical DOM and CSS.',
     lead3:
       'No styled-components, no CSS-in-JS runtime, no proprietary build steps — only standards: TypeScript, CSS variables, native DOM events.',
     versionLabel: 'Version',
     licenseLabel: 'License',
     licenseValue: 'MIT',
     architectureLink: 'Architecture →',
-    skyPlatformTitle: 'Sky platform',
-    skyPlatformLead: 'Three coupled projects sharing one design system and one data model.',
+    skyPlatformTitle: "Author's pet projects",
+    skyPlatformLead:
+      'Three independent pet projects by Ruslan Sinkevich — developer tools on different stacks.',
     skycodeTitle: 'Skycode',
-    skycodeDesc: 'AI-augmented IDE — VS Code fork with the Skycode assistant.',
-    skyforkTitle: 'SkyFork',
-    skyforkDesc: 'Codebase orchestration — branch hub, agent runner, automation.',
+    skycodeDesc:
+      'VS Code fork with a built-in AI assistant — agent, 40+ model providers, inline diff.',
+    gitborTitle: 'GitBor',
+    gitborDesc:
+      'Cross-platform desktop Git client on Electron — visual commit graph, interactive rebase, data safety.',
     skygraphTitle: 'SkyGraph',
-    skygraphDesc: 'This library — the UI / data foundation underneath every Sky surface.',
-    multiFrameworkTitle: 'Multi-framework — coming soon',
+    skygraphDesc: 'This library — multi-framework UI on a shared headless core.',
+    multiFrameworkTitle: 'Multi-framework',
     multiFrameworkLead:
-      'The core engine and the styling contract are framework-agnostic. Adapters in flight:',
-    multiFrameworkVue: 'Vue 3 — Composition-API bindings on top of the core store.',
-    multiFrameworkAngular: 'Angular — signals-based store integration, same components.',
+      'The core engine and the styling contract are framework-agnostic. Shipped adapters:',
+    multiFrameworkReact:
+      'React — hooks, ConfigProvider, 47 UI primitives + 17 complex components on top of the same core.',
+    multiFrameworkVue:
+      'Vue 3 — Composition-API bindings, 52 SFC primitives + 14 complex — same core, identical `.sg-*` classes.',
   },
   gettingStarted: {
     title: 'Getting Started',

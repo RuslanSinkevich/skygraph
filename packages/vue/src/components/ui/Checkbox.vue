@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useSlots, watch } from 'vue'
+import { computed, onMounted, ref, useSlots, watch } from 'vue'
 
 export interface CheckboxProps {
   /** v-model binding (Vue idiom). */
@@ -18,9 +18,20 @@ export interface CheckboxProps {
   unstyled?: boolean
 }
 
+// All controlled boolean inputs default to `undefined` so the
+// `props.modelValue ?? props.checked ?? props.defaultChecked` chain in
+// `internal` / `current` can correctly distinguish "consumer did not bind
+// this prop" from "consumer explicitly passed `false`". Without explicit
+// `undefined` defaults Vue normalises optional boolean props to `false`
+// at runtime and `??` collapses every variant to that fallback.
 const props = withDefaults(defineProps<CheckboxProps>(), {
+  modelValue: undefined,
+  checked: undefined,
+  defaultChecked: undefined,
+  indeterminate: undefined,
   disabled: false,
   loading: false,
+  unstyled: false,
 })
 
 const emit = defineEmits<{
@@ -44,13 +55,25 @@ watch(
 const current = computed(() => props.modelValue ?? props.checked ?? internal.value)
 
 const inputRef = ref<HTMLInputElement | null>(null)
-watch(
-  () => props.indeterminate,
-  (v) => {
-    if (inputRef.value) inputRef.value.indeterminate = v ?? false
-  },
-  { immediate: true },
-)
+
+// Vue 3 compiles `:checked="current"` into an attribute mutation rather than a
+// DOM property assignment, so `<input type="checkbox" checked="false">` paints
+// as *checked* (any value of the attribute is truthy in HTML). Mirror the
+// React reference behaviour by pushing the boolean through the DOM property
+// instead. The first sync runs in `onMounted` (the ref is null during setup),
+// subsequent updates piggyback on a normal watcher.
+function syncCheckbox() {
+  const el = inputRef.value
+  if (!el) return
+  const next = !!current.value
+  if (el.checked !== next) el.checked = next
+  el.indeterminate = props.indeterminate ?? false
+}
+
+onMounted(syncCheckbox)
+watch([() => current.value, () => props.indeterminate], () => syncCheckbox(), {
+  flush: 'post',
+})
 
 function onChange(e: Event) {
   const v = (e.target as HTMLInputElement).checked

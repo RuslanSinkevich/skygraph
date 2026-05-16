@@ -164,14 +164,14 @@ export interface DemoDict {
     skyPlatformLead: string
     skycodeTitle: string
     skycodeDesc: string
-    skyforkTitle: string
-    skyforkDesc: string
+    gitborTitle: string
+    gitborDesc: string
     skygraphTitle: string
     skygraphDesc: string
     multiFrameworkTitle: string
     multiFrameworkLead: string
+    multiFrameworkReact: string
     multiFrameworkVue: string
-    multiFrameworkAngular: string
   }
   gettingStarted: {
     title: string

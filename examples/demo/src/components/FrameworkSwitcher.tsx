@@ -1,11 +1,10 @@
 import type React from 'react'
 
-type Framework = 'react' | 'vue' | 'angular'
+type Framework = 'react' | 'vue'
 
 const FRAMEWORKS: { id: Framework; label: string; href: string; ready: boolean }[] = [
   { id: 'react', label: 'React', href: '/', ready: true },
-  { id: 'vue', label: 'Vue', href: '/vue/', ready: false },
-  { id: 'angular', label: 'Angular', href: '/angular/', ready: false },
+  { id: 'vue', label: 'Vue', href: '/vue/', ready: true },
 ]
 
 export function FrameworkSwitcher({ active }: { active: Framework }) {

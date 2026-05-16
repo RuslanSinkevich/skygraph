@@ -55,7 +55,7 @@ const APP_VERSION = 'v0.5.0'
         (select)="onHeaderSelect($event)"
         (searchChange)="search.set($event)"
       >
-        <sg-framework-switcher active="angular"></sg-framework-switcher>
+        <sg-framework-switcher></sg-framework-switcher>
         <sg-language-switcher
           [options]="languageOptions()"
           [active]="i18n.locale()"

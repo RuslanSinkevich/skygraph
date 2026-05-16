@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { flushSync } from 'react-dom'
 import { Form, Field, useFormContext } from '@skygraph/react'
@@ -9,7 +9,9 @@ import {
   useFormContext as useRhfContext,
 } from 'react-hook-form'
 
+import { useI18n } from '../../i18n/I18nContext'
 import {
+  benchFill,
   formatMetric,
   nextFrames,
   runVariant,
@@ -37,6 +39,11 @@ interface ApiHolder {
   rhfSet: ((name: string, value: string) => void) | null
 }
 
+interface FieldCopy {
+  labelAt: (i: number) => string
+  placeholderAt: (i: number) => string
+}
+
 function SkySubmitProbe({ holder }: { holder: { current: ApiHolder } }) {
   const ctx = useFormContext()
   if (ctx?.form && holder.current.sky !== ctx.form) {
@@ -45,12 +52,12 @@ function SkySubmitProbe({ holder }: { holder: { current: ApiHolder } }) {
   return null
 }
 
-function SkyFormBlock({ holder }: { holder: { current: ApiHolder } }) {
+function SkyFormBlock({ holder, copy }: { holder: { current: ApiHolder }; copy: FieldCopy }) {
   return (
     <Form layout="vertical" defaultValues={buildDefaults()} onSubmit={() => {}}>
       <SkySubmitProbe holder={holder} />
       {fieldNames().map((n, i) => (
-        <Field key={n} name={n} label={`Label ${i + 1}`} placeholder={`Placeholder ${i + 1}`} />
+        <Field key={n} name={n} label={copy.labelAt(i)} placeholder={copy.placeholderAt(i)} />
       ))}
     </Form>
   )
@@ -71,28 +78,28 @@ function RhfHandle({ holder }: { holder: { current: ApiHolder } }) {
   return null
 }
 
-function RhfField({ name, idx }: { name: string; idx: number }) {
+function RhfField({ name, idx, copy }: { name: string; idx: number; copy: FieldCopy }) {
   const ctx = useRhfContext()
   return (
     <label style={{ display: 'block', marginBottom: 8 }}>
-      <span style={{ display: 'block', fontSize: 12 }}>{`Label ${idx + 1}`}</span>
+      <span style={{ display: 'block', fontSize: 12 }}>{copy.labelAt(idx)}</span>
       <input
         {...ctx.register(name)}
-        placeholder={`Placeholder ${idx + 1}`}
+        placeholder={copy.placeholderAt(idx)}
         style={{ width: '100%' }}
       />
     </label>
   )
 }
 
-function RhfFormBlock({ holder }: { holder: { current: ApiHolder } }) {
+function RhfFormBlock({ holder, copy }: { holder: { current: ApiHolder }; copy: FieldCopy }) {
   const methods = useRhfForm({ defaultValues: buildDefaults() })
   return (
     <RhfFormProvider {...methods}>
       <RhfHandle holder={holder} />
       <form onSubmit={methods.handleSubmit(() => {})}>
         {fieldNames().map((n, i) => (
-          <RhfField key={n} name={n} idx={i} />
+          <RhfField key={n} name={n} idx={i} copy={copy} />
         ))}
       </form>
     </RhfFormProvider>
@@ -105,7 +112,7 @@ interface RunOutput {
   submitBytes: number
 }
 
-function buildRunner(variant: 'skygraph' | 'rhf'): Runner {
+function buildRunner(variant: 'skygraph' | 'rhf', copy: FieldCopy): Runner {
   return async (): Promise<{ value: number; extras?: Record<string, number> }> => {
     const host = document.createElement('div')
     host.style.position = 'fixed'
@@ -121,9 +128,9 @@ function buildRunner(variant: 'skygraph' | 'rhf'): Runner {
     const t0 = performance.now()
     flushSync(() => {
       if (variant === 'skygraph') {
-        root.render(<SkyFormBlock holder={holder} />)
+        root.render(<SkyFormBlock holder={holder} copy={copy} />)
       } else {
-        root.render(<RhfFormBlock holder={holder} />)
+        root.render(<RhfFormBlock holder={holder} copy={copy} />)
       }
     })
     await nextFrames(2)
@@ -170,11 +177,21 @@ function buildRunner(variant: 'skygraph' | 'rhf'): Runner {
 }
 
 export function FormBenchmark() {
+  const { t } = useI18n()
+  const b = t.benchmarks
   const [running, setRunning] = useState(false)
   const [progress, setProgress] = useState('')
   const [results, setResults] = useState<BenchResult[]>([])
   const [previewVariant, setPreviewVariant] = useState<'skygraph' | 'rhf'>('skygraph')
   const abortRef = useRef<AbortController | null>(null)
+
+  const fieldCopy = useMemo<FieldCopy>(
+    () => ({
+      labelAt: (i) => benchFill(b.fieldLabel, { n: String(i + 1) }),
+      placeholderAt: (i) => benchFill(b.fieldPlaceholder, { n: String(i + 1) }),
+    }),
+    [b],
+  )
 
   useEffect(() => () => abortRef.current?.abort(), [])
 
@@ -182,18 +199,18 @@ export function FormBenchmark() {
     if (running) return
     setRunning(true)
     setResults([])
-    setProgress('Warming up...')
+    setProgress(b.warmingUp)
     abortRef.current = new AbortController()
     const signal = abortRef.current.signal
     try {
       const variants: Array<{ id: string; label: string; runner: Runner }> = [
-        { id: 'skygraph', label: 'SkyGraph <Form> + <Field>', runner: buildRunner('skygraph') },
-        { id: 'rhf', label: 'react-hook-form + plain <input>', runner: buildRunner('rhf') },
+        { id: 'skygraph', label: b.labelSkyForm, runner: buildRunner('skygraph', fieldCopy) },
+        { id: 'rhf', label: b.labelRhfForm, runner: buildRunner('rhf', fieldCopy) },
       ]
       const out: BenchResult[] = []
       for (const v of variants) {
         if (signal.aborted) throw new Error('aborted')
-        setProgress(`Running ${v.label}...`)
+        setProgress(benchFill(b.runningWithLabel, { label: v.label }))
         const r = await runVariant(
           v.id,
           v.label,
@@ -205,9 +222,9 @@ export function FormBenchmark() {
         out.push(r)
         setResults([...out])
       }
-      setProgress('Done')
+      setProgress(b.done)
     } catch (err) {
-      setProgress(`Error: ${(err as Error).message}`)
+      setProgress(benchFill(b.errorWithMessage, { message: (err as Error).message }))
     } finally {
       setRunning(false)
     }
@@ -216,8 +233,13 @@ export function FormBenchmark() {
   const stop = () => {
     abortRef.current?.abort()
     setRunning(false)
-    setProgress('Stopped')
+    setProgress(b.stopped)
   }
+
+  const methodText = benchFill(b.formMethod, {
+    fields: FIELD_COUNT,
+    changes: CHANGE_FIELDS,
+  })
 
   return (
     <div className="bench-section">
@@ -228,49 +250,46 @@ export function FormBenchmark() {
           onClick={run}
           disabled={running}
         >
-          {running ? 'Running…' : `Run · ${FIELD_COUNT} fields × 6`}
+          {running ? b.runningEllipsis : benchFill(b.formRunIdle, { fields: FIELD_COUNT })}
         </button>
         <button className="bench-btn" type="button" onClick={stop} disabled={!running}>
-          Stop
+          {b.stop}
         </button>
         {progress && <span className="bench-progress">{progress}</span>}
       </div>
 
       <div className="bench-method">
-        <strong>Method.</strong> {FIELD_COUNT} text inputs are mounted in one <code>flushSync</code>
-        , mount time is captured to the next two frames. Then {CHANGE_FIELDS} fields are changed via
-        the library's controlled API (<code>FormApi.setValue</code> / <code>setValue</code> from
-        react-hook-form) and per-change time is reported. Submit bytes is the size of{' '}
-        <code>JSON.stringify(values)</code>. We discard the warm-up run and report the median of 5
-        runs.
+        <strong>{b.methodStrong}</strong> {methodText}
       </div>
 
       <ResultsTable
+        variantColumn={b.variantColumn}
+        emptyLabel={b.pressRunEmpty}
         results={results}
         columns={[
-          { key: 'mount', label: 'Median mount', extract: (r) => formatMetric(r.median, 'ms') },
+          { key: 'mount', label: b.colMedianMount, extract: (r) => formatMetric(r.median, 'ms') },
           {
             key: 'change',
-            label: 'Per-change',
+            label: b.colPerChange,
             extract: (r) => (r.extras?.changeMs ? formatMetric(r.extras.changeMs, 'ms') : '—'),
           },
           {
             key: 'bytes',
-            label: 'Submit bytes',
+            label: b.colSubmitBytes,
             extract: (r) =>
               r.extras?.submitBytes ? formatMetric(r.extras.submitBytes, 'bytes') : '—',
           },
-          { key: 'min', label: 'Min mount', extract: (r) => formatMetric(r.min, 'ms') },
-          { key: 'max', label: 'Max mount', extract: (r) => formatMetric(r.max, 'ms') },
+          { key: 'min', label: b.colMinMount, extract: (r) => formatMetric(r.min, 'ms') },
+          { key: 'max', label: b.colMaxMount, extract: (r) => formatMetric(r.max, 'ms') },
         ]}
       />
 
       <div className="bench-preview">
         <div className="bench-preview-head">
-          <strong>Live preview ({FIELD_COUNT} fields)</strong>
+          <strong>{benchFill(b.livePreviewFields, { count: FIELD_COUNT })}</strong>
           <div className="bench-preview-controls">
             <label>
-              Library
+              {b.library}
               <select
                 value={previewVariant}
                 onChange={(e) => setPreviewVariant(e.target.value as 'skygraph' | 'rhf')}
@@ -286,30 +305,34 @@ export function FormBenchmark() {
           className="bench-preview-frame"
           style={{ maxHeight: 360, overflowY: 'auto', padding: 12 }}
         >
-          {previewVariant === 'skygraph' ? <SkyPreview /> : <RhfPreview />}
+          {previewVariant === 'skygraph' ? (
+            <SkyPreview copy={fieldCopy} />
+          ) : (
+            <RhfPreview copy={fieldCopy} />
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-function SkyPreview() {
+function SkyPreview({ copy }: { copy: FieldCopy }) {
   return (
     <Form layout="vertical" defaultValues={buildDefaults()} onSubmit={() => {}}>
       {fieldNames().map((n, i) => (
-        <Field key={n} name={n} label={`Label ${i + 1}`} placeholder={`Placeholder ${i + 1}`} />
+        <Field key={n} name={n} label={copy.labelAt(i)} placeholder={copy.placeholderAt(i)} />
       ))}
     </Form>
   )
 }
 
-function RhfPreview() {
+function RhfPreview({ copy }: { copy: FieldCopy }) {
   const methods = useRhfForm({ defaultValues: buildDefaults() })
   return (
     <RhfFormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(() => {})}>
         {fieldNames().map((n, i) => (
-          <RhfField key={n} name={n} idx={i} />
+          <RhfField key={n} name={n} idx={i} copy={copy} />
         ))}
       </form>
     </RhfFormProvider>
@@ -322,16 +345,26 @@ interface ColumnDef {
   extract: (r: BenchResult) => string
 }
 
-function ResultsTable({ results, columns }: { results: BenchResult[]; columns: ColumnDef[] }) {
+function ResultsTable({
+  results,
+  columns,
+  variantColumn,
+  emptyLabel,
+}: {
+  results: BenchResult[]
+  columns: ColumnDef[]
+  variantColumn: string
+  emptyLabel: string
+}) {
   if (results.length === 0) {
-    return <div className="bench-empty">Press Run to collect numbers.</div>
+    return <div className="bench-empty">{emptyLabel}</div>
   }
   return (
     <div className="bench-results">
       <table className="bench-table">
         <thead>
           <tr>
-            <th>Variant</th>
+            <th>{variantColumn}</th>
             {columns.map((c) => (
               <th key={c.key}>{c.label}</th>
             ))}

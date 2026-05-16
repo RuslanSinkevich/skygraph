@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useConfigWithDefaults } from './ConfigProvider.vue'
 import type { SizeType } from '../../types'
 
@@ -103,9 +103,7 @@ function panelClasses(item: CollapseItem) {
 
 function arrowClasses(item: CollapseItem) {
   const isActive = currentActive.value.includes(item.key)
-  return ['sg-collapse-arrow', isActive ? 'sg-collapse-arrow-open' : '']
-    .filter(Boolean)
-    .join(' ')
+  return ['sg-collapse-arrow', isActive ? 'sg-collapse-arrow-open' : ''].filter(Boolean).join(' ')
 }
 
 function isOpen(key: string) {
@@ -119,6 +117,81 @@ function onKeyDown(e: KeyboardEvent, item: CollapseItem) {
     toggle(item.key)
   }
 }
+
+/* --- Per-panel animated max-height bookkeeping --- */
+
+const contentRefs = ref<Map<string, HTMLElement>>(new Map())
+const measuredHeights = ref<Map<string, number | null>>(new Map())
+
+function setContentRef(key: string, el: Element | null) {
+  if (el) contentRefs.value.set(key, el as HTMLElement)
+  else contentRefs.value.delete(key)
+}
+
+function contentStyle(item: CollapseItem) {
+  const measured = measuredHeights.value.get(item.key)
+  const open = isOpen(item.key)
+  let value: string
+  if (measured !== undefined && measured !== null) value = `${measured}px`
+  else if (open) value = 'none'
+  else value = '0px'
+  return { '--sg-collapse-content-max-height': value } as Record<string, string>
+}
+
+function syncHeight(item: CollapseItem) {
+  const el = contentRefs.value.get(item.key)
+  if (!el) return
+  if (isOpen(item.key)) {
+    measuredHeights.value.set(item.key, el.scrollHeight)
+  } else {
+    measuredHeights.value.set(item.key, el.scrollHeight)
+    requestAnimationFrame(() => {
+      measuredHeights.value.set(item.key, 0)
+      measuredHeights.value = new Map(measuredHeights.value)
+    })
+  }
+  measuredHeights.value = new Map(measuredHeights.value)
+}
+
+function onTransitionEnd(item: CollapseItem) {
+  if (isOpen(item.key)) {
+    measuredHeights.value.set(item.key, null)
+    measuredHeights.value = new Map(measuredHeights.value)
+  }
+}
+
+onMounted(() => {
+  // Prime measurements for any panels that start open so their CSS
+  // max-height reflects the actual scrollHeight (Vue mounted the DOM
+  // synchronously, so refs are populated by this tick).
+  for (const item of props.items) {
+    if (isOpen(item.key)) {
+      const el = contentRefs.value.get(item.key)
+      if (el) {
+        measuredHeights.value.set(item.key, el.scrollHeight)
+      }
+    }
+  }
+  measuredHeights.value = new Map(measuredHeights.value)
+})
+
+watch(currentActive, (next, prev) => {
+  const prevSet = new Set(prev ?? [])
+  const nextSet = new Set(next ?? [])
+  const changed: string[] = []
+  for (const item of props.items) {
+    const was = prevSet.has(item.key)
+    const now = nextSet.has(item.key)
+    if (was !== now) changed.push(item.key)
+  }
+  if (changed.length === 0) return
+  void nextTick(() => {
+    for (const key of changed) {
+      const item = props.items.find((i) => i.key === key)
+      if (item) syncHeight(item)
+    }
+  })
+})
 </script>
 
 <template>
@@ -160,8 +233,10 @@ function onKeyDown(e: KeyboardEvent, item: CollapseItem) {
         <span v-if="item.extra" class="sg-collapse-extra">{{ item.extra }}</span>
       </div>
       <div
-        v-if="isOpen(item.key)"
+        :ref="(el) => setContentRef(item.key, el as Element | null)"
         class="sg-collapse-content"
+        :style="contentStyle(item)"
+        @transitionend="onTransitionEnd(item)"
       >
         <div class="sg-collapse-content-inner">
           <slot name="panel" :item="item">{{ item.content }}</slot>

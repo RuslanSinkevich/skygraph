@@ -204,11 +204,7 @@ describe('SgCarousel', () => {
 })
 
 describe('SgTimeline', () => {
-  const items = [
-    { content: 'Created' },
-    { content: 'Reviewed' },
-    { content: 'Done' },
-  ]
+  const items = [{ content: 'Created' }, { content: 'Reviewed' }, { content: 'Done' }]
 
   it('renders all items', () => {
     const wrapper = mount(SgTimeline, { props: { items } })
@@ -322,7 +318,13 @@ describe('SgCollapse', () => {
 
   it('starts collapsed', () => {
     const wrapper = mount(SgCollapse, { props: { items } })
-    expect(wrapper.text()).not.toContain('Content 1')
+    // Content is always mounted to allow CSS max-height animation; visibility
+    // is driven by the `sg-collapse-panel-active` class on the panel and
+    // the `--sg-collapse-content-max-height` custom property on the body.
+    const panels = wrapper.findAll('.sg-collapse-panel')
+    for (const panel of panels) {
+      expect(panel.classes()).not.toContain('sg-collapse-panel-active')
+    }
   })
 
   it('expands panel on click', async () => {

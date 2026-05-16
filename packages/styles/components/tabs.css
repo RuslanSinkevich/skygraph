@@ -71,16 +71,25 @@
 }
 
 .sg-tabs-card .sg-tabs-tab {
+  /* Reserve the same vertical space for active and idle tabs so flipping
+   * between them never resizes the nav strip (no more 1px jitter on tab
+   * switch). The bottom border is always drawn but transparent until the
+   * tab becomes active. */
   padding: var(--sg-padding-sm) var(--sg-padding-lg);
   cursor: pointer;
-  margin: 0 2px 0 0;
+  margin: 0 2px -1px 0;
   color: var(--sg-color-text-secondary);
   border: 1px solid transparent;
-  border-bottom: none;
+  border-bottom: 1px solid transparent;
   border-radius: var(--sg-border-radius-sm) var(--sg-border-radius-sm) 0 0;
   background: transparent;
-  transition: all var(--sg-transition-duration);
+  transition:
+    color var(--sg-transition-duration),
+    background var(--sg-transition-duration),
+    border-color var(--sg-transition-duration);
   user-select: none;
+  position: relative;
+  z-index: 0;
 }
 
 .sg-tabs-card .sg-tabs-tab:hover {
@@ -92,10 +101,7 @@
   color: var(--sg-color-primary);
   background: var(--sg-color-bg);
   border-color: var(--sg-color-border-secondary);
-  border-bottom: 1px solid var(--sg-color-bg);
-  margin-bottom: -1px;
-  padding-bottom: calc(var(--sg-padding-sm) + 1px);
-  position: relative;
+  border-bottom-color: var(--sg-color-bg);
   z-index: 1;
 }
 

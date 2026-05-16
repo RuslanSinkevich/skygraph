@@ -24,6 +24,7 @@ const columns: TableColumn[] = [
     <SgTable
       :columns="columns"
       :data="data"
+      :page-size="data.length"
       :show-pagination="false"
       :virtual="{ rowHeight: 40, overscan: 10, height: 400 }"
       bordered

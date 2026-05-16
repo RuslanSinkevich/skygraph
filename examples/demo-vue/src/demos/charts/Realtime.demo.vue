@@ -71,7 +71,8 @@ const cpuSeries = computed(() => [{ id: 'cpu', label: 'CPU usage (%)', values: s
         {{ running ? '⏸ Pause' : '▶ Resume' }}
       </button>
       <span style="font-size: 12px; color: var(--sg-color-text-secondary)">
-        Sliding window: {{ WINDOW }} pts · tick: {{ TICK_MS }}ms · current = {{ slice[WINDOW - 1] }}%
+        Sliding window: {{ WINDOW }} pts · tick: {{ TICK_MS }}ms · current =
+        {{ slice[WINDOW - 1] }}%
       </span>
     </div>
     <SgLineChart
@@ -80,6 +81,7 @@ const cpuSeries = computed(() => [{ id: 'cpu', label: 'CPU usage (%)', values: s
       :height="220"
       :markers="false"
       :animate="false"
+      :crosshair="{ valueFormatter: (v: number) => `${v}%` }"
       :x-axis="{ tickCount: 6 }"
       :y-axis="{ tickCount: 5, tickFormatter: (v: number) => `${v}%`, gridLines: true }"
       :padding="[20, 24, 36, 48]"

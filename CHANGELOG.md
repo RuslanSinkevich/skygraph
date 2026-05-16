@@ -7,6 +7,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Stream 4 — Vue audit polish (critical bugfixes + visual parity)
+
+Stream 4 закрыл 19 пунктов аудита Vue-адаптера против React reference.
+Все 762 vitest-кейса остаются зелёными, typecheck/build чистые.
+
+#### Critical (broken functionality)
+
+- **`SgTable` virtualization** — `Virtual` / `VirtualDynamic` демо
+  показывали только первые ~50 строк, дальше пусто. Корень: `useTable`
+  дефолтит `pageSize=50`, `visibleRows` возвращает страницу, а движок
+  виртуализации работает только с `flatRows`. Фикс: при `virtual` и
+  отсутствующем `pageSize` Table автоматически выставляет
+  `pageSize = data.length`, и обе демо явно передают это значение для
+  1:1 совпадения с React.
+- **`SgCollapse`** — клик по заголовку не разворачивал панель. Корень:
+  `v-if="isOpen"` монтировал/демонтировал содержимое, CSS-переменная
+  `--sg-collapse-content-max-height` никогда не получала значение.
+  Перенесли логику на React-pattern: контент всегда смонтирован, при
+  toggle снимаем измерение `scrollHeight` и анимируем через CSS-переменную;
+  по `transitionend` для открытой панели сбрасываем lock на `none`.
+- **`SgTreeSelect`** — компонент был полностью сломан (несовпадение
+  классов, чужой API `value/label`). Переписан под React API
+  (`TreeNodeData` с `key/title`, `treeCheckable`, `treeDefaultExpandAll`,
+  `showCheckedStrategy`, поиск с автоэкспандом), внутри использует
+  `SgTree`. Все 7 demos и `data.ts` обновлены под новый API.
+- **`SgDropdown` keyboard navigation** — DOM-инспектор подтвердил, что
+  `ArrowDown` / `Enter` работают 1:1 с React.
+
+#### Visual styling
+
+- **`SgCheckbox` / `SgRadio`** — на initial mount Vue нормализовал
+  optional boolean props в `false`, из-за чего цепочка
+  `props.modelValue ?? props.checked ?? props.defaultChecked` всегда
+  возвращала false, и input оставался пустым. Зафиксили `undefined`
+  как дефолт через `withDefaults`, а `indeterminate` / `checked`
+  свойство теперь синхронизируется напрямую через ref в `onMounted` +
+  `watch(flush: 'post')`.
+- **`Tooltip` Rich content** — `.sg-tooltip-content` получил
+  `display: inline-block`, иначе `<span>` с `white-space: nowrap`
+  схлопывал блочного ребёнка до 0px. Vue теперь рендерит rich slot 1:1
+  с React.
+- **`Progress`** — убран `transition: width` на `.sg-progress-bg`.
+  Анимация интерполировала от 0 до целевого процента, в результате на
+  первом кадре полоса выглядела пустой и пользователь видел только
+  цифры. Width теперь применяется мгновенно (live-updates сохраняют
+  тот же эффект, что и React-эталон).
+- **`SgMenu`** иконки — `p.item.icon` (VNode) передавался как
+  slot-object `{ default: () => p.item.icon }`, что валидно для
+  компонентов, но `<span>` (native) трактует третий аргумент `h()` как
+  children. Теперь иконки рендерятся корректно.
+- **`Gantt` sidebar text** — убран inline `padding: 0 8px`,
+  перебивавший токен `--sg-padding-md`; пустой sidebar header
+  (React-эталон) без жёстко вшитого «Task».
+- **`Tabs`** — стабильная высота nav при смене таба. Убрана
+  кратковременная 1px-jitter, активный таб больше не «раздвигает»
+  стрипу через `padding-bottom + margin-bottom: -1px`.
+- **`SchemaForm` AutoField** — добавлен `sg-autofield-input` CSS class
+  + scoped `<style>` (mirror React `inputStyle`). Native `<input>` /
+  `<select>` / `<textarea>` теперь получают полную ширину, padding,
+  border и состояния error/warning.
+
+#### Functional improvements
+
+- **Charts** — `LineChart` demos `MultiSeries` / `Responsive` /
+  `Realtime` / `HoverActions` добавлен `crosshair` prop под паритет с
+  React: hover показывает crosshair-tooltip со значениями серий.
+- **`ResourceCalendar`** — `range` теперь трактуется как минимум
+  viewport; при drag-resize задания за правую границу шкала автоматически
+  расширяется по `assignmentMax + step`, бар больше не уходит в
+  «пустоту».
+- **`Pagination`** — стабильный 7-slot strip (`[1][2][3][4][5][…][N]`
+  → `[1][…][c-1][c][c+1][…][N]` → `[1][…][N-4][N-3][N-2][N-1][N]`).
+  `sg-pagination-item` зафиксирован на square min/width = height,
+  layout больше не прыгает при переходе 1 → 8 → 50. Тот же алгоритм
+  применён к React, чтобы держать паритет.
+
+#### Tests / build
+
+- `pnpm --filter @skygraph/vue typecheck` ✓
+- `pnpm --filter @skygraph/vue test` ✓ (762/762)
+- `pnpm --filter @skygraph/react typecheck` ✓
+- `pnpm --filter @skygraph/react test` ✓ (626 passed, 2 skipped)
+- `pnpm --filter @skygraph/vue build` ✓
+- `pnpm --filter demo-vue build` ✓
+
 ### Round 13 — `@skygraph/vue` full port + benchmarks + showcases dedup + deploy
 
 Round 13 закрылся 19 коммитами на master в две фазы. Фаза 1 (7 коммитов

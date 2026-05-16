@@ -14,7 +14,7 @@
  */
 import { useI18n } from '../i18n'
 
-type Framework = 'react' | 'vue' | 'angular'
+type Framework = 'react' | 'vue'
 
 interface FrameworkSpec {
   id: Framework
@@ -24,9 +24,8 @@ interface FrameworkSpec {
 }
 
 const FRAMEWORKS: FrameworkSpec[] = [
-  { id: 'react', label: 'React', href: '/', ready: false },
+  { id: 'react', label: 'React', href: '/', ready: true },
   { id: 'vue', label: 'Vue', href: '/vue/', ready: true },
-  { id: 'angular', label: 'Angular', href: '/angular/', ready: false },
 ]
 
 defineProps<{

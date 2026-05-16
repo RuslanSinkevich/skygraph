@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { I18nService } from '../../i18n'
 
-type Framework = 'react' | 'vue' | 'angular'
+type Framework = 'react' | 'vue'
 
 interface FrameworkSpec {
   id: Framework
@@ -11,9 +11,8 @@ interface FrameworkSpec {
 }
 
 const FRAMEWORKS: FrameworkSpec[] = [
-  { id: 'react', label: 'React', href: '/', ready: false },
-  { id: 'vue', label: 'Vue', href: '/vue/', ready: false },
-  { id: 'angular', label: 'Angular', href: '/angular/', ready: true },
+  { id: 'react', label: 'React', href: '/', ready: true },
+  { id: 'vue', label: 'Vue', href: '/vue/', ready: true },
 ]
 
 /**
@@ -62,7 +61,8 @@ const FRAMEWORKS: FrameworkSpec[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FrameworkSwitcherComponent {
-  readonly active = input<Framework>('angular')
+  /** Omitted on the Angular-built demo: neither React nor Vue tab is selected. */
+  readonly active = input<Framework | undefined>(undefined)
 
   protected readonly i18n = inject(I18nService)
 

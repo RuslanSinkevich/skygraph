@@ -59,18 +59,17 @@ const VERSION_LABEL = 'v0.5.0'
           <article class="about-platform-card">
             <div class="about-platform-card-title">
               <span class="about-platform-card-mark" aria-hidden="true"></span>
-              {{ i18n.t().about.skycodeTitle }}
+              <a
+                href="https://gitbor.ru/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="about-platform-card-link"
+              >
+                {{ i18n.t().about.gitborTitle }}
+              </a>
             </div>
-            <div class="about-platform-card-desc">{{ i18n.t().about.skycodeDesc }}</div>
-            <div class="about-platform-card-tag">IDE</div>
-          </article>
-          <article class="about-platform-card">
-            <div class="about-platform-card-title">
-              <span class="about-platform-card-mark" aria-hidden="true"></span>
-              {{ i18n.t().about.skyforkTitle }}
-            </div>
-            <div class="about-platform-card-desc">{{ i18n.t().about.skyforkDesc }}</div>
-            <div class="about-platform-card-tag">Orchestration</div>
+            <div class="about-platform-card-desc">{{ i18n.t().about.gitborDesc }}</div>
+            <div class="about-platform-card-tag">Git client</div>
           </article>
           <article class="about-platform-card about-platform-card--current">
             <div class="about-platform-card-title">
@@ -80,6 +79,21 @@ const VERSION_LABEL = 'v0.5.0'
             <div class="about-platform-card-desc">{{ i18n.t().about.skygraphDesc }}</div>
             <div class="about-platform-card-tag">UI library — you are here</div>
           </article>
+          <article class="about-platform-card">
+            <div class="about-platform-card-title">
+              <span class="about-platform-card-mark" aria-hidden="true"></span>
+              <a
+                href="https://github.com/RuslanSinkevich/skycode"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="about-platform-card-link"
+              >
+                {{ i18n.t().about.skycodeTitle }}
+              </a>
+            </div>
+            <div class="about-platform-card-desc">{{ i18n.t().about.skycodeDesc }}</div>
+            <div class="about-platform-card-tag">IDE</div>
+          </article>
         </div>
       </section>
 
@@ -87,8 +101,8 @@ const VERSION_LABEL = 'v0.5.0'
         <h2 class="about-section-title">{{ i18n.t().about.multiFrameworkTitle }}</h2>
         <p class="about-section-sub">{{ i18n.t().about.multiFrameworkLead }}</p>
         <ul>
+          <li>{{ i18n.t().about.multiFrameworkReact }}</li>
           <li>{{ i18n.t().about.multiFrameworkVue }}</li>
-          <li>{{ i18n.t().about.multiFrameworkAngular }}</li>
         </ul>
       </section>
     </div>

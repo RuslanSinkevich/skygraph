@@ -1,57 +1,56 @@
-import type { TreeSelectNode } from '@skygraph/vue'
+import type { TreeNodeData } from '@skygraph/vue'
 
 /** Org chart with 3 departments × multiple teams. Big enough to show
  *  search filtering and multi-select without being overwhelming.
- *
- *  Vue `SgTreeSelect` uses `value` / `label` (not `key` / `title`).
- */
-export const orgTree: TreeSelectNode[] = [
+ *  Mirrors React's `examples/demo/src/demos/treeselect/data.ts` so the
+ *  two demos stay structurally identical. */
+export const orgTree: TreeNodeData[] = [
   {
-    value: 'eng',
-    label: 'Engineering',
+    key: 'eng',
+    title: 'Engineering',
     children: [
       {
-        value: 'eng-web',
-        label: 'Web Platform',
+        key: 'eng-web',
+        title: 'Web Platform',
         children: [
-          { value: 'eng-web-frontend', label: 'Frontend' },
-          { value: 'eng-web-backend', label: 'Backend' },
-          { value: 'eng-web-devops', label: 'DevOps' },
+          { key: 'eng-web-frontend', title: 'Frontend' },
+          { key: 'eng-web-backend', title: 'Backend' },
+          { key: 'eng-web-devops', title: 'DevOps' },
         ],
       },
       {
-        value: 'eng-mobile',
-        label: 'Mobile',
+        key: 'eng-mobile',
+        title: 'Mobile',
         children: [
-          { value: 'eng-mobile-ios', label: 'iOS' },
-          { value: 'eng-mobile-android', label: 'Android' },
+          { key: 'eng-mobile-ios', title: 'iOS' },
+          { key: 'eng-mobile-android', title: 'Android' },
         ],
       },
-      { value: 'eng-qa', label: 'QA' },
+      { key: 'eng-qa', title: 'QA' },
     ],
   },
   {
-    value: 'design',
-    label: 'Design',
+    key: 'design',
+    title: 'Design',
     children: [
-      { value: 'design-product', label: 'Product Design' },
-      { value: 'design-research', label: 'UX Research' },
-      { value: 'design-brand', label: 'Brand' },
+      { key: 'design-product', title: 'Product Design' },
+      { key: 'design-research', title: 'UX Research' },
+      { key: 'design-brand', title: 'Brand' },
     ],
   },
   {
-    value: 'ops',
-    label: 'Operations',
+    key: 'ops',
+    title: 'Operations',
     children: [
-      { value: 'ops-hr', label: 'HR' },
-      { value: 'ops-finance', label: 'Finance', disabled: true },
-      { value: 'ops-legal', label: 'Legal' },
+      { key: 'ops-hr', title: 'HR' },
+      { key: 'ops-finance', title: 'Finance', disabled: true },
+      { key: 'ops-legal', title: 'Legal' },
     ],
   },
 ]
 
-/** Vue lacks `treeDefaultExpandAll`; pass these to `default-expanded-keys`
- *  to mimic the React behaviour. */
+/** Convenience list of parent keys for demos that prefer to mimic
+ *  `treeDefaultExpandAll` by passing `tree-default-expanded-keys`. */
 export const orgTreeAllParentKeys: (string | number)[] = [
   'eng',
   'eng-web',

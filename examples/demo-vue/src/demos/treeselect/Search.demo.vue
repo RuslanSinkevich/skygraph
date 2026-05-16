@@ -5,7 +5,7 @@
  * (regardless of expand state).
  */
 import { SgTreeSelect } from '@skygraph/vue'
-import { orgTree, orgTreeAllParentKeys } from './data'
+import { orgTree } from './data'
 import { useDemoStrings } from '../../i18n'
 
 const STRINGS = {
@@ -21,7 +21,7 @@ const t = useDemoStrings(STRINGS)
     <SgTreeSelect
       show-search
       :tree-data="orgTree"
-      :default-expanded-keys="orgTreeAllParentKeys"
+      tree-default-expand-all
       :placeholder="t.placeholder"
       allow-clear
     />

@@ -4,7 +4,7 @@
  * context — `Operations → Finance` can't be picked in this demo.
  */
 import { SgTreeSelect } from '@skygraph/vue'
-import { orgTree, orgTreeAllParentKeys } from './data'
+import { orgTree } from './data'
 import { useDemoStrings } from '../../i18n'
 
 const STRINGS = {
@@ -19,7 +19,7 @@ const t = useDemoStrings(STRINGS)
   <div style="width: 340px">
     <SgTreeSelect
       :tree-data="orgTree"
-      :default-expanded-keys="orgTreeAllParentKeys"
+      tree-default-expand-all
       :placeholder="t.placeholder"
       allow-clear
     />

@@ -16,6 +16,7 @@ const data = fivePalettes()
     :height="260"
     :stroke-width="2"
     legend
+    crosshair
     :x-axis="{ tickCount: 6, label: 'Hour' }"
     :y-axis="{ tickCount: 5, gridLines: true }"
     :padding="[20, 24, 36, 48]"

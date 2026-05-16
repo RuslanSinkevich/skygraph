@@ -10,6 +10,13 @@
 }
 
 .sg-tooltip-content {
+  /* `inline-block` lets the box wrap and size itself around block-level
+   * children (the Rich-content demo embeds a `<div max-width:220px;
+   * white-space:normal>` — React renders the content node as a `<div>`
+   * which already enforces `display:block`; Vue uses `<span>` so we have
+   * to lift the box ourselves, otherwise it stays a 0-px nowrap line and
+   * the tooltip looks empty). */
+  display: inline-block;
   padding: var(--sg-padding-xs) var(--sg-padding-sm);
   background: var(--sg-color-tooltip-bg);
   color: var(--sg-color-tooltip-text);

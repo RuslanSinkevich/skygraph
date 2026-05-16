@@ -146,9 +146,10 @@ const onPointerMove = (e: PointerEvent) => {
   const snappedDx = Math.round(dxMs / step) * step
   const task = props.tasks.find((t) => t.id === ds.taskId)
   if (!task) return
-  const next: GanttTask = ds.type === 'move'
-    ? { ...task, start: ds.origin.start + snappedDx, end: ds.origin.end + snappedDx }
-    : { ...task, end: Math.max(ds.origin.start + step, ds.origin.end + snappedDx) }
+  const next: GanttTask =
+    ds.type === 'move'
+      ? { ...task, start: ds.origin.start + snappedDx, end: ds.origin.end + snappedDx }
+      : { ...task, end: Math.max(ds.origin.start + step, ds.origin.end + snappedDx) }
   emit('task-change', next)
 }
 
@@ -171,21 +172,16 @@ defineExpose({ containerRef })
     @pointermove="onPointerMove"
     @pointerup="onPointerUp"
   >
-    <div
-      class="sg-gantt-sidebar"
-      :style="{ width: `${props.sidebarWidth}px`, flexShrink: 0 }"
-    >
+    <div class="sg-gantt-sidebar" :style="{ width: `${props.sidebarWidth}px`, flexShrink: 0 }">
       <div
         :class="!props.unstyled ? 'sg-gantt-sidebar-header' : undefined"
         :style="{ height: `${props.rowHeight}px` }"
-      >
-        Task
-      </div>
+      />
       <div
         v-for="row in rows"
         :key="row.key"
         :class="!props.unstyled ? 'sg-gantt-sidebar-row' : undefined"
-        :style="{ height: `${props.rowHeight}px`, display: 'flex', alignItems: 'center', padding: '0 8px' }"
+        :style="{ height: `${props.rowHeight}px` }"
       >
         {{ row.label }}
       </div>

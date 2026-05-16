@@ -497,13 +497,15 @@ describe('SgCascader', () => {
 })
 
 describe('SgTreeSelect', () => {
+  // Mirrors React's TreeNodeData shape (key/title), see
+  // packages/vue/src/components/ui/TreeSelect.vue.
   const treeData = [
     {
-      value: 'p',
-      label: 'Parent',
+      key: 'p',
+      title: 'Parent',
       children: [
-        { value: 'c1', label: 'Child 1' },
-        { value: 'c2', label: 'Child 2' },
+        { key: 'c1', title: 'Child 1' },
+        { key: 'c2', title: 'Child 2' },
       ],
     },
   ]
@@ -515,20 +517,20 @@ describe('SgTreeSelect', () => {
 
   it('opens dropdown on click', async () => {
     const w = mount(SgTreeSelect, { props: { treeData }, attachTo: document.body })
-    await w.find('.sg-treeselect-input').trigger('click')
+    await w.find('.sg-treeselect-selector').trigger('click')
     expect(w.classes().some((c) => c.includes('open'))).toBe(true)
     w.unmount()
   })
 
   it('emits update:modelValue on selection', async () => {
     const w = mount(SgTreeSelect, {
-      props: { treeData, defaultExpandedKeys: ['p'] },
+      props: { treeData, treeDefaultExpandedKeys: ['p'] },
       attachTo: document.body,
     })
-    await w.find('.sg-treeselect-input').trigger('click')
-    const labels = w.findAll('.sg-treeselect-node-label')
-    if (labels.length >= 2) {
-      await labels[1].trigger('click')
+    await w.find('.sg-treeselect-selector').trigger('click')
+    const titles = w.findAll('.sg-tree-node-title')
+    if (titles.length >= 2) {
+      await titles[1].trigger('click')
       expect(w.emitted('update:modelValue')).toBeTruthy()
     }
     w.unmount()

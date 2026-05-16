@@ -48,6 +48,10 @@ playwright-report/
 test-results/
 .playwright/
 
+# Visual audit screenshots — generated locally by `scripts/audit-*.mjs`.
+# Re-run the scripts to regenerate; they never belong in commits.
+screenshots/
+
 # api-extractor working dir (T-API). Snapshots live in `etc/`, are committed.
 packages/*/temp/
 

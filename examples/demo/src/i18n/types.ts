@@ -290,13 +290,106 @@ export interface DemoDict {
     skyPlatformLead: string
     skycodeTitle: string
     skycodeDesc: string
-    skyforkTitle: string
-    skyforkDesc: string
+    gitborTitle: string
+    gitborDesc: string
     skygraphTitle: string
     skygraphDesc: string
     multiFrameworkTitle: string
     multiFrameworkLead: string
+    multiFrameworkReact: string
     multiFrameworkVue: string
-    multiFrameworkAngular: string
+  }
+
+  /** Benchmarks hub (#/benchmarks) — follows header LanguageSwitcher locale. */
+  benchmarks: {
+    pageTitle: string
+    pageLead1: string
+    pageLead2: string
+    pageLead3: string
+    disclaimerHonestTitle: string
+    disclaimerHonestBody: string
+    disclaimerBrowserTitle: string
+    disclaimerBrowserBody: string
+    disclaimerTriggerTitle: string
+    disclaimerTriggerBeforeRun: string
+    disclaimerTriggerAfterRun: string
+    runWord: string
+    tabTableLabel: string
+    tabTableSubtitle: string
+    tabTableVs: string
+    tabFormLabel: string
+    tabFormSubtitle: string
+    tabFormVs: string
+    tabChartLabel: string
+    tabChartSubtitle: string
+    tabChartVs: string
+    howToReadTitle: string
+    howToRead1Strong: string
+    howToRead1Rest: string
+    howToRead2Strong: string
+    howToRead2Rest: string
+    howToRead3Strong: string
+    howToRead3Rest: string
+    howToRead4Strong: string
+    howToRead4BeforeCode: string
+    howToRead4AfterCode: string
+    run: string
+    stop: string
+    runningEllipsis: string
+    done: string
+    stopped: string
+    warmingUp: string
+    generatingDataset: string
+    runningWithLabel: string
+    errorWithMessage: string
+    pressRunEmpty: string
+    variantColumn: string
+    methodStrong: string
+    livePreview: string
+    livePreviewFields: string
+    rows: string
+    library: string
+    tick: string
+    heapNa: string
+    colMedianMount: string
+    colScrollFps: string
+    colHeapDelta: string
+    colMinMount: string
+    colMaxMount: string
+    colMedianFrame: string
+    colAvgFps: string
+    colMount: string
+    colMinFrame: string
+    colMaxFrame: string
+    colPerChange: string
+    colSubmitBytes: string
+    labelSkyTable: string
+    labelSkyVueTable: string
+    labelAntdTable: string
+    labelSkyForm: string
+    labelRhfForm: string
+    labelSkyChart: string
+    labelRechartsChart: string
+    tableRunIdle: string
+    formRunIdle: string
+    chartRunIdle: string
+    tableMethod: string
+    formMethod: string
+    chartMethod: string
+    fieldLabel: string
+    fieldPlaceholder: string
+    employeePrefix: string
+    colId: string
+    colName: string
+    colDepartment: string
+    colRole: string
+    colSalary: string
+    colStatus: string
+    colHired: string
+    chartVisits: string
+    chartOrders: string
+    previewSkyReact: string
+    previewSkyVue: string
+    previewAntdBrand: string
   }
 }

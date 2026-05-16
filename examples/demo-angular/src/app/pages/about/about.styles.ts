@@ -120,6 +120,17 @@ export const ABOUT_STYLES = `
   gap: 8px;
 }
 
+.about-platform-card-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+
+.about-platform-card-link:hover {
+  color: var(--sg-color-primary, #2563eb);
+  text-decoration: underline;
+}
+
 .about-platform-card-mark {
   width: 12px;
   height: 12px;
