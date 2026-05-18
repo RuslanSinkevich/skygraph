@@ -14,6 +14,17 @@ components built on top of the framework-agnostic engines, sharing the same
 
 ## Install
 
+For most apps the easier path is the meta-package, which pulls in
+`@skygraph/core` and `@skygraph/styles` transitively and auto-loads the
+CSS:
+
+```bash
+npm install skygraph-vue
+```
+
+If you want fine-grained control over the install set, the adapter is
+still published separately:
+
 ```bash
 pnpm add @skygraph/vue @skygraph/core @skygraph/styles vue
 ```

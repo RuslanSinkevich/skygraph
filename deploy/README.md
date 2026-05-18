@@ -57,8 +57,8 @@ Open http://localhost:8080.
 3. On the server:
 
 ```bash
-git clone https://github.com/RuslanSinkevich/skygraph.git
-cd skygraph
+git clone https://github.com/RuslanSinkevich/skygraph-public.git
+cd skygraph-public
 docker build -f deploy/Dockerfile -t skygraph-site .
 docker run -d --name skygraph \
   -p 80:80 -p 443:443 \

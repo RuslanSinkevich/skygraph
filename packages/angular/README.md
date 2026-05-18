@@ -13,6 +13,10 @@ Angular adapter for SkyGraph — same components as `@skygraph/react` and
 pnpm add @skygraph/angular @skygraph/core @skygraph/styles
 ```
 
+> The React and Vue adapters also ship a meta-package
+> (`skygraph-react`, `skygraph-vue`) that pulls in core + styles in one
+> step. Angular gets the same treatment once the adapter stabilises.
+
 Requires **Angular 21** (standalone API, control flow `@if`/`@for`).
 `zone.js` is still supported; `zoneless` mode is planned for Wave 4.2.
 
