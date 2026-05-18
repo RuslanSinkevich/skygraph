@@ -5,7 +5,7 @@ import { printElement } from '../../../utils/print'
 import {
   chartBounds,
   colorForSeries,
-  normalizePadding,
+  resolveChartPadding,
   resolveChartAnimation,
   type BaseChartProps,
 } from './types'
@@ -51,14 +51,6 @@ const fallbackH = computed(() =>
   typeof props.height === 'number' && Number.isFinite(props.height) ? props.height : 200,
 )
 const { size } = useChartSize(svgRef, { width: fallbackW.value, height: fallbackH.value })
-const padding = computed(() => normalizePadding(props.padding))
-
-const viewW = computed(() => size.value.width)
-const viewH = computed(() => size.value.height)
-const plotX = computed(() => padding.value[3])
-const plotY = computed(() => padding.value[0])
-const plotW = computed(() => Math.max(0, viewW.value - padding.value[3] - padding.value[1]))
-const plotH = computed(() => Math.max(0, viewH.value - padding.value[0] - padding.value[2]))
 
 const animation = computed(() => resolveChartAnimation(props.animate))
 
@@ -89,6 +81,16 @@ const bounds = computed(() => {
   const { min, max } = chartBounds(props.series.map((s) => s.values))
   return { min: Math.min(0, min), max: Math.max(0, max) }
 })
+
+const padding = computed(() =>
+  resolveChartPadding(props.padding, props.yAxis, bounds.value.min, bounds.value.max),
+)
+const viewW = computed(() => size.value.width)
+const viewH = computed(() => size.value.height)
+const plotX = computed(() => padding.value[3])
+const plotY = computed(() => padding.value[0])
+const plotW = computed(() => Math.max(0, viewW.value - padding.value[3] - padding.value[1]))
+const plotH = computed(() => Math.max(0, viewH.value - padding.value[0] - padding.value[2]))
 
 const xCoord = (i: number) => {
   const n = props.categories.length
@@ -144,6 +146,12 @@ function handleBrushChange(next: ChartBrushRange | null) {
   brushConfig.value?.onRangeChange?.(next)
 }
 
+const areaAnimStyle = computed(() =>
+  animation.value.enabled
+    ? { '--sg-chart-anim-duration': `${animation.value.duration}ms` }
+    : undefined,
+)
+
 defineExpose({
   print: (opts: { fileName?: string } = {}) => {
     const el = rootRef.value
@@ -189,19 +197,23 @@ defineExpose({
         <path
           v-for="a in areaPaths"
           :key="`${a.id}-area`"
+          :class="[animation.enabled && !props.unstyled && 'sg-chart-area-animate']"
           :d="a.areaPath"
           :fill="a.color"
           :fill-opacity="props.fillOpacity"
           :data-series-id="a.id"
+          :style="areaAnimStyle"
         />
         <path
           v-for="a in areaPaths"
           :key="`${a.id}-line`"
+          :class="[animation.enabled && !props.unstyled && 'sg-chart-area-animate']"
           :d="a.linePath"
           :stroke="a.color"
           :stroke-width="props.strokeWidth"
           fill="none"
           vector-effect="non-scaling-stroke"
+          :style="areaAnimStyle"
         />
       </g>
       <ChartBrush

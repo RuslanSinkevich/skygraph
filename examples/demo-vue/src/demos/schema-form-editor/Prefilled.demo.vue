@@ -56,8 +56,6 @@ function reset() {
     <div>
       <SgButton @click="reset">{{ resetLabel }}</SgButton>
     </div>
-    <div style="height: 600px">
-      <SgSchemaFormEditor :store="store" />
-    </div>
+    <SgSchemaFormEditor :store="store" style="height: 600px" />
   </div>
 </template>

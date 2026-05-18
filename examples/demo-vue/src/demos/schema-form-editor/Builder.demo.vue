@@ -35,8 +35,6 @@ function onChange(_schema: EditorSchema) {
     <span style="font-size: 12px; color: var(--sg-color-text-secondary)">
       {{ t.mutations }} {{ count }}
     </span>
-    <div style="height: 600px">
-      <SgSchemaFormEditor :empty-text="t.emptyText" @change="onChange" />
-    </div>
+    <SgSchemaFormEditor :empty-text="t.emptyText" style="height: 600px" @change="onChange" />
   </div>
 </template>

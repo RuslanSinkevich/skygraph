@@ -299,6 +299,12 @@ function statusForActive(c: Conversation): string {
   display: flex;
   gap: 6px;
   align-items: center;
+  white-space: nowrap;
+}
+.msg-attachment > strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .reactions {
   display: flex;

@@ -143,6 +143,13 @@
   line-height: 8px;
   color: var(--sg-color-text-quaternary, var(--sg-color-text-tertiary));
   transition: color var(--sg-transition-duration);
+  /* Defensive: keep the sort glyph compact even if the locale ships a long
+   * aria-quality label instead of a single ▲/▼ glyph. The cell would
+   * otherwise stretch by the full label width and clash with the column
+   * title or filter trigger. */
+  max-width: 1em;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .sg-table-sort-current {

@@ -73,11 +73,8 @@ export function BasicResourceCalendar() {
       sidebarWidth={140}
       draggable
       resizable
-      range={{ from: new Date(Date.UTC(2026, 0, 5)), to: new Date(Date.UTC(2026, 0, 12)) }}
       onAssignmentChange={(next) =>
-        setAssignments((prev) =>
-          prev.map((a) => (a.id === next.id ? { ...a, ...next } : a)),
-        )
+        setAssignments((prev) => prev.map((a) => (a.id === next.id ? { ...a, ...next } : a)))
       }
     />
   )

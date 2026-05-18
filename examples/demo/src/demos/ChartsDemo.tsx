@@ -41,16 +41,36 @@ export function ChartsDemo() {
 
   const baseProps = useMemo<PropDef[]>(
     () => [
-      { name: 'categories', description: t.propCategories, type: 'ChartCategory[]', required: true },
+      {
+        name: 'categories',
+        description: t.propCategories,
+        type: 'ChartCategory[]',
+        required: true,
+      },
       { name: 'series', description: t.propSeries, type: 'ChartSeries[]', required: true },
       { name: 'width', description: t.propWidth, type: 'number | string', default: "'100%'" },
       { name: 'height', description: t.propHeight, type: 'number', default: '200' },
-      { name: 'padding', description: t.propPadding, type: 'number | [number, number, number, number]', default: '[16,16,24,32]' },
+      {
+        name: 'padding',
+        description: t.propPadding,
+        type: 'number | [number, number, number, number]',
+        default: '[16,16,24,44]',
+      },
       { name: 'legend', description: t.propLegend, type: 'boolean', default: 'false' },
-      { name: 'animate', description: t.propAnimate, type: 'boolean | { duration?: number }', default: 'true' },
+      {
+        name: 'animate',
+        description: t.propAnimate,
+        type: 'boolean | { duration?: number }',
+        default: 'true',
+      },
       { name: 'xAxis', description: t.propXAxis, type: 'XAxisOptions' },
       { name: 'yAxis', description: t.propYAxis, type: 'YAxisOptions' },
-      { name: 'printable', description: t.propPrintable, type: 'boolean | { fileName?: string }', default: 'false' },
+      {
+        name: 'printable',
+        description: t.propPrintable,
+        type: 'boolean | { fileName?: string }',
+        default: 'false',
+      },
       { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
       { name: 'className', description: t.propClassName, type: 'string' },
       { name: 'style', description: t.propStyle, type: 'CSSProperties' },
@@ -62,7 +82,12 @@ export function ChartsDemo() {
     () => [
       { name: 'markers', description: t.propMarkers, type: 'boolean', default: 'true' },
       { name: 'strokeWidth', description: t.propStrokeWidth, type: 'number', default: '2' },
-      { name: 'crosshair', description: t.propCrosshair, type: 'boolean | { valueFormatter?: (v: number) => string }', default: 'false' },
+      {
+        name: 'crosshair',
+        description: t.propCrosshair,
+        type: 'boolean | { valueFormatter?: (v: number) => string }',
+        default: 'false',
+      },
       { name: 'brush', description: t.propBrush, type: 'boolean | ChartBrushConfig' },
     ],
     [t],
@@ -90,7 +115,11 @@ export function ChartsDemo() {
   const axisProps = useMemo<PropDef[]>(
     () => [
       { name: 'tickCount', description: t.propAxisTickCount, type: 'number' },
-      { name: 'tickFormatter', description: t.propAxisTickFormatter, type: '(value, index?) => string' },
+      {
+        name: 'tickFormatter',
+        description: t.propAxisTickFormatter,
+        type: '(value, index?) => string',
+      },
       { name: 'label', description: t.propAxisLabel, type: 'string' },
       { name: 'gridLines', description: t.propAxisGridLines, type: 'boolean', default: 'false' },
     ],
@@ -127,11 +156,19 @@ export function ChartsDemo() {
         <WithLegendChart />
       </DemoBox>
 
-      <DemoBox title={t.demoAnimationsTitle} description={t.demoAnimationsDesc} code={AnimationsSource}>
+      <DemoBox
+        title={t.demoAnimationsTitle}
+        description={t.demoAnimationsDesc}
+        code={AnimationsSource}
+      >
         <AnimationsChart />
       </DemoBox>
 
-      <DemoBox title={t.demoCrosshairTitle} description={t.demoCrosshairDesc} code={CrosshairSource}>
+      <DemoBox
+        title={t.demoCrosshairTitle}
+        description={t.demoCrosshairDesc}
+        code={CrosshairSource}
+      >
         <CrosshairChart />
       </DemoBox>
 
@@ -143,7 +180,11 @@ export function ChartsDemo() {
         <StackedChart />
       </DemoBox>
 
-      <DemoBox title={t.demoMultiSeriesTitle} description={t.demoMultiSeriesDesc} code={MultiSeriesSource}>
+      <DemoBox
+        title={t.demoMultiSeriesTitle}
+        description={t.demoMultiSeriesDesc}
+        code={MultiSeriesSource}
+      >
         <MultiSeriesChart />
       </DemoBox>
 
@@ -151,15 +192,27 @@ export function ChartsDemo() {
         <RealtimeChart />
       </DemoBox>
 
-      <DemoBox title={t.demoHoverActionsTitle} description={t.demoHoverActionsDesc} code={HoverActionsSource}>
+      <DemoBox
+        title={t.demoHoverActionsTitle}
+        description={t.demoHoverActionsDesc}
+        code={HoverActionsSource}
+      >
         <HoverActionsChart />
       </DemoBox>
 
-      <DemoBox title={t.demoContextMenuTitle} description={t.demoContextMenuDesc} code={ContextMenuSource}>
+      <DemoBox
+        title={t.demoContextMenuTitle}
+        description={t.demoContextMenuDesc}
+        code={ContextMenuSource}
+      >
         <ContextMenuChart />
       </DemoBox>
 
-      <DemoBox title={t.demoResponsiveTitle} description={t.demoResponsiveDesc} code={ResponsiveSource}>
+      <DemoBox
+        title={t.demoResponsiveTitle}
+        description={t.demoResponsiveDesc}
+        code={ResponsiveSource}
+      >
         <ResponsiveChart />
       </DemoBox>
 

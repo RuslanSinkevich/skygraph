@@ -15,7 +15,14 @@ const statusSeries = [{ id: 'count', label: 'Count', values: [72, 18, 10] }]
 
 <template>
   <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap">
-    <SgPieChart legend :categories="browsers" :series="browserSeries" />
-    <SgPieChart legend :inner-radius="0.55" :categories="status" :series="statusSeries" />
+    <SgPieChart legend :width="220" :height="220" :categories="browsers" :series="browserSeries" />
+    <SgPieChart
+      legend
+      :width="220"
+      :height="220"
+      :inner-radius="0.55"
+      :categories="status"
+      :series="statusSeries"
+    />
   </div>
 </template>
