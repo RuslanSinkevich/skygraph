@@ -24,6 +24,18 @@
     "brotli": true
   },
   {
+    "name": "skygraph-react (esm)",
+    "path": "packages/skygraph-react/dist/index.js",
+    "limit": "170 KB",
+    "brotli": true
+  },
+  {
+    "name": "skygraph-vue (esm)",
+    "path": "packages/skygraph-vue/dist/index.js",
+    "limit": "140 KB",
+    "brotli": true
+  },
+  {
     "name": "examples/demo (main bundle)",
     "path": "examples/demo/dist/assets/index-*.js",
     "limit": "1 MB",
