@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { I18nService } from '../../i18n'
 import { ABOUT_STYLES } from './about.styles'
 
-const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph'
+const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph-public'
 const ARCHITECTURE_URL = `${GITHUB_URL}/blob/master/ARCHITECTURE.md`
 const LICENSE_URL = `${GITHUB_URL}/blob/master/LICENSE`
 const VERSION_LABEL = 'v0.5.0'

@@ -17,8 +17,8 @@ export function FrameworkSwitcher({ active }: { active: Framework }) {
         gap: 4,
         padding: 2,
         borderRadius: 8,
-        border: '1px solid var(--sg-border, #e5e7eb)',
-        background: 'var(--sg-surface, transparent)',
+        border: '1px solid var(--sg-color-border)',
+        background: 'transparent',
       }}
     >
       {FRAMEWORKS.map((f) => {
@@ -41,7 +41,7 @@ export function FrameworkSwitcher({ active }: { active: Framework }) {
               title="Coming soon"
               style={{
                 ...baseStyle,
-                color: 'var(--sg-text-muted, #9ca3af)',
+                color: 'var(--sg-color-text-tertiary)',
                 cursor: 'not-allowed',
                 opacity: 0.55,
               }}
@@ -58,8 +58,8 @@ export function FrameworkSwitcher({ active }: { active: Framework }) {
             aria-selected={isActive}
             style={{
               ...baseStyle,
-              color: isActive ? 'var(--sg-text, #111827)' : 'var(--sg-text-muted, #6b7280)',
-              background: isActive ? 'var(--sg-bg-hover, #f3f4f6)' : 'transparent',
+              color: isActive ? 'var(--sg-color-text)' : 'var(--sg-color-text-secondary)',
+              background: isActive ? 'var(--sg-color-bg-hover)' : 'transparent',
               cursor: 'pointer',
             }}
           >

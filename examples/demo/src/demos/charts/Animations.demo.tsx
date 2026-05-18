@@ -20,7 +20,7 @@ export function AnimationsChart() {
             borderRadius: 6,
             border: '1px solid var(--sg-color-border)',
             background: 'var(--sg-color-primary)',
-            color: 'var(--sg-color-text-inverse)',
+            color: 'var(--sg-color-white)',
             cursor: 'pointer',
             fontWeight: 500,
           }}
@@ -28,7 +28,13 @@ export function AnimationsChart() {
           ▶ Replay animation
         </button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 16 }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))',
+          gap: 16,
+        }}
+      >
         <div>
           <div style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)', marginBottom: 6 }}>
             LineChart · animate.duration = 800ms

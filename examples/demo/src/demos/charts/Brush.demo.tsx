@@ -25,7 +25,7 @@ export function BrushChart() {
             borderRadius: 6,
             border: '1px solid var(--sg-color-border)',
             background: 'var(--sg-color-bg-elevated)',
-            color: 'var(--sg-color-text-primary)',
+            color: 'var(--sg-color-text)',
             cursor: range ? 'pointer' : 'not-allowed',
             opacity: range ? 1 : 0.5,
           }}

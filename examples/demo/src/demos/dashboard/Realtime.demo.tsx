@@ -37,7 +37,10 @@ export function RealtimeDashboard() {
     {
       id: 'live',
       title: `Live throughput · ${paused ? 'paused' : 'streaming'}`,
-      x: 1, y: 1, w: 12, h: 4,
+      x: 1,
+      y: 1,
+      w: 12,
+      h: 4,
       children: (
         <LineChart
           categories={tickLabels}
@@ -49,7 +52,10 @@ export function RealtimeDashboard() {
     {
       id: 'recent',
       title: 'Last 7 ticks',
-      x: 1, y: 5, w: 6, h: 2,
+      x: 1,
+      y: 5,
+      w: 6,
+      h: 2,
       children: (
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: '100%' }}>
           {bars.map((v, i) => (
@@ -70,9 +76,19 @@ export function RealtimeDashboard() {
     {
       id: 'now',
       title: 'Current value',
-      x: 7, y: 5, w: 6, h: 2,
+      x: 7,
+      y: 5,
+      w: 6,
+      h: 2,
       children: (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            height: '100%',
+          }}
+        >
           <span style={{ fontSize: 32, fontWeight: 700, color: 'var(--sg-color-text)' }}>
             {values[values.length - 1]}
           </span>
@@ -84,7 +100,7 @@ export function RealtimeDashboard() {
               border: '1px solid var(--sg-color-border)',
               borderRadius: 'var(--sg-border-radius)',
               background: paused ? 'var(--sg-color-success)' : 'var(--sg-color-bg-elevated)',
-              color: paused ? 'var(--sg-color-text-light-solid, #fff)' : 'var(--sg-color-text)',
+              color: paused ? 'var(--sg-color-white)' : 'var(--sg-color-text)',
               cursor: 'pointer',
             }}
           >

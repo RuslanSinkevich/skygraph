@@ -15,7 +15,7 @@ import './landing.css'
 const router = useRouter()
 const { t } = useI18n()
 
-const INSTALL_COMMAND = 'npm install @skygraph/core @skygraph/vue @skygraph/styles'
+const INSTALL_COMMAND = 'npm install skygraph-vue'
 
 /**
  * Vue Showcases are now embedded inside the Vue demo itself

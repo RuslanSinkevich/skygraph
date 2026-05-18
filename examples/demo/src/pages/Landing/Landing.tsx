@@ -7,7 +7,7 @@ interface LandingProps {
   onNavigate: (key: string) => void
 }
 
-const INSTALL_COMMAND = 'npm install @skygraph/core @skygraph/react @skygraph/styles'
+const INSTALL_COMMAND = 'npm install skygraph-react'
 
 const SHOWCASES: ReadonlyArray<{
   key: string

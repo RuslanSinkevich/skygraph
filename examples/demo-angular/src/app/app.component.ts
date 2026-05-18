@@ -23,7 +23,7 @@ import {
   sectionForRoute,
 } from './nav'
 
-const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph'
+const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph-public'
 const APP_VERSION = 'v0.5.0'
 
 @Component({

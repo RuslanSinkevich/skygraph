@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { I18nService } from '../../i18n'
 
-const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph'
+const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph-public'
 const REACT_REFERENCE = `${GITHUB_URL}/blob/master/examples/demo/src/demos/StylingShowcasePage.tsx`
 
 /**

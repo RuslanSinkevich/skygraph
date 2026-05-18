@@ -6,7 +6,10 @@ const initial: DashboardWidget[] = [
   {
     id: 'visits',
     title: 'Daily visits',
-    x: 1, y: 1, w: 7, h: 3,
+    x: 1,
+    y: 1,
+    w: 7,
+    h: 3,
     children: (
       <LineChart
         categories={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
@@ -18,7 +21,10 @@ const initial: DashboardWidget[] = [
   {
     id: 'orders',
     title: 'Orders',
-    x: 8, y: 1, w: 5, h: 3,
+    x: 8,
+    y: 1,
+    w: 5,
+    h: 3,
     children: (
       <BarChart
         categories={['Q1', 'Q2', 'Q3', 'Q4']}
@@ -42,8 +48,13 @@ export function EditorDashboard() {
       {
         id,
         title: `New widget ${counter}`,
-        x: 1, y: 4, w: 4, h: 2,
-        children: <div style={{ color: 'var(--sg-color-text-secondary)' }}>Drag me, resize me.</div>,
+        x: 1,
+        y: 4,
+        w: 4,
+        h: 2,
+        children: (
+          <div style={{ color: 'var(--sg-color-text-secondary)' }}>Drag me, resize me.</div>
+        ),
       },
     ])
     setLog((l) => [`+ added ${id}`, ...l].slice(0, 8))
@@ -60,7 +71,7 @@ export function EditorDashboard() {
             border: '1px solid var(--sg-color-border)',
             borderRadius: 'var(--sg-border-radius)',
             background: 'var(--sg-color-primary)',
-            color: 'var(--sg-color-text-light-solid, #fff)',
+            color: 'var(--sg-color-white)',
             cursor: 'pointer',
           }}
         >
@@ -80,9 +91,7 @@ export function EditorDashboard() {
           const patch = Object.entries(meta.patch)
             .map(([k, v]) => `${k}=${v}`)
             .join(' ')
-          setLog((l) =>
-            [`${meta.widgetId}: ${patch || 'removed'}`, ...l].slice(0, 8),
-          )
+          setLog((l) => [`${meta.widgetId}: ${patch || 'removed'}`, ...l].slice(0, 8))
         }}
       />
       <div
@@ -96,9 +105,11 @@ export function EditorDashboard() {
           minHeight: 80,
         }}
       >
-        {log.length === 0
-          ? <span style={{ color: 'var(--sg-color-text-tertiary)' }}>onLayoutChange log…</span>
-          : log.map((line, i) => <div key={i}>{line}</div>)}
+        {log.length === 0 ? (
+          <span style={{ color: 'var(--sg-color-text-tertiary)' }}>onLayoutChange log…</span>
+        ) : (
+          log.map((line, i) => <div key={i}>{line}</div>)
+        )}
       </div>
     </div>
   )

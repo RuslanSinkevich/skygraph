@@ -27,10 +27,10 @@ function Tile({ placement }: { placement: Placement }) {
     placement === 'top'
       ? 'column'
       : placement === 'bottom'
-      ? 'column-reverse'
-      : placement === 'left'
-      ? 'row-reverse'
-      : 'row'
+        ? 'column-reverse'
+        : placement === 'left'
+          ? 'row-reverse'
+          : 'row'
 
   const isVertical = placement === 'left' || placement === 'right'
 
@@ -43,10 +43,7 @@ function Tile({ placement }: { placement: Placement }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <BarChart categories={data.categories} series={data.series} height={180} />
         </div>
-        <ChartLegend
-          series={data.series}
-          style={isVertical ? LEGEND_VERTICAL : undefined}
-        />
+        <ChartLegend series={data.series} style={isVertical ? LEGEND_VERTICAL : undefined} />
       </div>
     </div>
   )
@@ -71,8 +68,7 @@ export function WithLegendChart() {
               border: '1px solid var(--sg-color-border)',
               background:
                 placement === p ? 'var(--sg-color-primary)' : 'var(--sg-color-bg-elevated)',
-              color:
-                placement === p ? 'var(--sg-color-text-inverse)' : 'var(--sg-color-text-primary)',
+              color: placement === p ? 'var(--sg-color-white)' : 'var(--sg-color-text)',
               cursor: 'pointer',
             }}
           >

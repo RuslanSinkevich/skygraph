@@ -10,6 +10,7 @@ export {
   SHOWCASES_URL,
   DEMO_URL,
   GITHUB_URL,
+  TELEGRAM_URL,
 } from './constants/stats'
 
 export type { ShowcasesLocale, ShowcaseCategoryKey } from './showcasesLocale'

@@ -11,22 +11,31 @@ export function GettingStartedPage() {
 
       <h2 id="installation">{g.installation}</h2>
       <p>{g.installLeadNpm}</p>
-      <pre className="doc-code"><code>npm install @skygraph/core @skygraph/react</code></pre>
+      <pre className="doc-code">
+        <code>npm install skygraph-react</code>
+      </pre>
       <p>{g.installLeadPnpm}</p>
-      <pre className="doc-code"><code>pnpm add @skygraph/core @skygraph/react</code></pre>
+      <pre className="doc-code">
+        <code>pnpm add skygraph-react</code>
+      </pre>
 
       <h2 id="import-styles">{g.importStyles}</h2>
       <p>{g.importStylesLead}</p>
-      <pre className="doc-code"><code>{`import '@skygraph/styles'`}</code></pre>
+      <pre className="doc-code">
+        <code>{`// styles are loaded automatically by skygraph-react`}</code>
+      </pre>
       <p>
         {g.importStylesNote1}
-        <a href="#/theming" className="doc-link">{g.importStylesNote2Theming}</a>
+        <a href="#/theming" className="doc-link">
+          {g.importStylesNote2Theming}
+        </a>
         {').'}
       </p>
 
       <h2 id="basic-form">{g.basicForm}</h2>
       <p>{g.basicFormLead}</p>
-      <pre className="doc-code"><code>{`import { Form, Field, SubmitButton } from '@skygraph/react'
+      <pre className="doc-code">
+        <code>{`import { Form, Field, SubmitButton } from 'skygraph-react'
 
 function LoginForm() {
   return (
@@ -49,11 +58,13 @@ function LoginForm() {
       <SubmitButton>Log in</SubmitButton>
     </Form>
   )
-}`}</code></pre>
+}`}</code>
+      </pre>
 
       <h2 id="individual-components">{g.individualComponents}</h2>
       <p>{g.individualComponentsLead}</p>
-      <pre className="doc-code"><code>{`import { Button, Switch, Select } from '@skygraph/react'
+      <pre className="doc-code">
+        <code>{`import { Button, Switch, Select } from 'skygraph-react'
 
 function App() {
   return (
@@ -69,7 +80,8 @@ function App() {
       />
     </>
   )
-}`}</code></pre>
+}`}</code>
+      </pre>
 
       <h2 id="whats-next">{g.whatsNext}</h2>
       <div className="doc-card-row">

@@ -36,7 +36,7 @@ const ACTION_BTN: CSSProperties = {
   borderRadius: 4,
   border: '1px solid var(--sg-color-border)',
   background: 'var(--sg-color-bg-elevated)',
-  color: 'var(--sg-color-text-primary)',
+  color: 'var(--sg-color-text)',
   fontSize: 12,
   cursor: 'pointer',
 }
@@ -91,7 +91,9 @@ function ChartWithDefaultToolbar() {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <div style={{ ...TOOLBAR_BASE, opacity: hover ? 1 : 0, pointerEvents: hover ? 'auto' : 'none' }}>
+      <div
+        style={{ ...TOOLBAR_BASE, opacity: hover ? 1 : 0, pointerEvents: hover ? 'auto' : 'none' }}
+      >
         <button
           type="button"
           style={ACTION_BTN}
@@ -168,7 +170,13 @@ function ChartWithCustomActions() {
 
 export function HoverActionsChart() {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 16 }}>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))',
+        gap: 16,
+      }}
+    >
       <ChartWithDefaultToolbar />
       <ChartWithCustomActions />
     </div>

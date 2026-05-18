@@ -7,7 +7,7 @@ const COMPONENT_COUNT = 78
 const TEST_COUNT = 1013
 const ENGINE_COUNT = 6
 const STANDALONE_COUNT = 51
-const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph'
+const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph-public'
 
 const INSTALL_SNIPPET = `npm install @skygraph/core @skygraph/angular @skygraph/styles
 # or

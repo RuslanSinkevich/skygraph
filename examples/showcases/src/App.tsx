@@ -77,7 +77,6 @@ export default function App() {
     () => [
       { key: 'docs', label: '← Docs', href: DEMO_URL, external: true },
       { key: 'showcases', label: 'Showcases', href: '#' },
-      { key: 'github', label: 'GitHub', href: GITHUB_URL, external: true },
     ],
     [],
   )

@@ -11,15 +11,15 @@ import { useI18n } from '../i18n'
 
 const { t } = useI18n()
 
-const NPM_INSTALL = 'npm install @skygraph/core @skygraph/vue'
-const PNPM_INSTALL = 'pnpm add @skygraph/core @skygraph/vue'
-const IMPORT_STYLES = "import '@skygraph/styles'"
+const NPM_INSTALL = 'npm install skygraph-vue'
+const PNPM_INSTALL = 'pnpm add skygraph-vue'
+const IMPORT_STYLES = '// styles are loaded automatically by skygraph-vue'
 
 // `\x3c` keeps the SFC parser happy by hiding literal `<` from the
 // template/parser. See Landing.vue for the same trick.
 const BASIC_FORM =
   '\x3cscript setup lang="ts">\n' +
-  "import { Form, Field, SubmitButton } from '@skygraph/vue'\n" +
+  "import { Form, Field, SubmitButton } from 'skygraph-vue'\n" +
   '\x3c/script>\n' +
   '\n' +
   '\x3ctemplate>\n' +
@@ -45,7 +45,7 @@ const BASIC_FORM =
 
 const INDIVIDUAL =
   '\x3cscript setup lang="ts">\n' +
-  "import { Button, Switch, Select } from '@skygraph/vue'\n" +
+  "import { Button, Switch, Select } from 'skygraph-vue'\n" +
   "import { ref } from 'vue'\n" +
   '\n' +
   'const checked = ref(false)\n' +

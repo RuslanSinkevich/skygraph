@@ -89,7 +89,10 @@
   flex-direction: column;
   gap: 4px;
   font: inherit;
-  transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    transform 120ms ease;
 }
 
 .bench-tab:hover {
@@ -154,7 +157,10 @@
   border: 1px solid var(--sg-color-border);
   background: var(--sg-color-bg);
   color: inherit;
-  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
 }
 
 .bench-btn:hover:not(:disabled) {
@@ -169,13 +175,13 @@
 
 .bench-btn--primary {
   background: var(--sg-color-primary);
-  color: var(--sg-color-text-inverse, #fff);
+  color: var(--sg-color-white);
   border-color: var(--sg-color-primary);
 }
 
 .bench-btn--primary:hover:not(:disabled) {
   filter: brightness(1.05);
-  color: var(--sg-color-text-inverse, #fff);
+  color: var(--sg-color-white);
 }
 
 .bench-progress {

@@ -39,7 +39,7 @@ const MENU_ITEM: CSSProperties = {
   border: 'none',
   textAlign: 'left',
   fontSize: 13,
-  color: 'var(--sg-color-text-primary)',
+  color: 'var(--sg-color-text)',
   cursor: 'pointer',
 }
 
@@ -75,10 +75,7 @@ export function ContextMenuChart() {
     }
   }, [menu])
 
-  const visibleSeries = useMemo(
-    () => data.series.filter((s) => !hidden.includes(s.id)),
-    [hidden],
-  )
+  const visibleSeries = useMemo(() => data.series.filter((s) => !hidden.includes(s.id)), [hidden])
 
   const target = menu ? data.series.find((s) => s.id === menu.seriesId) : null
 
@@ -165,7 +162,7 @@ export function ContextMenuChart() {
             alignSelf: 'flex-start',
             padding: '4px 10px',
             background: 'var(--sg-color-success)',
-            color: 'var(--sg-color-text-inverse)',
+            color: 'var(--sg-color-white)',
             borderRadius: 4,
             fontSize: 12,
           }}
@@ -190,7 +187,9 @@ export function ContextMenuChart() {
               type="button"
               style={MENU_ITEM}
               onClick={handleShow}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--sg-color-bg-elevated)')}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = 'var(--sg-color-bg-elevated)')
+              }
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               Show series
@@ -200,7 +199,9 @@ export function ContextMenuChart() {
               type="button"
               style={MENU_ITEM}
               onClick={handleHide}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--sg-color-bg-elevated)')}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = 'var(--sg-color-bg-elevated)')
+              }
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               Hide series

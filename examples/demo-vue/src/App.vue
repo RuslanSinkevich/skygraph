@@ -38,12 +38,11 @@ function sectionForRoute(path: string): AppShellSection {
 const section = computed(() => sectionForRoute(route.value.path))
 
 const navItems = computed<NavItem[]>(() => [
-  { key: 'showcases', label: 'Showcases', href: '#/showcases' },
   { key: 'components', label: t.value.header.navComponents, href: '#/components/button' },
   { key: 'guide', label: t.value.header.navGuide, href: '#/guide/getting-started' },
+  { key: 'showcases', label: 'Showcases', href: '#/showcases' },
   { key: 'roadmap', label: t.value.header.navRoadmap, href: '#/roadmap' },
   { key: 'about', label: t.value.header.navAbout, href: '#/about' },
-  { key: 'github', label: t.value.header.navGithub, href: GITHUB_URL, external: true },
 ])
 
 const componentsSidebar = computed<SidebarSection[]>(() => buildComponentsSidebar(t.value))

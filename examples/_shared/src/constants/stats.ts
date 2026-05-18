@@ -32,10 +32,13 @@ export const SHOWCASE_COUNT = 12
  * from the demo Landing.
  */
 export const SHOWCASES_URL =
-  'https://github.com/RuslanSinkevich/skygraph/tree/master/examples/showcases'
+  'https://github.com/RuslanSinkevich/skygraph-public/tree/master/examples/showcases'
 
 /** Documentation entry-point used from the showcases AppShell. */
 export const DEMO_URL = '../demo/'
 
 /** GitHub repo entry — used in Header / Footer links. */
-export const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph'
+export const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph-public'
+
+/** Telegram contact of the author — used in Footer links. */
+export const TELEGRAM_URL = 'https://t.me/ruslansinkevich'

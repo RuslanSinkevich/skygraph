@@ -346,7 +346,6 @@ export default function App() {
       { key: 'benchmarks', label: t.header.navBenchmarks, href: '#/benchmarks' },
       { key: 'roadmap', label: t.header.navRoadmap, href: '#/roadmap' },
       { key: 'about', label: t.header.navAbout, href: '#/about' },
-      { key: 'github', label: t.header.navGithub, href: GITHUB_URL, external: true },
     ],
     [t],
   )

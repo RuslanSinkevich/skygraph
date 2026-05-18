@@ -39,7 +39,7 @@ export function RealtimeChart() {
             borderRadius: 6,
             border: '1px solid var(--sg-color-border)',
             background: running ? 'var(--sg-color-warning)' : 'var(--sg-color-success)',
-            color: 'var(--sg-color-text-inverse)',
+            color: 'var(--sg-color-white)',
             cursor: 'pointer',
           }}
         >

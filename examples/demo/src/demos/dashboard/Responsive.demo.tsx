@@ -18,7 +18,10 @@ function buildWidgets(cols: number): DashboardWidget[] {
     {
       id: 'kpi-1',
       title: 'Revenue',
-      x: 1, y: 1, w: cols >= 4 ? half : cols, h: 1,
+      x: 1,
+      y: 1,
+      w: cols >= 4 ? half : cols,
+      h: 1,
       children: <strong style={{ fontSize: 22 }}>$128.4k</strong>,
     },
     {
@@ -66,7 +69,7 @@ export function ResponsiveDashboard() {
               border: '1px solid var(--sg-color-border)',
               borderRadius: 'var(--sg-border-radius)',
               background: mode === m ? 'var(--sg-color-primary)' : 'var(--sg-color-bg-elevated)',
-              color: mode === m ? 'var(--sg-color-text-light-solid, #fff)' : 'var(--sg-color-text)',
+              color: mode === m ? 'var(--sg-color-white)' : 'var(--sg-color-text)',
               cursor: 'pointer',
               fontSize: 13,
               textTransform: 'capitalize',
