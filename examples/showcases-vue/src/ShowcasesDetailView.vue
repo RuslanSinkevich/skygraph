@@ -45,7 +45,7 @@ const LazyApp = computed(() => {
   <div class="showcase-shell">
     <div class="showcase-topbar">
       <button type="button" class="showcase-back" @click="emit('back')">
-        ← {{ props.strings.back }}
+        {{ props.strings.back }}
       </button>
       <span class="showcase-topbar-title">
         <template v-if="meta?.icon">{{ meta.icon }} </template>{{ title }}

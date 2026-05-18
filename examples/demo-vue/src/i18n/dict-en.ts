@@ -34,6 +34,7 @@ export const en: DemoDict = {
     navComponents: 'Components',
     navHome: 'Home',
     navGuide: 'Guide',
+    navShowcases: 'Showcases',
     navRoadmap: 'Roadmap',
     navAbout: 'About',
     navGithub: 'GitHub',

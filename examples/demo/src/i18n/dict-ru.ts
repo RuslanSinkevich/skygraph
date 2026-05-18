@@ -210,6 +210,16 @@ export const ru: DemoDict = {
     themeAria: 'Переключить тему',
   },
 
+  benchmarkDetail: {
+    backToAll: '← Все бенчмарки',
+    tableTitle: 'Бенчмарк таблицы',
+    tableSubtitle: 'SkyGraph <Table> против antd <Table virtual>',
+    treeTitle: 'Бенчмарк дерева',
+    treeSubtitle: 'SkyGraph <Tree> против antd <Tree height>',
+    chartTitle: 'Бенчмарк графика',
+    chartSubtitle: 'SkyGraph <BarChart> против recharts <BarChart>',
+  },
+
   showcases: showcasesLocaleRu,
 
   footer: {

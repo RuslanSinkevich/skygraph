@@ -6,6 +6,7 @@ Multi-framework subdirectory deploy:
 - `/react/` — React demo (`examples/demo`)
 - `/react/showcases/` — React showcases (`examples/showcases`)
 - `/vue/` — Vue demo (`examples/demo-vue`)
+- `/vue/showcases/` — Vue showcases (`examples/showcases-vue`)
 - `/angular/` — Angular demo (currently stub: Coming Soon)
 
 Production target: <https://skygraph.ruslansinkevich.ru> (Caddy on host,
@@ -73,15 +74,14 @@ docker run -d --name skygraph \
 
 ```
 deploy/output/
-├── index.html               (React)
-├── assets/
-├── vue/index.html           (stub — production uses real Vue build via deploy-skygraph.ps1)
-└── angular/index.html       (stub)
+├── index.html                       (static landing)
+├── react/index.html                 (React demo)
+├── react/showcases/index.html       (React showcases)
+├── vue/index.html                   (Vue demo)
+├── vue/showcases/index.html         (Vue showcases)
+└── angular/index.html               (stub — Coming Soon)
 ```
 
-`build-all.mjs` still drops a Vue stub into `vue/` for local sanity
-checks. Real Vue demo is built and copied by the production deploy
-script (`infra/scripts/deploy-skygraph.ps1`). When the Angular demo is
-ready, update `deploy/build-all.mjs` to build it and copy `dist/`
-instead of the stub (template line is already present as a comment in
-the script).
+`build-all.mjs` builds all four apps and copies them under the right
+subpaths. When the Angular demo is ready, replace the stub copy step
+with a real `pnpm --filter demo-angular exec vite build --base=/angular/`.

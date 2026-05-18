@@ -73,12 +73,47 @@ export default function App() {
     }
   }
 
+  // Mirror the primary nav of `examples/demo`. Items other than
+  // `showcases` live in the demo app and are linked as external so
+  // navigation crosses the SPA boundary (`/react/` <-> `/react/showcases/`).
+  // Order and labels match `examples/demo/src/App.tsx` `navItems` so the
+  // three React entry points (demo + showcases + future docs) feel like
+  // one product chrome.
   const navItems = useMemo<NavItem[]>(
     () => [
-      { key: 'docs', label: '← Docs', href: DEMO_URL, external: true },
-      { key: 'showcases', label: 'Showcases', href: '#' },
+      {
+        key: 'components',
+        label: strings.shell.navComponents,
+        href: `${DEMO_URL}#/components/button`,
+        external: true,
+      },
+      {
+        key: 'guide',
+        label: strings.shell.navGuide,
+        href: `${DEMO_URL}#/guide/getting-started`,
+        external: true,
+      },
+      { key: 'showcases', label: strings.shell.navShowcases, href: '#' },
+      {
+        key: 'benchmarks',
+        label: strings.shell.navBenchmarks,
+        href: `${DEMO_URL}#/benchmarks`,
+        external: true,
+      },
+      {
+        key: 'roadmap',
+        label: strings.shell.navRoadmap,
+        href: `${DEMO_URL}#/roadmap`,
+        external: true,
+      },
+      {
+        key: 'about',
+        label: strings.shell.navAbout,
+        href: `${DEMO_URL}#/about`,
+        external: true,
+      },
     ],
-    [],
+    [strings.shell],
   )
 
   const header = (
@@ -109,8 +144,8 @@ export default function App() {
 
   const footer = (
     <Footer
-      copyright="© 2026 SkyGraph contributors"
-      version="v0.5.0"
+      copyright={strings.shell.footerCopyright}
+      version={`v${__SKYGRAPH_REACT_VERSION__}`}
       onSelect={(href) => {
         if (href === DEMO_URL) {
           window.location.href = DEMO_URL
@@ -118,32 +153,56 @@ export default function App() {
       }}
       columns={[
         {
-          title: 'Showcases',
+          title: strings.shell.footerShowcases.title,
           links: [
-            { label: 'All demos', href: '#' },
-            { label: 'Source on GitHub', href: SHOWCASES_URL, external: true },
+            { label: strings.shell.footerShowcases.allDemos, href: '#' },
+            {
+              label: strings.shell.footerShowcases.sourceOnGithub,
+              href: SHOWCASES_URL,
+              external: true,
+            },
           ],
         },
         {
-          title: 'Documentation',
+          title: strings.shell.footerDocumentation.title,
           links: [
-            { label: 'Demo site', href: DEMO_URL, external: true },
-            { label: 'Components', href: `${DEMO_URL}#/components/button`, external: true },
-            { label: 'Guide', href: `${DEMO_URL}#/guide/getting-started`, external: true },
+            { label: strings.shell.footerDocumentation.demoSite, href: DEMO_URL, external: true },
+            {
+              label: strings.shell.footerDocumentation.components,
+              href: `${DEMO_URL}#/components/button`,
+              external: true,
+            },
+            {
+              label: strings.shell.footerDocumentation.guide,
+              href: `${DEMO_URL}#/guide/getting-started`,
+              external: true,
+            },
           ],
         },
         {
-          title: 'Community',
+          title: strings.shell.footerCommunity.title,
           links: [
-            { label: 'GitHub', href: GITHUB_URL, external: true },
-            { label: 'Issues', href: `${GITHUB_URL}/issues`, external: true },
+            { label: strings.shell.footerCommunity.github, href: GITHUB_URL, external: true },
+            {
+              label: strings.shell.footerCommunity.issues,
+              href: `${GITHUB_URL}/issues`,
+              external: true,
+            },
           ],
         },
         {
-          title: 'Project',
+          title: strings.shell.footerProject.title,
           links: [
-            { label: 'Changelog', href: `${GITHUB_URL}/blob/master/CHANGELOG.md`, external: true },
-            { label: 'License', href: `${GITHUB_URL}/blob/master/LICENSE`, external: true },
+            {
+              label: strings.shell.footerProject.changelog,
+              href: `${GITHUB_URL}/blob/master/CHANGELOG.md`,
+              external: true,
+            },
+            {
+              label: strings.shell.footerProject.license,
+              href: `${GITHUB_URL}/blob/master/LICENSE`,
+              external: true,
+            },
           ],
         },
       ]}

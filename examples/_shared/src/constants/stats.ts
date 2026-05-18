@@ -34,8 +34,16 @@ export const SHOWCASE_COUNT = 12
 export const SHOWCASES_URL =
   'https://github.com/RuslanSinkevich/skygraph-public/tree/master/examples/showcases'
 
-/** Documentation entry-point used from the showcases AppShell. */
-export const DEMO_URL = '../demo/'
+/**
+ * Documentation entry-point used from the showcases AppShell.
+ *
+ * Both `/react/showcases/` and `/vue/showcases/` link "back to docs" via
+ * this URL. Because deployment layout puts the framework demo one level
+ * up from the corresponding showcases (`/react/` vs `/react/showcases/`,
+ * `/vue/` vs `/vue/showcases/`), the relative path resolves to the same
+ * sibling regardless of which framework is hosting the link.
+ */
+export const DEMO_URL = '../'
 
 /** GitHub repo entry — used in Header / Footer links. */
 export const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph-public'

@@ -208,6 +208,16 @@ export const en: DemoDict = {
     themeAria: 'Toggle theme',
   },
 
+  benchmarkDetail: {
+    backToAll: '← All benchmarks',
+    tableTitle: 'Table benchmark',
+    tableSubtitle: 'SkyGraph <Table> vs antd <Table virtual>',
+    treeTitle: 'Tree benchmark',
+    treeSubtitle: 'SkyGraph <Tree> vs antd <Tree height>',
+    chartTitle: 'Chart benchmark',
+    chartSubtitle: 'SkyGraph <BarChart> vs recharts <BarChart>',
+  },
+
   showcases: showcasesLocaleEn,
 
   footer: {

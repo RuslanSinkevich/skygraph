@@ -83,7 +83,7 @@ const VERSION_LABEL = 'v0.5.0'
             <div class="about-platform-card-title">
               <span class="about-platform-card-mark" aria-hidden="true"></span>
               <a
-                href="https://github.com/RuslanSinkevich/skycode"
+                href="https://skycode-ai.ru/"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="about-platform-card-link"

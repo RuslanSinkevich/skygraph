@@ -42,6 +42,7 @@ export interface DemoDict {
     navComponents: string
     navHome: string
     navGuide: string
+    navShowcases: string
     navRoadmap: string
     navAbout: string
     navGithub: string

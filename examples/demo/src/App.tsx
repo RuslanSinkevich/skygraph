@@ -428,7 +428,7 @@ export default function App() {
         if (href.startsWith('#/')) navigate(href.slice(2))
       }}
       copyright={t.footer.copyright}
-      version={`v0.5.0`}
+      version={`v${__SKYGRAPH_REACT_VERSION__}`}
       columns={[
         {
           title: t.footer.columnDocs,
@@ -510,35 +510,23 @@ function renderPage(route: string): (props: PageProps) => React.JSX.Element {
   if (route === 'benchmarks') return () => <BenchmarksPage />
   if (route === 'benchmarks/table') {
     return (p) => (
-      <SingleBenchmarkPage
-        title="Table benchmark"
-        subtitle={`SkyGraph <Table> vs antd <Table virtual>`}
-        onBack={() => p.onNavigate('benchmarks')}
-      >
+      <SingleBenchmarkPageTr kind="table" onBack={() => p.onNavigate('benchmarks')}>
         <TableBenchmark />
-      </SingleBenchmarkPage>
+      </SingleBenchmarkPageTr>
     )
   }
   if (route === 'benchmarks/tree') {
     return (p) => (
-      <SingleBenchmarkPage
-        title="Tree benchmark"
-        subtitle={`SkyGraph <Tree> vs antd <Tree height>`}
-        onBack={() => p.onNavigate('benchmarks')}
-      >
+      <SingleBenchmarkPageTr kind="tree" onBack={() => p.onNavigate('benchmarks')}>
         <TreeBenchmark />
-      </SingleBenchmarkPage>
+      </SingleBenchmarkPageTr>
     )
   }
   if (route === 'benchmarks/chart') {
     return (p) => (
-      <SingleBenchmarkPage
-        title="Chart benchmark"
-        subtitle={`SkyGraph <BarChart> vs recharts <BarChart>`}
-        onBack={() => p.onNavigate('benchmarks')}
-      >
+      <SingleBenchmarkPageTr kind="chart" onBack={() => p.onNavigate('benchmarks')}>
         <ChartBenchmark />
-      </SingleBenchmarkPage>
+      </SingleBenchmarkPageTr>
     )
   }
   if (route === 'showcases' || route.startsWith('showcases/')) {
@@ -551,14 +539,22 @@ function renderPage(route: string): (props: PageProps) => React.JSX.Element {
   return (p) => <Landing onNavigate={p.onNavigate} />
 }
 
-interface SingleBenchmarkPageProps {
-  title: string
-  subtitle: string
+interface SingleBenchmarkPageTrProps {
+  kind: 'table' | 'tree' | 'chart'
   onBack: () => void
   children: React.ReactNode
 }
 
-function SingleBenchmarkPage({ title, subtitle, onBack, children }: SingleBenchmarkPageProps) {
+// `SingleBenchmarkPageTr` is a thin translation wrapper around the original
+// `SingleBenchmarkPage` markup. We call `useI18n` here so each detail route
+// composes its title/subtitle/back button from the active locale instead of
+// the previously hardcoded English literals (see TODO-cycle.md).
+function SingleBenchmarkPageTr({ kind, onBack, children }: SingleBenchmarkPageTrProps) {
+  const { t } = useI18n()
+  const d = t.benchmarkDetail
+  const title = kind === 'table' ? d.tableTitle : kind === 'tree' ? d.treeTitle : d.chartTitle
+  const subtitle =
+    kind === 'table' ? d.tableSubtitle : kind === 'tree' ? d.treeSubtitle : d.chartSubtitle
   return (
     <div className="bench-page">
       <header className="bench-header">
@@ -568,7 +564,7 @@ function SingleBenchmarkPage({ title, subtitle, onBack, children }: SingleBenchm
           onClick={onBack}
           style={{ alignSelf: 'flex-start' }}
         >
-          ← All benchmarks
+          {d.backToAll}
         </button>
         <h1 className="bench-title">{title}</h1>
         <p className="bench-lead">{subtitle}</p>

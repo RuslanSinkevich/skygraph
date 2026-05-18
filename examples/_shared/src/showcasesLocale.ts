@@ -1761,6 +1761,48 @@ export interface ShowcasesLocale {
   noMatches: string
   back: string
   languageSwitcher: string
+  /**
+   * Strings for the chrome (header + footer) of the standalone showcases
+   * app. The embedded variant inside the demo uses its own DemoDict
+   * footer/header so these are scoped to `examples/showcases` and any
+   * other host that wants to render the full showcase shell.
+   */
+  shell: {
+    navDocs: string
+    navShowcases: string
+    /**
+     * Primary nav set, mirrors `examples/demo` so the standalone
+     * showcases header surfaces the same product entry-points
+     * (Components / Guide / Benchmarks / Roadmap / About).
+     */
+    navComponents: string
+    navGuide: string
+    navBenchmarks: string
+    navRoadmap: string
+    navAbout: string
+    footerCopyright: string
+    footerShowcases: {
+      title: string
+      allDemos: string
+      sourceOnGithub: string
+    }
+    footerDocumentation: {
+      title: string
+      demoSite: string
+      components: string
+      guide: string
+    }
+    footerCommunity: {
+      title: string
+      github: string
+      issues: string
+    }
+    footerProject: {
+      title: string
+      changelog: string
+      license: string
+    }
+  }
   categories: {
     all: string
     data: string
@@ -1803,6 +1845,37 @@ export const showcasesLocaleEn: ShowcasesLocale = {
   searchPlaceholder: 'Search demos by name, description or tag…',
   noMatches: 'No demos match your filters.',
   back: '← Back to hub',
+  shell: {
+    navDocs: '← Docs',
+    navShowcases: 'Showcases',
+    navComponents: 'Components',
+    navGuide: 'Guide',
+    navBenchmarks: 'Benchmarks',
+    navRoadmap: 'Roadmap',
+    navAbout: 'About',
+    footerCopyright: '© 2026 SkyGraph contributors',
+    footerShowcases: {
+      title: 'Showcases',
+      allDemos: 'All demos',
+      sourceOnGithub: 'Source on GitHub',
+    },
+    footerDocumentation: {
+      title: 'Documentation',
+      demoSite: 'Demo site',
+      components: 'Components',
+      guide: 'Guide',
+    },
+    footerCommunity: {
+      title: 'Community',
+      github: 'GitHub',
+      issues: 'Issues',
+    },
+    footerProject: {
+      title: 'Project',
+      changelog: 'Changelog',
+      license: 'License',
+    },
+  },
   categories: {
     all: 'All',
     data: 'Data & Tables',
@@ -3697,6 +3770,37 @@ export const showcasesLocaleRu: ShowcasesLocale = {
   searchPlaceholder: 'Поиск по названию, описанию или тегу…',
   noMatches: 'Ничего не подошло под фильтры.',
   back: '← К списку витрин',
+  shell: {
+    navDocs: '← Документация',
+    navShowcases: 'Витрины',
+    navComponents: 'Компоненты',
+    navGuide: 'Руководство',
+    navBenchmarks: 'Бенчмарки',
+    navRoadmap: 'Roadmap',
+    navAbout: 'О проекте',
+    footerCopyright: '© 2026 контрибьюторы SkyGraph',
+    footerShowcases: {
+      title: 'Витрины',
+      allDemos: 'Все демо',
+      sourceOnGithub: 'Исходники на GitHub',
+    },
+    footerDocumentation: {
+      title: 'Документация',
+      demoSite: 'Сайт демо',
+      components: 'Компоненты',
+      guide: 'Руководство',
+    },
+    footerCommunity: {
+      title: 'Сообщество',
+      github: 'GitHub',
+      issues: 'Issues',
+    },
+    footerProject: {
+      title: 'Проект',
+      changelog: 'Changelog',
+      license: 'Лицензия',
+    },
+  },
   categories: {
     all: 'Все',
     data: 'Данные и таблицы',

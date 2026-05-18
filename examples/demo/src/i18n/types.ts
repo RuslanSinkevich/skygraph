@@ -211,6 +211,21 @@ export interface DemoDict {
     themeAria: string
   }
 
+  /**
+   * Standalone benchmark detail pages (#/benchmarks/<table|tree|chart>).
+   * Linked from the components sidebar; uses the same translation channel
+   * as the BenchmarksPage hub.
+   */
+  benchmarkDetail: {
+    backToAll: string
+    tableTitle: string
+    tableSubtitle: string
+    treeTitle: string
+    treeSubtitle: string
+    chartTitle: string
+    chartSubtitle: string
+  }
+
   /** Embedded showcases hub (same copy as standalone `showcasesLocale`). */
   showcases: ShowcasesLocale
 

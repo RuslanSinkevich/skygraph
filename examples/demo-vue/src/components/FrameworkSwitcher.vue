@@ -39,8 +39,8 @@ const containerStyle = {
   gap: '4px',
   padding: '2px',
   borderRadius: '8px',
-  border: '1px solid var(--sg-border, #e5e7eb)',
-  background: 'var(--sg-surface, transparent)',
+  border: '1px solid var(--sg-color-border)',
+  background: 'transparent',
 } as const
 
 const baseStyle = {
@@ -56,7 +56,7 @@ const baseStyle = {
 function disabledStyle() {
   return {
     ...baseStyle,
-    color: 'var(--sg-text-muted, #9ca3af)',
+    color: 'var(--sg-color-text-tertiary)',
     cursor: 'not-allowed',
     opacity: 0.55,
   }
@@ -65,8 +65,8 @@ function disabledStyle() {
 function readyStyle(isActive: boolean) {
   return {
     ...baseStyle,
-    color: isActive ? 'var(--sg-text, #111827)' : 'var(--sg-text-muted, #6b7280)',
-    background: isActive ? 'var(--sg-bg-hover, #f3f4f6)' : 'transparent',
+    color: isActive ? 'var(--sg-color-text)' : 'var(--sg-color-text-secondary)',
+    background: isActive ? 'var(--sg-color-bg-hover)' : 'transparent',
     cursor: 'pointer',
   }
 }
