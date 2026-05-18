@@ -101,7 +101,7 @@ function senderName(t: EmailThread): string {
           :placeholder="l.searchPlaceholder"
           size="small"
           style="flex: 1"
-          @update:value="search = $event"
+          @update:model-value="search = $event"
         />
         <span style="color: var(--sg-color-text-secondary); font-size: 12px">
           {{ l.countInFolder(filtered.length, l.folders[folder]) }}

@@ -39,7 +39,7 @@ function onInput(v: string) {
       :value="searchValue"
       :placeholder="searchPlaceholder"
       :style="{ width: `${searchWidth}px` }"
-      @update:value="onInput"
+      @update:model-value="onInput"
     />
     <slot name="filters" />
     <div class="sc-toolbar-spacer" />

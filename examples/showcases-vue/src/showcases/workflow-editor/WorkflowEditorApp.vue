@@ -459,7 +459,7 @@ const kindOptions = computed(() =>
 
         <div class="we-inspector-section">
           <label class="we-inspector-label">{{ l.inspector.label }}</label>
-          <SgInput :value="labelDraft" @update:value="labelDraft = $event" />
+          <SgInput :value="labelDraft" @update:model-value="labelDraft = $event" />
           <SgButton size="small" type="primary" style="margin-top: 8px" @click="handleRename">
             {{ l.inspector.apply }}
           </SgButton>
@@ -491,7 +491,7 @@ const kindOptions = computed(() =>
           <SgInput
             :value="addLabel"
             :placeholder="l.modals.labelPlaceholder"
-            @update:value="addLabel = $event"
+            @update:model-value="addLabel = $event"
           />
         </label>
         <label class="we-form-row">
@@ -540,7 +540,7 @@ const kindOptions = computed(() =>
           <SgInput
             :value="edgeLabel"
             :placeholder="l.modals.edgeLabelPlaceholder"
-            @update:value="edgeLabel = $event"
+            @update:model-value="edgeLabel = $event"
           />
         </label>
         <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px">

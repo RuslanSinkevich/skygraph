@@ -83,7 +83,6 @@ function setLocalePersist(next: 'en' | 'ru') {
 const navItems = computed<NavItem[]>(() => [
   { key: 'docs', label: '← Docs', href: DEMO_URL, external: true },
   { key: 'showcases', label: 'Showcases', href: '#' },
-  { key: 'github', label: 'GitHub', href: GITHUB_URL, external: true },
 ])
 
 const section = computed<AppShellSection>(() => (parsed.value.kind === 'hub' ? 'showcases' : null))

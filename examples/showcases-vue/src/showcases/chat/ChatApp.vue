@@ -91,7 +91,7 @@ function statusForActive(c: Conversation): string {
             :value="search"
             :placeholder="l.searchConversations"
             size="small"
-            @update:value="search = $event"
+            @update:model-value="search = $event"
           />
         </div>
         <div style="flex: 1; overflow-y: auto">
