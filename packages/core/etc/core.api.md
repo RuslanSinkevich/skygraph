@@ -59,6 +59,15 @@ export type AnchorPolicy = {
 };
 
 // @public (undocumented)
+export interface BezierPathOptions {
+    curvature?: number;
+    source: Point;
+    sourceSide: Side;
+    target: Point;
+    targetSide: Side;
+}
+
+// @public (undocumented)
 export const CALENDAR_PREFIX: string;
 
 // @public
@@ -283,7 +292,7 @@ export interface EdgeInit {
     // (undocumented)
     from: EdgeEndpoint;
     id?: EdgeId;
-    routing?: 'straight' | 'orthogonal' | 'manual';
+    routing?: 'straight' | 'orthogonal' | 'bezier' | 'manual';
     // (undocumented)
     to: EdgeEndpoint;
     // (undocumented)
@@ -340,6 +349,12 @@ export type FilterFn = (row: Record<string, unknown>) => boolean;
 
 // @public
 export type FilterOperator = 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte' | 'between' | 'in' | 'notIn' | 'contains' | 'startsWith' | 'endsWith' | 'isEmpty' | 'isNotEmpty';
+
+// @public
+export function floatingAnchor(box: AABB, opposite: Point): {
+    point: Point;
+    side: Side;
+};
 
 // @public (undocumented)
 export const FORM_META_PREFIX: string;
@@ -453,6 +468,9 @@ export interface FormState {
 // @public
 export function freezeMiddleware(frozenPaths: string[]): Middleware;
 
+// @public
+export function getBezierPath(opts: BezierPathOptions): string;
+
 // @public (undocumented)
 export type GetFieldValue = (name: string) => unknown;
 
@@ -464,7 +482,7 @@ export interface GraphEdge {
     data?: unknown;
     from: EdgeEndpoint;
     id: EdgeId;
-    routing: 'straight' | 'orthogonal' | 'manual';
+    routing: 'straight' | 'orthogonal' | 'bezier' | 'manual';
     to: EdgeEndpoint;
     waypoints?: readonly Point[];
 }
@@ -567,6 +585,12 @@ export interface HistoryPlugin {
 }
 
 // @public
+export function inferSide(box: AABB, anchor: Point, opposite: Point, tolerance?: number): {
+    side: Side;
+    confident: boolean;
+};
+
+// @public
 export function isAvailable(resource: CalendarResource, range: {
     start: number;
     end: number;
@@ -630,6 +654,9 @@ export interface MeasureCacheOptions {
 
 // @public (undocumented)
 export type Middleware = (event: WriteEvent, next: NextFn) => void;
+
+// @public
+export function nearestSide(box: AABB, target: Point): Side;
 
 // @public (undocumented)
 export type NextFn = (event: WriteEvent) => void;
@@ -726,6 +753,9 @@ export type Point = readonly [number, number];
 export function pointsToPath(points: readonly Point[]): string;
 
 // @public
+export function pointsToRoundedPath(points: readonly Point[], radius: number): string;
+
+// @public
 export function reservePrefix(engine: string, prefix: string): string;
 
 // @public
@@ -741,6 +771,11 @@ export interface RouteOrthogonalOptions {
     maxNodes?: number;
     obstacles?: readonly AABB[];
     preferred?: 'auto' | 'hv' | 'vh';
+    snap?: number;
+    sourceBounds?: AABB;
+    stepPosition?: number;
+    stubLength?: number;
+    targetBounds?: AABB;
 }
 
 // @public (undocumented)
@@ -770,6 +805,9 @@ export interface RuleObject {
     validator?: (value: unknown, getFieldValue: GetFieldValue) => string | null | Promise<string | null>;
     warningOnly?: boolean;
 }
+
+// @public
+export type Side = 'top' | 'right' | 'bottom' | 'left';
 
 // @public (undocumented)
 export interface SortConfig {

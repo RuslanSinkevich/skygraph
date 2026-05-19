@@ -86,7 +86,8 @@ export interface RouteOrthogonalOptions {
   targetBounds?: AABB
   /**
    * Length (world units) of the perpendicular stub generated when
-   * `sourceBounds` / `targetBounds` is set. Defaults to `max(8, gridSize)`.
+   * `sourceBounds` / `targetBounds` is set. Defaults to `max(20, gridSize)`
+   * — matches React Flow's `offset = 20` for smoothstep edges.
    */
   stubLength?: number
   /**
@@ -96,6 +97,19 @@ export interface RouteOrthogonalOptions {
    * affects the L-route fallback.
    */
   snap?: number
+  /**
+   * Where the central bend sits on the connector when both
+   * `sourceBounds` and `targetBounds` are provided.
+   *
+   *   - `0`   → bend right at the source stub
+   *   - `0.5` → midpoint between the two stubs (default — matches
+   *             React Flow's `stepPosition`)
+   *   - `1`   → bend right at the target stub
+   *
+   * Ignored when bounds are missing (we fall back to the legacy L-route)
+   * or when A* is engaged (it picks bends from path-cost, not position).
+   */
+  stepPosition?: number
 }
 
 /**
@@ -122,7 +136,8 @@ export function routeOrthogonal(
     typeof options === 'string' ? { preferred: options } : (options ?? {})
 
   const gridSize = opts.gridSize ?? 10
-  const stubLength = opts.stubLength ?? Math.max(8, gridSize)
+  const stubLength = opts.stubLength ?? Math.max(20, gridSize)
+  const stepPosition = opts.stepPosition ?? 0.5
 
   // ─── Step 1. Derive the "approach points" from optional bounds ────────────
   // Each approach point lives at the centre of the side of the source/
@@ -133,9 +148,11 @@ export function routeOrthogonal(
   let sExit: Point | null = null
   let sStub: Point | null = null
   let sCorner: Point | null = null
+  let sSide: RectSide | null = null
   if (opts.sourceBounds) {
-    const exitInfo = exitOnNearestSide(opts.sourceBounds, end)
+    const exitInfo = exitOnNearestSide(opts.sourceBounds, end, start)
     sExit = exitInfo.point
+    sSide = exitInfo.side
     sStub = extrudePoint(exitInfo.point, exitInfo.side, stubLength)
     // Bridge from the raw anchor (which may sit anywhere on the
     // outline — corner anchors like `s=0.25` are common) to `sExit`
@@ -146,9 +163,11 @@ export function routeOrthogonal(
   let tExit: Point | null = null
   let tStub: Point | null = null
   let tCorner: Point | null = null
+  let tSide: RectSide | null = null
   if (opts.targetBounds) {
-    const enterInfo = exitOnNearestSide(opts.targetBounds, start)
+    const enterInfo = exitOnNearestSide(opts.targetBounds, start, end)
     tExit = enterInfo.point
+    tSide = enterInfo.side
     tStub = extrudePoint(enterInfo.point, enterInfo.side, stubLength)
     tCorner = orthoBridge(end, tExit, enterInfo.side)
   }
@@ -170,8 +189,19 @@ export function routeOrthogonal(
 
   let core: readonly Point[]
   if (filteredObstacles.length === 0) {
-    const snap = opts.snap ?? gridSize
-    core = lRoute(coreStart, coreEnd, opts.preferred ?? 'auto', snap)
+    // When BOTH endpoint sides are known, mimic React Flow's smoothstep
+    // routing: a 3-segment connector that always exits/enters
+    // perpendicular to the node face, with the centre bend positioned
+    // via `stepPosition`. This is the visual signature of Visio /
+    // draw.io / Lucidchart orthogonal edges and reads vastly cleaner
+    // than the legacy single-bend L when both endpoints face each
+    // other or sit on the same axis.
+    if (sSide && tSide) {
+      core = smoothStepRoute(coreStart, sSide, coreEnd, tSide, stepPosition)
+    } else {
+      const snap = opts.snap ?? gridSize
+      core = lRoute(coreStart, coreEnd, opts.preferred ?? 'auto', snap)
+    }
   } else {
     const inflate = opts.inflate ?? 0
     const maxNodes = opts.maxNodes ?? 5000
@@ -203,6 +233,120 @@ export function routeOrthogonal(
   if (!pointsEqual(end, points[points.length - 1]!)) pushIfDistinct(points, end)
 
   return compressCollinear(points)
+}
+
+// ─── Smoothstep core (no obstacles, both sides known) ──────────────────────
+
+/**
+ * React Flow-style smoothstep core: build the bend(s) between two
+ * perpendicular stubs.
+ *
+ *   - When the two sides are OPPOSITE on the same axis (typical
+ *     `right→left` / `top→bottom`), the connector takes one of two
+ *     shapes depending on the axis the stubs leave from:
+ *
+ *         ─── stub  ┐                ┌─── stub
+ *                   │  (verticalSplit)│
+ *                   └─── stub        stub ──┘ (horizontalSplit)
+ *
+ *     `stepPosition` slides the centre split toward source (`0`) or
+ *     target (`1`).
+ *
+ *   - When the sides face the SAME way (e.g. both `right`), the route
+ *     bypasses around to the far side via a single L bend.
+ *
+ *   - When the sides are PERPENDICULAR (e.g. `right→bottom`), one
+ *     coordinate of the bend comes from the source stub, the other
+ *     from the target stub.
+ *
+ * The output always starts at `coreStart` and ends at `coreEnd` so the
+ * stitching loop in `routeOrthogonal` can dedupe matching endpoints.
+ */
+function smoothStepRoute(
+  coreStart: Point,
+  sSide: RectSide,
+  coreEnd: Point,
+  tSide: RectSide,
+  stepPosition: number,
+): readonly Point[] {
+  const [sx, sy] = coreStart
+  const [tx, ty] = coreEnd
+  const sAxis = sideAxis(sSide)
+  const tAxis = sideAxis(tSide)
+  const sDir = sideDir(sSide)
+  const tDir = sideDir(tSide)
+
+  // Same axis (both horizontal or both vertical).
+  if (sAxis === tAxis) {
+    // Opposite directions on the same axis → classic smoothstep with
+    // a configurable centre.
+    if (sDir + tDir === 0) {
+      if (sAxis === 'x') {
+        const cx = sx + (tx - sx) * stepPosition
+        return [
+          [sx, sy],
+          [cx, sy],
+          [cx, ty],
+          [tx, ty],
+        ]
+      }
+      const cy = sy + (ty - sy) * stepPosition
+      return [
+        [sx, sy],
+        [sx, cy],
+        [tx, cy],
+        [tx, ty],
+      ]
+    }
+    // Same direction (both `right` for example) → loop around to the
+    // far side. The extra segment guarantees the connector clears the
+    // node bodies even when both stubs face the same way.
+    if (sAxis === 'x') {
+      const extX = sDir > 0 ? Math.max(sx, tx) : Math.min(sx, tx)
+      return [
+        [sx, sy],
+        [extX, sy],
+        [extX, ty],
+        [tx, ty],
+      ]
+    }
+    const extY = sDir > 0 ? Math.max(sy, ty) : Math.min(sy, ty)
+    return [
+      [sx, sy],
+      [sx, extY],
+      [tx, extY],
+      [tx, ty],
+    ]
+  }
+
+  // Perpendicular sides: one bend takes the source's bend-axis and the
+  // target's bend-axis. The orientation of the corner depends on which
+  // axis each stub leaves from.
+  if (sAxis === 'x') {
+    // Source leaves horizontally, target leaves vertically — the corner
+    // sits at (target.x, source.y).
+    return [
+      [sx, sy],
+      [tx, sy],
+      [tx, ty],
+    ]
+  }
+  // Source leaves vertically, target leaves horizontally — corner at
+  // (source.x, target.y).
+  return [
+    [sx, sy],
+    [sx, ty],
+    [tx, ty],
+  ]
+}
+
+function sideAxis(s: RectSide): 'x' | 'y' {
+  return s === 'left' || s === 'right' ? 'x' : 'y'
+}
+
+/** +1 for `right` / `bottom`, -1 for `left` / `top`. */
+function sideDir(s: RectSide): 1 | -1 {
+  return s === 'right' || s === 'bottom' ? 1 : -1
 }
 
 /**
@@ -346,6 +490,53 @@ export function getBezierPath(opts: BezierPathOptions): string {
 }
 
 /**
+ * Compute the intersection of the line from `box`'s centre to
+ * `opposite` with the rectangle's border. Returns the border point and
+ * the side it sits on.
+ *
+ * This is the "floating anchor" trick used by React Flow's
+ * FloatingEdges example and most graph viz libraries: instead of
+ * binding an endpoint to a fixed corner or midpoint, you bind it to
+ * the centre and let it slide along the perimeter following the
+ * direction to the other node. The result is dramatically cleaner on
+ * dense / unstructured graphs because every edge picks the closest
+ * face automatically as nodes are dragged around.
+ */
+export function floatingAnchor(box: AABB, opposite: Point): { point: Point; side: Side } {
+  const cx = box.x + box.w / 2
+  const cy = box.y + box.h / 2
+  const dx = opposite[0] - cx
+  const dy = opposite[1] - cy
+
+  if (dx === 0 && dy === 0) {
+    // Both centres coincide — return any side; this is a degenerate
+    // self-loop case that the caller is expected to handle separately
+    // anyway.
+    return { point: [box.x + box.w, cy], side: 'right' }
+  }
+
+  const hw = box.w / 2
+  const hh = box.h / 2
+  // Parametrise the ray (cx + t*dx, cy + t*dy) and find the first
+  // border hit. `tx` / `ty` are the parameters at which the ray
+  // crosses x = ±hw and y = ±hh in the local frame.
+  const tx = dx === 0 ? Infinity : hw / Math.abs(dx)
+  const ty = dy === 0 ? Infinity : hh / Math.abs(dy)
+  if (tx < ty) {
+    const sign = dx > 0 ? 1 : -1
+    return {
+      point: [cx + sign * hw, cy + sign * (hw / Math.abs(dx)) * dy],
+      side: sign > 0 ? 'right' : 'left',
+    }
+  }
+  const sign = dy > 0 ? 1 : -1
+  return {
+    point: [cx + sign * (hh / Math.abs(dy)) * dx, cy + sign * hh],
+    side: sign > 0 ? 'bottom' : 'top',
+  }
+}
+
+/**
  * Pick the side of `box` whose midpoint is closest to `target`. Same
  * logic as the internal helper used by orthogonal routing — exposed
  * publicly so consumers of `getBezierPath` don't need to re-implement
@@ -360,16 +551,114 @@ export function nearestSide(box: AABB, target: Point): Side {
   return dy >= 0 ? 'bottom' : 'top'
 }
 
+/**
+ * Decide which face an endpoint sits on, combining two cues:
+ *
+ *   1. **Anchor position** — if `anchor` is already at one of `box`'s
+ *      borders (within `tolerance`), the corresponding face is returned
+ *      as-is. This lets consumers express intent ("exit from the right
+ *      side") simply by placing the anchor on that border.
+ *
+ *   2. **Geometry fallback** — when the anchor is interior to `box`
+ *      (or no border match) we fall back to {@link nearestSide} pointed
+ *      at the opposite endpoint. This is the right answer for centre
+ *      anchors and produces stable sides for big graphs where every
+ *      pair of nodes has a different relative position.
+ *
+ * Returns the side along with a `confident` flag — `true` when the
+ * decision came from the anchor position (case 1), `false` when it
+ * fell back to geometry (case 2). Consumers that want to override the
+ * fallback in special cases can branch on the flag.
+ */
+export function inferSide(
+  box: AABB,
+  anchor: Point,
+  opposite: Point,
+  tolerance: number = 1,
+): { side: Side; confident: boolean } {
+  const onLeft = Math.abs(anchor[0] - box.x) <= tolerance
+  const onRight = Math.abs(anchor[0] - (box.x + box.w)) <= tolerance
+  const onTop = Math.abs(anchor[1] - box.y) <= tolerance
+  const onBottom = Math.abs(anchor[1] - (box.y + box.h)) <= tolerance
+
+  // Corner anchors (on two borders simultaneously) — disambiguate by
+  // which face points more at the opposite endpoint. This is the
+  // `ne`/`nw`/`se`/`sw` case from `perEdge: k=1` policy.
+  const horizontalHit = onLeft || onRight
+  const verticalHit = onTop || onBottom
+  if (horizontalHit && verticalHit) {
+    const cx = box.x + box.w / 2
+    const cy = box.y + box.h / 2
+    const dx = opposite[0] - cx
+    const dy = opposite[1] - cy
+    // Pick the axis that points more strongly at the opposite endpoint.
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      return { side: onRight ? 'right' : 'left', confident: true }
+    }
+    return { side: onBottom ? 'bottom' : 'top', confident: true }
+  }
+  if (onLeft) return { side: 'left', confident: true }
+  if (onRight) return { side: 'right', confident: true }
+  if (onTop) return { side: 'top', confident: true }
+  if (onBottom) return { side: 'bottom', confident: true }
+
+  return { side: nearestSide(box, opposite), confident: false }
+}
+
 // ─── Side / stub helpers ────────────────────────────────────────────────────
 
 /**
  * Pick the side of `box` nearest to `target` and return the midpoint of
- * that side. The chosen side is the one whose dominant axis matches the
- * dominant axis of the (target → box-centre) vector.
+ * that side.
+ *
+ * When `anchor` is provided AND it sits on (or very near) one of the
+ * box's borders, that border wins — the caller has explicitly placed
+ * the connection point and we honour the intent rather than overriding
+ * it with pure geometry. For corner anchors (touching two borders
+ * simultaneously, e.g. `ne` / `nw`), we disambiguate by which face
+ * faces `target` more strongly.
+ *
+ * Falling back to pure geometry (anchor missing OR interior to box)
+ * matches the legacy behaviour: pick the face whose normal is most
+ * aligned with the (target → centre) vector.
  */
-function exitOnNearestSide(box: AABB, target: Point): { point: Point; side: RectSide } {
+function exitOnNearestSide(
+  box: AABB,
+  target: Point,
+  anchor?: Point,
+): { point: Point; side: RectSide } {
   const cx = box.x + box.w / 2
   const cy = box.y + box.h / 2
+
+  if (anchor) {
+    const tolerance = 1
+    const onLeft = Math.abs(anchor[0] - box.x) <= tolerance
+    const onRight = Math.abs(anchor[0] - (box.x + box.w)) <= tolerance
+    const onTop = Math.abs(anchor[1] - box.y) <= tolerance
+    const onBottom = Math.abs(anchor[1] - (box.y + box.h)) <= tolerance
+    const horizontalHit = onLeft || onRight
+    const verticalHit = onTop || onBottom
+
+    if (horizontalHit && verticalHit) {
+      // Corner anchor — pick the axis pointing at the opposite endpoint.
+      const dx = target[0] - cx
+      const dy = target[1] - cy
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        return onRight
+          ? { point: [box.x + box.w, cy], side: 'right' }
+          : { point: [box.x, cy], side: 'left' }
+      }
+      return onBottom
+        ? { point: [cx, box.y + box.h], side: 'bottom' }
+        : { point: [cx, box.y], side: 'top' }
+    }
+    if (onRight) return { point: [box.x + box.w, cy], side: 'right' }
+    if (onLeft) return { point: [box.x, cy], side: 'left' }
+    if (onBottom) return { point: [cx, box.y + box.h], side: 'bottom' }
+    if (onTop) return { point: [cx, box.y], side: 'top' }
+    // Anchor is interior to the box — fall through to geometry.
+  }
+
   const dx = target[0] - cx
   const dy = target[1] - cy
   if (Math.abs(dx) >= Math.abs(dy)) {

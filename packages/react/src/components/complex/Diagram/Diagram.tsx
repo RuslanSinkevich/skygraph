@@ -21,7 +21,8 @@ import {
   pointsToPath,
   pointsToRoundedPath,
   getBezierPath,
-  nearestSide,
+  inferSide,
+  floatingAnchor,
 } from '@skygraph/core'
 import type { Side } from '@skygraph/core'
 import type {
@@ -191,6 +192,20 @@ export interface DiagramProps {
     maxNodes?: number
     cornerRadius?: number
     curvature?: number
+    /**
+     * Where the central bend of an orthogonal edge sits between the
+     * two perpendicular stubs:
+     *   - `0`   → bend at the source
+     *   - `0.5` → midpoint (default — matches React Flow's smoothstep)
+     *   - `1`   → bend at the target
+     */
+    stepPosition?: number
+    /**
+     * Length of the perpendicular stub extending from each endpoint
+     * before the connector turns. Defaults to `max(20, gridSize)`,
+     * matching React Flow's `offset = 20`.
+     */
+    stubLength?: number
   }
   /**
    * When `true`, every rendered edge gets an arrow marker on its target
@@ -370,27 +385,71 @@ function buildEdgePath(
 ): string {
   switch (edge.routing) {
     case 'orthogonal': {
-      const points = routeOrthogonal(start, end, {
+      // Floating-anchor mode for orthogonal edges too: when the bound
+      // anchor sits interior to the bbox (the only realistic case is
+      // a centre anchor at `s = 0.5` on an ellipse, but consumers may
+      // also feed arbitrary world points via `manual` policy), slide
+      // it along the perimeter so the connector exits the face nearest
+      // to the other endpoint. Border anchors are left untouched so
+      // explicit `nw` / `ne` / `s = 0.25` etc. still behave exactly as
+      // before.
+      let s: typeof start = start
+      if (sourceBounds) {
+        const inferred = inferSide(sourceBounds, start, end)
+        if (!inferred.confident) {
+          s = floatingAnchor(sourceBounds, end).point
+        }
+      }
+      let t: typeof end = end
+      if (targetBounds) {
+        const inferred = inferSide(targetBounds, end, start)
+        if (!inferred.confident) {
+          t = floatingAnchor(targetBounds, start).point
+        }
+      }
+      const points = routeOrthogonal(s, t, {
         obstacles,
         gridSize: routerOpts?.gridSize,
         inflate: routerOpts?.inflate,
         maxNodes: routerOpts?.maxNodes,
         sourceBounds,
         targetBounds,
+        stepPosition: routerOpts?.stepPosition,
+        stubLength: routerOpts?.stubLength,
       })
       return pointsToRoundedPath(points, routerOpts?.cornerRadius ?? ORTHOGONAL_CORNER_RADIUS)
     }
     case 'bezier': {
-      // Pick the exit/enter side from each endpoint's AABB. When the
-      // bounds aren't available (rare — only happens for nodes with
-      // exotic outlines) the curve falls back to "right → left",
-      // which still looks reasonable for horizontal layouts.
-      const sourceSide: Side = sourceBounds ? nearestSide(sourceBounds, end) : 'right'
-      const targetSide: Side = targetBounds ? nearestSide(targetBounds, start) : 'left'
+      // Floating-anchor bezier: when we know each endpoint's bbox we
+      // ALWAYS slide the connection point along the perimeter toward
+      // the other node, regardless of which anchor the consumer picked.
+      // This is the difference between a wavy spaghetti graph and a
+      // legible one when nodes are arranged arbitrarily — every edge
+      // exits the closest face, control handles are perpendicular to
+      // that face, and dragging a node smoothly re-orients the curve.
+      //
+      // Without bbox we have no perimeter to slide along, so we fall
+      // back to the literal anchor point + "right → left" sides — a
+      // reasonable default for the rare ellipse / path outline that
+      // forgoes bounds.
+      let s: Point = start
+      let sourceSide: Side = 'right'
+      if (sourceBounds) {
+        const floated = floatingAnchor(sourceBounds, end)
+        s = floated.point
+        sourceSide = floated.side
+      }
+      let t: Point = end
+      let targetSide: Side = 'left'
+      if (targetBounds) {
+        const floated = floatingAnchor(targetBounds, start)
+        t = floated.point
+        targetSide = floated.side
+      }
       return getBezierPath({
-        source: start,
+        source: s,
         sourceSide,
-        target: end,
+        target: t,
         targetSide,
         curvature: routerOpts?.curvature,
       })

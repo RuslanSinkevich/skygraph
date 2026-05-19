@@ -64,6 +64,8 @@ export {
   pointsToRoundedPath,
   getBezierPath,
   nearestSide,
+  inferSide,
+  floatingAnchor,
   aabbFromOBB,
   obbCorners,
   obbContainsPoint,

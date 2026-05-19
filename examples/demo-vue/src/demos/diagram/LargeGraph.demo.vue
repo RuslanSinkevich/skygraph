@@ -1,9 +1,10 @@
 <script setup lang="ts">
 /**
- * Stress test — 200 nodes / 400 random edges. The engine batches the
- * mutations through `graph.transaction()` so reactivity emits one update
- * for the whole insert. Drag a node to confirm interactivity stays
- * responsive.
+ * Stress test — 200 nodes / 400 random bezier edges. The endpoints
+ * bind to the perimeter midpoint (`s = 0.5`) so each curve picks its
+ * exit/enter side from the relative position of source vs. target —
+ * edges going north exit the top, edges going east exit the right,
+ * etc. Pan / zoom to inspect dense regions.
  */
 import { onMounted } from 'vue'
 import { SgDiagram, useGraph } from '@skygraph/vue'
@@ -35,8 +36,9 @@ onMounted(() => {
       let b = next() % NODE_COUNT
       if (b === a) b = (b + 1) % NODE_COUNT
       graph.addEdge({
-        from: { node: `n${a}`, anchor: 'ne' },
-        to: { node: `n${b}`, anchor: 'nw' },
+        from: { node: `n${a}`, anchor: { s: 0.5 } },
+        to: { node: `n${b}`, anchor: { s: 0.5 } },
+        routing: 'bezier',
       })
     }
   })
@@ -44,7 +46,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <SgDiagram :graph="graph" :state="state" :width="760" :height="460">
+  <SgDiagram
+    :graph="graph"
+    :state="state"
+    :width="760"
+    :height="460"
+    :draggable="true"
+    :zoomable="true"
+    :panable="true"
+    :routing-options="{ curvature: 0.35 }"
+  >
     <template #node="{ node }">
       <span style="font-size: 10px; font-weight: 600">{{ node.id }}</span>
     </template>

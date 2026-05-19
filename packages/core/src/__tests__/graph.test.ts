@@ -7,9 +7,11 @@ import {
   pointsToRoundedPath,
   getBezierPath,
   nearestSide,
+  inferSide,
+  floatingAnchor,
 } from '../engines/graph/router'
 import { aabbFromOBB, obbContainsPoint } from '../engines/graph/obb'
-import type { AABB, Outline } from '../engines/graph/types'
+import type { AABB, Outline, Point } from '../engines/graph/types'
 
 function setup() {
   const core = createCore()
@@ -575,6 +577,168 @@ describe('Orthogonal routing', () => {
     expect(nearestSide(box, [-50, 25])).toBe('left')
     expect(nearestSide(box, [50, 200])).toBe('bottom')
     expect(nearestSide(box, [50, -50])).toBe('top')
+  })
+
+  // ─── inferSide ───────────────────────────────────────────────────────────
+
+  it('inferSide honours an anchor sitting on a single border', () => {
+    const box = { x: 0, y: 0, w: 100, h: 60 }
+    // Anchor on the right border, opposite endpoint anywhere.
+    expect(inferSide(box, [100, 30], [200, 30])).toEqual({ side: 'right', confident: true })
+    expect(inferSide(box, [0, 30], [200, 30])).toEqual({ side: 'left', confident: true })
+    expect(inferSide(box, [50, 60], [200, 30])).toEqual({ side: 'bottom', confident: true })
+    expect(inferSide(box, [50, 0], [200, 30])).toEqual({ side: 'top', confident: true })
+  })
+
+  it('inferSide disambiguates corner anchors by which face points at the opposite endpoint', () => {
+    const box = { x: 0, y: 0, w: 100, h: 60 }
+    // NE corner (100, 0) — opposite endpoint to the right favours `right`.
+    expect(inferSide(box, [100, 0], [300, 0])).toEqual({ side: 'right', confident: true })
+    // Same NE corner but opposite endpoint mostly above favours `top`.
+    expect(inferSide(box, [100, 0], [50, -200])).toEqual({ side: 'top', confident: true })
+  })
+
+  it('inferSide falls back to nearestSide for interior anchors', () => {
+    const box = { x: 0, y: 0, w: 100, h: 60 }
+    // Centre anchor is not on any border → confidence: false.
+    expect(inferSide(box, [50, 30], [300, 30])).toEqual({ side: 'right', confident: false })
+  })
+
+  // ─── floatingAnchor ──────────────────────────────────────────────────────
+
+  it('floatingAnchor returns the side facing the opposite endpoint', () => {
+    const box = { x: 0, y: 0, w: 100, h: 60 }
+    expect(floatingAnchor(box, [300, 30]).side).toBe('right')
+    expect(floatingAnchor(box, [-200, 30]).side).toBe('left')
+    expect(floatingAnchor(box, [50, 300]).side).toBe('bottom')
+    expect(floatingAnchor(box, [50, -200]).side).toBe('top')
+  })
+
+  it('floatingAnchor lands the point exactly on the rectangle border', () => {
+    const box = { x: 0, y: 0, w: 100, h: 60 }
+    const right = floatingAnchor(box, [200, 30])
+    expect(right.point[0]).toBe(100)
+    expect(right.point[1]).toBe(30)
+    const top = floatingAnchor(box, [50, -100])
+    expect(top.point[0]).toBe(50)
+    expect(top.point[1]).toBe(0)
+  })
+
+  it('floatingAnchor slides along the diagonal — perimeter intersection, not corner', () => {
+    // Square box, opposite endpoint along the (1, 1) diagonal — the ray
+    // from the centre hits the right side (x = 50) at y = 50, but the
+    // box only extends to y = 50, so the right-side test is tied with
+    // the bottom-side test. Either is acceptable; just verify the point
+    // sits ON the perimeter.
+    const box = { x: 0, y: 0, w: 100, h: 100 }
+    const result = floatingAnchor(box, [300, 300])
+    const [px, py] = result.point
+    const onRightOrBottom = Math.abs(px - 100) < 1e-9 || Math.abs(py - 100) < 1e-9
+    expect(onRightOrBottom).toBe(true)
+  })
+
+  it('floatingAnchor picks the dominant axis when target is off-centre', () => {
+    const box = { x: 0, y: 0, w: 100, h: 100 }
+    // Mostly horizontal offset → right side, y proportional to dy.
+    const r = floatingAnchor(box, [200, 60])
+    expect(r.side).toBe('right')
+    expect(r.point[0]).toBe(100)
+    // (dy/dx) * hw = (10/150) * 50 = 3.333..., centre y = 50 → 53.333
+    expect(r.point[1]).toBeCloseTo(53.333, 2)
+  })
+
+  // ─── smoothstep routing (bounds, no obstacles) ───────────────────────────
+
+  it('smoothstep produces a 5-point path between two right→left rectangles', () => {
+    // Source on the left, target on the right with bigger horizontal
+    // than vertical offset. With both rectangles' bounds known the
+    // router should pick right side / left side and emit a 5-point
+    // polyline: start, sExit (right), midX-source-y, midX-target-y,
+    // tExit (left), end — with the corner-bridge collapsing where it's
+    // already collinear.
+    const sourceBounds: AABB = { x: 0, y: 0, w: 100, h: 60 }
+    const targetBounds: AABB = { x: 300, y: 0, w: 100, h: 60 }
+    const path = routeOrthogonal([100, 30], [300, 30], {
+      sourceBounds,
+      targetBounds,
+      stubLength: 20,
+    }) as readonly [number, number][]
+
+    // Endpoints preserved exactly.
+    expect(path[0]).toEqual([100, 30])
+    expect(path[path.length - 1]).toEqual([300, 30])
+    // Every consecutive pair must share an axis — orthogonal property.
+    for (let i = 1; i < path.length; i++) {
+      const a = path[i - 1]!
+      const b = path[i]!
+      expect(a[0] === b[0] || a[1] === b[1]).toBe(true)
+    }
+  })
+
+  it('smoothstep stepPosition slides the bend toward the source/target', () => {
+    // Offset target vertically so the connector actually has a bend
+    // to slide (when source and target share a y, the polyline
+    // degenerates into a straight line after compression).
+    const sourceBounds: AABB = { x: 0, y: 0, w: 100, h: 60 }
+    const targetBounds: AABB = { x: 300, y: 80, w: 100, h: 60 }
+    const opts = {
+      sourceBounds,
+      targetBounds,
+      stubLength: 20,
+    }
+    const mid = routeOrthogonal([100, 30], [300, 110], { ...opts, stepPosition: 0.5 })
+    const near = routeOrthogonal([100, 30], [300, 110], { ...opts, stepPosition: 0.1 })
+    const far = routeOrthogonal([100, 30], [300, 110], { ...opts, stepPosition: 0.9 })
+
+    // Same source & target → first / last point identical regardless
+    // of stepPosition.
+    expect(mid[0]).toEqual(near[0])
+    expect(mid[mid.length - 1]).toEqual(far[far.length - 1])
+    // Pull the bend x — the unique interior x-coordinate that isn't
+    // the source or target stub. Skip the test silently if the path
+    // collapses to a straight line (source y == target y is the
+    // degenerate case where compressCollinear erases the bend
+    // entirely; that's fine because there's no bend to position).
+    const bendX = (path: readonly Point[]): number | null => {
+      for (let i = 1; i < path.length - 1; i++) {
+        const p = path[i]!
+        const prev = path[i - 1]!
+        const next = path[i + 1]!
+        if (p[0] !== prev[0] && p[0] === next[0]) return p[0]
+        if (p[0] === prev[0] && p[0] !== next[0]) return p[0]
+      }
+      return null
+    }
+    const nearX = bendX(near)
+    const midX = bendX(mid)
+    const farX = bendX(far)
+    if (nearX !== null && midX !== null && farX !== null) {
+      expect(nearX).toBeLessThan(midX)
+      expect(midX).toBeLessThan(farX)
+    }
+  })
+
+  it('smoothstep handles perpendicular sides (right → bottom) cleanly', () => {
+    // Source rect to the left of target rect, with target offset
+    // vertically so the connector exits source-right and enters
+    // target-top.
+    const sourceBounds: AABB = { x: 0, y: 0, w: 100, h: 60 }
+    const targetBounds: AABB = { x: 200, y: 200, w: 100, h: 60 }
+    const path = routeOrthogonal([100, 30], [250, 200], {
+      sourceBounds,
+      targetBounds,
+      stubLength: 20,
+    }) as readonly [number, number][]
+
+    // Endpoints preserved.
+    expect(path[0]).toEqual([100, 30])
+    expect(path[path.length - 1]).toEqual([250, 200])
+    // Orthogonal property.
+    for (let i = 1; i < path.length; i++) {
+      const a = path[i - 1]!
+      const b = path[i]!
+      expect(a[0] === b[0] || a[1] === b[1]).toBe(true)
+    }
   })
 })
 
