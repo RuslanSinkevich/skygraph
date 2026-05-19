@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T">
 import { computed, ref, useSlots } from 'vue'
+import { useConfig } from '../../ui/ConfigProvider.vue'
 import type { ListProps, ListClassNames, ListStyles } from './types'
 
 const props = withDefaults(defineProps<ListProps<T>>(), {
@@ -35,6 +36,9 @@ defineSlots<{
 }>()
 
 const slots = useSlots()
+
+const cfg = useConfig()
+const loadingLabel = computed(() => cfg.value.locale?.list?.loading ?? 'Loading')
 
 const sCls = computed<ListClassNames>(() => props.classNames ?? {})
 const sSty = computed<ListStyles>(() => props.styles ?? {})
@@ -236,7 +240,7 @@ defineExpose({
     </div>
 
     <div v-if="loading" class="sg-list-loading-indicator" role="status" aria-live="polite">
-      <span v-if="!unstyled" class="sg-spin sg-spin-default" aria-label="Loading" />
+      <span v-if="!unstyled" class="sg-spin sg-spin-default" :aria-label="loadingLabel" />
     </div>
 
     <div

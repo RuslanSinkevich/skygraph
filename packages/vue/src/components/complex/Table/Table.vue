@@ -7,6 +7,7 @@ import SgCheckbox from '../../ui/Checkbox.vue'
 import SgSelect from '../../ui/Select.vue'
 import SgPagination from '../../ui/Pagination.vue'
 import SgSpin from '../../ui/Spin.vue'
+import { useConfig } from '../../ui/ConfigProvider.vue'
 import {
   DEFAULT_TABLE_LOCALE,
   type TableProps,
@@ -50,6 +51,8 @@ defineSlots<{
 }>()
 
 const slots = useSlots()
+const cfg = useConfig()
+const selectAllLabel = computed(() => cfg.value.locale?.table?.selectAll ?? 'Select all')
 
 const localeFull = computed(() => ({ ...DEFAULT_TABLE_LOCALE, ...props.locale }))
 const sCls = computed(() => props.classNames ?? {})
@@ -931,7 +934,7 @@ defineExpose({
                 v-if="rowSelection.type !== 'radio'"
                 :checked="allCurrentPageSelected"
                 :indeterminate="someCurrentPageSelected"
-                aria-label="Select all"
+                :aria-label="selectAllLabel"
                 @change="toggleSelectAll"
               />
             </div>

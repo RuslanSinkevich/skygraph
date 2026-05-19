@@ -17,8 +17,9 @@
  */
 import { computed, getCurrentInstance, onBeforeUnmount, ref, watch } from 'vue'
 import {
+  floatingAnchor,
   getBezierPath,
-  nearestSide,
+  inferSide,
   pointsToPath,
   pointsToRoundedPath,
   routeOrthogonal,
@@ -35,6 +36,7 @@ import {
 } from '@skygraph/core'
 import { printElement } from '../../../utils/print'
 import type { PrintOptions } from '../../../utils/print'
+import { useConfig } from '../../ui/ConfigProvider.vue'
 import type {
   DiagramCanvasContextPoint,
   DiagramDropPoint,
@@ -197,13 +199,33 @@ function buildEdgePath(
 ): string {
   switch (edge.routing) {
     case 'orthogonal': {
-      const pts = routeOrthogonal(start, end, {
+      // Floating-anchor mode (parity with React): when the anchor sits
+      // interior to the bbox slide it along the perimeter so the
+      // connector exits the closest face. Border anchors (`nw` / `ne`
+      // / etc.) are left untouched.
+      let s: Point = start
+      if (sourceBounds) {
+        const inferred = inferSide(sourceBounds, start, end)
+        if (!inferred.confident) {
+          s = floatingAnchor(sourceBounds, end).point
+        }
+      }
+      let t: Point = end
+      if (targetBounds) {
+        const inferred = inferSide(targetBounds, end, start)
+        if (!inferred.confident) {
+          t = floatingAnchor(targetBounds, start).point
+        }
+      }
+      const pts = routeOrthogonal(s, t, {
         obstacles,
         gridSize: props.routingOptions?.gridSize,
         inflate: props.routingOptions?.inflate,
         maxNodes: props.routingOptions?.maxNodes,
         sourceBounds,
         targetBounds,
+        stepPosition: props.routingOptions?.stepPosition,
+        stubLength: props.routingOptions?.stubLength,
       })
       return pointsToRoundedPath(
         pts,
@@ -211,12 +233,29 @@ function buildEdgePath(
       )
     }
     case 'bezier': {
-      const sourceSide: Side = sourceBounds ? nearestSide(sourceBounds, end) : 'right'
-      const targetSide: Side = targetBounds ? nearestSide(targetBounds, start) : 'left'
+      // Floating-anchor bezier — mirror React. When we know each
+      // endpoint's bbox we always slide the connection point along the
+      // perimeter toward the other node, regardless of which anchor
+      // the consumer picked. Without bbox we fall back to the literal
+      // anchor point + right→left sides.
+      let s: Point = start
+      let sourceSide: Side = 'right'
+      if (sourceBounds) {
+        const floated = floatingAnchor(sourceBounds, end)
+        s = floated.point
+        sourceSide = floated.side
+      }
+      let t: Point = end
+      let targetSide: Side = 'left'
+      if (targetBounds) {
+        const floated = floatingAnchor(targetBounds, start)
+        t = floated.point
+        targetSide = floated.side
+      }
       return getBezierPath({
-        source: start,
+        source: s,
         sourceSide,
-        target: end,
+        target: t,
         targetSide,
         curvature: props.routingOptions?.curvature,
       })
@@ -592,6 +631,8 @@ function onCanvasClick(e: MouseEvent) {
 // listener, `onDropNode` is the camel form) so the canvas only goes into
 // "drop target" mode when the parent actually listens.
 const __instance = getCurrentInstance()
+const cfg = useConfig()
+const diagramLabel = computed(() => cfg.value.locale?.diagram?.ariaLabel ?? 'Diagram')
 const dropEnabled = computed(() => {
   const attrs = __instance?.vnode?.props ?? {}
   return Boolean(
@@ -877,7 +918,7 @@ defineExpose({
     :data-selection-mode="props.selectionMode"
     :data-sg-drop="dropEnabled ? 'true' : undefined"
     role="application"
-    aria-label="Diagram"
+    :aria-label="diagramLabel"
     @wheel="effectiveZoomable || effectivePanable ? onWheel($event) : undefined"
     @pointerdown="onWrapperPointerDown"
     @pointermove="onWrapperPointerMove"

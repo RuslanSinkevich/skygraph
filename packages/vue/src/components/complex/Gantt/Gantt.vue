@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, type CSSProperties } from 'vue'
 import { pointsToPath } from '@skygraph/core'
+import { useConfig } from '../../ui/ConfigProvider.vue'
 import type { GanttProps, GanttRange, GanttScale, GanttTask } from './types'
 
 const props = withDefaults(defineProps<GanttProps>(), {
@@ -16,6 +17,10 @@ const props = withDefaults(defineProps<GanttProps>(), {
 const emit = defineEmits<{
   (e: 'task-change', task: GanttTask): void
 }>()
+
+const cfg = useConfig()
+const ganttLabel = computed(() => cfg.value.locale?.gantt?.ariaLabel ?? 'Gantt chart')
+const resizeTaskLabel = computed(() => cfg.value.locale?.gantt?.resizeTask ?? 'Resize task')
 
 const DAY = 86_400_000
 const STEP_MS: Record<GanttScale, number> = {
@@ -304,7 +309,7 @@ defineExpose({ containerRef })
     :class="wrapperClass"
     :style="wrapperStyle"
     role="region"
-    aria-label="Gantt chart"
+    :aria-label="ganttLabel"
     :data-scale="props.scale"
     @pointermove="onWrapperPointerMove"
     @pointerup="onWrapperPointerUp"
@@ -446,7 +451,7 @@ defineExpose({ containerRef })
               v-if="props.resizable"
               :class="props.unstyled ? undefined : 'sg-gantt-bar-resize'"
               role="button"
-              aria-label="Resize task"
+              :aria-label="resizeTaskLabel"
               tabindex="-1"
               data-role="resize-handle"
               :style="{

@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useChartSize } from '../../../composables/useChartSize'
 import { printElement } from '../../../utils/print'
+import { useConfig } from '../../ui/ConfigProvider.vue'
 import {
   chartBounds,
   colorForSeries,
@@ -57,6 +58,8 @@ const props = withDefaults(defineProps<LineChartProps>(), {
 
 const rootRef = ref<HTMLDivElement | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
+const cfg = useConfig()
+const chartLabel = computed(() => cfg.value.locale?.charts?.lineChart ?? 'Line chart')
 const fallbackW = computed(() =>
   typeof props.width === 'number' && Number.isFinite(props.width) ? props.width : 600,
 )
@@ -230,7 +233,7 @@ defineExpose({
       :width="typeof props.width === 'number' ? props.width : '100%'"
       :height="props.height"
       role="img"
-      aria-label="Line chart"
+      :aria-label="chartLabel"
       @mousemove="crosshairEnabled ? handleSvgMouseMove($event) : undefined"
       @mouseleave="crosshairEnabled ? handleSvgMouseLeave() : undefined"
     >

@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useChartSize } from '../../../composables/useChartSize'
 import { printElement } from '../../../utils/print'
+import { useConfig } from '../../ui/ConfigProvider.vue'
 import {
   DEFAULT_PALETTE,
   colorForSeries,
@@ -30,6 +31,8 @@ const props = withDefaults(defineProps<PieChartProps>(), {
 
 const rootRef = ref<HTMLDivElement | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
+const cfg = useConfig()
+const chartLabel = computed(() => cfg.value.locale?.charts?.pieChart ?? 'Pie chart')
 const fallbackW = computed(() =>
   typeof props.width === 'number' && Number.isFinite(props.width) ? props.width : 320,
 )
@@ -204,7 +207,7 @@ defineExpose({
       :width="typeof props.width === 'number' ? props.width : '100%'"
       :height="props.height"
       role="img"
-      aria-label="Pie chart"
+      :aria-label="chartLabel"
     >
       <g class="sg-chart-pie-slices">
         <path
