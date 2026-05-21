@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Diagram — edge routing concept refresh
+
+After three rounds of patching the same set of edge-rendering symptoms
+(arrows biting into nodes; diagonal connectors cutting through other
+nodes when both endpoints bound to corner anchors; arrowheads visually
+detached from the line on hover) the `<Diagram>` rendering stack now
+moves to a single canonical endpoint resolver and a strokeWidth-scaled
+"open-V" arrowhead modelled after React Flow / draw.io / Lucidchart.
+
+- **`@skygraph/core`: `computeEdgeEndpoint(box, anchor, opposite, padding)`**
+  is the new single resolver every routing mode (straight / orthogonal /
+  bezier) now starts from. It picks the side of `box` whose midpoint is
+  nearest `opposite`, snaps the connection point to that midpoint, and
+  shifts it `padding` units OUTWARD so the arrowhead has a clean gap to
+  occupy between the path tip and the node border. Corner anchors
+  (`nw`/`ne`/...) act as a HINT — if they would route AWAY from the
+  opposite endpoint the resolver drops them; otherwise it honours them
+  with `forced: true`. This is the engine-side fix for the
+  "stub-then-180°-loop" artifact on randomly-laid-out graphs.
+- **`@skygraph/react` + `@skygraph/vue`: `<Diagram>`** routes every edge
+  via the resolver with an 8-unit `ENDPOINT_PADDING`. Straight edges
+  thus stop running diagonally through neighbouring nodes (each
+  endpoint floats to the face that points at the other), orthogonal /
+  bezier routings drop the per-mode anchor heuristics they used to
+  duplicate, and the source/target `side` is reused by the bezier
+  control-point builder so curves always exit perpendicular to the
+  face the resolver picked.
+- **Marker geometry switched to an open-V in `strokeWidth` units**:
+  `viewBox="-10 -10 20 20"`, `refX/refY = 0`, `markerUnits="strokeWidth"`,
+  glyph drawn with `fill: none` and `stroke: context-stroke`. The
+  arrowhead now scales with the line stroke (so hover thickens the
+  whole edge, not just its body) and lands inside the new endpoint
+  padding gap instead of overlapping the node border. The CSS fallback
+  paints the glyph with `currentColor` for Firefox / older Safari where
+  `context-stroke` is unsupported.
+- **CSS**: `.sg-diagram-edge` now uses `stroke-linecap: butt` (the
+  previous `round` cap added a half-circle "pill" that leaked over the
+  arrow base on every edge tip), `stroke-width: 1.5` (down from `1.75`)
+  with hover at `2.25` (down from `2.5`), and `bezier` curves get
+  `stroke-width: 1.75` (down from `2`). Marker fill rule moved from
+  `fill: currentColor` to `stroke: currentColor; fill: none` to suit
+  the open-V geometry.
+- **Tests**: +9 cases in `packages/core/src/__tests__/graph.test.ts`
+  covering `computeEdgeEndpoint` (geometry side picking, padding
+  outward, corner anchor honour + drop, single-side anchor wins on
+  user intent, degenerate zero-area box, two edges from the same node
+  fan across different sides). Total core suite 421 tests (420 +
+  1 skipped); React `diagram.test.tsx` 40/40, Vue diagram + parity
+  suites 762/762.
+
 ### Diagram — edge routing overhaul
 
 - **`@skygraph/core`: orthogonal router now emits React Flow-style

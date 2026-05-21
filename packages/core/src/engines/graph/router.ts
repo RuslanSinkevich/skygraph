@@ -552,6 +552,182 @@ export function nearestSide(box: AABB, target: Point): Side {
 }
 
 /**
+ * Resolved edge endpoint geometry — output of {@link computeEdgeEndpoint}.
+ *
+ * `point` is in world space, sitting at the **midpoint of the chosen
+ * side** of `box` offset by `padding` outward. `side` records which
+ * face the connector exits / enters (the routers and bezier builder
+ * consume this so control handles and stubs are perpendicular).
+ *
+ * `forced` is `true` when the chosen side came from an explicit
+ * border-anchor (corner like `nw`/`ne` or side-midpoint like `s=0.25`).
+ * Consumers can branch on this to honour user intent or override it
+ * when geometry would clearly look wrong (e.g. a `nw`-anchored edge
+ * whose target sits to the south-east).
+ */
+export interface ResolvedEndpoint {
+  point: Point
+  side: Side
+  forced: boolean
+}
+
+/**
+ * Single canonical resolver used by all edge-routing modes (straight,
+ * orthogonal, bezier). Replaces the scattered ad-hoc anchor → world
+ * logic that lived in each `<Diagram>` adapter and used to produce four
+ * subtly different shapes for the same input — the "edges look bad"
+ * regression that drove the routing overhaul.
+ *
+ * Algorithm
+ * ─────────
+ *
+ *   1. Pick a **side**. The geometry-first preference is the side of
+ *      `box` whose midpoint is nearest the `opposite` endpoint
+ *      (i.e. `nearestSide(box, opposite)`).
+ *
+ *      - **Border anchors** (positions sitting on or very near `box`'s
+ *        perimeter, including corners like `nw`/`ne` and side-midpoints
+ *        like `s = 0.25`) act as a HINT, not a hard override:
+ *          * If their face is the same as the geometry-preferred one,
+ *            we honour the anchor (`forced = true`).
+ *          * If their face would point AWAY from `opposite`, we drop
+ *            the hint and use geometry instead — this is the fix for
+ *            the "stub-then-180°-loop" artifact that showed up on
+ *            random graphs where every edge bound to `nw`.
+ *          * Corner anchors disambiguate by which face points more
+ *            strongly at `opposite`.
+ *
+ *   2. Place the **point** at the midpoint of the chosen side, offset
+ *      OUTWARD by `padding` world units. The padding leaves room for
+ *      the arrowhead marker between the path tip and the node border —
+ *      a small but visually critical gap (≈ 8 units) that mainstream
+ *      diagram libraries (React Flow, draw.io, Lucidchart) use to keep
+ *      arrows from biting into the node border, especially on nodes
+ *      with `border-radius`.
+ *
+ *   3. Return the side so downstream routers (bezier control points,
+ *      orthogonal stubs) can stay perpendicular to the node face.
+ *
+ * When `box` has zero area (degenerate node) the function returns the
+ * literal `anchor` position with the geometry-derived side.
+ */
+export function computeEdgeEndpoint(
+  box: AABB,
+  anchor: Point,
+  opposite: Point,
+  padding: number = 0,
+): ResolvedEndpoint {
+  // Degenerate AABB (point-like node) — there is no perimeter to
+  // project onto, so return the anchor as-is and derive the side from
+  // raw direction to `opposite`.
+  if (box.w <= 0 || box.h <= 0) {
+    const cx = box.x + box.w / 2
+    const cy = box.y + box.h / 2
+    const dx = opposite[0] - cx
+    const dy = opposite[1] - cy
+    const side: Side =
+      Math.abs(dx) >= Math.abs(dy) ? (dx >= 0 ? 'right' : 'left') : dy >= 0 ? 'bottom' : 'top'
+    return { point: anchor, side, forced: false }
+  }
+
+  const geometrySide = nearestSide(box, opposite)
+
+  // Detect border / corner anchors. Tolerance is intentionally generous
+  // (1 world unit) so user-set anchors that snap to the perimeter via
+  // floating-point math (`s = 0.25` → `[w, h*0]` etc.) still register.
+  const tolerance = 1
+  const onLeft = Math.abs(anchor[0] - box.x) <= tolerance
+  const onRight = Math.abs(anchor[0] - (box.x + box.w)) <= tolerance
+  const onTop = Math.abs(anchor[1] - box.y) <= tolerance
+  const onBottom = Math.abs(anchor[1] - (box.y + box.h)) <= tolerance
+  const horizontalHit = onLeft || onRight
+  const verticalHit = onTop || onBottom
+
+  let chosen: Side = geometrySide
+  let forced = false
+
+  if (horizontalHit || verticalHit) {
+    // Build the candidate sides this anchor explicitly sits on.
+    const candidates: Side[] = []
+    if (onRight) candidates.push('right')
+    if (onLeft) candidates.push('left')
+    if (onBottom) candidates.push('bottom')
+    if (onTop) candidates.push('top')
+
+    // Honour the candidate only if it agrees with where `opposite`
+    // actually is — otherwise we'd route AWAY from the target.
+    if (candidates.includes(geometrySide)) {
+      chosen = geometrySide
+      forced = true
+    } else if (candidates.length === 1) {
+      // Single-side anchor (mid-side, not a corner). User intent is
+      // unambiguous; honour it even if geometry disagrees — this is
+      // the "exit from the right" case where the consumer made a
+      // deliberate choice.
+      chosen = candidates[0]!
+      forced = true
+    } else {
+      // Corner anchor (two sides) AND geometry disagrees with both.
+      // Pick the candidate whose face points more strongly at
+      // `opposite`.
+      const cx = box.x + box.w / 2
+      const cy = box.y + box.h / 2
+      const dx = opposite[0] - cx
+      const dy = opposite[1] - cy
+      // Score each candidate by how aligned its outward normal is
+      // with the (centre → opposite) vector.
+      let bestScore = -Infinity
+      for (const c of candidates) {
+        const [nx, ny] = sideNormal(c)
+        const score = nx * dx + ny * dy
+        if (score > bestScore) {
+          bestScore = score
+          chosen = c
+        }
+      }
+      forced = true
+    }
+  }
+
+  // Snap the point to the midpoint of the chosen side, shifted outward
+  // by `padding`. Midpoint (rather than the literal anchor) is the
+  // crucial bit — it dissolves the "edges crowd at the same corner"
+  // mess, because every edge exits the *middle* of its chosen face.
+  const cx = box.x + box.w / 2
+  const cy = box.y + box.h / 2
+  let point: Point
+  switch (chosen) {
+    case 'right':
+      point = [box.x + box.w + padding, cy]
+      break
+    case 'left':
+      point = [box.x - padding, cy]
+      break
+    case 'bottom':
+      point = [cx, box.y + box.h + padding]
+      break
+    case 'top':
+      point = [cx, box.y - padding]
+      break
+  }
+
+  return { point, side: chosen, forced }
+}
+
+function sideNormal(side: Side): [number, number] {
+  switch (side) {
+    case 'right':
+      return [1, 0]
+    case 'left':
+      return [-1, 0]
+    case 'bottom':
+      return [0, 1]
+    case 'top':
+      return [0, -1]
+  }
+}
+
+/**
  * Decide which face an endpoint sits on, combining two cues:
  *
  *   1. **Anchor position** — if `anchor` is already at one of `box`'s
@@ -569,6 +745,14 @@ export function nearestSide(box: AABB, target: Point): Side {
  * decision came from the anchor position (case 1), `false` when it
  * fell back to geometry (case 2). Consumers that want to override the
  * fallback in special cases can branch on the flag.
+ *
+ * Corner anchors (touching two borders simultaneously like `nw` / `ne`)
+ * are disambiguated by which face points more strongly at the opposite
+ * endpoint. **The disambiguation is also clamped to faces that face the
+ * other node** — a `ne` anchor on the source whose target sits to its
+ * left will pick `left` instead of `right`, because using `right` would
+ * route the edge AWAY from the target. This is the key fix for the
+ * "stub-then-180°-loop" artifact visible on randomly-laid-out graphs.
  */
 export function inferSide(
   box: AABB,

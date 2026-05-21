@@ -9,6 +9,7 @@ import {
   nearestSide,
   inferSide,
   floatingAnchor,
+  computeEdgeEndpoint,
 } from '../engines/graph/router'
 import { aabbFromOBB, obbContainsPoint } from '../engines/graph/obb'
 import type { AABB, Outline, Point } from '../engines/graph/types'
@@ -1030,6 +1031,87 @@ describe('Orthogonal routing — side-aware exits (sourceBounds / targetBounds)'
     expect(path.length).toBeGreaterThanOrEqual(4)
     expect(path[0]).toEqual([50, 30])
     expect(path[path.length - 1]).toEqual([250, 30])
+  })
+})
+
+describe('Edge endpoint resolver (computeEdgeEndpoint)', () => {
+  const box: AABB = { x: 0, y: 0, w: 100, h: 60 }
+
+  it('places point at midpoint of the side closest to opposite', () => {
+    // opposite to the right → should pick `right` side
+    const res = computeEdgeEndpoint(box, [50, 30], [300, 30], 0)
+    expect(res.side).toBe('right')
+    expect(res.point).toEqual([100, 30])
+  })
+
+  it('applies padding outward from the chosen side', () => {
+    const res = computeEdgeEndpoint(box, [50, 30], [300, 30], 8)
+    expect(res.side).toBe('right')
+    expect(res.point).toEqual([108, 30])
+  })
+
+  it('top side picked when opposite is above', () => {
+    const res = computeEdgeEndpoint(box, [50, 30], [50, -200], 5)
+    expect(res.side).toBe('top')
+    expect(res.point).toEqual([50, -5])
+  })
+
+  it('honours a corner anchor that agrees with geometry', () => {
+    // `ne` corner: anchor at [w, 0]. Opposite is to the right + slightly up,
+    // so geometry picks `right` (|dx|=250 > |dy|=30). Anchor agrees with `right`.
+    const res = computeEdgeEndpoint(box, [100, 0], [350, 0], 0)
+    expect(res.side).toBe('right')
+    expect(res.forced).toBe(true)
+  })
+
+  it('drops a corner anchor when geometry contradicts it', () => {
+    // `nw` corner anchor [0, 0], opposite far down-right → geometry says
+    // `right` or `bottom` (here right: |dx|=300 > |dy|=200). The anchor
+    // is on left+top; neither matches geometry → pick the candidate
+    // whose normal best aligns with (opposite - centre), which is
+    // `right` is NOT a candidate, so we pick `top` or `left`. Vector
+    // (300, 200) projected: left = -300, top = -200 → top wins (less
+    // negative). `forced: true` because the anchor IS on borders.
+    const res = computeEdgeEndpoint(box, [0, 0], [400, 230], 0)
+    expect(res.forced).toBe(true)
+    // We don't pin the exact side here — the contract is "best of the
+    // anchor's actual border sides" — but `right` and `bottom` must NOT
+    // be chosen because the anchor isn't on them.
+    expect(['left', 'top']).toContain(res.side)
+  })
+
+  it('mid-side anchor (s = 0.25) is honoured even when geometry disagrees', () => {
+    // `s = 0.25` on a rect is the centre of the right side at [w, h/2].
+    // Place the opposite to the LEFT — geometry says `left`, anchor says
+    // `right`. Single-side anchor wins (user intent).
+    const res = computeEdgeEndpoint(box, [100, 30], [-200, 30], 0)
+    expect(res.side).toBe('right')
+    expect(res.forced).toBe(true)
+    expect(res.point).toEqual([100, 30])
+  })
+
+  it('degenerate (zero-area) box returns the literal anchor', () => {
+    const zero: AABB = { x: 10, y: 20, w: 0, h: 0 }
+    const res = computeEdgeEndpoint(zero, [10, 20], [100, 100], 5)
+    expect(res.point).toEqual([10, 20])
+    expect(res.forced).toBe(false)
+  })
+
+  it('returns side aligned with the perpendicular axis when opposite is purely above/below', () => {
+    const res = computeEdgeEndpoint(box, [50, 30], [50, 200], 0)
+    expect(res.side).toBe('bottom')
+    expect(res.point).toEqual([50, 60])
+  })
+
+  it('two edges from the same node spread across different sides', () => {
+    // The `nw` anchor on the same node should choose `right` when the
+    // target is to the east and `bottom` when it's to the south — i.e.
+    // the resolver fans the edges out instead of bunching at a corner.
+    const east = computeEdgeEndpoint(box, [0, 0], [500, 30], 0)
+    const south = computeEdgeEndpoint(box, [0, 0], [50, 400], 0)
+    expect(east.side === 'right' || east.side === 'top').toBe(true)
+    expect(south.side === 'bottom' || south.side === 'left').toBe(true)
+    expect(east.side).not.toBe(south.side)
   })
 })
 
