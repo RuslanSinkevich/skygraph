@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from '../../i18n'
+import { DemoTOC, DemoTOCProvider } from './DemoTOC'
 
 /**
  * `ComponentDoc` — top-level page wrapper that renders the
@@ -20,6 +21,10 @@ import { useI18n } from '../../i18n'
  *      output sits **after** `.doc-demos` to mirror the visual order
  *      (tables under demos) — see `docs/_streams/decisions/T-Vue-Demo-
  *      Wrappers-Parity.md` for the full rationale.
+ *
+ * The page is wrapped in `<DemoTOCProvider>` so the right-rail
+ * "On this page" panel can register each `<DemoBox>` by title and
+ * keep the active section highlighted while the user scrolls.
  */
 interface Props {
   title: string
@@ -34,38 +39,45 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <section class="doc-page">
-    <div v-if="crumbs && crumbs.length > 0" class="doc-crumbs">
-      <span v-for="(c, i) in crumbs" :key="i" class="doc-crumb">
-        {{ c }}
-        <span v-if="i < crumbs.length - 1" class="doc-crumb-sep">/</span>
-      </span>
+  <DemoTOCProvider>
+    <div class="doc-with-toc">
+      <section class="doc-page">
+        <div v-if="crumbs && crumbs.length > 0" class="doc-crumbs">
+          <span v-for="(c, i) in crumbs" :key="i" class="doc-crumb">
+            {{ c }}
+            <span v-if="i < crumbs.length - 1" class="doc-crumb-sep">/</span>
+          </span>
+        </div>
+
+        <header class="doc-header">
+          <h1 class="doc-component-title">
+            {{ title }}
+            <span v-if="badge" class="doc-badge">{{ badge }}</span>
+          </h1>
+          <p class="doc-lead">{{ description }}</p>
+        </header>
+
+        <div v-if="whenToUse && whenToUse.length > 0" class="doc-when-to-use">
+          <h2>{{ t.componentDoc.whenToUse }}</h2>
+          <ul>
+            <li v-for="(item, i) in whenToUse" :key="i">{{ item }}</li>
+          </ul>
+        </div>
+
+        <div v-if="$slots.notes" class="doc-notes">
+          <slot name="notes" />
+        </div>
+
+        <h2>{{ t.componentDoc.examples }}</h2>
+        <div class="doc-demos">
+          <slot />
+        </div>
+
+        <slot name="api" />
+      </section>
+      <aside class="doc-toc-aside">
+        <DemoTOC />
+      </aside>
     </div>
-
-    <header class="doc-header">
-      <h1 class="doc-component-title">
-        {{ title }}
-        <span v-if="badge" class="doc-badge">{{ badge }}</span>
-      </h1>
-      <p class="doc-lead">{{ description }}</p>
-    </header>
-
-    <div v-if="whenToUse && whenToUse.length > 0" class="doc-when-to-use">
-      <h2>{{ t.componentDoc.whenToUse }}</h2>
-      <ul>
-        <li v-for="(item, i) in whenToUse" :key="i">{{ item }}</li>
-      </ul>
-    </div>
-
-    <div v-if="$slots.notes" class="doc-notes">
-      <slot name="notes" />
-    </div>
-
-    <h2>{{ t.componentDoc.examples }}</h2>
-    <div class="doc-demos">
-      <slot />
-    </div>
-
-    <slot name="api" />
-  </section>
+  </DemoTOCProvider>
 </template>

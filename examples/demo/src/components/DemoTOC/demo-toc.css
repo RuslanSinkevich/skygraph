@@ -24,7 +24,12 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--demo-toc-width);
   gap: var(--demo-toc-gutter);
-  align-items: start;
+  /* Stretch the aside to fill the row height: a short auto-height
+   * column would clip `position: sticky` inside it almost instantly
+   * because sticky is bounded by its parent's box. We need the aside
+   * tall (== doc-page tall) so the rail can stay pinned through the
+   * entire scroll of the demos column. */
+  align-items: stretch;
   width: 100%;
 }
 
@@ -36,12 +41,18 @@
   min-width: 0;
 }
 
+.doc-toc-aside {
+  /* The aside itself fills the grid row; the actual rail inside is
+   * sticky and stays pinned within this tall container. */
+  align-self: stretch;
+  height: 100%;
+}
+
 /* ── Right rail ──────────────────────────────────────────────────── */
 
 .demo-toc {
   position: sticky;
   top: var(--demo-toc-sticky-top);
-  align-self: start;
   max-height: calc(100vh - var(--demo-toc-sticky-top) - 24px);
   overflow-y: auto;
   padding: 24px 0 24px 16px;

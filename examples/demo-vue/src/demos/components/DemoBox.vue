@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import { useI18n } from '../../i18n'
 import SourceCode from './SourceCode.vue'
+import { useDemoTOC } from './DemoTOC'
 
 /**
  * `DemoBox` — single example card.
@@ -14,6 +15,8 @@ import SourceCode from './SourceCode.vue'
  *     `useI18n().t.demoBox.*` (paritet React `t.demoBox.*`).
  *   - `flush` / `vertical` toggle the preview layout for wide
  *     components (Table, Charts) and stacked previews.
+ *   - `useDemoTOC` registers the box with the page TOC; no-op when
+ *     there's no `<DemoTOCProvider>` above (guide pages etc.).
  *
  * Vue-side delta vs React: the code block is rendered through the
  * existing {@link SourceCode} component (a `<pre><code>` wrapper),
@@ -41,6 +44,8 @@ const { t } = useI18n()
 const open = ref(props.defaultOpen)
 const copied = ref(false)
 const hasCode = computed(() => typeof props.code === 'string' && props.code.trim().length > 0)
+
+const { id: tocId, ref: tocRef } = useDemoTOC(toRef(props, 'title'))
 
 const previewClasses = computed(() =>
   [
@@ -71,7 +76,7 @@ function toggle() {
 </script>
 
 <template>
-  <div class="demo-box">
+  <div class="demo-box" :id="tocId" :ref="tocRef">
     <div :class="previewClasses">
       <slot />
     </div>
