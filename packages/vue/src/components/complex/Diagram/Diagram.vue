@@ -17,20 +17,15 @@
  */
 import { computed, getCurrentInstance, onBeforeUnmount, ref, watch } from 'vue'
 import {
-  computeEdgeEndpoint,
+  resolveEdgeEndpoint,
   getBezierPath,
   pointsToPath,
   pointsToRoundedPath,
   routeOrthogonal,
   type AABB,
-  type Anchor,
-  type AnchorId,
-  type EdgeEndpoint,
   type GraphEdge,
-  type GraphEngine,
   type GraphNode,
   type NodeId,
-  type Point,
   type ResolvedEndpoint,
 } from '@skygraph/core'
 import { printElement } from '../../../utils/print'
@@ -158,72 +153,21 @@ const boundsById = computed<Map<NodeId, AABB>>(() => {
 
 // ─── Edge geometry ─────────────────────────────────────────────────────────
 
-function localOriginOffset(node: GraphNode): { x: number; y: number } {
-  const o = node.outline
-  if (o.kind === 'ellipse') return { x: -o.rx, y: -o.ry }
-  return { x: 0, y: 0 }
-}
-
-function resolveAnchor(
-  g: GraphEngine,
-  nodeId: NodeId,
-  refer: AnchorId | { s: number },
-): Anchor | null {
-  const anchors = g.anchorsOf(nodeId)
-  if (typeof refer === 'string') {
-    return anchors.find((a) => a.id === refer) ?? null
-  }
-  let best: Anchor | null = null
-  let bestDiff = Infinity
-  for (const a of anchors) {
-    const diff = Math.abs(a.s - refer.s)
-    if (diff < bestDiff) {
-      bestDiff = diff
-      best = a
-    }
-  }
-  return best
-}
-
-function endpointWorldPoint(g: GraphEngine, ep: EdgeEndpoint): Point | null {
-  const node = g.getNode(ep.node)
-  if (!node) return null
-  const a = resolveAnchor(g, ep.node, ep.anchor)
-  if (!a) return null
-  const b = g.boundsOf(ep.node)
-  const off = localOriginOffset(node)
-  return [b.x + (a.point[0] - off.x), b.y + (a.point[1] - off.y)]
-}
-
 /**
- * Single canonical endpoint resolver — every routing mode starts from
- * the same midpoint-of-the-nearest-side geometry, shifted outward by
- * `padding` so the arrowhead has a clean gap to land in. Parity with
- * the React adapter (`resolveEdgeEndpoint`). For non-rect outlines we
- * fall back to the literal anchor + direction-derived side.
+ * Pure-geometry floating endpoint pair — parity with the React adapter
+ * which delegates to `resolveEdgeEndpoint` from `@skygraph/core`
+ * (a port of xyflow / mxGraph). Anchor information from the engine is
+ * intentionally ignored at the render layer; see the matching
+ * comment in `Diagram.tsx` for the rationale.
  */
-function resolveEdgeEndpoint(
-  g: GraphEngine,
-  ep: EdgeEndpoint,
-  opposite: Point,
-  padding: number,
-): ResolvedEndpoint | null {
-  const node = g.getNode(ep.node)
-  if (!node) return null
-  const raw = endpointWorldPoint(g, ep)
-  if (!raw) return null
-  if (node.outline.kind !== 'rect' && node.outline.kind !== 'polygon') {
-    const bb = g.boundsOf(ep.node)
-    const cx = bb.x + bb.w / 2
-    const cy = bb.y + bb.h / 2
-    const dx = opposite[0] - cx
-    const dy = opposite[1] - cy
-    const side =
-      Math.abs(dx) >= Math.abs(dy) ? (dx >= 0 ? 'right' : 'left') : dy >= 0 ? 'bottom' : 'top'
-    return { point: raw, side, forced: false }
+function resolveEdgePair(
+  sourceBox: AABB,
+  targetBox: AABB,
+): { source: ResolvedEndpoint; target: ResolvedEndpoint } {
+  return {
+    source: resolveEdgeEndpoint(sourceBox, targetBox, ENDPOINT_PADDING),
+    target: resolveEdgeEndpoint(targetBox, sourceBox, ENDPOINT_PADDING),
   }
-  const bounds = g.boundsOf(ep.node)
-  return computeEdgeEndpoint(bounds, raw, opposite, padding)
 }
 
 function buildEdgePath(
@@ -284,17 +228,10 @@ const renderedEdges = computed<RenderedEdge[]>(() => {
   const map = boundsById.value
   const out: RenderedEdge[] = []
   for (const edge of edges.value) {
-    // Two-pass resolution: each endpoint needs to know where the OTHER
-    // one literally sits before it can commit to a "floating" midpoint.
-    // Skipping the two-pass means corner anchors leak through and we
-    // get diagonal lines across nodes — the regression the routing
-    // overhaul is meant to fix.
-    const rawA = endpointWorldPoint(props.graph, edge.from)
-    const rawB = endpointWorldPoint(props.graph, edge.to)
-    if (!rawA || !rawB) continue
-    const source = resolveEdgeEndpoint(props.graph, edge.from, rawB, ENDPOINT_PADDING)
-    const target = resolveEdgeEndpoint(props.graph, edge.to, rawA, ENDPOINT_PADDING)
-    if (!source || !target) continue
+    const sBox = map.get(edge.from.node)
+    const tBox = map.get(edge.to.node)
+    if (!sBox || !tBox) continue
+    const { source, target } = resolveEdgePair(sBox, tBox)
 
     let obstacles: AABB[] | undefined
     if (props.routeAroundNodes && edge.routing === 'orthogonal') {
@@ -304,13 +241,13 @@ const renderedEdges = computed<RenderedEdge[]>(() => {
         if (!skip.has(id)) obstacles.push(bb)
       }
     }
-    // Bounds only flow to the orthogonal A* router; bezier no longer
-    // needs them (the resolved endpoint already carries its `side`).
-    const sb = edge.routing === 'orthogonal' ? map.get(edge.from.node) : undefined
-    const tb = edge.routing === 'orthogonal' ? map.get(edge.to.node) : undefined
+    // Resolved endpoints already sit OUTSIDE the bboxes (padded), so
+    // we no longer pass source/target bounds to the router — letting
+    // it re-derive an "exit side" on top of an outside-the-box point
+    // produced loops around the source node.
     out.push({
       id: String(edge.id),
-      d: buildEdgePath(edge, source, target, obstacles, sb, tb),
+      d: buildEdgePath(edge, source, target, obstacles, undefined, undefined),
       routing: edge.routing,
       mid: {
         x: (source.point[0] + target.point[0]) / 2,
@@ -824,13 +761,14 @@ const hoveredEdgeRecord = computed<GraphEdge | null>(() =>
 )
 const hoveredEdgeMid = computed<{ x: number; y: number } | null>(() => {
   if (!hoveredEdgeRecord.value) return null
-  const rawA = endpointWorldPoint(props.graph, hoveredEdgeRecord.value.from)
-  const rawB = endpointWorldPoint(props.graph, hoveredEdgeRecord.value.to)
-  if (!rawA || !rawB) return null
-  const a = resolveEdgeEndpoint(props.graph, hoveredEdgeRecord.value.from, rawB, ENDPOINT_PADDING)
-  const b = resolveEdgeEndpoint(props.graph, hoveredEdgeRecord.value.to, rawA, ENDPOINT_PADDING)
-  if (!a || !b) return null
-  return { x: (a.point[0] + b.point[0]) / 2, y: (a.point[1] + b.point[1]) / 2 }
+  const sBox = boundsById.value.get(hoveredEdgeRecord.value.from.node)
+  const tBox = boundsById.value.get(hoveredEdgeRecord.value.to.node)
+  if (!sBox || !tBox) return null
+  const { source, target } = resolveEdgePair(sBox, tBox)
+  return {
+    x: (source.point[0] + target.point[0]) / 2,
+    y: (source.point[1] + target.point[1]) / 2,
+  }
 })
 
 // ─── Canvas bounds (SVG sizing) ───────────────────────────────────────────

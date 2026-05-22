@@ -552,179 +552,141 @@ export function nearestSide(box: AABB, target: Point): Side {
 }
 
 /**
- * Resolved edge endpoint geometry — output of {@link computeEdgeEndpoint}.
+ * Resolved edge endpoint geometry — output of {@link resolveEdgeEndpoint}.
  *
- * `point` is in world space, sitting at the **midpoint of the chosen
- * side** of `box` offset by `padding` outward. `side` records which
- * face the connector exits / enters (the routers and bezier builder
- * consume this so control handles and stubs are perpendicular).
- *
- * `forced` is `true` when the chosen side came from an explicit
- * border-anchor (corner like `nw`/`ne` or side-midpoint like `s=0.25`).
- * Consumers can branch on this to honour user intent or override it
- * when geometry would clearly look wrong (e.g. a `nw`-anchored edge
- * whose target sits to the south-east).
+ * `point` is in world space, sitting on (or just outside of) the
+ * `box` border. `side` records which face the connector exits / enters
+ * so downstream consumers (bezier control handles, orthogonal stubs)
+ * can stay perpendicular.
  */
 export interface ResolvedEndpoint {
   point: Point
   side: Side
-  forced: boolean
 }
 
 /**
- * Single canonical resolver used by all edge-routing modes (straight,
- * orthogonal, bezier). Replaces the scattered ad-hoc anchor → world
- * logic that lived in each `<Diagram>` adapter and used to produce four
- * subtly different shapes for the same input — the "edges look bad"
- * regression that drove the routing overhaul.
+ * Compute the intersection of the segment between the centre of
+ * `intersectionBox` and `targetCenter` with the perimeter of
+ * `intersectionBox`.
  *
- * Algorithm
- * ─────────
+ * **Source / credit.** Direct port of the algorithm used by xyflow
+ * (React Flow) for FloatingEdges and by mxGraph / draw.io's
+ * `mxPerimeter.RectanglePerimeter`. The closed-form derivation is in
+ * https://math.stackexchange.com/questions/1724792 — it parametrises
+ * the rectangle as the manhattan-norm rhombus `|x| + |y| = 1` and
+ * solves for the unit intersection in one step, which is faster and
+ * numerically more stable than the angle-based formulation.
  *
- *   1. Pick a **side**. The geometry-first preference is the side of
- *      `box` whose midpoint is nearest the `opposite` endpoint
- *      (i.e. `nearestSide(box, opposite)`).
+ * We use this as the canonical endpoint resolver for every routing
+ * mode (`straight` / `orthogonal` / `bezier`). The visible benefit is
+ * stability: nothing in this function depends on user-supplied
+ * anchors — the side, the point, the angle of approach are all pure
+ * functions of the two rectangles' bounding boxes, so dragging a node
+ * around never produces the "wrong-side-of-the-box" / "edge cuts
+ * through the node body" artifacts that the anchor-honouring resolver
+ * used to leak.
  *
- *      - **Border anchors** (positions sitting on or very near `box`'s
- *        perimeter, including corners like `nw`/`ne` and side-midpoints
- *        like `s = 0.25`) act as a HINT, not a hard override:
- *          * If their face is the same as the geometry-preferred one,
- *            we honour the anchor (`forced = true`).
- *          * If their face would point AWAY from `opposite`, we drop
- *            the hint and use geometry instead — this is the fix for
- *            the "stub-then-180°-loop" artifact that showed up on
- *            random graphs where every edge bound to `nw`.
- *          * Corner anchors disambiguate by which face points more
- *            strongly at `opposite`.
- *
- *   2. Place the **point** at the midpoint of the chosen side, offset
- *      OUTWARD by `padding` world units. The padding leaves room for
- *      the arrowhead marker between the path tip and the node border —
- *      a small but visually critical gap (≈ 8 units) that mainstream
- *      diagram libraries (React Flow, draw.io, Lucidchart) use to keep
- *      arrows from biting into the node border, especially on nodes
- *      with `border-radius`.
- *
- *   3. Return the side so downstream routers (bezier control points,
- *      orthogonal stubs) can stay perpendicular to the node face.
- *
- * When `box` has zero area (degenerate node) the function returns the
- * literal `anchor` position with the geometry-derived side.
+ * Returns the world-space intersection point. When `box` has zero
+ * area (degenerate node) the function returns its centre so callers
+ * can still draw a useful edge to it.
  */
-export function computeEdgeEndpoint(
-  box: AABB,
-  anchor: Point,
-  opposite: Point,
-  padding: number = 0,
-): ResolvedEndpoint {
-  // Degenerate AABB (point-like node) — there is no perimeter to
-  // project onto, so return the anchor as-is and derive the side from
-  // raw direction to `opposite`.
-  if (box.w <= 0 || box.h <= 0) {
-    const cx = box.x + box.w / 2
-    const cy = box.y + box.h / 2
-    const dx = opposite[0] - cx
-    const dy = opposite[1] - cy
-    const side: Side =
-      Math.abs(dx) >= Math.abs(dy) ? (dx >= 0 ? 'right' : 'left') : dy >= 0 ? 'bottom' : 'top'
-    return { point: anchor, side, forced: false }
+export function getNodeIntersection(intersectionBox: AABB, targetCenter: Point): Point {
+  const w = intersectionBox.w / 2
+  const h = intersectionBox.h / 2
+  const x2 = intersectionBox.x + w
+  const y2 = intersectionBox.y + h
+
+  // Degenerate — collapse to centre. Without this the algebra below
+  // divides by zero on point-like nodes.
+  if (w === 0 || h === 0) return [x2, y2]
+
+  const x1 = targetCenter[0]
+  const y1 = targetCenter[1]
+
+  const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h)
+  const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h)
+  const denom = Math.abs(xx1) + Math.abs(yy1)
+  if (denom === 0) {
+    // Centres coincide (overlapping nodes) — return the right side as
+    // a stable default; the visual layer will collapse the edge.
+    return [intersectionBox.x + intersectionBox.w, y2]
   }
-
-  const geometrySide = nearestSide(box, opposite)
-
-  // Detect border / corner anchors. Tolerance is intentionally generous
-  // (1 world unit) so user-set anchors that snap to the perimeter via
-  // floating-point math (`s = 0.25` → `[w, h*0]` etc.) still register.
-  const tolerance = 1
-  const onLeft = Math.abs(anchor[0] - box.x) <= tolerance
-  const onRight = Math.abs(anchor[0] - (box.x + box.w)) <= tolerance
-  const onTop = Math.abs(anchor[1] - box.y) <= tolerance
-  const onBottom = Math.abs(anchor[1] - (box.y + box.h)) <= tolerance
-  const horizontalHit = onLeft || onRight
-  const verticalHit = onTop || onBottom
-
-  let chosen: Side = geometrySide
-  let forced = false
-
-  if (horizontalHit || verticalHit) {
-    // Build the candidate sides this anchor explicitly sits on.
-    const candidates: Side[] = []
-    if (onRight) candidates.push('right')
-    if (onLeft) candidates.push('left')
-    if (onBottom) candidates.push('bottom')
-    if (onTop) candidates.push('top')
-
-    // Honour the candidate only if it agrees with where `opposite`
-    // actually is — otherwise we'd route AWAY from the target.
-    if (candidates.includes(geometrySide)) {
-      chosen = geometrySide
-      forced = true
-    } else if (candidates.length === 1) {
-      // Single-side anchor (mid-side, not a corner). User intent is
-      // unambiguous; honour it even if geometry disagrees — this is
-      // the "exit from the right" case where the consumer made a
-      // deliberate choice.
-      chosen = candidates[0]!
-      forced = true
-    } else {
-      // Corner anchor (two sides) AND geometry disagrees with both.
-      // Pick the candidate whose face points more strongly at
-      // `opposite`.
-      const cx = box.x + box.w / 2
-      const cy = box.y + box.h / 2
-      const dx = opposite[0] - cx
-      const dy = opposite[1] - cy
-      // Score each candidate by how aligned its outward normal is
-      // with the (centre → opposite) vector.
-      let bestScore = -Infinity
-      for (const c of candidates) {
-        const [nx, ny] = sideNormal(c)
-        const score = nx * dx + ny * dy
-        if (score > bestScore) {
-          bestScore = score
-          chosen = c
-        }
-      }
-      forced = true
-    }
-  }
-
-  // Snap the point to the midpoint of the chosen side, shifted outward
-  // by `padding`. Midpoint (rather than the literal anchor) is the
-  // crucial bit — it dissolves the "edges crowd at the same corner"
-  // mess, because every edge exits the *middle* of its chosen face.
-  const cx = box.x + box.w / 2
-  const cy = box.y + box.h / 2
-  let point: Point
-  switch (chosen) {
-    case 'right':
-      point = [box.x + box.w + padding, cy]
-      break
-    case 'left':
-      point = [box.x - padding, cy]
-      break
-    case 'bottom':
-      point = [cx, box.y + box.h + padding]
-      break
-    case 'top':
-      point = [cx, box.y - padding]
-      break
-  }
-
-  return { point, side: chosen, forced }
+  const a = 1 / denom
+  const xx3 = a * xx1
+  const yy3 = a * yy1
+  const x = w * (xx3 + yy3) + x2
+  const y = h * (-xx3 + yy3) + y2
+  return [x, y]
 }
 
-function sideNormal(side: Side): [number, number] {
+/**
+ * Classify which face of `box` the `intersectionPoint` sits on.
+ * Companion to {@link getNodeIntersection} — together they replace the
+ * old anchor-driven endpoint resolver.
+ *
+ * The function rounds both the box position and the point to integer
+ * pixels (matches the xyflow heuristic) before comparing, which keeps
+ * floating-point noise from picking the wrong side when an
+ * intersection lands almost exactly on a corner.
+ */
+export function getEdgePosition(box: AABB, intersectionPoint: Point): Side {
+  const nx = Math.round(box.x)
+  const ny = Math.round(box.y)
+  const px = Math.round(intersectionPoint[0])
+  const py = Math.round(intersectionPoint[1])
+  if (px <= nx + 1) return 'left'
+  if (px >= nx + box.w - 1) return 'right'
+  if (py <= ny + 1) return 'top'
+  if (py >= ny + box.h - 1) return 'bottom'
+  // Point sits inside the box (shouldn't happen with a real
+  // intersection result, but keep a safe fallback so callers never
+  // see `undefined`).
+  return 'top'
+}
+
+/**
+ * Single canonical edge endpoint resolver used by `<Diagram>` for
+ * every routing mode. Wraps {@link getNodeIntersection} +
+ * {@link getEdgePosition} into the `{ point, side }` shape the
+ * adapters expect, and applies a small outward `padding` so the
+ * arrowhead marker has room to sit between the path tip and the node
+ * border (matches React Flow / draw.io behaviour).
+ *
+ * **Important: anchor information is intentionally ignored here.**
+ * The `<Diagram>` API still accepts `from: { anchor: 'nw' }` etc. for
+ * back-compat and semantic intent, but the visual layer now derives
+ * the endpoint purely from bounding boxes. This is the floating-edges
+ * approach taken by every mainstream diagram library — it's what
+ * makes drag-around-the-canvas behaviour feel correct on randomly
+ * laid-out graphs.
+ */
+export function resolveEdgeEndpoint(
+  sourceBox: AABB,
+  targetBox: AABB,
+  padding: number = 0,
+): ResolvedEndpoint {
+  const targetCenter: Point = [targetBox.x + targetBox.w / 2, targetBox.y + targetBox.h / 2]
+  const raw = getNodeIntersection(sourceBox, targetCenter)
+  const side = getEdgePosition(sourceBox, raw)
+  if (padding === 0) return { point: raw, side }
+  // Push the point outward along the chosen side's normal so the
+  // marker glyph has a clean gap.
+  let point: Point = raw
   switch (side) {
     case 'right':
-      return [1, 0]
+      point = [raw[0] + padding, raw[1]]
+      break
     case 'left':
-      return [-1, 0]
+      point = [raw[0] - padding, raw[1]]
+      break
     case 'bottom':
-      return [0, 1]
+      point = [raw[0], raw[1] + padding]
+      break
     case 'top':
-      return [0, -1]
+      point = [raw[0], raw[1] - padding]
+      break
   }
+  return { point, side }
 }
 
 /**

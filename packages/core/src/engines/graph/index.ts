@@ -7,7 +7,9 @@ export {
   nearestSide,
   inferSide,
   floatingAnchor,
-  computeEdgeEndpoint,
+  getNodeIntersection,
+  getEdgePosition,
+  resolveEdgeEndpoint,
 } from './router'
 export type { RouteOrthogonalOptions, BezierPathOptions, ResolvedEndpoint, Side } from './router'
 export { aabbFromOBB, obbCorners, obbContainsPoint } from './obb'

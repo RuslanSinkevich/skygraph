@@ -1,17 +1,13 @@
-// Lightweight standalone Playwright script — runs against the already
-// running `pnpm --filter demo-vue dev` server on :5174/vue/. No
-// `playwright.config.ts` involvement, no spinning React.
+// Fast screenshot capture for Diagram demo boxes.
+// Runs against the already running `pnpm --filter demo-vue dev` server.
 //
-// Usage:
-//   node scripts/diagram-screenshots.mjs
-//
-// Output: `_audit/edge-routing-screenshots/*.png`
+// Usage: node scripts/diagram-screenshots.mjs
 
 import { chromium } from '@playwright/test'
 import { mkdir } from 'node:fs/promises'
 import path from 'node:path'
 
-const OUT_DIR = path.resolve(process.cwd(), '_audit/edge-routing-screenshots')
+const OUT_DIR = path.resolve(process.cwd(), '_audit/edge-routing-v2')
 const BASE = process.env.BASE ?? 'http://localhost:5174/vue/'
 
 await mkdir(OUT_DIR, { recursive: true })
@@ -23,40 +19,42 @@ const page = await ctx.newPage()
 console.log(`opening ${BASE}#/components/diagram`)
 await page.goto(`${BASE}#/components/diagram`, { waitUntil: 'networkidle' })
 await page.waitForSelector('.sg-diagram', { timeout: 30000 })
-await page.waitForTimeout(2000)
+// Wait for LargeGraph to settle and for layout / async demos to mount.
+await page.waitForTimeout(2500)
 
-const boxes = await page
-  .locator('section, .sg-demo-box, [class*="DemoBox"], [class*="demo-box"]')
-  .all()
-console.log(`found ${boxes.length} potential demo boxes`)
+// Group each diagram with its nearest preceding heading. The demo
+// uses `<DemoBox :title="..."><Diagram /></DemoBox>`, which puts the
+// title in an h3 / h4 inside the same parent — we walk up the DOM to
+// find that ancestor.
+const diagrams = await page.locator('.sg-diagram').all()
+console.log(`found ${diagrams.length} .sg-diagram elements`)
 
 let i = 0
-const seen = new Set()
-for (const box of boxes) {
-  const has = (await box.locator('.sg-diagram').count()) > 0
-  if (!has) continue
-  const title =
-    (await box.locator('h2, h3, .sg-demo-box-title').first().textContent().catch(() => '')) ?? ''
-  const slug =
-    title
-      .trim()
-      .toLowerCase()
-      .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 60) || `box-${i}`
-  if (seen.has(slug)) continue
-  seen.add(slug)
-  const file = path.join(OUT_DIR, `${String(i).padStart(2, '0')}-${slug}.png`)
-  await box.scrollIntoViewIfNeeded()
-  await page.waitForTimeout(200)
-  try {
-    await box.locator('.sg-diagram').first().screenshot({ path: file })
-    console.log(`  saved ${file}`)
-    i++
-  } catch (err) {
-    console.warn(`  skip ${slug}: ${err.message}`)
-  }
+for (const diagram of diagrams) {
+  // Resolve title via the closest box ancestor that has a heading.
+  const meta = await diagram.evaluate((el) => {
+    let cur = el.parentElement
+    while (cur) {
+      const h = cur.querySelector('h2, h3, h4, .sg-demo-box-title')
+      if (h && h.textContent && h.textContent.trim().length > 0) {
+        return { title: h.textContent.trim() }
+      }
+      cur = cur.parentElement
+    }
+    return { title: '' }
+  })
+  const slug = (meta.title || `diagram-${i}`)
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+  const file = path.join(OUT_DIR, `${String(i).padStart(2, '0')}-${slug || `box-${i}`}.png`)
+  await diagram.scrollIntoViewIfNeeded()
+  await page.waitForTimeout(120)
+  await diagram.screenshot({ path: file })
+  console.log(`  ${i.toString().padStart(2, '0')} ${meta.title || '(no title)'} → ${path.basename(file)}`)
+  i++
 }
 
-console.log(`done — ${i} screenshots saved to ${OUT_DIR}`)
+console.log(`\ndone — ${i} screenshots in ${OUT_DIR}`)
 await browser.close()

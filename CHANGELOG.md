@@ -7,55 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Diagram — edge routing concept refresh
+### Diagram — floating edges (xyflow / mxGraph port)
 
-After three rounds of patching the same set of edge-rendering symptoms
-(arrows biting into nodes; diagonal connectors cutting through other
-nodes when both endpoints bound to corner anchors; arrowheads visually
-detached from the line on hover) the `<Diagram>` rendering stack now
-moves to a single canonical endpoint resolver and a strokeWidth-scaled
-"open-V" arrowhead modelled after React Flow / draw.io / Lucidchart.
+The custom anchor-honouring resolver from the previous round was
+producing too many edge cases (corner anchors fighting the geometry,
+endpoint-on-the-wrong-side artifacts when nodes were dragged across
+each other, orthogonal routes looping back over their own source
+node). It's replaced now with a direct port of the floating-edges
+algorithm used by every mainstream diagram library:
 
-- **`@skygraph/core`: `computeEdgeEndpoint(box, anchor, opposite, padding)`**
-  is the new single resolver every routing mode (straight / orthogonal /
-  bezier) now starts from. It picks the side of `box` whose midpoint is
-  nearest `opposite`, snaps the connection point to that midpoint, and
-  shifts it `padding` units OUTWARD so the arrowhead has a clean gap to
-  occupy between the path tip and the node border. Corner anchors
-  (`nw`/`ne`/...) act as a HINT — if they would route AWAY from the
-  opposite endpoint the resolver drops them; otherwise it honours them
-  with `forced: true`. This is the engine-side fix for the
-  "stub-then-180°-loop" artifact on randomly-laid-out graphs.
-- **`@skygraph/react` + `@skygraph/vue`: `<Diagram>`** routes every edge
-  via the resolver with an 8-unit `ENDPOINT_PADDING`. Straight edges
-  thus stop running diagonally through neighbouring nodes (each
-  endpoint floats to the face that points at the other), orthogonal /
-  bezier routings drop the per-mode anchor heuristics they used to
-  duplicate, and the source/target `side` is reused by the bezier
-  control-point builder so curves always exit perpendicular to the
-  face the resolver picked.
-- **Marker geometry switched to an open-V in `strokeWidth` units**:
-  `viewBox="-10 -10 20 20"`, `refX/refY = 0`, `markerUnits="strokeWidth"`,
-  glyph drawn with `fill: none` and `stroke: context-stroke`. The
-  arrowhead now scales with the line stroke (so hover thickens the
-  whole edge, not just its body) and lands inside the new endpoint
-  padding gap instead of overlapping the node border. The CSS fallback
-  paints the glyph with `currentColor` for Firefox / older Safari where
-  `context-stroke` is unsupported.
-- **CSS**: `.sg-diagram-edge` now uses `stroke-linecap: butt` (the
-  previous `round` cap added a half-circle "pill" that leaked over the
-  arrow base on every edge tip), `stroke-width: 1.5` (down from `1.75`)
-  with hover at `2.25` (down from `2.5`), and `bezier` curves get
-  `stroke-width: 1.75` (down from `2`). Marker fill rule moved from
-  `fill: currentColor` to `stroke: currentColor; fill: none` to suit
-  the open-V geometry.
-- **Tests**: +9 cases in `packages/core/src/__tests__/graph.test.ts`
-  covering `computeEdgeEndpoint` (geometry side picking, padding
-  outward, corner anchor honour + drop, single-side anchor wins on
-  user intent, degenerate zero-area box, two edges from the same node
-  fan across different sides). Total core suite 421 tests (420 +
-  1 skipped); React `diagram.test.tsx` 40/40, Vue diagram + parity
-  suites 762/762.
+- **xyflow / React Flow** — `getNodeIntersection` /
+  `getEdgePosition` from the FloatingEdges example. The algebraic
+  form derives from
+  [math.stackexchange.com/q/1724792](https://math.stackexchange.com/questions/1724792)
+  and parametrises the rectangle as the manhattan-norm rhombus
+  `|x| + |y| = 1`, solving for the unit intersection in one step.
+- **mxGraph / draw.io** — `mxPerimeter.RectanglePerimeter`. Same
+  geometry, formulated through `atan2` instead of the rhombus
+  parametrisation; both produce identical points for axis-aligned
+  rectangles.
+
+Anchor information from `GraphEdge.from / to` is now **ignored at the
+render layer**. It remains meaningful in the engine model (still
+returned from `graph.anchorsOf`, still serialised, still drives the
+public types) — but `<Diagram>` derives the connection point purely
+from the two bounding boxes. This is the contract every mainstream
+library settled on for the same reason: it's the only formulation
+that survives arbitrary drag-around-the-canvas without producing
+artifacts.
+
+- **`@skygraph/core`: `getNodeIntersection(box, targetCenter)`** —
+  intersection of the segment `centre(box) → targetCenter` with the
+  rectangle perimeter. Direct port of xyflow's function with
+  citations.
+- **`@skygraph/core`: `getEdgePosition(box, point)`** — classifies
+  which face an intersection lands on (`top` / `right` / `bottom` /
+  `left`). Used by `getBezierPath` to keep control handles
+  perpendicular to the chosen face.
+- **`@skygraph/core`: `resolveEdgeEndpoint(sourceBox, targetBox,
+  padding)`** — single entry point used by `<Diagram>`. Wraps the
+  pair above, pushes the resulting point `padding` units outward
+  along the chosen side so the arrowhead has a clean gap between
+  path tip and node border.
+- **`@skygraph/core`: `computeEdgeEndpoint` REMOVED.** The
+  anchor-honouring resolver from the previous changeset is gone —
+  it was the source of the corner-anchor artifacts. If you were
+  depending on it directly (no consumers in-tree did),
+  `resolveEdgeEndpoint(sourceBox, targetBox)` is the replacement.
+- **`@skygraph/react` + `@skygraph/vue`: `<Diagram>`** routes every
+  edge via `resolveEdgeEndpoint` with `ENDPOINT_PADDING = 8`. The
+  old two-pass anchor resolution + `localOriginOffset` helpers are
+  gone. The orthogonal router no longer receives `sourceBounds` /
+  `targetBounds` either, because the endpoints already sit outside
+  the bboxes — re-deriving an "exit side" on top of an already-
+  outside-the-box point produced visible loops around the source
+  node (visible on the OrthogonalRouting demo in the previous
+  iteration). The router now consumes obstacles only, when
+  `routeAroundNodes` is on.
+- **Tests**: `computeEdgeEndpoint` tests replaced with 14 new cases
+  for the three new functions — straight side picking (left / right /
+  top / bottom), padding offset, symmetry of source↔target swap,
+  degenerate boxes, coinciding centres, two-edges-from-same-node
+  fan-out. Total core suite 426 tests (was 420 + the now-removed 9
+  + the new 14). React `diagram.test.tsx` 40/40, Vue diagram suites
+  7/7, all 51 Vue test files pass (762 tests).
 
 ### Diagram — edge routing overhaul
 
