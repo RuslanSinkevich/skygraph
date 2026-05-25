@@ -71,6 +71,25 @@
   position: relative;
 }
 
+/* Mobile fallback — when there's no explicit `scroll.x`, the table tries
+ * to flex into the available width which, on narrow viewports, collapses
+ * cells into illegible vertical stacks. Forcing horizontal overflow with
+ * `width: max-content` on the inner grid restores tabular layout and
+ * exposes a native horizontal scrollbar so users can pan instead of
+ * losing data. Only applies when `.sg-table-scroll-x` wasn't already set
+ * (which means the consumer opted-in to a controlled scroll width). */
+@media (max-width: 640px) {
+  .sg-table-scroll:not(.sg-table-scroll-x) {
+    overflow-x: auto;
+  }
+  .sg-table-scroll:not(.sg-table-scroll-x) .sg-table-grid,
+  .sg-table-scroll:not(.sg-table-scroll-x) .sg-table-pinned-top,
+  .sg-table-scroll:not(.sg-table-scroll-x) .sg-table-pinned-bottom {
+    min-width: 100%;
+    width: max-content;
+  }
+}
+
 /* Grid base.
  * The grid carries a solid base background so body cells (transparent by
  * default) and fixed-sticky cells draw over the same colour. Without this,

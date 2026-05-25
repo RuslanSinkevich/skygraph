@@ -6,7 +6,7 @@ export const en: DemoDict = {
     appTitle: 'SkyGraph',
     tagline: 'Reactive UI Library',
     heroSub:
-      'Headless reactive core + 50+ styled components. TypeScript-first. Zero runtime CSS-in-JS.',
+      'Headless reactive core + 78+ styled components. TypeScript-first. Zero runtime CSS-in-JS.',
     componentsBadgeSuffix: '+ Components',
   },
 
@@ -193,7 +193,7 @@ export const en: DemoDict = {
     cardCoreApiTitle: 'Core API',
     cardCoreApiDesc: 'createCore, createForm, createTable, createTree, createGraph',
     cardComponentsTitle: 'Components',
-    cardComponentsDesc: 'Browse 65+ ready-made UI components',
+    cardComponentsDesc: 'Browse 78+ ready-made UI components',
   },
 
   header: {
@@ -303,12 +303,54 @@ export const en: DemoDict = {
 
   roadmap: {
     title: 'Roadmap',
-    lead: 'Live snapshot of TODO.md. Closed items are tagged with the round that landed them; open items are candidates for upcoming streams.',
-    statClosed: 'closed',
-    statOpen: 'open',
+    lead: 'What has already shipped and what is coming next. Updated automatically from the repository.',
+    statClosed: 'done',
+    statOpen: 'planned',
     statTotal: 'total',
-    sourceLabel: 'Source: TODO.md',
-    emptyLabel: 'No items.',
+    sourceLabel: 'SkyGraph Roadmap',
+    emptyLabel: 'Nothing matches the current filter.',
+
+    metricComponents: 'components',
+    metricEngines: 'engines',
+    metricFrameworks: 'frameworks',
+    metricRounds: 'releases',
+
+    filterAll: 'All',
+    filterShipped: 'Shipped',
+    filterPlanned: 'Planned',
+    searchPlaceholder: 'Search…',
+    searchAriaLabel: 'Filter roadmap items',
+
+    sectionsHeading: 'Features',
+    sectionsLead: 'Major feature areas and their progress. Expand a card to see details.',
+    sectionProgressLabel: 'progress',
+    sectionStatusComplete: 'complete',
+    sectionStatusActive: 'active',
+    sectionProgressCount: '{closed} / {total}',
+
+    timelineHeading: 'Release history',
+    timelineLead: 'Every release with a summary of what was added or changed.',
+    roundLabel: 'Release',
+
+    nextHeading: "What's next",
+    nextLead: 'Upcoming features and improvements.',
+    nextEmpty: 'Everything is done for now.',
+
+    itemBadgeShipped: 'shipped',
+    itemBadgePlanned: 'planned',
+    itemRound: 'release {n}',
+
+    sourceLink: 'View raw source on GitHub →',
+
+    overallProgressLabel: 'Overall progress',
+    metricTests: 'tests',
+    latestEyebrow: 'Latest release',
+    topicSingular: 'feature',
+    topicPlural: 'features',
+    commitSingular: 'change',
+    commitPlural: 'changes',
+    changelogLink: 'Full changelog →',
+    moreLabel: 'more',
   },
 
   about: {
@@ -338,9 +380,9 @@ export const en: DemoDict = {
     multiFrameworkLead:
       'The core engine and the styling contract are framework-agnostic. Shipped adapters:',
     multiFrameworkReact:
-      'React — hooks, ConfigProvider, 47 UI primitives + 17 complex components on top of the same core.',
+      'React — hooks, ConfigProvider, 78+ styled components on the same shared core.',
     multiFrameworkVue:
-      'Vue 3 — Composition-API bindings, 52 SFC primitives + 14 complex — same core, identical `.sg-*` classes.',
+      'Vue 3 — Composition API, 78+ styled components — same core, identical `.sg-*` classes.',
   },
 
   benchmarks: {

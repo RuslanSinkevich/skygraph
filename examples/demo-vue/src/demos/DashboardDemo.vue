@@ -4,12 +4,7 @@
  * (parity with React; carta §C — `dashboard-no-css-vars`).
  */
 import { computed } from 'vue'
-import {
-  ComponentDoc,
-  DemoBox,
-  PropsTable,
-  type PropDef,
-} from './components'
+import { ComponentDoc, DemoBox, PropsTable, type PropDef } from './components'
 import { useDashboardDocStrings } from './dashboard-doc/useStrings'
 
 import BasicDb from './dashboard/Basic.demo.vue'
@@ -57,7 +52,11 @@ const editorProps = computed<PropDef[]>(() => [
   { name: 'resizable', description: t.value.editorResizable, type: 'boolean', default: 'true' },
   { name: 'minW', description: t.value.editorMinW, type: 'number', default: '1' },
   { name: 'minH', description: t.value.editorMinH, type: 'number', default: '1' },
-  { name: '@layout-change', description: t.value.editorEmitLayoutChange, type: '(widgets: DashboardWidget[]) => void' },
+  {
+    name: '@layout-change',
+    description: t.value.editorEmitLayoutChange,
+    type: '(widgets: DashboardWidget[]) => void',
+  },
 ])
 </script>
 
@@ -69,31 +68,51 @@ const editorProps = computed<PropDef[]>(() => [
     :description="t.pageLead"
     :when-to-use="[t.pageWhen1, t.pageWhen2, t.pageWhen3]"
   >
-    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource">
+    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource" flush>
       <BasicDb />
     </DemoBox>
 
-    <DemoBox :title="t.demoActionsTitle" :description="t.demoActionsDesc" :code="WithActionsSource">
+    <DemoBox
+      :title="t.demoActionsTitle"
+      :description="t.demoActionsDesc"
+      :code="WithActionsSource"
+      flush
+    >
       <WithActionsDb />
     </DemoBox>
 
-    <DemoBox :title="t.demoEditorTitle" :description="t.demoEditorDesc" :code="EditorSource">
+    <DemoBox :title="t.demoEditorTitle" :description="t.demoEditorDesc" :code="EditorSource" flush>
       <EditorDb />
     </DemoBox>
 
-    <DemoBox :title="t.demoMixedTitle" :description="t.demoMixedDesc" :code="MixedSource">
+    <DemoBox :title="t.demoMixedTitle" :description="t.demoMixedDesc" :code="MixedSource" flush>
       <MixedDb />
     </DemoBox>
 
-    <DemoBox :title="t.demoResponsiveTitle" :description="t.demoResponsiveDesc" :code="ResponsiveSource">
+    <DemoBox
+      :title="t.demoResponsiveTitle"
+      :description="t.demoResponsiveDesc"
+      :code="ResponsiveSource"
+      flush
+    >
       <ResponsiveDb />
     </DemoBox>
 
-    <DemoBox :title="t.demoRealtimeTitle" :description="t.demoRealtimeDesc" :code="RealtimeSource">
+    <DemoBox
+      :title="t.demoRealtimeTitle"
+      :description="t.demoRealtimeDesc"
+      :code="RealtimeSource"
+      flush
+    >
       <RealtimeDb />
     </DemoBox>
 
-    <DemoBox :title="t.demoLargeGridTitle" :description="t.demoLargeGridDesc" :code="LargeGridSource">
+    <DemoBox
+      :title="t.demoLargeGridTitle"
+      :description="t.demoLargeGridDesc"
+      :code="LargeGridSource"
+      flush
+    >
       <LargeGridDb />
     </DemoBox>
 

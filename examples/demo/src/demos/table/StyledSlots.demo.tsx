@@ -14,16 +14,21 @@ export function StyledSlotsTable() {
   const columns: TableColumn[] = [
     { key: 'name', title: 'Name', width: 180, headerClassName: 'demo-th-name' },
     { key: 'city', title: 'City', width: 120 },
+    { key: 'role', title: 'Role', width: 120 },
+    {
+      key: 'salary',
+      title: 'Salary',
+      width: 110,
+      align: 'right',
+      render: (v) => `$${Number(v).toLocaleString()}`,
+    },
     {
       key: 'status',
       title: 'Status',
       width: 120,
       headerClassName: 'demo-th-status',
       render: (val) => (
-        <Badge
-          status={val === 'active' ? 'success' : 'default'}
-          text={String(val)}
-        />
+        <Badge status={val === 'active' ? 'success' : 'default'} text={String(val)} />
       ),
     },
   ]
@@ -32,7 +37,7 @@ export function StyledSlotsTable() {
     <Table
       columns={columns}
       data={people}
-      pageSize={5}
+      pageSize={6}
       searchable
       classNames={{
         root: 'demo-table-root',

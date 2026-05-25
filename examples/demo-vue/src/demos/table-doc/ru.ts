@@ -87,8 +87,9 @@ export const tableDocRu: TableDocStrings = {
   demoVirtualDynamicTitle: 'Виртуальный — динамическая высота',
   demoVirtualDynamicDesc:
     'Передайте функцию `rowHeight(row)` для разных высот; `estimateRowHeight` сглаживает layout-jank до измерения.',
-  demoLargeDatasetTitle: 'Большой датасет',
-  demoLargeDatasetDesc: '1 000 строк через `pageSize`. Для тысяч записей включайте `virtual`.',
+  demoLargeDatasetTitle: 'Большой датасет (стресс-тест)',
+  demoLargeDatasetDesc:
+    '10 000 строк с виртуализацией, сортировкой, фильтрами, фиксированными колонками и выделением. UI должен оставаться отзывчивым.',
   demoRealtimeTitle: 'Realtime',
   demoRealtimeDesc:
     'Реактивный `data` — мутируем массив, таблица перерисовывается. progress тикает каждые 800 мс.',

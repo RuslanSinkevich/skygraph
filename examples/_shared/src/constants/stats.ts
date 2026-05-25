@@ -10,7 +10,7 @@
  * 1013 active tests after round 11).
  */
 
-/** Number of styled UI components shipped from `@skygraph/react`. */
+/** Number of styled components shipped from each adapter (`@skygraph/react` / `@skygraph/vue`). */
 export const COMPONENT_COUNT = 78
 
 /** Active vitest cases across `core` + `react` (excluding bench-gated). */

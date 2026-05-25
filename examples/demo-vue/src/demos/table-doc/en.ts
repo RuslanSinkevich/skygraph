@@ -92,9 +92,9 @@ export const tableDocEn = {
   demoVirtualDynamicTitle: 'Virtual scroll — dynamic heights',
   demoVirtualDynamicDesc:
     'Pass a function `rowHeight(row)` for variable-height rows; `estimateRowHeight` keeps unmeasured rows out of layout jank.',
-  demoLargeDatasetTitle: 'Large dataset',
+  demoLargeDatasetTitle: 'Large Dataset (stress test)',
   demoLargeDatasetDesc:
-    '1 000 rows rendered with `pageSize`. For thousands of rows reach for `virtual` instead.',
+    '10 000 rows with virtualisation, sorting, filtering, fixed columns and row selection. The UI should stay interactive at this volume.',
   demoRealtimeTitle: 'Realtime updates',
   demoRealtimeDesc:
     'Reactive `data` — mutate the array and the table refreshes. `progress` ticks every 800 ms.',

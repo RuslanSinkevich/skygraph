@@ -734,8 +734,14 @@ watch(
   { deep: false },
 )
 
-function onVirtualScroll(ev: Event) {
-  scrollTop.value = (ev.target as HTMLElement).scrollTop
+// Synchronous scroll handler — when the user drags the scrollbar
+// thumb, the browser moves it in sync with the pointer. Deferring to
+// rAF causes the DOM content (topPad/bottomPad) to update a frame
+// late, which makes the browser recalculate scroll position and the
+// thumb drifts away from the cursor.
+function onVirtualScroll() {
+  const el = scrollEl.value
+  if (el) scrollTop.value = el.scrollTop
 }
 
 function syncViewport() {
@@ -846,6 +852,24 @@ const scrollStyle = computed<Record<string, string | number>>(() => {
   return out
 })
 
+const virtualFixedRowHeight = computed(() => {
+  const cfg = virtualConfig.value
+  if (!cfg) return null
+  if (typeof cfg.rowHeight === 'number' && cfg.estimateRowHeight == null) return cfg.rowHeight
+  return null
+})
+
+const gridClass = computed(
+  () =>
+    [
+      'sg-table-grid',
+      virtualFixedRowHeight.value != null ? 'sg-table-grid-virtual-fixed' : '',
+      sCls.value.grid,
+    ]
+      .filter(Boolean)
+      .join(' ') || undefined,
+)
+
 const gridStyle = computed<Record<string, string | number>>(() => {
   const out: Record<string, string | number> = {
     gridTemplateColumns: gridTemplate.value,
@@ -853,6 +877,9 @@ const gridStyle = computed<Record<string, string | number>>(() => {
   }
   if (props.scroll?.x) {
     out.minWidth = typeof props.scroll.x === 'number' ? `${props.scroll.x}px` : props.scroll.x
+  }
+  if (virtualFixedRowHeight.value != null) {
+    out['--sg-virtual-row-height'] = `${virtualFixedRowHeight.value}px`
   }
   return out
 })
@@ -904,11 +931,7 @@ defineExpose({
       :aria-busy="loading || undefined"
       @scroll="onVirtualScroll"
     >
-      <div
-        :class="['sg-table-grid', sCls.grid].filter(Boolean).join(' ') || undefined"
-        :style="gridStyle"
-        role="table"
-      >
+      <div :class="gridClass" :style="gridStyle" role="table">
         <!-- Header rows -->
         <template v-for="(headerRow, rowIdx) in headerRows" :key="`hdr-${rowIdx}`">
           <div
@@ -951,6 +974,7 @@ defineExpose({
                     cell.col.fixed ? 'sg-table-cell-fixed' : '',
                     cell.col.fixed ? `sg-table-cell-fixed-${cell.col.fixed}` : '',
                     sCls.headerCell,
+                    cell.col.headerClassName,
                   ]
                     .filter(Boolean)
                     .join(' ') || undefined

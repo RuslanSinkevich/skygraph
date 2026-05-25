@@ -129,10 +129,15 @@ function handleDragEnd() {
   dropIndex.value = null
 }
 
+let listScrollRafId: number | null = null
 function handleVirtualScroll() {
-  if (virtualEl.value) {
-    scrollTop.value = virtualEl.value.scrollTop
-  }
+  if (listScrollRafId != null) return
+  listScrollRafId = requestAnimationFrame(() => {
+    listScrollRafId = null
+    if (virtualEl.value) {
+      scrollTop.value = virtualEl.value.scrollTop
+    }
+  })
 }
 
 const emptyText = computed(() => props.locale?.emptyText ?? 'No Data')
@@ -210,6 +215,7 @@ const wrapperClass = computed(() => {
     props.grid ? 'sg-list-grid' : '',
     props.selectable ? 'sg-list-selectable' : '',
     props.draggable ? 'sg-list-draggable' : '',
+    props.virtual ? 'sg-list-virtual' : '',
     gridResponsiveClass.value,
     sCls.value.root ?? '',
   ]

@@ -102,6 +102,8 @@ export interface TableColumn {
   onCell?: (row: Record<string, unknown>, rowIndex: number) => CellSpan
   /** Child columns for grouped headers. */
   children?: TableColumn[]
+  /** Extra class for header cell of this column. */
+  headerClassName?: string
   /** Footer aggregate for this column. */
   aggregate?: AggregateType | ((values: unknown[]) => unknown)
 }

@@ -135,35 +135,47 @@ const listCssVars = computed<CssVarDef[]>(() => [
     :description="t.pageLead"
     :when-to-use="[t.pageWhen1, t.pageWhen2]"
   >
-    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource">
+    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource" flush>
       <BasicList />
     </DemoBox>
-    <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource">
+    <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource" flush>
       <SizesList />
     </DemoBox>
-    <DemoBox :title="t.demoWithMetaTitle" :description="t.demoWithMetaDesc" :code="WithMetaSource">
+    <DemoBox
+      :title="t.demoWithMetaTitle"
+      :description="t.demoWithMetaDesc"
+      :code="WithMetaSource"
+      flush
+    >
       <WithMetaList />
     </DemoBox>
-    <DemoBox :title="t.demoGridTitle" :description="t.demoGridDesc" :code="GridSource">
+    <DemoBox :title="t.demoGridTitle" :description="t.demoGridDesc" :code="GridSource" flush>
       <GridList />
     </DemoBox>
     <DemoBox
       :title="t.demoPaginationTitle"
       :description="t.demoPaginationDesc"
       :code="PaginationSource"
+      flush
     >
       <PaginationList />
     </DemoBox>
-    <DemoBox :title="t.demoLoadingTitle" :description="t.demoLoadingDesc" :code="LoadingSource">
+    <DemoBox
+      :title="t.demoLoadingTitle"
+      :description="t.demoLoadingDesc"
+      :code="LoadingSource"
+      flush
+    >
       <LoadingList />
     </DemoBox>
-    <DemoBox :title="t.demoEmptyTitle" :description="t.demoEmptyDesc" :code="EmptySource">
+    <DemoBox :title="t.demoEmptyTitle" :description="t.demoEmptyDesc" :code="EmptySource" flush>
       <EmptyList />
     </DemoBox>
     <DemoBox
       :title="t.demoSelectableTitle"
       :description="t.demoSelectableDesc"
       :code="SelectableSource"
+      flush
     >
       <SelectableList />
     </DemoBox>
@@ -171,30 +183,43 @@ const listCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoDraggableTitle"
       :description="t.demoDraggableDesc"
       :code="DraggableSource"
+      flush
     >
       <DraggableList />
     </DemoBox>
-    <DemoBox :title="t.demoVirtualTitle" :description="t.demoVirtualDesc" :code="VirtualSource">
+    <DemoBox
+      :title="t.demoVirtualTitle"
+      :description="t.demoVirtualDesc"
+      :code="VirtualSource"
+      flush
+    >
       <VirtualList />
     </DemoBox>
     <DemoBox
       :title="t.demoRowClassNameTitle"
       :description="t.demoRowClassNameDesc"
       :code="RowClassNameSource"
+      flush
     >
       <RowClassNameList />
     </DemoBox>
-    <DemoBox :title="t.demoSlotsTitle" :description="t.demoSlotsDesc" :code="SlotsSource">
+    <DemoBox :title="t.demoSlotsTitle" :description="t.demoSlotsDesc" :code="SlotsSource" flush>
       <SlotsList />
     </DemoBox>
     <DemoBox
       :title="t.demoTokensTitle"
       :description="t.demoTokensDesc"
       :code="TokensOverrideSource"
+      flush
     >
       <TokensOverrideList />
     </DemoBox>
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
+    <DemoBox
+      :title="t.demoUnstyledTitle"
+      :description="t.demoUnstyledDesc"
+      :code="UnstyledSource"
+      flush
+    >
       <UnstyledList />
     </DemoBox>
 

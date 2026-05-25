@@ -4,20 +4,51 @@ import type { TableColumn } from '@skygraph/react'
 import { people } from './data'
 
 /**
- * Most features combined — selection + expand + sort + filter + search +
- * resize + fixed columns + editable + summary. Use as a reference when
- * wiring up complex tables.
+ * Every header-level filter style on the same table — checkbox list,
+ * search-as-you-type, advanced numeric, advanced text — combined with
+ * selection + expand + sort + global search + resize + fixed columns +
+ * editable + summary. Use as a reference when wiring up complex tables.
  */
 export function KitchenSinkTable() {
   const [selected, setSelected] = useState<string[]>([])
 
   const columns: TableColumn[] = [
-    { key: 'name', title: 'Name', width: 160, sortable: true, fixed: 'left', resizable: true },
-    { key: 'age', title: 'Age', width: 80, sortable: true, align: 'center', editable: true },
-    { key: 'email', title: 'Email', width: 200, resizable: true, ellipsis: true },
+    {
+      key: 'name',
+      title: 'Name',
+      width: 160,
+      sortable: true,
+      fixed: 'left',
+      resizable: true,
+      filterMode: 'search',
+      onFilter: (v, row) => String(row.name).toLowerCase().includes(String(v).toLowerCase()),
+    },
+    {
+      key: 'age',
+      title: 'Age',
+      width: 90,
+      sortable: true,
+      align: 'center',
+      editable: true,
+      filterMode: 'advanced',
+      advancedFilterType: 'number',
+      advancedFilterOperators: ['eq', 'lt', 'lte', 'gt', 'gte', 'between'],
+    },
+    {
+      key: 'email',
+      title: 'Email',
+      width: 220,
+      resizable: true,
+      ellipsis: true,
+      filterMode: 'search',
+      onFilter: (v, row) => String(row.email).toLowerCase().includes(String(v).toLowerCase()),
+    },
     { key: 'city', title: 'City', width: 130, sortable: true, resizable: true },
     {
-      key: 'role', title: 'Role', width: 130, resizable: true,
+      key: 'role',
+      title: 'Role',
+      width: 130,
+      resizable: true,
       filters: [
         { text: 'Developer', value: 'Developer' },
         { text: 'Designer', value: 'Designer' },
@@ -26,17 +57,36 @@ export function KitchenSinkTable() {
       ],
       onFilter: (value, row) => row.role === value,
     },
-    { key: 'salary', title: 'Salary', width: 110, align: 'right', sortable: true },
     {
-      key: 'status', title: 'Status', width: 100,
-      render: (val) => (
-        <Tag color={val === 'active' ? 'success' : 'default'}>{String(val)}</Tag>
-      ),
+      key: 'salary',
+      title: 'Salary',
+      width: 130,
+      align: 'right',
+      sortable: true,
+      filterMode: 'advanced',
+      advancedFilterType: 'number',
+      advancedFilterOperators: ['eq', 'gte', 'lte', 'between'],
     },
     {
-      key: 'action', title: 'Action', width: 90, fixed: 'right',
+      key: 'status',
+      title: 'Status',
+      width: 110,
+      filters: [
+        { text: 'Active', value: 'active' },
+        { text: 'Inactive', value: 'inactive' },
+      ],
+      onFilter: (value, row) => row.status === value,
+      render: (val) => <Tag color={val === 'active' ? 'success' : 'default'}>{String(val)}</Tag>,
+    },
+    {
+      key: 'action',
+      title: 'Action',
+      width: 90,
+      fixed: 'right',
       render: () => (
-        <Button size="small" type="text">Edit</Button>
+        <Button size="small" type="text">
+          Edit
+        </Button>
       ),
     },
   ]
@@ -48,7 +98,7 @@ export function KitchenSinkTable() {
       pageSize={6}
       searchable
       bordered
-      scroll={{ x: 1100 }}
+      scroll={{ x: 1200 }}
       rowSelection={{
         selectedKeys: selected,
         onChange: (keys) => setSelected(keys as string[]),
@@ -56,8 +106,8 @@ export function KitchenSinkTable() {
       expandable={{
         expandedRowRender: (row) => (
           <div>
-            Details for <strong>{String(row.name)}</strong>:{' '}
-            {String(row.email)}, ${String(row.salary)}
+            Details for <strong>{String(row.name)}</strong>: {String(row.email)}, $
+            {String(row.salary)}
           </div>
         ),
       }}
@@ -65,15 +115,14 @@ export function KitchenSinkTable() {
         console.log('Edit:', id, col, val)
       }}
       summary={(rows) => {
-        const total = rows.reduce(
-          (s, r) => s + (Number(r.data.salary) || 0),
-          0,
-        )
-        return [[
-          { content: `${rows.length} rows`, colSpan: 6 },
-          { content: `$${total.toLocaleString()}` },
-          { content: '' },
-        ]]
+        const total = rows.reduce((s, r) => s + (Number(r.data.salary) || 0), 0)
+        return [
+          [
+            { content: `${rows.length} rows`, colSpan: 6 },
+            { content: `$${total.toLocaleString()}` },
+            { content: '' },
+          ],
+        ]
       }}
     />
   )

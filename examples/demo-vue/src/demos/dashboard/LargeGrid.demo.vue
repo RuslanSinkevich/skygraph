@@ -54,13 +54,15 @@ const widgets: DashboardWidget[] = [
 </script>
 
 <template>
-  <SgDashboard :widgets="widgets" :columns="6" :row-height="70" :gap="10">
+  <SgDashboard :widgets="widgets" :columns="6" :row-height="90" :gap="10">
     <template #widget="{ widget }">
       <div v-if="kpiMap[widget.id]" style="display: flex; flex-direction: column; gap: 2px">
-        <strong style="font-size: 22px; color: var(--sg-color-text)">
+        <strong style="font-size: 20px; line-height: 1.2; color: var(--sg-color-text)">
           {{ kpiMap[widget.id].value }}
         </strong>
-        <span :style="{ fontSize: '12px', color: toneColor(kpiMap[widget.id].tone) }">
+        <span
+          :style="{ fontSize: '12px', lineHeight: 1.2, color: toneColor(kpiMap[widget.id].tone) }"
+        >
           {{ kpiMap[widget.id].delta }}
         </span>
       </div>
@@ -73,7 +75,12 @@ const widgets: DashboardWidget[] = [
       </div>
       <ul
         v-else-if="widget.id === 'w9'"
-        style="margin: 0; padding-left: 18px; color: var(--sg-color-text-secondary); font-size: 13px"
+        style="
+          margin: 0;
+          padding-left: 18px;
+          color: var(--sg-color-text-secondary);
+          font-size: 13px;
+        "
       >
         <li>etl/customer-sync — running</li>
         <li>etl/orders-aggregate — queued</li>
@@ -88,13 +95,19 @@ const widgets: DashboardWidget[] = [
           {{ barMap[widget.id] }}% used
         </span>
         <div
-          style="height: 8px; background: var(--sg-color-fill-secondary, #f0f0f0); border-radius: 4px; overflow: hidden"
+          style="
+            height: 8px;
+            background: var(--sg-color-fill-secondary, #f0f0f0);
+            border-radius: 4px;
+            overflow: hidden;
+          "
         >
           <div
             :style="{
               width: barMap[widget.id] + '%',
               height: '100%',
-              background: barMap[widget.id] > 75 ? 'var(--sg-color-error)' : 'var(--sg-color-primary)',
+              background:
+                barMap[widget.id] > 75 ? 'var(--sg-color-error)' : 'var(--sg-color-primary)',
             }"
           />
         </div>

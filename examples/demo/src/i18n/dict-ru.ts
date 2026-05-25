@@ -6,7 +6,7 @@ export const ru: DemoDict = {
     appTitle: 'SkyGraph',
     tagline: 'Реактивная UI-библиотека',
     heroSub:
-      'Headless-ядро реактивности + 50+ стилизованных компонентов. TypeScript-first. Zero runtime CSS-in-JS.',
+      'Headless-ядро реактивности + 78+ стилизованных компонентов. TypeScript-first. Zero runtime CSS-in-JS.',
     componentsBadgeSuffix: '+ компонентов',
   },
 
@@ -195,7 +195,7 @@ export const ru: DemoDict = {
     cardCoreApiTitle: 'API ядра',
     cardCoreApiDesc: 'createCore, createForm, createTable, createTree, createGraph',
     cardComponentsTitle: 'Компоненты',
-    cardComponentsDesc: 'Более 65 готовых UI-компонентов',
+    cardComponentsDesc: '78+ готовых UI-компонентов',
   },
 
   header: {
@@ -305,12 +305,55 @@ export const ru: DemoDict = {
 
   roadmap: {
     title: 'Roadmap',
-    lead: 'Живой срез TODO.md. Закрытые пункты помечены раундом, в котором приехали; открытые — кандидаты в ближайшие стримы.',
-    statClosed: 'закрыто',
-    statOpen: 'открыто',
+    lead: 'Что уже готово и что планируется. Обновляется автоматически из репозитория.',
+    statClosed: 'готово',
+    statOpen: 'в планах',
     statTotal: 'всего',
-    sourceLabel: 'Источник: TODO.md',
-    emptyLabel: 'Список пуст.',
+    sourceLabel: 'SkyGraph Roadmap',
+    emptyLabel: 'Под текущий фильтр ничего не подходит.',
+
+    metricComponents: 'компонентов',
+    metricEngines: 'движков',
+    metricFrameworks: 'фреймворка',
+    metricRounds: 'релизов',
+
+    filterAll: 'Всё',
+    filterShipped: 'Готово',
+    filterPlanned: 'В планах',
+    searchPlaceholder: 'Поиск…',
+    searchAriaLabel: 'Поиск по roadmap',
+
+    sectionsHeading: 'Возможности',
+    sectionsLead:
+      'Основные направления разработки и прогресс по каждому. Раскройте карточку для деталей.',
+    sectionProgressLabel: 'прогресс',
+    sectionStatusComplete: 'завершено',
+    sectionStatusActive: 'в работе',
+    sectionProgressCount: '{closed} / {total}',
+
+    timelineHeading: 'История релизов',
+    timelineLead: 'Каждый релиз с описанием того, что было добавлено или изменено.',
+    roundLabel: 'Релиз',
+
+    nextHeading: 'Что дальше',
+    nextLead: 'Предстоящие фичи и улучшения.',
+    nextEmpty: 'Пока всё готово.',
+
+    itemBadgeShipped: 'готово',
+    itemBadgePlanned: 'в планах',
+    itemRound: 'релиз {n}',
+
+    sourceLink: 'Исходный код на GitHub →',
+
+    overallProgressLabel: 'Общий прогресс',
+    metricTests: 'тестов',
+    latestEyebrow: 'Последний релиз',
+    topicSingular: 'фича',
+    topicPlural: 'фич',
+    commitSingular: 'изменение',
+    commitPlural: 'изменений',
+    changelogLink: 'Полный changelog →',
+    moreLabel: 'ещё',
   },
 
   about: {
@@ -339,9 +382,9 @@ export const ru: DemoDict = {
     multiFrameworkTitle: 'Multi-framework',
     multiFrameworkLead: 'Ядро и стилевой контракт фреймворк-независимы. Готовые адаптеры:',
     multiFrameworkReact:
-      'React — hooks, ConfigProvider, 47 UI-примитивов + 17 сложных компонентов на том же ядре.',
+      'React — hooks, ConfigProvider, 78+ стилизованных компонентов на том же общем ядре.',
     multiFrameworkVue:
-      'Vue 3 — биндинги Composition API, 52 SFC-примитива + 14 сложных — то же ядро, те же `.sg-*` классы.',
+      'Vue 3 — Composition API, 78+ стилизованных компонентов — то же ядро, те же `.sg-*` классы.',
   },
 
   benchmarks: {

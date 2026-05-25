@@ -471,8 +471,14 @@ export function freezeMiddleware(frozenPaths: string[]): Middleware;
 // @public
 export function getBezierPath(opts: BezierPathOptions): string;
 
+// @public
+export function getEdgePosition(box: AABB, intersectionPoint: Point): Side;
+
 // @public (undocumented)
 export type GetFieldValue = (name: string) => unknown;
+
+// @public
+export function getNodeIntersection(intersectionBox: AABB, targetCenter: Point): Point;
 
 // @public (undocumented)
 export const GRAPH_PREFIX: string;
@@ -757,6 +763,17 @@ export function pointsToRoundedPath(points: readonly Point[], radius: number): s
 
 // @public
 export function reservePrefix(engine: string, prefix: string): string;
+
+// @public
+export interface ResolvedEndpoint {
+    // (undocumented)
+    point: Point;
+    // (undocumented)
+    side: Side;
+}
+
+// @public
+export function resolveEdgeEndpoint(sourceBox: AABB, targetBox: AABB, padding?: number): ResolvedEndpoint;
 
 // @public
 export function resolveOperator(filter: AdvancedFilter | ColumnFilter): FilterOperator;

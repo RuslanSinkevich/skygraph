@@ -180,6 +180,50 @@ export interface DemoDict {
     statTotal: string
     sourceLabel: string
     emptyLabel: string
+
+    metricComponents: string
+    metricEngines: string
+    metricFrameworks: string
+    metricRounds: string
+
+    filterAll: string
+    filterShipped: string
+    filterPlanned: string
+    searchPlaceholder: string
+    searchAriaLabel: string
+
+    sectionsHeading: string
+    sectionsLead: string
+    sectionProgressLabel: string
+    sectionStatusComplete: string
+    sectionStatusActive: string
+    /** "{closed} of {total} closed" — `{closed}` / `{total}` are placeholders. */
+    sectionProgressCount: string
+
+    timelineHeading: string
+    timelineLead: string
+    roundLabel: string
+
+    nextHeading: string
+    nextLead: string
+    nextEmpty: string
+
+    itemBadgeShipped: string
+    itemBadgePlanned: string
+    /** "Round {n}" — `{n}` is replaced. */
+    itemRound: string
+
+    sourceLink: string
+
+    overallProgressLabel?: string
+    metricTests?: string
+    latestEyebrow?: string
+    topicSingular?: string
+    topicPlural?: string
+    commitSingular?: string
+    commitPlural?: string
+    changelogLink?: string
+    moreLabel?: string
   }
 
   /**
