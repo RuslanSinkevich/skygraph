@@ -286,4 +286,11 @@ const pieSeries = computed(() =>
   color: var(--sg-color-text-secondary);
   margin-bottom: 4px;
 }
+
+@media (max-width: 768px) {
+  .ana-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
 </style>
