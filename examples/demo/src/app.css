@@ -323,7 +323,17 @@ body {
   align-items: center;
   border-radius: var(--sg-border-radius, 6px) var(--sg-border-radius, 6px) 0 0;
   min-height: 64px;
-  overflow-x: auto;
+  /*
+   * IMPORTANT: keep `overflow: visible` here. Popovers, Select / DatePicker /
+   * Cascader dropdowns, Dropdown menus и Menu submenus рендерятся как
+   * `position: absolute` относительно своего триггера. Если задать
+   * `overflow: auto/hidden` на preview — попап обрезается, появляется
+   * горизонтальный скролл, и пользователь не видит выпадашку.
+   *
+   * Для широких компонентов (Table, Charts) используйте модификатор
+   * `.demo-box-preview-flush`, у него собственный wrapper для скролла.
+   */
+  overflow: visible;
   min-width: 0;
   background: linear-gradient(
     180deg,
@@ -337,6 +347,7 @@ body {
   min-height: 0;
   background: var(--sg-color-bg);
   overflow-x: auto;
+  overflow-y: visible;
 }
 
 .demo-box-preview-vertical {
