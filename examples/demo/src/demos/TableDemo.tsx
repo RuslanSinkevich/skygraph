@@ -16,6 +16,8 @@ import { FixedColumnsTable } from './table/FixedColumns.demo'
 import FixedColumnsSource from './table/FixedColumns.demo?raw'
 import { ResizableTable } from './table/Resizable.demo'
 import ResizableSource from './table/Resizable.demo?raw'
+import { DraggableColumnsTable } from './table/DraggableColumns.demo'
+import DraggableColumnsSource from './table/DraggableColumns.demo?raw'
 import { EditableTable } from './table/Editable.demo'
 import EditableSource from './table/Editable.demo?raw'
 import { FiltersTable } from './table/Filters.demo'
@@ -71,9 +73,19 @@ export function TableDemo() {
       { name: 'columns', description: t.propColumns, type: 'TableColumn[]' },
       { name: 'data', description: t.propData, type: 'Array<{ id, data }>' },
       { name: 'pageSize', description: t.propPageSize, type: 'number', default: '10' },
-      { name: 'showPagination', description: t.propShowPagination, type: 'boolean', default: 'true' },
+      {
+        name: 'showPagination',
+        description: t.propShowPagination,
+        type: 'boolean',
+        default: 'true',
+      },
       { name: 'bordered', description: t.propBordered, type: 'boolean', default: 'false' },
-      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'middle' | 'large'",
+        default: "'middle'",
+      },
       { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
       { name: 'searchable', description: t.propSearchable, type: 'boolean', default: 'false' },
       { name: 'scroll', description: t.propScroll, type: '{ x?: number }' },
@@ -82,13 +94,25 @@ export function TableDemo() {
       { name: 'tree', description: t.propTree, type: '{ defaultExpandAllRows?, indentSize? }' },
       { name: 'summary', description: t.propSummary, type: '(rows) => SummaryCell[][]' },
       { name: 'draggable', description: t.propDraggable, type: 'boolean', default: 'false' },
-      { name: 'onColumnOrderChange', description: t.propOnColumnOrderChange, type: '(keys: string[]) => void' },
+      {
+        name: 'onColumnOrderChange',
+        description: t.propOnColumnOrderChange,
+        type: '(keys: string[]) => void',
+      },
       { name: 'onCellEdit', description: t.propOnCellEdit, type: '(id, column, value) => void' },
-      { name: 'rowClassName', description: t.propRowClassName, type: 'string | (row, id) => string' },
+      {
+        name: 'rowClassName',
+        description: t.propRowClassName,
+        type: 'string | (row, id) => string',
+      },
       { name: 'classNames', description: t.propClassNames, type: 'TableClassNames' },
       { name: 'styles', description: t.propStyles, type: 'TableStyles' },
       { name: 'locale', description: t.propLocale, type: '{ emptyText? }' },
-      { name: 'virtual', description: t.propVirtual, type: 'boolean | { rowHeight?, overscan?, height? }' },
+      {
+        name: 'virtual',
+        description: t.propVirtual,
+        type: 'boolean | { rowHeight?, overscan?, height? }',
+      },
       { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
     ],
     [t],
@@ -109,11 +133,24 @@ export function TableDemo() {
       { name: 'headerClassName', description: t.colHeaderClassName, type: 'string' },
       { name: 'filters', description: t.colFilters, type: 'Array<{ text, value }>' },
       { name: 'onFilter', description: t.colOnFilter, type: '(filterValue, row) => boolean' },
-      { name: 'filterMultiple', description: t.colFilterMultiple, type: 'boolean', default: 'true' },
+      {
+        name: 'filterMultiple',
+        description: t.colFilterMultiple,
+        type: 'boolean',
+        default: 'true',
+      },
       { name: 'filterMode', description: t.colFilterMode, type: "'search'" },
       { name: 'filterSearch', description: t.colFilterSearch, type: 'boolean | Function' },
-      { name: 'filterDropdown', description: t.colFilterDropdown, type: '(props: FilterDropdownProps) => ReactNode' },
-      { name: 'filterIcon', description: t.colFilterIcon, type: '(filtered: boolean) => ReactNode' },
+      {
+        name: 'filterDropdown',
+        description: t.colFilterDropdown,
+        type: '(props: FilterDropdownProps) => ReactNode',
+      },
+      {
+        name: 'filterIcon',
+        description: t.colFilterIcon,
+        type: '(filtered: boolean) => ReactNode',
+      },
       { name: 'defaultFilteredValue', description: t.colDefaultFilteredValue, type: 'any[]' },
       { name: 'children', description: t.colChildren, type: 'TableColumn[]' },
       { name: 'onCell', description: t.colOnCell, type: '(row, index) => CellSpan' },
@@ -125,12 +162,36 @@ export function TableDemo() {
     () => [
       { name: 'sg-table-row-height', default: 'auto', description: t.cssSgTableRowHeight },
       { name: 'sg-table-row-bg', default: 'transparent', description: t.cssSgTableRowBg },
-      { name: 'sg-table-row-hover-bg', default: 'var(--sg-color-bg-hover)', description: t.cssSgTableRowHoverBg },
-      { name: 'sg-table-header-bg', default: 'var(--sg-color-bg-secondary)', description: t.cssSgTableHeaderBg },
-      { name: 'sg-table-border-color', default: 'var(--sg-color-border)', description: t.cssSgTableBorderColor },
-      { name: 'sg-table-border-color-secondary', default: 'var(--sg-color-border-secondary)', description: t.cssSgTableBorderColorSecondary },
-      { name: 'sg-table-cell-padding', default: 'var(--sg-padding-sm) var(--sg-padding-md)', description: t.cssSgTableCellPadding },
-      { name: 'sg-table-cell-solid-bg', default: 'var(--sg-color-bg)', description: t.cssSgTableCellSolidBg },
+      {
+        name: 'sg-table-row-hover-bg',
+        default: 'var(--sg-color-bg-hover)',
+        description: t.cssSgTableRowHoverBg,
+      },
+      {
+        name: 'sg-table-header-bg',
+        default: 'var(--sg-color-bg-secondary)',
+        description: t.cssSgTableHeaderBg,
+      },
+      {
+        name: 'sg-table-border-color',
+        default: 'var(--sg-color-border)',
+        description: t.cssSgTableBorderColor,
+      },
+      {
+        name: 'sg-table-border-color-secondary',
+        default: 'var(--sg-color-border-secondary)',
+        description: t.cssSgTableBorderColorSecondary,
+      },
+      {
+        name: 'sg-table-cell-padding',
+        default: 'var(--sg-padding-sm) var(--sg-padding-md)',
+        description: t.cssSgTableCellPadding,
+      },
+      {
+        name: 'sg-table-cell-solid-bg',
+        default: 'var(--sg-color-bg)',
+        description: t.cssSgTableCellSolidBg,
+      },
     ],
     [t],
   )
@@ -143,21 +204,13 @@ export function TableDemo() {
       description={t.pageLead}
       whenToUse={[t.pageWhen1, t.pageWhen2, t.pageWhen3]}
     >
-      <DemoBox
-        title={t.demoBasicTitle}
-        description={t.demoBasicDesc}
-        code={BasicTableSource}
-      >
+      <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicTableSource}>
         <div style={{ width: '100%' }}>
           <BasicTable />
         </div>
       </DemoBox>
 
-      <DemoBox
-        title={t.demoSortableTitle}
-        description={t.demoSortableDesc}
-        code={SortableSource}
-      >
+      <DemoBox title={t.demoSortableTitle} description={t.demoSortableDesc} code={SortableSource}>
         <div style={{ width: '100%' }}>
           <SortableTable />
         </div>
@@ -183,11 +236,7 @@ export function TableDemo() {
         </div>
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTreeDataTitle}
-        description={t.demoTreeDataDesc}
-        code={TreeDataSource}
-      >
+      <DemoBox title={t.demoTreeDataTitle} description={t.demoTreeDataDesc} code={TreeDataSource}>
         <div style={{ width: '100%' }}>
           <TreeDataTable />
         </div>
@@ -224,20 +273,22 @@ export function TableDemo() {
       </DemoBox>
 
       <DemoBox
-        title={t.demoEditableTitle}
-        description={t.demoEditableDesc}
-        code={EditableSource}
+        title={t.demoDraggableColumnsTitle}
+        description={t.demoDraggableColumnsDesc}
+        code={DraggableColumnsSource}
       >
+        <div style={{ width: '100%' }}>
+          <DraggableColumnsTable />
+        </div>
+      </DemoBox>
+
+      <DemoBox title={t.demoEditableTitle} description={t.demoEditableDesc} code={EditableSource}>
         <div style={{ width: '100%' }}>
           <EditableTable />
         </div>
       </DemoBox>
 
-      <DemoBox
-        title={t.demoFiltersTitle}
-        description={t.demoFiltersDesc}
-        code={FiltersSource}
-      >
+      <DemoBox title={t.demoFiltersTitle} description={t.demoFiltersDesc} code={FiltersSource}>
         <div style={{ width: '100%' }}>
           <FiltersTable />
         </div>
@@ -273,21 +324,13 @@ export function TableDemo() {
         </div>
       </DemoBox>
 
-      <DemoBox
-        title={t.demoSummaryTitle}
-        description={t.demoSummaryDesc}
-        code={SummarySource}
-      >
+      <DemoBox title={t.demoSummaryTitle} description={t.demoSummaryDesc} code={SummarySource}>
         <div style={{ width: '100%' }}>
           <SummaryTable />
         </div>
       </DemoBox>
 
-      <DemoBox
-        title={t.demoLoadingTitle}
-        description={t.demoLoadingDesc}
-        code={LoadingSource}
-      >
+      <DemoBox title={t.demoLoadingTitle} description={t.demoLoadingDesc} code={LoadingSource}>
         <div style={{ width: '100%' }}>
           <LoadingTable />
         </div>
@@ -353,21 +396,13 @@ export function TableDemo() {
         </div>
       </DemoBox>
 
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <div style={{ width: '100%' }}>
           <UnstyledTable />
         </div>
       </DemoBox>
 
-      <DemoBox
-        title={t.demoVirtualTitle}
-        description={t.demoVirtualDesc}
-        code={VirtualSource}
-      >
+      <DemoBox title={t.demoVirtualTitle} description={t.demoVirtualDesc} code={VirtualSource}>
         <div style={{ width: '100%' }}>
           <VirtualTable />
         </div>
@@ -393,11 +428,7 @@ export function TableDemo() {
         </div>
       </DemoBox>
 
-      <DemoBox
-        title={t.demoGroupingTitle}
-        description={t.demoGroupingDesc}
-        code={GroupingSource}
-      >
+      <DemoBox title={t.demoGroupingTitle} description={t.demoGroupingDesc} code={GroupingSource}>
         <div style={{ width: '100%' }}>
           <GroupingTable />
         </div>
@@ -423,11 +454,7 @@ export function TableDemo() {
         </div>
       </DemoBox>
 
-      <DemoBox
-        title={t.demoRealtimeTitle}
-        description={t.demoRealtimeDesc}
-        code={RealtimeSource}
-      >
+      <DemoBox title={t.demoRealtimeTitle} description={t.demoRealtimeDesc} code={RealtimeSource}>
         <div style={{ width: '100%' }}>
           <RealtimeTable />
         </div>
@@ -435,11 +462,7 @@ export function TableDemo() {
 
       <PropsTable title={t.tableTableApi} data={tableProps} />
       <PropsTable title={t.tableColumnApi} data={columnProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={tableCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={tableCssVars} />
     </ComponentDoc>
   )
 }

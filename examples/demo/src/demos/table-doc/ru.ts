@@ -27,16 +27,18 @@ export const tableDocRu: { [K in keyof typeof tableDocEn]: string } = {
   demoTreeDataDesc:
     'Иерархическая оргструктура с вложенными потомками. Клик по стрелкам — expand / collapse.',
   demoColumnGroupsTitle: 'Группы колонок',
-  demoColumnGroupsDesc:
-    'Многоуровневый header с группированными колонками (Contact Info, Work).',
+  demoColumnGroupsDesc: 'Многоуровневый header с группированными колонками (Contact Info, Work).',
   demoFixedColumnsTitle: 'Фиксированные колонки',
-  demoFixedColumnsDesc:
-    'Name закреплён слева, Action — справа. Прокрутка по горизонтали.',
+  demoFixedColumnsDesc: 'Name закреплён слева, Action — справа. Прокрутка по горизонтали.',
   demoResizableTitle: 'Resizable-колонки',
   demoResizableDesc:
     'Тяните правый край заголовка для изменения ширины. Удобно для контента переменной длины.',
+  demoDraggableColumnsTitle: 'Перетаскивание колонок',
+  demoDraggableColumnsDesc:
+    'Меняйте порядок колонок перетаскиванием заголовков. Подпишитесь на `onColumnOrderChange`, чтобы сохранить порядок.',
   demoEditableTitle: 'Редактируемые ячейки',
-  demoEditableDesc: 'Двойной клик по ячейке для редактирования. Enter — сохранить, Escape — отмена.',
+  demoEditableDesc:
+    'Двойной клик по ячейке для редактирования. Enter — сохранить, Escape — отмена.',
   demoFiltersTitle: 'Фильтры колонок',
   demoFiltersDesc: 'Мультивыбор чекбоксами на колонках Role и Status.',
   demoSearchFilterTitle: 'Search-фильтр',
@@ -71,8 +73,7 @@ export const tableDocRu: { [K in keyof typeof tableDocEn]: string } = {
   demoUnstyledDesc:
     'Снимите стили SkyGraph и приносите свой CSS / раскладку. Семантика и поведение остаются.',
   demoVirtualTitle: 'Virtual scroll',
-  demoVirtualDesc:
-    'Эффективный рендер тысяч строк — монтируется только видимое в viewport.',
+  demoVirtualDesc: 'Эффективный рендер тысяч строк — монтируется только видимое в viewport.',
   demoKitchenSinkTitle: 'Kitchen Sink',
   demoKitchenSinkDesc:
     'Все возможности вместе: selection, expand, sort, filter, search, resize, фиксированные колонки, editable, summary.',

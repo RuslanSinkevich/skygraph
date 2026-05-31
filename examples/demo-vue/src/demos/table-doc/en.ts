@@ -35,6 +35,9 @@ export const tableDocEn = {
     'Use `fixed: "left"` or `fixed: "right"` to pin columns while the middle scrolls horizontally.',
   demoResizableTitle: 'Resizable columns',
   demoResizableDesc: 'Drag the right edge of a header to resize it. Width persists per column.',
+  demoDraggableColumnsTitle: 'Draggable columns',
+  demoDraggableColumnsDesc:
+    'Reorder columns by dragging chips in the manager strip — the order flows back into `:columns`.',
   demoEditableTitle: 'Editable cells',
   demoEditableDesc:
     'Double-click a cell marked `editable` to edit. Enter commits, Escape cancels. `@cellEdit` fires (id, column, value).',

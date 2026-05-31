@@ -7,8 +7,7 @@ export const tableDocEn = {
   pageBadge: 'Data Display',
   crumbDataDisplay: 'Data Display',
   crumbTable: 'Table',
-  pageLead:
-    'A table displays rows of data. Built on div + CSS Grid for maximum flexibility.',
+  pageLead: 'A table displays rows of data. Built on div + CSS Grid for maximum flexibility.',
   pageWhen1: 'To display a collection of structured data.',
   pageWhen2: 'To sort, search, paginate, and filter data.',
   pageWhen3: 'For hierarchical data display using tree mode.',
@@ -16,7 +15,8 @@ export const tableDocEn = {
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Simple table with sorting and custom render.',
   demoSortableTitle: 'Sorting',
-  demoSortableDesc: 'Sortable columns. Click a header to toggle asc/desc; shift-click for multi-sort.',
+  demoSortableDesc:
+    'Sortable columns. Click a header to toggle asc/desc; shift-click for multi-sort.',
   demoSelectionTitle: 'Row Selection',
   demoSelectionDesc: 'Checkbox selection with select-all. Controlled state.',
   demoExpandableTitle: 'Expandable Rows',
@@ -27,11 +27,13 @@ export const tableDocEn = {
   demoColumnGroupsTitle: 'Column Groups',
   demoColumnGroupsDesc: 'Multi-level header with grouped columns (Contact Info, Work).',
   demoFixedColumnsTitle: 'Fixed Columns',
-  demoFixedColumnsDesc:
-    'Name is fixed left, Action is fixed right. Scroll horizontally.',
+  demoFixedColumnsDesc: 'Name is fixed left, Action is fixed right. Scroll horizontally.',
   demoResizableTitle: 'Resizable Columns',
   demoResizableDesc:
     'Drag the right edge of a header to resize. Useful for variable-length content.',
+  demoDraggableColumnsTitle: 'Draggable Columns',
+  demoDraggableColumnsDesc:
+    'Reorder columns by dragging the header. Subscribe to `onColumnOrderChange` to persist the order.',
   demoEditableTitle: 'Editable Cells',
   demoEditableDesc: 'Double-click a cell to edit. Enter to save, Escape to cancel.',
   demoFiltersTitle: 'Column Filters',
@@ -53,8 +55,7 @@ export const tableDocEn = {
   demoStyledSlotsDesc:
     'Style stable DOM slots without deep selectors. Also shows column.headerClassName.',
   demoCustomTokensTitle: 'Styling: component tokens (per instance)',
-  demoCustomTokensDesc:
-    'Override --sg-table-* tokens on a wrapper to restyle a single table.',
+  demoCustomTokensDesc: 'Override --sg-table-* tokens on a wrapper to restyle a single table.',
   demoConditionalRowsTitle: 'Conditional Row Color',
   demoConditionalRowsDesc:
     'rowClassName tags rows by state. CSS does the rest — no deep selectors needed.',

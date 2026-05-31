@@ -33,6 +33,9 @@ export const tableDocRu: TableDocStrings = {
     '`fixed: "left"` или `fixed: "right"` — колонка прилипает, середина скроллится горизонтально.',
   demoResizableTitle: 'Изменение ширины',
   demoResizableDesc: 'Тяните правый край заголовка — ширина сохраняется в state таблицы.',
+  demoDraggableColumnsTitle: 'Перетаскивание колонок',
+  demoDraggableColumnsDesc:
+    'Меняйте порядок колонок, перетаскивая чипы в верхней полосе — порядок передаётся в `:columns`.',
   demoEditableTitle: 'Inline-редактирование',
   demoEditableDesc:
     'Двойной клик по `editable`-ячейке. Enter сохраняет, Esc отменяет. `@cellEdit` отдаёт (id, column, value).',
