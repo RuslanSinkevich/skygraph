@@ -7,7 +7,9 @@ import { Progress } from '@skygraph/react'
  */
 export function ActiveProgress() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 400 }}>
+    <div
+      style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 400 }}
+    >
       <Progress percent={20} status="active" />
       <Progress percent={55} status="active" />
       <Progress percent={85} status="active" />

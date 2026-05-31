@@ -10,12 +10,18 @@ export function DynamicProgress() {
   const bump = (delta: number) => setPercent((p) => Math.min(100, Math.max(0, p + delta)))
 
   return (
-    <div style={{ maxWidth: 400 }}>
+    <div style={{ width: '100%', maxWidth: 400 }}>
       <Progress percent={percent} />
       <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
-        <Button size="small" onClick={() => bump(-10)}>−10</Button>
-        <Button size="small" onClick={() => bump(+10)}>+10</Button>
-        <Button size="small" onClick={() => setPercent(0)}>Reset</Button>
+        <Button size="small" onClick={() => bump(-10)}>
+          −10
+        </Button>
+        <Button size="small" onClick={() => bump(+10)}>
+          +10
+        </Button>
+        <Button size="small" onClick={() => setPercent(0)}>
+          Reset
+        </Button>
       </div>
     </div>
   )

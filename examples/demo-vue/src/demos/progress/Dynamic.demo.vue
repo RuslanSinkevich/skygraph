@@ -15,7 +15,7 @@ function bump(delta: number) {
 </script>
 
 <template>
-  <div style="max-width: 400px">
+  <div style="width: 100%; max-width: 400px">
     <SgProgress :percent="percent" />
     <div style="margin-top: 12px; display: flex; gap: 8px">
       <SgButton size="small" @click="bump(-10)">−10</SgButton>

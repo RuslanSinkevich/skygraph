@@ -14,6 +14,7 @@ const scoped = {
   display: 'flex',
   flexDirection: 'column',
   gap: '12px',
+  width: '100%',
   maxWidth: '400px',
 } as Record<string, string>
 </script>

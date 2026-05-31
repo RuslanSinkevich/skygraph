@@ -7,7 +7,9 @@ import { Progress } from '@skygraph/react'
  */
 export function UnstyledProgress() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 400 }}>
+    <div
+      style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 400 }}
+    >
       <Progress unstyled percent={45} strokeColor="#0ea5e9" />
       <Progress unstyled percent={90} strokeColor="#22c55e" strokeWidth={12} />
     </div>

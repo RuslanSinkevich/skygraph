@@ -8,8 +8,8 @@ import { SgProgress } from '@skygraph/vue'
 </script>
 
 <template>
-  <div style="display: flex; gap: 24px; align-items: center">
-    <div style="flex: 1; max-width: 300px">
+  <div style="display: flex; gap: 24px; align-items: center; width: 100%; max-width: 480px">
+    <div style="flex: 1; min-width: 0; max-width: 300px">
       <SgProgress :percent="50" stroke-color="#722ed1" />
     </div>
     <SgProgress type="circle" :percent="75" stroke-color="#eb2f96" />

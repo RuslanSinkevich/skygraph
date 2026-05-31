@@ -14,6 +14,7 @@ const scoped: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   gap: 12,
+  width: '100%',
   maxWidth: 400,
 }
 

@@ -6,7 +6,9 @@ import { Progress } from '@skygraph/react'
  */
 export function SizesProgress() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 400 }}>
+    <div
+      style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 400 }}
+    >
       <Progress size="small" percent={40} />
       <Progress percent={40} />
       <Progress percent={40} strokeWidth={14} />
