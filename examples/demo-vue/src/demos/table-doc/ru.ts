@@ -117,6 +117,7 @@ export const tableDocRu: TableDocStrings = {
   propOnCellEdit: 'Коммит inline-редактирования ячейки',
   propRowClassName: 'Класс строки (строка или функция)',
   propSticky: 'Sticky-шапка при скролле',
+  propDraggable: 'Перетаскивание колонок за шапку для смены порядка',
   propLocale: 'Свои локализационные строки',
   propVirtual: 'Виртуализация (fixed или динамическая высота)',
   propUnstyled: 'Снять стили Skygraph',
@@ -128,6 +129,7 @@ export const tableDocRu: TableDocStrings = {
   emitSortChange: 'Сменилась сортировка',
   emitCellEdit: 'Inline-редактирование закоммитили',
   emitExpand: 'Тоггл expand-строки',
+  emitColumnOrderChange: 'Колонки переставлены перетаскиванием',
 
   colKey: 'Уникальный ключ колонки',
   colTitle: 'Заголовок колонки',

@@ -25,6 +25,7 @@ import {
   SgDescriptions,
   SgCollapse,
 } from '../../components/ui'
+import { SgTable } from '../../components/complex/Table'
 
 /**
  * Structural a11y tests — exercise role / aria-* / focusability contracts
@@ -118,7 +119,12 @@ describe('ui a11y structural contracts', () => {
 
   it('Tabs: role=tablist with role=tab buttons', () => {
     const w = mount(SgTabs, {
-      props: { items: [{ key: 'a', label: 'A' }, { key: 'b', label: 'B' }] },
+      props: {
+        items: [
+          { key: 'a', label: 'A' },
+          { key: 'b', label: 'B' },
+        ],
+      },
     })
     expect(w.find('[role="tablist"]').exists()).toBe(true)
     expect(w.findAll('[role="tab"]').length).toBe(2)
@@ -166,7 +172,12 @@ describe('ui a11y structural contracts', () => {
 
   it('Segmented: role=radiogroup with role=radio items', () => {
     const w = mount(SgSegmented, {
-      props: { options: [{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }] },
+      props: {
+        options: [
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ],
+      },
     })
     expect(w.attributes('role')).toBe('radiogroup')
     expect(w.findAll('[role="radio"]').length).toBe(2)
@@ -175,7 +186,10 @@ describe('ui a11y structural contracts', () => {
   it('Segmented: aria-checked reflects current value', () => {
     const w = mount(SgSegmented, {
       props: {
-        options: [{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }],
+        options: [
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ],
         defaultValue: 'b',
       },
     })
@@ -230,5 +244,90 @@ describe('ui a11y structural contracts', () => {
     expect(header.attributes('aria-expanded')).toBe('false')
     await header.trigger('click')
     expect(header.attributes('aria-expanded')).toBe('true')
+  })
+
+  const tableCols = [
+    { key: 'name', title: 'Name', sortable: true },
+    { key: 'age', title: 'Age' },
+  ]
+  const tableData = [
+    { id: '1', data: { name: 'Alice', age: 30 } },
+    { id: '2', data: { name: 'Bob', age: 25 } },
+  ]
+
+  it('Table: ARIA grid roles (table / row / columnheader / cell)', () => {
+    const w = mount(SgTable, {
+      props: { columns: tableCols, data: tableData, showPagination: false },
+    })
+    expect(w.find('[role="table"]').exists()).toBe(true)
+    expect(w.findAll('[role="columnheader"]').length).toBe(2)
+    expect(w.findAll('[role="row"]').length).toBeGreaterThan(0)
+    expect(w.findAll('[role="cell"]').length).toBeGreaterThan(0)
+  })
+
+  it('Table: sortable header exposes aria-sort=none by default', () => {
+    const w = mount(SgTable, {
+      props: { columns: tableCols, data: tableData, showPagination: false },
+    })
+    const headers = w.findAll('[role="columnheader"]')
+    expect(headers[0].attributes('aria-sort')).toBe('none')
+  })
+
+  it('Table (draggable): header cells get draggable attr, fixed columns excluded', () => {
+    const w = mount(SgTable, {
+      props: {
+        columns: [
+          { key: 'name', title: 'Name', fixed: 'left' as const },
+          { key: 'age', title: 'Age' },
+          { key: 'city', title: 'City' },
+        ],
+        data: [
+          { id: '1', data: { name: 'Alice', age: 30, city: 'NY' } },
+          { id: '2', data: { name: 'Bob', age: 25, city: 'LA' } },
+        ],
+        draggable: true,
+        showPagination: false,
+      },
+    })
+    const headers = w.findAll('[role="columnheader"]')
+    // Pinned (fixed) column must not be draggable; the rest are.
+    expect(headers[0].attributes('draggable')).toBeUndefined()
+    expect(headers[1].attributes('draggable')).toBe('true')
+    expect(headers[2].attributes('draggable')).toBe('true')
+  })
+
+  it('Table (draggable): drop reorders columns and emits column-order-change', async () => {
+    const w = mount(SgTable, {
+      props: {
+        columns: [
+          { key: 'name', title: 'Name' },
+          { key: 'age', title: 'Age' },
+          { key: 'city', title: 'City' },
+        ],
+        data: [{ id: '1', data: { name: 'Alice', age: 30, city: 'NY' } }],
+        draggable: true,
+        showPagination: false,
+      },
+    })
+    const headers = () => w.findAll('[role="columnheader"]')
+    const dt = {
+      effectAllowed: '',
+      dropEffect: '',
+      setData: () => {},
+      getData: () => 'city',
+    }
+    // Drag the 3rd column (City) onto the 1st (Name).
+    await headers()[2].trigger('dragstart', { dataTransfer: dt })
+    await headers()[0].trigger('dragover', { dataTransfer: dt })
+    await headers()[0].trigger('drop', { dataTransfer: dt })
+    const emitted = w.emitted('columnOrderChange')
+    expect(emitted).toBeTruthy()
+    expect(emitted![0][0]).toEqual(['city', 'name', 'age'])
+    // Header order in the DOM reflects the new order.
+    expect(headers().map((h) => h.find('.sg-table-th-title').text())).toEqual([
+      'City',
+      'Name',
+      'Age',
+    ])
   })
 })

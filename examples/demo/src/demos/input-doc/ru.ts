@@ -23,6 +23,9 @@ export const inputDocRu: { [K in keyof typeof inputDocEn]: string } = {
   demoValidationDesc: 'aria-invalid переключает стиль ошибки без !important.',
   demoTokensTitle: 'Токены компонента',
   demoTokensDesc: 'Скоуп `--sg-input-*` для перешейпа только этих input-ов.',
+  demoTokensOverrideTitle: 'Темы через токены',
+  demoTokensOverrideDesc:
+    'Два готовых вида (мягкий pill, янтарная заливка) только на --sg-input-* — focus-кольцо и состояния сохраняются.',
   demoTextareaBasicTitle: 'Textarea — базовый',
   demoTextareaBasicDesc: 'Многострочный собрат с общими стилями.',
   demoTextareaCountTitle: 'Textarea — счётчик символов',

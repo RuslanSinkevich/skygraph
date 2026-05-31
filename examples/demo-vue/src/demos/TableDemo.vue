@@ -109,6 +109,7 @@ const tableProps = computed<PropDef[]>(() => [
     type: 'string | (row, id) => string',
   },
   { name: 'sticky', description: t.value.propSticky, type: 'boolean', default: 'false' },
+  { name: 'draggable', description: t.value.propDraggable, type: 'boolean', default: 'false' },
   { name: 'locale', description: t.value.propLocale, type: 'TableLocale' },
   { name: 'virtual', description: t.value.propVirtual, type: 'boolean | VirtualConfig' },
   { name: 'unstyled', description: t.value.propUnstyled, type: 'boolean', default: 'false' },
@@ -120,6 +121,11 @@ const tableProps = computed<PropDef[]>(() => [
   { name: '@sortChange', description: t.value.emitSortChange, type: '(column, direction) => void' },
   { name: '@cellEdit', description: t.value.emitCellEdit, type: '(id, column, value) => void' },
   { name: '@expand', description: t.value.emitExpand, type: '(expanded, id) => void' },
+  {
+    name: '@columnOrderChange',
+    description: t.value.emitColumnOrderChange,
+    type: '(order: string[]) => void',
+  },
 ])
 
 const columnProps = computed<PropDef[]>(() => [

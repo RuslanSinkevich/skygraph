@@ -122,6 +122,7 @@ export const tableDocEn = {
   propOnCellEdit: 'Commits inline cell edit values',
   propRowClassName: 'Static or per-row class',
   propSticky: 'Sticky header while scrolling',
+  propDraggable: 'Enable column reorder by header drag-and-drop',
   propLocale: 'Override locale strings',
   propVirtual: 'Virtualise the body (fixed or dynamic row height)',
   propUnstyled: 'Strip Skygraph styles',
@@ -133,6 +134,7 @@ export const tableDocEn = {
   emitSortChange: 'Sort indicator changed',
   emitCellEdit: 'Inline cell edit committed',
   emitExpand: 'Row expand state toggled',
+  emitColumnOrderChange: 'Header columns reordered by drag-and-drop',
 
   colKey: 'Unique column key matching row data',
   colTitle: 'Header label',

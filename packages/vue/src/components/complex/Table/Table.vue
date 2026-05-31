@@ -35,6 +35,7 @@ const emit = defineEmits<{
   (e: 'sortChange', column: string, direction: SortDirection | null): void
   (e: 'cellEdit', id: RowId, column: string, value: unknown): void
   (e: 'expand', expanded: boolean, id: RowId): void
+  (e: 'columnOrderChange', order: string[]): void
 }>()
 
 defineSlots<{
@@ -86,7 +87,15 @@ const headerDepth = computed(() =>
   props.columns.length === 0 ? 1 : Math.max(...props.columns.map(colDepth)),
 )
 
-const leafColumns = computed<TableColumn[]>(() => {
+/* ── Column reorder (drag-and-drop) ──────────────────────────────────────── */
+// Mirrors React `useTableState` colOrder: an internal ordering of leaf keys
+// applied on top of `props.columns`. Reorder is only available for flat
+// (non-grouped) tables, matching React.
+const colOrder = ref<string[]>([])
+const dragCol = ref<string | null>(null)
+const dragOver = ref<string | null>(null)
+
+const rawLeafColumns = computed<TableColumn[]>(() => {
   const out: TableColumn[] = []
   const visit = (c: TableColumn) => {
     if (c.hidden) return
@@ -97,9 +106,38 @@ const leafColumns = computed<TableColumn[]>(() => {
   return out
 })
 
+// Keep colOrder in sync with the column set: preserve the existing order,
+// append newly-added keys, drop removed ones.
+watch(
+  rawLeafColumns,
+  (cols) => {
+    const keys = cols.map((c) => c.key)
+    const prevSet = new Set(colOrder.value)
+    const added = keys.filter((k) => !prevSet.has(k))
+    const valid = colOrder.value.filter((k) => keys.includes(k))
+    colOrder.value = [...valid, ...added]
+  },
+  { immediate: true },
+)
+
+const leafColumns = computed<TableColumn[]>(() => {
+  const cols = rawLeafColumns.value
+  if (hasColumnGroups.value || !props.draggable) return cols
+  const map = new Map(cols.map((c) => [c.key, c]))
+  return colOrder.value.filter((k) => map.has(k)).map((k) => map.get(k)!)
+})
+
 const headerRows = computed<HeaderCellShape[][]>(() => {
   const depth = headerDepth.value
   const rows: HeaderCellShape[][] = Array.from({ length: depth }, () => [])
+  // Flat reorderable header: emit leaf columns in colOrder so drag changes
+  // the rendered order without rebuilding the grouped grid.
+  if (!hasColumnGroups.value && props.draggable && depth === 1) {
+    for (const col of leafColumns.value) {
+      rows[0].push({ col, colSpan: 1, rowSpan: 1 })
+    }
+    return rows
+  }
   const visit = (c: TableColumn, level: number) => {
     if (c.hidden) return
     const hasChildren = !!(c.children && c.children.length > 0)
@@ -118,6 +156,58 @@ const headerRows = computed<HeaderCellShape[][]>(() => {
 })
 
 const columns = computed(() => leafColumns.value)
+
+function handleColDragStart(ev: DragEvent, key: string) {
+  dragCol.value = key
+  if (ev.dataTransfer) {
+    ev.dataTransfer.effectAllowed = 'move'
+    ev.dataTransfer.setData('text/plain', key)
+  }
+}
+
+function handleColDragOver(ev: DragEvent, key: string) {
+  ev.preventDefault()
+  if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'move'
+  dragOver.value = key
+}
+
+function handleColDragLeave() {
+  dragOver.value = null
+}
+
+function handleColDrop(ev: DragEvent, targetKey: string) {
+  ev.preventDefault()
+  const from = dragCol.value
+  if (!from || from === targetKey) {
+    dragCol.value = null
+    dragOver.value = null
+    return
+  }
+  const next = colOrder.value.filter((k) => k !== from)
+  const idx = next.indexOf(targetKey)
+  next.splice(idx < 0 ? next.length : idx, 0, from)
+  colOrder.value = next
+  props.onColumnOrderChange?.(next)
+  emit('columnOrderChange', next)
+  dragCol.value = null
+  dragOver.value = null
+}
+
+function handleColDragEnd() {
+  dragCol.value = null
+  dragOver.value = null
+}
+
+// A column is draggable only on flat tables, when the feature is enabled,
+// and the column is not pinned (fixed) — matching React's `draggable && !col.fixed`.
+function isColDraggable(col: TableColumn): boolean {
+  return (
+    !!props.draggable &&
+    !hasColumnGroups.value &&
+    !col.fixed &&
+    !(col.children && col.children.length > 0)
+  )
+}
 
 /* -------------------------------------------------------------------------- */
 /* Engine wiring                                                              */
@@ -1011,12 +1101,21 @@ defineExpose({
                         : '',
                     cell.col.fixed ? 'sg-table-cell-fixed' : '',
                     cell.col.fixed ? `sg-table-cell-fixed-${cell.col.fixed}` : '',
+                    isColDraggable(cell.col) && dragOver === cell.col.key
+                      ? 'sg-table-th-drag-over'
+                      : '',
                     sCls.headerCell,
                     cell.col.headerClassName,
                   ]
                     .filter(Boolean)
                     .join(' ') || undefined
                 "
+                :draggable="isColDraggable(cell.col) || undefined"
+                @dragstart="isColDraggable(cell.col) && handleColDragStart($event, cell.col.key)"
+                @dragover="isColDraggable(cell.col) && handleColDragOver($event, cell.col.key)"
+                @dragleave="isColDraggable(cell.col) && handleColDragLeave()"
+                @drop="isColDraggable(cell.col) && handleColDrop($event, cell.col.key)"
+                @dragend="isColDraggable(cell.col) && handleColDragEnd()"
                 :style="{
                   ...(!(cell.col.children && cell.col.children.length > 0)
                     ? fixedStyle(cell.col, true)

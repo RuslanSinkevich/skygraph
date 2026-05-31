@@ -3,7 +3,7 @@
    * touching `--sg-color-text-disabled` (which is also used by the
    * disabled visual state — overriding it makes every control look
    * disabled). */
-  --sg-switch-bg: var(--sg-color-fill, rgba(0, 0, 0, 0.25));
+  --sg-switch-bg: color-mix(in srgb, var(--sg-color-text) 25%, transparent);
   --sg-switch-bg-checked: var(--sg-color-primary);
   position: relative;
   display: inline-flex;

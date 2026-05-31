@@ -29,6 +29,9 @@ export const inputDocEn = {
   demoValidationDesc: 'aria-invalid flips the error styling without !important.',
   demoTokensTitle: 'Component tokens',
   demoTokensDesc: 'Scope --sg-input-* to reshape only these inputs.',
+  demoTokensOverrideTitle: 'Token override themes',
+  demoTokensOverrideDesc:
+    'Two ready-made looks (Soft pill, Amber filled) built only from --sg-input-* tokens — focus ring and states stay intact.',
   demoTextareaBasicTitle: 'Textarea — basic',
   demoTextareaBasicDesc: 'Multi-line sibling with shared styling.',
   demoTextareaCountTitle: 'Textarea — character count',

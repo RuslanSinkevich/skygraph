@@ -23,7 +23,8 @@ beforeAll(() => {
       unobserve(): void {}
       disconnect(): void {}
     }
-    ;(globalThis as unknown as { ResizeObserver: typeof ResizeObserverStub }).ResizeObserver = ResizeObserverStub
+    ;(globalThis as unknown as { ResizeObserver: typeof ResizeObserverStub }).ResizeObserver =
+      ResizeObserverStub
   }
 })
 
@@ -42,6 +43,7 @@ import { Cascader } from '../components/complex/Cascader'
 import { ColorPicker } from '../components/ui/ColorPicker'
 import { TimePicker } from '../components/ui/TimePicker'
 import { VirtualList } from '../components/complex/VirtualList/VirtualList'
+import { Table } from '../components/complex/Table'
 
 interface AxeViolation {
   rule: string
@@ -247,9 +249,7 @@ describe('a11y smoke (axe-core)', () => {
   // `aria-allowed-attr`, critical) and had no accessible name (axe
   // `button-name` once the role was fixed).
   it('ColorPicker (closed) — name via aria-label — no violations', async () => {
-    const { container } = render(
-      <ColorPicker aria-label="Pick a color" defaultValue="#1677ff" />,
-    )
+    const { container } = render(<ColorPicker aria-label="Pick a color" defaultValue="#1677ff" />)
     expect(await runAxe(container)).toEqual([])
   })
 
@@ -268,9 +268,7 @@ describe('a11y smoke (axe-core)', () => {
   // The previous gap was an unnamed combobox flagged by axe
   // `aria-input-field-name` (serious).
   it('TimePicker (closed) — name via aria-label — no violations', async () => {
-    const { container } = render(
-      <TimePicker aria-label="Meeting time" />,
-    )
+    const { container } = render(<TimePicker aria-label="Meeting time" />)
     expect(await runAxe(container)).toEqual([])
   })
 
@@ -343,8 +341,51 @@ describe('a11y smoke (axe-core)', () => {
         itemHeight={32}
         style={{ height: 200 }}
         renderItem={(item, _idx, style) => (
-          <div style={style} key={item.id}>{item.label}</div>
+          <div style={style} key={item.id}>
+            {item.label}
+          </div>
         )}
+      />,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  // Table renders an ARIA grid (role=table / rowgroup / row / columnheader /
+  // cell). Locks in the role contract so refactors cannot silently drop it.
+  it('Table — no violations', async () => {
+    const { container } = render(
+      <Table
+        columns={[
+          { key: 'name', title: 'Name', sortable: true },
+          { key: 'age', title: 'Age', sortable: true },
+        ]}
+        data={[
+          { id: '1', data: { name: 'Alice', age: 30 } },
+          { id: '2', data: { name: 'Bob', age: 25 } },
+        ]}
+        showPagination={false}
+      />,
+    )
+    expect(await runAxe(container)).toEqual([])
+  })
+
+  // The `draggable` header variant adds drag handlers + `draggable` attrs to
+  // `role=columnheader` cells. Confirms reorder support introduces no ARIA
+  // violations (e.g. aria-allowed-attr on the columnheader role).
+  it('Table (draggable columns) — no violations', async () => {
+    const { container } = render(
+      <Table
+        columns={[
+          { key: 'name', title: 'Name', sortable: true },
+          { key: 'age', title: 'Age' },
+          { key: 'city', title: 'City' },
+        ]}
+        data={[
+          { id: '1', data: { name: 'Alice', age: 30, city: 'NY' } },
+          { id: '2', data: { name: 'Bob', age: 25, city: 'LA' } },
+        ]}
+        draggable
+        showPagination={false}
       />,
     )
     expect(await runAxe(container)).toEqual([])

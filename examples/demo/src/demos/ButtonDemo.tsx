@@ -16,6 +16,8 @@ import { WithIconButton } from './button/WithIcon.demo'
 import WithIconSource from './button/WithIcon.demo?raw'
 import { ComponentTokensButton } from './button/ComponentTokens.demo'
 import ComponentTokensSource from './button/ComponentTokens.demo?raw'
+import { TokensOverrideButton } from './button/TokensOverride.demo'
+import TokensOverrideSource from './button/TokensOverride.demo?raw'
 import { ScopedBrandButton } from './button/ScopedBrand.demo'
 import ScopedBrandSource from './button/ScopedBrand.demo?raw'
 import { UnstyledButton } from './button/Unstyled.demo'
@@ -26,12 +28,31 @@ export function ButtonDemo() {
 
   const buttonProps = useMemo<PropDef[]>(
     () => [
-      { name: 'type', description: t.propType, type: "'default' | 'primary' | 'dashed' | 'text' | 'link'", default: "'default'" },
-      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      {
+        name: 'type',
+        description: t.propType,
+        type: "'default' | 'primary' | 'dashed' | 'text' | 'link'",
+        default: "'default'",
+      },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'middle' | 'large'",
+        default: "'middle'",
+      },
       { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
       { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
-      { name: 'htmlType', description: t.propHtmlType, type: "'button' | 'submit' | 'reset'", default: "'button'" },
-      { name: 'onClick', description: t.propOnClick, type: '(e: MouseEvent<HTMLButtonElement>) => void' },
+      {
+        name: 'htmlType',
+        description: t.propHtmlType,
+        type: "'button' | 'submit' | 'reset'",
+        default: "'button'",
+      },
+      {
+        name: 'onClick',
+        description: t.propOnClick,
+        type: '(e: MouseEvent<HTMLButtonElement>) => void',
+      },
       { name: 'children', description: t.propChildren, type: 'ReactNode' },
       { name: 'className', description: t.propClassName, type: 'string' },
       { name: 'style', description: t.propStyle, type: 'CSSProperties' },
@@ -51,12 +72,28 @@ export function ButtonDemo() {
       { name: 'sg-btn-border', default: 'var(--sg-color-border)', description: t.cssSgBtnBorder },
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssSgColorPrimary },
       { name: 'sg-color-primary-hover', default: '#4096ff', description: t.cssSgColorPrimaryHover },
-      { name: 'sg-color-primary-active', default: '#0958d9', description: t.cssSgColorPrimaryActive },
+      {
+        name: 'sg-color-primary-active',
+        default: '#0958d9',
+        description: t.cssSgColorPrimaryActive,
+      },
       { name: 'sg-color-primary-bg', default: '#e6f4ff', description: t.cssSgColorPrimaryBg },
       { name: 'sg-color-white', default: '#ffffff', description: t.cssSgColorWhite },
-      { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgHover },
-      { name: 'sg-color-bg-disabled', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgDisabled },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      {
+        name: 'sg-color-bg-hover',
+        default: 'rgba(0, 0, 0, 0.04)',
+        description: t.cssSgColorBgHover,
+      },
+      {
+        name: 'sg-color-bg-disabled',
+        default: 'rgba(0, 0, 0, 0.04)',
+        description: t.cssSgColorBgDisabled,
+      },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
       { name: 'sg-height-sm', default: '24px', description: t.cssSgHeightSm },
       { name: 'sg-height-md', default: '32px', description: t.cssSgHeightMd },
       { name: 'sg-height-lg', default: '40px', description: t.cssSgHeightLg },
@@ -65,7 +102,11 @@ export function ButtonDemo() {
       { name: 'sg-padding-md', default: '12px', description: t.cssSgPaddingMd },
       { name: 'sg-padding-lg', default: '16px', description: t.cssSgPaddingLg },
       { name: 'sg-transition-duration', default: '180ms', description: t.cssSgTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssSgTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+        description: t.cssSgTransitionTiming,
+      },
     ],
     [t],
   )
@@ -86,27 +127,15 @@ export function ButtonDemo() {
         <SizesButton />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoLoadingTitle}
-        description={t.demoLoadingDesc}
-        code={LoadingSource}
-      >
+      <DemoBox title={t.demoLoadingTitle} description={t.demoLoadingDesc} code={LoadingSource}>
         <LoadingButton />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoDisabledTitle}
-        description={t.demoDisabledDesc}
-        code={DisabledSource}
-      >
+      <DemoBox title={t.demoDisabledTitle} description={t.demoDisabledDesc} code={DisabledSource}>
         <DisabledButton />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoIconTitle}
-        description={t.demoIconDesc}
-        code={WithIconSource}
-      >
+      <DemoBox title={t.demoIconTitle} description={t.demoIconDesc} code={WithIconSource}>
         <WithIconButton />
       </DemoBox>
 
@@ -119,27 +148,23 @@ export function ButtonDemo() {
       </DemoBox>
 
       <DemoBox
-        title={t.demoBrandTitle}
-        description={t.demoBrandDesc}
-        code={ScopedBrandSource}
+        title={t.demoTokensOverrideTitle}
+        description={t.demoTokensOverrideDesc}
+        code={TokensOverrideSource}
       >
+        <TokensOverrideButton />
+      </DemoBox>
+
+      <DemoBox title={t.demoBrandTitle} description={t.demoBrandDesc} code={ScopedBrandSource}>
         <ScopedBrandButton />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
+      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
         <UnstyledButton />
       </DemoBox>
 
       <PropsTable title={t.tableButtonApi} data={buttonProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={buttonCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={buttonCssVars} />
     </ComponentDoc>
   )
 }

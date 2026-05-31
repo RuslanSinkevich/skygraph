@@ -643,6 +643,11 @@
  * changes — that drift is what shows up as the scrollbar thumb lagging
  * behind the cursor while the user drags it. Locking visible row cells to
  * the configured `rowHeight` removes the mismatch entirely. */
+.sg-table-grid-virtual-fixed {
+  /* Overridden inline by Table when `rowHeight` is set */
+  --sg-virtual-row-height: var(--sg-height-md);
+}
+
 .sg-table-grid-virtual-fixed .sg-table-row[data-sg-virtual-row-index] > .sg-table-td {
   height: var(--sg-virtual-row-height);
   min-height: 0;

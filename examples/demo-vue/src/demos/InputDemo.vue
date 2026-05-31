@@ -32,6 +32,8 @@ import ValidationInput from './input/Validation.demo.vue'
 import ValidationSource from './input/Validation.demo.vue?raw'
 import ComponentTokensInput from './input/ComponentTokens.demo.vue'
 import ComponentTokensSource from './input/ComponentTokens.demo.vue?raw'
+import TokensOverrideInput from './input/TokensOverride.demo.vue'
+import TokensOverrideSource from './input/TokensOverride.demo.vue?raw'
 import TextareaBasic from './input/TextareaBasic.demo.vue'
 import TextareaBasicSource from './input/TextareaBasic.demo.vue?raw'
 import TextareaCount from './input/TextareaCount.demo.vue'
@@ -232,6 +234,14 @@ const inputCssVars = computed<CssVarDef[]>(() => [
       :code="ComponentTokensSource"
     >
       <ComponentTokensInput />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoTokensOverrideTitle"
+      :description="t.demoTokensOverrideDesc"
+      :code="TokensOverrideSource"
+    >
+      <TokensOverrideInput />
     </DemoBox>
 
     <DemoBox

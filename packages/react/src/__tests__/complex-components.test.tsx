@@ -72,10 +72,38 @@ describe('Table', () => {
     expect(checkboxes.length).toBeGreaterThan(0)
   })
 
-  it('search filters rows', () => {
-    render(
-      <Table columns={tableCols} data={tableData} searchable showPagination={false} />,
+  it('reorders columns via header drag-and-drop (draggable)', () => {
+    const onColumnOrderChange = vi.fn()
+    const { container } = render(
+      <Table
+        columns={[
+          { key: 'name', title: 'Name' },
+          { key: 'age', title: 'Age' },
+        ]}
+        data={tableData}
+        draggable
+        onColumnOrderChange={onColumnOrderChange}
+        showPagination={false}
+      />,
     )
+    const headers = container.querySelectorAll('[role="columnheader"]')
+    const dt = {
+      effectAllowed: '',
+      dropEffect: '',
+      setData: vi.fn(),
+      getData: () => 'age',
+    } as unknown as DataTransfer
+    // Drag "Age" (index 1) onto "Name" (index 0).
+    fireEvent.dragStart(headers[1], { dataTransfer: dt })
+    fireEvent.dragOver(headers[0], { dataTransfer: dt })
+    fireEvent.drop(headers[0], { dataTransfer: dt })
+    expect(onColumnOrderChange).toHaveBeenCalledWith(['age', 'name'])
+    const reordered = container.querySelectorAll('[role="columnheader"] .sg-table-th-title')
+    expect(Array.from(reordered).map((n) => n.textContent)).toEqual(['Age', 'Name'])
+  })
+
+  it('search filters rows', () => {
+    render(<Table columns={tableCols} data={tableData} searchable showPagination={false} />)
     const input = screen.getByPlaceholderText('Search...')
     fireEvent.change(input, { target: { value: 'Alice' } })
     expect(screen.getByText('Alice')).toBeDefined()
@@ -175,12 +203,7 @@ describe('Table', () => {
 
   it('column visibility toggle', () => {
     const { container } = render(
-      <Table
-        columns={tableCols}
-        data={tableData}
-        columnVisibility
-        showPagination={false}
-      />,
+      <Table columns={tableCols} data={tableData} columnVisibility showPagination={false} />,
     )
     const btn = screen.getByText('Show Columns')
     fireEvent.click(btn)
@@ -189,26 +212,14 @@ describe('Table', () => {
   })
 
   it('export buttons render when exportable', () => {
-    render(
-      <Table
-        columns={tableCols}
-        data={tableData}
-        exportable
-        showPagination={false}
-      />,
-    )
+    render(<Table columns={tableCols} data={tableData} exportable showPagination={false} />)
     expect(screen.getByText('Export CSV')).toBeDefined()
     expect(screen.getByText('Copy')).toBeDefined()
   })
 
   it('striped class applies to alternating rows', () => {
     const { container } = render(
-      <Table
-        columns={tableCols}
-        data={tableData}
-        striped
-        showPagination={false}
-      />,
+      <Table columns={tableCols} data={tableData} striped showPagination={false} />,
     )
     expect(container.querySelector('.sg-table-striped')).toBeTruthy()
   })
@@ -254,8 +265,9 @@ describe('Table grouping', () => {
         showPagination={false}
       />,
     )
-    const titles = Array.from(container.querySelectorAll('.sg-table-group-title strong'))
-      .map((n) => n.textContent)
+    const titles = Array.from(container.querySelectorAll('.sg-table-group-title strong')).map(
+      (n) => n.textContent,
+    )
     expect(titles).toEqual(['Moscow', 'Berlin'])
   })
 
@@ -292,12 +304,7 @@ describe('Table grouping', () => {
 
   it('groups start collapsed by default', () => {
     const { container } = render(
-      <Table
-        columns={groupedCols}
-        data={groupedData}
-        groupBy="city"
-        showPagination={false}
-      />,
+      <Table columns={groupedCols} data={groupedData} groupBy="city" showPagination={false} />,
     )
     expect(screen.queryByText('Alice')).toBeNull()
     expect(screen.queryByText('Bob')).toBeNull()
@@ -305,14 +312,7 @@ describe('Table grouping', () => {
   })
 
   it('clicking group header expands the group', () => {
-    render(
-      <Table
-        columns={groupedCols}
-        data={groupedData}
-        groupBy="city"
-        showPagination={false}
-      />,
-    )
+    render(<Table columns={groupedCols} data={groupedData} groupBy="city" showPagination={false} />)
     expect(screen.queryByText('Alice')).toBeNull()
     const moscowHeader = screen.getByText('Moscow').closest('.sg-table-group-cell') as HTMLElement
     fireEvent.click(moscowHeader)
@@ -322,14 +322,7 @@ describe('Table grouping', () => {
   })
 
   it('Expand All button reveals all group children', () => {
-    render(
-      <Table
-        columns={groupedCols}
-        data={groupedData}
-        groupBy="city"
-        showPagination={false}
-      />,
-    )
+    render(<Table columns={groupedCols} data={groupedData} groupBy="city" showPagination={false} />)
     expect(screen.queryByText('Alice')).toBeNull()
     fireEvent.click(screen.getByText('Expand All'))
     expect(screen.getByText('Alice')).toBeDefined()
@@ -417,9 +410,7 @@ const treeData = [
   {
     key: 'parent-2',
     title: 'Parent 2',
-    children: [
-      { key: 'child-2-1', title: 'Child 2-1' },
-    ],
+    children: [{ key: 'child-2-1', title: 'Child 2-1' }],
   },
 ]
 
@@ -549,26 +540,17 @@ describe('Cascader', () => {
     fireEvent.click(screen.getByText('Zhejiang'))
     fireEvent.click(screen.getByText('Hangzhou'))
     fireEvent.click(screen.getByText('West Lake'))
-    expect(onChange).toHaveBeenCalledWith(
-      ['zhejiang', 'hangzhou', 'xihu'],
-      expect.any(Array),
-    )
+    expect(onChange).toHaveBeenCalledWith(['zhejiang', 'hangzhou', 'xihu'], expect.any(Array))
   })
 
   it('displays selected value', () => {
-    render(
-      <Cascader options={cascaderOptions} value={['zhejiang', 'hangzhou', 'xihu']} />,
-    )
+    render(<Cascader options={cascaderOptions} value={['zhejiang', 'hangzhou', 'xihu']} />)
     expect(screen.getByText('Zhejiang / Hangzhou / West Lake')).toBeDefined()
   })
 
   it('allowClear shows clear button', () => {
     const { container } = render(
-      <Cascader
-        options={cascaderOptions}
-        value={['zhejiang', 'hangzhou', 'xihu']}
-        allowClear
-      />,
+      <Cascader options={cascaderOptions} value={['zhejiang', 'hangzhou', 'xihu']} allowClear />,
     )
     expect(container.querySelector('.sg-cascader-clear')).toBeTruthy()
   })
@@ -596,9 +578,7 @@ const transferData = [
 
 describe('Transfer', () => {
   it('renders source and target lists', () => {
-    const { container } = render(
-      <Transfer dataSource={transferData} targetKeys={['3']} />,
-    )
+    const { container } = render(<Transfer dataSource={transferData} targetKeys={['3']} />)
     const lists = container.querySelectorAll('.sg-transfer-list')
     expect(lists.length).toBe(2)
   })
@@ -620,7 +600,9 @@ describe('Transfer', () => {
     const { container } = render(
       <Transfer dataSource={transferData} targetKeys={[]} onChange={onChange} />,
     )
-    const checkboxes = container.querySelectorAll('.sg-transfer-list:first-child .sg-transfer-list-item')
+    const checkboxes = container.querySelectorAll(
+      '.sg-transfer-list:first-child .sg-transfer-list-item',
+    )
     expect(checkboxes.length).toBeGreaterThan(0)
 
     const firstCheck = within(checkboxes[0] as HTMLElement).getByRole('checkbox')
@@ -633,17 +615,13 @@ describe('Transfer', () => {
   })
 
   it('search filters items', () => {
-    render(
-      <Transfer dataSource={transferData} targetKeys={[]} showSearch />,
-    )
+    render(<Transfer dataSource={transferData} targetKeys={[]} showSearch />)
     const inputs = screen.getAllByRole('textbox')
     expect(inputs.length).toBeGreaterThanOrEqual(1)
   })
 
   it('disabled state prevents interaction', () => {
-    const { container } = render(
-      <Transfer dataSource={transferData} targetKeys={[]} disabled />,
-    )
+    const { container } = render(<Transfer dataSource={transferData} targetKeys={[]} disabled />)
     expect(container.querySelector('.sg-transfer-disabled')).toBeTruthy()
     const buttons = container.querySelectorAll('.sg-transfer-operations button')
     buttons.forEach((btn) => {
@@ -652,29 +630,21 @@ describe('Transfer', () => {
   })
 
   it('oneWay hides left arrow button', () => {
-    const { container } = render(
-      <Transfer dataSource={transferData} targetKeys={['1']} oneWay />,
-    )
+    const { container } = render(<Transfer dataSource={transferData} targetKeys={['1']} oneWay />)
     const buttons = container.querySelectorAll('.sg-transfer-operations button')
     expect(buttons.length).toBe(1)
   })
 
   it('custom titles render', () => {
     render(
-      <Transfer
-        dataSource={transferData}
-        targetKeys={[]}
-        titles={['Available', 'Selected']}
-      />,
+      <Transfer dataSource={transferData} targetKeys={[]} titles={['Available', 'Selected']} />,
     )
     expect(screen.getByText('Available')).toBeDefined()
     expect(screen.getByText('Selected')).toBeDefined()
   })
 
   it('unstyled mode renders without sg- classes', () => {
-    const { container } = render(
-      <Transfer dataSource={transferData} targetKeys={[]} unstyled />,
-    )
+    const { container } = render(<Transfer dataSource={transferData} targetKeys={[]} unstyled />)
     expect(container.querySelector('.sg-transfer')).toBeNull()
   })
 })
@@ -685,12 +655,7 @@ const listData = ['Racing car', 'Japanese princess', 'Australian walk', 'Chinese
 
 describe('List', () => {
   it('renders items', () => {
-    render(
-      <List
-        dataSource={listData}
-        renderItem={(item: string) => <div>{item}</div>}
-      />,
-    )
+    render(<List dataSource={listData} renderItem={(item: string) => <div>{item}</div>} />)
     expect(screen.getByText('Racing car')).toBeDefined()
     expect(screen.getByText('Japanese princess')).toBeDefined()
   })
@@ -709,33 +674,20 @@ describe('List', () => {
   })
 
   it('empty state', () => {
-    render(
-      <List
-        dataSource={[]}
-        renderItem={(item: string) => <div>{item}</div>}
-      />,
-    )
+    render(<List dataSource={[]} renderItem={(item: string) => <div>{item}</div>} />)
     expect(screen.getByText('No Data')).toBeDefined()
   })
 
   it('loading state shows spinner', () => {
     const { container } = render(
-      <List
-        dataSource={listData}
-        renderItem={(item: string) => <div>{item}</div>}
-        loading
-      />,
+      <List dataSource={listData} renderItem={(item: string) => <div>{item}</div>} loading />,
     )
     expect(container.querySelector('.sg-list-loading')).toBeTruthy()
   })
 
   it('bordered adds border class', () => {
     const { container } = render(
-      <List
-        dataSource={listData}
-        renderItem={(item: string) => <div>{item}</div>}
-        bordered
-      />,
+      <List dataSource={listData} renderItem={(item: string) => <div>{item}</div>} bordered />,
     )
     expect(container.querySelector('.sg-list-bordered')).toBeTruthy()
   })
@@ -765,22 +717,14 @@ describe('List', () => {
 
   it('size classes apply', () => {
     const { container } = render(
-      <List
-        dataSource={listData}
-        renderItem={(item: string) => <div>{item}</div>}
-        size="small"
-      />,
+      <List dataSource={listData} renderItem={(item: string) => <div>{item}</div>} size="small" />,
     )
     expect(container.querySelector('.sg-list-small')).toBeTruthy()
   })
 
   it('unstyled mode works', () => {
     const { container } = render(
-      <List
-        dataSource={listData}
-        renderItem={(item: string) => <div>{item}</div>}
-        unstyled
-      />,
+      <List dataSource={listData} renderItem={(item: string) => <div>{item}</div>} unstyled />,
     )
     expect(container.querySelector('.sg-list')).toBeNull()
     expect(screen.getByText('Racing car')).toBeDefined()

@@ -179,6 +179,10 @@ export interface TableProps {
   size?: 'small' | 'middle' | 'large'
   /** Sticky header while scrolling vertically. */
   sticky?: boolean
+  /** Enables column reorder by drag-and-drop in the header. */
+  draggable?: boolean
+  /** Called after header columns are reordered by drag-and-drop. */
+  onColumnOrderChange?: (order: string[]) => void
   /** Locale strings. */
   locale?: TableLocale
   /** Row class name. */

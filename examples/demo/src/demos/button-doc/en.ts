@@ -25,6 +25,9 @@ export const buttonDocEn = {
   demoIconDesc: 'Flex gap keeps icon + label aligned at every size.',
   demoTokensTitle: 'Component tokens',
   demoTokensDesc: 'Scope --sg-btn-* for a local reshape (pills, chunky, compact).',
+  demoTokensOverrideTitle: 'Token override themes',
+  demoTokensOverrideDesc:
+    'Two ready-made looks (Emerald pill, Sunset sharp) built only from --sg-btn-* tokens — hover / focus / disabled stay intact.',
   demoBrandTitle: 'Scoped brand',
   demoBrandDesc: 'Override --sg-color-primary* to rebrand a subtree.',
   demoUnstyledTitle: 'Unstyled',

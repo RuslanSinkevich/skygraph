@@ -31,6 +31,8 @@ import WithIconButton from './button/WithIcon.demo.vue'
 import WithIconSource from './button/WithIcon.demo.vue?raw'
 import ComponentTokensButton from './button/ComponentTokens.demo.vue'
 import ComponentTokensSource from './button/ComponentTokens.demo.vue?raw'
+import TokensOverrideButton from './button/TokensOverride.demo.vue'
+import TokensOverrideSource from './button/TokensOverride.demo.vue?raw'
 import ScopedBrandButton from './button/ScopedBrand.demo.vue'
 import ScopedBrandSource from './button/ScopedBrand.demo.vue?raw'
 import UnstyledButton from './button/Unstyled.demo.vue'
@@ -186,6 +188,14 @@ const buttonCssVars = computed<CssVarDef[]>(() => [
       :code="ComponentTokensSource"
     >
       <ComponentTokensButton />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoTokensOverrideTitle"
+      :description="t.demoTokensOverrideDesc"
+      :code="TokensOverrideSource"
+    >
+      <TokensOverrideButton />
     </DemoBox>
 
     <DemoBox :title="t.demoBrandTitle" :description="t.demoBrandDesc" :code="ScopedBrandSource">
