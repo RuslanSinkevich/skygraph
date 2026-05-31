@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2026-05-31] — core 0.5.0 · react 0.5.0 · vue 0.6.0 · styles 0.2.0 · skygraph-react/vue 0.6.0
+
 ### Diagram — floating edges (xyflow / mxGraph port)
 
 The custom anchor-honouring resolver from the previous round was
