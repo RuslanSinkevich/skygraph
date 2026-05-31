@@ -30,6 +30,15 @@ export const menuDocEn = {
   demoDarkDesc: "theme='dark' for dark surfaces.",
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope globals on a wrapper to re-skin a single menu.',
+  demoCustomLauncherTitle: 'Custom: App launcher',
+  demoCustomLauncherDesc:
+    'SaaS-style sidebar with gradient brand mark, glyph badges and a soft elevated surface — pure token scoping.',
+  demoCustomGlassTitle: 'Custom: Glass top nav',
+  demoCustomGlassDesc:
+    'Frosted floating bar over a colourful hero, with pill CTA. Demonstrates horizontal menu re-skinning via tokens.',
+  demoCustomPaletteTitle: 'Custom: Command palette',
+  demoCustomPaletteDesc:
+    'Dark search-driven palette: keyboard shortcuts, fuzzy search, grouped commands. Items live in the public API; rich nodes via `h()` VNodes in `label`.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'ARIA semantics only — bring your own CSS.',
 

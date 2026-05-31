@@ -33,6 +33,12 @@ import DarkThemeMenu from './menu/DarkTheme.demo.vue'
 import DarkThemeSource from './menu/DarkTheme.demo.vue?raw'
 import TokensOverrideMenu from './menu/TokensOverride.demo.vue'
 import TokensOverrideSource from './menu/TokensOverride.demo.vue?raw'
+import CustomAppLauncherMenu from './menu/CustomAppLauncher.demo.vue'
+import CustomAppLauncherSource from './menu/CustomAppLauncher.demo.vue?raw'
+import CustomGlassTopNavMenu from './menu/CustomGlassTopNav.demo.vue'
+import CustomGlassTopNavSource from './menu/CustomGlassTopNav.demo.vue?raw'
+import CustomCommandPaletteMenu from './menu/CustomCommandPalette.demo.vue'
+import CustomCommandPaletteSource from './menu/CustomCommandPalette.demo.vue?raw'
 import UnstyledMenu from './menu/Unstyled.demo.vue'
 import UnstyledSource from './menu/Unstyled.demo.vue?raw'
 
@@ -200,6 +206,28 @@ const menuCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideMenu />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoCustomLauncherTitle"
+      :description="t.demoCustomLauncherDesc"
+      :code="CustomAppLauncherSource"
+    >
+      <CustomAppLauncherMenu />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoCustomGlassTitle"
+      :description="t.demoCustomGlassDesc"
+      :code="CustomGlassTopNavSource"
+      vertical
+    >
+      <CustomGlassTopNavMenu />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoCustomPaletteTitle"
+      :description="t.demoCustomPaletteDesc"
+      :code="CustomCommandPaletteSource"
+    >
+      <CustomCommandPaletteMenu />
     </DemoBox>
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledMenu />

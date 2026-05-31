@@ -22,6 +22,12 @@ import { DarkThemeMenu } from './menu/DarkTheme.demo'
 import DarkThemeSource from './menu/DarkTheme.demo?raw'
 import { TokensOverrideMenu } from './menu/TokensOverride.demo'
 import TokensOverrideSource from './menu/TokensOverride.demo?raw'
+import { CustomAppLauncherMenu } from './menu/CustomAppLauncher.demo'
+import CustomAppLauncherSource from './menu/CustomAppLauncher.demo?raw'
+import { CustomGlassTopNavMenu } from './menu/CustomGlassTopNav.demo'
+import CustomGlassTopNavSource from './menu/CustomGlassTopNav.demo?raw'
+import { CustomCommandPaletteMenu } from './menu/CustomCommandPalette.demo'
+import CustomCommandPaletteSource from './menu/CustomCommandPalette.demo?raw'
 import { UnstyledMenu } from './menu/Unstyled.demo'
 import UnstyledSource from './menu/Unstyled.demo?raw'
 
@@ -31,15 +37,35 @@ export function MenuDemo() {
   const menuProps = useMemo<PropDef[]>(
     () => [
       { name: 'items', description: t.propItems, type: 'MenuItem[]' },
-      { name: 'mode', description: t.propMode, type: "'vertical' | 'horizontal' | 'inline'", default: "'vertical'" },
+      {
+        name: 'mode',
+        description: t.propMode,
+        type: "'vertical' | 'horizontal' | 'inline'",
+        default: "'vertical'",
+      },
       { name: 'selectedKeys', description: t.propSelectedKeys, type: 'string[]' },
-      { name: 'defaultSelectedKeys', description: t.propDefaultSelectedKeys, type: 'string[]', default: '[]' },
+      {
+        name: 'defaultSelectedKeys',
+        description: t.propDefaultSelectedKeys,
+        type: 'string[]',
+        default: '[]',
+      },
       { name: 'openKeys', description: t.propOpenKeys, type: 'string[]' },
-      { name: 'defaultOpenKeys', description: t.propDefaultOpenKeys, type: 'string[]', default: '[]' },
+      {
+        name: 'defaultOpenKeys',
+        description: t.propDefaultOpenKeys,
+        type: 'string[]',
+        default: '[]',
+      },
       { name: 'onSelect', description: t.propOnSelect, type: '({ key, selectedKeys }) => void' },
       { name: 'onOpenChange', description: t.propOnOpenChange, type: '(keys: string[]) => void' },
       { name: 'theme', description: t.propTheme, type: "'light' | 'dark'", default: "'light'" },
-      { name: 'inlineCollapsed', description: t.propInlineCollapsed, type: 'boolean', default: 'false' },
+      {
+        name: 'inlineCollapsed',
+        description: t.propInlineCollapsed,
+        type: 'boolean',
+        default: 'false',
+      },
       { name: 'className', description: t.propClassName, type: 'string' },
       { name: 'style', description: t.propStyle, type: 'CSSProperties' },
       { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
@@ -64,19 +90,43 @@ export function MenuDemo() {
     () => [
       { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssPrimary },
       { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: t.cssPrimaryBg },
-      { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: t.cssPrimaryHover },
+      {
+        name: 'sg-color-primary-hover',
+        default: 'var(--sg-blue-5)',
+        description: t.cssPrimaryHover,
+      },
       { name: 'sg-color-bg-container', default: '#ffffff', description: t.cssBgContainer },
       { name: 'sg-color-bg-elevated', default: '#ffffff', description: t.cssBgElevated },
       { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: t.cssBgHover },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssTextSecondary },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssTextTertiary },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssTextDisabled },
-      { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: t.cssBorderSecondary },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssTextSecondary,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssTextTertiary,
+      },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssTextDisabled,
+      },
+      {
+        name: 'sg-color-border-secondary',
+        default: 'var(--sg-gray-4)',
+        description: t.cssBorderSecondary,
+      },
       { name: 'sg-color-error', default: 'var(--sg-red-5)', description: t.cssError },
       { name: 'sg-color-error-bg', default: 'var(--sg-red-1)', description: t.cssErrorBg },
       { name: 'sg-border-radius-lg', default: '8px', description: t.cssBorderRadiusLg },
-      { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0, 0, 0, 0.08)', description: t.cssShadowLg },
+      {
+        name: 'sg-shadow-lg',
+        default: '0 6px 16px rgba(0, 0, 0, 0.08)',
+        description: t.cssShadowLg,
+      },
       { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
       { name: 'sg-font-size-lg', default: '16px', description: t.cssFontSizeLg },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssFontSizeSm },
@@ -89,7 +139,11 @@ export function MenuDemo() {
       { name: 'sg-z-dropdown', default: '1050', description: t.cssZDropdown },
       { name: 'sg-line-height', default: '1.5714', description: t.cssLineHeight },
       { name: 'sg-transition-duration', default: '0.2s', description: t.cssTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+        description: t.cssTransitionTiming,
+      },
     ],
     [t],
   )
@@ -104,7 +158,11 @@ export function MenuDemo() {
         <VerticalMenu />
       </DemoBox>
 
-      <DemoBox title={t.demoHorizontalTitle} description={t.demoHorizontalDesc} code={HorizontalSource}>
+      <DemoBox
+        title={t.demoHorizontalTitle}
+        description={t.demoHorizontalDesc}
+        code={HorizontalSource}
+      >
         <HorizontalMenu />
       </DemoBox>
 
@@ -112,7 +170,11 @@ export function MenuDemo() {
         <InlineMenu />
       </DemoBox>
 
-      <DemoBox title={t.demoControlledTitle} description={t.demoControlledDesc} code={ControlledSource}>
+      <DemoBox
+        title={t.demoControlledTitle}
+        description={t.demoControlledDesc}
+        code={ControlledSource}
+      >
         <ControlledMenu />
       </DemoBox>
 
@@ -124,7 +186,11 @@ export function MenuDemo() {
         <GroupsDividersMenu />
       </DemoBox>
 
-      <DemoBox title={t.demoCollapsedTitle} description={t.demoCollapsedDesc} code={CollapsedSource}>
+      <DemoBox
+        title={t.demoCollapsedTitle}
+        description={t.demoCollapsedDesc}
+        code={CollapsedSource}
+      >
         <CollapsedMenu />
       </DemoBox>
 
@@ -132,12 +198,33 @@ export function MenuDemo() {
         <DarkThemeMenu />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideMenu />
+      </DemoBox>
+
+      <DemoBox
+        title={t.demoCustomLauncherTitle}
+        description={t.demoCustomLauncherDesc}
+        code={CustomAppLauncherSource}
+      >
+        <CustomAppLauncherMenu />
+      </DemoBox>
+
+      <DemoBox
+        title={t.demoCustomGlassTitle}
+        description={t.demoCustomGlassDesc}
+        code={CustomGlassTopNavSource}
+        vertical
+      >
+        <CustomGlassTopNavMenu />
+      </DemoBox>
+
+      <DemoBox
+        title={t.demoCustomPaletteTitle}
+        description={t.demoCustomPaletteDesc}
+        code={CustomCommandPaletteSource}
+      >
+        <CustomCommandPaletteMenu />
       </DemoBox>
 
       <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
@@ -146,11 +233,7 @@ export function MenuDemo() {
 
       <PropsTable title={t.tableMenuApi} data={menuProps} />
       <PropsTable title={t.tableMenuItem} data={menuItemProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={menuCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={menuCssVars} />
     </ComponentDoc>
   )
 }

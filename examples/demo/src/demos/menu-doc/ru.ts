@@ -29,6 +29,15 @@ export const menuDocRu: { [K in keyof typeof menuDocEn]: string } = {
   demoDarkDesc: "theme='dark' для тёмных поверхностей.",
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоупите глобальные токены на обёртке для перекраски одного меню.',
+  demoCustomLauncherTitle: 'Кастом: App launcher',
+  demoCustomLauncherDesc:
+    'Сайдбар в стиле SaaS: градиентный логотип, цветные глифы, мягкая поднятая поверхность — только скоуп токенов.',
+  demoCustomGlassTitle: 'Кастом: glass top nav',
+  demoCustomGlassDesc:
+    'Frosted-плавающий бар над цветным hero и pill-CTA. Показывает перекраску горизонтального меню через токены.',
+  demoCustomPaletteTitle: 'Кастом: командная палитра',
+  demoCustomPaletteDesc:
+    'Тёмная палитра с поиском: горячие клавиши, fuzzy-фильтр, группы. Всё на публичном API: rich-узлы через ReactNode в label.',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Только ARIA-семантика — стили подставьте свои.',
 
@@ -61,7 +70,8 @@ export const menuDocRu: { [K in keyof typeof menuDocEn]: string } = {
   itemChildren: 'Вложенные элементы (создают сабменю)',
   itemType: "'group' — секция с заголовком; 'divider' — горизонтальная линия",
 
-  cssPrimary: 'Текст выбранного элемента, фон выбранного в тёмной теме, горизонтальное подчёркивание',
+  cssPrimary:
+    'Текст выбранного элемента, фон выбранного в тёмной теме, горизонтальное подчёркивание',
   cssPrimaryBg: 'Фон выбранного элемента (светлая тема)',
   cssPrimaryHover: 'Подчёркивание при наведении (горизонтальный режим)',
   cssBgContainer: 'Фон поверхности меню',
