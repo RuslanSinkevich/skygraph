@@ -796,6 +796,44 @@ const bodyRows = computed<FlatRow[]>(() =>
 
 const rowIndexOffset = computed(() => (virtualRange.value ? virtualRange.value.startIndex : 0))
 
+// Inline-locking высот ячеек к engine.getItemSize(idx). React делает
+// то же самое в `VirtualTableBody` через useLayoutEffect — без этого
+// DOM.scrollHeight рассинхронизируется с engine.totalHeight (натуральная
+// высота ячеек может отличаться от заявленной в `rowHeight(row)` —
+// например, рендер контента влияет на интервалы), и при drag-е ползунка
+// браузер мапит cursorY → scrollTop по «вранному» scrollHeight, ползунок
+// уезжает от курсора.
+//
+// `flush: 'post'` гарантирует, что эффект отрабатывает ПОСЛЕ обновления
+// DOM, когда новые видимые строки уже есть в дереве. Лочим высоту на
+// inline-style каждой ячейки в строке.
+watch(
+  [() => virtualRange.value, () => virtualVersion.value, () => bodyRows.value],
+  () => {
+    const eng = virtualEngine.value
+    const cfg = virtualConfig.value
+    if (!eng || !cfg) return
+    const grid = scrollEl.value?.querySelector('.sg-table-grid')
+    if (!grid) return
+    const rowEls = grid.querySelectorAll<HTMLElement>('[data-sg-virtual-row-index]')
+    rowEls.forEach((rowEl) => {
+      const idx = Number(rowEl.getAttribute('data-sg-virtual-row-index'))
+      if (!Number.isFinite(idx)) return
+      const h = eng.getItemSize(idx)
+      if (!Number.isFinite(h) || h <= 0) return
+      const px = `${h}px`
+      const children = rowEl.children
+      for (let c = 0; c < children.length; c++) {
+        const cell = children[c] as HTMLElement
+        if (cell.style.height !== px) cell.style.height = px
+        if (cell.style.minHeight !== '0px') cell.style.minHeight = '0px'
+        if (cell.style.overflow !== 'hidden') cell.style.overflow = 'hidden'
+      }
+    })
+  },
+  { flush: 'post' },
+)
+
 /* -------------------------------------------------------------------------- */
 /* Layout classes                                                             */
 /* -------------------------------------------------------------------------- */
@@ -1002,7 +1040,7 @@ defineExpose({
                 "
               >
                 <span class="sg-table-th-content">
-                  <span>{{ cell.col.title }}</span>
+                  <span class="sg-table-th-title">{{ cell.col.title }}</span>
                   <span
                     v-if="cell.col.sortable && !(cell.col.children && cell.col.children.length > 0)"
                     class="sg-table-sort-arrows"
