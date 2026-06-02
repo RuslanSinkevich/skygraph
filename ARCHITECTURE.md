@@ -502,7 +502,7 @@ skygraph/
 │   │   │   │   ├── Middleware.ts
 │   │   │   │   └── index.ts
 │   │   │   ├── engines/
-│   │   │   │   ├── form/       — FormEngine, FieldModel, MetaStore, ValidationEngine
+│   │   │   │   ├── form/       — FormEngine (validation в middleware/validation.ts, meta под $meta.)
 │   │   │   │   ├── table/      — TableEngine (sort, filter, pagination, pinning, group)
 │   │   │   │   ├── tree/       — TreeEngine (expand, check, drag, async)
 │   │   │   │   ├── virtual/    — VirtualScroll engine (windowed rendering)
