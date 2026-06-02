@@ -163,13 +163,21 @@ export class SgDropdownComponent {
         break
       case 'ArrowDown':
         e.preventDefault()
-        if (!this._open()) this._open.set(true)
-        else this._focused.set(enabledIdx(this._focused(), 1))
+        if (!this._open()) {
+          this._open.set(true)
+          this._focused.set(enabledIdx(-1, 1))
+        } else {
+          this._focused.set(enabledIdx(this._focused(), 1))
+        }
         break
       case 'ArrowUp':
         e.preventDefault()
-        if (!this._open()) this._open.set(true)
-        else this._focused.set(enabledIdx(this._focused(), -1))
+        if (!this._open()) {
+          this._open.set(true)
+          this._focused.set(enabledIdx(this.items.length, -1))
+        } else {
+          this._focused.set(enabledIdx(this._focused(), -1))
+        }
         break
     }
   }
