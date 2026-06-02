@@ -18,6 +18,8 @@ import { ComponentTokensInput } from './input/ComponentTokens.demo'
 import ComponentTokensSource from './input/ComponentTokens.demo?raw'
 import { TokensOverrideInput } from './input/TokensOverride.demo'
 import TokensOverrideSource from './input/TokensOverride.demo?raw'
+import { FloatingLabelInput } from './input/FloatingLabel.demo'
+import FloatingLabelSource from './input/FloatingLabel.demo?raw'
 import { TextareaBasic } from './input/TextareaBasic.demo'
 import TextareaBasicSource from './input/TextareaBasic.demo?raw'
 import { TextareaCount } from './input/TextareaCount.demo'
@@ -214,6 +216,14 @@ export function InputDemo() {
         code={TokensOverrideSource}
       >
         <TokensOverrideInput />
+      </DemoBox>
+
+      <DemoBox
+        title={t.demoFloatingLabelTitle}
+        description={t.demoFloatingLabelDesc}
+        code={FloatingLabelSource}
+      >
+        <FloatingLabelInput />
       </DemoBox>
 
       <DemoBox

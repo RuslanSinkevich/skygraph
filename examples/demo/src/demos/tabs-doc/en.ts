@@ -5,7 +5,8 @@
 export const tabsDocEn = {
   pageTitle: 'Tabs',
   pageLead: 'Switch between related views without leaving the page.',
-  pageWhen1: 'When a single resource has multiple views that share context (details / activity / settings).',
+  pageWhen1:
+    'When a single resource has multiple views that share context (details / activity / settings).',
   pageWhen2: 'When you want lightweight navigation that keeps the user on the current screen.',
   pageWhen3: 'For stepwise flows consider <Steps> instead — Tabs does not imply order.',
 
@@ -21,8 +22,9 @@ export const tabsDocEn = {
   demoRichLabelsDesc: 'Mix badges, icons, and status dots into the label.',
   demoStatesTitle: 'Loading & disabled',
   demoStatesDesc: 'Per-item flags gate activation.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scoped --sg-color-primary re-skins the active tab + card seams (default type="card").',
+  demoTokensTitle: 'Custom tab styles',
+  demoTokensDesc:
+    'Three distinct strips (segmented pill, floating cards, animated gradient underline) — each one is just a className on the wrapper plus descendant CSS.',
 
   tableTabsApi: 'Tabs API',
   tableTabItem: 'TabItem',
@@ -35,7 +37,8 @@ export const tabsDocEn = {
   propActiveKey: 'Controlled active key',
   propDefaultActiveKey: 'Initial active key (uncontrolled)',
   propOnChange: 'Fires after user interaction changes the active tab',
-  propType: 'Visual style: `card` — bordered tabs attached to the panel; `line` — underline indicator only',
+  propType:
+    'Visual style: `card` — bordered tabs attached to the panel; `line` — underline indicator only',
   propSize: 'Tab list size (inherits from ConfigProvider)',
   propClassName: 'Extra class on the root',
   propStyle: 'Inline styles on the root',

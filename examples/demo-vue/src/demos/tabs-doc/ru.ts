@@ -25,9 +25,9 @@ export const tabsDocRu: { [K in keyof typeof tabsDocEn]: string } = {
   demoRichLabelsDesc: 'Бейджи, иконки и точки статуса прямо в подписи.',
   demoStatesTitle: 'Loading и disabled',
   demoStatesDesc: 'Per-item флаги управляют активацией.',
-  demoTokensTitle: 'Переопределение токенов',
+  demoTokensTitle: 'Кастомные стили табов',
   demoTokensDesc:
-    'Скоупленный --sg-color-primary перекрашивает активную вкладку и швы card (type="card" по умолчанию).',
+    'Три непохожих набора (сегментный pill, парящие карточки, анимированное градиент-подчёркивание) — обычный className на обёртке плюс CSS для потомков.',
 
   tableTabsApi: 'API Tabs',
   tableTabItem: 'TabItem',
@@ -39,14 +39,16 @@ export const tabsDocRu: { [K in keyof typeof tabsDocEn]: string } = {
   propItems: 'Определения вкладок',
   propActiveKey: 'Контролируемый активный ключ',
   propDefaultActiveKey: 'Начальный активный ключ (без контроля)',
-  propType: 'Визуальный стиль: `card` — вкладки в рамке, прикреплённые к панели; `line` — только индикатор-подчёркивание',
+  propType:
+    'Визуальный стиль: `card` — вкладки в рамке, прикреплённые к панели; `line` — только индикатор-подчёркивание',
   propSize: 'Размер списка вкладок (наследуется от ConfigProvider)',
   propUnstyled: 'Отказаться от стилей SkyGraph',
   emitChange: 'Срабатывает после смены активной вкладки',
 
   itemKey: 'Уникальный идентификатор — для активного состояния и ARIA',
   itemLabel: 'Текст подписи вкладки в полосе вкладок',
-  itemContent: 'Тело панели для активной вкладки (string; для rich-контента используйте слот `#panel`)',
+  itemContent:
+    'Тело панели для активной вкладки (string; для rich-контента используйте слот `#panel`)',
   itemDisabled: 'Затемнение и запрет активации',
   itemLoading: 'Показать спиннер, запретить активацию',
 
@@ -55,7 +57,8 @@ export const tabsDocRu: { [K in keyof typeof tabsDocEn]: string } = {
   cssText: 'Текст тела панели',
   cssTextSecondary: 'Подпись неактивной вкладки',
   cssTextDisabled: 'Подпись отключённой вкладки',
-  cssBorderSecondary: '`line`: нижняя линия nav; `card`: внешний контур + швы вкладок + верх панели',
+  cssBorderSecondary:
+    '`line`: нижняя линия nav; `card`: внешний контур + швы вкладок + верх панели',
   cssBg: '`card`: фон активной вкладки и панели',
   cssBgSecondary: '`card`: фон полосы неактивных вкладок',
   cssFontSize: 'Размер шрифта подписи (sm/lg-варианты перебивают)',

@@ -6,7 +6,8 @@ import { tabsDocEn } from './en'
 export const tabsDocRu: { [K in keyof typeof tabsDocEn]: string } = {
   pageTitle: 'Tabs',
   pageLead: 'Переключение между связанными представлениями без ухода со страницы.',
-  pageWhen1: 'У одного ресурса несколько представлений с общим контекстом (детали / активность / настройки).',
+  pageWhen1:
+    'У одного ресурса несколько представлений с общим контекстом (детали / активность / настройки).',
   pageWhen2: 'Лёгкая навигация, при которой пользователь остаётся на том же экране.',
   pageWhen3: 'Для пошаговых сценариев используйте <Steps> — Tabs не подразумевает порядок.',
 
@@ -22,8 +23,9 @@ export const tabsDocRu: { [K in keyof typeof tabsDocEn]: string } = {
   demoRichLabelsDesc: 'Бейджи, иконки и точки статуса прямо в подписи.',
   demoStatesTitle: 'Loading и disabled',
   demoStatesDesc: 'Per-item флаги управляют активацией.',
-  demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоупленный --sg-color-primary перекрашивает активную вкладку и швы card (type="card" по умолчанию).',
+  demoTokensTitle: 'Кастомные стили табов',
+  demoTokensDesc:
+    'Три непохожих набора (сегментный pill, парящие карточки, анимированное градиент-подчёркивание) — обычный className на обёртке плюс CSS для потомков.',
 
   tableTabsApi: 'API Tabs',
   tableTabItem: 'TabItem',
@@ -36,7 +38,8 @@ export const tabsDocRu: { [K in keyof typeof tabsDocEn]: string } = {
   propActiveKey: 'Контролируемый активный ключ',
   propDefaultActiveKey: 'Начальный активный ключ (без контроля)',
   propOnChange: 'Срабатывает после смены активной вкладки пользователем',
-  propType: 'Визуальный стиль: `card` — вкладки в рамке, прикреплённые к панели; `line` — только индикатор-подчёркивание',
+  propType:
+    'Визуальный стиль: `card` — вкладки в рамке, прикреплённые к панели; `line` — только индикатор-подчёркивание',
   propSize: 'Размер списка вкладок (наследуется от ConfigProvider)',
   propClassName: 'Дополнительный class на корне',
   propStyle: 'Inline-стиль на корне',
@@ -53,7 +56,8 @@ export const tabsDocRu: { [K in keyof typeof tabsDocEn]: string } = {
   cssText: 'Текст тела панели',
   cssTextSecondary: 'Подпись неактивной вкладки',
   cssTextDisabled: 'Подпись отключённой вкладки',
-  cssBorderSecondary: '`line`: нижняя линия nav; `card`: внешний контур + швы вкладок + верх панели',
+  cssBorderSecondary:
+    '`line`: нижняя линия nav; `card`: внешний контур + швы вкладок + верх панели',
   cssBg: '`card`: фон активной вкладки и панели',
   cssBgSecondary: '`card`: фон полосы неактивных вкладок',
   cssFontSize: 'Размер шрифта подписи (sm/lg-варианты перебивают)',

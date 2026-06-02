@@ -34,6 +34,8 @@ import ComponentTokensInput from './input/ComponentTokens.demo.vue'
 import ComponentTokensSource from './input/ComponentTokens.demo.vue?raw'
 import TokensOverrideInput from './input/TokensOverride.demo.vue'
 import TokensOverrideSource from './input/TokensOverride.demo.vue?raw'
+import FloatingLabelInput from './input/FloatingLabel.demo.vue'
+import FloatingLabelSource from './input/FloatingLabel.demo.vue?raw'
 import TextareaBasic from './input/TextareaBasic.demo.vue'
 import TextareaBasicSource from './input/TextareaBasic.demo.vue?raw'
 import TextareaCount from './input/TextareaCount.demo.vue'
@@ -242,6 +244,14 @@ const inputCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideInput />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoFloatingLabelTitle"
+      :description="t.demoFloatingLabelDesc"
+      :code="FloatingLabelSource"
+    >
+      <FloatingLabelInput />
     </DemoBox>
 
     <DemoBox

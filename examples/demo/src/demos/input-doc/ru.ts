@@ -26,6 +26,9 @@ export const inputDocRu: { [K in keyof typeof inputDocEn]: string } = {
   demoTokensOverrideTitle: 'Темы через токены',
   demoTokensOverrideDesc:
     'Два готовых вида (мягкий pill, янтарная заливка) только на --sg-input-* — focus-кольцо и состояния сохраняются.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающий label на чистом CSS (в духе Material 3). Подпись лежит внутри поля и уезжает влево-вверх при фокусе или когда поле заполнено. Контурный и filled-варианты — без правок ядра, только `:has(input:focus)` + `:has(input:not(:placeholder-shown))`.',
   demoTextareaBasicTitle: 'Textarea — базовый',
   demoTextareaBasicDesc: 'Многострочный собрат с общими стилями.',
   demoTextareaCountTitle: 'Textarea — счётчик символов',

@@ -26,9 +26,9 @@ export const tabsDocEn = {
   demoRichLabelsDesc: 'Mix badges, icons, and status dots into the label.',
   demoStatesTitle: 'Loading & disabled',
   demoStatesDesc: 'Per-item flags gate activation.',
-  demoTokensTitle: 'Tokens override',
+  demoTokensTitle: 'Custom tab styles',
   demoTokensDesc:
-    'Scoped --sg-color-primary re-skins the active tab + card seams (default type="card").',
+    'Three distinct strips (segmented pill, floating cards, animated gradient underline) — each one is just a className on the wrapper plus descendant CSS.',
 
   tableTabsApi: 'Tabs API',
   tableTabItem: 'TabItem',
@@ -40,14 +40,16 @@ export const tabsDocEn = {
   propItems: 'Tab definitions',
   propActiveKey: 'Controlled active key',
   propDefaultActiveKey: 'Initial active key (uncontrolled)',
-  propType: 'Visual style: `card` — bordered tabs attached to the panel; `line` — underline indicator only',
+  propType:
+    'Visual style: `card` — bordered tabs attached to the panel; `line` — underline indicator only',
   propSize: 'Tab list size (inherits from ConfigProvider)',
   propUnstyled: 'Opt out of SkyGraph styling',
   emitChange: 'Emitted after the active tab changes',
 
   itemKey: 'Unique identifier — used for active state and ARIA',
   itemLabel: 'Tab label text shown in the tab strip',
-  itemContent: 'Panel body shown when this tab is active (string; use `#panel` slot for rich content)',
+  itemContent:
+    'Panel body shown when this tab is active (string; use `#panel` slot for rich content)',
   itemDisabled: 'Grey out and block activation',
   itemLoading: 'Show spinner, block activation',
 

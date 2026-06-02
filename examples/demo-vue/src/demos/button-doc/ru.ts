@@ -27,9 +27,9 @@ export const buttonDocRu: { [K in keyof typeof buttonDocEn]: string } = {
   demoIconDesc: 'Flex-gap выравнивает иконку и подпись на любом размере.',
   demoTokensTitle: 'Токены компонента',
   demoTokensDesc: 'Скоуп `--sg-btn-*` для локальной формы (pill, крупнее, компактнее).',
-  demoTokensOverrideTitle: 'Темы через токены',
+  demoTokensOverrideTitle: 'Кастомные стили кнопок',
   demoTokensOverrideDesc:
-    'Два готовых вида (изумрудный pill, острый закат) только на --sg-btn-* — hover / focus / disabled сохраняются.',
+    'Четыре непохожих вида (стекло, нео-морфизм, градиент-пилюля, брутализм) на токенах `--sg-btn-*` плюс небольшой слой CSS — компонент тот же, доступность сохраняется.',
   demoBrandTitle: 'Бренд в скоупе',
   demoBrandDesc: 'Переопределите `--sg-color-primary*` для поддерева.',
   demoUnstyledTitle: 'Без стилей',

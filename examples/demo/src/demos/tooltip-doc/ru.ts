@@ -19,11 +19,14 @@ export const tooltipDocRu: { [K in keyof typeof tooltipDocEn]: string } = {
   demoRichDesc:
     'title принимает любой ReactNode — оберните широкий контент в div с заданным размером, чтобы перебить дефолтный nowrap.',
   demoDisabledTitle: 'На отключённом элементе',
-  demoDisabledDesc: 'Tooltip слушает обёртку, поэтому disabled-дочки всё равно показывают подсказку.',
+  demoDisabledDesc:
+    'Tooltip слушает обёртку, поэтому disabled-дочки всё равно показывают подсказку.',
   demoIconTitle: 'На иконке info',
-  demoIconDesc: 'Классический паттерн «?» — задайте tabIndex, чтобы клавиатурный пользователь мог сфокусироваться.',
-  demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: '--sg-color-tooltip-bg и --sg-color-tooltip-text — единственные два цветовых токена.',
+  demoIconDesc:
+    'Классический паттерн «?» — задайте tabIndex, чтобы клавиатурный пользователь мог сфокусироваться.',
+  demoTokensTitle: 'Кастомные стили тултипов',
+  demoTokensDesc:
+    'Три непохожих скина (мутное стекло, сочный градиент, мягкая карточка) — каждый прокидывает className на обёртку и стилизует `.sg-tooltip-content` / `.sg-tooltip-arrow`.',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Сохранить поведение и ARIA, поменять всю отрисовку.',
 

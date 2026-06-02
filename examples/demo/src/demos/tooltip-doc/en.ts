@@ -15,13 +15,15 @@ export const tooltipDocEn = {
   demoPlacementTitle: 'Placement',
   demoPlacementDesc: 'Four sides, no auto-flip — pick what fits your layout.',
   demoRichTitle: 'Rich content',
-  demoRichDesc: 'title accepts any ReactNode — wrap wide content in a sized div to override the default nowrap.',
+  demoRichDesc:
+    'title accepts any ReactNode — wrap wide content in a sized div to override the default nowrap.',
   demoDisabledTitle: 'On a disabled element',
   demoDisabledDesc: 'Tooltip listens on its wrapper, so disabled children still reveal the tip.',
   demoIconTitle: 'On an info icon',
   demoIconDesc: "Classic '?' glyph pattern; set tabIndex so keyboard users can focus it.",
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: '--sg-color-tooltip-bg and --sg-color-tooltip-text are the only two colour tokens you need.',
+  demoTokensTitle: 'Custom tooltip styles',
+  demoTokensDesc:
+    'Three distinct skins (frosted glass, vivid gradient, soft card) — each one passes a className to the wrapper and styles `.sg-tooltip-content` / `.sg-tooltip-arrow` underneath.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Keep the behaviour + ARIA, swap all painting.',
 
