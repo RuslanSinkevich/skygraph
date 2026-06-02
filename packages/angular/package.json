@@ -1,7 +1,7 @@
 {
   "name": "@skygraph/angular",
   "version": "0.0.1",
-  "description": "SkyGraph Angular adapter — components, directives, services and DI tokens",
+  "description": "SkyGraph Angular adapter вЂ” components, directives, services and DI tokens",
   "license": "MIT",
   "private": true,
   "type": "module",
