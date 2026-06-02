@@ -1,35 +1,21 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { DomSanitizer, type SafeHtml } from '@angular/platform-browser'
 import { I18nService } from '../../i18n'
 import { ROADMAP_STYLES } from './roadmap.styles'
 import {
-  compareIds,
-  parseTodo,
-  stripInlineMarkdown,
-  summarizeBody,
-  type TodoItem,
-  type TodoSection,
-} from './todo-parser'
-import todoMd from '../../../../../../TODO.md'
+  parseChangelog,
+  type ChangelogEntry,
+  type ChangelogRound,
+  type ChangelogSubsection,
+} from './changelog-parser'
+import changelogMd from '../../../../../../CHANGELOG.md'
 
-interface DecoratedItem {
-  item: TodoItem
-  section: TodoSection
-  sortKey: string
-}
+const CHANGELOG_GITHUB_URL =
+  'https://github.com/RuslanSinkevich/skygraph-public/blob/master/CHANGELOG.md'
 
 /**
- * Roadmap — Angular port of `examples/demo/src/pages/Roadmap/Roadmap.tsx`.
- *
- * Loads `TODO.md` at build time via the `loader: { '.md': 'text' }`
- * tweak in `angular.json` — same effect as Vite's `?raw` query.
- *
- * Renders a flat list with markers + status badges. The React/Vue
- * versions use `<EventTimeline>` from the framework adapter, but the
- * Angular adapter doesn't ship `EventTimeline` (Wave 4.2 didn't add
- * the `complex/Timeline` namesake — see Step-3 finding `event-timeline-missing`).
- * The flat-list rendering is a Step-1 stand-in; visual structure is
- * close enough that the React→Angular smoke parity test will accept
- * it.
+ * Changelog page — Angular port of the React/Vue Changelog page.
+ * Renders `CHANGELOG.md` as a plain release list.
  */
 @Component({
   selector: 'sg-roadmap-page',
@@ -39,74 +25,67 @@ interface DecoratedItem {
       <header class="roadmap-header">
         <h1 class="roadmap-title">{{ i18n.t().roadmap.title }}</h1>
         <p class="roadmap-lead">{{ i18n.t().roadmap.lead }}</p>
+        <div class="roadmap-links">
+          <a [href]="changelogUrl" target="_blank" rel="noreferrer noopener">
+            {{ i18n.t().roadmap.viewOnGithub }}
+          </a>
+        </div>
       </header>
 
-      <div class="roadmap-stats" role="list" aria-label="Roadmap stats">
-        <span class="roadmap-stat roadmap-stat--closed" role="listitem">
-          <span class="roadmap-stat-dot" aria-hidden="true"></span>
-          {{ stats().closed }} {{ i18n.t().roadmap.statClosed }}
-        </span>
-        <span class="roadmap-stat roadmap-stat--open" role="listitem">
-          <span class="roadmap-stat-dot" aria-hidden="true"></span>
-          {{ stats().open }} {{ i18n.t().roadmap.statOpen }}
-        </span>
-        <span class="roadmap-stat roadmap-stat--total" role="listitem">
-          <span class="roadmap-stat-dot" aria-hidden="true"></span>
-          {{ stats().total }} {{ i18n.t().roadmap.statTotal }}
-        </span>
-      </div>
-
-      <div class="roadmap-source">{{ i18n.t().roadmap.sourceLabel }}</div>
-
-      @if (events().length === 0) {
+      @if (entries().length === 0) {
         <div class="roadmap-empty">{{ i18n.t().roadmap.emptyLabel }}</div>
       } @else {
-        <ul class="roadmap-list">
-          @for (ev of events(); track ev.sortKey) {
-            <li class="roadmap-event">
-              <span
-                [class]="
-                  ev.item.status === 'closed'
-                    ? 'roadmap-marker roadmap-marker--closed'
-                    : 'roadmap-marker roadmap-marker--open'
-                "
-                aria-hidden="true"
-              ></span>
-              <div class="roadmap-event-body-wrap">
-                <div class="roadmap-event-title">
-                  @if (ev.item.id) {
-                    <span class="roadmap-event-id">§ {{ ev.item.id }}</span>
+        <ol class="roadmap-list">
+          @for (entry of entries(); track entry.title; let idx = $index) {
+            <li class="roadmap-entry">
+              <article class="roadmap-release">
+                <header class="roadmap-release-head">
+                  <h2 class="roadmap-release-version">
+                    {{ entry.version ?? entry.title }}
+                  </h2>
+                  @if (entry.date) {
+                    <span class="roadmap-release-date">{{ entry.date }}</span>
                   }
-                  <span>{{ stripInline(ev.item.title) }}</span>
-                  <span
-                    [class]="
-                      ev.item.status === 'closed'
-                        ? 'roadmap-event-status roadmap-event-status--closed'
-                        : 'roadmap-event-status roadmap-event-status--open'
-                    "
-                  >
-                    {{
-                      ev.item.status === 'closed'
-                        ? i18n.t().roadmap.statClosed
-                        : i18n.t().roadmap.statOpen
-                    }}
-                  </span>
-                </div>
-                @if (ev.section.title) {
-                  <div class="roadmap-event-section">
-                    @if (ev.section.id) {
-                      <span>§{{ ev.section.id }} · </span>
+                </header>
+
+                @if (entry.body.length > 0) {
+                  <p class="roadmap-release-summary">
+                    {{ joinParagraph(entry.body) }}
+                  </p>
+                }
+
+                @for (section of entry.rounds; track section.title) {
+                  <section class="roadmap-section">
+                    @if (section.title) {
+                      <h3 class="roadmap-section-title">{{ section.title }}</h3>
                     }
-                    <span>{{ ev.section.title }}</span>
-                  </div>
+                    @if (collectBullets(section.body).length > 0) {
+                      <ul class="roadmap-bullets">
+                        @for (line of collectBullets(section.body); track line) {
+                          <li [innerHTML]="renderInline(line)"></li>
+                        }
+                      </ul>
+                    }
+                    @for (sub of section.subsections; track sub.title) {
+                      <div class="roadmap-subsection">
+                        @if (sub.title) {
+                          <h4 class="roadmap-subsection-title">{{ sub.title }}</h4>
+                        }
+                        @if (collectBullets(sub.body).length > 0) {
+                          <ul class="roadmap-bullets">
+                            @for (line of collectBullets(sub.body); track line) {
+                              <li [innerHTML]="renderInline(line)"></li>
+                            }
+                          </ul>
+                        }
+                      </div>
+                    }
+                  </section>
                 }
-                @if (summary(ev.item)) {
-                  <div class="roadmap-event-body">{{ summary(ev.item) }}</div>
-                }
-              </div>
+              </article>
             </li>
           }
-        </ul>
+        </ol>
       }
     </div>
   `,
@@ -115,37 +94,51 @@ interface DecoratedItem {
 })
 export class RoadmapPageComponent {
   protected readonly i18n = inject(I18nService)
+  private readonly sanitizer = inject(DomSanitizer)
 
-  protected readonly sections = parseTodo(todoMd)
+  protected readonly changelogUrl = CHANGELOG_GITHUB_URL
 
-  protected readonly events = computed<DecoratedItem[]>(() => {
-    const out: DecoratedItem[] = []
-    for (const section of this.sections) {
-      for (const item of section.items) {
-        out.push({ item, section, sortKey: `${section.id}-${item.id}-${item.title}` })
+  protected readonly entries = computed<ChangelogEntry[]>(() => parseChangelog(changelogMd))
+
+  protected joinParagraph(lines: string[]): string {
+    return lines
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0 && !/^[-*]\s/.test(l))
+      .join(' ')
+  }
+
+  protected collectBullets(lines: string[]): string[] {
+    const out: string[] = []
+    let current: string | null = null
+    for (const raw of lines) {
+      if (/^\s*[-*]\s+/.test(raw)) {
+        if (current !== null) out.push(current.trim())
+        current = raw.replace(/^\s*[-*]\s+/, '').trim()
+      } else if (current !== null && raw.trim() !== '') {
+        current += ' ' + raw.trim()
+      } else if (current !== null && raw.trim() === '') {
+        out.push(current.trim())
+        current = null
       }
     }
-    return out.sort((a, b) => {
-      if (a.item.status !== b.item.status) return a.item.status === 'closed' ? -1 : 1
-      return compareIds(a.item.id, b.item.id)
-    })
-  })
-
-  protected readonly stats = computed(() => {
-    let closed = 0
-    let open = 0
-    for (const { item } of this.events()) {
-      if (item.status === 'closed') closed++
-      else open++
-    }
-    return { closed, open, total: this.events().length }
-  })
-
-  protected stripInline(text: string): string {
-    return stripInlineMarkdown(text)
+    if (current !== null) out.push(current.trim())
+    return out
   }
 
-  protected summary(item: TodoItem): string {
-    return summarizeBody(item)
+  protected renderInline(text: string): SafeHtml {
+    const html = escapeHtml(text)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(
+        /\[([^\]]+)\]\(([^)]+)\)/g,
+        '<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>',
+      )
+    return this.sanitizer.bypassSecurityTrustHtml(html)
   }
 }
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+export type { ChangelogEntry, ChangelogRound, ChangelogSubsection }

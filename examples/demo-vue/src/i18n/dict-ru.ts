@@ -35,7 +35,7 @@ export const ru: DemoDict = {
     navHome: 'Главная',
     navGuide: 'Руководство',
     navShowcases: 'Кейсы',
-    navRoadmap: 'Roadmap',
+    navRoadmap: 'Changelog',
     navAbout: 'О проекте',
     navGithub: 'GitHub',
     themeAria: 'Переключить тему',
@@ -58,7 +58,7 @@ export const ru: DemoDict = {
     linkGithub: 'GitHub',
     linkIssues: 'Сообщить о проблеме',
     linkAbout: 'О проекте',
-    linkRoadmap: 'Roadmap',
+    linkRoadmap: 'Changelog',
     linkLicense: 'Лицензия',
   },
   language: {
@@ -161,56 +161,10 @@ export const ru: DemoDict = {
   },
 
   roadmap: {
-    title: 'Roadmap',
-    lead: 'Что уже готово и что планируется. Обновляется автоматически из репозитория.',
-    statClosed: 'готово',
-    statOpen: 'в планах',
-    statTotal: 'всего',
-    sourceLabel: 'SkyGraph Roadmap',
-    emptyLabel: 'Под текущий фильтр ничего не подходит.',
-
-    metricComponents: 'компонентов',
-    metricEngines: 'движков',
-    metricFrameworks: 'фреймворка',
-    metricRounds: 'релизов',
-
-    filterAll: 'Всё',
-    filterShipped: 'Готово',
-    filterPlanned: 'В планах',
-    searchPlaceholder: 'Поиск…',
-    searchAriaLabel: 'Поиск по roadmap',
-
-    sectionsHeading: 'Возможности',
-    sectionsLead:
-      'Основные направления разработки и прогресс по каждому. Раскройте карточку для деталей.',
-    sectionProgressLabel: 'прогресс',
-    sectionStatusComplete: 'завершено',
-    sectionStatusActive: 'в работе',
-    sectionProgressCount: '{closed} / {total}',
-
-    timelineHeading: 'История релизов',
-    timelineLead: 'Каждый релиз с описанием того, что было добавлено или изменено.',
-    roundLabel: 'Релиз',
-
-    nextHeading: 'Что дальше',
-    nextLead: 'Предстоящие фичи и улучшения.',
-    nextEmpty: 'Пока всё готово.',
-
-    itemBadgeShipped: 'готово',
-    itemBadgePlanned: 'в планах',
-    itemRound: 'релиз {n}',
-
-    sourceLink: 'Исходный код на GitHub →',
-
-    overallProgressLabel: 'Общий прогресс',
-    metricTests: 'тестов',
-    latestEyebrow: 'Последний релиз',
-    topicSingular: 'фича',
-    topicPlural: 'фич',
-    commitSingular: 'изменение',
-    commitPlural: 'изменений',
-    changelogLink: 'Полный changelog →',
-    moreLabel: 'ещё',
+    title: 'Changelog',
+    lead: 'Каждая выпущенная версия и что в неё вошло.',
+    emptyLabel: 'Релизов пока нет.',
+    viewOnGithub: 'Открыть CHANGELOG.md на GitHub →',
   },
 
   about: {

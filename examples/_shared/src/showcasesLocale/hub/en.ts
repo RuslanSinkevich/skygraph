@@ -14,7 +14,7 @@ export const hubLocaleEn: HubLocale = {
     navComponents: 'Components',
     navGuide: 'Guide',
     navBenchmarks: 'Benchmarks',
-    navRoadmap: 'Roadmap',
+    navRoadmap: 'Changelog',
     navAbout: 'About',
     footerCopyright: '© 2026 SkyGraph contributors',
     footerShowcases: {

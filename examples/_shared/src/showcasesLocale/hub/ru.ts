@@ -14,7 +14,7 @@ export const hubLocaleRu: HubLocale = {
     navComponents: 'Компоненты',
     navGuide: 'Руководство',
     navBenchmarks: 'Бенчмарки',
-    navRoadmap: 'Roadmap',
+    navRoadmap: 'Changelog',
     navAbout: 'О проекте',
     footerCopyright: '© 2026 контрибьюторы SkyGraph',
     footerShowcases: {

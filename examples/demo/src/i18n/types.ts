@@ -297,67 +297,15 @@ export interface DemoDict {
     footerDevHint: string
   }
 
+  /**
+   * Changelog page (`#/roadmap`). Renders `CHANGELOG.md` as a plain
+   * release list — no filters, no metrics.
+   */
   roadmap: {
     title: string
     lead: string
-    statClosed: string
-    statOpen: string
-    statTotal: string
-    sourceLabel: string
     emptyLabel: string
-
-    /** Hero metrics row (chips above the timeline). */
-    metricComponents: string
-    metricEngines: string
-    metricFrameworks: string
-    metricRounds: string
-
-    /** Tabs in the filter bar. */
-    filterAll: string
-    filterShipped: string
-    filterPlanned: string
-    searchPlaceholder: string
-    searchAriaLabel: string
-
-    /** Section grid. */
-    sectionsHeading: string
-    sectionsLead: string
-    sectionProgressLabel: string
-    sectionStatusComplete: string
-    sectionStatusActive: string
-    /** "{closed} of {total} closed" — `{closed}` / `{total}` are placeholders. */
-    sectionProgressCount: string
-
-    /** Round timeline. */
-    timelineHeading: string
-    timelineLead: string
-    /** Used as the round event title prefix, e.g. "Round 13". */
-    roundLabel: string
-
-    /** What's next column. */
-    nextHeading: string
-    nextLead: string
-    nextEmpty: string
-
-    /** Item card. */
-    itemBadgeShipped: string
-    itemBadgePlanned: string
-    /** "Round {n}" — `{n}` is replaced. */
-    itemRound: string
-
-    /** Link to the raw source on GitHub. */
-    sourceLink: string
-
-    /** Redesigned Roadmap (optional — fallbacks live in the page). */
-    overallProgressLabel?: string
-    metricTests?: string
-    latestEyebrow?: string
-    topicSingular?: string
-    topicPlural?: string
-    commitSingular?: string
-    commitPlural?: string
-    changelogLink?: string
-    moreLabel?: string
+    viewOnGithub: string
   }
 
   about: {

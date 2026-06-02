@@ -145,11 +145,8 @@ export interface DemoDict {
   roadmap: {
     title: string
     lead: string
-    statClosed: string
-    statOpen: string
-    statTotal: string
-    sourceLabel: string
     emptyLabel: string
+    viewOnGithub: string
   }
   about: {
     title: string

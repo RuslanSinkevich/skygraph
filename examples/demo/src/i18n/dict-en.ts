@@ -201,7 +201,7 @@ export const en: DemoDict = {
     navShowcases: 'Showcases',
     navGuide: 'Guide',
     navBenchmarks: 'Benchmarks',
-    navRoadmap: 'Roadmap',
+    navRoadmap: 'Changelog',
     navAbout: 'About',
     navGithub: 'GitHub',
     burgerAria: 'Open navigation',
@@ -236,7 +236,7 @@ export const en: DemoDict = {
     linkGithub: 'GitHub',
     linkIssues: 'Report an issue',
     linkAbout: 'About',
-    linkRoadmap: 'Roadmap',
+    linkRoadmap: 'Changelog',
     linkLicense: 'License',
     copyright: '© 2026 SkyGraph contributors',
   },
@@ -302,55 +302,10 @@ export const en: DemoDict = {
   },
 
   roadmap: {
-    title: 'Roadmap',
-    lead: 'What has already shipped and what is coming next. Updated automatically from the repository.',
-    statClosed: 'done',
-    statOpen: 'planned',
-    statTotal: 'total',
-    sourceLabel: 'SkyGraph Roadmap',
-    emptyLabel: 'Nothing matches the current filter.',
-
-    metricComponents: 'components',
-    metricEngines: 'engines',
-    metricFrameworks: 'frameworks',
-    metricRounds: 'releases',
-
-    filterAll: 'All',
-    filterShipped: 'Shipped',
-    filterPlanned: 'Planned',
-    searchPlaceholder: 'Search…',
-    searchAriaLabel: 'Filter roadmap items',
-
-    sectionsHeading: 'Features',
-    sectionsLead: 'Major feature areas and their progress. Expand a card to see details.',
-    sectionProgressLabel: 'progress',
-    sectionStatusComplete: 'complete',
-    sectionStatusActive: 'active',
-    sectionProgressCount: '{closed} / {total}',
-
-    timelineHeading: 'Release history',
-    timelineLead: 'Every release with a summary of what was added or changed.',
-    roundLabel: 'Release',
-
-    nextHeading: "What's next",
-    nextLead: 'Upcoming features and improvements.',
-    nextEmpty: 'Everything is done for now.',
-
-    itemBadgeShipped: 'shipped',
-    itemBadgePlanned: 'planned',
-    itemRound: 'release {n}',
-
-    sourceLink: 'View raw source on GitHub →',
-
-    overallProgressLabel: 'Overall progress',
-    metricTests: 'tests',
-    latestEyebrow: 'Latest release',
-    topicSingular: 'feature',
-    topicPlural: 'features',
-    commitSingular: 'change',
-    commitPlural: 'changes',
-    changelogLink: 'Full changelog →',
-    moreLabel: 'more',
+    title: 'Changelog',
+    lead: 'Every released version with the changes that landed in it.',
+    emptyLabel: 'No releases yet.',
+    viewOnGithub: 'View CHANGELOG.md on GitHub →',
   },
 
   about: {
