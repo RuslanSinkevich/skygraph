@@ -14,6 +14,14 @@ const publicPackageJson = JSON.parse(
 
 export default defineConfig({
   base: '/react/',
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
+  preview: {
+    port: 4173,
+    strictPort: true,
+  },
   plugins: [react(), vue()],
   define: {
     __SKYGRAPH_REACT_VERSION__: JSON.stringify(publicPackageJson.version),
