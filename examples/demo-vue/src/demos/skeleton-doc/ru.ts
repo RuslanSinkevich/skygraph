@@ -25,27 +25,26 @@ export const skeletonDocRu: SkeletonDocStrings = {
   demoRowsDesc: '`:paragraph="{ rows, width }"` задаёт форму абзаца.',
   demoCardTitle: 'Сетка карточек',
   demoCardDesc: 'Composing нескольких Skeleton для итогового layout.',
-  demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Перекрашиваем placeholder + shimmer через глобальные токены.',
+  demoTokensTitle: 'Кастомные темы скелета',
+  demoTokensDesc:
+    'Три палитры (светлая карточка, индиго-фирменная, тёмный режим) — меняются только `--sg-skeleton-bg` и `--sg-skeleton-shimmer`.',
   demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc:
-    '`unstyled` сохраняет aria-busy и порядок блоков, убирает все классы.',
+  demoUnstyledDesc: '`unstyled` сохраняет aria-busy и порядок блоков, убирает все классы.',
 
   tableSkeletonApi: 'API Skeleton',
   tableCssVars: 'CSS-переменные',
   cssHint:
-    'У Skeleton нет собственных токенов. Переопределяй `--sg-color-bg-hover` (заливка) и `--sg-color-bg-secondary` (highlight) для ребрендинга.',
+    'У Skeleton два собственных токена — `--sg-skeleton-bg` (заливка плейсхолдера) и `--sg-skeleton-shimmer` (блик анимации). Меняй оба на обёртке для тёмного режима или фирменного плейсхолдера.',
 
   propActive: 'Включить shimmer-анимацию',
   propAvatar: 'Показать аватар; объект `{ size, shape }` — настройки',
   propTitle: 'Показать заголовок; объект `{ width }` — кастомная ширина',
   propParagraph: 'Показать строки абзаца; `{ rows, width[] }` — настройки',
   propLoading: 'Если false — рендерим default-слот вместо скелета',
-  propUnstyled:
-    'Снять sg-skeleton-* классы (сохранить aria-busy + порядок блоков)',
+  propUnstyled: 'Снять sg-skeleton-* классы (сохранить aria-busy + порядок блоков)',
 
-  cssBgHover: 'Цвет заливки placeholder',
-  cssBgSecondary: 'Цвет highlight анимации',
+  cssSkeletonBg: 'Цвет заливки placeholder',
+  cssSkeletonShimmer: 'Цвет highlight анимации',
   cssBorderRadiusSm: 'Радиус скругления полосок',
   cssMotionDurationSlow: 'Длительность shimmer',
 }

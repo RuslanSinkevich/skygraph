@@ -64,8 +64,8 @@ const skeletonProps = computed<PropDef[]>(() => [
 ])
 
 const skeletonCssVars = computed<CssVarDef[]>(() => [
-  { name: 'sg-color-bg-hover', default: '#f5f5f5', description: t.value.cssBgHover },
-  { name: 'sg-color-bg-secondary', default: '#fafafa', description: t.value.cssBgSecondary },
+  { name: 'sg-skeleton-bg', default: '#e2e8f0', description: t.value.cssSkeletonBg },
+  { name: 'sg-skeleton-shimmer', default: '#f8fafc', description: t.value.cssSkeletonShimmer },
   { name: 'sg-border-radius-sm', default: '4px', description: t.value.cssBorderRadiusSm },
   {
     name: 'sg-motion-duration-slow',

@@ -29,9 +29,24 @@ export function SkeletonDemo() {
   const skeletonProps = useMemo<PropDef[]>(
     () => [
       { name: 'active', description: t.propActive, type: 'boolean', default: 'false' },
-      { name: 'avatar', description: t.propAvatar, type: 'boolean | { size?: number; shape?: "circle" | "square" }', default: 'false' },
-      { name: 'title', description: t.propTitle, type: 'boolean | { width?: number | string }', default: 'true' },
-      { name: 'paragraph', description: t.propParagraph, type: 'boolean | { rows?: number; width?: Array<number | string> }', default: 'true' },
+      {
+        name: 'avatar',
+        description: t.propAvatar,
+        type: 'boolean | { size?: number; shape?: "circle" | "square" }',
+        default: 'false',
+      },
+      {
+        name: 'title',
+        description: t.propTitle,
+        type: 'boolean | { width?: number | string }',
+        default: 'true',
+      },
+      {
+        name: 'paragraph',
+        description: t.propParagraph,
+        type: 'boolean | { rows?: number; width?: Array<number | string> }',
+        default: 'true',
+      },
       { name: 'loading', description: t.propLoading, type: 'boolean', default: 'true' },
       { name: 'children', description: t.propChildren, type: 'ReactNode' },
       { name: 'className', description: t.propClassName, type: 'string' },
@@ -43,8 +58,8 @@ export function SkeletonDemo() {
 
   const skeletonCssVars = useMemo<CssVarDef[]>(
     () => [
-      { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssBgHover },
-      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.02)', description: t.cssBgSecondary },
+      { name: 'sg-skeleton-bg', default: '#e2e8f0', description: t.cssSkeletonBg },
+      { name: 'sg-skeleton-shimmer', default: '#f8fafc', description: t.cssSkeletonShimmer },
       { name: 'sg-border-radius', default: '6px', description: t.cssRadius },
       { name: 'sg-border-radius-sm', default: '4px', description: t.cssRadiusSm },
       { name: 'sg-padding-lg', default: '16px', description: t.cssPaddingLg },

@@ -27,15 +27,16 @@ export const skeletonDocEn = {
   demoRowsDesc: '`:paragraph="{ rows, width }"` shapes the line block.',
   demoCardTitle: 'Card grid',
   demoCardDesc: 'Compose multiple Skeletons for the final layout.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Re-tint the placeholder + shimmer via global tokens.',
+  demoTokensTitle: 'Custom skeleton themes',
+  demoTokensDesc:
+    'Three palettes (light card, indigo branded, dark mode) — only `--sg-skeleton-bg` and `--sg-skeleton-shimmer` change.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: '`unstyled` keeps aria-busy and block order, drops every class.',
 
   tableSkeletonApi: 'Skeleton API',
   tableCssVars: 'CSS Variables',
   cssHint:
-    'Skeleton has no component-private tokens. Override `--sg-color-bg-hover` (placeholder fill) and `--sg-color-bg-secondary` (shimmer highlight) to rebrand.',
+    'Skeleton ships two dedicated tokens — `--sg-skeleton-bg` (placeholder fill) and `--sg-skeleton-shimmer` (animation highlight). Override both on a wrapper for a dark-mode or branded placeholder.',
 
   propActive: 'Enable shimmer animation',
   propAvatar: 'Show avatar block; pass `{ size, shape }` to tune',
@@ -44,8 +45,8 @@ export const skeletonDocEn = {
   propLoading: 'When false, render the default slot instead of the skeleton',
   propUnstyled: 'Drop sg-skeleton-* classes (keep aria-busy + block order)',
 
-  cssBgHover: 'Placeholder fill colour',
-  cssBgSecondary: 'Animation highlight colour',
+  cssSkeletonBg: 'Placeholder fill colour',
+  cssSkeletonShimmer: 'Animation highlight colour',
   cssBorderRadiusSm: 'Corner radius of bars',
   cssMotionDurationSlow: 'Shimmer duration',
 } as const

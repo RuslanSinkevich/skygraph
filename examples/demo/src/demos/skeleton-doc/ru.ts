@@ -9,7 +9,8 @@ export const skeletonDocRu: { [K in keyof typeof skeletonDocEn]: string } = {
     'Плейсхолдер с учётом раскладки на время загрузки контента — блоки avatar, title и paragraph, опциональная шиммер-анимация.',
   pageWhen1: 'Элементы фида / списка, зависящие от сетевого запроса.',
   pageWhen2: 'Карточки и виджеты дашборда, гидрирующиеся после mount.',
-  pageWhen3: 'Любой экран, где переключение плейсхолдера на контент не должно прыгать по раскладке.',
+  pageWhen3:
+    'Любой экран, где переключение плейсхолдера на контент не должно прыгать по раскладке.',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Заголовок + 3 строки, без анимации.',
@@ -25,28 +26,30 @@ export const skeletonDocRu: { [K in keyof typeof skeletonDocEn]: string } = {
   demoLoadingDesc: 'Переключите `loading`, чтобы подменить skeleton на `children` на месте.',
   demoCardTitle: 'Композиция карточки',
   demoCardDesc: 'Соберите несколько Skeleton, чтобы повторить сетку карточек.',
-  demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоупьте два bg-токена для своей палитры skeleton.',
+  demoTokensTitle: 'Кастомные темы скелета',
+  demoTokensDesc:
+    'Три палитры (светлая карточка, индиго-фирменная, тёмный режим) — меняются только `--sg-skeleton-bg` и `--sg-skeleton-shimmer`; шиммер всегда читается, потому что блик ярче базы.',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Сохранить aria + структуру; стили ваши.',
 
   tableSkeletonApi: 'API Skeleton',
   tableCssVars: 'CSS-переменные',
   cssHint:
-    'У Skeleton нет приватных токенов — он читает `--sg-color-bg-hover` (заливка) и `--sg-color-bg-secondary` (блик шиммера). Меняйте оба на обёртке для тёмного режима или брендированного плейсхолдера.',
+    'Skeleton использует два собственных токена — `--sg-skeleton-bg` (заливка плейсхолдера) и `--sg-skeleton-shimmer` (блик анимации). Меняйте оба на обёртке для тёмного режима или брендированного плейсхолдера; шиммер всегда читается, потому что блик ярче базы.',
 
   propActive: 'Включить шиммер-анимацию',
   propAvatar: 'Показать плейсхолдер аватара; объектная форма задаёт `size` и `shape`',
   propTitle: 'Показать полосу заголовка; объектная форма задаёт `width`',
-  propParagraph: 'Показать строки параграфа; объектная форма задаёт `rows` и `width` для каждой строки',
+  propParagraph:
+    'Показать строки параграфа; объектная форма задаёт `rows` и `width` для каждой строки',
   propLoading: 'При `false` рендерится `children` вместо skeleton',
   propChildren: 'Реальный контент, отрисовываемый при `loading=false`',
   propClassName: 'className обёртки',
   propStyle: 'Inline-стиль обёртки',
   propUnstyled: 'Убрать классы sg-skeleton-* (headless-режим)',
 
-  cssBgHover: 'Цвет заливки плейсхолдера (avatar / title / rows)',
-  cssBgSecondary: 'Цвет блика в градиенте шиммера (`active`)',
+  cssSkeletonBg: 'Цвет заливки плейсхолдера (avatar / title / rows)',
+  cssSkeletonShimmer: 'Цвет блика в градиенте шиммера (`active`)',
   cssRadius: 'Скругление углов квадратного аватара',
   cssRadiusSm: 'Скругление углов строк title и paragraph',
   cssPaddingLg: 'Зазор между аватаром и блоком контента',

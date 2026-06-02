@@ -24,15 +24,16 @@ export const skeletonDocEn = {
   demoLoadingDesc: 'Flip `loading` to swap the skeleton for `children` in place.',
   demoCardTitle: 'Card composition',
   demoCardDesc: 'Compose several Skeletons to mirror a card grid.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope the two bg tokens for a bespoke skeleton palette.',
+  demoTokensTitle: 'Custom skeleton themes',
+  demoTokensDesc:
+    'Three palettes (light card, indigo branded, dark mode) — only `--sg-skeleton-bg` and `--sg-skeleton-shimmer` change; the shimmer keeps reading because the highlight is always brighter than the base.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Keep aria + structure, bring your own styling.',
 
   tableSkeletonApi: 'Skeleton API',
   tableCssVars: 'CSS Variables',
   cssHint:
-    'Skeleton has no component-private tokens — it reads `--sg-color-bg-hover` (fill) and `--sg-color-bg-secondary` (shimmer highlight). Swap both on a wrapper for a dark-mode or branded placeholder.',
+    'Skeleton ships two dedicated tokens — `--sg-skeleton-bg` (placeholder fill) and `--sg-skeleton-shimmer` (animation highlight). Override both on a wrapper for a dark-mode or branded placeholder; the shimmer reads as a sweep because the highlight is always brighter than the base.',
 
   propActive: 'Turn on the shimmer animation',
   propAvatar: 'Show an avatar placeholder; object form tunes `size` and `shape`',
@@ -44,8 +45,8 @@ export const skeletonDocEn = {
   propStyle: 'Wrapper inline style',
   propUnstyled: 'Drop every sg-skeleton-* class (headless mode)',
 
-  cssBgHover: 'Placeholder fill colour (avatar / title / rows)',
-  cssBgSecondary: 'Highlight colour in the shimmer gradient (`active`)',
+  cssSkeletonBg: 'Placeholder fill colour (avatar / title / rows)',
+  cssSkeletonShimmer: 'Highlight colour in the shimmer gradient (`active`)',
   cssRadius: 'Square avatar corner radius',
   cssRadiusSm: 'Title + paragraph line corner radius',
   cssPaddingLg: 'Gap between avatar and content block',
