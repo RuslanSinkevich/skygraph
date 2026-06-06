@@ -27,7 +27,7 @@ const search = ref('')
 
 function sectionForRoute(path: string): AppShellSection {
   if (path === '/' || path === '') return 'landing'
-  if (path === '/roadmap') return 'roadmap'
+  if (path === '/changelog' || path === '/roadmap') return 'changelog'
   if (path === '/about') return 'about'
   if (path.startsWith('/showcases')) return 'showcases'
   if (path.startsWith('/components/')) return 'components'
@@ -41,7 +41,7 @@ const navItems = computed<NavItem[]>(() => [
   { key: 'components', label: t.value.header.navComponents, href: '#/components/button' },
   { key: 'guide', label: t.value.header.navGuide, href: '#/guide/getting-started' },
   { key: 'showcases', label: t.value.header.navShowcases, href: '#/showcases' },
-  { key: 'roadmap', label: t.value.header.navRoadmap, href: '#/roadmap' },
+  { key: 'changelog', label: t.value.header.navRoadmap, href: '#/changelog' },
   { key: 'about', label: t.value.header.navAbout, href: '#/about' },
 ])
 
@@ -72,7 +72,7 @@ const showSidebar = computed(() => section.value === 'components' || section.val
 const headerActive = computed<string | null>(() => {
   if (section.value === 'components') return 'components'
   if (section.value === 'guide') return 'guide'
-  if (section.value === 'roadmap') return 'roadmap'
+  if (section.value === 'changelog') return 'changelog'
   if (section.value === 'about') return 'about'
   if (section.value === 'showcases') return 'showcases'
   return null
@@ -133,7 +133,7 @@ const footerColumns = computed<FooterColumn[]>(() => [
     title: t.value.footer.columnProject,
     links: [
       { label: t.value.footer.linkAbout, href: '#/about' },
-      { label: t.value.footer.linkRoadmap, href: '#/roadmap' },
+      { label: t.value.footer.linkRoadmap, href: '#/changelog' },
       {
         label: t.value.footer.linkLicense,
         href: `${GITHUB_URL}/blob/master/LICENSE`,

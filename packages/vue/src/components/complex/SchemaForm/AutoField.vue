@@ -312,8 +312,8 @@ const fieldStateClass = computed(() => ({
           fontSize: '20px',
           color:
             i <= (typeof value === 'number' ? value : 0)
-              ? 'var(--sg-warning, #faad14)'
-              : 'var(--sg-border, #d9d9d9)',
+              ? 'var(--sg-color-warning, #faad14)'
+              : 'var(--sg-color-border, #d9d9d9)',
           padding: 0,
         }"
         @click="!isDisabled && handleChange(i)"
@@ -353,11 +353,11 @@ const fieldStateClass = computed(() => ({
       v-if="hasErrors"
       :id="errorId"
       role="alert"
-      style="color: var(--sg-error, #ff4d4f); font-size: 12px"
+      style="color: var(--sg-color-error, #ff4d4f); font-size: 12px"
     >
       {{ meta.errors.join('; ') }}
     </span>
-    <span v-else-if="hasWarnings" style="color: var(--sg-warning, #faad14); font-size: 12px">
+    <span v-else-if="hasWarnings" style="color: var(--sg-color-warning, #faad14); font-size: 12px">
       {{ meta.warnings.join('; ') }}
     </span>
   </div>

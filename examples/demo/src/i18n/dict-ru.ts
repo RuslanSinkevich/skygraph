@@ -6,8 +6,8 @@ export const ru: DemoDict = {
     appTitle: 'SkyGraph',
     tagline: 'Реактивная UI-библиотека',
     heroSub:
-      'Headless-ядро реактивности + 78+ стилизованных компонентов. TypeScript-first. Zero runtime CSS-in-JS.',
-    componentsBadgeSuffix: '+ компонентов',
+      'Headless-ядро реактивности и множество стилизованных компонентов. TypeScript-first. Zero runtime CSS-in-JS.',
+    componentsBadgeSuffix: 'Компоненты',
   },
 
   search: {
@@ -153,22 +153,68 @@ export const ru: DemoDict = {
 
   coreApi: {
     title: 'API ядра',
-    lead: 'Чистый TS реактивный рантайм + предметные движки. Никакой зависимости от React в ядре; React-слой — тонкий адаптер.',
+    lead: 'Чистый TypeScript-рантайм, на котором стоят все компоненты SkyGraph. В 95% случаев напрямую к нему обращаться не нужно — но если нужно (общее состояние между фреймворками, свои движки, код вне компонентов) — это та самая поверхность API.',
+    whyTitle: 'Зачем нужно отдельное ядро',
+    whyP1:
+      'Большинство UI-библиотек намертво прибивают state к одному фреймворку. SkyGraph делает наоборот: реактивный store, движки форм, таблиц, графов — никто из них не импортирует React, Vue или Angular. Это просто TypeScript-классы.',
+    whyP2:
+      'Именно поэтому одинаковые компоненты ведут себя идентично во всех трёх фреймворках, а SSR, воркеры и тесты могут пользоваться теми же движками без затаскивания UI-фреймворка.',
+    mentalTitle: 'Ментальная модель — три слоя',
+    mentalP1:
+      'Всё в SkyGraph построено на трёх слоях. На любом из них можно остановиться, если этого хватает.',
+    mentalLayer1:
+      'Store — единый реактивный key/value по строковым путям (`user.name`, `form.fields.email`).',
+    mentalLayer2:
+      'Предметные движки — внешние API для конкретной задачи (Form / Table / Tree / Virtual / Graph), каждый живёт в своём namespace в Store.',
+    mentalLayer3:
+      'Биндинги фреймворков — `@skygraph/react`, `@skygraph/vue`, `@skygraph/angular` превращают обновления Store в нативный re-render.',
     sectionStore: 'Store — реактивный key/value по путям',
     sectionStoreLead:
-      'Централизованное состояние, точечные подписки по путям, транзакционные коммиты, батч-уведомления, computed с детектом циклов.',
-    sectionEngines: 'Предметные движки',
+      'Нижний слой. Одно централизованное дерево состояния, точечные подписки по конкретному пути, транзакционные коммиты, батч-уведомления и computed с детектом циклов.',
+    sectionStoreP2:
+      '`set` пишет по пути, `subscribe` слушает ровно один путь (никаких лишних рендеров), `batch` собирает несколько записей в одно уведомление — удобно когда меняешь сразу пачку связанных полей.',
+    sectionEngines: 'Предметные движки — Form, Table, Tree, Virtual, Graph',
     sectionEnginesLead:
-      'FormEngine, TableEngine, TreeEngine, VirtualEngine, GraphEngine — каждый владеет namespace `$<name>.` в Store и даёт сфокусированный API для своей предметной области.',
+      'Пять высокоуровневых движков поверх Store. Каждый владеет namespace `$<name>.` и даёт сфокусированный API. Бери их, когда ручные `get` / `set` означали бы заново написать валидацию формы или виртуализацию.',
+    engineFormLabel: 'FormEngine',
+    engineFormDesc:
+      'Реестр полей, асинхронная валидация, отслеживание dirty / touched, submit-pipeline.',
+    engineTableLabel: 'TableEngine',
+    engineTableDesc:
+      'Сортировка, фильтрация, пагинация, выбор строк, ресайз колонок — для любой формы данных.',
+    engineTreeLabel: 'TreeEngine',
+    engineTreeDesc: 'Иерархический выбор, expand / collapse, ленивая загрузка детей.',
+    engineVirtualLabel: 'VirtualEngine',
+    engineVirtualDesc:
+      'Окно с фиксированной / переменной высотой для списков и таблиц на тысячи строк.',
+    engineGraphLabel: 'GraphEngine',
+    engineGraphDesc: 'Узлы, рёбра и якоря для диаграмм и node-based редакторов.',
     sectionTyped: 'TypedCore — типобезопасные пути',
     sectionTypedLead:
-      'Оберните runtime Core в generic TypedCore<T> для автокомплита и TS-проверки путей без рантайм-нагрузки.',
+      'Оберни runtime Core в generic `TypedCore<T>` — и компилятор будет автокомплитить каждый путь и валить опечатки. Без рантайм-нагрузки.',
+    sectionTypedP2:
+      'Имеет смысл, когда store вырастает за пределы пары путей или когда над ним работает команда. И записи, и `subscribe` становятся проверяемыми типами.',
     sectionMiddleware: 'Pipeline middleware',
     sectionMiddlewareLead:
-      'Подключайте logger / freeze / persistence / validation между записями и уведомлениями. Настраивайте порядок и пишите свои.',
-    sectionGraph: 'GraphEngine — диаграммы',
+      'Сквозная логика — логирование, freeze, персистентность, валидация — подключается между записями и уведомлениями. Порядок задаётся явно, свои middleware пишутся за минуту.',
+    sectionMiddlewareP2:
+      'Готовые средства в комплекте: `loggerMiddleware()` пишет лог каждой записи, `freezeMiddleware()` делает state read-only в dev, persistence и validation лежат рядом.',
+    sectionGraph: 'GraphEngine — диаграммы подробнее',
     sectionGraphLead:
-      'Узлы (outline / transform / parent / anchorPolicy), рёбра (стабильные anchor ID), инкрементальные якоря и AABB, подписки на snapshot для React.',
+      'Самодостаточный движок для диаграмм и node-редакторов: узлы с outline / transform / parent / anchorPolicy, рёбра со стабильными anchor ID, инкрементальные кэши якорей и AABB.',
+    sectionGraphP2:
+      'Подпишись один раз — получишь snapshot при любом изменении графа. Именно этот snapshot потребляют React / Vue / Angular Graph-компоненты.',
+    whenTitle: 'Когда лезть в Core напрямую',
+    when1:
+      'Нужно общее состояние между фреймворками (React-островок в Vue-хосте или Angular-shell с React-виджетами).',
+    when2: 'Движок нужен в воркере, в тестах или на сервере — там UI-фреймворк избыточен.',
+    when3:
+      'Пишешь свой компонент SkyGraph и хочешь, чтобы он играл с `subscribe` / `batch` / TypedCore.',
+    when4:
+      'Нужен централизованный audit trail, слой персистентности или freeze в dev — middleware-pipeline это и есть нужный хук.',
+    nextTitle: 'Куда идти дальше',
+    nextLead:
+      'Большинство приложений напрямую к Core не обращаются — берут компоненты `@skygraph/react`, `@skygraph/vue` или `@skygraph/angular`, которые уже умеют с ним разговаривать. За биндингами — в «Быстрый старт»; за рантайм-конфигурацией (size / locale / direction) — в «ConfigProvider»; за темизацией — в «Дизайн-токены» и «Стилизацию».',
   },
 
   gettingStarted: {
@@ -195,7 +241,7 @@ export const ru: DemoDict = {
     cardCoreApiTitle: 'API ядра',
     cardCoreApiDesc: 'createCore, createForm, createTable, createTree, createGraph',
     cardComponentsTitle: 'Компоненты',
-    cardComponentsDesc: '78+ готовых UI-компонентов',
+    cardComponentsDesc: 'Каталог готовых UI-компонентов',
   },
 
   header: {
@@ -246,13 +292,13 @@ export const ru: DemoDict = {
   landing: {
     heroTitle: 'Готовый набор UI для веб-приложений',
     heroSub:
-      'SkyGraph — multi-framework UI-библиотека для React и Vue. 78+ компонентов, 12 готовых приложений, светлая и тёмная темы — всё на едином ядре.',
+      'SkyGraph — multi-framework UI-библиотека для React и Vue. Множество стилизованных компонентов, готовые приложения, светлая и тёмная темы — всё на едином ядре.',
     ctaPrimary: 'Посмотреть приложения',
     ctaSecondary: 'Открыть компоненты',
     heroImageAlt: 'Скриншот демо CRM в светлой теме',
 
     highlightsTitle: 'Что внутри',
-    highlight1Title: '78+ компонентов',
+    highlight1Title: 'Стилизованные компоненты',
     highlight1Desc:
       'Формы, таблицы, деревья, календари, графики, диаграммы, дашборды. Готовы к проекту.',
     highlight2Title: '12 готовых приложений',
@@ -313,7 +359,7 @@ export const ru: DemoDict = {
   about: {
     title: 'О проекте',
     lead1:
-      'SkyGraph — TypeScript-first реактивная UI-библиотека: path-based ядро, шесть предметных движков и 78+ стилизованных компонентов на чистых CSS-переменных без рантайма.',
+      'SkyGraph — TypeScript-first реактивная UI-библиотека: path-based ядро, шесть предметных движков и множество стилизованных компонентов на чистых CSS-переменных без рантайма.',
     lead2:
       'Это UI-фундамент платформы Sky: один и тот же компонентный контракт поставляется через адаптеры для React и Vue — одинаковый DOM и CSS.',
     lead3:
@@ -328,17 +374,20 @@ export const ru: DemoDict = {
     skycodeTitle: 'Skycode',
     skycodeDesc:
       'Форк VS Code со встроенным AI-ассистентом — агент, 40+ провайдеров моделей, inline diff.',
+    skycodeTag: 'IDE',
     gitborTitle: 'GitBor',
     gitborDesc:
       'Кроссплатформенный десктопный Git-клиент на Electron — визуальный граф коммитов, интерактивный rebase, защита данных.',
+    gitborTag: 'Git-клиент',
     skygraphTitle: 'SkyGraph',
     skygraphDesc: 'Эта библиотека — multi-framework UI на общем headless-ядре.',
+    skygraphTag: 'UI-библиотека — вы здесь',
     multiFrameworkTitle: 'Multi-framework',
     multiFrameworkLead: 'Ядро и стилевой контракт фреймворк-независимы. Готовые адаптеры:',
     multiFrameworkReact:
-      'React — hooks, ConfigProvider, 78+ стилизованных компонентов на том же общем ядре.',
+      'React — hooks, ConfigProvider, множество стилизованных компонентов на том же общем ядре.',
     multiFrameworkVue:
-      'Vue 3 — Composition API, 78+ стилизованных компонентов — то же ядро, те же `.sg-*` классы.',
+      'Vue 3 — Composition API, множество стилизованных компонентов — то же ядро, те же `.sg-*` классы.',
   },
 
   benchmarks: {

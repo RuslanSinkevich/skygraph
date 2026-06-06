@@ -103,8 +103,8 @@ const filPwd = ref('')
 }
 
 .demo-float-outlined .sg-input {
-  --sg-input-height: 56px;
-  --sg-input-padding: 22px 14px 8px;
+  --sg-input-height: 48px;
+  --sg-input-padding: 18px 14px 6px;
 }
 .demo-float-outlined .demo-float-label {
   background: var(--sg-color-bg-container);
@@ -119,8 +119,8 @@ const filPwd = ref('')
 }
 
 .demo-float-filled .sg-input {
-  --sg-input-height: 56px;
-  --sg-input-padding: 22px 14px 8px;
+  --sg-input-height: 48px;
+  --sg-input-padding: 18px 14px 6px;
   --sg-input-bg: #f1f5f9;
   --sg-input-border: transparent;
   border-bottom: 2px solid var(--sg-color-border) !important;
@@ -136,7 +136,7 @@ const filPwd = ref('')
 }
 .demo-float-filled:has(.sg-input:focus) .demo-float-label,
 .demo-float-filled:has(.sg-input:not(:placeholder-shown)) .demo-float-label {
-  top: 12px;
+  top: 10px;
   transform: translateY(-50%) scale(0.78);
   transform-origin: left center;
   color: var(--sg-color-primary);

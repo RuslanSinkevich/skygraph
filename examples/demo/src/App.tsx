@@ -73,8 +73,8 @@ import { CoreApiPage } from './demos/CoreApiPage'
 import { StylingShowcasePage } from './demos/StylingShowcasePage'
 import { DesignTokensPage } from './demos/DesignTokensPage'
 import { ConfigProviderDemo } from './demos/ConfigProviderDemo'
-import { DiagramDemo } from './demos/DiagramDemo'
 import { ChartsDemo } from './demos/ChartsDemo'
+import { DiagramDemo } from './demos/DiagramDemo'
 import { DashboardDemo } from './demos/DashboardDemo'
 import { GanttDemo } from './demos/GanttDemo'
 import { EventTimelineDemo } from './demos/EventTimelineDemo'
@@ -147,8 +147,8 @@ const componentPages: Record<string, () => React.JSX.Element> = {
   'components/timeline': TimelineDemo,
   'components/carousel': CarouselDemo,
   'components/descriptions': DescriptionsDemo,
-  'components/diagram': DiagramDemo,
   'components/charts': ChartsDemo,
+  'components/diagram': DiagramDemo,
   'components/dashboard': DashboardDemo,
   'components/gantt': GanttDemo,
   'components/event-timeline': EventTimelineDemo,
@@ -175,7 +175,6 @@ const LEGACY_GUIDE_KEYS: Record<string, string> = {
   'core-api': 'guide/core-api',
   'config-provider': 'guide/config-provider',
   tokens: 'guide/design-tokens',
-  changelog: 'guide/changelog',
 }
 
 // ---------------------------------------------------------------------------
@@ -295,6 +294,10 @@ function getHashRoute(): string {
   const h = raw.split('~')[0]
   if (!h) return 'landing'
   if (h === 'overview') return 'landing'
+  // The "Changelog" entry in the header used to live at `/roadmap`. Keep the
+  // old URL working so external links don't 404 — internally everything is
+  // routed by `'changelog'` now.
+  if (h === 'roadmap') return 'changelog'
   if (LEGACY_GUIDE_KEYS[h]) return LEGACY_GUIDE_KEYS[h]
   return h
 }
@@ -309,7 +312,7 @@ function navigate(key: string) {
 
 function sectionForRoute(route: string): AppShellSection {
   if (route === 'landing') return 'landing'
-  if (route === 'roadmap') return 'roadmap'
+  if (route === 'changelog') return 'changelog'
   if (route === 'about') return 'about'
   if (route === 'benchmarks' || route.startsWith('benchmarks/')) return null
   if (route === 'showcases' || route.startsWith('showcases/')) return null
@@ -344,7 +347,7 @@ export default function App() {
       { key: 'guide', label: t.header.navGuide, href: '#/guide/getting-started' },
       { key: 'showcases', label: t.header.navShowcases, href: '#/showcases' },
       { key: 'benchmarks', label: t.header.navBenchmarks, href: '#/benchmarks' },
-      { key: 'roadmap', label: t.header.navRoadmap, href: '#/roadmap' },
+      { key: 'changelog', label: t.header.navRoadmap, href: '#/changelog' },
       { key: 'about', label: t.header.navAbout, href: '#/about' },
     ],
     [t],
@@ -475,7 +478,7 @@ export default function App() {
           title: t.footer.columnProject,
           links: [
             { label: t.footer.linkAbout, href: '#/about' },
-            { label: t.footer.linkRoadmap, href: '#/roadmap' },
+            { label: t.footer.linkRoadmap, href: '#/changelog' },
             {
               label: t.footer.linkLicense,
               href: `${GITHUB_URL}/blob/master/LICENSE`,
@@ -505,7 +508,7 @@ type PageProps = { onNavigate: (key: string) => void; route: string }
 
 function renderPage(route: string): (props: PageProps) => React.JSX.Element {
   if (route === 'landing') return (p) => <Landing onNavigate={p.onNavigate} />
-  if (route === 'roadmap') return () => <Roadmap />
+  if (route === 'changelog') return () => <Roadmap />
   if (route === 'about') return () => <About />
   if (route === 'benchmarks') return () => <BenchmarksPage />
   if (route === 'benchmarks/table') {

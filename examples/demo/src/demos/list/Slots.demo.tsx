@@ -10,8 +10,13 @@ export function SlotsList() {
   return (
     <div>
       <style>{`
-        .demo-list-root { border-color: #c4b5fd; }
-        .demo-list-header { background: #ede9fe; color: #4c1d95; }
+        .demo-list-root {
+          border-color: color-mix(in srgb, var(--sg-color-primary) 35%, var(--sg-color-border));
+        }
+        .demo-list-header {
+          background: var(--sg-color-primary-bg);
+          color: var(--sg-color-primary);
+        }
         .demo-list-item { transition: transform 160ms ease; }
         .demo-list-item:hover { transform: translateX(4px); }
       `}</style>

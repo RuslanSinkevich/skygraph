@@ -12,10 +12,12 @@ export const routes: Routes = [
 
   // Wave 5.3 — top-level pages (parity with React/Vue demos)
   {
-    path: 'roadmap',
+    path: 'changelog',
     loadComponent: () =>
       import('./pages/roadmap/roadmap.component').then((m) => m.RoadmapPageComponent),
   },
+  // Legacy URL — keep `/roadmap` working for external links.
+  { path: 'roadmap', redirectTo: 'changelog', pathMatch: 'full' },
   {
     path: 'about',
     loadComponent: () => import('./pages/about/about.component').then((m) => m.AboutPageComponent),

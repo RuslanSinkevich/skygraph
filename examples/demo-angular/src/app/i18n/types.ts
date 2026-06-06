@@ -114,6 +114,8 @@ export interface DemoDict {
     lead: string
     heroInstall: string
     statComponents: string
+    /** Short label for the components stat tile — no numeric count. */
+    statComponentsValue: string
     statComposables: string
     statTests: string
     statEngines: string
@@ -161,10 +163,13 @@ export interface DemoDict {
     skyPlatformLead: string
     skycodeTitle: string
     skycodeDesc: string
+    skycodeTag: string
     gitborTitle: string
     gitborDesc: string
+    gitborTag: string
     skygraphTitle: string
     skygraphDesc: string
+    skygraphTag: string
     multiFrameworkTitle: string
     multiFrameworkLead: string
     multiFrameworkReact: string
@@ -223,16 +228,45 @@ export interface DemoDict {
   coreApi: {
     title: string
     lead: string
+    whyTitle: string
+    whyP1: string
+    whyP2: string
+    mentalTitle: string
+    mentalP1: string
+    mentalLayer1: string
+    mentalLayer2: string
+    mentalLayer3: string
     sectionStore: string
     sectionStoreLead: string
+    sectionStoreP2: string
     sectionEngines: string
     sectionEnginesLead: string
+    engineFormLabel: string
+    engineFormDesc: string
+    engineTableLabel: string
+    engineTableDesc: string
+    engineTreeLabel: string
+    engineTreeDesc: string
+    engineVirtualLabel: string
+    engineVirtualDesc: string
+    engineGraphLabel: string
+    engineGraphDesc: string
     sectionTyped: string
     sectionTypedLead: string
+    sectionTypedP2: string
     sectionMiddleware: string
     sectionMiddlewareLead: string
+    sectionMiddlewareP2: string
     sectionGraph: string
     sectionGraphLead: string
+    sectionGraphP2: string
+    whenTitle: string
+    when1: string
+    when2: string
+    when3: string
+    when4: string
+    nextTitle: string
+    nextLead: string
   }
   configProvider: {
     title: string
@@ -248,6 +282,8 @@ export interface DemoDict {
     wrapperNote: string
   }
   guideStub: {
+    bannerTitle: string
+    bannerBody: string
     seeReactDocs: string
     stylingShowcaseTitle: string
     stylingShowcaseLead: string
@@ -255,6 +291,48 @@ export interface DemoDict {
     designTokensLead: string
     designTokensDescription: string
     designTokensTokensLine: string
+  }
+
+  designTokens: {
+    title: string
+    lead: string
+    searchPlaceholder: string
+    searchAriaLabel: string
+    summaryGlobal: string
+    summaryComponentsLeft: string
+    summaryComponentsRight: string
+    globalHeading: string
+    globalLead: string
+    perComponentHeading: string
+    perComponentLead: string
+    overrideHeading: string
+    overrideAppWide: string
+    overrideSubtree: string
+    colVariable: string
+    colDefault: string
+    colDescription: string
+  }
+
+  stylingShowcase: {
+    pageTitle: string
+    pageLead: string
+    when1: string
+    when2: string
+    when3: string
+    swatchSemanticBadge: string
+    recipePaletteTitle: string
+    recipePaletteDesc: string
+    recipeSemanticTitle: string
+    recipeSemanticDesc: string
+    recipeScopedBrandTitle: string
+    recipeScopedBrandDesc: string
+    recipeScopedBrandHeading: string
+    recipeDarkTitle: string
+    recipeDarkDesc: string
+    recipeBtnTokensTitle: string
+    recipeBtnTokensDesc: string
+    recipeInputTokensTitle: string
+    recipeInputTokensDesc: string
   }
   frameworkSwitcher: {
     label: string

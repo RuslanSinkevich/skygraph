@@ -103,7 +103,8 @@ export const ru: DemoDict = {
     title: 'SkyGraph',
     lead: 'Фреймворк-агностичная UI-библиотека с Angular-адаптером — standalone-компоненты, signals и новый control flow поверх @skygraph/core.',
     heroInstall: 'npm install @skygraph/core @skygraph/angular @skygraph/styles',
-    statComponents: 'компонентов',
+    statComponents: 'стилизованных UI-компонентов',
+    statComponentsValue: 'Много',
     statComposables: 'standalone',
     statTests: 'тестов',
     statEngines: 'движков',
@@ -148,7 +149,7 @@ export const ru: DemoDict = {
   about: {
     title: 'О проекте',
     lead1:
-      'SkyGraph — TypeScript-first реактивная UI-библиотека: path-based ядро, шесть предметных движков и 78+ стилизованных компонентов на чистых CSS-переменных без рантайма.',
+      'SkyGraph — TypeScript-first реактивная UI-библиотека: path-based ядро, шесть предметных движков и множество стилизованных компонентов на чистых CSS-переменных без рантайма.',
     lead2:
       'Это UI-фундамент платформы Sky: один и тот же компонентный контракт поставляется через адаптеры для React и Vue — одинаковый DOM и CSS.',
     lead3:
@@ -163,11 +164,14 @@ export const ru: DemoDict = {
     skycodeTitle: 'Skycode',
     skycodeDesc:
       'Форк VS Code со встроенным AI-ассистентом — агент, 40+ провайдеров моделей, inline diff.',
+    skycodeTag: 'IDE',
     gitborTitle: 'GitBor',
     gitborDesc:
       'Кроссплатформенный десктопный Git-клиент на Electron — визуальный граф коммитов, интерактивный rebase, защита данных.',
+    gitborTag: 'Git-клиент',
     skygraphTitle: 'SkyGraph',
     skygraphDesc: 'Эта библиотека — multi-framework UI на общем headless-ядре.',
+    skygraphTag: 'UI-библиотека — вы здесь',
     multiFrameworkTitle: 'Multi-framework',
     multiFrameworkLead: 'Ядро и стилевой контракт фреймворк-независимы. Готовые адаптеры:',
     multiFrameworkReact:
@@ -199,7 +203,7 @@ export const ru: DemoDict = {
     cardCoreApiTitle: 'API ядра',
     cardCoreApiDesc: 'Управляйте формами, таблицами и деревьями через path-based реактивный store.',
     cardComponentsTitle: 'Все компоненты',
-    cardComponentsDesc: '50+ готовых компонентов: Button, Input, Table, Tree и многое другое.',
+    cardComponentsDesc: 'Готовые компоненты: Button, Input, Table, Tree и многое другое.',
   },
   theming: {
     title: 'Темизация',
@@ -239,22 +243,68 @@ export const ru: DemoDict = {
   },
   coreApi: {
     title: 'API ядра',
-    lead: 'Фреймворк-независимый движок, на котором работают все адаптеры SkyGraph. Path-based реактивный store с пакетными обновлениями, типизированными биндингами и движками для форм, таблиц, деревьев и графов.',
-    sectionStore: 'createCore — реактивный store',
+    lead: 'Чистый TypeScript-рантайм, на котором стоят все компоненты SkyGraph. В 95% случаев напрямую к нему обращаться не нужно — но если нужно (общее состояние между фреймворками, свои движки, код вне компонентов) — это та самая поверхность API.',
+    whyTitle: 'Зачем нужно отдельное ядро',
+    whyP1:
+      'Большинство UI-библиотек намертво прибивают state к одному фреймворку. SkyGraph делает наоборот: реактивный store, движки форм, таблиц, графов — никто из них не импортирует React, Vue или Angular. Это просто TypeScript-классы.',
+    whyP2:
+      'Именно поэтому одинаковые компоненты ведут себя идентично во всех трёх фреймворках, а SSR, воркеры и тесты могут пользоваться теми же движками без затаскивания UI-фреймворка.',
+    mentalTitle: 'Ментальная модель — три слоя',
+    mentalP1:
+      'Всё в SkyGraph построено на трёх слоях. На любом из них можно остановиться, если этого хватает.',
+    mentalLayer1:
+      'Store — единый реактивный key/value по строковым путям (`user.name`, `form.fields.email`).',
+    mentalLayer2:
+      'Предметные движки — внешние API для конкретной задачи (Form / Table / Tree / Virtual / Graph), каждый живёт в своём namespace в Store.',
+    mentalLayer3:
+      'Биндинги фреймворков — `@skygraph/react`, `@skygraph/vue`, `@skygraph/angular` превращают обновления Store в нативный re-render.',
+    sectionStore: 'Store — реактивный key/value по путям',
     sectionStoreLead:
-      'Path-based реактивный store. Set, subscribe, batch — точечная реактивность без каскадных рендеров.',
-    sectionEngines: 'Предметные движки',
+      'Нижний слой. Одно централизованное дерево состояния, точечные подписки по конкретному пути, транзакционные коммиты, батч-уведомления и computed с детектом циклов.',
+    sectionStoreP2:
+      '`set` пишет по пути, `subscribe` слушает ровно один путь (никаких лишних рендеров), `batch` собирает несколько записей в одно уведомление — удобно когда меняешь сразу пачку связанных полей.',
+    sectionEngines: 'Предметные движки — Form, Table, Tree, Virtual, Graph',
     sectionEnginesLead:
-      'Специализированные движки поверх ядра: формы, таблицы, деревья, графы и виртуализация.',
-    sectionTyped: 'Типизированное ядро',
+      'Пять высокоуровневых движков поверх Store. Каждый владеет namespace `$<name>.` и даёт сфокусированный API. Бери их, когда ручные `get` / `set` означали бы заново написать валидацию формы или виртуализацию.',
+    engineFormLabel: 'FormEngine',
+    engineFormDesc:
+      'Реестр полей, асинхронная валидация, отслеживание dirty / touched, submit-pipeline.',
+    engineTableLabel: 'TableEngine',
+    engineTableDesc:
+      'Сортировка, фильтрация, пагинация, выбор строк, ресайз колонок — для любой формы данных.',
+    engineTreeLabel: 'TreeEngine',
+    engineTreeDesc: 'Иерархический выбор, expand / collapse, ленивая загрузка детей.',
+    engineVirtualLabel: 'VirtualEngine',
+    engineVirtualDesc:
+      'Окно с фиксированной / переменной высотой для списков и таблиц на тысячи строк.',
+    engineGraphLabel: 'GraphEngine',
+    engineGraphDesc: 'Узлы, рёбра и якоря для диаграмм и node-based редакторов.',
+    sectionTyped: 'TypedCore — типобезопасные пути',
     sectionTypedLead:
-      'Оберните core в типизированный прокси, чтобы получить автокомплит и compile-time проверки на каждом set/get/subscribe.',
-    sectionMiddleware: 'Middleware',
+      'Оберни runtime Core в generic `TypedCore<T>` — и компилятор будет автокомплитить каждый путь и валить опечатки. Без рантайм-нагрузки.',
+    sectionTypedP2:
+      'Имеет смысл, когда store вырастает за пределы пары путей или когда над ним работает команда. И записи, и `subscribe` становятся проверяемыми типами.',
+    sectionMiddleware: 'Pipeline middleware',
     sectionMiddlewareLead:
-      'Подключайте логирование, freeze, devtools или свой middleware к store через core.use().',
-    sectionGraph: 'Graph-движок',
+      'Сквозная логика — логирование, freeze, персистентность, валидация — подключается между записями и уведомлениями. Порядок задаётся явно, свои middleware пишутся за минуту.',
+    sectionMiddlewareP2:
+      'Готовые средства в комплекте: `loggerMiddleware()` пишет лог каждой записи, `freezeMiddleware()` делает state read-only в dev, persistence и validation лежат рядом.',
+    sectionGraph: 'GraphEngine — диаграммы подробнее',
     sectionGraphLead:
-      'Реактивный граф с топологией: узлы, рёбра, порты, якоря. Используется в Diagram, Dashboard и в роутинге.',
+      'Самодостаточный движок для диаграмм и node-редакторов: узлы с outline / transform / parent / anchorPolicy, рёбра со стабильными anchor ID, инкрементальные кэши якорей и AABB.',
+    sectionGraphP2:
+      'Подпишись один раз — получишь snapshot при любом изменении графа. Именно этот snapshot потребляют React / Vue / Angular Graph-компоненты.',
+    whenTitle: 'Когда лезть в Core напрямую',
+    when1:
+      'Нужно общее состояние между фреймворками (React-островок в Vue-хосте или Angular-shell с React-виджетами).',
+    when2: 'Движок нужен в воркере, в тестах или на сервере — там UI-фреймворк избыточен.',
+    when3:
+      'Пишешь свой компонент SkyGraph и хочешь, чтобы он играл с `subscribe` / `batch` / TypedCore.',
+    when4:
+      'Нужен централизованный audit trail, слой персистентности или freeze в dev — middleware-pipeline это и есть нужный хук.',
+    nextTitle: 'Куда идти дальше',
+    nextLead:
+      'Большинство приложений напрямую к Core не обращаются — берут компоненты `@skygraph/react`, `@skygraph/vue` или `@skygraph/angular`, которые уже умеют с ним разговаривать. За биндингами — в «Быстрый старт»; за рантайм-конфигурацией (size / locale / direction) — в «ConfigProvider»; за темизацией — в «Дизайн-токены» и «Стилизацию».',
   },
   configProvider: {
     title: 'ConfigProvider',
@@ -274,17 +324,72 @@ export const ru: DemoDict = {
       'Совет: в Angular предпочтительнее `provideSgConfig()` на уровне route-providers, а не компонент-обёртка. Компонент существует для тестов, демо и постепенной миграции.',
   },
   guideStub: {
+    bannerTitle: '⛔ ЗАГЛУШКА — НЕ ТРОГАТЬ ЭТУ СТРАНИЦУ',
+    bannerBody:
+      'Это намеренная заглушка Angular: пункт меню есть, контента здесь нет. Полная версия — в React- и Vue-демо. Не портируйте, не рефакторите и не «доделывайте» этот файл без явной задачи.',
     seeReactDocs: 'Полный текст — в React-эталоне →',
     stylingShowcaseTitle: 'Стилизация',
     stylingShowcaseLead:
-      'Галерея всех стилевых рецептов SkyGraph — палитра, семантические и компонентные токены, slot-переопределения, условные строки, тёмные scope-ы, headless-модалки. Angular-порт в работе.',
+      'Только заглушка. Палитра, семантика, бренд, тёмная тема — смотрите React- или Vue-демо.',
     designTokensTitle: 'Дизайн-токены',
     designTokensLead:
-      'Поисковый индекс всех публичных --sg-* переменных. Angular-порт в работе — React-эталон содержит полный каталог токенов.',
+      'Только заглушка. Поисковый индекс токенов — в React/Vue; ниже ссылка на CSS как запасной вариант.',
     designTokensDescription:
-      'Пока что токены можно посмотреть прямо в исходнике — они лежат в одном CSS-файле и не зависят от фреймворка:',
+      'Токены в одном CSS-файле (без привязки к фреймворку). Angular-страница намеренно не дублирует explorer.',
     designTokensTokensLine:
       'один CSS-файл со всеми палитрами + семантическими + компонентными токенами.',
+  },
+
+  designTokens: {
+    title: 'Дизайн-токены',
+    lead: 'Поисковый индекс всех публичных --sg-* переменных. Токены — это контракт темизации: переопределите одну переменную в :root, на враппере или на отдельном компоненте — и UI перекрасится без правок в коде компонентов.',
+    searchPlaceholder: 'Поиск по имени, значению или описанию…',
+    searchAriaLabel: 'Поиск дизайн-токенов',
+    summaryGlobal: 'глобальных токенов',
+    summaryComponentsLeft: 'компонентных переменных в',
+    summaryComponentsRight: 'группах',
+    globalHeading: 'Глобальные токены',
+    globalLead:
+      'Палитра, семантические цвета, типографика и размеры. Переопределите на :root — поменяете весь интерфейс.',
+    perComponentHeading: 'Компонентные токены',
+    perComponentLead:
+      'Локальные переменные каждого компонента — точечные настройки без правок CSS. Группируются по компоненту.',
+    overrideHeading: 'Как переопределять',
+    overrideAppWide: 'Глобально на :root — действует на всё приложение:',
+    overrideSubtree: 'Локально на поддереве через style — действует только на ветку DOM:',
+    colVariable: 'Переменная',
+    colDefault: 'По умолчанию',
+    colDescription: 'Описание',
+  },
+
+  stylingShowcase: {
+    pageTitle: 'Стилизация',
+    pageLead:
+      'Галерея стилевых рецептов SkyGraph: палитра, семантические токены, scope-овая брендовая тема, тёмный scope, компонентные токены. Все примеры используют только CSS-переменные — никакого runtime CSS-in-JS.',
+    when1: 'Нужно перекрасить весь UI под брендовые цвета — переопределите семантические токены.',
+    when2: 'Нужна тёмная тема на части страницы — поставьте data-sg-theme="dark" на враппер.',
+    when3:
+      'Нужно подкрутить один компонент — используйте компонентные токены (--sg-btn-*, --sg-input-*, …).',
+    swatchSemanticBadge: 'тема',
+    recipePaletteTitle: 'Палитра',
+    recipePaletteDesc:
+      'Стабильные шкалы цветов 1–10 для blue / gray / red / green / orange. На них опираются все семантические токены.',
+    recipeSemanticTitle: 'Семантические токены',
+    recipeSemanticDesc:
+      'Поверхности, текст, бренд, состояния success / error / warning. Переключаются вместе с data-sg-theme="dark|light".',
+    recipeScopedBrandTitle: 'Брендовый scope',
+    recipeScopedBrandDesc:
+      'Переопределите --sg-color-primary и --sg-border-radius на враппере — компоненты внутри перекрасятся без правок.',
+    recipeScopedBrandHeading: 'Розовый бренд + скруглённые углы',
+    recipeDarkTitle: 'Тёмный scope',
+    recipeDarkDesc:
+      'Один атрибут data-sg-theme="dark" — и все вложенные компоненты переключаются на тёмную палитру.',
+    recipeBtnTokensTitle: 'Компонентные токены — Button',
+    recipeBtnTokensDesc:
+      'Скрутите --sg-btn-radius / --sg-btn-height / --sg-btn-padding на враппере — получите pill-кнопки. Только для скоупа.',
+    recipeInputTokensTitle: 'Компонентные токены — Input',
+    recipeInputTokensDesc:
+      '--sg-input-height и --sg-input-radius меняют форму инпутов локально. Select подхватит те же токены.',
   },
   frameworkSwitcher: {
     label: 'Фреймворк',

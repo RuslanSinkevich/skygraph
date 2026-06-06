@@ -64,7 +64,7 @@ export function About() {
               </a>
             </div>
             <div className="about-platform-card-desc">{t.about.gitborDesc}</div>
-            <div className="about-platform-card-tag">Git client</div>
+            <div className="about-platform-card-tag">{t.about.gitborTag}</div>
           </article>
           <article className="about-platform-card about-platform-card--current">
             <div className="about-platform-card-title">
@@ -72,7 +72,7 @@ export function About() {
               {t.about.skygraphTitle}
             </div>
             <div className="about-platform-card-desc">{t.about.skygraphDesc}</div>
-            <div className="about-platform-card-tag">UI library — you are here</div>
+            <div className="about-platform-card-tag">{t.about.skygraphTag}</div>
           </article>
           <article className="about-platform-card">
             <div className="about-platform-card-title">
@@ -87,7 +87,7 @@ export function About() {
               </a>
             </div>
             <div className="about-platform-card-desc">{t.about.skycodeDesc}</div>
-            <div className="about-platform-card-tag">IDE</div>
+            <div className="about-platform-card-tag">{t.about.skycodeTag}</div>
           </article>
         </div>
       </section>

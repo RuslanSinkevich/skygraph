@@ -5,7 +5,7 @@ import { APP_SHELL_KEY, type AppShellSection } from './useAppShell'
 interface Props {
   /**
    * Logical app section. Drives sidebar visibility (sections that don't
-   * benefit from contextual nav — `landing`, `roadmap`, `about`,
+   * benefit from contextual nav — `landing`, `changelog`, `about`,
    * `showcases` — render full-width).
    */
   section: AppShellSection

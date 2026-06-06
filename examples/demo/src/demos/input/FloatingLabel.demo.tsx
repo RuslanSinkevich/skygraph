@@ -55,8 +55,8 @@ const SHEET = `
 
 /* Outlined: extra room top + bottom for the label to live above the border. */
 .demo-float-outlined .sg-input {
-  --sg-input-height: 56px;
-  --sg-input-padding: 22px 14px 8px;
+  --sg-input-height: 48px;
+  --sg-input-padding: 18px 14px 6px;
 }
 .demo-float-outlined .demo-float-label {
   background: var(--sg-color-bg-container);
@@ -72,8 +72,8 @@ const SHEET = `
 
 /* Filled: tinted surface, label tucks to the top inside the box. */
 .demo-float-filled .sg-input {
-  --sg-input-height: 56px;
-  --sg-input-padding: 22px 14px 8px;
+  --sg-input-height: 48px;
+  --sg-input-padding: 18px 14px 6px;
   --sg-input-bg: #f1f5f9;
   --sg-input-border: transparent;
   border-bottom: 2px solid var(--sg-color-border) !important;
@@ -89,7 +89,7 @@ const SHEET = `
 }
 .demo-float-filled:has(.sg-input:focus) .demo-float-label,
 .demo-float-filled:has(.sg-input:not(:placeholder-shown)) .demo-float-label {
-  top: 12px;
+  top: 10px;
   transform: translateY(-50%) scale(0.78);
   transform-origin: left center;
   color: var(--sg-color-primary);
@@ -106,9 +106,9 @@ export function FloatingLabelInput() {
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 240px))',
         gap: 24,
-        maxWidth: 640,
+        maxWidth: 520,
       }}
     >
       <style>{SHEET}</style>

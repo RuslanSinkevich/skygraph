@@ -125,7 +125,8 @@ const routes: RouteRecord[] = [
   { path: '/components/resource-calendar', component: ResourceCalendarDemo },
   { path: '/components/schema-form-editor', component: SchemaFormEditorDemo },
 
-  { path: '/roadmap', component: Roadmap },
+  { path: '/changelog', component: Roadmap },
+  { path: '/roadmap', redirect: '/changelog' },
   { path: '/about', component: About },
   { path: '/showcases', component: Showcases },
   { path: '/showcases/*', component: Showcases },

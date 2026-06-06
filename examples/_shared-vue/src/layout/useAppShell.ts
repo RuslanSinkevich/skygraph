@@ -20,7 +20,7 @@ export type AppShellSection =
   | 'showcases'
   | 'guide'
   | 'tokens'
-  | 'roadmap'
+  | 'changelog'
   | 'about'
   | 'landing'
   | null

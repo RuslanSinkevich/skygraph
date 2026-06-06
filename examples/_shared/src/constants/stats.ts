@@ -6,13 +6,6 @@
  * (demo, showcases, future demo-vue / demo-angular) read the same value
  * without duplicating literals across the codebase.
  *
- * Last verified: round 12 (single-commit `@skygraph/styles` extract,
- * 1013 active tests after round 11).
- */
-
-/** Number of styled components shipped from each adapter (`@skygraph/react` / `@skygraph/vue`). */
-export const COMPONENT_COUNT = 78
-
 /** Active vitest cases across `core` + `react` (excluding bench-gated). */
 export const TEST_COUNT = 1013
 

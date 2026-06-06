@@ -5,7 +5,7 @@ export const en: DemoDict = {
     appTitle: 'SkyGraph Vue',
     tagline: 'Reactive UI Library for Vue 3',
     heroSub:
-      'Composables and 78+ styled components powered by @skygraph/core and @skygraph/styles. Same DOM contract, same CSS, idiomatic Vue API.',
+      'Composables and many styled components powered by @skygraph/core and @skygraph/styles. Same DOM contract, same CSS, idiomatic Vue API.',
   },
   search: {
     placeholder: 'Search components',
@@ -103,13 +103,13 @@ export const en: DemoDict = {
   landing: {
     heroTitle: 'A ready-made UI kit for Vue 3',
     heroSub:
-      'SkyGraph is a multi-framework UI library for React and Vue. 78+ components, 12 reference apps, dark and light themes — built on a single shared engine.',
+      'SkyGraph is a multi-framework UI library for React and Vue. Many styled components, reference apps, dark and light themes — built on a single shared engine.',
     ctaPrimary: 'See live apps',
     ctaSecondary: 'Browse components',
     heroImageAlt: 'Screenshot of the SkyGraph CRM showcase in light mode',
 
     highlightsTitle: 'What you get',
-    highlight1Title: '78+ components',
+    highlight1Title: 'Styled components',
     highlight1Desc:
       'Forms, tables, trees, calendars, charts, diagrams, dashboards. All ready to drop into a project.',
     highlight2Title: '12 reference apps',
@@ -170,7 +170,7 @@ export const en: DemoDict = {
   about: {
     title: 'About SkyGraph',
     lead1:
-      'SkyGraph is a TypeScript-first reactive UI library — a path-based core, six domain engines and 78+ styled components, all driven by CSS variables with zero runtime cost.',
+      'SkyGraph is a TypeScript-first reactive UI library — a path-based core, six domain engines and many styled components, all driven by CSS variables with zero runtime cost.',
     lead2:
       'It is the UI substrate for the Sky platform: the same component contract ships through adapters for React and Vue — pixel-identical DOM and CSS.',
     lead3:
@@ -185,18 +185,21 @@ export const en: DemoDict = {
     skycodeTitle: 'Skycode',
     skycodeDesc:
       'VS Code fork with a built-in AI assistant — agent, 40+ model providers, inline diff.',
+    skycodeTag: 'IDE',
     gitborTitle: 'GitBor',
     gitborDesc:
       'Cross-platform desktop Git client on Electron — visual commit graph, interactive rebase, data safety.',
+    gitborTag: 'Git client',
     skygraphTitle: 'SkyGraph',
     skygraphDesc: 'This library — multi-framework UI on a shared headless core.',
+    skygraphTag: 'UI library — you are here',
     multiFrameworkTitle: 'Multi-framework',
     multiFrameworkLead:
       'The core engine and the styling contract are framework-agnostic. Shipped adapters:',
     multiFrameworkReact:
-      'React — hooks, ConfigProvider, 78+ styled components on the same shared core.',
+      'React — hooks, ConfigProvider, many styled components on the same shared core.',
     multiFrameworkVue:
-      'Vue 3 — Composition API, 78+ styled components — same core, identical `.sg-*` classes.',
+      'Vue 3 — Composition API, many styled components — same core, identical `.sg-*` classes.',
   },
 
   gettingStarted: {
@@ -220,7 +223,7 @@ export const en: DemoDict = {
     cardCoreApiTitle: 'Core API',
     cardCoreApiDesc: 'Drive forms, tables and trees with the path-based reactive store.',
     cardComponentsTitle: 'Browse components',
-    cardComponentsDesc: '78+ ready-to-use components: Button, Input, Table, Tree and more.',
+    cardComponentsDesc: 'Ready-to-use components: Button, Input, Table, Tree and more.',
   },
 
   theming: {
@@ -261,35 +264,172 @@ export const en: DemoDict = {
 
   coreApi: {
     title: 'Core API',
-    lead: 'The framework-agnostic engine that powers every SkyGraph adapter. A path-based reactive store with batched updates, typed bindings and domain engines for forms, tables, trees and graphs.',
-    sectionStore: 'createCore — reactive store',
+    lead: 'A pure-TypeScript reactive runtime that sits underneath every SkyGraph component. You almost never need to touch it directly — but when you do (state shared across frameworks, custom engines, or non-component code), this is the API surface.',
+    whyTitle: 'Why a separate Core?',
+    whyP1:
+      'Most UI libraries glue their state model to a single framework. SkyGraph does the opposite: the reactive store, the form engine, the table engine, the graph engine — none of them import React, Vue or Angular. They are plain TypeScript classes.',
+    whyP2:
+      'That is what makes the same components behave identically across frameworks, and why server-rendered code, workers and tests can use the same engines without dragging a UI framework in.',
+    mentalTitle: 'Mental model — three layers',
+    mentalP1:
+      'Everything in SkyGraph is built on three layers. You can stop at any layer that solves your problem.',
+    mentalLayer1:
+      'Store — a single reactive key/value addressed by string paths (`user.name`, `form.fields.email`).',
+    mentalLayer2:
+      'Domain engines — opinionated APIs (Form / Table / Tree / Virtual / Graph) that live inside their own namespace in the Store.',
+    mentalLayer3:
+      'Framework bindings — `@skygraph/react`, `@skygraph/vue`, `@skygraph/angular` translate Store updates into framework-native re-renders.',
+    sectionStore: 'Store — path-based reactive key/value',
     sectionStoreLead:
-      'Path-based reactive store. Set, subscribe, batch — fine-grained reactivity without re-render waterfalls.',
-    sectionEngines: 'Domain engines',
+      'The lowest layer. One centralized state tree, granular per-path subscriptions, transactional commits, batched notifies, and computed values with cycle detection.',
+    sectionStoreP2:
+      '`set` writes to a path, `subscribe` listens to exactly one path (no over-renders), and `batch` collects multiple writes into a single notification — useful when you mutate several related fields at once.',
+    sectionEngines: 'Domain engines — Form, Table, Tree, Virtual, Graph',
     sectionEnginesLead:
-      'Specialised engines built on top of the core: forms, tables, trees, graphs and a virtualisation primitive.',
-    sectionTyped: 'Typed core',
+      'Five high-level engines sit on top of the Store. Each one owns a `$<name>.` namespace and exposes a focused API for its domain. Use them when raw `get` / `set` would mean reinventing form validation or virtualization.',
+    engineFormLabel: 'FormEngine',
+    engineFormDesc: 'Field registry, async validation, dirty / touched tracking, submit pipeline.',
+    engineTableLabel: 'TableEngine',
+    engineTableDesc:
+      'Sorting, filtering, pagination, row selection, column resize — for any data shape.',
+    engineTreeLabel: 'TreeEngine',
+    engineTreeDesc: 'Hierarchical selection, expand / collapse, async children loading.',
+    engineVirtualLabel: 'VirtualEngine',
+    engineVirtualDesc:
+      'Fixed / variable size windowing for lists and tables with thousands of rows.',
+    engineGraphLabel: 'GraphEngine',
+    engineGraphDesc: 'Nodes, edges and anchors for diagrams and node-based editors.',
+    sectionTyped: 'TypedCore — compile-time path safety',
     sectionTypedLead:
-      'Wrap a core in a typed proxy to get autocomplete and compile-time safety on every set/get/subscribe call.',
-    sectionMiddleware: 'Middleware',
+      'Wrap the runtime Core in a generic `TypedCore<T>` and the compiler will autocomplete every path and reject typos — with zero runtime overhead.',
+    sectionTypedP2:
+      'Reach for this when your store grows beyond a handful of paths or when several developers share the same shape. Both write sites and `subscribe` calls become type-safe.',
+    sectionMiddleware: 'Middleware pipeline',
     sectionMiddlewareLead:
-      'Plug logging, freeze, devtools or your own middleware into the store via core.use().',
-    sectionGraph: 'Graph engine',
+      'Cross-cutting concerns — logging, freezing, persistence, validation — plug in between writes and notifications. Order is explicit and you can write your own.',
+    sectionMiddlewareP2:
+      'Built-ins ship with the core: `loggerMiddleware()` traces every write, `freezeMiddleware()` makes state read-only in dev, and persistence/validation helpers live next to them.',
+    sectionGraph: 'GraphEngine — diagrams in depth',
     sectionGraphLead:
-      'A topology-aware reactive graph: nodes, edges, ports, anchors. Powers Diagram, Dashboard and the routing primitives.',
+      'A self-contained engine for diagrams and node editors: nodes with outline / transform / parent / anchorPolicy, edges with stable anchor IDs, incremental anchor caches and AABBs.',
+    sectionGraphP2:
+      'Subscribe once and you receive a snapshot whenever any part of the graph changes — that snapshot is what `@skygraph/react`, `@skygraph/vue` and `@skygraph/angular` Graph components consume.',
+    whenTitle: 'When to use Core directly',
+    when1:
+      'You need to share state across frameworks (React island in a Vue host, or Angular shell with React widgets).',
+    when2:
+      'You need a domain engine in a worker, in a test, or on the server — anywhere a UI framework is overkill.',
+    when3:
+      'You are writing a new SkyGraph component and want it to play nicely with `subscribe` / `batch` / TypedCore.',
+    when4:
+      'You want a centralized audit trail, persistence layer or freeze-in-dev — the middleware pipeline is the right hook.',
+    nextTitle: 'Where to go next',
+    nextLead:
+      'Most apps never touch Core — they use `@skygraph/react`, `@skygraph/vue` or `@skygraph/angular` components which already speak to it. If you want the framework bindings, see Getting Started; if you want runtime configuration (size / locale / direction) see ConfigProvider; for theming see Design Tokens and Styling Showcase.',
   },
 
   guideStub: {
     seeReactDocs: 'See the React reference for the full content →',
     stylingShowcaseTitle: 'Styling Showcase',
     stylingShowcaseLead:
-      'A gallery of every styling recipe SkyGraph supports — palette, semantic and component tokens, slot overrides, conditional rows, dark scopes, headless modals. Vue port pending.',
+      'Gallery of SkyGraph styling recipes — palette, semantic tokens, component tokens, dark scopes.',
     designTokensTitle: 'Design Tokens',
-    designTokensLead:
-      'Searchable index of every public --sg-* variable SkyGraph exposes. Vue port pending — the React reference covers the full token catalogue.',
+    designTokensLead: 'Searchable index of every public --sg-* variable SkyGraph exposes.',
     configProviderTitle: 'ConfigProvider',
     configProviderLead:
       'Scope size / disabled / locale / bordered defaults to a subtree. The component-level demo is available under Components → ConfigProvider.',
+  },
+
+  designTokens: {
+    title: 'Design Tokens',
+    lead: 'Searchable index of every public --sg-* variable. Tokens are the theming contract: override one on :root, on a wrapper or on a single component scope to re-skin the UI without touching components.',
+    searchPlaceholder: 'Search by name, value or description…',
+    searchAriaLabel: 'Search design tokens',
+    summaryGlobal: 'global tokens',
+    summaryComponentsLeft: 'component variables across',
+    summaryComponentsRight: 'groups',
+    globalHeading: 'Global tokens',
+    globalLead:
+      'Palette, semantic colours, typography and sizing. Override on :root to re-skin the whole app.',
+    perComponentHeading: 'Per-component tokens',
+    perComponentLead:
+      'Local variables exposed per component — surgical tweaks without touching the CSS. Grouped by component.',
+    overrideHeading: 'How to override',
+    overrideAppWide: 'App-wide on :root — applies everywhere:',
+    overrideSubtree: 'Per-subtree via inline style — applies only to the DOM branch:',
+    colVariable: 'Variable',
+    colDefault: 'Default',
+    colDescription: 'Description',
+  },
+
+  stylingShowcase: {
+    pageTitle: 'Styling Showcase',
+    pageLead:
+      'A gallery of SkyGraph styling recipes: palette, semantic tokens, scoped brand themes, dark scopes, component tokens and headless mode. Every example uses nothing but CSS variables — no runtime CSS-in-JS.',
+    when1: 'You need to re-skin the whole UI with brand colours — override semantic tokens.',
+    when2: 'You need a dark scope on part of the page — set data-sg-theme="dark" on a wrapper.',
+    when3:
+      'You need to tune a single component — use its component tokens (--sg-btn-*, --sg-input-*, …).',
+    swatchSemanticBadge: 'theme',
+    recipePaletteTitle: 'Palette',
+    recipePaletteDesc:
+      'Stable 1–10 colour ramps for blue / gray / red / green / orange. Every semantic token resolves to one of these.',
+    recipeSemanticTitle: 'Semantic tokens',
+    recipeSemanticDesc:
+      'Surface, text, brand and state colours (success / error / warning). Theme-driven — switch with data-sg-theme="dark|light".',
+    recipeScopedBrandTitle: 'Scoped brand',
+    recipeScopedBrandDesc:
+      'Override --sg-color-primary and --sg-border-radius on a wrapper — every component inside re-skins without touching its source.',
+    recipeScopedBrandHeading: 'Pink brand + rounded corners',
+    scopedBrandPrimary: 'Primary',
+    scopedBrandDefault: 'Default',
+    scopedBrandInputPlaceholder: 'Inherits tokens…',
+    recipeDarkTitle: 'Dark scope',
+    recipeDarkDesc:
+      'A single data-sg-theme="dark" attribute flips every nested component to the dark palette.',
+    darkPrimary: 'Primary',
+    darkDefault: 'Default',
+    darkInputPlaceholder: 'Dark input',
+    recipeBtnTokensTitle: 'Component tokens — Button',
+    recipeBtnTokensDesc:
+      'Tune --sg-btn-radius / --sg-btn-height / --sg-btn-padding on a wrapper for pill buttons. Scoped — not global.',
+    pillPrimary: 'Pill primary',
+    pillDefault: 'Pill default',
+    recipeInputTokensTitle: 'Component tokens — Input',
+    recipeInputTokensDesc:
+      '--sg-input-height and --sg-input-radius reshape inputs locally. Select picks up the same tokens.',
+    roundedInputPlaceholder: 'Rounded soft input',
+    recipePerFeatureTitle: 'Per-feature brand',
+    recipePerFeatureDesc:
+      'Compose colour + radius + tinted surfaces into one scope object and wrap a single feature or screen with it.',
+    perFeatureLabelPrimary: 'Brand:',
+    perFeatureLabelRadius: 'Radius:',
+    perFeaturePrimary: 'Primary',
+    perFeatureDefault: 'Default',
+    perFeatureInputPlaceholder: 'Email…',
+  },
+
+  configProviderGuide: {
+    title: 'ConfigProvider',
+    lead: '`<SgConfigProvider>` scopes size / disabled / locale / bordered defaults to a subtree. Components inside read those defaults via `useConfig()` — no prop drilling, no global store.',
+    whenHeading: 'When to use',
+    when1: 'At the app root — pick a locale (ru_RU / en_US) and a base size.',
+    when2: 'On a form or dialog — force every nested control to small or disabled.',
+    when3: 'In an admin UI — switch size based on layout density (compact / comfortable).',
+    when4: 'In a table toolbar — drop bordered so inputs blend into the header.',
+    apiHeading: 'API',
+    apiLead: 'Every prop is optional — children is required.',
+    apiSizeDesc: "Default control size: 'small' | 'middle' | 'large'.",
+    apiDisabledDesc: 'When true — every nested control becomes disabled.',
+    apiBorderedDesc: 'When false — drops the border on inputs and selects.',
+    apiLocaleDesc: 'Locale object — strings for tables, modals, pickers and forms.',
+    nestedHeading: 'Nesting',
+    nestedLead:
+      'Providers merge. An outer ru_RU + middle and an inner override of size=small keeps the locale as ru_RU.',
+    componentHeading: 'Live demo',
+    componentLead:
+      'Every scenario (size / disabled / locale / nested / theme-scope) is on the component page:',
+    componentCta: 'Open the ConfigProvider demo →',
   },
 
   frameworkSwitcher: {

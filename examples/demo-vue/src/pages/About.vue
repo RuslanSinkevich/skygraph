@@ -66,7 +66,7 @@ const VERSION_LABEL = 'v0.5.0'
             </a>
           </div>
           <div class="about-platform-card-desc">{{ t.about.gitborDesc }}</div>
-          <div class="about-platform-card-tag">Git client</div>
+          <div class="about-platform-card-tag">{{ t.about.gitborTag }}</div>
         </article>
         <article class="about-platform-card about-platform-card--current">
           <div class="about-platform-card-title">
@@ -74,7 +74,7 @@ const VERSION_LABEL = 'v0.5.0'
             {{ t.about.skygraphTitle }}
           </div>
           <div class="about-platform-card-desc">{{ t.about.skygraphDesc }}</div>
-          <div class="about-platform-card-tag">UI library — you are here</div>
+          <div class="about-platform-card-tag">{{ t.about.skygraphTag }}</div>
         </article>
         <article class="about-platform-card">
           <div class="about-platform-card-title">
@@ -89,7 +89,7 @@ const VERSION_LABEL = 'v0.5.0'
             </a>
           </div>
           <div class="about-platform-card-desc">{{ t.about.skycodeDesc }}</div>
-          <div class="about-platform-card-tag">IDE</div>
+          <div class="about-platform-card-tag">{{ t.about.skycodeTag }}</div>
         </article>
       </div>
     </section>

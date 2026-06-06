@@ -13,6 +13,31 @@ export default defineConfig({
     alias: {
       '@skygraph/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),
       '@skygraph/vue': path.resolve(__dirname, '../../packages/vue/src/index.ts'),
+      // Sub-path aliases MUST come before the bare-name alias — Vite
+      // matches `alias` entries top-to-bottom, so the more specific
+      // patterns have to win first. Without these, `shared/tokens`
+      // would resolve to `shared/src/index.ts/tokens` (file-not-found).
+      '@skygraph-examples/shared/tokens': path.resolve(__dirname, '../_shared/src/tokens/index.ts'),
+      '@skygraph-examples/shared/constants/stats': path.resolve(
+        __dirname,
+        '../_shared/src/constants/stats.ts',
+      ),
+      '@skygraph-examples/shared/parsers/changelog': path.resolve(
+        __dirname,
+        '../_shared/src/parsers/changelog.ts',
+      ),
+      '@skygraph-examples/shared/parsers/todo': path.resolve(
+        __dirname,
+        '../_shared/src/parsers/todo.ts',
+      ),
+      '@skygraph-examples/shared/types/changelog': path.resolve(
+        __dirname,
+        '../_shared/src/types/changelog.ts',
+      ),
+      '@skygraph-examples/shared/types/todo': path.resolve(
+        __dirname,
+        '../_shared/src/types/todo.ts',
+      ),
       '@skygraph-examples/shared': path.resolve(__dirname, '../_shared/src/index.ts'),
       '@skygraph-examples/shared-vue/layout/styles.css': path.resolve(
         __dirname,

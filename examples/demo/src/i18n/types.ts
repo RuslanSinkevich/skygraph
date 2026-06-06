@@ -164,16 +164,45 @@ export interface DemoDict {
   coreApi: {
     title: string
     lead: string
+    whyTitle: string
+    whyP1: string
+    whyP2: string
+    mentalTitle: string
+    mentalP1: string
+    mentalLayer1: string
+    mentalLayer2: string
+    mentalLayer3: string
     sectionStore: string
     sectionStoreLead: string
+    sectionStoreP2: string
     sectionEngines: string
     sectionEnginesLead: string
+    engineFormLabel: string
+    engineFormDesc: string
+    engineTableLabel: string
+    engineTableDesc: string
+    engineTreeLabel: string
+    engineTreeDesc: string
+    engineVirtualLabel: string
+    engineVirtualDesc: string
+    engineGraphLabel: string
+    engineGraphDesc: string
     sectionTyped: string
     sectionTypedLead: string
+    sectionTypedP2: string
     sectionMiddleware: string
     sectionMiddlewareLead: string
+    sectionMiddlewareP2: string
     sectionGraph: string
     sectionGraphLead: string
+    sectionGraphP2: string
+    whenTitle: string
+    when1: string
+    when2: string
+    when3: string
+    when4: string
+    nextTitle: string
+    nextLead: string
   }
 
   gettingStarted: {
@@ -321,10 +350,13 @@ export interface DemoDict {
     skyPlatformLead: string
     skycodeTitle: string
     skycodeDesc: string
+    skycodeTag: string
     gitborTitle: string
     gitborDesc: string
+    gitborTag: string
     skygraphTitle: string
     skygraphDesc: string
+    skygraphTag: string
     multiFrameworkTitle: string
     multiFrameworkLead: string
     multiFrameworkReact: string

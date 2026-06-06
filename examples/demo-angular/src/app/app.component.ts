@@ -127,7 +127,7 @@ export class AppComponent {
     return [
       { key: 'components', label: t.header.navComponents, href: '#/components/button' },
       { key: 'guide', label: t.header.navGuide, href: '#/guide/getting-started' },
-      { key: 'roadmap', label: t.header.navRoadmap, href: '#/roadmap' },
+      { key: 'changelog', label: t.header.navRoadmap, href: '#/changelog' },
       { key: 'about', label: t.header.navAbout, href: '#/about' },
       { key: 'github', label: t.header.navGithub, href: GITHUB_URL, external: true },
     ]
@@ -135,7 +135,7 @@ export class AppComponent {
 
   protected readonly headerActive = computed(() => {
     const sec = this.section()
-    if (sec === 'components' || sec === 'guide' || sec === 'roadmap' || sec === 'about') {
+    if (sec === 'components' || sec === 'guide' || sec === 'changelog' || sec === 'about') {
       return sec
     }
     return null
@@ -223,7 +223,7 @@ export class AppComponent {
         title: t.footer.columnProject,
         links: [
           { label: t.footer.linkAbout, href: '#/about' },
-          { label: t.footer.linkRoadmap, href: '#/roadmap' },
+          { label: t.footer.linkRoadmap, href: '#/changelog' },
           {
             label: t.footer.linkLicense,
             href: `${GITHUB_URL}/blob/master/LICENSE`,

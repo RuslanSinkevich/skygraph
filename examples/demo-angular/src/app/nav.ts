@@ -125,7 +125,7 @@ export function routeToKey(path: string): string {
 /** Top-level section for a router path. Drives `<sg-app-shell [section]>` and the sidebar visibility. */
 export function sectionForRoute(path: string): import('./shared/layout').AppShellSection {
   if (path === '/' || path === '') return 'landing'
-  if (path === '/roadmap') return 'roadmap'
+  if (path === '/changelog' || path === '/roadmap') return 'changelog'
   if (path === '/about') return 'about'
   if (path.startsWith('/components/')) return 'components'
   if (path.startsWith('/guide/')) return 'guide'

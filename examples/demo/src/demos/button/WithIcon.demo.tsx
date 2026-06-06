@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Button } from '@skygraph/react'
 import { useDemoStrings } from '../../i18n'
 
@@ -16,29 +17,60 @@ const STRINGS = {
   },
 } as const
 
+/** Inline stroke icons keep crisp at any size and inherit `currentColor`. */
+function Icon({ children }: { children: ReactNode }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      focusable="false"
+    >
+      {children}
+    </svg>
+  )
+}
+
 /**
- * Put any icon node as the first child. The button uses flex with
- * `gap: --sg-padding-xs` so icon and label stay aligned across
- * all three sizes.
+ * Pass an icon node (here an inline SVG) as the first child. The button
+ * lays children out with flex + `gap: --sg-padding-xs`, so the icon and
+ * label stay aligned across all three sizes. The last example is
+ * icon-only — give it an `aria-label` so it stays accessible.
  */
 export function WithIconButton() {
   const t = useDemoStrings(STRINGS)
   return (
     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
       <Button type="primary">
-        <span aria-hidden>＋</span>
+        <Icon>
+          <path d="M12 5v14M5 12h14" />
+        </Icon>
         {t.newProject}
       </Button>
       <Button>
-        <span aria-hidden>⟳</span>
+        <Icon>
+          <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+          <path d="M21 4v5h-5" />
+        </Icon>
         {t.refresh}
       </Button>
       <Button type="text">
-        <span aria-hidden>⌫</span>
+        <Icon>
+          <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" />
+        </Icon>
         {t.remove}
       </Button>
       <Button aria-label={t.search} size="small">
-        <span aria-hidden>🔍</span>
+        <Icon>
+          <circle cx="11" cy="11" r="7" />
+          <path d="m21 21-4.3-4.3" />
+        </Icon>
       </Button>
     </div>
   )

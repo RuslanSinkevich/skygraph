@@ -1,23 +1,25 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { I18nService } from '../../i18n'
+import { GuideStubBannerComponent } from '../../shared/guide-stub-banner.component'
 
 const GITHUB_URL = 'https://github.com/RuslanSinkevich/skygraph-public'
 const REACT_REFERENCE = `${GITHUB_URL}/blob/master/examples/demo/src/demos/StylingShowcasePage.tsx`
 
 /**
- * Guide → Styling Showcase — Angular stub.
+ * Guide → Styling Showcase — Angular STUB.
  *
- * The React reference page (`examples/demo/src/demos/StylingShowcasePage.tsx`)
- * is ~900 lines of interactive recipes. Porting it 1:1 is out of
- * scope for Wave 5.3 — see
- * `docs/_streams/findings/T-Angular-Polish.md#guide-stubs` (mirroring
- * the Vue-side `T-Vue-Demo-Header-Parity.md#guide-stubs`).
+ * ⛔ Intentionally minimal. Full gallery lives in React/Vue demos.
+ * Do not port content here without explicit approval — this file is a
+ * menu placeholder only.
  */
 @Component({
   selector: 'sg-styling-showcase-page',
   standalone: true,
+  imports: [GuideStubBannerComponent],
   template: `
     <section class="doc-page">
+      <sg-guide-stub-banner />
+
       <h1>{{ i18n.t().guideStub.stylingShowcaseTitle }}</h1>
       <p class="doc-lead">{{ i18n.t().guideStub.stylingShowcaseLead }}</p>
       <p>

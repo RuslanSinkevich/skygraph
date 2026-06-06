@@ -3,7 +3,6 @@ import { Router } from '@angular/router'
 import { I18nService } from '../../i18n'
 import { LANDING_STYLES } from './landing.styles'
 
-const COMPONENT_COUNT = 78
 const TEST_COUNT = 1013
 const ENGINE_COUNT = 6
 const STANDALONE_COUNT = 51
@@ -64,7 +63,7 @@ interface Feature {
 
       <div class="landing-stats" role="list" aria-label="Project stats">
         <div class="landing-stat" role="listitem">
-          <div class="landing-stat-value">{{ componentCount }}+</div>
+          <div class="landing-stat-value">{{ i18n.t().landing.statComponentsValue }}</div>
           <div class="landing-stat-label">{{ i18n.t().landing.statComponents }}</div>
         </div>
         <div class="landing-stat" role="listitem">
@@ -141,7 +140,6 @@ export class LandingComponent {
   protected readonly i18n = inject(I18nService)
   private readonly router = inject(Router)
 
-  protected readonly componentCount = COMPONENT_COUNT
   protected readonly testCount = TEST_COUNT
   protected readonly engineCount = ENGINE_COUNT
   protected readonly standaloneCount = STANDALONE_COUNT

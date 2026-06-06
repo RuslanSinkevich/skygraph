@@ -5,7 +5,7 @@
  * have been replaced by `@skygraph-examples/shared-react/layout` (which
  * uses `.xshell-*` tokens). The remainder of this file is the
  * documentation-page chrome — `.doc-*`, `.demo-box-*`, `.demo-table-*`
- * and friends — still consumed by 78+ component pages.
+ * and friends — still consumed by 50+ component pages.
  */
 
 * {
@@ -289,6 +289,28 @@ body {
   font-size: 13px;
   line-height: 1.7;
   color: var(--sg-color-text-secondary);
+}
+
+/* Guide-page list styling. Used inside `.doc-page` content (Core API,
+   etc.) — the default browser list looks bare and clashes with the
+   doc lead colour. */
+.doc-page ul.doc-bullet-list,
+.doc-page ol.doc-ordered-list {
+  margin: 8px 0 16px;
+  padding-left: 22px;
+}
+
+.doc-page ul.doc-bullet-list li,
+.doc-page ol.doc-ordered-list li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--sg-color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.doc-page ul.doc-bullet-list li strong,
+.doc-page ol.doc-ordered-list li strong {
+  color: var(--sg-color-text);
 }
 
 .doc-demos {

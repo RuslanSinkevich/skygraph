@@ -1,6 +1,12 @@
 import { useMemo, useState } from 'react'
 import { SchemaFormEditor, useSchemaEditor } from '@skygraph/react'
 import type { EditorSchema } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+
+const STRINGS = {
+  en: { reset: 'Reset' },
+  ru: { reset: 'Сбросить' },
+} as const
 
 /**
  * Pre-filled editor with five fields. The "Reset" button rolls the schema
@@ -15,17 +21,24 @@ export function PrefilledDemo() {
         { id: 'sf1', name: 'fullName', label: 'Full name', type: 'string', required: true, min: 2 },
         { id: 'sf2', name: 'email', label: 'Email', type: 'email', required: true },
         { id: 'sf3', name: 'age', label: 'Age', type: 'number', min: 13, max: 120 },
-        { id: 'sf4', name: 'role', label: 'Role', type: 'select', options: [
-          { value: 'admin', label: 'Administrator' },
-          { value: 'editor', label: 'Editor' },
-          { value: 'viewer', label: 'Viewer' },
-        ] },
+        {
+          id: 'sf4',
+          name: 'role',
+          label: 'Role',
+          type: 'select',
+          options: [
+            { value: 'admin', label: 'Administrator' },
+            { value: 'editor', label: 'Editor' },
+            { value: 'viewer', label: 'Viewer' },
+          ],
+        },
         { id: 'sf5', name: 'newsletter', label: 'Subscribe to newsletter', type: 'boolean' },
       ],
     }),
     [],
   )
 
+  const t = useDemoStrings(STRINGS)
   const store = useSchemaEditor({ initialSchema })
   const [resetCount, setResetCount] = useState(0)
 
@@ -40,7 +53,7 @@ export function PrefilledDemo() {
             setResetCount((c) => c + 1)
           }}
         >
-          Reset {resetCount > 0 ? `(×${resetCount})` : ''}
+          {t.reset} {resetCount > 0 ? `(×${resetCount})` : ''}
         </button>
       </div>
       <SchemaFormEditor store={store} style={{ height: 600 }} />

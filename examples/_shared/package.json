@@ -11,7 +11,8 @@
     "./parsers/todo": "./src/parsers/todo.ts",
     "./types/changelog": "./src/types/changelog.ts",
     "./types/todo": "./src/types/todo.ts",
-    "./constants/stats": "./src/constants/stats.ts"
+    "./constants/stats": "./src/constants/stats.ts",
+    "./tokens": "./src/tokens/index.ts"
   },
   "scripts": {
     "test": "vitest run --passWithNoTests"

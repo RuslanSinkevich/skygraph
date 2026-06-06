@@ -5,7 +5,7 @@ export type AppShellSection =
   | 'showcases'
   | 'guide'
   | 'tokens'
-  | 'roadmap'
+  | 'changelog'
   | 'about'
   | 'landing'
   | null
@@ -13,7 +13,7 @@ export type AppShellSection =
 export interface AppShellProps {
   /**
    * Logical app section. Drives sidebar visibility (sections that don't
-   * benefit from contextual nav — `landing`, `roadmap`, `about`,
+   * benefit from contextual nav — `landing`, `changelog`, `about`,
    * `showcases` — render full-width).
    */
   section: AppShellSection
