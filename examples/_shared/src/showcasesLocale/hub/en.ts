@@ -97,10 +97,10 @@ export const hubLocaleEn: HubLocale = {
       description:
         'Users, audit log, role transfer, API keys, sessions and system settings across one admin panel.',
     },
-    'org-chart': {
-      title: 'Org Chart',
+    'project-tracker': {
+      title: 'Project Tracker',
       description:
-        'Company org chart on GraphEngine — auto tree layout, pan & zoom, collapsible branches and a person inspector.',
+        'Compact delivery board with task table, progress KPIs, status filters and a detail drawer. No graph canvas.',
     },
     forms: {
       title: 'Forms Playground',

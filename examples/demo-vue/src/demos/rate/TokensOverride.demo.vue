@@ -33,7 +33,8 @@ const labelBase: CSSProperties = {
 
 const greenScope = {
   '--sg-color-star': '#059669',
-  '--sg-color-border': '#bbf7d0',
+  '--sg-color-border': '#86efac',
+  '--sg-rate-symbol-empty-opacity': '0.7',
   ...cardBase,
   background: '#f0fdf4',
   border: '1px solid #bbf7d0',
@@ -41,15 +42,17 @@ const greenScope = {
 
 const darkScope = {
   '--sg-color-star': '#facc15',
-  '--sg-color-border': '#334155',
+  '--sg-color-border': '#64748b',
+  '--sg-rate-symbol-empty-opacity': '0.72',
   ...cardBase,
   background: '#0f172a',
   border: '1px solid #1e293b',
 } as CSSProperties
 
 const glassScope = {
-  '--sg-color-star': '#ec4899',
-  '--sg-color-border': 'rgba(255, 255, 255, 0.7)',
+  '--sg-color-star': '#be185d',
+  '--sg-color-border': 'rgba(30, 41, 59, 0.45)',
+  '--sg-rate-symbol-empty-opacity': '0.72',
   ...cardBase,
   background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.3))',
   border: '1px solid rgba(255, 255, 255, 0.6)',

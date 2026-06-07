@@ -7,8 +7,8 @@ export const diagramDocRu: DiagramDocStrings = {
   crumbDataDisplay: 'Data Display',
   crumbDiagram: 'Diagram',
   pageLead:
-    'Визуальный слой для GraphEngine — DOM-узлы + SVG-overlay рёбер на базе `useGraph()`. Поддерживает drag-and-drop, wheel-zoom, pan-канвы, single / multi / lasso выбор, snap-to-grid, OBB-вращение и императивный `print()` через ref.',
-  pageWhen1: 'Flow / org-chart / dependency-graph поверх реактивного state.',
+    'Визуальный слой для небольших редакторов на GraphEngine — DOM-узлы + SVG-overlay рёбер на базе `useGraph()`. Поддерживает drag-and-drop, wheel-zoom, pan-канвы, single / multi / lasso выбор, snap-to-grid, OBB-вращение и императивный `print()` через ref.',
+  pageWhen1: 'Компактный flowchart или dependency-graph поверх реактивного state.',
   pageWhen2:
     'Visio-подобный редактор, где топология живёт в `@skygraph/core`, а визуальный слой — тонкая Vue-проекция.',
   pageWhen3:
@@ -30,9 +30,6 @@ export const diagramDocRu: DiagramDocStrings = {
   demoBezierTitle: 'Bezier-маршрутизация',
   demoBezierDesc:
     'Кубические Bezier-рёбра, контрольные точки перпендикулярны ближайшей грани — таскайте узлы и смотрите как кривые подстраиваются.',
-  demoOrthogonalTitle: 'Ортогональная маршрутизация (обходы узлов)',
-  demoOrthogonalDesc:
-    'Передайте `route-around-nodes` — остальные узлы становятся препятствиями для A*-роутера; линии огибают их, а не идут сквозь.',
   demoUndoRedoTitle: 'Undo / Redo',
   demoUndoRedoDesc:
     'Встроенная история `GraphEngine`. Тащите узлы, затем `Ctrl+Z` / `Ctrl+Shift+Z` (или кнопки) — пройдитесь по таймлайну.',
@@ -45,10 +42,6 @@ export const diagramDocRu: DiagramDocStrings = {
   demoOBBTitle: 'Повёрнутые узлы (OBB)',
   demoOBBDesc:
     'У каждого transform нетривиальный `rot`; движок всё равно считает корректные AABB через проекцию OBB — роутинг продолжает работать.',
-  demoLargeTitle: 'Большой граф (200 / 400)',
-  demoLargeDesc:
-    'Стресс-тест: 200 узлов и 400 случайных рёбер. Мутации объединены в `graph.transaction()`.',
-
   tableDiagramApi: 'Diagram API',
   tableUseGraphApi: 'useGraph(options) Options',
   tableDiagramExpose: 'Методы ref-а SgDiagram',

@@ -10,10 +10,18 @@ import { TokenScopeCards } from '../_shared/TokenScopeCards'
 export function TokensOverrideDescriptions() {
   return (
     <TokenScopeCards
+      minCardWidth={420}
+      contentMinWidth={360}
       extra={{
-        brand: { ['--sg-color-bg-secondary' as never]: '#d1fae5' },
-        dark: { ['--sg-color-bg-secondary' as never]: '#1e293b' },
-        glass: { ['--sg-color-bg-secondary' as never]: 'rgba(99, 102, 241, 0.12)' },
+        brand: { ['--sg-color-bg-secondary' as never]: '#ecfdf5' },
+        dark: {
+          ['--sg-color-bg-secondary' as never]: '#1e293b',
+          ['--sg-color-border-secondary' as never]: '#475569',
+        },
+        glass: {
+          ['--sg-color-bg-secondary' as never]: 'rgba(255, 255, 255, 0.58)',
+          ['--sg-color-border-secondary' as never]: 'rgba(79, 70, 229, 0.22)',
+        },
       }}
       render={() => <Descriptions bordered items={userItems} />}
     />

@@ -173,6 +173,7 @@ const transferCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoTokensOverrideTitle"
       :description="t.demoTokensOverrideDesc"
       :code="TokensOverrideSource"
+      flush
     >
       <TokensOverrideTransferDemo />
     </DemoBox>

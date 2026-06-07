@@ -19,7 +19,8 @@ const t = useDemoStrings(STRINGS)
 const cardBase: CSSProperties = {
   padding: '14px',
   borderRadius: '16px',
-  flex: '1 1 320px',
+  flex: '1 1 360px',
+  minWidth: '340px',
 }
 const labelBase: CSSProperties = {
   fontSize: '11px',
@@ -46,7 +47,10 @@ const darkScope = {
   '--sg-color-bg-container': '#0f172a',
   '--sg-color-bg-hover': '#1e293b',
   '--sg-color-text': '#e2e8f0',
+  '--sg-color-text-secondary': '#cbd5e1',
+  '--sg-color-text-tertiary': '#94a3b8',
   '--sg-color-border-secondary': '#334155',
+  '--sg-color-border': '#475569',
   ...cardBase,
   background: '#0f172a',
   border: '1px solid #1e293b',
@@ -54,9 +58,13 @@ const darkScope = {
 
 const glassScope = {
   '--sg-color-primary': '#6366f1',
-  '--sg-color-primary-bg': 'rgba(255, 255, 255, 0.55)',
-  '--sg-color-bg-container': 'rgba(255, 255, 255, 0.45)',
-  '--sg-color-bg-hover': 'rgba(255, 255, 255, 0.6)',
+  '--sg-color-primary-bg': 'rgba(255, 255, 255, 0.75)',
+  '--sg-color-bg-container': 'rgba(255, 255, 255, 0.72)',
+  '--sg-color-bg-hover': 'rgba(255, 255, 255, 0.82)',
+  '--sg-color-text': '#111827',
+  '--sg-color-text-secondary': '#334155',
+  '--sg-color-border': 'rgba(255, 255, 255, 0.8)',
+  '--sg-color-border-secondary': 'rgba(255, 255, 255, 0.7)',
   '--sg-border-radius-sm': '999px',
   ...cardBase,
   background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.3))',
@@ -71,15 +79,15 @@ const glassScope = {
   <div style="display: flex; gap: 16px; flex-wrap: wrap">
     <div :style="greenScope">
       <span :style="{ ...labelBase, color: '#047857' }">{{ t.green }}</span>
-      <SgCalendar />
+      <SgCalendar :fullscreen="false" />
     </div>
     <div :style="darkScope">
       <span :style="{ ...labelBase, color: '#94a3b8' }">{{ t.dark }}</span>
-      <SgCalendar />
+      <SgCalendar :fullscreen="false" />
     </div>
     <div :style="glassScope">
       <span :style="{ ...labelBase, color: '#1e1b4b' }">{{ t.glass }}</span>
-      <SgCalendar />
+      <SgCalendar :fullscreen="false" />
     </div>
   </div>
 </template>

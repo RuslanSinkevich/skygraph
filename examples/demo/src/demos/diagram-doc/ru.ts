@@ -9,8 +9,8 @@ export const diagramDocRu: { [K in keyof typeof diagramDocEn]: string } = {
   crumbDataDisplay: 'Отображение данных',
   crumbDiagram: 'Diagram',
   pageLead:
-    'Визуальный слой для GraphEngine — DOM-узлы и SVG-наложение для рёбер. Поддерживает drag-and-drop, zoom / pan, snap-to-grid, ортогональную маршрутизацию с обходом препятствий, multi-select с лассо, hover-панели и кастомные context-menu.',
-  pageWhen1: 'Отрисовать flowchart, оргструктуру или граф зависимостей с реактивным состоянием.',
+    'Визуальный слой для небольших редакторов на GraphEngine — DOM-узлы и SVG-наложение для рёбер. Поддерживает drag-and-drop, zoom / pan, snap-to-grid, Bezier-маршрутизацию, multi-select с лассо, hover-панели и кастомные context-menu.',
+  pageWhen1: 'Отрисовать компактный flowchart или граф зависимостей с реактивным состоянием.',
   pageWhen2:
     'Построить редактор в духе Visio: топология живёт в `@skygraph/core`, визуальный слой — тонкая React-проекция.',
   pageWhen3:
@@ -40,10 +40,6 @@ export const diagramDocRu: { [K in keyof typeof diagramDocEn]: string } = {
   demoBezierDesc:
     'Кубические Bezier-рёбра — управляющие точки уходят перпендикулярно ближайшей грани каждой ноды, как в React Flow / draw.io. Маркер-стрелка автоматически следует за цветом линии при hover и выделении.',
 
-  demoOrthogonalTitle: 'Ортогональная маршрутизация',
-  demoOrthogonalDesc:
-    'A*-маршрутизатор с обходом препятствий — рёбра огибают другие узлы, а не проходят сквозь них.',
-
   demoUndoRedoTitle: 'Undo / Redo',
   demoUndoRedoDesc:
     'Встроенная история. Подвигайте узлы и нажмите `Ctrl+Z` / `Ctrl+Shift+Z` (или используйте кнопки) — пройдёте по истории мутаций.',
@@ -59,10 +55,6 @@ export const diagramDocRu: { [K in keyof typeof diagramDocEn]: string } = {
   demoOBBTitle: 'Повёрнутые узлы (OBB)',
   demoOBBDesc:
     'У каждого узла свой `transform.rot`. Engine проецирует OBB в плотный AABB, поэтому layout, якоря и обход препятствий продолжают работать.',
-
-  demoLargeTitle: 'Большой граф (200 / 400)',
-  demoLargeDesc:
-    'Стресс-тест: 200 узлов и 400 случайных рёбер; включены drag, zoom и pan. Воспроизводимый seed гарантирует стабильную раскладку между перерисовками.',
 
   tableDiagramApi: 'API Diagram',
   tableUseGraphApi: 'Опции useGraph(options)',

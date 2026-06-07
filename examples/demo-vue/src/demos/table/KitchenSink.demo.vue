@@ -4,7 +4,7 @@
  * custom search dropdown on name (via #filterDropdown slot), plus selection + expand +
  * sort + global search + resize + fixed columns + editable + summary.
  */
-import { h, ref } from 'vue'
+import { computed, h, ref } from 'vue'
 import {
   SgTable,
   SgButton,
@@ -81,12 +81,12 @@ const columns: TableColumn[] = [
   { key: 'action', title: 'Action', width: 90, fixed: 'right' },
 ]
 
-const rowSelection = {
+const rowSelection = computed(() => ({
   selectedKeys: selected.value,
   onChange: (keys: RowId[]) => {
     selected.value = keys
   },
-}
+}))
 
 const expandable = { expandedRowRender: () => h('div') }
 

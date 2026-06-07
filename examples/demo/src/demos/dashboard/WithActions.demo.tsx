@@ -17,7 +17,10 @@ export function WithActionsDashboard() {
     {
       id: 'visits',
       title: 'Daily visits',
-      x: 1, y: 1, w: 7, h: 3,
+      x: 1,
+      y: 1,
+      w: 7,
+      h: 3,
       children: (
         <LineChart
           categories={['Mon', 'Tue', 'Wed', 'Thu', 'Fri']}
@@ -27,22 +30,38 @@ export function WithActionsDashboard() {
       ),
       actions: [
         ...sharedActions,
-        { id: 'archive', label: 'Archive', variant: 'danger', onClick: (w) => append(`archive: ${w.id}`) },
+        {
+          id: 'archive',
+          label: 'Archive',
+          variant: 'danger',
+          onClick: (w) => append(`archive: ${w.id}`),
+        },
       ],
     },
     {
       id: 'kpi',
       title: 'Revenue',
-      x: 8, y: 1, w: 5, h: 1,
+      x: 8,
+      y: 1,
+      w: 5,
+      h: 2,
       children: (
-        <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--sg-color-text)' }}>$48.2k</div>
+        <div style={{ display: 'grid', gap: 4 }}>
+          <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--sg-color-text)' }}>$48.2k</div>
+          <div style={{ fontSize: 12, color: 'var(--sg-color-text-secondary)' }}>
+            +12.4% vs previous week
+          </div>
+        </div>
       ),
       actions: sharedActions,
     },
     {
       id: 'no-actions',
       title: 'No actions',
-      x: 8, y: 2, w: 5, h: 2,
+      x: 8,
+      y: 3,
+      w: 5,
+      h: 2,
       children: (
         <div style={{ color: 'var(--sg-color-text-secondary)' }}>
           This widget defines `actions: []` — no `⋯` menu shown.
@@ -66,9 +85,11 @@ export function WithActionsDashboard() {
           minHeight: 60,
         }}
       >
-        {log.length === 0
-          ? <span style={{ color: 'var(--sg-color-text-tertiary)' }}>Hover a widget, click `⋯`…</span>
-          : log.map((line, i) => <div key={i}>{line}</div>)}
+        {log.length === 0 ? (
+          <span style={{ color: 'var(--sg-color-text-tertiary)' }}>Hover a widget, click `⋯`…</span>
+        ) : (
+          log.map((line, i) => <div key={i}>{line}</div>)
+        )}
       </div>
     </div>
   )

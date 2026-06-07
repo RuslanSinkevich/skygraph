@@ -230,6 +230,7 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoFixedColumnsTitle"
       :description="t.demoFixedColumnsDesc"
       :code="FixedColumnsSource"
+      flush
     >
       <FixedColumnsTable />
     </DemoBox>
@@ -237,6 +238,7 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoResizableTitle"
       :description="t.demoResizableDesc"
       :code="ResizableSource"
+      flush
     >
       <ResizableTable />
     </DemoBox>
@@ -244,19 +246,26 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoDraggableColumnsTitle"
       :description="t.demoDraggableColumnsDesc"
       :code="DraggableColumnsSource"
+      flush
     >
       <DraggableColumnsTable />
     </DemoBox>
     <DemoBox :title="t.demoEditableTitle" :description="t.demoEditableDesc" :code="EditableSource">
       <EditableTable />
     </DemoBox>
-    <DemoBox :title="t.demoFiltersTitle" :description="t.demoFiltersDesc" :code="FiltersSource">
+    <DemoBox
+      :title="t.demoFiltersTitle"
+      :description="t.demoFiltersDesc"
+      :code="FiltersSource"
+      flush
+    >
       <FiltersTable />
     </DemoBox>
     <DemoBox
       :title="t.demoSearchFilterTitle"
       :description="t.demoSearchFilterDesc"
       :code="SearchFilterSource"
+      flush
     >
       <SearchFilterTable />
     </DemoBox>
@@ -264,6 +273,7 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoCustomFilterDropdownTitle"
       :description="t.demoCustomFilterDropdownDesc"
       :code="CustomFilterDropdownSource"
+      flush
     >
       <CustomFilterDropdownTable />
     </DemoBox>
@@ -271,10 +281,16 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoGlobalSearchTitle"
       :description="t.demoGlobalSearchDesc"
       :code="GlobalSearchSource"
+      flush
     >
       <GlobalSearchTable />
     </DemoBox>
-    <DemoBox :title="t.demoSummaryTitle" :description="t.demoSummaryDesc" :code="SummarySource">
+    <DemoBox
+      :title="t.demoSummaryTitle"
+      :description="t.demoSummaryDesc"
+      :code="SummarySource"
+      flush
+    >
       <SummaryTable />
     </DemoBox>
     <DemoBox :title="t.demoLoadingTitle" :description="t.demoLoadingDesc" :code="LoadingSource">
@@ -291,6 +307,7 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoStyledSlotsTitle"
       :description="t.demoStyledSlotsDesc"
       :code="StyledSlotsSource"
+      flush
     >
       <StyledSlotsTable />
     </DemoBox>
@@ -298,6 +315,7 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoCustomTokensTitle"
       :description="t.demoCustomTokensDesc"
       :code="CustomTokensSource"
+      flush
     >
       <CustomTokensTable />
     </DemoBox>
@@ -325,13 +343,19 @@ const tableCssVars = computed<CssVarDef[]>(() => [
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
       <UnstyledTable />
     </DemoBox>
-    <DemoBox :title="t.demoVirtualTitle" :description="t.demoVirtualDesc" :code="VirtualSource">
+    <DemoBox
+      :title="t.demoVirtualTitle"
+      :description="t.demoVirtualDesc"
+      :code="VirtualSource"
+      flush
+    >
       <VirtualTable />
     </DemoBox>
     <DemoBox
       :title="t.demoKitchenSinkTitle"
       :description="t.demoKitchenSinkDesc"
       :code="KitchenSinkSource"
+      flush
     >
       <KitchenSinkTable />
     </DemoBox>
@@ -339,6 +363,7 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoAdvancedFiltersTitle"
       :description="t.demoAdvancedFiltersDesc"
       :code="AdvancedFiltersSource"
+      flush
     >
       <AdvancedFiltersTable />
     </DemoBox>
@@ -349,6 +374,7 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoVirtualDynamicTitle"
       :description="t.demoVirtualDynamicDesc"
       :code="VirtualDynamicSource"
+      flush
     >
       <VirtualDynamicTable />
     </DemoBox>
@@ -356,10 +382,16 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoLargeDatasetTitle"
       :description="t.demoLargeDatasetDesc"
       :code="LargeDatasetSource"
+      flush
     >
       <LargeDatasetTable />
     </DemoBox>
-    <DemoBox :title="t.demoRealtimeTitle" :description="t.demoRealtimeDesc" :code="RealtimeSource">
+    <DemoBox
+      :title="t.demoRealtimeTitle"
+      :description="t.demoRealtimeDesc"
+      :code="RealtimeSource"
+      flush
+    >
       <RealtimeTable />
     </DemoBox>
 

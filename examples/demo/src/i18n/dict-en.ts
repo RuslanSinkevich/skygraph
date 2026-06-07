@@ -301,7 +301,7 @@ export const en: DemoDict = {
       'Forms, tables, trees, calendars, charts, diagrams, dashboards. All ready to drop into a project.',
     highlight2Title: '12 reference apps',
     highlight2Desc:
-      'Real CRM, dashboards, org chart, kitchen-sink table — full source code included.',
+      'Real CRM, dashboards, project tracker, kitchen-sink table — full source code included.',
     highlight3Title: 'Light and dark themes',
     highlight3Desc:
       'Themes ship out of the box. Switch with a single attribute, change colors via CSS variables.',
@@ -319,9 +319,9 @@ export const en: DemoDict = {
     showcaseDashboardTitle: 'Operations Dashboard',
     showcaseDashboardDesc:
       'Live KPI grid, mixed charts, filters and drill-down, customizable layout.',
-    showcaseOrgChartTitle: 'Org Chart',
-    showcaseOrgChartDesc:
-      'Company org chart with auto tree layout, pan & zoom, and collapsible branches.',
+    showcaseProjectTrackerTitle: 'Project Tracker',
+    showcaseProjectTrackerDesc:
+      'Task table with progress KPIs, status filters and a detail drawer.',
     showcaseTableTitle: 'Table — Kitchen Sink',
     showcaseTableDesc:
       'Sorting, filtering, grouping, virtual scroll, export and print on a million-row dataset.',
@@ -330,9 +330,9 @@ export const en: DemoDict = {
     spotThemingTitle: 'Light and dark in one click',
     spotThemingDesc:
       'Each component reads its colors from CSS variables. Switch theme via a single attribute or override individual tokens for your brand.',
-    spotChartsTitle: 'Charts and diagrams',
+    spotChartsTitle: 'Charts',
     spotChartsDesc:
-      'Responsive SVG charts, interactive flow diagrams, configurable tooltips and legends. SVG/PNG export and print built in.',
+      'Responsive SVG charts with configurable tooltips, legends and print/export flows.',
     spotFormsTitle: 'Forms with validation',
     spotFormsDesc:
       'Type-safe forms, field-level validation, dependent fields, conditional rows. Works with any data source.',

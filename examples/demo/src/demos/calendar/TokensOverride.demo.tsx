@@ -7,5 +7,19 @@ import { TokenScopeCards } from '../_shared/TokenScopeCards'
  * reskin one instance.
  */
 export function TokensOverrideCalendar() {
-  return <TokenScopeCards render={() => <Calendar fullscreen={false} />} />
+  return (
+    <TokenScopeCards
+      minCardWidth={380}
+      contentMinWidth={320}
+      extra={{
+        brand: { ['--sg-color-bg-hover' as never]: '#ecfdf5' },
+        dark: { ['--sg-color-bg-hover' as never]: '#273449' },
+        glass: {
+          ['--sg-color-bg-container' as never]: 'rgba(255, 255, 255, 0.86)',
+          ['--sg-color-border-secondary' as never]: 'rgba(79, 70, 229, 0.18)',
+        },
+      }}
+      render={() => <Calendar fullscreen={false} />}
+    />
+  )
 }

@@ -92,10 +92,10 @@ export const SHOWCASE_METAS: ShowcaseMeta[] = [
     tags: ['Transfer', 'Table', 'Drawer', 'Collapse', 'Switch', 'Popconfirm', 'Tabs'],
   },
   {
-    key: 'org-chart',
-    icon: '🏛️',
-    category: 'design',
-    tags: ['Diagram', 'GraphEngine', 'TreeLayout', 'Pan', 'Zoom', 'Collapse'],
+    key: 'project-tracker',
+    icon: '✅',
+    category: 'productivity',
+    tags: ['Table', 'Progress', 'Drawer', 'Segmented', 'Tasks', 'Filters'],
   },
   {
     key: 'forms',

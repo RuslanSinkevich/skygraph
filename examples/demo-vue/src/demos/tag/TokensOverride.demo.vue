@@ -63,10 +63,16 @@ const greenScope = {
 
 const darkScope = {
   '--sg-color-text': '#e2e8f0',
-  '--sg-color-fill-secondary': '#334155',
-  '--sg-color-border': '#334155',
+  '--sg-color-fill-secondary': '#475569',
+  '--sg-color-border': '#64748b',
   '--sg-color-primary': '#38bdf8',
   '--sg-color-primary-bg': '#1e3a5f',
+  '--sg-color-success': '#4ade80',
+  '--sg-color-success-bg': '#14532d',
+  '--sg-color-warning': '#facc15',
+  '--sg-color-warning-bg': '#713f12',
+  '--sg-color-error': '#f87171',
+  '--sg-color-error-bg': '#7f1d1d',
   ...cardBase,
   background: '#0f172a',
   border: '1px solid #1e293b',
@@ -74,8 +80,11 @@ const darkScope = {
 
 const glassScope = {
   '--sg-border-radius-sm': '999px',
-  '--sg-color-primary': '#6366f1',
-  '--sg-color-primary-bg': 'rgba(255, 255, 255, 0.6)',
+  '--sg-color-text': '#111827',
+  '--sg-color-border': 'rgba(30, 41, 59, 0.25)',
+  '--sg-color-fill-secondary': 'rgba(255, 255, 255, 0.7)',
+  '--sg-color-primary': '#4f46e5',
+  '--sg-color-primary-bg': 'rgba(99, 102, 241, 0.14)',
   ...cardBase,
   background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.3))',
   border: '1px solid rgba(255, 255, 255, 0.6)',

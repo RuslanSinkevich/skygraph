@@ -50,17 +50,29 @@ export const BRAND_SCOPE: CSSProperties = {
 /** Dark field — full surface / text / border palette flipped to slate. */
 export const DARK_SCOPE: CSSProperties = {
   ['--sg-color-bg' as never]: '#0f172a',
-  ['--sg-color-bg-container' as never]: '#0f172a',
-  ['--sg-color-bg-elevated' as never]: '#0f172a',
-  ['--sg-color-bg-hover' as never]: '#1e293b',
-  ['--sg-color-text' as never]: '#e2e8f0',
-  ['--sg-color-text-secondary' as never]: '#94a3b8',
-  ['--sg-color-text-tertiary' as never]: '#64748b',
-  ['--sg-color-text-placeholder' as never]: '#64748b',
-  ['--sg-color-border' as never]: '#1e293b',
-  ['--sg-color-border-secondary' as never]: '#1e293b',
+  ['--sg-color-bg-container' as never]: '#111827',
+  ['--sg-color-bg-elevated' as never]: '#1f2937',
+  ['--sg-color-bg-secondary' as never]: '#1e293b',
+  ['--sg-color-bg-hover' as never]: '#273449',
+  ['--sg-color-bg-disabled' as never]: '#0b1120',
+  ['--sg-color-text' as never]: '#f8fafc',
+  ['--sg-color-text-secondary' as never]: '#cbd5e1',
+  ['--sg-color-text-tertiary' as never]: '#94a3b8',
+  ['--sg-color-text-quaternary' as never]: '#64748b',
+  ['--sg-color-text-placeholder' as never]: '#94a3b8',
+  ['--sg-color-text-disabled' as never]: '#64748b',
+  ['--sg-color-border' as never]: '#475569',
+  ['--sg-color-border-secondary' as never]: '#334155',
   ['--sg-color-primary' as never]: '#60a5fa',
-  ['--sg-color-primary-bg' as never]: 'rgba(96, 165, 250, 0.18)',
+  ['--sg-color-primary-hover' as never]: '#93c5fd',
+  ['--sg-color-primary-bg' as never]: 'rgba(96, 165, 250, 0.22)',
+  ['--sg-color-success' as never]: '#34d399',
+  ['--sg-color-success-bg' as never]: 'rgba(52, 211, 153, 0.18)',
+  ['--sg-color-warning' as never]: '#fbbf24',
+  ['--sg-color-warning-bg' as never]: 'rgba(251, 191, 36, 0.18)',
+  ['--sg-color-error' as never]: '#f87171',
+  ['--sg-color-error-bg' as never]: 'rgba(248, 113, 113, 0.18)',
+  ['--sg-color-star' as never]: '#fbbf24',
 }
 
 /** Glass pick — translucent frosted surface + elevated shadow. */
@@ -105,11 +117,20 @@ const HINT_COLOR: Record<TokenScopeKey, string> = {
 export type TokenScopeCardsProps = {
   /** Per-scope extra CSS variables merged on top of the base palette. */
   extra?: Partial<Record<TokenScopeKey, CSSProperties>>
+  /** Minimum card width before the grid wraps. Use a larger value for wide components. */
+  minCardWidth?: number
+  /** Minimum preview content width inside each card; overflow becomes local. */
+  contentMinWidth?: number
   /** Returns the demoed component for a given scope. */
   render: (scope: TokenScopeKey) => ReactNode
 }
 
-export function TokenScopeCards({ extra, render }: TokenScopeCardsProps) {
+export function TokenScopeCards({
+  extra,
+  minCardWidth = 280,
+  contentMinWidth,
+  render,
+}: TokenScopeCardsProps) {
   const t = useDemoStrings(STRINGS)
 
   const cards: { key: TokenScopeKey; label: string; hint: string }[] = [
@@ -122,7 +143,7 @@ export function TokenScopeCards({ extra, render }: TokenScopeCardsProps) {
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${minCardWidth}px), 1fr))`,
         gap: 16,
         width: '100%',
         padding: 'var(--sg-padding-md, 12px) 0',
@@ -159,7 +180,15 @@ export function TokenScopeCards({ extra, render }: TokenScopeCardsProps) {
           >
             {card.hint}
           </div>
-          {render(card.key)}
+          <div
+            style={{
+              minWidth: 0,
+              overflowX: contentMinWidth ? 'auto' : undefined,
+              paddingBottom: contentMinWidth ? 2 : undefined,
+            }}
+          >
+            <div style={{ minWidth: contentMinWidth }}>{render(card.key)}</div>
+          </div>
         </div>
       ))}
     </div>

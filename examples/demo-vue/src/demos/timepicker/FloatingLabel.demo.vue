@@ -38,18 +38,30 @@ const toFilled = computed(() => to.value.length > 0)
 <style scoped>
 .fl-row {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   flex-wrap: wrap;
   max-width: 560px;
 }
 .fl-field {
   position: relative;
-  flex: 1 1 220px;
+  flex: 1 1 240px;
+  min-width: 0;
+  padding-top: 8px;
+}
+.fl-field :deep(.sg-timepicker),
+.fl-field :deep(.sg-timepicker-input) {
+  width: 100%;
+}
+.fl-field :deep(.sg-timepicker-input > span:first-child) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .fl-label {
   position: absolute;
   left: 12px;
-  top: 50%;
+  top: calc(50% + 4px);
   transform: translateY(-50%);
   font-size: 14px;
   color: var(--sg-color-text-secondary, rgba(0, 0, 0, 0.65));
@@ -65,7 +77,7 @@ const toFilled = computed(() => to.value.length > 0)
 }
 .fl-field:focus-within .fl-label,
 .fl-field.fl-filled .fl-label {
-  top: 0;
+  top: 8px;
   transform: translateY(-50%) scale(0.85);
   transform-origin: left center;
   color: var(--sg-color-primary);

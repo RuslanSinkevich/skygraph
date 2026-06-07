@@ -65,16 +65,19 @@ const darkScope = {
   '--sg-radio-border-hover': '#38bdf8',
   '--sg-radio-dot-color': '#0f172a',
   '--sg-color-text': '#e2e8f0',
+  '--sg-color-text-secondary': '#cbd5e1',
+  '--sg-color-border': '#64748b',
   ...cardBase,
   background: '#0f172a',
   border: '1px solid #1e293b',
 } as CSSProperties
 
 const glassScope = {
-  '--sg-radio-bg-checked': '#6366f1',
-  '--sg-radio-border-hover': '#6366f1',
+  '--sg-radio-bg-checked': '#4f46e5',
+  '--sg-radio-border-hover': '#4f46e5',
   '--sg-radio-dot-color': '#fff',
-  '--sg-color-text': '#1e1b4b',
+  '--sg-color-text': '#111827',
+  '--sg-color-border': 'rgba(30, 41, 59, 0.35)',
   ...cardBase,
   background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.3))',
   border: '1px solid rgba(255, 255, 255, 0.6)',

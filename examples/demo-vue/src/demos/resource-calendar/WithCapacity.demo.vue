@@ -4,43 +4,70 @@
  * trip the over-capacity rule — the engine emits a `conflict` event which
  * the panel below mirrors.
  */
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { SgResourceCalendar } from '@skygraph/vue'
 import type {
   ResourceCalendarAssignment as Assignment,
   ResourceCalendarResource as Resource,
 } from '@skygraph/vue'
+import { useDemoStrings } from '../../i18n'
 
-const resources: Resource[] = [
-  { id: 'room-a', name: 'Meeting Room A', color: '#0ea5e9', capacityPerSlot: 2 },
-]
+const STRINGS = {
+  en: {
+    room: 'Meeting Room A',
+    standup: 'Standup',
+    designCrit: 'Design crit',
+    oneOnOne: '1:1',
+    conflicts: 'Conflicts',
+  },
+  ru: {
+    room: 'Переговорная A',
+    standup: 'Standup',
+    designCrit: 'Дизайн-критика',
+    oneOnOne: '1:1',
+    conflicts: 'Конфликты',
+  },
+} as const
 
-const initial: Assignment[] = [
-  {
-    id: 'a1',
-    resourceId: 'room-a',
-    title: 'Standup',
-    start: Date.UTC(2026, 0, 5),
-    end: Date.UTC(2026, 0, 6),
-  },
-  {
-    id: 'a2',
-    resourceId: 'room-a',
-    title: 'Design crit',
-    start: Date.UTC(2026, 0, 5),
-    end: Date.UTC(2026, 0, 7),
-  },
-  {
-    id: 'a3',
-    resourceId: 'room-a',
-    title: '1:1',
-    start: Date.UTC(2026, 0, 5),
-    end: Date.UTC(2026, 0, 6),
-  },
-]
+const t = useDemoStrings(STRINGS)
 
-const assignments = ref<Assignment[]>(initial)
+const resources = computed<Resource[]>(() => [
+  { id: 'room-a', name: t.value.room, color: '#0ea5e9', capacityPerSlot: 2 },
+])
+
+function makeInitial(): Assignment[] {
+  return [
+    {
+      id: 'a1',
+      resourceId: 'room-a',
+      title: t.value.standup,
+      start: Date.UTC(2026, 0, 5),
+      end: Date.UTC(2026, 0, 6),
+    },
+    {
+      id: 'a2',
+      resourceId: 'room-a',
+      title: t.value.designCrit,
+      start: Date.UTC(2026, 0, 5),
+      end: Date.UTC(2026, 0, 7),
+    },
+    {
+      id: 'a3',
+      resourceId: 'room-a',
+      title: t.value.oneOnOne,
+      start: Date.UTC(2026, 0, 5),
+      end: Date.UTC(2026, 0, 6),
+    },
+  ]
+}
+
+const assignments = ref<Assignment[]>(makeInitial())
 const conflicts = ref<Array<{ a: Assignment; b: Assignment }>>([])
+
+watch(t, () => {
+  assignments.value = makeInitial()
+  conflicts.value = []
+})
 
 function onAssignmentChange(next: Assignment) {
   assignments.value = assignments.value.map((a) => (a.id === next.id ? { ...a, ...next } : a))
@@ -67,7 +94,7 @@ function onConflict(list: Array<{ a: Assignment; b: Assignment }>) {
       @conflict="onConflict"
     />
     <div class="demo-rc-conflicts">
-      <strong>Conflicts ({{ conflicts.length }}):</strong>
+      <strong>{{ t.conflicts }} ({{ conflicts.length }}):</strong>
       <ul style="margin: 6px 0 0; padding-left: 20px">
         <li v-for="(c, i) in conflicts" :key="i">
           <code>{{ c.a.id }}</code> &amp; <code>{{ c.b.id }}</code>

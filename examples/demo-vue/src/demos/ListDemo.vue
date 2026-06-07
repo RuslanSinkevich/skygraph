@@ -135,28 +135,28 @@ const listCssVars = computed<CssVarDef[]>(() => [
     :description="t.pageLead"
     :when-to-use="[t.pageWhen1, t.pageWhen2]"
   >
-    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource" flush>
+    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource" vertical>
       <BasicList />
     </DemoBox>
-    <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource" flush>
+    <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource" vertical>
       <SizesList />
     </DemoBox>
     <DemoBox
       :title="t.demoWithMetaTitle"
       :description="t.demoWithMetaDesc"
       :code="WithMetaSource"
-      flush
+      vertical
     >
       <WithMetaList />
     </DemoBox>
-    <DemoBox :title="t.demoGridTitle" :description="t.demoGridDesc" :code="GridSource" flush>
+    <DemoBox :title="t.demoGridTitle" :description="t.demoGridDesc" :code="GridSource" vertical>
       <GridList />
     </DemoBox>
     <DemoBox
       :title="t.demoPaginationTitle"
       :description="t.demoPaginationDesc"
       :code="PaginationSource"
-      flush
+      vertical
     >
       <PaginationList />
     </DemoBox>
@@ -164,18 +164,18 @@ const listCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoLoadingTitle"
       :description="t.demoLoadingDesc"
       :code="LoadingSource"
-      flush
+      vertical
     >
       <LoadingList />
     </DemoBox>
-    <DemoBox :title="t.demoEmptyTitle" :description="t.demoEmptyDesc" :code="EmptySource" flush>
+    <DemoBox :title="t.demoEmptyTitle" :description="t.demoEmptyDesc" :code="EmptySource" vertical>
       <EmptyList />
     </DemoBox>
     <DemoBox
       :title="t.demoSelectableTitle"
       :description="t.demoSelectableDesc"
       :code="SelectableSource"
-      flush
+      vertical
     >
       <SelectableList />
     </DemoBox>
@@ -183,7 +183,7 @@ const listCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoDraggableTitle"
       :description="t.demoDraggableDesc"
       :code="DraggableSource"
-      flush
+      vertical
     >
       <DraggableList />
     </DemoBox>
@@ -191,7 +191,7 @@ const listCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoVirtualTitle"
       :description="t.demoVirtualDesc"
       :code="VirtualSource"
-      flush
+      vertical
     >
       <VirtualList />
     </DemoBox>
@@ -199,18 +199,18 @@ const listCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoRowClassNameTitle"
       :description="t.demoRowClassNameDesc"
       :code="RowClassNameSource"
-      flush
+      vertical
     >
       <RowClassNameList />
     </DemoBox>
-    <DemoBox :title="t.demoSlotsTitle" :description="t.demoSlotsDesc" :code="SlotsSource" flush>
+    <DemoBox :title="t.demoSlotsTitle" :description="t.demoSlotsDesc" :code="SlotsSource" vertical>
       <SlotsList />
     </DemoBox>
     <DemoBox
       :title="t.demoTokensTitle"
       :description="t.demoTokensDesc"
       :code="TokensOverrideSource"
-      flush
+      vertical
     >
       <TokensOverrideList />
     </DemoBox>
@@ -218,7 +218,7 @@ const listCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoUnstyledTitle"
       :description="t.demoUnstyledDesc"
       :code="UnstyledSource"
-      flush
+      vertical
     >
       <UnstyledList />
     </DemoBox>

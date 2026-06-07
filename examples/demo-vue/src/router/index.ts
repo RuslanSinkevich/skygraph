@@ -55,7 +55,6 @@ const DashboardDemo = () => import('../demos/DashboardDemo.vue')
 const GanttDemo = () => import('../demos/GanttDemo.vue')
 const EventTimelineDemo = () => import('../demos/EventTimelineDemo.vue')
 const ResourceCalendarDemo = () => import('../demos/ResourceCalendarDemo.vue')
-const SchemaFormEditorDemo = () => import('../demos/SchemaFormEditorDemo.vue')
 
 // ── Wave 3.4: top-level pages + guide section ──────────────────────────
 const Roadmap = () => import('../pages/Roadmap.vue')
@@ -123,7 +122,6 @@ const routes: RouteRecord[] = [
   { path: '/components/gantt', component: GanttDemo },
   { path: '/components/event-timeline', component: EventTimelineDemo },
   { path: '/components/resource-calendar', component: ResourceCalendarDemo },
-  { path: '/components/schema-form-editor', component: SchemaFormEditorDemo },
 
   { path: '/changelog', component: Roadmap },
   { path: '/roadmap', redirect: '/changelog' },

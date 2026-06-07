@@ -26,10 +26,14 @@ export function TokensOverrideRadio() {
           ['--sg-radio-border-hover' as never]: '#059669',
         },
         dark: {
+          ['--sg-radio-border' as never]: '#64748b',
+          ['--sg-radio-bg' as never]: '#111827',
           ['--sg-radio-bg-checked' as never]: '#60a5fa',
           ['--sg-radio-border-hover' as never]: '#60a5fa',
         },
         glass: {
+          ['--sg-radio-border' as never]: 'rgba(30, 41, 59, 0.26)',
+          ['--sg-radio-bg' as never]: 'rgba(255, 255, 255, 0.58)',
           ['--sg-radio-bg-checked' as never]: '#6366f1',
           ['--sg-radio-border-hover' as never]: '#6366f1',
         },

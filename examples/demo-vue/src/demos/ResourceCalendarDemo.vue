@@ -99,7 +99,7 @@ const calendarCssVars = computed<CssVarDef[]>(() => [
     :description="t.pageLead"
     :when-to-use="[t.pageWhen1, t.pageWhen2, t.pageWhen3]"
   >
-    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource">
+    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource" flush>
       <BasicRc />
     </DemoBox>
 
@@ -107,6 +107,7 @@ const calendarCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoWithCapacityTitle"
       :description="t.demoWithCapacityDesc"
       :code="WithCapacitySource"
+      flush
     >
       <WithCapacityRc />
     </DemoBox>

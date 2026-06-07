@@ -17,8 +17,14 @@ export function TokensOverrideSwitch() {
     <TokenScopeCards
       extra={{
         brand: { ['--sg-switch-bg-checked' as never]: '#059669' },
-        dark: { ['--sg-switch-bg-checked' as never]: '#60a5fa' },
-        glass: { ['--sg-switch-bg-checked' as never]: '#6366f1' },
+        dark: {
+          ['--sg-switch-bg' as never]: '#475569',
+          ['--sg-switch-bg-checked' as never]: '#60a5fa',
+        },
+        glass: {
+          ['--sg-switch-bg' as never]: 'rgba(30, 41, 59, 0.34)',
+          ['--sg-switch-bg-checked' as never]: '#6366f1',
+        },
       }}
       render={() => (
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>

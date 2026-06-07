@@ -2,10 +2,10 @@
  * English source of truth for Diagram doc page strings (Vue).
  * Other locales must provide the same keys (see `ru.ts`).
  *
- * 1:1 demo parity with React (12 examples). All major features —
- * routing (orthogonal / bezier / obstacle-aware A*), pan / zoom,
- * snap-to-grid, OBB-aware geometry, multi / lasso selection, hover
- * actions and `*ContextMenu` callbacks — are first-class on `SgDiagram`.
+ * 1:1 demo parity with React. The public page intentionally stays focused
+ * on compact editor scenarios; stress graphs and obstacle-routing demos are
+ * kept out of the showcase surface until the visual layer can present them
+ * cleanly.
  */
 export const diagramDocEn = {
   pageTitle: 'Diagram',
@@ -13,8 +13,8 @@ export const diagramDocEn = {
   crumbDataDisplay: 'Data Display',
   crumbDiagram: 'Diagram',
   pageLead:
-    'Visual layer for GraphEngine — DOM nodes + SVG-overlay edges, driven by `useGraph()`. Supports drag-and-drop, wheel zoom, canvas pan, single / multi / lasso selection, snap-to-grid, OBB rotation, and an imperative `print()` API.',
-  pageWhen1: 'Render a flowchart / org chart / dependency graph backed by reactive state.',
+    'Visual layer for small GraphEngine-backed editors — DOM nodes + SVG-overlay edges, driven by `useGraph()`. Supports drag-and-drop, wheel zoom, canvas pan, single / multi / lasso selection, snap-to-grid, OBB rotation, and an imperative `print()` API.',
+  pageWhen1: 'Render a compact flowchart or dependency graph backed by reactive state.',
   pageWhen2:
     'Build a Visio-like editor where the topology lives in `@skygraph/core` and the visual layer is a thin Vue projection.',
   pageWhen3:
@@ -36,9 +36,6 @@ export const diagramDocEn = {
   demoBezierTitle: 'Bezier routing',
   demoBezierDesc:
     'Cubic-Bezier edges with control handles perpendicular to the nearest face — drag nodes to see curves re-fit.',
-  demoOrthogonalTitle: 'Orthogonal routing (obstacle-aware)',
-  demoOrthogonalDesc:
-    'Pass `route-around-nodes` to feed every other node as an obstacle into the A*-based router; edges detour rather than cutting through.',
   demoUndoRedoTitle: 'Undo / Redo',
   demoUndoRedoDesc:
     'Built-in history on `GraphEngine`. Drag the nodes, then `Ctrl+Z` / `Ctrl+Shift+Z` (or use the buttons) to walk the timeline.',
@@ -51,10 +48,6 @@ export const diagramDocEn = {
   demoOBBTitle: 'Rotated nodes (OBB)',
   demoOBBDesc:
     'Every transform carries a non-zero `rot`; the engine still derives correct AABBs via OBB projection so routing keeps working.',
-  demoLargeTitle: 'Large graph (200 / 400)',
-  demoLargeDesc:
-    'Stress test: 200 nodes and 400 random straight edges. Mutations batched through `graph.transaction()`.',
-
   tableDiagramApi: 'Diagram API',
   tableUseGraphApi: 'useGraph(options) Options',
   tableDiagramExpose: 'SgDiagram ref methods',

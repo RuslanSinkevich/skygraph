@@ -20,5 +20,19 @@ function TransferCard() {
 }
 
 export function TokensOverrideTransfer() {
-  return <TokenScopeCards render={() => <TransferCard />} />
+  return (
+    <TokenScopeCards
+      minCardWidth={620}
+      contentMinWidth={560}
+      extra={{
+        brand: { ['--sg-color-bg-secondary' as never]: '#ecfdf5' },
+        dark: { ['--sg-color-primary-bg' as never]: 'rgba(96, 165, 250, 0.28)' },
+        glass: {
+          ['--sg-color-bg-secondary' as never]: 'rgba(255, 255, 255, 0.7)',
+          ['--sg-color-border-secondary' as never]: 'rgba(79, 70, 229, 0.18)',
+        },
+      }}
+      render={() => <TransferCard />}
+    />
+  )
 }

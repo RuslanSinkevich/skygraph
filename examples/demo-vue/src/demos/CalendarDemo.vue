@@ -273,6 +273,7 @@ const calendarCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoTokensOverrideTitle"
       :description="t.demoTokensOverrideDesc"
       :code="TokensOverrideSource"
+      flush
     >
       <TokensOverrideCalendarDemo />
     </DemoBox>

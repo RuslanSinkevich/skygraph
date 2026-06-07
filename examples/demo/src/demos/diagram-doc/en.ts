@@ -8,8 +8,8 @@ export const diagramDocEn = {
   crumbDataDisplay: 'Data Display',
   crumbDiagram: 'Diagram',
   pageLead:
-    'Visual layer for GraphEngine — DOM nodes + SVG-overlay edges. Supports drag-and-drop, zoom / pan, snap-to-grid, orthogonal routing with obstacle avoidance, multi-select with lasso, hover mini-toolbars and custom context menus.',
-  pageWhen1: 'Render a flowchart / org chart / dependency graph backed by reactive state.',
+    'Visual layer for small GraphEngine-backed editors — DOM nodes plus SVG-overlay edges. Supports drag-and-drop, zoom / pan, snap-to-grid, Bezier routing, multi-select with lasso, hover mini-toolbars and custom context menus.',
+  pageWhen1: 'Render a compact flowchart or dependency graph backed by reactive state.',
   pageWhen2:
     'Build a Visio-like editor where the topology lives in `@skygraph/core` and the visual layer is just a thin React projection.',
   pageWhen3:
@@ -35,10 +35,6 @@ export const diagramDocEn = {
   demoSnapToGridDesc:
     '`snapToGrid={20}` rounds every drag-end to multiples of 20 world units and turns on the matching CSS background grid.',
 
-  demoOrthogonalTitle: 'Orthogonal routing',
-  demoOrthogonalDesc:
-    'A*-based router with obstacle avoidance — edges detour around every other node rather than cutting through them. Corners are rounded so right-angle bends read as deliberate, not jagged.',
-
   demoBezierTitle: 'Bezier curves',
   demoBezierDesc:
     'Cubic-Bezier edges whose control handles extend perpendicular to the nearest face of each node, in the spirit of React Flow / draw.io. Arrow markers track the line colour through hover and selected states.',
@@ -58,10 +54,6 @@ export const diagramDocEn = {
   demoOBBTitle: 'Rotated nodes (OBB)',
   demoOBBDesc:
     'Each node carries a non-zero `transform.rot`. The engine projects the OBB to a tight axis-aligned box so layout, anchors and obstacle-aware routing keep working.',
-
-  demoLargeTitle: 'Large graph (200 / 400)',
-  demoLargeDesc:
-    'Stress test: 200 nodes and 400 random straight edges with drag, zoom and pan all enabled. A reproducible seed keeps the layout stable across renders.',
 
   tableDiagramApi: 'Diagram API',
   tableUseGraphApi: 'useGraph(options) Options',

@@ -14,6 +14,6 @@ export const showcaseLoaders: Record<string, () => Promise<{ default: Component 
   'hr-portal': () => import('./showcases/hr-portal/HrPortalApp.vue'),
   'file-manager': () => import('./showcases/file-manager/FileManagerApp.vue'),
   admin: () => import('./showcases/admin/AdminApp.vue'),
-  'org-chart': () => import('./showcases/org-chart/OrgChartApp.vue'),
+  'project-tracker': () => import('./showcases/project-tracker/ProjectTrackerApp.vue'),
   forms: () => import('./showcases/forms/FormsApp.vue'),
 }

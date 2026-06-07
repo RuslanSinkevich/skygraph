@@ -1,36 +1,68 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ResourceCalendar } from '@skygraph/react'
 import type { Assignment, Conflict, Resource } from '@skygraph/react'
+import { useDemoStrings, useI18n } from '../../i18n'
 
 // Capacity = 2 ⇒ this resource tolerates two concurrent bookings per
 // day-slot but flags the third as `over-capacity`.
-const resources: Resource[] = [
-  { id: 'room-a', name: 'Meeting Room A', color: '#0ea5e9', capacityPerSlot: 2 },
-]
+const RESOURCES = {
+  en: [{ id: 'room-a', name: 'Meeting Room A', color: '#0ea5e9', capacityPerSlot: 2 }],
+  ru: [{ id: 'room-a', name: 'Переговорная A', color: '#0ea5e9', capacityPerSlot: 2 }],
+} as const satisfies Record<string, readonly Resource[]>
 
-const initial: Assignment[] = [
-  {
-    id: 'a1',
-    resourceId: 'room-a',
-    title: 'Standup',
-    start: Date.UTC(2026, 0, 5),
-    end: Date.UTC(2026, 0, 6),
-  },
-  {
-    id: 'a2',
-    resourceId: 'room-a',
-    title: 'Design crit',
-    start: Date.UTC(2026, 0, 5),
-    end: Date.UTC(2026, 0, 7),
-  },
-  {
-    id: 'a3',
-    resourceId: 'room-a',
-    title: '1:1',
-    start: Date.UTC(2026, 0, 5),
-    end: Date.UTC(2026, 0, 6),
-  },
-]
+const INITIAL = {
+  en: [
+    {
+      id: 'a1',
+      resourceId: 'room-a',
+      title: 'Standup',
+      start: Date.UTC(2026, 0, 5),
+      end: Date.UTC(2026, 0, 6),
+    },
+    {
+      id: 'a2',
+      resourceId: 'room-a',
+      title: 'Design crit',
+      start: Date.UTC(2026, 0, 5),
+      end: Date.UTC(2026, 0, 7),
+    },
+    {
+      id: 'a3',
+      resourceId: 'room-a',
+      title: '1:1',
+      start: Date.UTC(2026, 0, 5),
+      end: Date.UTC(2026, 0, 6),
+    },
+  ],
+  ru: [
+    {
+      id: 'a1',
+      resourceId: 'room-a',
+      title: 'Standup',
+      start: Date.UTC(2026, 0, 5),
+      end: Date.UTC(2026, 0, 6),
+    },
+    {
+      id: 'a2',
+      resourceId: 'room-a',
+      title: 'Дизайн-критика',
+      start: Date.UTC(2026, 0, 5),
+      end: Date.UTC(2026, 0, 7),
+    },
+    {
+      id: 'a3',
+      resourceId: 'room-a',
+      title: '1:1',
+      start: Date.UTC(2026, 0, 5),
+      end: Date.UTC(2026, 0, 6),
+    },
+  ],
+} as const satisfies Record<string, readonly Assignment[]>
+
+const STRINGS = {
+  en: { conflicts: 'Conflicts' },
+  ru: { conflicts: 'Конфликты' },
+} as const
 
 /**
  * `capacityPerSlot=2` for the room. Three concurrent bookings on
@@ -39,8 +71,13 @@ const initial: Assignment[] = [
  * `Conflict[]` from `onConflict`.
  */
 export function WithCapacityResourceCalendar() {
-  const [assignments, setAssignments] = useState(initial)
+  const { locale } = useI18n()
+  const resources = RESOURCES[locale] ?? RESOURCES.en
+  const initial = INITIAL[locale] ?? INITIAL.en
+  const t = useDemoStrings(STRINGS)
+  const [assignments, setAssignments] = useState<Assignment[]>(() => [...initial])
   const [conflicts, setConflicts] = useState<Conflict[]>([])
+  useEffect(() => setAssignments([...initial]), [initial])
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <ResourceCalendar
@@ -54,9 +91,7 @@ export function WithCapacityResourceCalendar() {
         resizable
         range={{ from: new Date(Date.UTC(2026, 0, 5)), to: new Date(Date.UTC(2026, 0, 10)) }}
         onAssignmentChange={(next) =>
-          setAssignments((prev) =>
-            prev.map((a) => (a.id === next.id ? { ...a, ...next } : a)),
-          )
+          setAssignments((prev) => prev.map((a) => (a.id === next.id ? { ...a, ...next } : a)))
         }
         onConflict={setConflicts}
       />
@@ -70,7 +105,9 @@ export function WithCapacityResourceCalendar() {
           color: 'var(--sg-color-text)',
         }}
       >
-        <strong>Conflicts ({conflicts.length}):</strong>
+        <strong>
+          {t.conflicts} ({conflicts.length}):
+        </strong>
         <ul style={{ margin: '6px 0 0', paddingLeft: 20 }}>
           {conflicts.map((c) => (
             <li key={c.id}>

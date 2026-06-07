@@ -85,6 +85,10 @@
   background: var(--sg-color-bg-hover);
 }
 
+.sg-select-option-focused {
+  background: var(--sg-color-bg-hover);
+}
+
 .sg-select-option-selected {
   font-weight: 600;
   background: var(--sg-color-primary-bg);

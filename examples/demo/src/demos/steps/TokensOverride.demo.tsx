@@ -8,5 +8,18 @@ import { TokenScopeCards } from '../_shared/TokenScopeCards'
  * whole wizard.
  */
 export function TokensOverrideSteps() {
-  return <TokenScopeCards render={() => <Steps current={1} items={basicSteps} />} />
+  return (
+    <TokenScopeCards
+      minCardWidth={420}
+      extra={{
+        brand: { ['--sg-color-border-secondary' as never]: '#a7f3d0' },
+        dark: {
+          ['--sg-color-border' as never]: '#64748b',
+          ['--sg-color-border-secondary' as never]: '#475569',
+        },
+        glass: { ['--sg-color-border-secondary' as never]: 'rgba(79, 70, 229, 0.24)' },
+      }}
+      render={() => <Steps current={1} items={basicSteps} direction="vertical" />}
+    />
+  )
 }

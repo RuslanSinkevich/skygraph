@@ -35,7 +35,6 @@ import { TabsDemo } from './demos/TabsDemo'
 import { TooltipDemo } from './demos/TooltipDemo'
 import { ModalDemo } from './demos/ModalDemo'
 import { FormDemo } from './demos/FormDemo'
-import { SchemaFormEditorDemo } from './demos/SchemaFormEditorDemo'
 import { TableDemo } from './demos/TableDemo'
 import { NotificationDemo } from './demos/NotificationDemo'
 import { DrawerDemo } from './demos/DrawerDemo'
@@ -153,7 +152,6 @@ const componentPages: Record<string, () => React.JSX.Element> = {
   'components/gantt': GanttDemo,
   'components/event-timeline': EventTimelineDemo,
   'components/resource-calendar': ResourceCalendarDemo,
-  'components/schema-form-editor': SchemaFormEditorDemo,
 }
 
 const guidePages: Record<string, () => React.JSX.Element> = {
@@ -212,7 +210,6 @@ function buildComponentsSidebar(t: DemoDict): SidebarSection[] {
         { key: 'components/transfer', label: 'Transfer' },
         { key: 'components/calendar', label: 'Calendar' },
         { key: 'components/form', label: 'Form' },
-        { key: 'components/schema-form-editor', label: 'SchemaFormEditor' },
       ],
     },
     {

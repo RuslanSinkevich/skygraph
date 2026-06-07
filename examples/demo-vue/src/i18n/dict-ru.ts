@@ -114,7 +114,7 @@ export const ru: DemoDict = {
       'Формы, таблицы, деревья, календари, графики, диаграммы, дашборды. Готовы к проекту.',
     highlight2Title: '12 готовых приложений',
     highlight2Desc:
-      'Настоящий CRM, дашборды, орг-структура, kitchen-sink таблица — с полным исходным кодом.',
+      'Настоящий CRM, дашборды, трекер проектов, kitchen-sink таблица — с полным исходным кодом.',
     highlight3Title: 'Светлая и тёмная темы',
     highlight3Desc:
       'Темы из коробки. Переключение одним атрибутом, цвета меняются через CSS-переменные.',
@@ -132,9 +132,9 @@ export const ru: DemoDict = {
     showcaseDashboardTitle: 'Дашборд операций',
     showcaseDashboardDesc:
       'Живой KPI-grid, разные графики, фильтры и drill-down, настраиваемая раскладка.',
-    showcaseOrgChartTitle: 'Организационная структура',
-    showcaseOrgChartDesc:
-      'Орг-схема с авто-раскладкой дерева, панорамой, зумом и сворачиванием веток.',
+    showcaseProjectTrackerTitle: 'Трекер проектов',
+    showcaseProjectTrackerDesc:
+      'Таблица задач с KPI прогресса, фильтрами статусов и drawer с деталями.',
     showcaseTableTitle: 'Таблица — всё включено',
     showcaseTableDesc:
       'Сортировка, фильтры, группировка, virtual scroll, экспорт и печать на миллионе строк.',
@@ -143,9 +143,9 @@ export const ru: DemoDict = {
     spotThemingTitle: 'Тема в один клик',
     spotThemingDesc:
       'Каждый компонент читает цвета из CSS-переменных. Тема переключается одним атрибутом, токены легко переопределить под бренд.',
-    spotChartsTitle: 'Графики и диаграммы',
+    spotChartsTitle: 'Графики',
     spotChartsDesc:
-      'Responsive SVG-графики, интерактивные блок-схемы, настраиваемые tooltip и легенды. Экспорт в SVG/PNG и печать — встроены.',
+      'Responsive SVG-графики с настраиваемыми tooltip, легендами и сценариями печати/экспорта.',
     spotFormsTitle: 'Формы с валидацией',
     spotFormsDesc:
       'Типизированные формы, валидация по полю, зависимые поля, условные строки. Работает с любым источником данных.',

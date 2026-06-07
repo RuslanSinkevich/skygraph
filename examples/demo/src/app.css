@@ -488,6 +488,17 @@ body {
   width: 100%;
 }
 
+.demo-box-preview > .sg-list,
+.demo-box-preview > .sg-descriptions,
+.demo-box-preview > .sg-collapse,
+.demo-box-preview > .sg-steps,
+.demo-box-preview > .sg-event-timeline,
+.demo-box-preview > .sg-dashboard,
+.demo-box-preview > .sg-gantt,
+.demo-box-preview > .sg-resource-calendar {
+  width: 100%;
+}
+
 .demo-box-preview .demo-card-host .sg-result,
 .demo-box-preview .demo-card-host .sg-empty {
   background: transparent;

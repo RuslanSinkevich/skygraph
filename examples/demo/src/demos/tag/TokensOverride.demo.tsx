@@ -17,6 +17,18 @@ export function TokensOverrideTag() {
   const t = useDemoStrings(STRINGS)
   return (
     <TokenScopeCards
+      minCardWidth={260}
+      extra={{
+        brand: { ['--sg-color-bg-secondary' as never]: '#ecfdf5' },
+        dark: {
+          ['--sg-color-bg-secondary' as never]: '#1e293b',
+          ['--sg-color-primary-bg' as never]: 'rgba(96, 165, 250, 0.22)',
+        },
+        glass: {
+          ['--sg-color-bg-secondary' as never]: 'rgba(255, 255, 255, 0.58)',
+          ['--sg-color-border' as never]: 'rgba(79, 70, 229, 0.2)',
+        },
+      }}
       render={() => (
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Tag>{t.default}</Tag>

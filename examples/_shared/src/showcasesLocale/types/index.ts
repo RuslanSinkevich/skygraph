@@ -3,7 +3,6 @@ import type { InboxLocale } from './inbox'
 import type { HelpdeskLocale } from './helpdesk'
 import type { DashboardLocale } from './dashboard'
 import type { FileManagerLocale } from './file-manager'
-import type { OrgChartLocale } from './org-chart'
 import type { FormsLocale } from './forms'
 import type { HrPortalLocale } from './hr-portal'
 import type { AdminLocale } from './admin'
@@ -18,7 +17,6 @@ export type { InboxLocale } from './inbox'
 export type { HelpdeskLocale } from './helpdesk'
 export type { DashboardLocale } from './dashboard'
 export type { FileManagerLocale } from './file-manager'
-export type { OrgChartLocale, OrgDept } from './org-chart'
 export type { FormsLocale } from './forms'
 export type { HrPortalLocale } from './hr-portal'
 export type { AdminLocale } from './admin'
@@ -34,7 +32,6 @@ export interface ShowcasesLocale extends HubLocale {
     helpdesk: HelpdeskLocale
     dashboard: DashboardLocale
     fileManager: FileManagerLocale
-    orgChart: OrgChartLocale
     forms: FormsLocale
     hrPortal: HrPortalLocale
     admin: AdminLocale

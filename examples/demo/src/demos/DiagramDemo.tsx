@@ -14,8 +14,6 @@ import { PannableDiagram } from './diagram/Pannable.demo'
 import PannableSource from './diagram/Pannable.demo?raw'
 import { SnapToGridDiagram } from './diagram/SnapToGrid.demo'
 import SnapToGridSource from './diagram/SnapToGrid.demo?raw'
-import { OrthogonalRoutingDiagram } from './diagram/OrthogonalRouting.demo'
-import OrthogonalRoutingSource from './diagram/OrthogonalRouting.demo?raw'
 import { BezierDiagram } from './diagram/Bezier.demo'
 import BezierSource from './diagram/Bezier.demo?raw'
 import { UndoRedoDiagram } from './diagram/UndoRedo.demo'
@@ -26,8 +24,6 @@ import { MultiSelectDiagram } from './diagram/MultiSelect.demo'
 import MultiSelectSource from './diagram/MultiSelect.demo?raw'
 import { OBBDiagram } from './diagram/OBB.demo'
 import OBBSource from './diagram/OBB.demo?raw'
-import { LargeGraphDiagram } from './diagram/LargeGraph.demo'
-import LargeGraphSource from './diagram/LargeGraph.demo?raw'
 
 export function DiagramDemo() {
   const t = useDiagramDocStrings()
@@ -149,14 +145,6 @@ export function DiagramDemo() {
         <BezierDiagram />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoOrthogonalTitle}
-        description={t.demoOrthogonalDesc}
-        code={OrthogonalRoutingSource}
-      >
-        <OrthogonalRoutingDiagram />
-      </DemoBox>
-
       <DemoBox title={t.demoUndoRedoTitle} description={t.demoUndoRedoDesc} code={UndoRedoSource}>
         <UndoRedoDiagram />
       </DemoBox>
@@ -179,10 +167,6 @@ export function DiagramDemo() {
 
       <DemoBox title={t.demoOBBTitle} description={t.demoOBBDesc} code={OBBSource}>
         <OBBDiagram />
-      </DemoBox>
-
-      <DemoBox title={t.demoLargeTitle} description={t.demoLargeDesc} code={LargeGraphSource}>
-        <LargeGraphDiagram />
       </DemoBox>
 
       <PropsTable title={t.tableDiagramApi} data={diagramProps} />

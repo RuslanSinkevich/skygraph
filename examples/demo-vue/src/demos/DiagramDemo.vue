@@ -21,8 +21,6 @@ import SnapToGridDiagram from './diagram/SnapToGrid.demo.vue'
 import SnapToGridSource from './diagram/SnapToGrid.demo.vue?raw'
 import BezierDiagram from './diagram/Bezier.demo.vue'
 import BezierSource from './diagram/Bezier.demo.vue?raw'
-import OrthogonalDiagram from './diagram/OrthogonalRouting.demo.vue'
-import OrthogonalSource from './diagram/OrthogonalRouting.demo.vue?raw'
 import UndoRedoDiagram from './diagram/UndoRedo.demo.vue'
 import UndoRedoSource from './diagram/UndoRedo.demo.vue?raw'
 import ContextMenuDiagram from './diagram/ContextMenu.demo.vue'
@@ -31,8 +29,6 @@ import MultiSelectDiagram from './diagram/MultiSelect.demo.vue'
 import MultiSelectSource from './diagram/MultiSelect.demo.vue?raw'
 import OBBDiagram from './diagram/OBB.demo.vue'
 import OBBSource from './diagram/OBB.demo.vue?raw'
-import LargeDiagram from './diagram/LargeGraph.demo.vue'
-import LargeSource from './diagram/LargeGraph.demo.vue?raw'
 
 const t = useDiagramDocStrings()
 
@@ -142,13 +138,6 @@ const exposeProps = computed<PropDef[]>(() => [
     <DemoBox :title="t.demoBezierTitle" :description="t.demoBezierDesc" :code="BezierSource">
       <BezierDiagram />
     </DemoBox>
-    <DemoBox
-      :title="t.demoOrthogonalTitle"
-      :description="t.demoOrthogonalDesc"
-      :code="OrthogonalSource"
-    >
-      <OrthogonalDiagram />
-    </DemoBox>
     <DemoBox :title="t.demoUndoRedoTitle" :description="t.demoUndoRedoDesc" :code="UndoRedoSource">
       <UndoRedoDiagram />
     </DemoBox>
@@ -168,9 +157,6 @@ const exposeProps = computed<PropDef[]>(() => [
     </DemoBox>
     <DemoBox :title="t.demoOBBTitle" :description="t.demoOBBDesc" :code="OBBSource">
       <OBBDiagram />
-    </DemoBox>
-    <DemoBox :title="t.demoLargeTitle" :description="t.demoLargeDesc" :code="LargeSource">
-      <LargeDiagram />
     </DemoBox>
 
     <template #api>

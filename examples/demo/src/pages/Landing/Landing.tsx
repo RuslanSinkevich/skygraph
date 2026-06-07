@@ -14,12 +14,12 @@ const SHOWCASES: ReadonlyArray<{
   titleKey:
     | 'showcaseCrmTitle'
     | 'showcaseDashboardTitle'
-    | 'showcaseOrgChartTitle'
+    | 'showcaseProjectTrackerTitle'
     | 'showcaseTableTitle'
   descKey:
     | 'showcaseCrmDesc'
     | 'showcaseDashboardDesc'
-    | 'showcaseOrgChartDesc'
+    | 'showcaseProjectTrackerDesc'
     | 'showcaseTableDesc'
   image: string
   imageDesc: string
@@ -41,12 +41,12 @@ const SHOWCASES: ReadonlyArray<{
       'Operations dashboard: 4 KPI cards on top, mixed line/bar chart in the middle, breakdown table at the bottom. Dark theme.',
   },
   {
-    key: 'org-chart',
-    titleKey: 'showcaseOrgChartTitle',
-    descKey: 'showcaseOrgChartDesc',
-    image: 'org-chart.png',
+    key: 'project-tracker',
+    titleKey: 'showcaseProjectTrackerTitle',
+    descKey: 'showcaseProjectTrackerDesc',
+    image: 'project-tracker.png',
     imageDesc:
-      'Org chart: top-down tree of employee cards joined by elbow connectors, department accent on each card, inspector panel on the right. Light theme.',
+      'Project tracker: KPI cards above a filtered task table with progress bars and a detail drawer. Light theme.',
   },
   {
     key: 'table-kitchen-sink',

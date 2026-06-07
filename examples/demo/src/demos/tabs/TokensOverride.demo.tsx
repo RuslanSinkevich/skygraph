@@ -19,5 +19,22 @@ export function TokensOverrideTabs() {
     { key: '2', label: t.tab2, children: <p style={{ margin: '8px 0 0' }}>{t.panel}</p> },
     { key: '3', label: t.tab3, children: <p style={{ margin: '8px 0 0' }}>{t.panel}</p> },
   ]
-  return <TokenScopeCards render={() => <Tabs type="line" items={items} />} />
+  return (
+    <TokenScopeCards
+      minCardWidth={360}
+      extra={{
+        brand: { ['--sg-color-bg-secondary' as never]: '#ecfdf5' },
+        dark: {
+          ['--sg-color-bg-secondary' as never]: '#1e293b',
+          ['--sg-color-border-secondary' as never]: '#475569',
+        },
+        glass: {
+          ['--sg-color-bg' as never]: 'rgba(255, 255, 255, 0.72)',
+          ['--sg-color-bg-secondary' as never]: 'rgba(255, 255, 255, 0.48)',
+          ['--sg-color-border-secondary' as never]: 'rgba(79, 70, 229, 0.18)',
+        },
+      }}
+      render={() => <Tabs type="line" items={items} />}
+    />
+  )
 }

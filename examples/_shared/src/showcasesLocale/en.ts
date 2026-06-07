@@ -5,7 +5,6 @@ import { inboxLocaleEn } from './apps/inbox/en'
 import { helpdeskLocaleEn } from './apps/helpdesk/en'
 import { dashboardLocaleEn } from './apps/dashboard/en'
 import { fileManagerLocaleEn } from './apps/file-manager/en'
-import { orgChartLocaleEn } from './apps/org-chart/en'
 import { formsLocaleEn } from './apps/forms/en'
 import { hrPortalLocaleEn } from './apps/hr-portal/en'
 import { adminLocaleEn } from './apps/admin/en'
@@ -21,7 +20,6 @@ export const showcasesLocaleEn: ShowcasesLocale = {
     helpdesk: helpdeskLocaleEn,
     dashboard: dashboardLocaleEn,
     fileManager: fileManagerLocaleEn,
-    orgChart: orgChartLocaleEn,
     forms: formsLocaleEn,
     hrPortal: hrPortalLocaleEn,
     admin: adminLocaleEn,

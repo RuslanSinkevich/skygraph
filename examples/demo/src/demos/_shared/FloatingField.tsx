@@ -18,6 +18,36 @@ const SHEET = `
 .demo-ff {
   position: relative;
   width: 100%;
+  --demo-ff-surface: var(--sg-color-bg-container, var(--sg-color-bg, #ffffff));
+}
+.demo-ff > .sg-input,
+.demo-ff > .sg-input-number,
+.demo-ff > .sg-select,
+.demo-ff > .sg-timepicker,
+.demo-ff > .sg-datepicker,
+.demo-ff > .sg-color-picker,
+.demo-ff > .sg-cascader,
+.demo-ff > .sg-tree-select {
+  width: 100%;
+}
+.demo-ff > .sg-input-number .sg-input-number-input {
+  text-align: left;
+  padding-left: 12px;
+}
+.demo-ff > .sg-select .sg-select-selector,
+.demo-ff > .sg-timepicker .sg-timepicker-input {
+  padding-left: 14px;
+}
+.demo-ff > .sg-timepicker .sg-timepicker-input {
+  min-width: 0;
+  width: 100%;
+}
+.demo-ff > .sg-timepicker .sg-timepicker-placeholder,
+.demo-ff > .sg-timepicker .sg-timepicker-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .demo-ff-label {
   position: absolute;
@@ -42,7 +72,7 @@ const SHEET = `
   transform: translateY(-50%) scale(0.85);
   transform-origin: left center;
   color: var(--sg-color-primary);
-  background: var(--sg-color-bg-container, #ffffff);
+  background: var(--demo-ff-surface);
 }
 `
 

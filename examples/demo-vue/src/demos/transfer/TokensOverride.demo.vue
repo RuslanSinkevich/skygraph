@@ -25,6 +25,7 @@ const cardBase: CSSProperties = {
   padding: '16px',
   borderRadius: '16px',
   flex: '1 1 360px',
+  minWidth: '320px',
 }
 const labelBase: CSSProperties = {
   fontSize: '11px',
@@ -56,18 +57,27 @@ const darkScope = {
   '--sg-color-primary': '#38bdf8',
   '--sg-color-primary-bg': '#1e3a5f',
   '--sg-color-text': '#e2e8f0',
+  '--sg-color-text-secondary': '#cbd5e1',
+  '--sg-color-text-tertiary': '#94a3b8',
+  '--sg-input-bg': '#0f172a',
+  '--sg-input-color': '#e2e8f0',
+  '--sg-input-border': '#475569',
   ...cardBase,
   background: '#0f172a',
   border: '1px solid #1e293b',
 } as CSSProperties
 
 const glassScope = {
-  '--sg-color-bg-container': 'rgba(255, 255, 255, 0.55)',
+  '--sg-color-bg-container': 'rgba(255, 255, 255, 0.72)',
   '--sg-color-border': 'rgba(255, 255, 255, 0.7)',
-  '--sg-color-bg-secondary': 'rgba(255, 255, 255, 0.4)',
-  '--sg-color-bg-hover': 'rgba(255, 255, 255, 0.7)',
+  '--sg-color-border-secondary': 'rgba(255, 255, 255, 0.7)',
+  '--sg-color-bg-secondary': 'rgba(255, 255, 255, 0.55)',
+  '--sg-color-bg-hover': 'rgba(255, 255, 255, 0.82)',
   '--sg-color-primary': '#6366f1',
-  '--sg-color-primary-bg': 'rgba(255, 255, 255, 0.6)',
+  '--sg-color-primary-bg': 'rgba(99, 102, 241, 0.16)',
+  '--sg-color-text': '#111827',
+  '--sg-color-text-secondary': '#334155',
+  '--sg-input-bg': 'rgba(255, 255, 255, 0.75)',
   ...cardBase,
   background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.3))',
   border: '1px solid rgba(255, 255, 255, 0.6)',
@@ -78,18 +88,36 @@ const glassScope = {
 </script>
 
 <template>
-  <div style="display: flex; gap: 16px; flex-wrap: wrap">
-    <div :style="greenScope">
+  <div class="transfer-token-grid">
+    <div class="transfer-token-card" :style="greenScope">
       <span :style="{ ...labelBase, color: '#047857' }">{{ t.green }}</span>
       <SgTransfer v-model="keys1" :data-source="mockData" show-search />
     </div>
-    <div :style="darkScope">
+    <div class="transfer-token-card" :style="darkScope">
       <span :style="{ ...labelBase, color: '#94a3b8' }">{{ t.dark }}</span>
       <SgTransfer v-model="keys2" :data-source="mockData" show-search />
     </div>
-    <div :style="glassScope">
+    <div class="transfer-token-card" :style="glassScope">
       <span :style="{ ...labelBase, color: '#1e1b4b' }">{{ t.glass }}</span>
       <SgTransfer v-model="keys3" :data-source="mockData" show-search />
     </div>
   </div>
 </template>
+
+<style scoped>
+.transfer-token-grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.transfer-token-card :deep(.sg-transfer) {
+  flex-direction: column;
+  gap: 10px;
+}
+.transfer-token-card :deep(.sg-transfer-list) {
+  width: 100%;
+}
+.transfer-token-card :deep(.sg-transfer-operations) {
+  flex-direction: row;
+}
+</style>

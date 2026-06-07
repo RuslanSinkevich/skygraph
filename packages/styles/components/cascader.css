@@ -247,6 +247,11 @@
   background: transparent;
 }
 
+.sg-cascader-option-loading {
+  color: var(--sg-color-text-tertiary);
+  cursor: wait;
+}
+
 .sg-cascader-option-label {
   flex: 1;
   overflow: hidden;

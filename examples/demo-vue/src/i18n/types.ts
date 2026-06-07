@@ -145,8 +145,8 @@ export interface DemoDict {
     showcaseCrmDesc: string
     showcaseDashboardTitle: string
     showcaseDashboardDesc: string
-    showcaseOrgChartTitle: string
-    showcaseOrgChartDesc: string
+    showcaseProjectTrackerTitle: string
+    showcaseProjectTrackerDesc: string
     showcaseTableTitle: string
     showcaseTableDesc: string
 

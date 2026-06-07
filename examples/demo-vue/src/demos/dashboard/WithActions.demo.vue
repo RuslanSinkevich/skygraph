@@ -15,15 +15,15 @@ function append(msg: string) {
 
 const widgets: DashboardWidget[] = [
   { id: 'visits', title: 'Daily visits', x: 1, y: 1, w: 7, h: 3 },
-  { id: 'kpi', title: 'Revenue', x: 8, y: 1, w: 5, h: 1 },
-  { id: 'no-actions', title: 'No actions', x: 8, y: 2, w: 5, h: 2 },
+  { id: 'kpi', title: 'Revenue', x: 8, y: 1, w: 5, h: 2 },
+  { id: 'no-actions', title: 'No actions', x: 8, y: 3, w: 5, h: 1 },
 ]
 
 const visitCategories = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
 const visitSeries = [{ id: 'v', label: 'Visits', values: [120, 200, 150, 180, 220] }]
 
 const actionsForVisits = ['refresh', 'export', 'pin', 'archive'] as const
-const actionsForKpi = ['refresh', 'export', 'pin'] as const
+const actionsForKpi = ['refresh', 'export'] as const
 </script>
 
 <template>
@@ -38,7 +38,7 @@ const actionsForKpi = ['refresh', 'export', 'pin'] as const
         />
         <div
           v-else-if="widget.id === 'kpi'"
-          style="font-size: 24px; font-weight: 700; color: var(--sg-color-text)"
+          style="font-size: 24px; font-weight: 700; color: var(--sg-color-text); line-height: 1.15"
         >
           $48.2k
         </div>

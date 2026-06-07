@@ -20,7 +20,8 @@ const t = useDemoStrings(STRINGS)
 const cardBase: CSSProperties = {
   padding: '16px',
   borderRadius: '16px',
-  flex: '1 1 260px',
+  flex: '1 1 320px',
+  minWidth: '280px',
 }
 const labelBase: CSSProperties = {
   fontSize: '11px',
@@ -49,6 +50,8 @@ const darkScope = {
   '--sg-color-bg-hover': '#374151',
   '--sg-color-text': '#f9fafb',
   '--sg-color-text-secondary': '#cbd5e1',
+  '--sg-color-text-tertiary': '#94a3b8',
+  '--sg-color-border': '#475569',
   '--sg-color-border-secondary': '#334155',
   '--sg-border-radius-lg': '10px',
   ...cardBase,
@@ -57,11 +60,13 @@ const darkScope = {
 } as CSSProperties
 
 const glassScope = {
-  '--sg-color-bg-container': 'rgba(255, 255, 255, 0.55)',
-  '--sg-color-bg-secondary': 'rgba(255, 255, 255, 0.35)',
-  '--sg-color-bg-hover': 'rgba(255, 255, 255, 0.65)',
+  '--sg-color-bg-container': 'rgba(255, 255, 255, 0.76)',
+  '--sg-color-bg-secondary': 'rgba(255, 255, 255, 0.58)',
+  '--sg-color-bg-hover': 'rgba(255, 255, 255, 0.86)',
   '--sg-color-border-secondary': 'rgba(255, 255, 255, 0.6)',
   '--sg-color-primary': '#6366f1',
+  '--sg-color-text': '#111827',
+  '--sg-color-text-secondary': '#334155',
   '--sg-border-radius-lg': '10px',
   ...cardBase,
   background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.3))',

@@ -41,7 +41,6 @@ export function buildComponentsSidebar(t: DemoDict): SidebarSection[] {
         { key: 'components/upload', label: 'Upload' },
         { key: 'components/transfer', label: 'Transfer' },
         { key: 'components/form', label: 'Form' },
-        { key: 'components/schema-form-editor', label: 'SchemaFormEditor' },
       ],
     },
     {
