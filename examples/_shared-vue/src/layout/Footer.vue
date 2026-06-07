@@ -15,7 +15,7 @@ interface Props {
   columns: readonly FooterColumn[]
   /** Bottom-strip copyright line ("© 2026 SkyGraph"). */
   copyright: string
-  /** Bottom-strip version badge ("v0.5.0"). */
+  /** Bottom-strip version badge (e.g. "v0.6.3"). */
   version?: string
 }
 

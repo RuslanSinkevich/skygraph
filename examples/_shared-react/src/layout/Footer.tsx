@@ -16,7 +16,7 @@ export interface FooterProps {
   columns: readonly FooterColumn[]
   /** Bottom-strip copyright line ("© 2026 SkyGraph"). */
   copyright: string
-  /** Bottom-strip version badge ("v0.5.0"). */
+  /** Bottom-strip version badge (e.g. "v0.6.3"). */
   version?: string
   /** Bottom-strip extras (optional secondary controls). */
   extras?: ReactNode
@@ -32,13 +32,7 @@ export interface FooterProps {
  * `onSelect(href)` callback so the host app can intercept hash-based
  * navigation; external links open in a new tab.
  */
-export function Footer({
-  columns,
-  copyright,
-  version,
-  extras,
-  onSelect,
-}: FooterProps) {
+export function Footer({ columns, copyright, version, extras, onSelect }: FooterProps) {
   return (
     <footer className="xshell-footer" role="contentinfo">
       <div className="xshell-footer-inner">

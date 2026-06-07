@@ -22,6 +22,7 @@ import ShowcasesDetailView from './ShowcasesDetailView.vue'
 import { parseShowcaseHashRoute, showcaseDetailHash, showcaseHubHash } from './showcaseRouting'
 
 const LOCALE_STORAGE_KEY = 'skygraph-demo-locale'
+const appVersion = `v${__SKYGRAPH_VUE_VERSION__}`
 
 function readLocale(): 'en' | 'ru' {
   if (typeof window === 'undefined') return 'en'
@@ -135,7 +136,7 @@ const headerActive = computed<string | null>(() =>
     <template v-if="parsed.kind === 'hub'" #footer>
       <Footer
         copyright="© 2026 SkyGraph contributors"
-        version="v0.5.0"
+        :version="appVersion"
         :columns="[
           {
             title: 'Showcases',

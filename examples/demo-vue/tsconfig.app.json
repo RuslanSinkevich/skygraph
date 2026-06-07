@@ -29,6 +29,7 @@
     "../_shared-vue/src/**/*.ts",
     "../_shared-vue/src/**/*.vue",
     "../showcases-vue/src/**/*.ts",
-    "../showcases-vue/src/**/*.vue"
+    "../showcases-vue/src/**/*.vue",
+    "../showcases-vue/src/vite-env.d.ts"
   ]
 }

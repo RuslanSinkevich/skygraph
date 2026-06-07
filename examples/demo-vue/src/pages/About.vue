@@ -14,7 +14,7 @@ const { t } = useI18n()
 
 const ARCHITECTURE_URL = `${GITHUB_URL}/blob/master/ARCHITECTURE.md`
 const LICENSE_URL = `${GITHUB_URL}/blob/master/LICENSE`
-const VERSION_LABEL = 'v0.5.0'
+const VERSION_LABEL = `v${__SKYGRAPH_VUE_VERSION__}`
 </script>
 
 <template>

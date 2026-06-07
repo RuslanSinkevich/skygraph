@@ -1,14 +1,22 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'node:path'
+import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+const publicPackageJson = JSON.parse(
+  readFileSync(path.resolve(__dirname, '../../packages/skygraph-vue/package.json'), 'utf8'),
+) as { version: string }
+
 export default defineConfig({
   base: '/vue/showcases/',
   plugins: [vue()],
+  define: {
+    __SKYGRAPH_VUE_VERSION__: JSON.stringify(publicPackageJson.version),
+  },
   resolve: {
     alias: {
       '@skygraph/core': path.resolve(__dirname, '../../packages/core/src/index.ts'),

@@ -5,7 +5,7 @@ All notable user-facing changes to SkyGraph are documented here.
 Each version uses the same cycle: `Core`, `Components`, `Styles`, `Fixes`, and `Breaking / Removed`.
 Demo implementation details, docs routing, tests, generated reports, and dead adapters are intentionally omitted.
 
-## [Unreleased]
+## [0.5.1] - 2026-06-07
 
 ### Core
 
@@ -32,7 +32,7 @@ Demo implementation details, docs routing, tests, generated reports, and dead ad
 
 ### Breaking / Removed
 
-- No user-facing removals planned.
+- No user-facing removals.
 
 ## [0.5.0] - 2026-05-31
 

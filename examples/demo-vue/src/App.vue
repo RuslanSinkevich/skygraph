@@ -20,6 +20,8 @@ import { SUPPORTED_LOCALES, type Locale } from './i18n/types'
 import { buildComponentsSidebar, buildGuideSidebar, routeToKey } from './nav'
 import FrameworkSwitcher from './components/FrameworkSwitcher.vue'
 
+const appVersion = `v${__SKYGRAPH_VUE_VERSION__}`
+
 const route = useRoute()
 const router = useRouter()
 const { t, locale, setLocale } = useI18n()
@@ -232,7 +234,7 @@ const sidebarActive = computed<string | null>(() => routeToKey(route.value.path)
       <Footer
         :columns="footerColumns"
         :copyright="t.footer.copyright"
-        version="v0.5.0"
+        :version="appVersion"
         @select="onFooterSelect"
       />
     </template>
