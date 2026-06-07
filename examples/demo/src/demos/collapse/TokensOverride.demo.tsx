@@ -1,30 +1,14 @@
-import type { CSSProperties } from 'react'
 import { Collapse } from '@skygraph/react'
 import { sampleItems } from './data'
+import { TokenScopeCards } from '../_shared/TokenScopeCards'
 
 /**
- * Collapse has no dedicated tokens — it reads the global surface
- * palette (`--sg-color-bg-container`, `--sg-color-bg-secondary`,
- * `--sg-color-bg-hover`) and border tokens. Scope them for a dark
- * panel look like this.
+ * Collapse reads the global surface palette (`--sg-color-bg-container`,
+ * `--sg-color-bg-secondary`, `--sg-color-bg-hover`) and border tokens. Three
+ * scoped recipes — branded green, dark field, glass pick — reskin the panels.
  */
-const scoped: CSSProperties = {
-  ['--sg-color-bg-container' as never]: '#1f2937',
-  ['--sg-color-bg-secondary' as never]: '#111827',
-  ['--sg-color-bg-hover' as never]: '#374151',
-  ['--sg-color-text' as never]: '#f9fafb',
-  ['--sg-color-text-secondary' as never]: '#cbd5e1',
-  ['--sg-color-border-secondary' as never]: '#334155',
-  ['--sg-border-radius-lg' as never]: '10px',
-  padding: 16,
-  background: '#0f172a',
-  borderRadius: 12,
-}
-
 export function TokensOverrideCollapse() {
   return (
-    <div style={scoped}>
-      <Collapse items={sampleItems} defaultActiveKey={['1']} />
-    </div>
+    <TokenScopeCards render={() => <Collapse items={sampleItems} defaultActiveKey={['1']} />} />
   )
 }

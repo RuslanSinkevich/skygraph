@@ -11,27 +11,26 @@ export const autoCompleteDocRu: { [K in keyof typeof autoCompleteDocEn]: string 
   crumbAutoComplete: 'AutoComplete',
   pageLead:
     'Текстовое поле с выпадающим списком отфильтрованных подсказок. Введённая строка — это финальное значение; выбор пункта просто записывает его обратно.',
-  pageWhen1:
-    'Свободный текст, где вероятны несколько известных значений (города, email, теги).',
+  pageWhen1: 'Свободный текст, где вероятны несколько известных значений (города, email, теги).',
   pageWhen2: 'Email-префиксы: автодополнение известных доменов после ввода имени.',
-  pageWhen3:
-    'Async-lookup на сервере — эмитим `@search`, прогресс показываем боковой подписью.',
+  pageWhen3: 'Async-lookup на сервере — эмитим `@search`, прогресс показываем боковой подписью.',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Статичные подсказки, фильтрация на клиенте по label.',
   demoEmailTitle: 'Подсказки email-доменов',
   demoEmailDesc: 'Список выводится из текущего ввода — классика mail-клиентов.',
   demoAsyncTitle: 'Async-поиск',
-  demoAsyncDesc:
-    'Дебаунс `@search` — пока ответ в полёте, показываем side-label.',
+  demoAsyncDesc: 'Дебаунс `@search` — пока ответ в полёте, показываем side-label.',
   demoSizesTitle: 'Размеры',
   demoSizesDesc: 'Small / default / large, согласовано с Input.',
   demoStatesTitle: 'Disabled-состояния',
-  demoStatesDesc:
-    '`disabled` блокирует ввод. У Vue пока нет loading-состояния (parity-gap).',
+  demoStatesDesc: '`disabled` блокирует ввод. У Vue пока нет loading-состояния (parity-gap).',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Скоуп `--sg-input-*` и глобальных токенов для ребрендинга одного экземпляра.',
+    'Три скоупа на токенах AutoComplete: зелёный бренд, тёмное поле (с панелью подсказок) и glass pick.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись на поле AutoComplete: уезжает вверх при фокусе/вводе или когда поле заполнено.',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Headless-режим — только семантика, без классов SkyGraph.',
 
@@ -54,8 +53,7 @@ export const autoCompleteDocRu: { [K in keyof typeof autoCompleteDocEn]: string 
   emitBlur: 'Эмитится при потере фокуса',
 
   propOptionValue: 'Строка, записываемая в инпут при выборе',
-  propOptionLabel:
-    'Текст в списке + используемый для фильтрации (по умолчанию = `value`)',
+  propOptionLabel: 'Текст в списке + используемый для фильтрации (по умолчанию = `value`)',
 
   cssHint:
     'AutoComplete переиспользует всю группу `--sg-input-*` для самого поля; дропдаун использует те же глобалы, что и Select (bg-elevated, bg-hover, shadow-lg, border-radius).',

@@ -24,8 +24,6 @@ export const tooltipDocEn = {
   demoTokensTitle: 'Custom tooltip styles',
   demoTokensDesc:
     'Three distinct skins (frosted glass, vivid gradient, soft card) — each one passes a className to the wrapper and styles `.sg-tooltip-content` / `.sg-tooltip-arrow` underneath.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Keep the behaviour + ARIA, swap all painting.',
 
   tableTooltipApi: 'Tooltip API',
   tableCssVars: 'CSS Variables',

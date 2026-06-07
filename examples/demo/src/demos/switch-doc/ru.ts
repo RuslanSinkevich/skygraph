@@ -7,7 +7,8 @@ export const switchDocRu: { [K in keyof typeof switchDocEn]: string } = {
   pageTitle: 'Switch',
   pageLead:
     'Булев селектор, фиксирующий значение сразу. Сочетайте с подписью и — для медленных сетей — со состоянием `loading`.',
-  pageWhen1: 'Переключение одного состояния, которое срабатывает мгновенно (тёмная тема, уведомления, публикация).',
+  pageWhen1:
+    'Переключение одного состояния, которое срабатывает мгновенно (тёмная тема, уведомления, публикация).',
   pageWhen2: 'В строках настроек, где commit-on-click натуральнее, чем submit формы.',
   pageWhen3: 'Если значение отправляется позже в составе формы — берите Checkbox.',
 
@@ -25,8 +26,6 @@ export const switchDocRu: { [K in keyof typeof switchDocEn]: string } = {
   demoInFormDesc: "Используйте valuePropName='checked', чтобы привязать Switch к boolean-полю.",
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоуп глобальных токенов для ребрендинга группы.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Только семантика — рисуйте сами.',
 
   tableSwitchApi: 'API Switch',
   tableCssVars: 'CSS-переменные',

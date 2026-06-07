@@ -26,9 +26,9 @@ export const tabsDocEn = {
   demoRichLabelsDesc: 'Mix badges, icons, and status dots into the label.',
   demoStatesTitle: 'Loading & disabled',
   demoStatesDesc: 'Per-item flags gate activation.',
-  demoTokensTitle: 'Custom tab styles',
+  demoTokensTitle: 'Token override',
   demoTokensDesc:
-    'Three distinct strips (segmented pill, floating cards, animated gradient underline) — each one is just a className on the wrapper plus descendant CSS.',
+    'Three scopes built from Tabs tokens: green brand, dark surface and glass pick (ink bar and label).',
 
   tableTabsApi: 'Tabs API',
   tableTabItem: 'TabItem',

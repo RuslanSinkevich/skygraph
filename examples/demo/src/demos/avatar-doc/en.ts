@@ -28,8 +28,6 @@ export const avatarDocEn = {
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
     'Bump --sg-border-radius for softer squares, swap --sg-color-text-disabled for a branded fallback.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop every sg-avatar class — you own the painting.',
 
   tableAvatarApi: 'Avatar API',
   tableCssVars: 'CSS Variables',

@@ -17,8 +17,7 @@ export const rateDocRu: { [K in keyof typeof rateDocEn]: string } = {
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Управляемый 5-star rating, клик для сброса.',
   demoAllowHalfTitle: 'Half-steps',
-  demoAllowHalfDesc:
-    '`allow-half` использует позицию указателя для выбора N − 0.5 vs N.',
+  demoAllowHalfDesc: '`allow-half` использует позицию указателя для выбора N − 0.5 vs N.',
   demoCountTitle: 'Кастомный count',
   demoCountDesc: '3 — для эмоций, 10 — для NPS-подобных шкал.',
   demoCustomCharacterTitle: 'Кастомный символ',
@@ -30,7 +29,7 @@ export const rateDocRu: { [K in keyof typeof rateDocEn]: string } = {
   demoInFormDesc: 'Валидатор «оценка обязательна».',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
-    'Сменить `--sg-color-star` для ребрендинга или расширить `--sg-font-size-xl` для крупных звёзд.',
+    'Три скоупа на токенах Rate: зелёный бренд, тёмная поверхность и glass pick (`--sg-color-star` + рамка).',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'ARIA остаётся; оформление за вами.',
 

@@ -114,7 +114,7 @@ export const ru: DemoDict = {
       'Формы, таблицы, деревья, календари, графики, диаграммы, дашборды. Готовы к проекту.',
     highlight2Title: '12 готовых приложений',
     highlight2Desc:
-      'Настоящий CRM, дашборды, редактор процессов, kitchen-sink таблица — с полным исходным кодом.',
+      'Настоящий CRM, дашборды, орг-структура, kitchen-sink таблица — с полным исходным кодом.',
     highlight3Title: 'Светлая и тёмная темы',
     highlight3Desc:
       'Темы из коробки. Переключение одним атрибутом, цвета меняются через CSS-переменные.',
@@ -132,9 +132,9 @@ export const ru: DemoDict = {
     showcaseDashboardTitle: 'Дашборд операций',
     showcaseDashboardDesc:
       'Живой KPI-grid, разные графики, фильтры и drill-down, настраиваемая раскладка.',
-    showcaseWorkflowTitle: 'Редактор процессов',
-    showcaseWorkflowDesc:
-      'Visio-подобные блок-схемы: множественный выбор, lasso, undo/redo, orthogonal routing.',
+    showcaseOrgChartTitle: 'Организационная структура',
+    showcaseOrgChartDesc:
+      'Орг-схема с авто-раскладкой дерева, панорамой, зумом и сворачиванием веток.',
     showcaseTableTitle: 'Таблица — всё включено',
     showcaseTableDesc:
       'Сортировка, фильтры, группировка, virtual scroll, экспорт и печать на миллионе строк.',

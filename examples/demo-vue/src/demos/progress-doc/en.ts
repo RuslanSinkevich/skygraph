@@ -28,7 +28,8 @@ export const progressDocEn = {
   demoDynamicTitle: 'Dynamic',
   demoDynamicDesc: 'Drive `percent` from state — clamped into [0, 100].',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global colour tokens to rebrand every bar / ring inside.',
+  demoTokensDesc:
+    'Three scopes built from Progress tokens: green brand, dark surface and glass pick (every bar / ring).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: '`unstyled` keeps `role="progressbar"`, drops every class.',
 

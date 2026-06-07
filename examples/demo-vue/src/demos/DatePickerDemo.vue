@@ -40,6 +40,8 @@ import RangePresetsDatePickerDemo from './datepicker/RangePresets.demo.vue'
 import RangePresetsSource from './datepicker/RangePresets.demo.vue?raw'
 import TokensOverrideDatePickerDemo from './datepicker/TokensOverride.demo.vue'
 import TokensOverrideSource from './datepicker/TokensOverride.demo.vue?raw'
+import FloatingLabelDatePickerDemo from './datepicker/FloatingLabel.demo.vue'
+import FloatingLabelSource from './datepicker/FloatingLabel.demo.vue?raw'
 
 const t = useDatePickerDocStrings()
 
@@ -286,6 +288,14 @@ const datePickerCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideDatePickerDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoFloatingLabelTitle"
+      :description="t.demoFloatingLabelDesc"
+      :code="FloatingLabelSource"
+    >
+      <FloatingLabelDatePickerDemo />
     </DemoBox>
 
     <template #api>

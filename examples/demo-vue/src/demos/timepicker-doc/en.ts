@@ -35,8 +35,12 @@ export const timePickerDocEn = {
   demoStatesTitle: 'States',
   demoStatesDesc:
     'Disabled blocks the dropdown; `loading` keeps the trigger inert and swaps the chevron for a spinner.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global tokens on a wrapper to rebrand an instance.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scopes built from TimePicker tokens: green brand, dark field (with dropdown) and glass pick.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the TimePicker control: glides up on focus or when a time is selected.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Headless mode, native classes removed.',
 

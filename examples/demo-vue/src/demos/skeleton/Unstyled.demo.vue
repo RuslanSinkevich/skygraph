@@ -1,20 +1,9 @@
 <script setup lang="ts">
-/**
- * `unstyled` keeps the `aria-busy="true"` wrapper and the same
- * block order but drops all classes — bring your own skeleton
- * style. Widths / heights are still computed so the layout is
- * consistent.
- */
 import { SgSkeleton } from '@skygraph/vue'
 </script>
 
 <template>
-  <SgSkeleton
-    unstyled
-    class="demo-raw-skeleton-vue"
-    avatar
-    :paragraph="{ rows: 3 }"
-  />
+  <SgSkeleton unstyled class="demo-raw-skeleton-vue" avatar :paragraph="{ rows: 3 }" />
 </template>
 
 <style>
@@ -24,8 +13,6 @@ import { SgSkeleton } from '@skygraph/vue'
   padding: 12px;
   background: #eef2ff;
   border-radius: 10px;
-  font-family: monospace;
-  font-size: 13px;
 }
 .demo-raw-skeleton-vue > div:first-child {
   border-radius: 50%;

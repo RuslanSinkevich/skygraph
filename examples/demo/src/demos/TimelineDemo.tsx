@@ -22,8 +22,6 @@ import { CustomColorTimeline } from './timeline/CustomColor.demo'
 import CustomColorSource from './timeline/CustomColor.demo?raw'
 import { TokensOverrideTimeline } from './timeline/TokensOverride.demo'
 import TokensOverrideSource from './timeline/TokensOverride.demo?raw'
-import { UnstyledTimeline } from './timeline/Unstyled.demo'
-import UnstyledSource from './timeline/Unstyled.demo?raw'
 
 export function TimelineDemo() {
   const t = useTimelineDocStrings()
@@ -31,7 +29,12 @@ export function TimelineDemo() {
   const timelineProps = useMemo<PropDef[]>(
     () => [
       { name: 'items', description: t.propItems, type: 'TimelineItem[]' },
-      { name: 'mode', description: t.propMode, type: "'left' | 'right' | 'alternate'", default: "'left'" },
+      {
+        name: 'mode',
+        description: t.propMode,
+        type: "'left' | 'right' | 'alternate'",
+        default: "'left'",
+      },
       { name: 'pending', description: t.propPending, type: 'ReactNode | boolean' },
       { name: 'pendingDot', description: t.propPendingDot, type: 'ReactNode' },
       { name: 'reverse', description: t.propReverse, type: 'boolean', default: 'false' },
@@ -57,11 +60,27 @@ export function TimelineDemo() {
     () => [
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssSgColorPrimary },
       { name: 'sg-color-bg', default: '#ffffff', description: t.cssSgColorBg },
-      { name: 'sg-color-border-secondary', default: '#f0f0f0', description: t.cssSgColorBorderSecondary },
+      {
+        name: 'sg-color-border-secondary',
+        default: '#f0f0f0',
+        description: t.cssSgColorBorderSecondary,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssSgColorTextSecondary },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssSgColorTextSecondary,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextTertiary,
+      },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
       { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
       { name: 'sg-font-size-lg', default: '16px', description: t.cssSgFontSizeLg },
@@ -109,19 +128,11 @@ export function TimelineDemo() {
         <WithLabelTimeline />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoPendingTitle}
-        description={t.demoPendingDesc}
-        code={PendingSource}
-      >
+      <DemoBox title={t.demoPendingTitle} description={t.demoPendingDesc} code={PendingSource}>
         <PendingTimeline />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoReverseTitle}
-        description={t.demoReverseDesc}
-        code={ReverseSource}
-      >
+      <DemoBox title={t.demoReverseTitle} description={t.demoReverseDesc} code={ReverseSource}>
         <ReverseTimeline />
       </DemoBox>
 
@@ -141,29 +152,13 @@ export function TimelineDemo() {
         <CustomColorTimeline />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideTimeline />
-      </DemoBox>
-
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
-        <UnstyledTimeline />
       </DemoBox>
 
       <PropsTable title={t.tableTimelineApi} data={timelineProps} />
       <PropsTable title={t.tableTimelineItem} data={timelineItemProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={timelineCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={timelineCssVars} />
     </ComponentDoc>
   )
 }

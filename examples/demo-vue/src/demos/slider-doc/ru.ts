@@ -10,10 +10,8 @@ export const sliderDocRu: { [K in keyof typeof sliderDocEn]: string } = {
   crumbSlider: 'Slider',
   pageLead:
     'Горизонтальный числовой слайдер с полной поддержкой клавиатуры (стрелки уважают `step`). Эмитит `number`, всегда в пределах `[min, max]`.',
-  pageWhen1:
-    'Выбор числа, где «примерно» — это нормально: громкость, яркость, прозрачность.',
-  pageWhen2:
-    'Любая ограниченная настройка с визуальным "fill", помогающим почувствовать масштаб.',
+  pageWhen1: 'Выбор числа, где «примерно» — это нормально: громкость, яркость, прозрачность.',
+  pageWhen2: 'Любая ограниченная настройка с визуальным "fill", помогающим почувствовать масштаб.',
   pageWhen3: 'В паре с `SgInputNumber`, когда важен точный ввод.',
 
   demoBasicTitle: 'Базовый',
@@ -27,7 +25,8 @@ export const sliderDocRu: { [K in keyof typeof sliderDocEn]: string } = {
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: 'Слайдер в `<SgField>` через scoped-слот.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп глобальных токенов на обёртке для ребрендинга.',
+  demoTokensDesc:
+    'Три скоупа на токенах Slider: зелёный бренд, тёмная поверхность и glass pick (заливка, ручка, рельс).',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'DOM и ARIA остаются; классы убраны.',
 
@@ -42,8 +41,7 @@ export const sliderDocRu: { [K in keyof typeof sliderDocEn]: string } = {
   propStep: 'Шаг между допустимыми значениями (pointer + клавиатура)',
   propDisabled: 'Блокировать ввод pointer и клавиатуры',
   propUnstyled: 'Убрать классы SkyGraph (headless-режим)',
-  emitUpdateModelValue:
-    'Эмитится при каждой фиксации значения (используется `v-model`)',
+  emitUpdateModelValue: 'Эмитится при каждой фиксации значения (используется `v-model`)',
   emitChange: 'Зеркало `update:modelValue`',
 
   cssHint:

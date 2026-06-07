@@ -25,9 +25,8 @@ export const rateDocRu: { [K in keyof typeof rateDocEn]: string } = {
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: 'Валидатор «обязательная оценка».',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc: 'Меняйте --sg-color-star для ребрендинга или --sg-font-size-xl для звёзд побольше.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'ARIA сохраняется; рисуйте сами.',
+  demoTokensOverrideDesc:
+    'Меняйте --sg-color-star для ребрендинга или --sg-font-size-xl для звёзд побольше.',
 
   tableRateApi: 'API Rate',
   tableCssVars: 'CSS-переменные',

@@ -16,8 +16,6 @@ import { HiddenDotsCarousel } from './carousel/HiddenDots.demo'
 import HiddenDotsSource from './carousel/HiddenDots.demo?raw'
 import { TokensOverrideCarousel } from './carousel/TokensOverride.demo'
 import TokensOverrideSource from './carousel/TokensOverride.demo?raw'
-import { UnstyledCarousel } from './carousel/Unstyled.demo'
-import UnstyledSource from './carousel/Unstyled.demo?raw'
 
 export function CarouselDemo() {
   const t = useCarouselDocStrings()
@@ -27,7 +25,12 @@ export function CarouselDemo() {
       { name: 'autoplay', description: t.propAutoplay, type: 'boolean', default: 'false' },
       { name: 'autoplaySpeed', description: t.propAutoplaySpeed, type: 'number', default: '3000' },
       { name: 'dots', description: t.propDots, type: 'boolean', default: 'true' },
-      { name: 'dotPosition', description: t.propDotPosition, type: "'top' | 'bottom' | 'left' | 'right'", default: "'bottom'" },
+      {
+        name: 'dotPosition',
+        description: t.propDotPosition,
+        type: "'top' | 'bottom' | 'left' | 'right'",
+        default: "'bottom'",
+      },
       { name: 'effect', description: t.propEffect, type: "'slide' | 'fade'", default: "'slide'" },
       { name: 'children', description: t.propChildren, type: 'ReactNode' },
       { name: 'className', description: t.propClassName, type: 'string' },
@@ -40,13 +43,25 @@ export function CarouselDemo() {
   const carouselCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssTextDisabled },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssTextTertiary },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssTextDisabled,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssTextTertiary,
+      },
       { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
       { name: 'sg-padding-xs', default: '4px', description: t.cssPaddingXs },
       { name: 'sg-padding-sm', default: '8px', description: t.cssPaddingSm },
       { name: 'sg-transition-duration', default: '180ms', description: t.cssTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+        description: t.cssTransitionTiming,
+      },
     ],
     [t],
   )
@@ -71,20 +86,24 @@ export function CarouselDemo() {
         <FadeCarousel />
       </DemoBox>
 
-      <DemoBox title={t.demoDotPositionTitle} description={t.demoDotPositionDesc} code={DotPositionSource}>
+      <DemoBox
+        title={t.demoDotPositionTitle}
+        description={t.demoDotPositionDesc}
+        code={DotPositionSource}
+      >
         <DotPositionCarousel />
       </DemoBox>
 
-      <DemoBox title={t.demoHiddenDotsTitle} description={t.demoHiddenDotsDesc} code={HiddenDotsSource}>
+      <DemoBox
+        title={t.demoHiddenDotsTitle}
+        description={t.demoHiddenDotsDesc}
+        code={HiddenDotsSource}
+      >
         <HiddenDotsCarousel />
       </DemoBox>
 
       <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideCarousel />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledCarousel />
       </DemoBox>
 
       <PropsTable title={t.tableCarouselApi} data={carouselProps} />

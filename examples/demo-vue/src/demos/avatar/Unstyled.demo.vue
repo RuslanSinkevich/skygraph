@@ -1,22 +1,5 @@
 <script setup lang="ts">
-/**
- * `unstyled` drops the `sg-avatar-*` classes and the inline sizing —
- * you get a plain `<span>` with the `<img>` (or icon / text) inside.
- * Size and shape are up to your own CSS.
- */
 import { SgAvatar } from '@skygraph/vue'
-import { useDemoStrings } from '../../i18n'
-
-const STRINGS = {
-  en: {
-    alt: 'Custom',
-  },
-  ru: {
-    alt: 'Свой стиль',
-  },
-} as const
-
-const t = useDemoStrings(STRINGS)
 </script>
 
 <template>
@@ -24,7 +7,7 @@ const t = useDemoStrings(STRINGS)
     <SgAvatar
       unstyled
       src="https://api.dicebear.com/7.x/miniavs/svg?seed=24"
-      :alt="t.alt"
+      alt="Custom"
       :style="{
         display: 'inline-block',
         width: '56px',

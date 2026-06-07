@@ -41,8 +41,9 @@ export const listDocEn = {
   demoRowClassNameDesc: 'Highlight rows by predicate.',
   demoSlotsTitle: 'Slots (classNames / styles)',
   demoSlotsDesc: 'Target stable DOM slots without descendant selectors.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Rebrand the hover / border / header via global tokens.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scopes built from List tokens: green brand, dark surface and glass pick (hover / border / header).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Drop sg-list-* styles, keep behaviour.',
 

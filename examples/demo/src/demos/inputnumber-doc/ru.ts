@@ -24,9 +24,11 @@ export const inputNumberDocRu: { [K in keyof typeof inputNumberDocEn]: string } 
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: 'Валидаторы required и диапазона на числовых полях.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп глобалов для ребрендинга одного экземпляра.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Логика stepper-а без классов SkyGraph.',
+  demoTokensDesc:
+    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один InputNumber.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись над полем — уезжает вверх при фокусе или когда есть значение; stepper продолжает работать.',
 
   tableInputNumberApi: 'API InputNumber',
   tableCssVars: 'CSS-переменные',

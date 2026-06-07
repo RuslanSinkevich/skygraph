@@ -32,7 +32,7 @@ export const avatarDocEn = {
   demoWithBadgeDesc: 'Wrap the avatar in a Badge for presence / count.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
-    'Bump --sg-border-radius for softer squares, swap --sg-color-text-disabled for a branded fallback.',
+    'Three scopes built from Avatar tokens: green brand, dark surface and glass pick (shape + fallback bg).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Drop every sg-avatar class — you own the painting.',
 

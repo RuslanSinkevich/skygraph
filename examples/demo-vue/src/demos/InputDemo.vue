@@ -30,8 +30,6 @@ import StatesInput from './input/States.demo.vue'
 import StatesSource from './input/States.demo.vue?raw'
 import ValidationInput from './input/Validation.demo.vue'
 import ValidationSource from './input/Validation.demo.vue?raw'
-import ComponentTokensInput from './input/ComponentTokens.demo.vue'
-import ComponentTokensSource from './input/ComponentTokens.demo.vue?raw'
 import TokensOverrideInput from './input/TokensOverride.demo.vue'
 import TokensOverrideSource from './input/TokensOverride.demo.vue?raw'
 import FloatingLabelInput from './input/FloatingLabel.demo.vue'
@@ -228,14 +226,6 @@ const inputCssVars = computed<CssVarDef[]>(() => [
       :code="ValidationSource"
     >
       <ValidationInput />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoTokensTitle"
-      :description="t.demoTokensDesc"
-      :code="ComponentTokensSource"
-    >
-      <ComponentTokensInput />
     </DemoBox>
 
     <DemoBox

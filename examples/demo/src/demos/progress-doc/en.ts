@@ -21,13 +21,12 @@ export const progressDocEn = {
   demoCustomColorTitle: 'Custom color',
   demoCustomColorDesc: '`strokeColor` overrides the status-based theme colour.',
   demoSizesTitle: 'Sizes & strokeWidth',
-  demoSizesDesc: '`size="small"` thins the bar; `strokeWidth` wins if you need an exact pixel value.',
+  demoSizesDesc:
+    '`size="small"` thins the bar; `strokeWidth` wins if you need an exact pixel value.',
   demoNoInfoTitle: 'Hide label',
   demoNoInfoDesc: '`showInfo={false}` drops the trailing / inner percentage text.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope the theme primitives to rebrand every bar inside a container.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Keep clamping + aria, paint the track and fill yourself.',
 
   tableProgressApi: 'Progress API',
   tableCssVars: 'CSS Variables',

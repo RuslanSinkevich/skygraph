@@ -1,18 +1,19 @@
 <script setup lang="ts">
 /**
- * Three distinct tab strips. The Tabs component is unchanged — each
- * look adds a class to the wrapper and overrides nav / tab paint via
- * descendant selectors.
- * Mirrors React `tabs/TokensOverride.demo.tsx`.
+ * Single "token override" block with three ready-made scopes. Tabs read
+ * `--sg-color-primary` for the active ink bar / label and the surface
+ * tokens for the strip, so each scope reskins one Tabs without bespoke
+ * CSS.
  */
+import { computed, type CSSProperties } from 'vue'
 import { SgTabs, type TabItem } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'
 
 const STRINGS = {
   en: {
-    pillLabel: 'Segmented · pill',
-    cardLabel: 'Floating cards',
-    glassLabel: 'Underline · gradient',
+    green: 'Green brand',
+    dark: 'Dark surface',
+    glass: 'Glass pick',
     tab1: 'Overview',
     tab2: 'Activity',
     tab3: 'Settings',
@@ -21,9 +22,9 @@ const STRINGS = {
     panel3: 'Configuration options.',
   },
   ru: {
-    pillLabel: 'Сегмент · pill',
-    cardLabel: 'Парящие карточки',
-    glassLabel: 'Подчёркивание · градиент',
+    green: 'Зелёный бренд',
+    dark: 'Тёмная поверхность',
+    glass: 'Glass pick',
     tab1: 'Обзор',
     tab2: 'Активность',
     tab3: 'Настройки',
@@ -35,154 +36,71 @@ const STRINGS = {
 
 const t = useDemoStrings(STRINGS)
 
-const items = [
+const items = computed<TabItem[]>(() => [
   { key: '1', label: t.value.tab1, content: t.value.panel1 },
   { key: '2', label: t.value.tab2, content: t.value.panel2 },
   { key: '3', label: t.value.tab3, content: t.value.panel3 },
-] satisfies TabItem[]
+])
 
-const labelStyle = {
+const cardBase: CSSProperties = {
+  padding: '16px',
+  borderRadius: '16px',
+  flex: '1 1 280px',
+}
+const labelBase: CSSProperties = {
   fontSize: '11px',
   fontWeight: 700,
-  textTransform: 'uppercase' as const,
+  textTransform: 'uppercase',
   letterSpacing: '0.08em',
-  color: 'var(--sg-color-text-tertiary)',
   display: 'block',
   marginBottom: '10px',
 }
+
+const greenScope = {
+  '--sg-color-primary': '#059669',
+  '--sg-color-primary-hover': '#047857',
+  '--sg-color-bg-hover': '#ecfdf5',
+  ...cardBase,
+  background: '#f0fdf4',
+  border: '1px solid #bbf7d0',
+} as CSSProperties
+
+const darkScope = {
+  '--sg-color-primary': '#38bdf8',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text-secondary': '#94a3b8',
+  '--sg-color-border-secondary': '#334155',
+  ...cardBase,
+  background: '#0f172a',
+  border: '1px solid #1e293b',
+} as CSSProperties
+
+const glassScope = {
+  '--sg-color-primary': '#6366f1',
+  '--sg-color-text': '#1e1b4b',
+  '--sg-color-border-secondary': 'rgba(255, 255, 255, 0.6)',
+  ...cardBase,
+  background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.3))',
+  border: '1px solid rgba(255, 255, 255, 0.6)',
+  backdropFilter: 'blur(10px)',
+  WebkitBackdropFilter: 'blur(10px)',
+  boxShadow: '0 8px 32px rgba(31, 38, 135, 0.2)',
+} as CSSProperties
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 28px">
-    <div>
-      <span :style="labelStyle">{{ t.pillLabel }}</span>
-      <SgTabs type="line" :items="items" class="demo-tabs-pill" />
+  <div style="display: flex; gap: 16px; flex-wrap: wrap">
+    <div :style="greenScope">
+      <span :style="{ ...labelBase, color: '#047857' }">{{ t.green }}</span>
+      <SgTabs type="line" :items="items" />
     </div>
-    <div>
-      <span :style="labelStyle">{{ t.cardLabel }}</span>
-      <SgTabs type="card" :items="items" class="demo-tabs-cards" />
+    <div :style="darkScope">
+      <span :style="{ ...labelBase, color: '#94a3b8' }">{{ t.dark }}</span>
+      <SgTabs type="line" :items="items" />
     </div>
-    <div>
-      <span :style="labelStyle">{{ t.glassLabel }}</span>
-      <SgTabs type="line" :items="items" class="demo-tabs-glass" />
+    <div :style="glassScope">
+      <span :style="{ ...labelBase, color: '#1e1b4b' }">{{ t.glass }}</span>
+      <SgTabs type="line" :items="items" />
     </div>
   </div>
 </template>
-
-<style>
-.demo-tabs-pill .sg-tabs-nav {
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px;
-  margin: 0 0 14px;
-  background: #f1f5f9;
-  border-radius: 999px;
-  border: none;
-}
-.demo-tabs-pill .sg-tabs-tab {
-  border: none;
-  background: transparent;
-  border-radius: 999px;
-  padding: 8px 18px;
-  font-weight: 600;
-  color: #475569;
-  margin: 0;
-}
-.demo-tabs-pill .sg-tabs-tab:hover {
-  color: #1e293b;
-  background: rgba(255, 255, 255, 0.6);
-}
-.demo-tabs-pill .sg-tabs-tab-active,
-.demo-tabs-pill .sg-tabs-tab-active:hover {
-  color: #ffffff;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  border: none;
-  box-shadow: 0 6px 16px -4px rgba(99, 102, 241, 0.55);
-}
-
-.demo-tabs-cards.sg-tabs-card {
-  border: none;
-  background: transparent;
-  border-radius: 16px;
-  overflow: visible;
-}
-.demo-tabs-cards .sg-tabs-nav {
-  background: transparent;
-  padding: 0;
-  gap: 8px;
-  border: none;
-}
-.demo-tabs-cards .sg-tabs-tab {
-  margin: 0;
-  padding: 12px 18px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  color: #475569;
-  font-weight: 600;
-  box-shadow: 0 2px 6px -2px rgba(15, 23, 42, 0.08);
-  transition:
-    transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 200ms ease,
-    color 180ms ease,
-    border-color 180ms ease;
-}
-.demo-tabs-cards .sg-tabs-tab:hover {
-  color: #0f172a;
-  background: #ffffff;
-  border-color: #cbd5e1;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px -6px rgba(15, 23, 42, 0.18);
-}
-.demo-tabs-cards .sg-tabs-tab-active,
-.demo-tabs-cards .sg-tabs-tab-active:hover {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border-color: #f59e0b;
-  color: #92400e;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px -6px rgba(245, 158, 11, 0.45);
-}
-.demo-tabs-cards .sg-tabs-content {
-  margin-top: 14px;
-  padding: 18px 20px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px -10px rgba(15, 23, 42, 0.12);
-}
-
-.demo-tabs-glass.sg-tabs-line .sg-tabs-nav {
-  border-bottom-color: rgba(15, 23, 42, 0.08);
-  gap: 6px;
-}
-.demo-tabs-glass.sg-tabs-line .sg-tabs-tab {
-  position: relative;
-  padding: 10px 18px;
-  font-weight: 600;
-  color: #475569;
-  border-bottom: 2px solid transparent;
-}
-.demo-tabs-glass.sg-tabs-line .sg-tabs-tab::after {
-  content: '';
-  position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: -1px;
-  height: 3px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #f43f5e, #8b5cf6, #06b6d4);
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 240ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.demo-tabs-glass.sg-tabs-line .sg-tabs-tab:hover {
-  color: #0f172a;
-}
-.demo-tabs-glass.sg-tabs-line .sg-tabs-tab-active {
-  color: #0f172a;
-  border-bottom-color: transparent;
-}
-.demo-tabs-glass.sg-tabs-line .sg-tabs-tab-active::after {
-  transform: scaleX(1);
-}
-</style>

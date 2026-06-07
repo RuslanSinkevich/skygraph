@@ -40,8 +40,6 @@ export const listDocEn = {
   demoSlotsDesc: 'Target stable DOM slots.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Rebrand the hover / border / header via global tokens.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop sg-list-* styles, keep behaviour.',
 
   tableListApi: 'List API',
   tableListItem: 'List.Item',
@@ -57,8 +55,7 @@ export const listDocEn = {
   propBordered: 'Outline the list and tint header / footer',
   propSplit: 'Render dividers between items',
   propHoverable: 'Highlight rows on hover',
-  propSize:
-    'Padding preset (this is List-specific; not tied to ConfigProvider.size)',
+  propSize: 'Padding preset (this is List-specific; not tied to ConfigProvider.size)',
   propPagination: 'Pagination config — pass `false` to disable',
   propGrid: 'Grid layout config with responsive column counts',
   propVirtual: 'Fixed-height virtualization',
@@ -71,8 +68,7 @@ export const listDocEn = {
   propOnReorder: 'Fires after a drop',
   propOnItemClick: 'Row click handler (fires even without selection)',
   propRowClassName: 'Static class or predicate for row styling',
-  propClassNames:
-    'Slot classes (root / header / footer / items / item / empty / pagination)',
+  propClassNames: 'Slot classes (root / header / footer / items / item / empty / pagination)',
   propStyles: 'Slot inline styles',
   propClassStyle: 'Root class / style',
   propUnstyled: 'Drop every sg-list-* style',

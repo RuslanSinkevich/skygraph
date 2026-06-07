@@ -24,15 +24,9 @@ export const buttonDocRu: { [K in keyof typeof buttonDocEn]: string } = {
   demoDisabledDesc: 'Затемнение и aria-disabled для всех вариантов.',
   demoIconTitle: 'С иконкой',
   demoIconDesc: 'Flex-gap выравнивает иконку и подпись на любом размере.',
-  demoTokensTitle: 'Токены компонента',
-  demoTokensDesc: 'Скоуп `--sg-btn-*` для локальной формы (pill, крупнее, компактнее).',
-  demoTokensOverrideTitle: 'Кастомные стили кнопок',
+  demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
-    'Четыре непохожих вида (стекло, нео-морфизм, градиент-пилюля, брутализм) на токенах `--sg-btn-*` плюс небольшой слой CSS — компонент тот же, доступность сохраняется.',
-  demoBrandTitle: 'Бренд в скоупе',
-  demoBrandDesc: 'Переопределите `--sg-color-primary*` для поддерева.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Убрать весь CSS, сохранить семантику кнопки.',
+    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают одну и ту же Button через --sg-btn-* и глобальную primary-палитру; hover / focus / disabled сохраняются.',
 
   tableButtonApi: 'API Button',
   tableCssVars: 'CSS-переменные',

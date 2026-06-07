@@ -7,8 +7,10 @@ export const cascaderDocEn = {
   pageLead:
     'Column-based picker for ordered hierarchical data: region → city → district, taxonomy → subcategory → tag, etc.',
   pageWhen1: 'When the value is a path rather than a single node (province + city + district).',
-  pageWhen2: 'When options form a clear hierarchy and column-by-column drill-down is faster than a deep tree.',
-  pageWhen3: 'When users benefit from parent-level commits (changeOnSelect) or cross-branch search (showSearch).',
+  pageWhen2:
+    'When options form a clear hierarchy and column-by-column drill-down is faster than a deep tree.',
+  pageWhen3:
+    'When users benefit from parent-level commits (changeOnSelect) or cross-branch search (showSearch).',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Controlled drill-down with both value and labels.',
@@ -30,10 +32,12 @@ export const cascaderDocEn = {
   demoCustomRenderDesc: 'Replace the default label with a richer renderer.',
   demoAsyncLoadTitle: 'Async loading',
   demoAsyncLoadDesc: 'Populate children on demand via loadData.',
-  demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc: 'Scope global tokens on a wrapper to re-skin a single Cascader.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Semantics only — paint with your own CSS.',
+  demoTokensOverrideTitle: 'Token override',
+  demoTokensOverrideDesc:
+    'Three scoped recipes — branded green, dark field, glass pick — reskin one Cascader.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the trigger — it rises on focus or once a path is selected.',
 
   tableCascaderApi: 'Cascader API',
   tableOption: 'CascaderOption',

@@ -10,8 +10,7 @@ export const listDocRu: { [K in keyof typeof listDocEn]: string } = {
   crumbList: 'Список',
   pageLead:
     'Рендерер коллекций с header / footer, пагинацией, сеткой, виртуализацией, выбором и drag-and-drop.',
-  pageWhen1:
-    'Когда нужно отрисовать однородную коллекцию, недостаточно крупную для Table.',
+  pageWhen1: 'Когда нужно отрисовать однородную коллекцию, недостаточно крупную для Table.',
   pageWhen2:
     'Когда раскладка элемента осмысленна (аватар + заголовок + действия) и под неё нужны слоты — см. `List.Item.Meta`.',
 
@@ -41,8 +40,6 @@ export const listDocRu: { [K in keyof typeof listDocEn]: string } = {
   demoSlotsDesc: 'Целиться в стабильные DOM-слоты.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Перекрасить hover / border / header через глобальные токены.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Уберите стили sg-list-*, поведение остаётся.',
 
   tableListApi: 'API List',
   tableListItem: 'List.Item',
@@ -58,8 +55,7 @@ export const listDocRu: { [K in keyof typeof listDocEn]: string } = {
   propBordered: 'Очертить список и тонировать header / footer',
   propSplit: 'Рендерить разделители между элементами',
   propHoverable: 'Подсвечивать строки при наведении',
-  propSize:
-    'Пресет отступов (специфичен для List; не привязан к ConfigProvider.size)',
+  propSize: 'Пресет отступов (специфичен для List; не привязан к ConfigProvider.size)',
   propPagination: 'Конфиг пагинации — `false` отключает',
   propGrid: 'Конфиг сетки с адаптивным числом колонок',
   propVirtual: 'Виртуализация с фиксированной высотой',
@@ -72,8 +68,7 @@ export const listDocRu: { [K in keyof typeof listDocEn]: string } = {
   propOnReorder: 'Срабатывает после drop',
   propOnItemClick: 'Обработчик клика по строке (срабатывает даже без выбора)',
   propRowClassName: 'Статичный класс или предикат для стилизации строк',
-  propClassNames:
-    'Слот-классы (root / header / footer / items / item / empty / pagination)',
+  propClassNames: 'Слот-классы (root / header / footer / items / item / empty / pagination)',
   propStyles: 'Inline-стили слотов',
   propClassStyle: 'Класс / стиль корня',
   propUnstyled: 'Убрать все стили sg-list-*',

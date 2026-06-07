@@ -18,8 +18,6 @@ import { KeyboardDropdown } from './dropdown/Keyboard.demo'
 import KeyboardSource from './dropdown/Keyboard.demo?raw'
 import { TokensOverrideDropdown } from './dropdown/TokensOverride.demo'
 import TokensOverrideSource from './dropdown/TokensOverride.demo?raw'
-import { UnstyledDropdown } from './dropdown/Unstyled.demo'
-import UnstyledSource from './dropdown/Unstyled.demo?raw'
 
 export function DropdownDemo() {
   const t = useDropdownDocStrings()
@@ -28,8 +26,18 @@ export function DropdownDemo() {
     () => [
       { name: 'items', description: t.propItems, type: 'DropdownItem[]' },
       { name: 'onSelect', description: t.propOnSelect, type: '(key: string) => void' },
-      { name: 'trigger', description: t.propTrigger, type: "'click' | 'hover'", default: "'hover'" },
-      { name: 'placement', description: t.propPlacement, type: "'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'", default: "'bottomLeft'" },
+      {
+        name: 'trigger',
+        description: t.propTrigger,
+        type: "'click' | 'hover'",
+        default: "'hover'",
+      },
+      {
+        name: 'placement',
+        description: t.propPlacement,
+        type: "'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'",
+        default: "'bottomLeft'",
+      },
       { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
       { name: 'children', description: t.propChildren, type: 'ReactElement' },
       { name: 'className', description: t.propClassName, type: 'string' },
@@ -52,10 +60,18 @@ export function DropdownDemo() {
   const dropdownCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-bg-elevated', default: '#ffffff', description: t.cssBgElevated },
-      { name: 'sg-color-border-secondary', default: 'rgba(5, 5, 5, 0.04)', description: t.cssBorderSecondary },
+      {
+        name: 'sg-color-border-secondary',
+        default: 'rgba(5, 5, 5, 0.04)',
+        description: t.cssBorderSecondary,
+      },
       { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssBgHover },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssTextDisabled },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssTextDisabled,
+      },
       { name: 'sg-color-error', default: '#ff4d4f', description: t.cssError },
       { name: 'sg-color-error-bg', default: '#fff2f0', description: t.cssErrorBg },
       { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
@@ -67,7 +83,11 @@ export function DropdownDemo() {
       { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0,0,0,0.08)', description: t.cssShadowLg },
       { name: 'sg-z-dropdown', default: '1050', description: t.cssZDropdown },
       { name: 'sg-transition-duration', default: '180ms', description: t.cssTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+        description: t.cssTransitionTiming,
+      },
     ],
     [t],
   )
@@ -82,11 +102,7 @@ export function DropdownDemo() {
         <BasicDropdown />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTriggerTitle}
-        description={t.demoTriggerDesc}
-        code={TriggerSource}
-      >
+      <DemoBox title={t.demoTriggerTitle} description={t.demoTriggerDesc} code={TriggerSource}>
         <TriggerDropdown />
       </DemoBox>
 
@@ -98,53 +114,25 @@ export function DropdownDemo() {
         <PlacementDropdown />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoRichTitle}
-        description={t.demoRichDesc}
-        code={RichItemsSource}
-      >
+      <DemoBox title={t.demoRichTitle} description={t.demoRichDesc} code={RichItemsSource}>
         <RichItemsDropdown />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoDisabledTitle}
-        description={t.demoDisabledDesc}
-        code={DisabledSource}
-      >
+      <DemoBox title={t.demoDisabledTitle} description={t.demoDisabledDesc} code={DisabledSource}>
         <DisabledDropdown />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoKeyboardTitle}
-        description={t.demoKeyboardDesc}
-        code={KeyboardSource}
-      >
+      <DemoBox title={t.demoKeyboardTitle} description={t.demoKeyboardDesc} code={KeyboardSource}>
         <KeyboardDropdown />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideDropdown />
-      </DemoBox>
-
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
-        <UnstyledDropdown />
       </DemoBox>
 
       <PropsTable title={t.tableDropdownApi} data={dropdownProps} />
       <PropsTable title={t.tableDropdownItem} data={dropdownItemProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={dropdownCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={dropdownCssVars} />
     </ComponentDoc>
   )
 }

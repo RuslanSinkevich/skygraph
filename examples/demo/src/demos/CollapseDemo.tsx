@@ -26,8 +26,6 @@ import { ControlledCollapse } from './collapse/Controlled.demo'
 import ControlledSource from './collapse/Controlled.demo?raw'
 import { TokensOverrideCollapse } from './collapse/TokensOverride.demo'
 import TokensOverrideSource from './collapse/TokensOverride.demo?raw'
-import { UnstyledCollapse } from './collapse/Unstyled.demo'
-import UnstyledSource from './collapse/Unstyled.demo?raw'
 
 export function CollapseDemo() {
   const t = useCollapseDocStrings()
@@ -40,9 +38,19 @@ export function CollapseDemo() {
       { name: 'onChange', description: t.propOnChange, type: '(activeKey: string[]) => void' },
       { name: 'accordion', description: t.propAccordion, type: 'boolean', default: 'false' },
       { name: 'bordered', description: t.propBordered, type: 'boolean', default: 'true' },
-      { name: 'expandIconPosition', description: t.propExpandIconPosition, type: "'start' | 'end'", default: "'start'" },
+      {
+        name: 'expandIconPosition',
+        description: t.propExpandIconPosition,
+        type: "'start' | 'end'",
+        default: "'start'",
+      },
       { name: 'ghost', description: t.propGhost, type: 'boolean', default: 'false' },
-      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'middle' | 'large'",
+        default: "'middle'",
+      },
       { name: 'className', description: t.propClassName, type: 'string' },
       { name: 'style', description: t.propStyle, type: 'CSSProperties' },
       { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
@@ -65,11 +73,23 @@ export function CollapseDemo() {
   const collapseCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-bg-container', default: '#ffffff', description: t.cssBgContainer },
-      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.02)', description: t.cssBgSecondary },
+      {
+        name: 'sg-color-bg-secondary',
+        default: 'rgba(0, 0, 0, 0.02)',
+        description: t.cssBgSecondary,
+      },
       { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssBgHover },
-      { name: 'sg-color-border-secondary', default: 'rgba(5, 5, 5, 0.06)', description: t.cssBorderSecondary },
+      {
+        name: 'sg-color-border-secondary',
+        default: 'rgba(5, 5, 5, 0.06)',
+        description: t.cssBorderSecondary,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssTextSecondary },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssTextSecondary,
+      },
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
       { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssFontSizeSm },
@@ -85,7 +105,11 @@ export function CollapseDemo() {
       { name: 'sg-padding-xl', default: '20px', description: t.cssPaddingXl },
       { name: 'sg-border-radius-lg', default: '8px', description: t.cssBorderRadiusLg },
       { name: 'sg-transition-duration', default: '180ms', description: t.cssTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+        description: t.cssTransitionTiming,
+      },
     ],
     [t],
   )
@@ -116,11 +140,7 @@ export function CollapseDemo() {
         <BorderlessCollapse />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoGhostTitle}
-        description={t.demoGhostDesc}
-        code={GhostSource}
-      >
+      <DemoBox title={t.demoGhostTitle} description={t.demoGhostDesc} code={GhostSource}>
         <GhostCollapse />
       </DemoBox>
 
@@ -132,27 +152,15 @@ export function CollapseDemo() {
         <IconPositionCollapse />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoExtraTitle}
-        description={t.demoExtraDesc}
-        code={ExtraSource}
-      >
+      <DemoBox title={t.demoExtraTitle} description={t.demoExtraDesc} code={ExtraSource}>
         <ExtraCollapse />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoDisabledTitle}
-        description={t.demoDisabledDesc}
-        code={DisabledSource}
-      >
+      <DemoBox title={t.demoDisabledTitle} description={t.demoDisabledDesc} code={DisabledSource}>
         <DisabledCollapse />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoNoArrowTitle}
-        description={t.demoNoArrowDesc}
-        code={NoArrowSource}
-      >
+      <DemoBox title={t.demoNoArrowTitle} description={t.demoNoArrowDesc} code={NoArrowSource}>
         <NoArrowCollapse />
       </DemoBox>
 
@@ -168,29 +176,13 @@ export function CollapseDemo() {
         <ControlledCollapse />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideCollapse />
-      </DemoBox>
-
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
-        <UnstyledCollapse />
       </DemoBox>
 
       <PropsTable title={t.tableCollapseApi} data={collapseProps} />
       <PropsTable title={t.tableCollapseItem} data={collapseItemProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={collapseCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={collapseCssVars} />
     </ComponentDoc>
   )
 }

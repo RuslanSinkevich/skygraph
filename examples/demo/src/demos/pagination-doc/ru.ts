@@ -24,9 +24,8 @@ export const paginationDocRu: { [K in keyof typeof paginationDocEn]: string } = 
   demoDisabledTitle: 'Отключено',
   demoDisabledDesc: 'Затемнение и pointer-events: none, пока таблица грузится.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Перекрасьте --sg-color-primary для активного чипа, увеличьте --sg-border-radius для pill.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Кламп и a11y остаются — кнопки рисуйте сами.',
+  demoTokensDesc:
+    'Перекрасьте --sg-color-primary для активного чипа, увеличьте --sg-border-radius для pill.',
 
   tablePaginationApi: 'API Pagination',
   tableCssVars: 'CSS-переменные',
@@ -58,7 +57,8 @@ export const paginationDocRu: { [K in keyof typeof paginationDocEn]: string } = 
   cssPrimaryHover: 'Фон активного чипа при наведении',
   cssWhite: 'Цвет текста активного чипа',
   cssHeightMd: 'Высота чипа и блока с эллипсисом',
-  cssPaddingSm: 'Горизонтальный отступ чипа, зазор simple-режима, перенос строк, отступ jumper/select',
+  cssPaddingSm:
+    'Горизонтальный отступ чипа, зазор simple-режима, перенос строк, отступ jumper/select',
   cssMarginXs: 'Зазор между контролами пагера',
   cssFontSizeSm: 'Текст total-лейбла, размера и quick jumper',
   cssBorderRadius: 'Скругление чипа',

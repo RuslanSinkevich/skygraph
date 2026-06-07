@@ -24,11 +24,14 @@ export const colorPickerDocRu: { [K in keyof typeof colorPickerDocEn]: string } 
   demoDisabledTitle: 'Отключено',
   demoDisabledDesc: 'Триггер читаем, но не открывается.',
   demoThemeSwapTitle: 'Живая смена темы',
-  demoThemeSwapDesc: 'Берите --sg-color-primary из пикера и смотрите, как все компоненты мгновенно перекрашиваются.',
+  demoThemeSwapDesc:
+    'Берите --sg-color-primary из пикера и смотрите, как все компоненты мгновенно перекрашиваются.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc: 'Скоуп глобальных color/radius токенов на обёртке для перекраски без файла темы.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Уберите все классы SkyGraph и принесите свой дизайн — поведение остаётся.',
+  demoTokensOverrideDesc:
+    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один ColorPicker.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись над триггером — остаётся как заголовок (цвет всегда задан) и подсвечивается при фокусе.',
 
   tableColorPickerApi: 'API ColorPicker',
   tableCssVars: 'CSS-переменные',

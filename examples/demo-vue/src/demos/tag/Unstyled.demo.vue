@@ -1,22 +1,5 @@
 <script setup lang="ts">
-/**
- * `unstyled` strips all `sg-tag-*` classes — you get just a `<span>`
- * with the slot content and an optional close button. Style it with
- * your own classes or utility CSS.
- */
 import { SgTag } from '@skygraph/vue'
-import { useDemoStrings } from '../../i18n'
-
-const STRINGS = {
-  en: {
-    label: 'Custom gradient',
-  },
-  ru: {
-    label: 'Свой градиент',
-  },
-} as const
-
-const t = useDemoStrings(STRINGS)
 </script>
 
 <template>
@@ -35,7 +18,7 @@ const t = useDemoStrings(STRINGS)
         fontSize: '12px',
       }"
     >
-      {{ t.label }}
+      Custom gradient
     </SgTag>
   </div>
 </template>

@@ -32,9 +32,12 @@ export const colorPickerDocEn = {
   demoThemeSwapTitle: 'Live theme swap',
   demoThemeSwapDesc:
     'Drive `--sg-color-primary` from the picker and watch every component restyle instantly.',
-  demoTokensOverrideTitle: 'Tokens override',
+  demoTokensOverrideTitle: 'Token override',
   demoTokensOverrideDesc:
-    'Scope global colour / radius tokens on a wrapper to restyle without a theme file.',
+    'Three scopes built from ColorPicker tokens: green brand, dark field (with popover) and glass pick.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the ColorPicker trigger: a colour is always set, so the label rests up top and lifts its accent on focus.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Drop every SkyGraph class and bring your own design — behaviour stays.',
 

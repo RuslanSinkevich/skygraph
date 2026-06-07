@@ -20,8 +20,6 @@ import { NoInfoProgress } from './progress/NoInfo.demo'
 import NoInfoSource from './progress/NoInfo.demo?raw'
 import { TokensOverrideProgress } from './progress/TokensOverride.demo'
 import TokensOverrideSource from './progress/TokensOverride.demo?raw'
-import { UnstyledProgress } from './progress/Unstyled.demo'
-import UnstyledSource from './progress/Unstyled.demo?raw'
 
 export function ProgressDemo() {
   const t = useProgressDocStrings()
@@ -30,12 +28,22 @@ export function ProgressDemo() {
     () => [
       { name: 'percent', description: t.propPercent, type: 'number', required: true },
       { name: 'type', description: t.propType, type: "'line' | 'circle'", default: "'line'" },
-      { name: 'status', description: t.propStatus, type: "'normal' | 'success' | 'error' | 'active'", default: "'normal'" },
+      {
+        name: 'status',
+        description: t.propStatus,
+        type: "'normal' | 'success' | 'error' | 'active'",
+        default: "'normal'",
+      },
       { name: 'showInfo', description: t.propShowInfo, type: 'boolean', default: 'true' },
       { name: 'strokeWidth', description: t.propStrokeWidth, type: 'number' },
       { name: 'strokeColor', description: t.propStrokeColor, type: 'string' },
       { name: 'width', description: t.propWidth, type: 'number', default: '120' },
-      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'middle' | 'large'",
+        default: "'middle'",
+      },
       { name: 'className', description: t.propClassName, type: 'string' },
       { name: 'style', description: t.propStyle, type: 'CSSProperties' },
       { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
@@ -50,12 +58,20 @@ export function ProgressDemo() {
       { name: 'sg-color-error', default: '#ff4d4f', description: t.cssError },
       { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssBgHover },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssTextSecondary },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssTextSecondary,
+      },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssFontSizeSm },
       { name: 'sg-font-size-xl', default: '20px', description: t.cssFontSizeXl },
       { name: 'sg-padding-sm', default: '8px', description: t.cssPaddingSm },
       { name: 'sg-transition-duration', default: '180ms', description: t.cssTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+        description: t.cssTransitionTiming,
+      },
     ],
     [t],
   )
@@ -82,7 +98,11 @@ export function ProgressDemo() {
         <DynamicProgress />
       </DemoBox>
 
-      <DemoBox title={t.demoCustomColorTitle} description={t.demoCustomColorDesc} code={CustomColorSource}>
+      <DemoBox
+        title={t.demoCustomColorTitle}
+        description={t.demoCustomColorDesc}
+        code={CustomColorSource}
+      >
         <CustomColorProgress />
       </DemoBox>
 
@@ -96,10 +116,6 @@ export function ProgressDemo() {
 
       <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideProgress />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledProgress />
       </DemoBox>
 
       <PropsTable title={t.tableProgressApi} data={progressProps} />

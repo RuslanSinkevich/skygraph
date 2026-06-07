@@ -31,7 +31,7 @@ export const rateDocEn = {
   demoInFormDesc: "Validator for 'must rate'.",
   demoTokensOverrideTitle: 'Tokens override',
   demoTokensOverrideDesc:
-    'Swap `--sg-color-star` to rebrand, or widen `--sg-font-size-xl` for bigger stars.',
+    'Three scopes built from Rate tokens: green brand, dark surface and glass pick (`--sg-color-star` + border).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'ARIA stays; you own the painting.',
 

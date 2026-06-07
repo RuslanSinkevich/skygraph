@@ -26,7 +26,8 @@ export const tagDocEn = {
   demoWithIconTitle: 'With icon',
   demoWithIconDesc: 'Default slot accepts any markup — icon + text is just template.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Round corners to 999px for pills, restyle preset palettes with colour tokens.',
+  demoTokensDesc:
+    'Three scopes built from Tag tokens: green brand, dark surface and glass pick (preset palette + radius).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Drop every sg-tag-* class — you own the painting.',
 

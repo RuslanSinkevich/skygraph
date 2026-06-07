@@ -20,8 +20,6 @@ import { CardSkeleton } from './skeleton/Card.demo'
 import CardSource from './skeleton/Card.demo?raw'
 import { TokensOverrideSkeleton } from './skeleton/TokensOverride.demo'
 import TokensOverrideSource from './skeleton/TokensOverride.demo?raw'
-import { UnstyledSkeleton } from './skeleton/Unstyled.demo'
-import UnstyledSource from './skeleton/Unstyled.demo?raw'
 
 export function SkeletonDemo() {
   const t = useSkeletonDocStrings()
@@ -105,10 +103,6 @@ export function SkeletonDemo() {
 
       <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideSkeleton />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledSkeleton />
       </DemoBox>
 
       <PropsTable title={t.tableSkeletonApi} data={skeletonProps} />

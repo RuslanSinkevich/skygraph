@@ -1,80 +1,77 @@
 <script setup lang="ts">
 /**
- * Three skeleton skins built only from `--sg-skeleton-bg`,
- * `--sg-skeleton-shimmer` and `--sg-border-radius-sm`.
- * Mirrors React `skeleton/TokensOverride.demo.tsx`.
+ * Single "token override" block with three ready-made scopes built only
+ * from `--sg-skeleton-bg`, `--sg-skeleton-shimmer` and
+ * `--sg-border-radius-sm`.
  */
+import type { CSSProperties } from 'vue'
 import { SgSkeleton } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'
 
 const STRINGS = {
-  en: {
-    cardLabel: 'Light · card',
-    brandLabel: 'Indigo · branded',
-    darkLabel: 'Dark mode',
-  },
-  ru: {
-    cardLabel: 'Светлая · карточка',
-    brandLabel: 'Индиго · фирменная',
-    darkLabel: 'Тёмная тема',
-  },
+  en: { green: 'Green brand', dark: 'Dark surface', glass: 'Glass pick' },
+  ru: { green: 'Зелёный бренд', dark: 'Тёмная поверхность', glass: 'Glass pick' },
 } as const
 
 const t = useDemoStrings(STRINGS)
 
-const labelStyle = {
+const cardBase: CSSProperties = {
+  padding: '18px',
+  borderRadius: '16px',
+  flex: '1 1 240px',
+}
+const labelBase: CSSProperties = {
   fontSize: '11px',
   fontWeight: 700,
-  textTransform: 'uppercase' as const,
+  textTransform: 'uppercase',
   letterSpacing: '0.08em',
-  marginBottom: '12px',
   display: 'block',
+  marginBottom: '12px',
 }
 
-const cardScope = {
-  '--sg-skeleton-bg': '#e2e8f0',
-  '--sg-skeleton-shimmer': '#f8fafc',
+const greenScope = {
+  '--sg-skeleton-bg': '#bbf7d0',
+  '--sg-skeleton-shimmer': '#dcfce7',
   '--sg-border-radius-sm': '8px',
-  padding: '18px',
-  background: '#ffffff',
-  border: '1px solid #e2e8f0',
-  borderRadius: '14px',
-  boxShadow: '0 8px 24px -10px rgba(15, 23, 42, 0.12)',
-} as Record<string, string>
-
-const brandScope = {
-  '--sg-skeleton-bg': '#c7d2fe',
-  '--sg-skeleton-shimmer': '#e0e7ff',
-  '--sg-border-radius-sm': '999px',
-  padding: '18px',
-  background: 'linear-gradient(135deg, #eef2ff 0%, #ddd6fe 100%)',
-  borderRadius: '14px',
-} as Record<string, string>
+  ...cardBase,
+  background: '#f0fdf4',
+  border: '1px solid #bbf7d0',
+} as CSSProperties
 
 const darkScope = {
   '--sg-skeleton-bg': 'rgba(148, 163, 184, 0.18)',
   '--sg-skeleton-shimmer': 'rgba(226, 232, 240, 0.45)',
   '--sg-border-radius-sm': '6px',
-  padding: '18px',
+  ...cardBase,
   background: '#0f172a',
-  borderRadius: '14px',
-} as Record<string, string>
+  border: '1px solid #1e293b',
+} as CSSProperties
+
+const glassScope = {
+  '--sg-skeleton-bg': 'rgba(255, 255, 255, 0.45)',
+  '--sg-skeleton-shimmer': 'rgba(255, 255, 255, 0.85)',
+  '--sg-border-radius-sm': '999px',
+  ...cardBase,
+  background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.3))',
+  border: '1px solid rgba(255, 255, 255, 0.6)',
+  backdropFilter: 'blur(10px)',
+  WebkitBackdropFilter: 'blur(10px)',
+  boxShadow: '0 8px 32px rgba(31, 38, 135, 0.2)',
+} as CSSProperties
 </script>
 
 <template>
-  <div
-    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px"
-  >
-    <div :style="cardScope">
-      <span :style="{ ...labelStyle, color: '#475569' }">{{ t.cardLabel }}</span>
+  <div style="display: flex; gap: 16px; flex-wrap: wrap">
+    <div :style="greenScope">
+      <span :style="{ ...labelBase, color: '#047857' }">{{ t.green }}</span>
       <SgSkeleton active avatar :paragraph="{ rows: 3 }" />
     </div>
-    <div :style="brandScope">
-      <span :style="{ ...labelStyle, color: '#4338ca' }">{{ t.brandLabel }}</span>
-      <SgSkeleton active :paragraph="{ rows: 3 }" />
-    </div>
     <div :style="darkScope">
-      <span :style="{ ...labelStyle, color: '#cbd5e1' }">{{ t.darkLabel }}</span>
+      <span :style="{ ...labelBase, color: '#94a3b8' }">{{ t.dark }}</span>
+      <SgSkeleton active avatar :paragraph="{ rows: 3 }" />
+    </div>
+    <div :style="glassScope">
+      <span :style="{ ...labelBase, color: '#1e1b4b' }">{{ t.glass }}</span>
       <SgSkeleton active avatar :paragraph="{ rows: 3 }" />
     </div>
   </div>

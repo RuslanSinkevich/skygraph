@@ -1,12 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` drops the slide animation, mask, and every sg-drawer-*
- * class — you keep the focus trap, ESC handler, and ARIA dialog
- * wiring. Useful when you need to render into a custom portal.
- *
- * Vue-side delta vs React: there is no `style`/`className` prop —
- * the demo styles the headless dialog through a body-level class.
- */
 import { ref, watch } from 'vue'
 import { SgButton, SgDrawer } from '@skygraph/vue'
 

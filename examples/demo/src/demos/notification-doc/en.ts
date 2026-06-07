@@ -18,19 +18,18 @@ export const notificationDocEn = {
   demoDurationDesc: 'Set `duration` in ms; pass `0` to disable auto-close.',
   demoPlacementTitle: 'Placement',
   demoPlacementDesc:
-    "Toasts render in the corner that matches the `placement` option. Each corner needs its own mounted `NotificationContainer` (the demo site mounts three — `topRight`, `topLeft`, `bottomRight`; `bottomLeft` is reserved for the Unstyled example).",
+    'Toasts render in the corner that matches the `placement` option. Each corner needs its own mounted `NotificationContainer` (the demo site mounts three — `topRight`, `topLeft`, `bottomRight`; `bottomLeft` is reserved for the Unstyled example).',
   demoOnCloseTitle: 'onClose callback',
-  demoOnCloseDesc: 'Observe when a toast is actually removed — manually or by the auto-dismiss timer.',
+  demoOnCloseDesc:
+    'Observe when a toast is actually removed — manually or by the auto-dismiss timer.',
   demoRichTitle: 'Rich content',
-  demoRichDesc: '`message` and `description` accept any ReactNode — wire up buttons, links, progress bars, anything.',
+  demoRichDesc:
+    '`message` and `description` accept any ReactNode — wire up buttons, links, progress bars, anything.',
   demoDestroyTitle: 'Destroy all',
   demoDestroyDesc: '`notification.destroy()` clears the entire store regardless of placement.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
     'Card visuals come from global design tokens — swap them on `:root` or a high-level wrapper that also contains `<NotificationContainer/>`.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc:
-    'Drop every `sg-notification-*` class via `<NotificationContainer unstyled/>`. You keep the store + portal logic; paint the cards yourself.',
 
   tableConfig: 'NotificationConfig',
   tableContainer: 'NotificationContainer',

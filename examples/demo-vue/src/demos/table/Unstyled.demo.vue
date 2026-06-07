@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` strips Skygraph CSS so you can apply a fully custom
- * design system. The DOM and `sg-*` classes stay the same so your
- * styles are predictable.
- */
 import { SgTable } from '@skygraph/vue'
 import { makeUserRows, userColumns } from './_data'
 

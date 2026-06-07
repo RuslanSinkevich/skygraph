@@ -30,8 +30,6 @@ import { SlotsList } from './list/Slots.demo'
 import SlotsSource from './list/Slots.demo?raw'
 import { TokensOverrideList } from './list/TokensOverride.demo'
 import TokensOverrideSource from './list/TokensOverride.demo?raw'
-import { UnstyledList } from './list/Unstyled.demo'
-import UnstyledSource from './list/Unstyled.demo?raw'
 
 export function ListDemo() {
   const t = useListDocStrings()
@@ -39,7 +37,11 @@ export function ListDemo() {
   const listProps = useMemo<PropDef[]>(
     () => [
       { name: 'dataSource', description: t.propDataSource, type: 'T[]' },
-      { name: 'renderItem', description: t.propRenderItem, type: '(item: T, index: number) => ReactNode' },
+      {
+        name: 'renderItem',
+        description: t.propRenderItem,
+        type: '(item: T, index: number) => ReactNode',
+      },
       { name: 'header', description: t.propHeader, type: 'ReactNode' },
       { name: 'footer', description: t.propFooter, type: 'ReactNode' },
       { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
@@ -47,19 +49,48 @@ export function ListDemo() {
       { name: 'bordered', description: t.propBordered, type: 'boolean', default: 'false' },
       { name: 'split', description: t.propSplit, type: 'boolean', default: 'true' },
       { name: 'hoverable', description: t.propHoverable, type: 'boolean', default: 'true' },
-      { name: 'size', description: t.propSize, type: "'small' | 'default' | 'large'", default: "'default'" },
-      { name: 'pagination', description: t.propPagination, type: 'false | { current?, pageSize?, total?, onChange? }' },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'default' | 'large'",
+        default: "'default'",
+      },
+      {
+        name: 'pagination',
+        description: t.propPagination,
+        type: 'false | { current?, pageSize?, total?, onChange? }',
+      },
       { name: 'grid', description: t.propGrid, type: '{ gutter?, column?, xs?, sm?, md?, lg? }' },
       { name: 'virtual', description: t.propVirtual, type: '{ itemHeight, height, overscan? }' },
       { name: 'locale', description: t.propLocale, type: '{ emptyText?: ReactNode }' },
       { name: 'selectable', description: t.propSelectable, type: 'boolean', default: 'false' },
       { name: 'multiSelect', description: t.propMultiSelect, type: 'boolean', default: 'false' },
-      { name: 'selectedKeys / defaultSelectedKeys', description: t.propSelectedKeys, type: 'number[]' },
-      { name: 'onSelectionChange', description: t.propOnSelectionChange, type: '(keys: number[], items: T[]) => void' },
+      {
+        name: 'selectedKeys / defaultSelectedKeys',
+        description: t.propSelectedKeys,
+        type: 'number[]',
+      },
+      {
+        name: 'onSelectionChange',
+        description: t.propOnSelectionChange,
+        type: '(keys: number[], items: T[]) => void',
+      },
       { name: 'draggable', description: t.propDraggable, type: 'boolean', default: 'false' },
-      { name: 'onReorder', description: t.propOnReorder, type: '(fromIndex: number, toIndex: number) => void' },
-      { name: 'onItemClick', description: t.propOnItemClick, type: '(item: T, index: number) => void' },
-      { name: 'rowClassName', description: t.propRowClassName, type: 'string | ((item, index) => string)' },
+      {
+        name: 'onReorder',
+        description: t.propOnReorder,
+        type: '(fromIndex: number, toIndex: number) => void',
+      },
+      {
+        name: 'onItemClick',
+        description: t.propOnItemClick,
+        type: '(item: T, index: number) => void',
+      },
+      {
+        name: 'rowClassName',
+        description: t.propRowClassName,
+        type: 'string | ((item, index) => string)',
+      },
       { name: 'classNames', description: t.propClassNames, type: 'ListClassNames' },
       { name: 'styles', description: t.propStyles, type: 'ListStyles' },
       { name: 'className / style', description: t.propClassStyle, type: 'string / CSSProperties' },
@@ -90,12 +121,28 @@ export function ListDemo() {
   const listCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-bg', default: '#ffffff', description: t.cssSgColorBg },
-      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgSecondary },
-      { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgHover },
+      {
+        name: 'sg-color-bg-secondary',
+        default: 'rgba(0, 0, 0, 0.04)',
+        description: t.cssSgColorBgSecondary,
+      },
+      {
+        name: 'sg-color-bg-hover',
+        default: 'rgba(0, 0, 0, 0.04)',
+        description: t.cssSgColorBgHover,
+      },
       { name: 'sg-color-border', default: '#d9d9d9', description: t.cssSgColorBorder },
-      { name: 'sg-color-border-secondary', default: '#f0f0f0', description: t.cssSgColorBorderSecondary },
+      {
+        name: 'sg-color-border-secondary',
+        default: '#f0f0f0',
+        description: t.cssSgColorBorderSecondary,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssSgColorTextSecondary },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssSgColorTextSecondary,
+      },
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssSgColorPrimary },
       { name: 'sg-border-radius', default: '6px', description: t.cssSgBorderRadius },
       { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
@@ -128,19 +175,11 @@ export function ListDemo() {
         <SizesList />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoWithMetaTitle}
-        description={t.demoWithMetaDesc}
-        code={WithMetaSource}
-      >
+      <DemoBox title={t.demoWithMetaTitle} description={t.demoWithMetaDesc} code={WithMetaSource}>
         <WithMetaList />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoGridTitle}
-        description={t.demoGridDesc}
-        code={GridSource}
-      >
+      <DemoBox title={t.demoGridTitle} description={t.demoGridDesc} code={GridSource}>
         <GridList />
       </DemoBox>
 
@@ -152,19 +191,11 @@ export function ListDemo() {
         <PaginationList />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoLoadingTitle}
-        description={t.demoLoadingDesc}
-        code={LoadingSource}
-      >
+      <DemoBox title={t.demoLoadingTitle} description={t.demoLoadingDesc} code={LoadingSource}>
         <LoadingList />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoEmptyTitle}
-        description={t.demoEmptyDesc}
-        code={EmptySource}
-      >
+      <DemoBox title={t.demoEmptyTitle} description={t.demoEmptyDesc} code={EmptySource}>
         <EmptyList />
       </DemoBox>
 
@@ -184,11 +215,7 @@ export function ListDemo() {
         <DraggableList />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoVirtualTitle}
-        description={t.demoVirtualDesc}
-        code={VirtualSource}
-      >
+      <DemoBox title={t.demoVirtualTitle} description={t.demoVirtualDesc} code={VirtualSource}>
         <VirtualList />
       </DemoBox>
 
@@ -200,38 +227,18 @@ export function ListDemo() {
         <RowClassNameList />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoSlotsTitle}
-        description={t.demoSlotsDesc}
-        code={SlotsSource}
-      >
+      <DemoBox title={t.demoSlotsTitle} description={t.demoSlotsDesc} code={SlotsSource}>
         <SlotsList />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideList />
-      </DemoBox>
-
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
-        <UnstyledList />
       </DemoBox>
 
       <PropsTable title={t.tableListApi} data={listProps} />
       <PropsTable title={t.tableListItem} data={listItemProps} />
       <PropsTable title={t.tableListItemMeta} data={listMetaProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={listCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={listCssVars} />
     </ComponentDoc>
   )
 }

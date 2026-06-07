@@ -20,9 +20,9 @@ export const tooltipDocEn = {
   demoDisabledDesc: 'Tooltip listens on its wrapper, so disabled children still reveal the tip.',
   demoIconTitle: 'On an info icon',
   demoIconDesc: "Classic '?' glyph pattern; set tabindex so keyboard users can focus it.",
-  demoTokensTitle: 'Custom tooltip styles',
+  demoTokensTitle: 'Token override',
   demoTokensDesc:
-    'Three distinct skins (frosted glass, vivid gradient, soft card) — each one passes a className to the wrapper and styles `.sg-tooltip-content` / `.sg-tooltip-arrow` underneath.',
+    'Three tooltip skins (frosted glass, gradient, soft card) — each one passes a className to the wrapper and styles `.sg-tooltip-content` / `.sg-tooltip-arrow` underneath.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Keep the behaviour + ARIA, swap all painting via CSS.',
 

@@ -18,8 +18,6 @@ import { InCardEmpty } from './empty/InCard.demo'
 import InCardSource from './empty/InCard.demo?raw'
 import { TokensOverrideEmpty } from './empty/TokensOverride.demo'
 import TokensOverrideSource from './empty/TokensOverride.demo?raw'
-import { UnstyledEmpty } from './empty/Unstyled.demo'
-import UnstyledSource from './empty/Unstyled.demo?raw'
 
 export function EmptyDemo() {
   const t = useEmptyDocStrings()
@@ -38,8 +36,16 @@ export function EmptyDemo() {
 
   const emptyCssVars = useMemo<CssVarDef[]>(
     () => [
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextTertiary,
+      },
       { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
       { name: 'sg-line-height', default: '1.5714', description: t.cssSgLineHeight },
       { name: 'sg-padding-xl', default: '20px', description: t.cssSgPaddingXl },
@@ -77,11 +83,7 @@ export function EmptyDemo() {
         <NoDescriptionEmpty />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoActionsTitle}
-        description={t.demoActionsDesc}
-        code={WithActionsSource}
-      >
+      <DemoBox title={t.demoActionsTitle} description={t.demoActionsDesc} code={WithActionsSource}>
         <WithActionsEmpty />
       </DemoBox>
 
@@ -93,36 +95,16 @@ export function EmptyDemo() {
         <CustomImageEmpty />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoInCardTitle}
-        description={t.demoInCardDesc}
-        code={InCardSource}
-      >
+      <DemoBox title={t.demoInCardTitle} description={t.demoInCardDesc} code={InCardSource}>
         <InCardEmpty />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideEmpty />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
-        <UnstyledEmpty />
-      </DemoBox>
-
       <PropsTable title={t.tableEmptyApi} data={emptyProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={emptyCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={emptyCssVars} />
     </ComponentDoc>
   )
 }

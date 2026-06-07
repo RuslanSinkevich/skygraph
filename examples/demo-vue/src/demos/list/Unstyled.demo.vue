@@ -1,19 +1,10 @@
 <script setup lang="ts">
-/**
- * `unstyled` strips every `sg-list-*` class (wrapper, items, Spin,
- * Empty). Rebuild the look with your own CSS while keeping selection,
- * pagination and drag-drop behaviour intact.
- */
 import { SgList } from '@skygraph/vue'
 import { shortData } from './data'
 </script>
 
 <template>
-  <SgList
-    unstyled
-    :class-names="{ root: 'demo-raw-list' }"
-    :data-source="shortData"
-  >
+  <SgList unstyled :class-names="{ root: 'demo-raw-list' }" :data-source="shortData">
     <template #default="{ item }">
       <div>{{ item }}</div>
     </template>

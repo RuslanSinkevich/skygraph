@@ -9,7 +9,8 @@ export const modalDocRu: { [K in keyof typeof modalDocEn]: string } = {
   crumbFeedback: 'Обратная связь',
   crumbModal: 'Modal',
   pageLead: 'Диалог с focus trap, закрытием по Escape и переоформлением через скоуп токенов.',
-  pageWhen1: 'Когда нужно завершить короткое действие, не теряя контекст (создать, подтвердить, изменить).',
+  pageWhen1:
+    'Когда нужно завершить короткое действие, не теряя контекст (создать, подтвердить, изменить).',
   pageWhen2: 'Когда нужно показать важные детали без перехода на другую страницу.',
   pageWhen3: 'Для лёгких подтверждений — `<Popconfirm>`. Для пошаговых сценариев — `<Drawer>`.',
 
@@ -26,13 +27,13 @@ export const modalDocRu: { [K in keyof typeof modalDocEn]: string } = {
   demoNoFooterDesc:
     'Передайте `footer={null}`, чтобы убрать разделитель — read-only диалог только с кнопкой закрытия.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп `--sg-color-primary` + `--sg-border-radius-lg` для переоформления одного modal.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Headless-режим: focus trap и ARIA сохраняются, визуал убран.',
+  demoTokensDesc:
+    'Скоуп `--sg-color-primary` + `--sg-border-radius-lg` для переоформления одного modal.',
 
   tableModalApi: 'API Modal',
   tableCssVars: 'CSS-переменные',
-  cssHint: 'Modal открывает структурные отступы и цвета. Контент (Buttons, Forms) тянет свои токены.',
+  cssHint:
+    'Modal открывает структурные отступы и цвета. Контент (Buttons, Forms) тянет свои токены.',
 
   propOpen: 'Управление видимостью',
   propOnClose: 'Вызывается на Escape, клик по подложке или кнопку закрытия',
@@ -41,7 +42,8 @@ export const modalDocRu: { [K in keyof typeof modalDocEn]: string } = {
     'Переопределить подвал. Пропустите для дефолтных OK/Cancel при заданном `onOk`. Передайте `null` чтобы убрать подвал полностью.',
   propOnOk: 'Вызывается на дефолтный OK. Включает дефолтный подвал, если `footer` не передан.',
   propOkText: 'Подпись дефолтного OK. По умолчанию из `locale.modal.okText` → «OK».',
-  propCancelText: 'Подпись дефолтного Cancel. По умолчанию из `locale.modal.cancelText` → «Cancel».',
+  propCancelText:
+    'Подпись дефолтного Cancel. По умолчанию из `locale.modal.cancelText` → «Cancel».',
   propOkType: 'Визуальный тип дефолтной кнопки OK.',
   propConfirmLoading: 'Переводит OK в loading и блокирует Cancel.',
   propChildren: 'Содержимое body',

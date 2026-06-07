@@ -301,7 +301,7 @@ export const en: DemoDict = {
       'Forms, tables, trees, calendars, charts, diagrams, dashboards. All ready to drop into a project.',
     highlight2Title: '12 reference apps',
     highlight2Desc:
-      'Real CRM, dashboards, workflow editor, kitchen-sink table — full source code included.',
+      'Real CRM, dashboards, org chart, kitchen-sink table — full source code included.',
     highlight3Title: 'Light and dark themes',
     highlight3Desc:
       'Themes ship out of the box. Switch with a single attribute, change colors via CSS variables.',
@@ -319,9 +319,9 @@ export const en: DemoDict = {
     showcaseDashboardTitle: 'Operations Dashboard',
     showcaseDashboardDesc:
       'Live KPI grid, mixed charts, filters and drill-down, customizable layout.',
-    showcaseWorkflowTitle: 'Workflow Editor',
-    showcaseWorkflowDesc:
-      'Visio-style flowcharts with multi-select, lasso, undo/redo and orthogonal routing.',
+    showcaseOrgChartTitle: 'Org Chart',
+    showcaseOrgChartDesc:
+      'Company org chart with auto tree layout, pan & zoom, and collapsible branches.',
     showcaseTableTitle: 'Table — Kitchen Sink',
     showcaseTableDesc:
       'Sorting, filtering, grouping, virtual scroll, export and print on a million-row dataset.',

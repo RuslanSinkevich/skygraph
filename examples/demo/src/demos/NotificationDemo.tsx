@@ -20,19 +20,27 @@ import { RichContentNotification } from './notification/RichContent.demo'
 import RichContentSource from './notification/RichContent.demo?raw'
 import { TokensOverrideNotification } from './notification/TokensOverride.demo'
 import TokensOverrideSource from './notification/TokensOverride.demo?raw'
-import { UnstyledNotification } from './notification/Unstyled.demo'
-import UnstyledSource from './notification/Unstyled.demo?raw'
 
 export function NotificationDemo() {
   const t = useNotificationDocStrings()
 
   const configProps = useMemo<PropDef[]>(
     () => [
-      { name: 'type', description: t.cfgType, type: "'success' | 'error' | 'warning' | 'info'", default: "'info'" },
+      {
+        name: 'type',
+        description: t.cfgType,
+        type: "'success' | 'error' | 'warning' | 'info'",
+        default: "'info'",
+      },
       { name: 'message', description: t.cfgMessage, type: 'ReactNode' },
       { name: 'description', description: t.cfgDescription, type: 'ReactNode' },
       { name: 'duration', description: t.cfgDuration, type: 'number', default: '4500' },
-      { name: 'placement', description: t.cfgPlacement, type: "'topRight' | 'topLeft' | 'bottomRight' | 'bottomLeft'", default: "'topRight'" },
+      {
+        name: 'placement',
+        description: t.cfgPlacement,
+        type: "'topRight' | 'topLeft' | 'bottomRight' | 'bottomLeft'",
+        default: "'topRight'",
+      },
       { name: 'key', description: t.cfgKey, type: 'string' },
       { name: 'onClose', description: t.cfgOnClose, type: '() => void' },
     ],
@@ -41,7 +49,12 @@ export function NotificationDemo() {
 
   const containerProps = useMemo<PropDef[]>(
     () => [
-      { name: 'placement', description: t.containerPlacement, type: "'topRight' | 'topLeft' | 'bottomRight' | 'bottomLeft'", default: "'topRight'" },
+      {
+        name: 'placement',
+        description: t.containerPlacement,
+        type: "'topRight' | 'topLeft' | 'bottomRight' | 'bottomLeft'",
+        default: "'topRight'",
+      },
       { name: 'unstyled', description: t.containerUnstyled, type: 'boolean', default: 'false' },
       { name: 'className', description: t.containerClassName, type: 'string' },
       { name: 'style', description: t.containerStyle, type: 'CSSProperties' },
@@ -51,11 +64,31 @@ export function NotificationDemo() {
 
   const utilityMethods = useMemo<PropDef[]>(
     () => [
-      { name: 'notification.open(config)', description: t.utilOpen, type: '(config: NotificationConfig) => void' },
-      { name: 'notification.success(message, description?)', description: t.utilSuccess, type: '(message, description?) => void' },
-      { name: 'notification.error(message, description?)', description: t.utilError, type: '(message, description?) => void' },
-      { name: 'notification.warning(message, description?)', description: t.utilWarning, type: '(message, description?) => void' },
-      { name: 'notification.info(message, description?)', description: t.utilInfo, type: '(message, description?) => void' },
+      {
+        name: 'notification.open(config)',
+        description: t.utilOpen,
+        type: '(config: NotificationConfig) => void',
+      },
+      {
+        name: 'notification.success(message, description?)',
+        description: t.utilSuccess,
+        type: '(message, description?) => void',
+      },
+      {
+        name: 'notification.error(message, description?)',
+        description: t.utilError,
+        type: '(message, description?) => void',
+      },
+      {
+        name: 'notification.warning(message, description?)',
+        description: t.utilWarning,
+        type: '(message, description?) => void',
+      },
+      {
+        name: 'notification.info(message, description?)',
+        description: t.utilInfo,
+        type: '(message, description?) => void',
+      },
       { name: 'notification.destroy()', description: t.utilDestroy, type: '() => void' },
     ],
     [t],
@@ -75,7 +108,11 @@ export function NotificationDemo() {
       { name: 'sg-border-radius-lg', default: '8px', description: t.cssRadiusLg },
       { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0,0,0,0.08)', description: t.cssShadowLg },
       { name: 'sg-transition-duration', default: '0.2s', description: t.cssTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+        description: t.cssTransitionTiming,
+      },
       { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssFontSizeSm },
       { name: 'sg-font-size-lg', default: '16px', description: t.cssFontSizeLg },
@@ -112,7 +149,11 @@ export function NotificationDemo() {
         <DurationNotification />
       </DemoBox>
 
-      <DemoBox title={t.demoPlacementTitle} description={t.demoPlacementDesc} code={PlacementSource}>
+      <DemoBox
+        title={t.demoPlacementTitle}
+        description={t.demoPlacementDesc}
+        code={PlacementSource}
+      >
         <PlacementNotification />
       </DemoBox>
 
@@ -130,10 +171,6 @@ export function NotificationDemo() {
 
       <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideNotification />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledNotification />
       </DemoBox>
 
       <PropsTable title={t.tableConfig} data={configProps} />

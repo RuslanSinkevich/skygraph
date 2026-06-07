@@ -22,8 +22,6 @@ export const checkboxDocEn = {
   demoInFormDesc: "Wrap with Field + valuePropName='checked'.",
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global tokens on a wrapper to re-skin.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Native input + label wrapper, no SkyGraph classes.',
 
   tableCssVars: 'CSS Variables',
 

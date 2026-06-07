@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` drops every SkyGraph class (ring + overlay + tip)
- * while keeping the `delay`, `spinning`, and child overlay
- * logic. Best paired with a custom `#indicator` slot.
- */
 import { SgSpin } from '@skygraph/vue'
 </script>
 

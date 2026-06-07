@@ -6,8 +6,10 @@ export const switchDocEn = {
   pageTitle: 'Switch',
   pageLead:
     'Boolean selector that commits immediately. Pair it with a label and — for slow networks — the `loading` state.',
-  pageWhen1: 'Flip a single state that takes effect right away (dark mode, notifications, publish state).',
-  pageWhen2: 'Inline in settings rows where a commit-on-click toggle is more natural than a form submit.',
+  pageWhen1:
+    'Flip a single state that takes effect right away (dark mode, notifications, publish state).',
+  pageWhen2:
+    'Inline in settings rows where a commit-on-click toggle is more natural than a form submit.',
   pageWhen3: 'Reach for Checkbox instead if the value is submitted later as part of a form.',
 
   demoBasicTitle: 'Basic',
@@ -24,8 +26,6 @@ export const switchDocEn = {
   demoInFormDesc: "Use valuePropName='checked' to bind Switch to a boolean field.",
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global tokens to rebrand a group.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Semantics only — paint it yourself.',
 
   tableSwitchApi: 'Switch API',
   tableCssVars: 'CSS Variables',

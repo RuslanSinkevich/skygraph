@@ -28,7 +28,7 @@ export const progressDocRu: ProgressDocStrings = {
   demoDynamicDesc: 'Управляем `percent` из state — clamped в [0, 100].',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Локально переопределяем глобальные цветовые токены для всех полос / колец.',
+    'Три скоупа на токенах Progress: зелёный бренд, тёмная поверхность и glass pick (все полосы / кольца).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: '`unstyled` сохраняет `role="progressbar"`, убирает все классы.',
 

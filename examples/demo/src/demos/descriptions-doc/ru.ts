@@ -10,10 +10,8 @@ export const descriptionsDocRu: { [K in keyof typeof descriptionsDocEn]: string 
   crumbDescriptions: 'Описания',
   pageLead:
     'Read-only таблица «ключ — значение» для страниц деталей. Поддерживает горизонтальную и вертикальную раскладку, bordered-вариант, переменное число колонок и `span` на элемент.',
-  pageWhen1:
-    'Блок read-only полей — счета, сводки профиля, детали инцидента.',
-  pageWhen2:
-    'Когда полноценная таблица слишком тяжела, а голый `<dl>` — слишком минималистичен.',
+  pageWhen1: 'Блок read-only полей — счета, сводки профиля, детали инцидента.',
+  pageWhen2: 'Когда полноценная таблица слишком тяжела, а голый `<dl>` — слишком минималистичен.',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'По умолчанию: 3 колонки, горизонтальная раскладка.',
@@ -31,8 +29,6 @@ export const descriptionsDocRu: { [K in keyof typeof descriptionsDocEn]: string 
   demoRichContentDesc: 'Лейблы и значения принимают любой ReactNode — Badge, Tag, ссылки…',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоупните токены фона лейбла / границы для смены оформления рамки.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Голая `<table>` — приносите свой CSS.',
 
   tableDescriptionsApi: 'API Descriptions',
   tableDescriptionsItem: 'DescriptionsItem',

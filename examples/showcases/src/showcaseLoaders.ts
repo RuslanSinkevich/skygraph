@@ -17,9 +17,9 @@ export const showcaseLoaders: Record<string, () => Promise<{ default: ComponentT
   'file-manager': () =>
     import('./showcases/file-manager/FileManagerApp').then((m) => ({ default: m.FileManagerApp })),
   admin: () => import('./showcases/admin/AdminApp').then((m) => ({ default: m.AdminApp })),
-  'workflow-editor': () =>
-    import('./showcases/workflow-editor/WorkflowEditorApp').then((m) => ({
-      default: m.WorkflowEditorApp,
+  'org-chart': () =>
+    import('./showcases/org-chart/OrgChartApp').then((m) => ({
+      default: m.OrgChartApp,
     })),
   forms: () => import('./showcases/forms/FormsApp').then((m) => ({ default: m.FormsApp })),
 }

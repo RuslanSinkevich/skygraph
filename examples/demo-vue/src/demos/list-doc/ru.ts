@@ -9,7 +9,8 @@ export const listDocRu: ListDocStrings = {
   pageLead:
     'Рендерер коллекции с header / footer, пагинацией, grid, виртуализацией, выбором и drag-and-drop.',
   pageWhen1: 'Когда нужно рендерить коллекцию, для которой Table — слишком тяжело.',
-  pageWhen2: 'Когда у элемента осмысленная вёрстка (avatar + title + actions) и нужен паттерн default-слота.',
+  pageWhen2:
+    'Когда у элемента осмысленная вёрстка (avatar + title + actions) и нужен паттерн default-слота.',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'dataSource + default-slot, в bordered-обёртке.',
@@ -35,8 +36,9 @@ export const listDocRu: ListDocStrings = {
   demoRowClassNameDesc: 'Подсветить строки по предикату.',
   demoSlotsTitle: 'Slots (classNames / styles)',
   demoSlotsDesc: 'Целиться в стабильные DOM-слоты без descendant-селекторов.',
-  demoTokensTitle: 'Override токенов',
-  demoTokensDesc: 'Перекрасить hover / border / header через глобальные токены.',
+  demoTokensTitle: 'Переопределение токенов',
+  demoTokensDesc:
+    'Три скоупа на токенах List: зелёный бренд, тёмная поверхность и glass pick (hover / border / header).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Сбросить sg-list-* стили, поведение остаётся.',
 
@@ -65,8 +67,7 @@ export const listDocRu: ListDocStrings = {
   propEmitItemClick: '`@itemClick(item, index)` — клик по строке',
   propEmitPageChange: '`@pageChange(page, size)` — изменение страницы',
   propRowClassName: 'Статическая строка или `(item, index) => string`',
-  propClassNames:
-    'Классы по слотам (root / header / footer / items / item / empty / pagination)',
+  propClassNames: 'Классы по слотам (root / header / footer / items / item / empty / pagination)',
   propStyles: 'Inline-стили по слотам',
   propUnstyled: 'Сбросить все sg-list-* классы',
 

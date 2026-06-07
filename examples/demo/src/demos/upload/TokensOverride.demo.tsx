@@ -1,28 +1,17 @@
-import type { CSSProperties } from 'react'
 import { Upload } from '@skygraph/react'
 import type { UploadFile } from '@skygraph/react'
-
-const files: UploadFile[] = [
-  { uid: '1', name: 'brief.docx', size: 48_000, status: 'done' },
-  { uid: '2', name: 'upload-failure.log', size: 2_500, status: 'error' },
-]
+import { TokenScopeCards } from '../_shared/TokenScopeCards'
 
 /**
- * Upload has no component tokens — it is fully driven by global tokens.
- * Override them on a scoped wrapper to re-skin the file list rows and the
- * remove/error accents.
+ * Upload has no component tokens — the file list, remove and error accents are
+ * fully driven by global tokens. Three scoped recipes — branded green, dark
+ * field, glass pick — reskin the rows.
  */
-const scoped: CSSProperties = {
-  ['--sg-color-border-secondary' as never]: 'var(--sg-cyan-4)',
-  ['--sg-color-error' as never]: 'var(--sg-magenta-5)',
-  ['--sg-border-radius-sm' as never]: '999px',
-  ['--sg-font-size-sm' as never]: '13px',
-}
+const files: UploadFile[] = [
+  { uid: '1', name: 'brief.docx', size: 48_000, status: 'done' },
+  { uid: '2', name: 'photo.png', size: 120_000, status: 'done' },
+]
 
 export function TokensOverrideUpload() {
-  return (
-    <div style={{ ...scoped, maxWidth: 420 }}>
-      <Upload multiple fileList={files} />
-    </div>
-  )
+  return <TokenScopeCards render={() => <Upload multiple fileList={files} />} />
 }

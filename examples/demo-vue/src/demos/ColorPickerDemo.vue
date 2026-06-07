@@ -32,6 +32,8 @@ import ThemeSwapColorPickerDemo from './colorpicker/ThemeSwap.demo.vue'
 import ThemeSwapSource from './colorpicker/ThemeSwap.demo.vue?raw'
 import TokensOverrideColorPickerDemo from './colorpicker/TokensOverride.demo.vue'
 import TokensOverrideSource from './colorpicker/TokensOverride.demo.vue?raw'
+import FloatingLabelColorPickerDemo from './colorpicker/FloatingLabel.demo.vue'
+import FloatingLabelSource from './colorpicker/FloatingLabel.demo.vue?raw'
 import UnstyledColorPickerDemo from './colorpicker/Unstyled.demo.vue'
 import UnstyledSource from './colorpicker/Unstyled.demo.vue?raw'
 
@@ -205,6 +207,14 @@ const colorPickerCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideColorPickerDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoFloatingLabelTitle"
+      :description="t.demoFloatingLabelDesc"
+      :code="FloatingLabelSource"
+    >
+      <FloatingLabelColorPickerDemo />
     </DemoBox>
 
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">

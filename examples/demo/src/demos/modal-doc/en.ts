@@ -8,9 +8,11 @@ export const modalDocEn = {
   crumbFeedback: 'Feedback',
   crumbModal: 'Modal',
   pageLead: 'Dialog with focus trap, Escape-to-close, and scoped token re-skinning.',
-  pageWhen1: 'When a user must complete a short task before returning to context (create, confirm, edit).',
+  pageWhen1:
+    'When a user must complete a short task before returning to context (create, confirm, edit).',
   pageWhen2: 'When you need to show important details without navigating away.',
-  pageWhen3: 'For lightweight confirmations prefer <Popconfirm>. For stepwise flows consider <Drawer>.',
+  pageWhen3:
+    'For lightweight confirmations prefer <Popconfirm>. For stepwise flows consider <Drawer>.',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Title, body, two-button footer.',
@@ -22,22 +24,23 @@ export const modalDocEn = {
   demoWidthsTitle: 'Widths',
   demoWidthsDesc: '`width` takes pixels or any CSS length.',
   demoNoFooterTitle: 'No footer',
-  demoNoFooterDesc: 'Pass `footer={null}` to drop the divider — read-only dialogs with only the close button.',
+  demoNoFooterDesc:
+    'Pass `footer={null}` to drop the divider — read-only dialogs with only the close button.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope `--sg-color-primary` + `--sg-border-radius-lg` to re-skin one modal.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Headless mode — keeps focus trap and ARIA, drops the visuals.',
 
   tableModalApi: 'Modal API',
   tableCssVars: 'CSS Variables',
-  cssHint: 'Modal exposes structural spacing + colors. The content (Buttons, Forms) follows its own tokens.',
+  cssHint:
+    'Modal exposes structural spacing + colors. The content (Buttons, Forms) follows its own tokens.',
 
   propOpen: 'Controls visibility',
   propOnClose: 'Called on Escape, mask click, or close button',
   propTitle: 'Optional heading + accessible name',
   propFooter:
     'Override the footer area. Omit to use the default OK/Cancel when `onOk` is set. Pass `null` to drop the footer entirely.',
-  propOnOk: 'Called when the default OK button is clicked. Enables the default footer when `footer` is omitted.',
+  propOnOk:
+    'Called when the default OK button is clicked. Enables the default footer when `footer` is omitted.',
   propOkText: 'Default OK label. Falls back to `locale.modal.okText` → "OK".',
   propCancelText: 'Default Cancel label. Falls back to `locale.modal.cancelText` → "Cancel".',
   propOkType: 'Visual type of the default OK button.',

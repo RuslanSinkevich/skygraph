@@ -13,8 +13,7 @@ export const sliderDocEn = {
   pageLead:
     'Horizontal numeric slider with full keyboard support (arrow keys respect `step`). Emits a `number`, always within `[min, max]`.',
   pageWhen1: 'Pick a number where approximate is fine: volume, brightness, opacity.',
-  pageWhen2:
-    'Any bounded setting with a visual "fill" that helps users feel the scale.',
+  pageWhen2: 'Any bounded setting with a visual "fill" that helps users feel the scale.',
   pageWhen3: 'Paired with an `SgInputNumber` when precise typing matters.',
 
   demoBasicTitle: 'Basic',
@@ -28,7 +27,8 @@ export const sliderDocEn = {
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: 'Slider plugged into `<SgField>` via the scoped slot.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global tokens on a wrapper to rebrand.',
+  demoTokensDesc:
+    'Three scopes built from Slider tokens: green brand, dark surface and glass pick (fill, handle, rail).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'DOM & ARIA stay; classes drop.',
 

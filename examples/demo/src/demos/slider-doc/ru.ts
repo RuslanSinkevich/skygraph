@@ -7,7 +7,8 @@ export const sliderDocRu: { [K in keyof typeof sliderDocEn]: string } = {
   pageTitle: 'Slider',
   pageLead:
     'Горизонтальный числовой слайдер с полной клавиатурной поддержкой (стрелки уважают `step`). Возвращает `number` всегда в пределах `[min, max]`.',
-  pageWhen1: 'Выбор числа, где приблизительное значение нормально: громкость, яркость, прозрачность.',
+  pageWhen1:
+    'Выбор числа, где приблизительное значение нормально: громкость, яркость, прозрачность.',
   pageWhen2: 'Любая ограниченная настройка с визуальной заливкой, помогающей почувствовать шкалу.',
   pageWhen3: 'В паре с `InputNumber`, когда важен точный ввод.',
 
@@ -23,8 +24,6 @@ export const sliderDocRu: { [K in keyof typeof sliderDocEn]: string } = {
   demoInFormDesc: 'Slider подключён через `<Field>`.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоуп глобальных токенов на обёртке для ребрендинга.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'DOM и ARIA остаются; классы убираются.',
 
   tableSliderApi: 'API Slider',
   tableCssVars: 'CSS-переменные',
@@ -43,7 +42,8 @@ export const sliderDocRu: { [K in keyof typeof sliderDocEn]: string } = {
   cssHint:
     'Корень растягивается через `width: 100%` и `--sg-slider-min-inline-size`. `--sg-color-primary` красит заливку и границу ручки; `--sg-color-border` — рельс.',
 
-  cssSgSliderMinInlineSize: 'Минимальная ширина (flex/grid); берётся из `--sg-font-size`, переопределяйте свободно',
+  cssSgSliderMinInlineSize:
+    'Минимальная ширина (flex/grid); берётся из `--sg-font-size`, переопределяйте свободно',
   cssSgColorPrimary: 'Цвет заливки и границы ручки',
   cssSgColorPrimaryBg: 'Цвет focus ring ручки',
   cssSgColorBorder: 'Цвет рельса (track)',

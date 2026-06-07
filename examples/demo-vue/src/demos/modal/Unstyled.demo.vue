@@ -1,10 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` strips SkyGraph's styles but keeps all semantics:
- * `role="dialog"`, focus trap, `Escape` handling. Bring your own
- * visuals via a body-level class (the modal still teleports to
- * `<body>`).
- */
 import { ref, watch } from 'vue'
 import { SgButton, SgModal } from '@skygraph/vue'
 
@@ -20,10 +14,7 @@ watch(open, (isOpen) => {
   <SgButton @click="open = true">Open headless dialog</SgButton>
   <SgModal unstyled :open="open" title="Headless" @close="open = false">
     <div style="padding: 16px">
-      <p style="margin-top: 0">
-        No SkyGraph styles. Backdrop, centering, radii, colors are all yours
-        via a body-level class.
-      </p>
+      <p style="margin-top: 0">No SkyGraph styles. Painting is yours.</p>
       <SgButton @click="open = false">Close</SgButton>
     </div>
   </SgModal>

@@ -16,8 +16,6 @@ import { InTablePopconfirm } from './popconfirm/InTable.demo'
 import InTableSource from './popconfirm/InTable.demo?raw'
 import { TokensOverridePopconfirm } from './popconfirm/TokensOverride.demo'
 import TokensOverrideSource from './popconfirm/TokensOverride.demo?raw'
-import { UnstyledPopconfirm } from './popconfirm/Unstyled.demo'
-import UnstyledSource from './popconfirm/Unstyled.demo?raw'
 
 export function PopconfirmDemo() {
   const t = usePopconfirmDocStrings()
@@ -30,7 +28,12 @@ export function PopconfirmDemo() {
       { name: 'onCancel', description: t.propOnCancel, type: '() => void' },
       { name: 'okText', description: t.propOkText, type: 'string', default: "'Yes'" },
       { name: 'cancelText', description: t.propCancelText, type: 'string', default: "'No'" },
-      { name: 'placement', description: t.propPlacement, type: "'top' | 'bottom' | 'left' | 'right'", default: "'top'" },
+      {
+        name: 'placement',
+        description: t.propPlacement,
+        type: "'top' | 'bottom' | 'left' | 'right'",
+        default: "'top'",
+      },
       { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
       { name: 'children', description: t.propChildren, type: 'ReactElement' },
       { name: 'className', description: t.propClassName, type: 'string' },
@@ -42,9 +45,17 @@ export function PopconfirmDemo() {
   const popconfirmCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-bg-elevated', default: '#ffffff', description: t.cssBgElevated },
-      { name: 'sg-color-border-secondary', default: 'rgba(5, 5, 5, 0.04)', description: t.cssBorderSecondary },
+      {
+        name: 'sg-color-border-secondary',
+        default: 'rgba(5, 5, 5, 0.04)',
+        description: t.cssBorderSecondary,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssTextSecondary },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssTextSecondary,
+      },
       { name: 'sg-color-warning', default: '#faad14', description: t.cssWarning },
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
       { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
@@ -73,7 +84,11 @@ export function PopconfirmDemo() {
         <WithDescriptionPopconfirm />
       </DemoBox>
 
-      <DemoBox title={t.demoPlacementTitle} description={t.demoPlacementDesc} code={PlacementSource}>
+      <DemoBox
+        title={t.demoPlacementTitle}
+        description={t.demoPlacementDesc}
+        code={PlacementSource}
+      >
         <PlacementPopconfirm />
       </DemoBox>
 
@@ -87,10 +102,6 @@ export function PopconfirmDemo() {
 
       <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverridePopconfirm />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledPopconfirm />
       </DemoBox>
 
       <PropsTable title={t.tablePopconfirmApi} data={popconfirmProps} />

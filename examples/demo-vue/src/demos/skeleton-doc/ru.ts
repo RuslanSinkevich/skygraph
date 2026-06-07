@@ -25,9 +25,9 @@ export const skeletonDocRu: SkeletonDocStrings = {
   demoRowsDesc: '`:paragraph="{ rows, width }"` задаёт форму абзаца.',
   demoCardTitle: 'Сетка карточек',
   demoCardDesc: 'Composing нескольких Skeleton для итогового layout.',
-  demoTokensTitle: 'Кастомные темы скелета',
+  demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три палитры (светлая карточка, индиго-фирменная, тёмный режим) — меняются только `--sg-skeleton-bg` и `--sg-skeleton-shimmer`.',
+    'Три скоупа на токенах Skeleton: зелёный бренд, тёмная поверхность и glass pick (`--sg-skeleton-bg` / `--sg-skeleton-shimmer`).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: '`unstyled` сохраняет aria-busy и порядок блоков, убирает все классы.',
 

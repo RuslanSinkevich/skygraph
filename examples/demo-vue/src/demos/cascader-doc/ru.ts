@@ -41,7 +41,11 @@ export const cascaderDocRu: { [K in keyof typeof cascaderDocEn]: string } = {
   demoAsyncLoadDesc:
     'Пометь узел `isLeaf: false`; по клику cascader вызывает `load-data(selectedOptions)` и показывает спиннер, пока children не подгрузятся.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc: 'Скоуп глобальных токенов на обёртке для перекраски одного Cascader.',
+  demoTokensOverrideDesc:
+    'Три скоупа на токенах Cascader: зелёный бренд, тёмное поле (с панелями) и glass pick.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись на контроле Cascader: уезжает вверх при фокусе или когда путь выбран.',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Только семантика — оформляете своими CSS.',
 

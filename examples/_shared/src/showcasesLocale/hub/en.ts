@@ -97,10 +97,10 @@ export const hubLocaleEn: HubLocale = {
       description:
         'Users, audit log, role transfer, API keys, sessions and system settings across one admin panel.',
     },
-    'workflow-editor': {
-      title: 'Workflow Editor',
+    'org-chart': {
+      title: 'Org Chart',
       description:
-        'Visio-like flowchart built on GraphEngine — drag nodes, switch routing, add nodes/edges, inspect topology.',
+        'Company org chart on GraphEngine — auto tree layout, pan & zoom, collapsible branches and a person inspector.',
     },
     forms: {
       title: 'Forms Playground',

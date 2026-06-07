@@ -16,8 +16,6 @@ import { InFormCheckbox } from './checkbox/InForm.demo'
 import InFormSource from './checkbox/InForm.demo?raw'
 import { TokensOverrideCheckbox } from './checkbox/TokensOverride.demo'
 import TokensOverrideSource from './checkbox/TokensOverride.demo?raw'
-import { UnstyledCheckbox } from './checkbox/Unstyled.demo'
-import UnstyledSource from './checkbox/Unstyled.demo?raw'
 
 export function CheckboxDemo() {
   const t = useCheckboxDocStrings()
@@ -25,8 +23,18 @@ export function CheckboxDemo() {
   const checkboxProps = useMemo<PropDef[]>(
     () => [
       { name: 'checked', description: t.propChecked, type: 'boolean' },
-      { name: 'defaultChecked', description: t.propDefaultChecked, type: 'boolean', default: 'false' },
-      { name: 'indeterminate', description: t.propIndeterminate, type: 'boolean', default: 'false' },
+      {
+        name: 'defaultChecked',
+        description: t.propDefaultChecked,
+        type: 'boolean',
+        default: 'false',
+      },
+      {
+        name: 'indeterminate',
+        description: t.propIndeterminate,
+        type: 'boolean',
+        default: 'false',
+      },
       { name: 'onChange', description: t.propOnChange, type: '(checked: boolean) => void' },
       { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
       { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
@@ -42,8 +50,16 @@ export function CheckboxDemo() {
     () => [
       { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextTertiary,
+      },
       { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
       { name: 'sg-line-height', default: '1.5714', description: t.cssSgLineHeight },
       { name: 'sg-padding-sm', default: '12px', description: t.cssSgPaddingSm },
@@ -69,7 +85,11 @@ export function CheckboxDemo() {
         <CheckAllCheckbox />
       </DemoBox>
 
-      <DemoBox title={t.demoRichLabelTitle} description={t.demoRichLabelDesc} code={RichLabelSource}>
+      <DemoBox
+        title={t.demoRichLabelTitle}
+        description={t.demoRichLabelDesc}
+        code={RichLabelSource}
+      >
         <RichLabelCheckbox />
       </DemoBox>
 
@@ -77,24 +97,12 @@ export function CheckboxDemo() {
         <InFormCheckbox />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideCheckbox />
       </DemoBox>
 
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledCheckbox />
-      </DemoBox>
-
       <PropsTable data={checkboxProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={checkboxCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={checkboxCssVars} />
     </ComponentDoc>
   )
 }

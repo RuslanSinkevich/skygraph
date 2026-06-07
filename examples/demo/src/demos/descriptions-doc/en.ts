@@ -9,8 +9,7 @@ export const descriptionsDocEn = {
   crumbDescriptions: 'Descriptions',
   pageLead:
     'Read-only key / value table for detail pages. Supports horizontal + vertical layouts, a bordered variant, variable column count and per-item `span`.',
-  pageWhen1:
-    'Showing a block of read-only fields — invoices, profile summaries, incident details.',
+  pageWhen1: 'Showing a block of read-only fields — invoices, profile summaries, incident details.',
   pageWhen2: 'When a data table feels too heavy but a plain `<dl>` would be too minimal.',
 
   demoBasicTitle: 'Basic',
@@ -29,8 +28,6 @@ export const descriptionsDocEn = {
   demoRichContentDesc: 'Labels and values accept any ReactNode — Badge, Tag, links…',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope the label-bg / border tokens to rebrand the frame.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Bare `<table>` — bring your own CSS.',
 
   tableDescriptionsApi: 'Descriptions API',
   tableDescriptionsItem: 'DescriptionsItem',

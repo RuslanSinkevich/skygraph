@@ -18,8 +18,6 @@ import { InFormSwitch } from './switch/InForm.demo'
 import InFormSource from './switch/InForm.demo?raw'
 import { TokensOverrideSwitch } from './switch/TokensOverride.demo'
 import TokensOverrideSource from './switch/TokensOverride.demo?raw'
-import { UnstyledSwitch } from './switch/Unstyled.demo'
-import UnstyledSource from './switch/Unstyled.demo?raw'
 
 export function SwitchDemo() {
   const t = useSwitchDocStrings()
@@ -27,11 +25,21 @@ export function SwitchDemo() {
   const switchProps = useMemo<PropDef[]>(
     () => [
       { name: 'checked', description: t.propChecked, type: 'boolean' },
-      { name: 'defaultChecked', description: t.propDefaultChecked, type: 'boolean', default: 'false' },
+      {
+        name: 'defaultChecked',
+        description: t.propDefaultChecked,
+        type: 'boolean',
+        default: 'false',
+      },
       { name: 'onChange', description: t.propOnChange, type: '(checked: boolean) => void' },
       { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
       { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
-      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'middle' | 'large'",
+        default: "'middle'",
+      },
       { name: 'checkedChildren', description: t.propCheckedChildren, type: 'ReactNode' },
       { name: 'unCheckedChildren', description: t.propUnCheckedChildren, type: 'ReactNode' },
       { name: 'className', description: t.propClassName, type: 'string' },
@@ -44,12 +52,24 @@ export function SwitchDemo() {
   const switchCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
       { name: 'sg-color-white', default: '#ffffff', description: t.cssSgColorWhite },
-      { name: 'sg-shadow-sm', default: '0 1px 2px rgba(0, 0, 0, 0.05)', description: t.cssSgShadowSm },
+      {
+        name: 'sg-shadow-sm',
+        default: '0 1px 2px rgba(0, 0, 0, 0.05)',
+        description: t.cssSgShadowSm,
+      },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
       { name: 'sg-transition-duration', default: '180ms', description: t.cssSgTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(.4,0,.2,1)', description: t.cssSgTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(.4,0,.2,1)',
+        description: t.cssSgTransitionTiming,
+      },
     ],
     [t],
   )
@@ -76,19 +96,11 @@ export function SwitchDemo() {
         <StatesSwitch />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoAsyncTitle}
-        description={t.demoAsyncDesc}
-        code={AsyncToggleSource}
-      >
+      <DemoBox title={t.demoAsyncTitle} description={t.demoAsyncDesc} code={AsyncToggleSource}>
         <AsyncToggleSwitch />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoInFormTitle}
-        description={t.demoInFormDesc}
-        code={InFormSource}
-      >
+      <DemoBox title={t.demoInFormTitle} description={t.demoInFormDesc} code={InFormSource}>
         <InFormSwitch />
       </DemoBox>
 
@@ -96,16 +108,8 @@ export function SwitchDemo() {
         <TokensOverrideSwitch />
       </DemoBox>
 
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledSwitch />
-      </DemoBox>
-
       <PropsTable title={t.tableSwitchApi} data={switchProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={switchCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={switchCssVars} />
     </ComponentDoc>
   )
 }

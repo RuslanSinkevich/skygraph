@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` drops every `sg-badge-*` class and just renders a
- * `<span>` with your children and a `<sup>` for the count / dot. Do
- * the styling on your wrapping container.
- */
 import { SgBadge } from '@skygraph/vue'
 
 const box = {

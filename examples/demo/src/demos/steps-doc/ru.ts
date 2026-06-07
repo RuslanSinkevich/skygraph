@@ -29,8 +29,6 @@ export const stepsDocRu: { [K in keyof typeof stepsDocEn]: string } = {
   demoNavigationDesc: 'Вариант с подчёркиванием как у вкладок, без иконок.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Цвет finish / process следует за `--sg-color-primary`.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Без классов — только `data-status` + ваши элементы.',
 
   tableStepsApi: 'API Steps',
   tableStepItem: 'StepItem',
@@ -43,7 +41,8 @@ export const stepsDocRu: { [K in keyof typeof stepsDocEn]: string } = {
   propItems: 'Упорядоченные шаги',
   propDirection: 'Направление раскладки',
   propOnChange: 'Срабатывает при клике на шаг. Наличие prop также делает шаги кликабельными',
-  propType: 'Визуальный вариант — default (нумерованные) или navigation (подчёркивание как у вкладок)',
+  propType:
+    'Визуальный вариант — default (нумерованные) или navigation (подчёркивание как у вкладок)',
   propSize: 'Пресет иконки / шрифта — наследуется от ConfigProvider',
   propClassName: 'Дополнительный class на корне',
   propStyle: 'Inline-стиль на корне',

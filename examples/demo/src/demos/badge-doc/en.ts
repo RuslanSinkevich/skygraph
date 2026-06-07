@@ -27,8 +27,6 @@ export const badgeDocEn = {
   demoOffsetDesc: 'Nudge the pinned count by [right, top] pixels.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Swap --sg-color-error to rebrand every count and dot at once.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop every sg-badge class — you own the painting.',
 
   tableBadgeApi: 'Badge API',
   tableCssVars: 'CSS Variables',

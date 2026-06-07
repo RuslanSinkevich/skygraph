@@ -1,31 +1,35 @@
-import type { CSSProperties } from 'react'
 import { Result, Button } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+import { TokenScopeCards } from '../_shared/TokenScopeCards'
 
 /**
- * Result has no component-private tokens — it reads `--sg-color-
- * success/error/warning/primary` for icon tints, the text palette
- * for title/subtitle, and `--sg-color-bg-secondary` for the body
- * panel. Scope them on a wrapper to rebrand.
+ * Result has no component-private tokens — icon tints read
+ * `--sg-color-success/primary`, the body panel reads
+ * `--sg-color-bg-secondary`. Three scoped recipes — branded green, dark field,
+ * glass pick — rebrand it.
  */
-const scoped: CSSProperties = {
-  ['--sg-color-success' as never]: '#059669',
-  ['--sg-color-primary' as never]: '#0ea5e9',
-  ['--sg-color-bg-secondary' as never]: '#f0fdfa',
-  ['--sg-font-size-xl' as never]: '24px',
-  ['--sg-border-radius' as never]: '12px',
-}
+const STRINGS = {
+  en: { title: 'All good', subtitle: 'Scoped via tokens', cta: 'Continue' },
+  ru: { title: 'Всё готово', subtitle: 'Скоуп через токены', cta: 'Продолжить' },
+} as const
 
 export function TokensOverrideResult() {
+  const t = useDemoStrings(STRINGS)
   return (
-    <div style={scoped}>
-      <Result
-        status="success"
-        title="All good"
-        subTitle="Brand scoped to teal via --sg-color-primary / --sg-color-success"
-        extra={<Button type="primary">Continue</Button>}
-      >
-        <span>Extra info panel also follows the scoped background token.</span>
-      </Result>
-    </div>
+    <TokenScopeCards
+      extra={{
+        brand: { ['--sg-color-success' as never]: '#059669' },
+        dark: { ['--sg-color-success' as never]: '#34d399' },
+        glass: { ['--sg-color-success' as never]: '#6366f1' },
+      }}
+      render={() => (
+        <Result
+          status="success"
+          title={t.title}
+          subTitle={t.subtitle}
+          extra={<Button type="primary">{t.cta}</Button>}
+        />
+      )}
+    />
   )
 }

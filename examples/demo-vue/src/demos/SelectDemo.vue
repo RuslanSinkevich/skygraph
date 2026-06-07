@@ -28,6 +28,8 @@ import NumericValuesSelect from './select/NumericValues.demo.vue'
 import NumericValuesSource from './select/NumericValues.demo.vue?raw'
 import TokensOverrideSelect from './select/TokensOverride.demo.vue'
 import TokensOverrideSource from './select/TokensOverride.demo.vue?raw'
+import FloatingLabelSelect from './select/FloatingLabel.demo.vue'
+import FloatingLabelSource from './select/FloatingLabel.demo.vue?raw'
 import UnstyledSelect from './select/Unstyled.demo.vue'
 import UnstyledSource from './select/Unstyled.demo.vue?raw'
 
@@ -198,6 +200,14 @@ const selectCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideSelect />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoFloatingLabelTitle"
+      :description="t.demoFloatingLabelDesc"
+      :code="FloatingLabelSource"
+    >
+      <FloatingLabelSelect />
     </DemoBox>
 
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">

@@ -25,9 +25,9 @@ export const tabsDocRu: { [K in keyof typeof tabsDocEn]: string } = {
   demoRichLabelsDesc: 'Бейджи, иконки и точки статуса прямо в подписи.',
   demoStatesTitle: 'Loading и disabled',
   demoStatesDesc: 'Per-item флаги управляют активацией.',
-  demoTokensTitle: 'Кастомные стили табов',
+  demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три непохожих набора (сегментный pill, парящие карточки, анимированное градиент-подчёркивание) — обычный className на обёртке плюс CSS для потомков.',
+    'Три скоупа на токенах Tabs: зелёный бренд, тёмная поверхность и glass pick (ink-бар и текст).',
 
   tableTabsApi: 'API Tabs',
   tableTabItem: 'TabItem',

@@ -1,21 +1,13 @@
 <script setup lang="ts">
-/**
- * `unstyled` drops every `sg-pagination-*` class so you can paint the
- * pager from scratch. The underlying button list, ellipsis folding,
- * keyboard handling and a11y stay intact.
- */
 import { ref } from 'vue'
 import { SgPagination } from '@skygraph/vue'
 
 const page = ref(1)
-function onChange(p: number) {
-  page.value = p
-}
 </script>
 
 <template>
   <div class="custom-pager">
-    <SgPagination unstyled :current="page" :total="50" @change="onChange" />
+    <SgPagination unstyled :current="page" :total="50" @change="page = $event" />
   </div>
 </template>
 

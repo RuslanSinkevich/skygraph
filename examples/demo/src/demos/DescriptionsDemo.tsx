@@ -20,8 +20,6 @@ import { RichContentDescriptions } from './descriptions/RichContent.demo'
 import RichContentSource from './descriptions/RichContent.demo?raw'
 import { TokensOverrideDescriptions } from './descriptions/TokensOverride.demo'
 import TokensOverrideSource from './descriptions/TokensOverride.demo?raw'
-import { UnstyledDescriptions } from './descriptions/Unstyled.demo'
-import UnstyledSource from './descriptions/Unstyled.demo?raw'
 
 export function DescriptionsDemo() {
   const t = useDescriptionsDocStrings()
@@ -32,9 +30,19 @@ export function DescriptionsDemo() {
       { name: 'items', description: t.propItems, type: 'DescriptionsItem[]' },
       { name: 'bordered', description: t.propBordered, type: 'boolean', default: 'false' },
       { name: 'column', description: t.propColumn, type: 'number', default: '3' },
-      { name: 'layout', description: t.propLayout, type: "'horizontal' | 'vertical'", default: "'horizontal'" },
+      {
+        name: 'layout',
+        description: t.propLayout,
+        type: "'horizontal' | 'vertical'",
+        default: "'horizontal'",
+      },
       { name: 'colon', description: t.propColon, type: 'boolean', default: 'true' },
-      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'middle' | 'large'",
+        default: "'middle'",
+      },
       { name: 'className', description: t.propClassName, type: 'string' },
       { name: 'style', description: t.propStyle, type: 'CSSProperties' },
       { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
@@ -55,9 +63,21 @@ export function DescriptionsDemo() {
   const descCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssSgColorTextSecondary },
-      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgSecondary },
-      { name: 'sg-color-border-secondary', default: '#f0f0f0', description: t.cssSgColorBorderSecondary },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssSgColorTextSecondary,
+      },
+      {
+        name: 'sg-color-bg-secondary',
+        default: 'rgba(0, 0, 0, 0.04)',
+        description: t.cssSgColorBgSecondary,
+      },
+      {
+        name: 'sg-color-border-secondary',
+        default: '#f0f0f0',
+        description: t.cssSgColorBorderSecondary,
+      },
       { name: 'sg-border-radius', default: '6px', description: t.cssSgBorderRadius },
       { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
@@ -85,35 +105,19 @@ export function DescriptionsDemo() {
         <BasicDescriptions />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoBorderedTitle}
-        description={t.demoBorderedDesc}
-        code={BorderedSource}
-      >
+      <DemoBox title={t.demoBorderedTitle} description={t.demoBorderedDesc} code={BorderedSource}>
         <BorderedDescriptions />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoVerticalTitle}
-        description={t.demoVerticalDesc}
-        code={VerticalSource}
-      >
+      <DemoBox title={t.demoVerticalTitle} description={t.demoVerticalDesc} code={VerticalSource}>
         <VerticalDescriptions />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoColumnsTitle}
-        description={t.demoColumnsDesc}
-        code={ColumnsSource}
-      >
+      <DemoBox title={t.demoColumnsTitle} description={t.demoColumnsDesc} code={ColumnsSource}>
         <ColumnsDescriptions />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoNoColonTitle}
-        description={t.demoNoColonDesc}
-        code={NoColonSource}
-      >
+      <DemoBox title={t.demoNoColonTitle} description={t.demoNoColonDesc} code={NoColonSource}>
         <NoColonDescriptions />
       </DemoBox>
 
@@ -129,29 +133,13 @@ export function DescriptionsDemo() {
         <RichContentDescriptions />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideDescriptions />
-      </DemoBox>
-
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
-        <UnstyledDescriptions />
       </DemoBox>
 
       <PropsTable title={t.tableDescriptionsApi} data={descriptionsProps} />
       <PropsTable title={t.tableDescriptionsItem} data={itemProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={descCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={descCssVars} />
     </ComponentDoc>
   )
 }

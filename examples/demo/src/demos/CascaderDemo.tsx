@@ -26,8 +26,8 @@ import { AsyncLoadCascader } from './cascader/AsyncLoad.demo'
 import AsyncLoadSource from './cascader/AsyncLoad.demo?raw'
 import { TokensOverrideCascader } from './cascader/TokensOverride.demo'
 import TokensOverrideSource from './cascader/TokensOverride.demo?raw'
-import { UnstyledCascader } from './cascader/Unstyled.demo'
-import UnstyledSource from './cascader/Unstyled.demo?raw'
+import { FloatingLabelCascader } from './cascader/FloatingLabel.demo'
+import FloatingLabelSource from './cascader/FloatingLabel.demo?raw'
 
 export function CascaderDemo() {
   const t = useCascaderDocStrings()
@@ -41,12 +41,36 @@ export function CascaderDemo() {
       { name: 'placeholder', description: t.propPlaceholder, type: 'string' },
       { name: 'allowClear', description: t.propAllowClear, type: 'boolean', default: 'true' },
       { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
-      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'middle' | 'large'",
+        default: "'middle'",
+      },
       { name: 'multiple', description: t.propMultiple, type: 'boolean', default: 'false' },
-      { name: 'showSearch', description: t.propShowSearch, type: 'boolean | { filter }', default: 'false' },
-      { name: 'expandTrigger', description: t.propExpandTrigger, type: "'click' | 'hover'", default: "'click'" },
-      { name: 'changeOnSelect', description: t.propChangeOnSelect, type: 'boolean', default: 'false' },
-      { name: 'displayRender', description: t.propDisplayRender, type: '(labels, selected) => ReactNode' },
+      {
+        name: 'showSearch',
+        description: t.propShowSearch,
+        type: 'boolean | { filter }',
+        default: 'false',
+      },
+      {
+        name: 'expandTrigger',
+        description: t.propExpandTrigger,
+        type: "'click' | 'hover'",
+        default: "'click'",
+      },
+      {
+        name: 'changeOnSelect',
+        description: t.propChangeOnSelect,
+        type: 'boolean',
+        default: 'false',
+      },
+      {
+        name: 'displayRender',
+        description: t.propDisplayRender,
+        type: '(labels, selected) => ReactNode',
+      },
       { name: 'loadData', description: t.propLoadData, type: '(selected) => void' },
       { name: 'maxTagCount', description: t.propMaxTagCount, type: 'number' },
       { name: 'dropdownStyle', description: t.propDropdownStyle, type: 'CSSProperties' },
@@ -71,20 +95,48 @@ export function CascaderDemo() {
   const cascaderCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
-      { name: 'sg-color-primary-hover', default: 'var(--sg-blue-5)', description: t.cssSgColorPrimaryHover },
-      { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: t.cssSgColorPrimaryBg },
+      {
+        name: 'sg-color-primary-hover',
+        default: 'var(--sg-blue-5)',
+        description: t.cssSgColorPrimaryHover,
+      },
+      {
+        name: 'sg-color-primary-bg',
+        default: 'var(--sg-blue-1)',
+        description: t.cssSgColorPrimaryBg,
+      },
       { name: 'sg-color-bg-container', default: '#ffffff', description: t.cssSgColorBgContainer },
       { name: 'sg-color-bg-elevated', default: '#ffffff', description: t.cssSgColorBgElevated },
       { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: t.cssSgColorBgHover },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-placeholder', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextPlaceholder },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      {
+        name: 'sg-color-text-placeholder',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextPlaceholder,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextTertiary,
+      },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
       { name: 'sg-color-border', default: 'var(--sg-gray-5)', description: t.cssSgColorBorder },
-      { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: t.cssSgColorBorderSecondary },
+      {
+        name: 'sg-color-border-secondary',
+        default: 'var(--sg-gray-4)',
+        description: t.cssSgColorBorderSecondary,
+      },
       { name: 'sg-border-radius', default: '6px', description: t.cssSgBorderRadius },
       { name: 'sg-border-radius-sm', default: '4px', description: t.cssSgBorderRadiusSm },
-      { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0, 0, 0, 0.08)', description: t.cssSgShadowLg },
+      {
+        name: 'sg-shadow-lg',
+        default: '0 6px 16px rgba(0, 0, 0, 0.08)',
+        description: t.cssSgShadowLg,
+      },
       { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
       { name: 'sg-font-size-lg', default: '16px', description: t.cssSgFontSizeLg },
@@ -96,7 +148,11 @@ export function CascaderDemo() {
       { name: 'sg-padding-md', default: '16px', description: t.cssSgPaddingMd },
       { name: 'sg-padding-lg', default: '24px', description: t.cssSgPaddingLg },
       { name: 'sg-transition-duration', default: '0.2s', description: t.cssSgTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssSgTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+        description: t.cssSgTransitionTiming,
+      },
     ],
     [t],
   )
@@ -111,15 +167,27 @@ export function CascaderDemo() {
         <BasicCascader />
       </DemoBox>
 
-      <DemoBox title={t.demoDefaultValueTitle} description={t.demoDefaultValueDesc} code={DefaultValueSource}>
+      <DemoBox
+        title={t.demoDefaultValueTitle}
+        description={t.demoDefaultValueDesc}
+        code={DefaultValueSource}
+      >
         <DefaultValueCascader />
       </DemoBox>
 
-      <DemoBox title={t.demoHoverTriggerTitle} description={t.demoHoverTriggerDesc} code={HoverTriggerSource}>
+      <DemoBox
+        title={t.demoHoverTriggerTitle}
+        description={t.demoHoverTriggerDesc}
+        code={HoverTriggerSource}
+      >
         <HoverTriggerCascader />
       </DemoBox>
 
-      <DemoBox title={t.demoChangeOnSelectTitle} description={t.demoChangeOnSelectDesc} code={ChangeOnSelectSource}>
+      <DemoBox
+        title={t.demoChangeOnSelectTitle}
+        description={t.demoChangeOnSelectDesc}
+        code={ChangeOnSelectSource}
+      >
         <ChangeOnSelectCascader />
       </DemoBox>
 
@@ -139,11 +207,19 @@ export function CascaderDemo() {
         <DisabledCascader />
       </DemoBox>
 
-      <DemoBox title={t.demoCustomRenderTitle} description={t.demoCustomRenderDesc} code={CustomRenderSource}>
+      <DemoBox
+        title={t.demoCustomRenderTitle}
+        description={t.demoCustomRenderDesc}
+        code={CustomRenderSource}
+      >
         <CustomRenderCascader />
       </DemoBox>
 
-      <DemoBox title={t.demoAsyncLoadTitle} description={t.demoAsyncLoadDesc} code={AsyncLoadSource}>
+      <DemoBox
+        title={t.demoAsyncLoadTitle}
+        description={t.demoAsyncLoadDesc}
+        code={AsyncLoadSource}
+      >
         <AsyncLoadCascader />
       </DemoBox>
 
@@ -155,17 +231,17 @@ export function CascaderDemo() {
         <TokensOverrideCascader />
       </DemoBox>
 
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledCascader />
+      <DemoBox
+        title={t.demoFloatingLabelTitle}
+        description={t.demoFloatingLabelDesc}
+        code={FloatingLabelSource}
+      >
+        <FloatingLabelCascader />
       </DemoBox>
 
       <PropsTable title={t.tableCascaderApi} data={cascaderProps} />
       <PropsTable title={t.tableOption} data={optionProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={cascaderCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={cascaderCssVars} />
     </ComponentDoc>
   )
 }

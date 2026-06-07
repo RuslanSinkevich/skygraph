@@ -303,8 +303,8 @@ export interface DemoDict {
     showcaseCrmDesc: string
     showcaseDashboardTitle: string
     showcaseDashboardDesc: string
-    showcaseWorkflowTitle: string
-    showcaseWorkflowDesc: string
+    showcaseOrgChartTitle: string
+    showcaseOrgChartDesc: string
     showcaseTableTitle: string
     showcaseTableDesc: string
 

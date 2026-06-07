@@ -7,8 +7,7 @@ export const timelineDocEn = {
   pageBadge: 'Data Display',
   crumbDataDisplay: 'Data Display',
   crumbTimeline: 'Timeline',
-  pageLead:
-    'Chronological vertical list with axis, dots, optional labels and a pending tail.',
+  pageLead: 'Chronological vertical list with axis, dots, optional labels and a pending tail.',
   pageWhen1:
     'When a series of events needs to be ordered in time (audit logs, changelogs, delivery tracking).',
   pageWhen2: 'When you want to connect events visually rather than stacking them as a plain list.',
@@ -31,8 +30,6 @@ export const timelineDocEn = {
   demoCustomColorDesc: 'Tint the default ring via the `color` prop.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Rebrand the axis / connector via scoped CSS variables.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Bare `<ul>` — bring your own CSS.',
 
   tableTimelineApi: 'Timeline API',
   tableTimelineItem: 'TimelineItem',
@@ -40,8 +37,7 @@ export const timelineDocEn = {
 
   propItems: 'Ordered timeline steps',
   propMode: 'Axis placement — fixed left / right, or alternating',
-  propPending:
-    'Append a muted pending row. Pass a node for custom copy, `true` for a placeholder',
+  propPending: 'Append a muted pending row. Pass a node for custom copy, `true` for a placeholder',
   propPendingDot: 'Marker for the synthetic pending row',
   propReverse: 'Reverse the visual order (including pending)',
   propClassName: 'Extra class on the root `<ul>`',

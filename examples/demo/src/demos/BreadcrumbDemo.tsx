@@ -16,8 +16,6 @@ import { DropdownBreadcrumb } from './breadcrumb/Dropdown.demo'
 import DropdownSource from './breadcrumb/Dropdown.demo?raw'
 import { TokensOverrideBreadcrumb } from './breadcrumb/TokensOverride.demo'
 import TokensOverrideSource from './breadcrumb/TokensOverride.demo?raw'
-import { UnstyledBreadcrumb } from './breadcrumb/Unstyled.demo'
-import UnstyledSource from './breadcrumb/Unstyled.demo?raw'
 
 export function BreadcrumbDemo() {
   const t = useBreadcrumbDocStrings()
@@ -45,14 +43,26 @@ export function BreadcrumbDemo() {
   const breadcrumbCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssTextSecondary },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssTextTertiary },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssTextSecondary,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssTextTertiary,
+      },
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
       { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
       { name: 'sg-line-height', default: '1.5714', description: t.cssLineHeight },
       { name: 'sg-padding-sm', default: '8px', description: t.cssPaddingSm },
       { name: 'sg-transition-duration', default: '180ms', description: t.cssTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+        description: t.cssTransitionTiming,
+      },
     ],
     [t],
   )
@@ -75,53 +85,25 @@ export function BreadcrumbDemo() {
         <SeparatorBreadcrumb />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoOnClickTitle}
-        description={t.demoOnClickDesc}
-        code={OnClickSource}
-      >
+      <DemoBox title={t.demoOnClickTitle} description={t.demoOnClickDesc} code={OnClickSource}>
         <OnClickBreadcrumb />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoIconsTitle}
-        description={t.demoIconsDesc}
-        code={WithIconsSource}
-      >
+      <DemoBox title={t.demoIconsTitle} description={t.demoIconsDesc} code={WithIconsSource}>
         <WithIconsBreadcrumb />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoDropdownTitle}
-        description={t.demoDropdownDesc}
-        code={DropdownSource}
-      >
+      <DemoBox title={t.demoDropdownTitle} description={t.demoDropdownDesc} code={DropdownSource}>
         <DropdownBreadcrumb />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideBreadcrumb />
-      </DemoBox>
-
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
-        <UnstyledBreadcrumb />
       </DemoBox>
 
       <PropsTable title={t.tableBreadcrumbApi} data={breadcrumbProps} />
       <PropsTable title={t.tableBreadcrumbItem} data={breadcrumbItemProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={breadcrumbCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={breadcrumbCssVars} />
     </ComponentDoc>
   )
 }

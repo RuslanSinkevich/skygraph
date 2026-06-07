@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` renders a plain `<ul>` with label / dot / content
- * spans per item — no axis, no connector. Bring your own CSS
- * to rebuild the look.
- */
 import { SgTimeline } from '@skygraph/vue'
 import { releaseItems } from './data'
 </script>

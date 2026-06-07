@@ -18,15 +18,18 @@ import { WithContentResult } from './result/WithContent.demo'
 import WithContentSource from './result/WithContent.demo?raw'
 import { TokensOverrideResult } from './result/TokensOverride.demo'
 import TokensOverrideSource from './result/TokensOverride.demo?raw'
-import { UnstyledResult } from './result/Unstyled.demo'
-import UnstyledSource from './result/Unstyled.demo?raw'
 
 export function ResultDemo() {
   const t = useResultDocStrings()
 
   const resultProps = useMemo<PropDef[]>(
     () => [
-      { name: 'status', description: t.propStatus, type: "'success' | 'error' | 'info' | 'warning' | '404' | '403' | '500'", required: true },
+      {
+        name: 'status',
+        description: t.propStatus,
+        type: "'success' | 'error' | 'info' | 'warning' | '404' | '403' | '500'",
+        required: true,
+      },
       { name: 'title', description: t.propTitle, type: 'ReactNode', required: true },
       { name: 'subTitle', description: t.propSubTitle, type: 'ReactNode' },
       { name: 'icon', description: t.propIcon, type: 'ReactNode' },
@@ -45,10 +48,22 @@ export function ResultDemo() {
       { name: 'sg-color-error', default: '#ff4d4f', description: t.cssError },
       { name: 'sg-color-warning', default: '#faad14', description: t.cssWarning },
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssTextTertiary },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssTextTertiary,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssTextSecondary },
-      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.02)', description: t.cssBgSecondary },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssTextSecondary,
+      },
+      {
+        name: 'sg-color-bg-secondary',
+        default: 'rgba(0, 0, 0, 0.02)',
+        description: t.cssBgSecondary,
+      },
       { name: 'sg-font-size', default: '14px', description: t.cssFontSize },
       { name: 'sg-font-size-xl', default: '20px', description: t.cssFontSizeXl },
       { name: 'sg-line-height', default: '1.5714', description: t.cssLineHeight },
@@ -94,10 +109,6 @@ export function ResultDemo() {
 
       <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideResult />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledResult />
       </DemoBox>
 
       <PropsTable title={t.tableResultApi} data={resultProps} />

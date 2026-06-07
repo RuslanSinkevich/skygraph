@@ -12,16 +12,13 @@ export const switchDocRu: { [K in keyof typeof switchDocEn]: string } = {
     'Бинарный переключатель, фиксирует значение моментально. Сочетайте с подписью и — для медленных сетей — с pending-состоянием через `disabled`.',
   pageWhen1:
     'Переключение одного состояния, действующего сразу (тёмная тема, уведомления, статус публикации).',
-  pageWhen2:
-    'Inline в строках настроек, где commit-on-click удобнее, чем submit формы.',
-  pageWhen3:
-    'Используйте Checkbox, если значение отправляется позже как часть формы.',
+  pageWhen2: 'Inline в строках настроек, где commit-on-click удобнее, чем submit формы.',
+  pageWhen3: 'Используйте Checkbox, если значение отправляется позже как часть формы.',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Управляемый on/off через v-model с живым выводом.',
   demoTextIconTitle: 'Текст и иконка',
-  demoTextIconDesc:
-    'Слоты `#checkedChildren` / `#unCheckedChildren` рендерятся внутри трека.',
+  demoTextIconDesc: 'Слоты `#checkedChildren` / `#unCheckedChildren` рендерятся внутри трека.',
   demoSizesTitle: 'Размеры',
   demoSizesDesc: '`small` для компактных тулбаров; default для форм.',
   demoStatesTitle: 'Disabled-состояния',
@@ -34,7 +31,8 @@ export const switchDocRu: { [K in keyof typeof switchDocEn]: string } = {
   demoInFormDesc:
     'Обернуть в `<SgField>` и пробросить `:model-value` / `@update:model-value` из слота.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп глобальных токенов для ребрендинга группы.',
+  demoTokensDesc:
+    'Три скоупа на токенах Switch: зелёный бренд, тёмная поверхность и glass pick (трек в обоих состояниях).',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Только семантика — оформляете сами.',
 

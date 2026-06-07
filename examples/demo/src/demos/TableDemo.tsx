@@ -48,8 +48,6 @@ import { ProgressCellsTable } from './table/ProgressCells.demo'
 import ProgressCellsSource from './table/ProgressCells.demo?raw'
 import { FinanceStyleTable } from './table/FinanceStyle.demo'
 import FinanceStyleSource from './table/FinanceStyle.demo?raw'
-import { UnstyledTable } from './table/Unstyled.demo'
-import UnstyledSource from './table/Unstyled.demo?raw'
 import { VirtualTable } from './table/Virtual.demo'
 import VirtualSource from './table/Virtual.demo?raw'
 import { KitchenSinkTable } from './table/KitchenSink.demo'
@@ -393,12 +391,6 @@ export function TableDemo() {
       >
         <div style={{ width: '100%' }}>
           <FinanceStyleTable />
-        </div>
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <div style={{ width: '100%' }}>
-          <UnstyledTable />
         </div>
       </DemoBox>
 

@@ -27,9 +27,9 @@ export const skeletonDocEn = {
   demoRowsDesc: '`:paragraph="{ rows, width }"` shapes the line block.',
   demoCardTitle: 'Card grid',
   demoCardDesc: 'Compose multiple Skeletons for the final layout.',
-  demoTokensTitle: 'Custom skeleton themes',
+  demoTokensTitle: 'Token override',
   demoTokensDesc:
-    'Three palettes (light card, indigo branded, dark mode) — only `--sg-skeleton-bg` and `--sg-skeleton-shimmer` change.',
+    'Three scopes built from Skeleton tokens: green brand, dark surface and glass pick (`--sg-skeleton-bg` / `--sg-skeleton-shimmer`).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: '`unstyled` keeps aria-busy and block order, drops every class.',
 

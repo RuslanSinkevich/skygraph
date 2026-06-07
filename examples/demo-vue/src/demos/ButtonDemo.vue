@@ -29,8 +29,6 @@ import DisabledButton from './button/Disabled.demo.vue'
 import DisabledSource from './button/Disabled.demo.vue?raw'
 import WithIconButton from './button/WithIcon.demo.vue'
 import WithIconSource from './button/WithIcon.demo.vue?raw'
-import ComponentTokensButton from './button/ComponentTokens.demo.vue'
-import ComponentTokensSource from './button/ComponentTokens.demo.vue?raw'
 import TokensOverrideButton from './button/TokensOverride.demo.vue'
 import TokensOverrideSource from './button/TokensOverride.demo.vue?raw'
 import ScopedBrandButton from './button/ScopedBrand.demo.vue'
@@ -180,14 +178,6 @@ const buttonCssVars = computed<CssVarDef[]>(() => [
 
     <DemoBox :title="t.demoIconTitle" :description="t.demoIconDesc" :code="WithIconSource">
       <WithIconButton />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoTokensTitle"
-      :description="t.demoTokensDesc"
-      :code="ComponentTokensSource"
-    >
-      <ComponentTokensButton />
     </DemoBox>
 
     <DemoBox

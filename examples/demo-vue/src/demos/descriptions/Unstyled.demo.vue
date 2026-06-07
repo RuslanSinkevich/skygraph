@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` drops every class and renders a bare `<table>` —
- * labels in `<th>`, values in `<td>`. Perfect starting point
- * for custom theming.
- */
 import { SgDescriptions } from '@skygraph/vue'
 import { userItems } from './data'
 </script>

@@ -36,6 +36,8 @@ import AsyncLoadCascaderDemo from './cascader/AsyncLoad.demo.vue'
 import AsyncLoadSource from './cascader/AsyncLoad.demo.vue?raw'
 import TokensOverrideCascaderDemo from './cascader/TokensOverride.demo.vue'
 import TokensOverrideSource from './cascader/TokensOverride.demo.vue?raw'
+import FloatingLabelCascaderDemo from './cascader/FloatingLabel.demo.vue'
+import FloatingLabelSource from './cascader/FloatingLabel.demo.vue?raw'
 import UnstyledCascaderDemo from './cascader/Unstyled.demo.vue'
 import UnstyledSource from './cascader/Unstyled.demo.vue?raw'
 
@@ -267,6 +269,14 @@ const cascaderCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideCascaderDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoFloatingLabelTitle"
+      :description="t.demoFloatingLabelDesc"
+      :code="FloatingLabelSource"
+    >
+      <FloatingLabelCascaderDemo />
     </DemoBox>
 
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">

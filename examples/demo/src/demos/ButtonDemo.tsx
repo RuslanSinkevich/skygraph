@@ -14,14 +14,8 @@ import { DisabledButton } from './button/Disabled.demo'
 import DisabledSource from './button/Disabled.demo?raw'
 import { WithIconButton } from './button/WithIcon.demo'
 import WithIconSource from './button/WithIcon.demo?raw'
-import { ComponentTokensButton } from './button/ComponentTokens.demo'
-import ComponentTokensSource from './button/ComponentTokens.demo?raw'
 import { TokensOverrideButton } from './button/TokensOverride.demo'
 import TokensOverrideSource from './button/TokensOverride.demo?raw'
-import { ScopedBrandButton } from './button/ScopedBrand.demo'
-import ScopedBrandSource from './button/ScopedBrand.demo?raw'
-import { UnstyledButton } from './button/Unstyled.demo'
-import UnstyledSource from './button/Unstyled.demo?raw'
 
 export function ButtonDemo() {
   const t = useButtonDocStrings()
@@ -140,27 +134,11 @@ export function ButtonDemo() {
       </DemoBox>
 
       <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={ComponentTokensSource}
-      >
-        <ComponentTokensButton />
-      </DemoBox>
-
-      <DemoBox
         title={t.demoTokensOverrideTitle}
         description={t.demoTokensOverrideDesc}
         code={TokensOverrideSource}
       >
         <TokensOverrideButton />
-      </DemoBox>
-
-      <DemoBox title={t.demoBrandTitle} description={t.demoBrandDesc} code={ScopedBrandSource}>
-        <ScopedBrandButton />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledButton />
       </DemoBox>
 
       <PropsTable title={t.tableButtonApi} data={buttonProps} />

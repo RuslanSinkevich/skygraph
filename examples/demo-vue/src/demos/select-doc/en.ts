@@ -26,8 +26,12 @@ export const selectDocEn = {
     '`loading` disables input and shows a spinner; per-option `loading` marks rows as "still syncing".',
   demoNumericTitle: 'Numeric values',
   demoNumericDesc: '`value` preserves number types (important for IDs).',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope one Select to different tokens — same component, different skin.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scopes built from Select tokens: green brand, dark field (with dropdown surface) and glass pick — same component, different skins.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the Select trigger: glides up on focus or when a value is picked (`:focus-within` + a filled class).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Native <select> with no library styling — headless mode.',
 

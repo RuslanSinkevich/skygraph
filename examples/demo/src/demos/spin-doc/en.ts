@@ -28,8 +28,6 @@ export const spinDocEn = {
   demoFullscreenDesc: 'Viewport-level overlay at z-modal.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Tune ring + overlay background via CSS vars.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Keep the delay + overlay logic, ship your own visuals.',
 
   tableSpinApi: 'Spin API',
   tableCssVars: 'CSS Variables',

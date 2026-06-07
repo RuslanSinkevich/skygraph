@@ -9,7 +9,8 @@ export const segmentedDocEn = {
   crumbSegmented: 'Segmented',
   pageLead: 'Mutually-exclusive option picker. Lighter than Tabs, richer than a Radio Group.',
   pageWhen1: 'Display a small, fixed set of mutually-exclusive views or modes.',
-  pageWhen2: 'Use instead of Tabs when the options are short, flat, and shown inline (filters, view switchers).',
+  pageWhen2:
+    'Use instead of Tabs when the options are short, flat, and shown inline (filters, view switchers).',
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Pass an array of strings and let Segmented do the rest.',
@@ -25,8 +26,6 @@ export const segmentedDocEn = {
   demoSizesDesc: 'Small, middle, large.',
   demoTokensOverrideTitle: 'Tokens override',
   demoTokensOverrideDesc: 'Scope the track / thumb tokens to repaint the control.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop the built-in CSS; keep the radio-group semantics.',
 
   tableSegmentedApi: 'Segmented API',
   tableCssVars: 'CSS Variables',

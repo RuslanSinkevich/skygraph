@@ -30,8 +30,6 @@ import { LocaleCalendar } from './calendar/Locale.demo'
 import LocaleSource from './calendar/Locale.demo?raw'
 import { TokensOverrideCalendar } from './calendar/TokensOverride.demo'
 import TokensOverrideSource from './calendar/TokensOverride.demo?raw'
-import { UnstyledCalendar } from './calendar/Unstyled.demo'
-import UnstyledSource from './calendar/Unstyled.demo?raw'
 
 export function CalendarDemo() {
   const t = useCalendarDocStrings()
@@ -47,18 +45,50 @@ export function CalendarDemo() {
       { name: 'fullscreen', description: t.propFullscreen, type: 'boolean', default: 'true' },
       { name: 'disabledDate', description: t.propDisabledDate, type: '(date: Date) => boolean' },
       { name: 'cellRender', description: t.propCellRender, type: '(date, info) => ReactNode' },
-      { name: 'headerRender', description: t.propHeaderRender, type: '(info: CalendarHeaderInfo) => ReactNode' },
+      {
+        name: 'headerRender',
+        description: t.propHeaderRender,
+        type: '(info: CalendarHeaderInfo) => ReactNode',
+      },
       { name: 'locale', description: t.propLocale, type: 'CalendarLocale' },
-      { name: 'weekStartDay', description: t.propWeekStartDay, type: '0 | 1 | 2 | 3 | 4 | 5 | 6', default: '0' },
-      { name: 'showWeekNumber', description: t.propShowWeekNumber, type: 'boolean', default: 'false' },
-      { name: 'rangeSelection', description: t.propRangeSelection, type: 'boolean', default: 'false' },
+      {
+        name: 'weekStartDay',
+        description: t.propWeekStartDay,
+        type: '0 | 1 | 2 | 3 | 4 | 5 | 6',
+        default: '0',
+      },
+      {
+        name: 'showWeekNumber',
+        description: t.propShowWeekNumber,
+        type: 'boolean',
+        default: 'false',
+      },
+      {
+        name: 'rangeSelection',
+        description: t.propRangeSelection,
+        type: 'boolean',
+        default: 'false',
+      },
       { name: 'rangeValue', description: t.propRangeValue, type: '[Date | null, Date | null]' },
-      { name: 'defaultRangeValue', description: t.propDefaultRangeValue, type: '[Date | null, Date | null]' },
+      {
+        name: 'defaultRangeValue',
+        description: t.propDefaultRangeValue,
+        type: '[Date | null, Date | null]',
+      },
       { name: 'onRangeChange', description: t.propOnRangeChange, type: '(range) => void' },
-      { name: 'multipleSelection', description: t.propMultipleSelection, type: 'boolean', default: 'false' },
+      {
+        name: 'multipleSelection',
+        description: t.propMultipleSelection,
+        type: 'boolean',
+        default: 'false',
+      },
       { name: 'multipleValue', description: t.propMultipleValue, type: 'Date[]' },
       { name: 'defaultMultipleValue', description: t.propDefaultMultipleValue, type: 'Date[]' },
-      { name: 'onMultipleChange', description: t.propOnMultipleChange, type: '(dates: Date[]) => void' },
+      {
+        name: 'onMultipleChange',
+        description: t.propOnMultipleChange,
+        type: '(dates: Date[]) => void',
+      },
       { name: 'events', description: t.propEvents, type: 'CalendarEvent[]' },
       { name: 'maxEvents', description: t.propMaxEvents, type: 'number', default: '3' },
       { name: 'keyboard', description: t.propKeyboard, type: 'boolean', default: 'true' },
@@ -82,15 +112,35 @@ export function CalendarDemo() {
   const calendarCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
-      { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: t.cssSgColorPrimaryBg },
+      {
+        name: 'sg-color-primary-bg',
+        default: 'var(--sg-blue-1)',
+        description: t.cssSgColorPrimaryBg,
+      },
       { name: 'sg-color-bg-container', default: '#ffffff', description: t.cssSgColorBgContainer },
       { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: t.cssSgColorBgHover },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssSgColorTextSecondary },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssSgColorTextSecondary,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextTertiary,
+      },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
       { name: 'sg-color-border', default: 'var(--sg-gray-5)', description: t.cssSgColorBorder },
-      { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: t.cssSgColorBorderSecondary },
+      {
+        name: 'sg-color-border-secondary',
+        default: 'var(--sg-gray-4)',
+        description: t.cssSgColorBorderSecondary,
+      },
       { name: 'sg-color-success', default: 'var(--sg-green-6)', description: t.cssSgColorSuccess },
       { name: 'sg-color-warning', default: 'var(--sg-orange-5)', description: t.cssSgColorWarning },
       { name: 'sg-color-error', default: 'var(--sg-red-5)', description: t.cssSgColorError },
@@ -122,11 +172,19 @@ export function CalendarDemo() {
         <CardCalendar />
       </DemoBox>
 
-      <DemoBox title={t.demoControlledTitle} description={t.demoControlledDesc} code={ControlledSource}>
+      <DemoBox
+        title={t.demoControlledTitle}
+        description={t.demoControlledDesc}
+        code={ControlledSource}
+      >
         <ControlledCalendar />
       </DemoBox>
 
-      <DemoBox title={t.demoDisabledDatesTitle} description={t.demoDisabledDatesDesc} code={DisabledDatesSource}>
+      <DemoBox
+        title={t.demoDisabledDatesTitle}
+        description={t.demoDisabledDatesDesc}
+        code={DisabledDatesSource}
+      >
         <DisabledDatesCalendar />
       </DemoBox>
 
@@ -134,15 +192,27 @@ export function CalendarDemo() {
         <YearModeCalendar />
       </DemoBox>
 
-      <DemoBox title={t.demoWeekNumbersTitle} description={t.demoWeekNumbersDesc} code={WeekNumbersSource}>
+      <DemoBox
+        title={t.demoWeekNumbersTitle}
+        description={t.demoWeekNumbersDesc}
+        code={WeekNumbersSource}
+      >
         <WeekNumbersCalendar />
       </DemoBox>
 
-      <DemoBox title={t.demoRangeSelectionTitle} description={t.demoRangeSelectionDesc} code={RangeSelectionSource}>
+      <DemoBox
+        title={t.demoRangeSelectionTitle}
+        description={t.demoRangeSelectionDesc}
+        code={RangeSelectionSource}
+      >
         <RangeSelectionCalendar />
       </DemoBox>
 
-      <DemoBox title={t.demoMultipleSelectionTitle} description={t.demoMultipleSelectionDesc} code={MultipleSelectionSource}>
+      <DemoBox
+        title={t.demoMultipleSelectionTitle}
+        description={t.demoMultipleSelectionDesc}
+        code={MultipleSelectionSource}
+      >
         <MultipleSelectionCalendar />
       </DemoBox>
 
@@ -150,11 +220,19 @@ export function CalendarDemo() {
         <EventsCalendar />
       </DemoBox>
 
-      <DemoBox title={t.demoCustomCellTitle} description={t.demoCustomCellDesc} code={CustomCellSource}>
+      <DemoBox
+        title={t.demoCustomCellTitle}
+        description={t.demoCustomCellDesc}
+        code={CustomCellSource}
+      >
         <CustomCellCalendar />
       </DemoBox>
 
-      <DemoBox title={t.demoCustomHeaderTitle} description={t.demoCustomHeaderDesc} code={CustomHeaderSource}>
+      <DemoBox
+        title={t.demoCustomHeaderTitle}
+        description={t.demoCustomHeaderDesc}
+        code={CustomHeaderSource}
+      >
         <CustomHeaderCalendar />
       </DemoBox>
 
@@ -170,17 +248,9 @@ export function CalendarDemo() {
         <TokensOverrideCalendar />
       </DemoBox>
 
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledCalendar />
-      </DemoBox>
-
       <PropsTable title={t.tableCalendarApi} data={calendarProps} />
       <PropsTable title={t.tableCalendarEvent} data={calendarEventProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={calendarCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={calendarCssVars} />
     </ComponentDoc>
   )
 }

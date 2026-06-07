@@ -22,10 +22,12 @@ export const inputNumberDocEn = {
   demoStatesDesc: 'Disabled and loading.',
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: 'Required + range validators on number fields.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope globals to rebrand one instance.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Stepper logic without SkyGraph classes.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scoped recipes — branded green, dark field, glass pick — reskin one InputNumber.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the field — it rises on focus or once a value is present; the stepper keeps working.',
 
   tableInputNumberApi: 'InputNumber API',
   tableCssVars: 'CSS Variables',

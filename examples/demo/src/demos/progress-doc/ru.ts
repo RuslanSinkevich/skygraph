@@ -22,13 +22,12 @@ export const progressDocRu: { [K in keyof typeof progressDocEn]: string } = {
   demoCustomColorTitle: 'Свой цвет',
   demoCustomColorDesc: '`strokeColor` перебивает цвет, заданный статусом.',
   demoSizesTitle: 'Размеры и strokeWidth',
-  demoSizesDesc: '`size="small"` делает полосу тоньше; `strokeWidth` побеждает, если нужно точное значение.',
+  demoSizesDesc:
+    '`size="small"` делает полосу тоньше; `strokeWidth` побеждает, если нужно точное значение.',
   demoNoInfoTitle: 'Скрыть подпись',
   demoNoInfoDesc: '`showInfo={false}` убирает процент справа / по центру.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоупьте примитивы темы, чтобы перебрендить все полосы внутри контейнера.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Сохранить ограничение значений и aria; track и fill рисуете сами.',
 
   tableProgressApi: 'API Progress',
   tableCssVars: 'CSS-переменные',

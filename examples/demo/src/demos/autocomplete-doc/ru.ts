@@ -22,9 +22,11 @@ export const autoCompleteDocRu: { [K in keyof typeof autoCompleteDocEn]: string 
   demoStatesTitle: 'Состояния',
   demoStatesDesc: 'Disabled и loading.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп `--sg-input-*` и глобальных токенов для ребрендинга одного экземпляра.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Headless-режим — только семантика, без классов SkyGraph.',
+  demoTokensDesc:
+    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один AutoComplete.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись над полем — уезжает вверх при фокусе или после ввода. Чистый CSS + управляемое значение.',
 
   tableAutoCompleteApi: 'API AutoComplete',
   tableOptionApi: 'AutoCompleteOption',

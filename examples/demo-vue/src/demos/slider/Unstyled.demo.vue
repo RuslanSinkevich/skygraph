@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` drops SkyGraph classes. The DOM structure (track, fill,
- * handle) stays so you can target it yourself, and `role="slider"`
- * remains on the thumb.
- */
 import { SgSlider } from '@skygraph/vue'
 </script>
 

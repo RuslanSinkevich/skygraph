@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` strips every SkyGraph class so you can ship a completely
- * custom look while reusing the picker's parsing, swatch grid and
- * preset interactions.
- */
 import { SgColorPicker } from '@skygraph/vue'
 </script>
 

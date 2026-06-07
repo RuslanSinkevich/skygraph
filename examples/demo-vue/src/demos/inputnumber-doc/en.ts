@@ -28,8 +28,12 @@ export const inputNumberDocEn = {
   demoStatesDesc: 'Disabled (Vue InputNumber has no loading prop yet).',
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: 'Required + range validators on number fields.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope globals to rebrand one instance.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scopes built from InputNumber tokens: green brand, dark field and glass pick (field + steppers).',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the InputNumber field: glides up on focus or when a number is entered.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Stepper logic without SkyGraph classes.',
 

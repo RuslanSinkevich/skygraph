@@ -35,7 +35,8 @@ export const switchDocEn = {
   demoInFormDesc:
     'Wrap with `<SgField>` and pipe `:model-value` / `@update:model-value` from the slot.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global tokens to rebrand a group.',
+  demoTokensDesc:
+    'Three scopes built from Switch tokens: green brand, dark surface and glass pick (track in both states).',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Semantics only — paint it yourself.',
 

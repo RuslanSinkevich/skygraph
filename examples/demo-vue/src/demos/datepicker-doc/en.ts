@@ -39,8 +39,12 @@ export const datePickerDocEn = {
   demoRangePresetsTitle: 'Range presets',
   demoRangePresetsDesc:
     'Preset values may be a `[Date, Date]` tuple — clicking fills both ends at once.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope tokens to re-skin one picker without touching the rest.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scopes built from DatePicker tokens: green brand, dark field (with calendar panel) and glass pick.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the DatePicker control: glides up on focus or when a date is selected.',
 
   tableDatePickerApi: 'DatePicker API',
   tableRangePickerApi: 'RangePicker API',

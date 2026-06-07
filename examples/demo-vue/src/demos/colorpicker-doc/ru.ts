@@ -13,10 +13,8 @@ export const colorPickerDocRu: { [K in keyof typeof colorPickerDocEn]: string } 
     'Popover-color-picker с hex/rgb-инпутом и опциональными группами пресетов. Поддерживает click/hover-триггеры и controlled open.',
   pageWhen1:
     'Дать пользователю выбрать брендовый цвет — пробросить результат прямо в `--sg-color-primary`.',
-  pageWhen2:
-    'Design-tool-style взаимодействия, где swatch + popover чище, чем модалка.',
-  pageWhen3:
-    'Опросы или конфиги, принимающие произвольный цвет, не палитру.',
+  pageWhen2: 'Design-tool-style взаимодействия, где swatch + popover чище, чем модалка.',
+  pageWhen3: 'Опросы или конфиги, принимающие произвольный цвет, не палитру.',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Управляемый hex с живым preview-swatch.',
@@ -35,7 +33,10 @@ export const colorPickerDocRu: { [K in keyof typeof colorPickerDocEn]: string } 
     'Управлять `--sg-color-primary` из picker-а и видеть, как все компоненты перекрашиваются.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
-    'Скоуп глобальных color/radius-токенов на обёртке, чтобы перестилить без отдельной темы.',
+    'Три скоупа на токенах ColorPicker: зелёный бренд, тёмное поле (с popover) и glass pick.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись над триггером ColorPicker: цвет всегда задан, поэтому label держится сверху и подсвечивается при фокусе.',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Убрать все классы SkyGraph, оставив поведение.',
 
@@ -47,8 +48,7 @@ export const colorPickerDocRu: { [K in keyof typeof colorPickerDocEn]: string } 
   propDefaultValue: 'Начальный цвет в неуправляемом режиме',
   propFormat: 'Формат вывода + payload',
   propPresets: 'Группированные swatch-пресеты',
-  propShowText:
-    'Показывать форматированный текст рядом со swatch (только boolean в Vue)',
+  propShowText: 'Показывать форматированный текст рядом со swatch (только boolean в Vue)',
   propTrigger: 'Способ открытия панели',
   propOpen: 'Управляемое состояние открытия панели',
   propSize: 'Высота триггера + размер swatch',

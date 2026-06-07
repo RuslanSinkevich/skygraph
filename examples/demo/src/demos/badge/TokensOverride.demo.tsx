@@ -1,44 +1,37 @@
-import type { CSSProperties } from 'react'
 import { Badge } from '@skygraph/react'
-import { useDemoStrings } from '../../i18n'
+import { TokenScopeCards } from '../_shared/TokenScopeCards'
 
-const STRINGS = {
-  en: {
-    connecting: 'Connecting…',
-  },
-  ru: {
-    connecting: 'Подключение…',
-  },
-} as const
-
+/**
+ * Badge has no component-specific tokens — the count pulls `--sg-color-error`,
+ * the status dot pulls the primary palette. Three scoped recipes — branded
+ * green, dark field, glass pick — rebrand the counters.
+ */
 const box = {
-  width: 42,
-  height: 42,
-  borderRadius: 6,
-  background: 'var(--sg-color-bg-container)',
-  border: '1px solid color-mix(in srgb, var(--sg-color-error) 30%, transparent)',
-  boxShadow: 'inset 0 0 0 1px color-mix(in srgb, white 55%, transparent)',
+  width: 36,
+  height: 36,
+  borderRadius: 8,
+  background: 'rgba(148, 163, 184, 0.35)',
   display: 'inline-block',
 }
 
-/**
- * Badge has no component-specific tokens — `sg-badge-count` pulls
- * from `--sg-color-error` for the background and `--sg-color-bg` for
- * the tiny outline. Scope those globals to rebrand your counters.
- */
-const scoped: CSSProperties = {
-  ['--sg-color-error' as never]: '#7c3aed',
-  ['--sg-color-primary' as never]: '#f97316',
-  ['--sg-color-bg' as never]: '#fef3c7',
-}
-
 export function TokensOverrideBadge() {
-  const t = useDemoStrings(STRINGS)
   return (
-    <div style={{ ...scoped, display: 'flex', gap: 24, padding: 16, background: '#fef3c7' }}>
-      <Badge count={5}><div style={box} /></Badge>
-      <Badge dot><div style={box} /></Badge>
-      <Badge status="processing" text={t.connecting} />
-    </div>
+    <TokenScopeCards
+      extra={{
+        brand: { ['--sg-color-error' as never]: '#059669' },
+        dark: { ['--sg-color-error' as never]: '#60a5fa' },
+        glass: { ['--sg-color-error' as never]: '#6366f1' },
+      }}
+      render={() => (
+        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+          <Badge count={5}>
+            <span style={box} />
+          </Badge>
+          <Badge dot>
+            <span style={box} />
+          </Badge>
+        </div>
+      )}
+    />
   )
 }

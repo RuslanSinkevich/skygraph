@@ -32,6 +32,8 @@ import InFormInputNumber from './inputnumber/InForm.demo.vue'
 import InFormSource from './inputnumber/InForm.demo.vue?raw'
 import TokensOverrideInputNumber from './inputnumber/TokensOverride.demo.vue'
 import TokensOverrideSource from './inputnumber/TokensOverride.demo.vue?raw'
+import FloatingLabelInputNumber from './inputnumber/FloatingLabel.demo.vue'
+import FloatingLabelSource from './inputnumber/FloatingLabel.demo.vue?raw'
 import UnstyledInputNumber from './inputnumber/Unstyled.demo.vue'
 import UnstyledSource from './inputnumber/Unstyled.demo.vue?raw'
 
@@ -157,6 +159,14 @@ const inputNumberCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideInputNumber />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoFloatingLabelTitle"
+      :description="t.demoFloatingLabelDesc"
+      :code="FloatingLabelSource"
+    >
+      <FloatingLabelInputNumber />
     </DemoBox>
 
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">

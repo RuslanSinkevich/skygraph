@@ -29,9 +29,9 @@ export const buttonDocEn = {
   demoIconDesc: 'Flex gap keeps icon + label aligned at every size.',
   demoTokensTitle: 'Component tokens',
   demoTokensDesc: 'Scope --sg-btn-* for a local reshape (pills, chunky, compact).',
-  demoTokensOverrideTitle: 'Custom button styles',
+  demoTokensOverrideTitle: 'Token override',
   demoTokensOverrideDesc:
-    'Four distinct looks (glass, neumorphic, gradient pill, brutalist) built from `--sg-btn-*` tokens plus a small custom CSS layer — same Button component, fully accessible.',
+    'Three ready-made scopes built from `--sg-btn-*` tokens: green brand, dark surface and glass pick. Only paint / shape changes — fully accessible.',
   demoBrandTitle: 'Scoped brand',
   demoBrandDesc: 'Override --sg-color-primary* to rebrand a subtree.',
   demoUnstyledTitle: 'Unstyled',

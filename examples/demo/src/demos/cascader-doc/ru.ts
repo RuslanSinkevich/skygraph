@@ -8,8 +8,10 @@ export const cascaderDocRu: { [K in keyof typeof cascaderDocEn]: string } = {
   pageLead:
     'Колоночный селектор для упорядоченных иерархических данных: регион → город → район, таксономия → подкатегория → тег и т. п.',
   pageWhen1: 'Когда значение — это путь, а не один узел (область + город + район).',
-  pageWhen2: 'Когда опции образуют чёткую иерархию и колоночный drill-down быстрее, чем глубокое дерево.',
-  pageWhen3: 'Когда нужен коммит на промежуточном уровне (changeOnSelect) или поиск по ветвям (showSearch).',
+  pageWhen2:
+    'Когда опции образуют чёткую иерархию и колоночный drill-down быстрее, чем глубокое дерево.',
+  pageWhen3:
+    'Когда нужен коммит на промежуточном уровне (changeOnSelect) или поиск по ветвям (showSearch).',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Контролируемый drill-down со значением и подписями.',
@@ -32,9 +34,11 @@ export const cascaderDocRu: { [K in keyof typeof cascaderDocEn]: string } = {
   demoAsyncLoadTitle: 'Асинхронная загрузка',
   demoAsyncLoadDesc: 'Подгружать дочерние узлы по требованию через loadData.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc: 'Скоуп глобальных токенов на обёртке для переоформления одного Cascader.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Только семантика — рисуйте своим CSS.',
+  demoTokensOverrideDesc:
+    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один Cascader.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись над триггером — уезжает вверх при фокусе или после выбора пути.',
 
   tableCascaderApi: 'API Cascader',
   tableOption: 'CascaderOption',

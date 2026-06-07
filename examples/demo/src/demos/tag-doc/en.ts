@@ -27,8 +27,6 @@ export const tagDocEn = {
   demoWithIconDesc: 'Children is a ReactNode — icon + text is just JSX.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Round corners to 999px for pills, restyle preset palettes with colour tokens.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop every sg-tag-* class — you own the painting.',
 
   tableTagApi: 'Tag API',
   tableCssVars: 'CSS Variables',

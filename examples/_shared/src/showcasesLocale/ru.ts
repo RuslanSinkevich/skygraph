@@ -5,7 +5,7 @@ import { inboxLocaleRu } from './apps/inbox/ru'
 import { helpdeskLocaleRu } from './apps/helpdesk/ru'
 import { dashboardLocaleRu } from './apps/dashboard/ru'
 import { fileManagerLocaleRu } from './apps/file-manager/ru'
-import { workflowEditorLocaleRu } from './apps/workflow-editor/ru'
+import { orgChartLocaleRu } from './apps/org-chart/ru'
 import { formsLocaleRu } from './apps/forms/ru'
 import { hrPortalLocaleRu } from './apps/hr-portal/ru'
 import { adminLocaleRu } from './apps/admin/ru'
@@ -21,7 +21,7 @@ export const showcasesLocaleRu: ShowcasesLocale = {
     helpdesk: helpdeskLocaleRu,
     dashboard: dashboardLocaleRu,
     fileManager: fileManagerLocaleRu,
-    workflowEditor: workflowEditorLocaleRu,
+    orgChart: orgChartLocaleRu,
     forms: formsLocaleRu,
     hrPortal: hrPortalLocaleRu,
     admin: adminLocaleRu,

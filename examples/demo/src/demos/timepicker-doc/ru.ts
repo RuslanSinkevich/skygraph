@@ -7,7 +7,8 @@ export const timePickerDocRu: { [K in keyof typeof timePickerDocEn]: string } = 
   pageTitle: 'TimePicker',
   pageLead:
     'Пикер времени со скролл-колонками. Возвращает форматированную **строку** — без жонглирования Date. Собрат `TimeRangePicker` принимает те же параметры для start/end.',
-  pageWhen1: 'Любой ввод времени, где скролл-колонки лучше свободного ввода (слоты приёмов, будильники).',
+  pageWhen1:
+    'Любой ввод времени, где скролл-колонки лучше свободного ввода (слоты приёмов, будильники).',
   pageWhen2: 'Когда нужен 12-часовой UX с AM/PM на 24-часовых данных.',
   pageWhen3: 'Диапазоны — используйте собрат `RangePicker` (или `TimePicker.RangePicker`).',
 
@@ -26,9 +27,11 @@ export const timePickerDocRu: { [K in keyof typeof timePickerDocEn]: string } = 
   demoStatesTitle: 'Состояния',
   demoStatesDesc: 'Disabled и loading.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп глобальных токенов на обёртке для ребрендинга экземпляра.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Headless-режим, нативные классы убраны.',
+  demoTokensDesc:
+    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один TimePicker.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись над триггером — уезжает вверх при фокусе или после выбора времени. Чистый CSS + управляемое значение.',
 
   tableTimePickerApi: 'API TimePicker',
   tableTimeRangePickerApi: 'API TimeRangePicker',

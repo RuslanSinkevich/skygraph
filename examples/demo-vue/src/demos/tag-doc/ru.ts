@@ -28,7 +28,7 @@ export const tagDocRu: { [K in keyof typeof tagDocEn]: string } = {
   demoWithIconDesc: 'Default-слот принимает любую разметку — иконка + текст это просто template.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Скруглите углы до 999px для pill, перекрасьте палитру пресетов через цветовые токены.',
+    'Три скоупа на токенах Tag: зелёный бренд, тёмная поверхность и glass pick (палитра пресетов + радиус).',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Уберите все классы sg-tag-* — рисуете сами.',
 

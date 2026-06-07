@@ -30,6 +30,8 @@ import StatesAutoCompleteDemo from './autocomplete/States.demo.vue'
 import StatesSource from './autocomplete/States.demo.vue?raw'
 import TokensOverrideAutoCompleteDemo from './autocomplete/TokensOverride.demo.vue'
 import TokensOverrideSource from './autocomplete/TokensOverride.demo.vue?raw'
+import FloatingLabelAutoCompleteDemo from './autocomplete/FloatingLabel.demo.vue'
+import FloatingLabelSource from './autocomplete/FloatingLabel.demo.vue?raw'
 import UnstyledAutoCompleteDemo from './autocomplete/Unstyled.demo.vue'
 import UnstyledSource from './autocomplete/Unstyled.demo.vue?raw'
 
@@ -141,6 +143,14 @@ const autoCompleteCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideAutoCompleteDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoFloatingLabelTitle"
+      :description="t.demoFloatingLabelDesc"
+      :code="FloatingLabelSource"
+    >
+      <FloatingLabelAutoCompleteDemo />
     </DemoBox>
 
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">

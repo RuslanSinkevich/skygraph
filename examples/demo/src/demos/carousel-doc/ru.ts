@@ -12,7 +12,8 @@ export const carouselDocRu: { [K in keyof typeof carouselDocEn]: string } = {
     'Контейнер с прокруткой слайдов, dot-навигацией, четырьмя позициями точек и переходами slide / fade.',
   pageWhen1:
     'Когда группе равноправного контента нужно по очереди показываться в одной области — hero-баннеры, отзывы.',
-  pageWhen2: 'Когда ограниченное горизонтальное пространство должно прокручивать пару элементов, а не скроллиться.',
+  pageWhen2:
+    'Когда ограниченное горизонтальное пространство должно прокручивать пару элементов, а не скроллиться.',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Дефолтный slide-переход, точки внизу по центру.',
@@ -21,13 +22,12 @@ export const carouselDocRu: { [K in keyof typeof carouselDocEn]: string } = {
   demoFadeTitle: 'Fade',
   demoFadeDesc: 'Кросс-фейд слайдов через opacity.',
   demoDotPositionTitle: 'Позиция точек',
-  demoDotPositionDesc: 'Top, bottom (по умолчанию), left или right — left / right разворачивает раскладку вертикально.',
+  demoDotPositionDesc:
+    'Top, bottom (по умолчанию), left или right — left / right разворачивает раскладку вертикально.',
   demoHiddenDotsTitle: 'Скрытые точки',
   demoHiddenDotsDesc: '`dots={false}` для декоративных каруселей.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоупьте цвета точек для ребрендинга.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Активный слайд и нумерованные кнопки, никакого встроенного CSS.',
 
   tableCarouselApi: 'API Carousel',
   tableCssVars: 'CSS-переменные',
@@ -42,7 +42,8 @@ export const carouselDocRu: { [K in keyof typeof carouselDocEn]: string } = {
   propChildren: 'Каждый прямой child — один слайд',
   propClassName: 'Дополнительный class на корне',
   propStyle: 'Inline-стиль на корне',
-  propUnstyled: 'Убрать стили sg-carousel-* — рендерится только активный слайд и нумерованные кнопки',
+  propUnstyled:
+    'Убрать стили sg-carousel-* — рендерится только активный слайд и нумерованные кнопки',
 
   cssPrimary: 'Цвет активной точки (более широкая «таблетка»)',
   cssTextDisabled: 'Цвет неактивной точки',

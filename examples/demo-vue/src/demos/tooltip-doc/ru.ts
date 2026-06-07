@@ -23,9 +23,9 @@ export const tooltipDocRu: { [K in keyof typeof tooltipDocEn]: string } = {
   demoIconTitle: 'На иконке info',
   demoIconDesc:
     'Классический паттерн «?» — задайте tabindex, чтобы клавиатурный пользователь мог сфокусироваться.',
-  demoTokensTitle: 'Кастомные стили тултипов',
+  demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три непохожих скина (мутное стекло, сочный градиент, мягкая карточка) — каждый прокидывает className на обёртку и стилизует `.sg-tooltip-content` / `.sg-tooltip-arrow`.',
+    'Три скина тултипа (стекло, градиент, карточка) — каждый прокидывает className на обёртку и стилизует `.sg-tooltip-content` / `.sg-tooltip-arrow`.',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Сохранить поведение и ARIA, поменять всю отрисовку через CSS.',
 

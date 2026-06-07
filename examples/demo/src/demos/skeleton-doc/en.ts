@@ -27,8 +27,6 @@ export const skeletonDocEn = {
   demoTokensTitle: 'Custom skeleton themes',
   demoTokensDesc:
     'Three palettes (light card, indigo branded, dark mode) — only `--sg-skeleton-bg` and `--sg-skeleton-shimmer` change; the shimmer keeps reading because the highlight is always brighter than the base.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Keep aria + structure, bring your own styling.',
 
   tableSkeletonApi: 'Skeleton API',
   tableCssVars: 'CSS Variables',

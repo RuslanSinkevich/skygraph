@@ -65,9 +65,6 @@ export const tableDocEn = {
   demoFinanceStyleTitle: 'Finance Style (Stock Terminal)',
   demoFinanceStyleDesc:
     'Monospace tickers, green/red deltas, tabular numerics. Built only from slots and render.',
-  demoUnstyledTitle: 'Styling: unstyled (headless)',
-  demoUnstyledDesc:
-    'Strip SkyGraph styles and bring your own CSS/layout. Semantics and behavior stay.',
   demoVirtualTitle: 'Virtual Scroll',
   demoVirtualDesc:
     'Efficiently render thousands of rows by only mounting what is visible in the viewport.',

@@ -29,7 +29,7 @@ export const avatarDocRu: { [K in keyof typeof avatarDocEn]: string } = {
   demoWithBadgeDesc: 'Оберните аватар в Badge для статуса присутствия или счётчика.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Увеличьте `--sg-border-radius` для более мягких квадратов, замените `--sg-color-text-disabled` для брендового fallback.',
+    'Три скоупа на токенах Avatar: зелёный бренд, тёмная поверхность и glass pick (форма + fallback-фон).',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Уберите все классы sg-avatar — рисуете сами.',
 

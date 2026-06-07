@@ -37,8 +37,6 @@ export const calendarDocRu: { [K in keyof typeof calendarDocEn]: string } = {
   demoLocaleDesc: 'Русские дни/месяцы + старт с понедельника + номера недель.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc: 'Скоуп глобальных токенов на обёртке для перекраски.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Только семантика, рисуйте своим CSS.',
 
   tableCalendarApi: 'API Calendar',
   tableCalendarEvent: 'CalendarEvent',

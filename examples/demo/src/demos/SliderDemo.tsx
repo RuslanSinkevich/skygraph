@@ -16,8 +16,6 @@ import { InFormSlider } from './slider/InForm.demo'
 import InFormSource from './slider/InForm.demo?raw'
 import { TokensOverrideSlider } from './slider/TokensOverride.demo'
 import TokensOverrideSource from './slider/TokensOverride.demo?raw'
-import { UnstyledSlider } from './slider/Unstyled.demo'
-import UnstyledSource from './slider/Unstyled.demo?raw'
 
 export function SliderDemo() {
   const t = useSliderDocStrings()
@@ -46,7 +44,11 @@ export function SliderDemo() {
         description: t.cssSgSliderMinInlineSize,
       },
       { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
-      { name: 'sg-color-primary-bg', default: 'rgba(22, 119, 255, 0.1)', description: t.cssSgColorPrimaryBg },
+      {
+        name: 'sg-color-primary-bg',
+        default: 'rgba(22, 119, 255, 0.1)',
+        description: t.cssSgColorPrimaryBg,
+      },
       { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: t.cssSgColorBorder },
       { name: 'sg-color-white', default: '#ffffff', description: t.cssSgColorWhite },
       { name: 'sg-padding-sm', default: '12px', description: t.cssSgPaddingSm },
@@ -65,11 +67,19 @@ export function SliderDemo() {
         <BasicSlider />
       </DemoBox>
 
-      <DemoBox title={t.demoMinMaxStepTitle} description={t.demoMinMaxStepDesc} code={MinMaxStepSource}>
+      <DemoBox
+        title={t.demoMinMaxStepTitle}
+        description={t.demoMinMaxStepDesc}
+        code={MinMaxStepSource}
+      >
         <MinMaxStepSlider />
       </DemoBox>
 
-      <DemoBox title={t.demoWithValueTitle} description={t.demoWithValueDesc} code={WithValueSource}>
+      <DemoBox
+        title={t.demoWithValueTitle}
+        description={t.demoWithValueDesc}
+        code={WithValueSource}
+      >
         <WithValueSlider />
       </DemoBox>
 
@@ -81,24 +91,12 @@ export function SliderDemo() {
         <InFormSlider />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideSlider />
       </DemoBox>
 
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledSlider />
-      </DemoBox>
-
       <PropsTable title={t.tableSliderApi} data={sliderProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={sliderCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={sliderCssVars} />
     </ComponentDoc>
   )
 }

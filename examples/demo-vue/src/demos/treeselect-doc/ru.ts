@@ -29,7 +29,10 @@ export const treeSelectDocRu: { [K in keyof typeof treeSelectDocEn]: string } = 
   demoSizesDesc: 'Три размера, одна структура.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
-    'Скоуп токенов, чтобы тематизировать один TreeSelect, не трогая остальной экран.',
+    'Три скоупа на токенах TreeSelect: зелёный бренд, тёмное поле (с деревом dropdown) и glass pick.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись на контроле TreeSelect: уезжает вверх при фокусе или когда узел выбран.',
 
   tableTreeSelectApi: 'API TreeSelect',
   tableTreeNodeData: 'TreeNodeData',

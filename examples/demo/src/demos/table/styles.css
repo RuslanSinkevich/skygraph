@@ -51,7 +51,11 @@
 /* ── FinanceStyle.demo ──────────────────────────────────────────────── */
 .demo-finance-root {
   font-variant-numeric: tabular-nums;
-  --sg-table-header-bg: color-mix(in srgb, var(--sg-color-bg-secondary) 70%, var(--sg-color-bg) 30%);
+  --sg-table-header-bg: color-mix(
+    in srgb,
+    var(--sg-color-bg-secondary) 70%,
+    var(--sg-color-bg) 30%
+  );
   --sg-table-cell-padding: 8px 12px;
 }
 .demo-ticker {
@@ -83,12 +87,20 @@
 
 /* ── Realtime.demo ──────────────────────────────────────────────────── */
 @keyframes demo-rt-flash-up {
-  0%   { background: color-mix(in srgb, var(--sg-color-success-bg) 90%, transparent); }
-  100% { background: transparent; }
+  0% {
+    background: color-mix(in srgb, var(--sg-color-success-bg) 90%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
 }
 @keyframes demo-rt-flash-down {
-  0%   { background: color-mix(in srgb, var(--sg-color-error-bg) 90%, transparent); }
-  100% { background: transparent; }
+  0% {
+    background: color-mix(in srgb, var(--sg-color-error-bg) 90%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
 }
 .demo-rt-price {
   display: inline-block;
@@ -105,38 +117,4 @@
   animation: demo-rt-flash-down 900ms ease-out;
   color: var(--sg-color-error);
   font-weight: 600;
-}
-
-/* ── Unstyled.demo ──────────────────────────────────────────────────── */
-.demo-unstyled-card {
-  padding: 16px;
-  border: 1px dashed var(--sg-color-border);
-  border-radius: var(--sg-border-radius-lg);
-  background: var(--sg-color-bg-secondary);
-}
-.demo-unstyled-card-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: var(--sg-color-text-secondary);
-}
-.demo-unstyled-card-row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 12px;
-  font-size: 13px;
-}
-.demo-unstyled-btn {
-  border: 1px solid var(--sg-color-border);
-  background: var(--sg-color-bg);
-  color: var(--sg-color-text);
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-}
-.demo-unstyled-btn:hover {
-  border-color: var(--sg-color-primary);
-  color: var(--sg-color-primary);
 }

@@ -69,9 +69,6 @@ export const tableDocRu: { [K in keyof typeof tableDocEn]: string } = {
   demoFinanceStyleTitle: 'Финансовый стиль (Stock Terminal)',
   demoFinanceStyleDesc:
     'Моноширинные тикеры, зелёные / красные дельты, табулярные числа. Только слоты и render.',
-  demoUnstyledTitle: 'Стилизация: unstyled (headless)',
-  demoUnstyledDesc:
-    'Снимите стили SkyGraph и приносите свой CSS / раскладку. Семантика и поведение остаются.',
   demoVirtualTitle: 'Virtual scroll',
   demoVirtualDesc: 'Эффективный рендер тысяч строк — монтируется только видимое в viewport.',
   demoKitchenSinkTitle: 'Kitchen Sink',

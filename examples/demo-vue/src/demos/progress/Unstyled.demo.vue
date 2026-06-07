@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` drops all SkyGraph classes and renders a minimal
- * `role="progressbar"` wrapper with bare inline track + fill.
- * Use the raw props + your own CSS to reach any design target.
- */
 import { SgProgress } from '@skygraph/vue'
 </script>
 

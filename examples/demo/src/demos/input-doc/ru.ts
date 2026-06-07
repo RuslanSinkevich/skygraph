@@ -21,11 +21,9 @@ export const inputDocRu: { [K in keyof typeof inputDocEn]: string } = {
   demoStatesDesc: 'Disabled и inline-спиннер загрузки.',
   demoValidationTitle: 'Валидация',
   demoValidationDesc: 'aria-invalid переключает стиль ошибки без !important.',
-  demoTokensTitle: 'Токены компонента',
-  demoTokensDesc: 'Скоуп `--sg-input-*` для перешейпа только этих input-ов.',
-  demoTokensOverrideTitle: 'Темы через токены',
+  demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
-    'Два готовых вида (мягкий pill, янтарная заливка) только на --sg-input-* — focus-кольцо и состояния сохраняются.',
+    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один и тот же Input через --sg-input-* и глобальные токены; focus-кольцо и состояния сохраняются.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающий label на чистом CSS (в духе Material 3). Подпись лежит внутри поля и уезжает влево-вверх при фокусе или когда поле заполнено. Контурный и filled-варианты — без правок ядра, только `:has(input:focus)` + `:has(input:not(:placeholder-shown))`.',
@@ -37,8 +35,6 @@ export const inputDocRu: { [K in keyof typeof inputDocEn]: string } = {
   demoTextareaStatesDesc: 'Варианты disabled и loading.',
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: 'Input + Textarea подключены через `<Field>`.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Headless-режим со своим CSS-классом.',
 
   tableInputApi: 'API Input',
   tableTextareaApi: 'API Textarea',

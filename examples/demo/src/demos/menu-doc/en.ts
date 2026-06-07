@@ -37,8 +37,6 @@ export const menuDocEn = {
   demoCustomPaletteTitle: 'Custom: Command palette',
   demoCustomPaletteDesc:
     'Dark search-driven palette: keyboard shortcuts, fuzzy search, grouped commands. Items live in the public API; rich nodes via ReactNode labels.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'ARIA semantics only — bring your own CSS.',
 
   tableMenuApi: 'Menu API',
   tableMenuItem: 'MenuItem',

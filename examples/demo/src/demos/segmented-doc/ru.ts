@@ -8,9 +8,11 @@ export const segmentedDocRu: { [K in keyof typeof segmentedDocEn]: string } = {
   pageBadge: 'Ввод данных',
   crumbDataEntry: 'Ввод данных',
   crumbSegmented: 'Segmented',
-  pageLead: 'Селектор взаимоисключающих вариантов. Легче, чем Tabs, выразительнее, чем Radio Group.',
+  pageLead:
+    'Селектор взаимоисключающих вариантов. Легче, чем Tabs, выразительнее, чем Radio Group.',
   pageWhen1: 'Небольшой фиксированный набор взаимоисключающих режимов или представлений.',
-  pageWhen2: 'Вместо Tabs, когда варианты короткие, плоские и показываются инлайн (фильтры, переключатели вида).',
+  pageWhen2:
+    'Вместо Tabs, когда варианты короткие, плоские и показываются инлайн (фильтры, переключатели вида).',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Передайте массив строк — Segmented сделает остальное.',
@@ -26,8 +28,6 @@ export const segmentedDocRu: { [K in keyof typeof segmentedDocEn]: string } = {
   demoSizesDesc: 'Маленький, средний, большой.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc: 'Скоуп токенов track / thumb для перекраски контрола.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Уберите встроенный CSS, оставьте семантику radio-group.',
 
   tableSegmentedApi: 'API Segmented',
   tableCssVars: 'CSS-переменные',

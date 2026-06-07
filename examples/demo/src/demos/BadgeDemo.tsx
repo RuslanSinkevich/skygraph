@@ -18,8 +18,6 @@ import { OffsetBadge } from './badge/Offset.demo'
 import OffsetSource from './badge/Offset.demo?raw'
 import { TokensOverrideBadge } from './badge/TokensOverride.demo'
 import TokensOverrideSource from './badge/TokensOverride.demo?raw'
-import { UnstyledBadge } from './badge/Unstyled.demo'
-import UnstyledSource from './badge/Unstyled.demo?raw'
 
 export function BadgeDemo() {
   const t = useBadgeDocStrings()
@@ -31,7 +29,11 @@ export function BadgeDemo() {
       { name: 'overflowCount', description: t.propOverflowCount, type: 'number', default: '99' },
       { name: 'showZero', description: t.propShowZero, type: 'boolean', default: 'false' },
       { name: 'color', description: t.propColor, type: 'string' },
-      { name: 'status', description: t.propStatus, type: "'success' | 'error' | 'warning' | 'processing' | 'default'" },
+      {
+        name: 'status',
+        description: t.propStatus,
+        type: "'success' | 'error' | 'warning' | 'processing' | 'default'",
+      },
       { name: 'text', description: t.propText, type: 'ReactNode' },
       { name: 'offset', description: t.propOffset, type: '[number, number]' },
       { name: 'children', description: t.propChildren, type: 'ReactNode' },
@@ -50,7 +52,11 @@ export function BadgeDemo() {
       { name: 'sg-color-success', default: '#52c41a', description: t.cssSgColorSuccess },
       { name: 'sg-color-warning', default: '#faad14', description: t.cssSgColorWarning },
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssSgColorPrimary },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
       { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
@@ -73,11 +79,7 @@ export function BadgeDemo() {
         <BasicBadge />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoOverflowTitle}
-        description={t.demoOverflowDesc}
-        code={OverflowSource}
-      >
+      <DemoBox title={t.demoOverflowTitle} description={t.demoOverflowDesc} code={OverflowSource}>
         <OverflowBadge />
       </DemoBox>
 
@@ -85,11 +87,7 @@ export function BadgeDemo() {
         <DotBadge />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoStatusTitle}
-        description={t.demoStatusDesc}
-        code={StatusSource}
-      >
+      <DemoBox title={t.demoStatusTitle} description={t.demoStatusDesc} code={StatusSource}>
         <StatusBadge />
       </DemoBox>
 
@@ -101,36 +99,16 @@ export function BadgeDemo() {
         <CustomColorBadge />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoOffsetTitle}
-        description={t.demoOffsetDesc}
-        code={OffsetSource}
-      >
+      <DemoBox title={t.demoOffsetTitle} description={t.demoOffsetDesc} code={OffsetSource}>
         <OffsetBadge />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideBadge />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
-        <UnstyledBadge />
-      </DemoBox>
-
       <PropsTable title={t.tableBadgeApi} data={badgeProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={badgeCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={badgeCssVars} />
     </ComponentDoc>
   )
 }

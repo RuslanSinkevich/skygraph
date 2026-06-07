@@ -1,28 +1,24 @@
-import type { CSSProperties } from 'react'
 import { Spin } from '@skygraph/react'
+import { TokenScopeCards } from '../_shared/TokenScopeCards'
 
 /**
- * Two tokens matter for Spin: `--sg-spin-color` for the ring and
- * `--sg-spin-overlay-bg` for the backdrop covering wrapped content.
- * Both can be scoped on a wrapper for scoped rebrands.
+ * Spin reads `--sg-spin-color` for the ring (defaulting to the primary
+ * palette) and `--sg-spin-overlay-bg` for the backdrop. Three scoped recipes —
+ * branded green, dark field, glass pick — recolour the spinner.
  */
-const scoped: CSSProperties = {
-  ['--sg-spin-color' as never]: '#f59e0b',
-  ['--sg-spin-overlay-bg' as never]: 'rgba(251, 191, 36, 0.2)',
-  padding: 16,
-  background: 'var(--sg-color-bg-container)',
-  borderRadius: 'var(--sg-border-radius)',
-  border: '1px solid var(--sg-color-border)',
-}
-
 export function TokensOverrideSpin() {
   return (
-    <div style={scoped}>
-      <Spin spinning tip="Loading...">
-        <div style={{ padding: 24 }}>
-          <p>Wrapped content — blurred by the amber overlay.</p>
+    <TokenScopeCards
+      extra={{
+        brand: { ['--sg-spin-color' as never]: '#059669' },
+        dark: { ['--sg-spin-color' as never]: '#60a5fa' },
+        glass: { ['--sg-spin-color' as never]: '#6366f1' },
+      }}
+      render={() => (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
+          <Spin spinning size="large" />
         </div>
-      </Spin>
-    </div>
+      )}
+    />
   )
 }

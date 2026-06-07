@@ -16,8 +16,8 @@ import { StatesAutoComplete } from './autocomplete/States.demo'
 import StatesSource from './autocomplete/States.demo?raw'
 import { TokensOverrideAutoComplete } from './autocomplete/TokensOverride.demo'
 import TokensOverrideSource from './autocomplete/TokensOverride.demo?raw'
-import { UnstyledAutoComplete } from './autocomplete/Unstyled.demo'
-import UnstyledSource from './autocomplete/Unstyled.demo?raw'
+import { FloatingLabelAutoComplete } from './autocomplete/FloatingLabel.demo'
+import FloatingLabelSource from './autocomplete/FloatingLabel.demo?raw'
 
 export function AutoCompleteDemo() {
   const t = useAutoCompleteDocStrings()
@@ -32,7 +32,12 @@ export function AutoCompleteDemo() {
       { name: 'onSearch', description: t.propOnSearch, type: '(query: string) => void' },
       { name: 'onSelect', description: t.propOnSelect, type: '(value, option) => void' },
       { name: 'onBlur', description: t.propOnBlur, type: '() => void' },
-      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'middle' | 'large'",
+        default: "'middle'",
+      },
       { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
       { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
       { name: 'className', description: t.propClassName, type: 'string' },
@@ -54,11 +59,23 @@ export function AutoCompleteDemo() {
     () => [
       { name: 'sg-input-*', default: '—', description: t.cssSgInputAll },
       { name: 'sg-color-bg-elevated', default: '#ffffff', description: t.cssSgColorBgElevated },
-      { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgHover },
+      {
+        name: 'sg-color-bg-hover',
+        default: 'rgba(0, 0, 0, 0.04)',
+        description: t.cssSgColorBgHover,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextTertiary,
+      },
       { name: 'sg-border-radius', default: '6px', description: t.cssSgBorderRadius },
-      { name: 'sg-shadow-lg', default: '0 10px 30px rgba(0, 0, 0, 0.12)', description: t.cssSgShadowLg },
+      {
+        name: 'sg-shadow-lg',
+        default: '0 10px 30px rgba(0, 0, 0, 0.12)',
+        description: t.cssSgShadowLg,
+      },
       { name: 'sg-padding-xs', default: '8px', description: t.cssSgPaddingXs },
       { name: 'sg-padding-md', default: '16px', description: t.cssSgPaddingMd },
       { name: 'sg-transition-duration', default: '180ms', description: t.cssSgTransitionDuration },
@@ -76,19 +93,11 @@ export function AutoCompleteDemo() {
         <BasicAutoComplete />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoEmailTitle}
-        description={t.demoEmailDesc}
-        code={EmailDomainsSource}
-      >
+      <DemoBox title={t.demoEmailTitle} description={t.demoEmailDesc} code={EmailDomainsSource}>
         <EmailDomainsAutoComplete />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoAsyncTitle}
-        description={t.demoAsyncDesc}
-        code={AsyncSearchSource}
-      >
+      <DemoBox title={t.demoAsyncTitle} description={t.demoAsyncDesc} code={AsyncSearchSource}>
         <AsyncSearchAutoComplete />
       </DemoBox>
 
@@ -100,25 +109,21 @@ export function AutoCompleteDemo() {
         <StatesAutoComplete />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideAutoComplete />
       </DemoBox>
 
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledAutoComplete />
+      <DemoBox
+        title={t.demoFloatingLabelTitle}
+        description={t.demoFloatingLabelDesc}
+        code={FloatingLabelSource}
+      >
+        <FloatingLabelAutoComplete />
       </DemoBox>
 
       <PropsTable title={t.tableAutoCompleteApi} data={autoCompleteProps} />
       <PropsTable title={t.tableOptionApi} data={optionProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={autoCompleteCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={autoCompleteCssVars} />
     </ComponentDoc>
   )
 }

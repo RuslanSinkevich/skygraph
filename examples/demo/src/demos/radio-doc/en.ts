@@ -20,8 +20,6 @@ export const radioDocEn = {
   demoInFormDesc: 'RadioGroup wrapped in Field with validation.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global tokens to rebrand a single group.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Native radiogroup + inputs, no SkyGraph classes.',
 
   tableRadioGroupApi: 'RadioGroup API',
   tableRadioOptionApi: 'RadioOption',

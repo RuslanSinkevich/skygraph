@@ -22,8 +22,6 @@ export const sliderDocEn = {
   demoInFormDesc: 'Slider plugged into `<Field>`.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global tokens on a wrapper to rebrand.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'DOM & ARIA stay; classes drop.',
 
   tableSliderApi: 'Slider API',
   tableCssVars: 'CSS Variables',
@@ -42,7 +40,8 @@ export const sliderDocEn = {
   cssHint:
     'The root stretches with `width: 100%` and `--sg-slider-min-inline-size`. `--sg-color-primary` paints the fill and handle border; `--sg-color-border` the rail.',
 
-  cssSgSliderMinInlineSize: 'Minimum width (flex/grid); derived from `--sg-font-size`, override freely',
+  cssSgSliderMinInlineSize:
+    'Minimum width (flex/grid); derived from `--sg-font-size`, override freely',
   cssSgColorPrimary: 'Fill color and handle border color',
   cssSgColorPrimaryBg: 'Handle focus ring color',
   cssSgColorBorder: 'Track (rail) color',

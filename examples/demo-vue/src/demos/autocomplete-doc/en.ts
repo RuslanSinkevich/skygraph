@@ -26,8 +26,12 @@ export const autoCompleteDocEn = {
   demoSizesDesc: 'Small / default / large, aligned with Input.',
   demoStatesTitle: 'Disabled states',
   demoStatesDesc: '`disabled` blocks editing. Vue has no loading state yet (parity gap).',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope `--sg-input-*` and global tokens to rebrand one instance.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scopes built from AutoComplete tokens: green brand, dark field (with suggestions panel) and glass pick.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the AutoComplete field: glides up on focus / typing or when the field is filled.',
   demoUnstyledTitle: 'Unstyled',
   demoUnstyledDesc: 'Headless mode — semantics only, no SkyGraph classes.',
 

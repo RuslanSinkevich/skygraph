@@ -12,6 +12,6 @@
  * dictionaries live in `./types/*` and `./apps/*` and are not re-exported
  * from the package root.
  */
-export type { ShowcasesLocale, ShowcaseCategoryKey } from './types'
+export type { ShowcasesLocale, ShowcaseCategoryKey, OrgDept } from './types'
 export { showcasesLocaleEn } from './en'
 export { showcasesLocaleRu } from './ru'

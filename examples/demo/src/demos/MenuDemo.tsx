@@ -28,8 +28,6 @@ import { CustomGlassTopNavMenu } from './menu/CustomGlassTopNav.demo'
 import CustomGlassTopNavSource from './menu/CustomGlassTopNav.demo?raw'
 import { CustomCommandPaletteMenu } from './menu/CustomCommandPalette.demo'
 import CustomCommandPaletteSource from './menu/CustomCommandPalette.demo?raw'
-import { UnstyledMenu } from './menu/Unstyled.demo'
-import UnstyledSource from './menu/Unstyled.demo?raw'
 
 export function MenuDemo() {
   const t = useMenuDocStrings()
@@ -225,10 +223,6 @@ export function MenuDemo() {
         code={CustomCommandPaletteSource}
       >
         <CustomCommandPaletteMenu />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledMenu />
       </DemoBox>
 
       <PropsTable title={t.tableMenuApi} data={menuProps} />

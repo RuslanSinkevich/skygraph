@@ -30,11 +30,10 @@ export const collapseDocRu: { [K in keyof typeof collapseDocEn]: string } = {
   demoSizesTitle: 'Размеры',
   demoSizesDesc: 'Маленький / средний / большой.',
   demoControlledTitle: 'Контролируемый',
-  demoControlledDesc: 'Управляйте набором открытых сами — добавьте кнопки «Развернуть всё» / «Свернуть всё».',
+  demoControlledDesc:
+    'Управляйте набором открытых сами — добавьте кнопки «Развернуть всё» / «Свернуть всё».',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Ребрендинг через скоупленные CSS-переменные — пример с тёмными панелями.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Aria и логика аккордеона остаются — стили подставьте свои.',
 
   tableCollapseApi: 'API Collapse',
   tableCollapseItem: 'CollapseItem',

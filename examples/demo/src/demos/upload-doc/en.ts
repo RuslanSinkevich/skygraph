@@ -6,7 +6,8 @@ export const uploadDocEn = {
   pageTitle: 'Upload',
   pageLead:
     'Hidden native file input with a swappable trigger and an optional controlled file list. No network layer — you own the transport.',
-  pageWhen1: 'When you need file selection inside a form; pair it with your own upload/progress logic.',
+  pageWhen1:
+    'When you need file selection inside a form; pair it with your own upload/progress logic.',
   pageWhen2: 'When the built-in list (uploading / done / error) is enough for UX feedback.',
   pageWhen3: 'When you want a branded trigger — Upload accepts any ReactNode as children.',
 
@@ -26,8 +27,6 @@ export const uploadDocEn = {
   demoDisabledDesc: 'Block the trigger or swap it for a loading state.',
   demoTokensOverrideTitle: 'Tokens override',
   demoTokensOverrideDesc: 'Scope global tokens on a wrapper to re-skin the list.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Just semantics — paint with your own CSS.',
 
   tableUploadApi: 'Upload API',
   tableUploadFile: 'UploadFile',

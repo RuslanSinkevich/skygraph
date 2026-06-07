@@ -23,15 +23,13 @@ export const notificationDocRu: { [K in keyof typeof notificationDocEn]: string 
   demoOnCloseTitle: 'Колбэк onClose',
   demoOnCloseDesc: 'Поймайте момент удаления тоста — вручную или по таймеру авто-закрытия.',
   demoRichTitle: 'Сложное содержимое',
-  demoRichDesc: '`message` и `description` принимают любой ReactNode — кнопки, ссылки, прогресс-бары.',
+  demoRichDesc:
+    '`message` и `description` принимают любой ReactNode — кнопки, ссылки, прогресс-бары.',
   demoDestroyTitle: 'Удалить все',
   demoDestroyDesc: '`notification.destroy()` чистит весь стор, независимо от placement.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Визуал карточек собирается из глобальных дизайн-токенов — переопределяйте их на `:root` или на верхнеуровневой обёртке, где также живёт `<NotificationContainer/>`.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc:
-    'Снимите все классы `sg-notification-*` через `<NotificationContainer unstyled/>`. Стор и портал остаются — карточки рисуете сами.',
 
   tableConfig: 'NotificationConfig',
   tableContainer: 'NotificationContainer',
@@ -48,7 +46,8 @@ export const notificationDocRu: { [K in keyof typeof notificationDocEn]: string 
   cfgKey: 'Стабильный id для React-ключа и ручного удаления. Генерируется, если не задан.',
   cfgOnClose: 'Срабатывает, когда тост удалён из стора (вручную или авто).',
 
-  containerPlacement: 'Угол, который слушает данный экземпляр. Один контейнер на каждый используемый угол.',
+  containerPlacement:
+    'Угол, который слушает данный экземпляр. Один контейнер на каждый используемый угол.',
   containerUnstyled: 'Снять классы `sg-notification-*` с контейнера и карточек.',
   containerClassName: 'Дополнительный className обёртки.',
   containerStyle: 'Inline-стиль обёртки.',

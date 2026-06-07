@@ -14,8 +14,6 @@ import { NoFooterModal } from './modal/NoFooter.demo'
 import NoFooterSource from './modal/NoFooter.demo?raw'
 import { TokensOverrideModal } from './modal/TokensOverride.demo'
 import TokensOverrideSource from './modal/TokensOverride.demo?raw'
-import { UnstyledModal } from './modal/Unstyled.demo'
-import UnstyledSource from './modal/Unstyled.demo?raw'
 import { DefaultFooterModal } from './modal/DefaultFooter.demo'
 import DefaultFooterSource from './modal/DefaultFooter.demo?raw'
 
@@ -31,7 +29,12 @@ export function ModalDemo() {
       { name: 'onOk', description: t.propOnOk, type: '() => void | Promise<void>' },
       { name: 'okText', description: t.propOkText, type: 'string' },
       { name: 'cancelText', description: t.propCancelText, type: 'string' },
-      { name: 'okType', description: t.propOkType, type: "'primary' | 'default' | 'dashed' | 'text'", default: "'primary'" },
+      {
+        name: 'okType',
+        description: t.propOkType,
+        type: "'primary' | 'default' | 'dashed' | 'text'",
+        default: "'primary'",
+      },
       { name: 'confirmLoading', description: t.propConfirmLoading, type: 'boolean' },
       { name: 'children', description: t.propChildren, type: 'ReactNode' },
       { name: 'width', description: t.propWidth, type: 'number | string', default: '520' },
@@ -46,13 +49,25 @@ export function ModalDemo() {
       { name: 'sg-z-modal', default: '1000', description: t.cssZModal },
       { name: 'sg-color-overlay', default: 'rgba(0, 0, 0, 0.45)', description: t.cssOverlay },
       { name: 'sg-color-bg-elevated', default: 'var(--sg-gray-1)', description: t.cssBgElevated },
-      { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: t.cssBorderSecondary },
+      {
+        name: 'sg-color-border-secondary',
+        default: 'var(--sg-gray-4)',
+        description: t.cssBorderSecondary,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssText },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssTextTertiary },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssTextTertiary,
+      },
       { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: t.cssBgHover },
       { name: 'sg-border-radius-lg', default: '8px', description: t.cssRadiusLg },
       { name: 'sg-border-radius-sm', default: '4px', description: t.cssRadiusSm },
-      { name: 'sg-shadow-lg', default: '0 6px 16px rgba(0, 0, 0, 0.12)', description: t.cssShadowLg },
+      {
+        name: 'sg-shadow-lg',
+        default: '0 6px 16px rgba(0, 0, 0, 0.12)',
+        description: t.cssShadowLg,
+      },
       { name: 'sg-padding-lg', default: '16px', description: t.cssPaddingLg },
       { name: 'sg-padding-md', default: '12px', description: t.cssPaddingMd },
       { name: 'sg-padding-sm', default: '8px', description: t.cssPaddingSm },
@@ -75,7 +90,11 @@ export function ModalDemo() {
         <BasicModal />
       </DemoBox>
 
-      <DemoBox title={t.demoDefaultFooterTitle} description={t.demoDefaultFooterDesc} code={DefaultFooterSource}>
+      <DemoBox
+        title={t.demoDefaultFooterTitle}
+        description={t.demoDefaultFooterDesc}
+        code={DefaultFooterSource}
+      >
         <DefaultFooterModal />
       </DemoBox>
 
@@ -93,10 +112,6 @@ export function ModalDemo() {
 
       <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideModal />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledModal />
       </DemoBox>
 
       <PropsTable title={t.tableModalApi} data={modalProps} />

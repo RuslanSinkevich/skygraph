@@ -18,8 +18,6 @@ import { InFormRate } from './rate/InForm.demo'
 import InFormSource from './rate/InForm.demo?raw'
 import { TokensOverrideRate } from './rate/TokensOverride.demo'
 import TokensOverrideSource from './rate/TokensOverride.demo?raw'
-import { UnstyledRate } from './rate/Unstyled.demo'
-import UnstyledSource from './rate/Unstyled.demo?raw'
 
 export function RateDemo() {
   const t = useRateDocStrings()
@@ -66,7 +64,11 @@ export function RateDemo() {
         <BasicRate />
       </DemoBox>
 
-      <DemoBox title={t.demoAllowHalfTitle} description={t.demoAllowHalfDesc} code={AllowHalfSource}>
+      <DemoBox
+        title={t.demoAllowHalfTitle}
+        description={t.demoAllowHalfDesc}
+        code={AllowHalfSource}
+      >
         <AllowHalfRate />
       </DemoBox>
 
@@ -74,7 +76,11 @@ export function RateDemo() {
         <CountRate />
       </DemoBox>
 
-      <DemoBox title={t.demoCustomCharacterTitle} description={t.demoCustomCharacterDesc} code={CustomCharacterSource}>
+      <DemoBox
+        title={t.demoCustomCharacterTitle}
+        description={t.demoCustomCharacterDesc}
+        code={CustomCharacterSource}
+      >
         <CustomCharacterRate />
       </DemoBox>
 
@@ -86,20 +92,16 @@ export function RateDemo() {
         <InFormRate />
       </DemoBox>
 
-      <DemoBox title={t.demoTokensOverrideTitle} description={t.demoTokensOverrideDesc} code={TokensOverrideSource}>
+      <DemoBox
+        title={t.demoTokensOverrideTitle}
+        description={t.demoTokensOverrideDesc}
+        code={TokensOverrideSource}
+      >
         <TokensOverrideRate />
       </DemoBox>
 
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledRate />
-      </DemoBox>
-
       <PropsTable title={t.tableRateApi} data={rateProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={rateCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={rateCssVars} />
     </ComponentDoc>
   )
 }

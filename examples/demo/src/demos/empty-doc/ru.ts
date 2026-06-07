@@ -28,8 +28,6 @@ export const emptyDocRu: { [K in keyof typeof emptyDocEn]: string } = {
   demoInCardDesc: 'Канонический вариант размещения внутри Table / Card / List.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Перекрасьте иллюстрацию и подпись через CSS-переменные.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Сохраните структуру и aria, везите свою раскладку.',
 
   tableEmptyApi: 'API Empty',
   tableCssVars: 'CSS-переменные',

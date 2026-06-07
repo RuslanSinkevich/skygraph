@@ -29,9 +29,9 @@ export const inputDocEn = {
   demoValidationDesc: 'aria-invalid flips the error styling without !important.',
   demoTokensTitle: 'Component tokens',
   demoTokensDesc: 'Scope --sg-input-* to reshape only these inputs.',
-  demoTokensOverrideTitle: 'Token override themes',
+  demoTokensOverrideTitle: 'Token override',
   demoTokensOverrideDesc:
-    'Two ready-made looks (Soft pill, Amber filled) built only from --sg-input-* tokens — focus ring and states stay intact.',
+    'Three ready-made scopes built from --sg-input-* tokens: green brand, dark field and glass pick. Only paint / shape changes — focus ring and states stay intact.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Pure-CSS floating label (Material 3-ish). The label sits inside the field and glides to the top-left on focus or when the field has a value. Outlined and filled variants — no core changes, just `:has(input:focus)` + `:has(input:not(:placeholder-shown))`.',

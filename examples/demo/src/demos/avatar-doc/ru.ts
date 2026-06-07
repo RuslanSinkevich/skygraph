@@ -30,8 +30,6 @@ export const avatarDocRu: { [K in keyof typeof avatarDocEn]: string } = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Увеличьте `--sg-border-radius` для более мягких квадратов, замените `--sg-color-text-disabled` для брендового fallback.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Уберите все классы sg-avatar — рисуете сами.',
 
   tableAvatarApi: 'API Avatar',
   tableCssVars: 'CSS-переменные',

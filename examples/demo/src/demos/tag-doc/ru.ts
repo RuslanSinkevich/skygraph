@@ -29,8 +29,6 @@ export const tagDocRu: { [K in keyof typeof tagDocEn]: string } = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Скруглите углы до 999px для pill, перекрасьте палитру пресетов через цветовые токены.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Уберите все классы sg-tag-* — рисуете сами.',
 
   tableTagApi: 'API Tag',
   tableCssVars: 'CSS-переменные',

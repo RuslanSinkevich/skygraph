@@ -27,8 +27,6 @@ export const emptyDocEn = {
   demoInCardDesc: 'Canonical placement inside a Table / Card / List.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Retint the illustration + caption via CSS variables.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Keep structure + aria, ship your own layout.',
 
   tableEmptyApi: 'Empty API',
   tableCssVars: 'CSS Variables',

@@ -23,15 +23,9 @@ export const buttonDocEn = {
   demoDisabledDesc: 'Dim + aria-disabled across every variant.',
   demoIconTitle: 'With icon',
   demoIconDesc: 'Flex gap keeps icon + label aligned at every size.',
-  demoTokensTitle: 'Component tokens',
-  demoTokensDesc: 'Scope --sg-btn-* for a local reshape (pills, chunky, compact).',
-  demoTokensOverrideTitle: 'Custom button styles',
+  demoTokensOverrideTitle: 'Token override',
   demoTokensOverrideDesc:
-    'Four distinct looks (glass, neumorphic, gradient pill, brutalist) built from `--sg-btn-*` tokens plus a small custom CSS layer — same Button component, fully accessible.',
-  demoBrandTitle: 'Scoped brand',
-  demoBrandDesc: 'Override --sg-color-primary* to rebrand a subtree.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop all CSS, keep the button semantics.',
+    'Three scoped recipes — branded green, dark field, glass pick — reskin the same Button via --sg-btn-* and the global primary palette; hover / focus / disabled stay intact.',
 
   tableButtonApi: 'Button API',
   tableCssVars: 'CSS Variables',

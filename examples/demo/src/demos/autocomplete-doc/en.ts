@@ -20,10 +20,12 @@ export const autoCompleteDocEn = {
   demoSizesDesc: 'Small / default / large, aligned with Input.',
   demoStatesTitle: 'States',
   demoStatesDesc: 'Disabled and loading.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope --sg-input-* and global tokens to rebrand one instance.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Headless mode — semantics only, no SkyGraph classes.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scoped recipes — branded green, dark field, glass pick — reskin one AutoComplete.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the field — it rises on focus or once typed. Pure CSS + the controlled value.',
 
   tableAutoCompleteApi: 'AutoComplete API',
   tableOptionApi: 'AutoCompleteOption',
@@ -50,7 +52,8 @@ export const autoCompleteDocEn = {
   cssHint:
     'AutoComplete reuses the full `--sg-input-*` group for the field itself; the dropdown uses the same globals as Select (bg-elevated, bg-hover, shadow-lg, border-radius).',
 
-  cssSgInputAll: 'AutoComplete reuses the full --sg-input-* group for the field itself — see Input for the list.',
+  cssSgInputAll:
+    'AutoComplete reuses the full --sg-input-* group for the field itself — see Input for the list.',
   cssSgColorBgElevated: 'Dropdown background',
   cssSgColorBgHover: 'Highlight on suggestion hover',
   cssSgColorText: 'Suggestion text color',

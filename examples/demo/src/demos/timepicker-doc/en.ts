@@ -24,10 +24,12 @@ export const timePickerDocEn = {
   demoSizesDesc: 'Aligned with Input / DatePicker heights.',
   demoStatesTitle: 'States',
   demoStatesDesc: 'Disabled and loading.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global tokens on a wrapper to rebrand an instance.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Headless mode, native classes removed.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scoped recipes — branded green, dark field, glass pick — reskin one TimePicker.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the trigger — it rises on focus or once a time is selected. Pure CSS + the controlled value.',
 
   tableTimePickerApi: 'TimePicker API',
   tableTimeRangePickerApi: 'TimeRangePicker API',

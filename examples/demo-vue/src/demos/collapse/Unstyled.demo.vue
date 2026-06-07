@@ -1,13 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` strips every class but keeps the keyboard / aria
- * plumbing and the accordion logic. Pair it with your own CSS
- * (Tailwind, CSS modules, etc.) to ship any layout.
- *
- * Vue note: unstyled mode renders raw `<button>` + `<div>` children,
- * so the demo styles are a global (non-scoped) block targeting
- * `.demo-raw-collapse-vue` + descendants.
- */
 import { SgCollapse } from '@skygraph/vue'
 import { sampleItems } from './data'
 </script>

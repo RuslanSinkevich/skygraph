@@ -5,7 +5,8 @@ import { selectDocEn } from './en'
  */
 export const selectDocRu: { [K in keyof typeof selectDocEn]: string } = {
   pageTitle: 'Select',
-  pageLead: 'Селектор одного значения с клавиатурной навигацией, состояниями загрузки и нативным fallback.',
+  pageLead:
+    'Селектор одного значения с клавиатурной навигацией, состояниями загрузки и нативным fallback.',
   pageWhen1: 'Когда пользователь выбирает одно значение из небольшого предопределённого списка.',
   pageWhen2: 'Для длинных списков с поиском используйте AutoComplete.',
   pageWhen3: 'Внутри форм — оберните в <Field> для валидации.',
@@ -23,9 +24,11 @@ export const selectDocRu: { [K in keyof typeof selectDocEn]: string } = {
   demoNumericTitle: 'Числовые значения',
   demoNumericDesc: '`value` сохраняет числовые типы (важно для ID).',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп одного Select на другие токены — тот же компонент, другая шкурка.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Нативный <select> без стилей библиотеки — headless-режим.',
+  demoTokensDesc:
+    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один и тот же Select.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись над триггером Select — уезжает вверх при фокусе или после выбора значения. Чистый CSS + управляемое значение, без правок ядра.',
 
   tableSelectApi: 'API Select',
   tableOptionApi: 'SelectOption',

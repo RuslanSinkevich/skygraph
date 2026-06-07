@@ -21,9 +21,8 @@ export const popconfirmDocEn = {
   demoTableTitle: 'Row-level delete',
   demoTableDesc: "Canonical table usage — placement='left' keeps the bubble inside the body.",
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Retint every surface with --sg-color-bg-elevated, --sg-color-warning, and --sg-color-primary.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Behaviour + focus trap + ARIA; painting is yours.',
+  demoTokensDesc:
+    'Retint every surface with --sg-color-bg-elevated, --sg-color-warning, and --sg-color-primary.',
 
   tablePopconfirmApi: 'Popconfirm API',
   tableCssVars: 'CSS Variables',

@@ -21,8 +21,6 @@ export const radioDocRu: { [K in keyof typeof radioDocEn]: string } = {
   demoInFormDesc: 'RadioGroup в Field с валидацией.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоуп глобальных токенов для ребрендинга одной группы.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Нативный radiogroup + inputs, без классов SkyGraph.',
 
   tableRadioGroupApi: 'API RadioGroup',
   tableRadioOptionApi: 'RadioOption',

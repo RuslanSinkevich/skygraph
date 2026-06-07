@@ -14,8 +14,6 @@ import { StatesInput } from './input/States.demo'
 import StatesSource from './input/States.demo?raw'
 import { ValidationInput } from './input/Validation.demo'
 import ValidationSource from './input/Validation.demo?raw'
-import { ComponentTokensInput } from './input/ComponentTokens.demo'
-import ComponentTokensSource from './input/ComponentTokens.demo?raw'
 import { TokensOverrideInput } from './input/TokensOverride.demo'
 import TokensOverrideSource from './input/TokensOverride.demo?raw'
 import { FloatingLabelInput } from './input/FloatingLabel.demo'
@@ -28,8 +26,6 @@ import { TextareaStates } from './input/TextareaStates.demo'
 import TextareaStatesSource from './input/TextareaStates.demo?raw'
 import { InFormInput } from './input/InForm.demo'
 import InFormSource from './input/InForm.demo?raw'
-import { UnstyledInput } from './input/Unstyled.demo'
-import UnstyledSource from './input/Unstyled.demo?raw'
 
 export function InputDemo() {
   const t = useInputDocStrings()
@@ -203,14 +199,6 @@ export function InputDemo() {
       </DemoBox>
 
       <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={ComponentTokensSource}
-      >
-        <ComponentTokensInput />
-      </DemoBox>
-
-      <DemoBox
         title={t.demoTokensOverrideTitle}
         description={t.demoTokensOverrideDesc}
         code={TokensOverrideSource}
@@ -252,10 +240,6 @@ export function InputDemo() {
 
       <DemoBox title={t.demoInFormTitle} description={t.demoInFormDesc} code={InFormSource}>
         <InFormInput />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledInput />
       </DemoBox>
 
       <PropsTable title={t.tableInputApi} data={inputProps} />

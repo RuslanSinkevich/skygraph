@@ -32,6 +32,8 @@ import SizesTreeSelectDemo from './treeselect/Sizes.demo.vue'
 import SizesSource from './treeselect/Sizes.demo.vue?raw'
 import TokensOverrideTreeSelectDemo from './treeselect/TokensOverride.demo.vue'
 import TokensOverrideSource from './treeselect/TokensOverride.demo.vue?raw'
+import FloatingLabelTreeSelectDemo from './treeselect/FloatingLabel.demo.vue'
+import FloatingLabelSource from './treeselect/FloatingLabel.demo.vue?raw'
 
 const t = useTreeSelectDocStrings()
 
@@ -217,6 +219,14 @@ const treeSelectCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideTreeSelectDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoFloatingLabelTitle"
+      :description="t.demoFloatingLabelDesc"
+      :code="FloatingLabelSource"
+    >
+      <FloatingLabelTreeSelectDemo />
     </DemoBox>
 
     <template #api>

@@ -33,6 +33,8 @@ import StatesTimePickerDemo from './timepicker/States.demo.vue'
 import StatesSource from './timepicker/States.demo.vue?raw'
 import TokensOverrideTimePickerDemo from './timepicker/TokensOverride.demo.vue'
 import TokensOverrideSource from './timepicker/TokensOverride.demo.vue?raw'
+import FloatingLabelTimePickerDemo from './timepicker/FloatingLabel.demo.vue'
+import FloatingLabelSource from './timepicker/FloatingLabel.demo.vue?raw'
 import UnstyledTimePickerDemo from './timepicker/Unstyled.demo.vue'
 import UnstyledSource from './timepicker/Unstyled.demo.vue?raw'
 
@@ -264,6 +266,14 @@ const timePickerCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideTimePickerDemo />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoFloatingLabelTitle"
+      :description="t.demoFloatingLabelDesc"
+      :code="FloatingLabelSource"
+    >
+      <FloatingLabelTimePickerDemo />
     </DemoBox>
 
     <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">

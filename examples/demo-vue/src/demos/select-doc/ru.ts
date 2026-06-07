@@ -28,7 +28,11 @@ export const selectDocRu: { [K in keyof typeof selectDocEn]: string } = {
   demoNumericTitle: 'Числовые значения',
   demoNumericDesc: '`value` сохраняет числовые типы (важно для ID).',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп одного Select на другие токены — тот же компонент, другая шкурка.',
+  demoTokensDesc:
+    'Три скоупа на токенах Select: зелёный бренд, тёмное поле (с фоном dropdown) и glass pick — тот же компонент, разные шкурки.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись на триггере Select: уезжает вверх при фокусе или когда значение выбрано (`:focus-within` + класс заполненности).',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Нативный <select> без стилей библиотеки — headless-режим.',
 

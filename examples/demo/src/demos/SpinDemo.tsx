@@ -22,8 +22,6 @@ import { FullscreenSpin } from './spin/Fullscreen.demo'
 import FullscreenSource from './spin/Fullscreen.demo?raw'
 import { TokensOverrideSpin } from './spin/TokensOverride.demo'
 import TokensOverrideSource from './spin/TokensOverride.demo?raw'
-import { UnstyledSpin } from './spin/Unstyled.demo'
-import UnstyledSource from './spin/Unstyled.demo?raw'
 
 export function SpinDemo() {
   const t = useSpinDocStrings()
@@ -31,7 +29,12 @@ export function SpinDemo() {
   const spinProps = useMemo<PropDef[]>(
     () => [
       { name: 'spinning', description: t.propSpinning, type: 'boolean', default: 'true' },
-      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'middle' | 'large'",
+        default: "'middle'",
+      },
       { name: 'delay', description: t.propDelay, type: 'number' },
       { name: 'tip', description: t.propTip, type: 'string' },
       { name: 'fullscreen', description: t.propFullscreen, type: 'boolean', default: 'false' },
@@ -47,7 +50,11 @@ export function SpinDemo() {
   const spinCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-spin-color', default: 'var(--sg-color-primary)', description: t.cssSpinColor },
-      { name: 'sg-spin-overlay-bg', default: 'rgba(255, 255, 255, 0.65)', description: t.cssSpinOverlayBg },
+      {
+        name: 'sg-spin-overlay-bg',
+        default: 'rgba(255, 255, 255, 0.65)',
+        description: t.cssSpinOverlayBg,
+      },
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssPrimary },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssFontSizeSm },
       { name: 'sg-margin-sm', default: '8px', description: t.cssMarginSm },
@@ -72,7 +79,11 @@ export function SpinDemo() {
         <SizesSpin />
       </DemoBox>
 
-      <DemoBox title={t.demoContainerTitle} description={t.demoContainerDesc} code={ContainerSource}>
+      <DemoBox
+        title={t.demoContainerTitle}
+        description={t.demoContainerDesc}
+        code={ContainerSource}
+      >
         <ContainerSpin />
       </DemoBox>
 
@@ -84,24 +95,32 @@ export function SpinDemo() {
         <DelaySpin />
       </DemoBox>
 
-      <DemoBox title={t.demoCustomColorTitle} description={t.demoCustomColorDesc} code={CustomColorSource}>
+      <DemoBox
+        title={t.demoCustomColorTitle}
+        description={t.demoCustomColorDesc}
+        code={CustomColorSource}
+      >
         <CustomColorSpin />
       </DemoBox>
 
-      <DemoBox title={t.demoCustomIndicatorTitle} description={t.demoCustomIndicatorDesc} code={CustomIndicatorSource}>
+      <DemoBox
+        title={t.demoCustomIndicatorTitle}
+        description={t.demoCustomIndicatorDesc}
+        code={CustomIndicatorSource}
+      >
         <CustomIndicatorSpin />
       </DemoBox>
 
-      <DemoBox title={t.demoFullscreenTitle} description={t.demoFullscreenDesc} code={FullscreenSource}>
+      <DemoBox
+        title={t.demoFullscreenTitle}
+        description={t.demoFullscreenDesc}
+        code={FullscreenSource}
+      >
         <FullscreenSpin />
       </DemoBox>
 
       <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideSpin />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledSpin />
       </DemoBox>
 
       <PropsTable title={t.tableSpinApi} data={spinProps} />

@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` drops the container chrome and renders the active
- * slide as-is, plus numeric `<button>` controls. Autoplay still
- * works; build your own transition in CSS.
- */
 import { SgCarousel } from '@skygraph/vue'
 import { slideBase, paletteColors } from './data'
 </script>
@@ -17,7 +12,6 @@ import { slideBase, paletteColors } from './data'
 </template>
 
 <style>
-/* Global (not scoped) so descendants of SgCarousel.unstyled receive styling. */
 .demo-raw-carousel-vue {
   display: flex;
   flex-direction: column;

@@ -1,23 +1,11 @@
 <script setup lang="ts">
-/**
- * `unstyled` drops every CSS class and renders a native radio
- * group — behaviour stays (`role="radiogroup"`, keyboard,
- * disabled), but styling is 100% yours.
- */
-import { computed } from 'vue'
 import { SgSegmented } from '@skygraph/vue'
-import { useDemoStrings } from '../../i18n'
 
-const t = useDemoStrings({
-  en: { map: 'Map', transit: 'Transit', satellite: 'Satellite' },
-  ru: { map: 'Карта', transit: 'Транспорт', satellite: 'Спутник' },
-})
-
-const options = computed(() => [
-  { label: t.value.map, value: 'Map' },
-  { label: t.value.transit, value: 'Transit' },
-  { label: t.value.satellite, value: 'Satellite' },
-])
+const options = [
+  { label: 'Map', value: 'Map' },
+  { label: 'Transit', value: 'Transit' },
+  { label: 'Satellite', value: 'Satellite' },
+]
 </script>
 
 <template>

@@ -7,7 +7,7 @@ export const breadcrumbDocEn = {
   pageLead:
     'Hierarchical location indicator. The last segment is non-interactive and marks the current page; everything before it is linked.',
   pageWhen1: 'Three or more levels of hierarchy where users need a way back to a parent.',
-  pageWhen2: "Long pages where the page title alone doesn\u2019t tell you where you are.",
+  pageWhen2: 'Long pages where the page title alone doesn\u2019t tell you where you are.',
   pageWhen3: 'Router-driven apps that need a lightweight navigation trail.',
 
   demoBasicTitle: 'Basic',
@@ -22,8 +22,6 @@ export const breadcrumbDocEn = {
   demoDropdownDesc: 'Embed a Dropdown inside a segment for sibling navigation.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope the text palette + `--sg-color-primary` to rebrand.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop the classes; the <nav> + a11y label stay.',
 
   tableBreadcrumbApi: 'Breadcrumb API',
   tableBreadcrumbItem: 'BreadcrumbItem',

@@ -29,8 +29,6 @@ export const skeletonDocRu: { [K in keyof typeof skeletonDocEn]: string } = {
   demoTokensTitle: 'Кастомные темы скелета',
   demoTokensDesc:
     'Три палитры (светлая карточка, индиго-фирменная, тёмный режим) — меняются только `--sg-skeleton-bg` и `--sg-skeleton-shimmer`; шиммер всегда читается, потому что блик ярче базы.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Сохранить aria + структуру; стили ваши.',
 
   tableSkeletonApi: 'API Skeleton',
   tableCssVars: 'CSS-переменные',

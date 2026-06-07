@@ -20,8 +20,6 @@ import { DisabledUpload } from './upload/Disabled.demo'
 import DisabledSource from './upload/Disabled.demo?raw'
 import { TokensOverrideUpload } from './upload/TokensOverride.demo'
 import TokensOverrideSource from './upload/TokensOverride.demo?raw'
-import { UnstyledUpload } from './upload/Unstyled.demo'
-import UnstyledSource from './upload/Unstyled.demo?raw'
 
 export function UploadDemo() {
   const t = useUploadDocStrings()
@@ -56,9 +54,17 @@ export function UploadDemo() {
 
   const uploadCssVars = useMemo<CssVarDef[]>(
     () => [
-      { name: 'sg-color-border-secondary', default: 'var(--sg-gray-4)', description: t.cssSgColorBorderSecondary },
+      {
+        name: 'sg-color-border-secondary',
+        default: 'var(--sg-gray-4)',
+        description: t.cssSgColorBorderSecondary,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextTertiary,
+      },
       { name: 'sg-color-error', default: 'var(--sg-red-5)', description: t.cssSgColorError },
       { name: 'sg-border-radius-sm', default: '4px', description: t.cssSgBorderRadiusSm },
       { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
@@ -67,7 +73,11 @@ export function UploadDemo() {
       { name: 'sg-margin-xs', default: '8px', description: t.cssSgMarginXs },
       { name: 'sg-padding-xs', default: '8px', description: t.cssSgPaddingXs },
       { name: 'sg-padding-sm', default: '12px', description: t.cssSgPaddingSm },
-      { name: 'sg-spin-color', default: 'var(--sg-color-text-tertiary)', description: t.cssSgSpinColor },
+      {
+        name: 'sg-spin-color',
+        default: 'var(--sg-color-text-tertiary)',
+        description: t.cssSgSpinColor,
+      },
     ],
     [t],
   )
@@ -90,15 +100,27 @@ export function UploadDemo() {
         <AcceptUpload />
       </DemoBox>
 
-      <DemoBox title={t.demoCustomTriggerTitle} description={t.demoCustomTriggerDesc} code={CustomTriggerSource}>
+      <DemoBox
+        title={t.demoCustomTriggerTitle}
+        description={t.demoCustomTriggerDesc}
+        code={CustomTriggerSource}
+      >
         <CustomTriggerUpload />
       </DemoBox>
 
-      <DemoBox title={t.demoWithProgressTitle} description={t.demoWithProgressDesc} code={WithProgressSource}>
+      <DemoBox
+        title={t.demoWithProgressTitle}
+        description={t.demoWithProgressDesc}
+        code={WithProgressSource}
+      >
         <WithProgressUpload />
       </DemoBox>
 
-      <DemoBox title={t.demoErrorStateTitle} description={t.demoErrorStateDesc} code={ErrorStateSource}>
+      <DemoBox
+        title={t.demoErrorStateTitle}
+        description={t.demoErrorStateDesc}
+        code={ErrorStateSource}
+      >
         <ErrorStateUpload />
       </DemoBox>
 
@@ -106,21 +128,17 @@ export function UploadDemo() {
         <DisabledUpload />
       </DemoBox>
 
-      <DemoBox title={t.demoTokensOverrideTitle} description={t.demoTokensOverrideDesc} code={TokensOverrideSource}>
+      <DemoBox
+        title={t.demoTokensOverrideTitle}
+        description={t.demoTokensOverrideDesc}
+        code={TokensOverrideSource}
+      >
         <TokensOverrideUpload />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledUpload />
       </DemoBox>
 
       <PropsTable title={t.tableUploadApi} data={uploadProps} />
       <PropsTable title={t.tableUploadFile} data={uploadFileProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={uploadCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={uploadCssVars} />
     </ComponentDoc>
   )
 }

@@ -1,46 +1,57 @@
 import { useState } from 'react'
 import { Button, Modal } from '@skygraph/react'
+import { useDemoStrings } from '../../i18n'
+import { TokenScopeCards } from '../_shared/TokenScopeCards'
 
 /**
- * Wrapping the Modal (and its trigger) in a token-scoped div re-skins
- * only that modal. Every `type="primary"` Button inside inherits the
- * same palette — no component prop changes needed.
+ * Scoping tokens on the wrapper reskins the trigger and the dialog it opens —
+ * every `type="primary"` button inherits the scoped palette. Three recipes —
+ * branded green, dark field, glass pick.
  */
-export function TokensOverrideModal() {
+const STRINGS = {
+  en: {
+    open: 'Open modal',
+    title: 'Scoped tokens',
+    body: 'Primary palette is scoped here.',
+    cancel: 'Cancel',
+    ok: 'Confirm',
+  },
+  ru: {
+    open: 'Открыть',
+    title: 'Скоуп токенов',
+    body: 'Primary-палитра скоупится здесь.',
+    cancel: 'Отмена',
+    ok: 'Ок',
+  },
+} as const
+
+function ModalCard() {
+  const t = useDemoStrings(STRINGS)
   const [open, setOpen] = useState(false)
   return (
-    <div
-      style={
-        {
-          '--sg-color-primary': '#7c3aed',
-          '--sg-color-primary-hover': '#6d28d9',
-          '--sg-color-primary-active': '#5b21b6',
-          '--sg-color-primary-bg': '#f3e8ff',
-          '--sg-border-radius-lg': '14px',
-        } as React.CSSProperties
-      }
-    >
+    <>
       <Button type="primary" onClick={() => setOpen(true)}>
-        Open purple modal
+        {t.open}
       </Button>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title="Scoped tokens"
+        title={t.title}
         footer={
           <>
-            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={() => setOpen(false)}>{t.cancel}</Button>
             <Button type="primary" onClick={() => setOpen(false)}>
-              Confirm
+              {t.ok}
             </Button>
           </>
         }
       >
-        <p>
-          Inside this subtree, <code>--sg-color-primary</code> is purple and
-          the dialog radius is 14px. The rest of the app stays blue.
-        </p>
+        <p>{t.body}</p>
       </Modal>
-    </div>
+    </>
   )
+}
+
+export function TokensOverrideModal() {
+  return <TokenScopeCards render={() => <ModalCard />} />
 }

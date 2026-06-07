@@ -21,10 +21,12 @@ export const selectDocEn = {
   demoLoadingDesc: 'Loading on the select vs. a single option.',
   demoNumericTitle: 'Numeric values',
   demoNumericDesc: '`value` preserves number types (important for IDs).',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope one Select to different tokens — same component, different skin.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Native <select> with no library styling — headless mode.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scoped recipes — branded green, dark field, glass pick — reskin the same Select.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the Select trigger — it glides up on focus or once a value is chosen. Pure CSS + the controlled value, no core changes.',
 
   tableSelectApi: 'Select API',
   tableOptionApi: 'SelectOption',

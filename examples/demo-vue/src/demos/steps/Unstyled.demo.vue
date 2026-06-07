@@ -1,8 +1,4 @@
 <script setup lang="ts">
-/**
- * `unstyled` renders a plain list with `data-status` on each
- * row. Everything else — structure, click behaviour — stays.
- */
 import { SgSteps } from '@skygraph/vue'
 import { basicSteps } from './data'
 </script>

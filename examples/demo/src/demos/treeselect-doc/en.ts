@@ -22,8 +22,12 @@ export const treeSelectDocEn = {
   demoDisabledNodesDesc: 'Per-node `disabled` greys out specific rows.',
   demoSizesTitle: 'Sizes',
   demoSizesDesc: 'Three sizes, same structure.',
-  demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc: 'Scope tokens to theme one TreeSelect without touching the rest of the page.',
+  demoTokensOverrideTitle: 'Token override',
+  demoTokensOverrideDesc:
+    'Three scoped recipes — branded green, dark field, glass pick — reskin one TreeSelect.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the trigger — it rises on focus or once a node is chosen.',
 
   tableTreeSelectApi: 'TreeSelect API',
   tableTreeNodeData: 'TreeNodeData',

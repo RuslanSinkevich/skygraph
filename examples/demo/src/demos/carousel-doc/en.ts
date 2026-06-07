@@ -25,8 +25,6 @@ export const carouselDocEn = {
   demoHiddenDotsDesc: '`dots={false}` for decorative carousels.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope the dot colours to rebrand.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Active slide + numbered buttons, zero built-in CSS.',
 
   tableCarouselApi: 'Carousel API',
   tableCssVars: 'CSS Variables',

@@ -16,8 +16,6 @@ import { OnIconTooltip } from './tooltip/OnIcon.demo'
 import OnIconSource from './tooltip/OnIcon.demo?raw'
 import { TokensOverrideTooltip } from './tooltip/TokensOverride.demo'
 import TokensOverrideSource from './tooltip/TokensOverride.demo?raw'
-import { UnstyledTooltip } from './tooltip/Unstyled.demo'
-import UnstyledSource from './tooltip/Unstyled.demo?raw'
 
 export function TooltipDemo() {
   const t = useTooltipDocStrings()
@@ -25,7 +23,12 @@ export function TooltipDemo() {
   const tooltipProps = useMemo<PropDef[]>(
     () => [
       { name: 'title', description: t.propTitle, type: 'ReactNode' },
-      { name: 'placement', description: t.propPlacement, type: "'top' | 'bottom' | 'left' | 'right'", default: "'top'" },
+      {
+        name: 'placement',
+        description: t.propPlacement,
+        type: "'top' | 'bottom' | 'left' | 'right'",
+        default: "'top'",
+      },
       { name: 'children', description: t.propChildren, type: 'ReactElement' },
       { name: 'className', description: t.propClassName, type: 'string' },
       { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
@@ -57,7 +60,11 @@ export function TooltipDemo() {
         <BasicTooltip />
       </DemoBox>
 
-      <DemoBox title={t.demoPlacementTitle} description={t.demoPlacementDesc} code={PlacementSource}>
+      <DemoBox
+        title={t.demoPlacementTitle}
+        description={t.demoPlacementDesc}
+        code={PlacementSource}
+      >
         <PlacementTooltip />
       </DemoBox>
 
@@ -75,10 +82,6 @@ export function TooltipDemo() {
 
       <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideTooltip />
-      </DemoBox>
-
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledTooltip />
       </DemoBox>
 
       <PropsTable title={t.tableTooltipApi} data={tooltipProps} />

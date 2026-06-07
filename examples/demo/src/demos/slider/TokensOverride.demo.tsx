@@ -1,21 +1,11 @@
-import type { CSSProperties } from 'react'
 import { Slider } from '@skygraph/react'
+import { TokenScopeCards } from '../_shared/TokenScopeCards'
 
 /**
- * Slider uses only global tokens. The fill and handle follow
- * `--sg-color-primary`, the rail follows `--sg-color-border`, so
- * scoping those on a wrapper rebrands the whole control.
+ * Slider uses only global tokens — the fill and handle follow
+ * `--sg-color-primary`, the rail follows `--sg-color-border`. Three scoped
+ * recipes — branded green, dark field, glass pick — rebrand the control.
  */
-const scoped: CSSProperties = {
-  ['--sg-color-primary' as never]: '#f97316',
-  ['--sg-color-primary-bg' as never]: 'rgba(249, 115, 22, 0.2)',
-  ['--sg-color-border' as never]: '#fed7aa',
-}
-
 export function TokensOverrideSlider() {
-  return (
-    <div style={{ ...scoped }}>
-      <Slider defaultValue={60} />
-    </div>
-  )
+  return <TokenScopeCards render={() => <Slider defaultValue={60} />} />
 }

@@ -25,8 +25,6 @@ export const resultDocRu: { [K in keyof typeof resultDocEn]: string } = {
   demoContentDesc: '`children` отрисовываются внутри мягкой панели для диагностики.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Брендинг через CSS-переменные — оттенки статуса + панель контента.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Сохранить aria и структуру; раскраска ваша.',
 
   tableResultApi: 'API Result',
   tableCssVars: 'CSS-переменные',

@@ -18,8 +18,8 @@ import { InFormInputNumber } from './inputnumber/InForm.demo'
 import InFormSource from './inputnumber/InForm.demo?raw'
 import { TokensOverrideInputNumber } from './inputnumber/TokensOverride.demo'
 import TokensOverrideSource from './inputnumber/TokensOverride.demo?raw'
-import { UnstyledInputNumber } from './inputnumber/Unstyled.demo'
-import UnstyledSource from './inputnumber/Unstyled.demo?raw'
+import { FloatingLabelInputNumber } from './inputnumber/FloatingLabel.demo'
+import FloatingLabelSource from './inputnumber/FloatingLabel.demo?raw'
 
 export function InputNumberDemo() {
   const t = useInputNumberDocStrings()
@@ -37,7 +37,12 @@ export function InputNumberDemo() {
       { name: 'onBlur', description: t.propOnBlur, type: '() => void' },
       { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
       { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
-      { name: 'size', description: t.propSize, type: "'small' | 'middle' | 'large'", default: "'middle'" },
+      {
+        name: 'size',
+        description: t.propSize,
+        type: "'small' | 'middle' | 'large'",
+        default: "'middle'",
+      },
       { name: 'className', description: t.propClassName, type: 'string' },
       { name: 'style', description: t.propStyle, type: 'CSSProperties' },
       { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
@@ -50,11 +55,27 @@ export function InputNumberDemo() {
       { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: t.cssSgColorBorder },
       { name: 'sg-border-radius', default: '6px', description: t.cssSgBorderRadius },
       { name: 'sg-color-bg-container', default: '#ffffff', description: t.cssSgColorBgContainer },
-      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.02)', description: t.cssSgColorBgSecondary },
-      { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgHover },
+      {
+        name: 'sg-color-bg-secondary',
+        default: 'rgba(0, 0, 0, 0.02)',
+        description: t.cssSgColorBgSecondary,
+      },
+      {
+        name: 'sg-color-bg-hover',
+        default: 'rgba(0, 0, 0, 0.04)',
+        description: t.cssSgColorBgHover,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextTertiary,
+      },
       { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
       { name: 'sg-font-size-lg', default: '16px', description: t.cssSgFontSizeLg },
@@ -77,11 +98,19 @@ export function InputNumberDemo() {
         <BasicInputNumber />
       </DemoBox>
 
-      <DemoBox title={t.demoMinMaxStepTitle} description={t.demoMinMaxStepDesc} code={MinMaxStepSource}>
+      <DemoBox
+        title={t.demoMinMaxStepTitle}
+        description={t.demoMinMaxStepDesc}
+        code={MinMaxStepSource}
+      >
         <MinMaxStepInputNumber />
       </DemoBox>
 
-      <DemoBox title={t.demoPrecisionTitle} description={t.demoPrecisionDesc} code={PrecisionSource}>
+      <DemoBox
+        title={t.demoPrecisionTitle}
+        description={t.demoPrecisionDesc}
+        code={PrecisionSource}
+      >
         <PrecisionInputNumber />
       </DemoBox>
 
@@ -101,16 +130,16 @@ export function InputNumberDemo() {
         <TokensOverrideInputNumber />
       </DemoBox>
 
-      <DemoBox title={t.demoUnstyledTitle} description={t.demoUnstyledDesc} code={UnstyledSource}>
-        <UnstyledInputNumber />
+      <DemoBox
+        title={t.demoFloatingLabelTitle}
+        description={t.demoFloatingLabelDesc}
+        code={FloatingLabelSource}
+      >
+        <FloatingLabelInputNumber />
       </DemoBox>
 
       <PropsTable title={t.tableInputNumberApi} data={inputNumberProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={inputNumberCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={inputNumberCssVars} />
     </ComponentDoc>
   )
 }

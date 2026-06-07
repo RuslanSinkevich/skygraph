@@ -20,11 +20,9 @@ export const inputDocEn = {
   demoStatesDesc: 'Disabled and inline loading spinner.',
   demoValidationTitle: 'Validation',
   demoValidationDesc: 'aria-invalid flips the error styling without !important.',
-  demoTokensTitle: 'Component tokens',
-  demoTokensDesc: 'Scope --sg-input-* to reshape only these inputs.',
-  demoTokensOverrideTitle: 'Token override themes',
+  demoTokensOverrideTitle: 'Token override',
   demoTokensOverrideDesc:
-    'Two ready-made looks (Soft pill, Amber filled) built only from --sg-input-* tokens — focus ring and states stay intact.',
+    'Three scoped recipes — branded green, dark field, glass pick — reshape the same Input through --sg-input-* and global tokens; focus ring and states stay intact.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Pure-CSS floating label (Material 3-ish). The label sits inside the field and glides to the top-left on focus or when the field has a value. Outlined and filled variants — no core changes, just `:has(input:focus)` + `:has(input:not(:placeholder-shown))`.',
@@ -36,8 +34,6 @@ export const inputDocEn = {
   demoTextareaStatesDesc: 'Disabled and loading variants.',
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: 'Input + Textarea wired up via `<Field>`.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Headless mode with your own CSS class.',
 
   tableInputApi: 'Input API',
   tableTextareaApi: 'Textarea API',

@@ -24,9 +24,8 @@ export const rateDocEn = {
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: "Validator for 'must rate'.",
   demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc: 'Swap --sg-color-star to rebrand, or widen --sg-font-size-xl for bigger stars.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'ARIA stays; you own the painting.',
+  demoTokensOverrideDesc:
+    'Swap --sg-color-star to rebrand, or widen --sg-font-size-xl for bigger stars.',
 
   tableRateApi: 'Rate API',
   tableCssVars: 'CSS Variables',

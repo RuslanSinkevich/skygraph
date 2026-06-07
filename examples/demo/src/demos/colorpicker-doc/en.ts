@@ -13,7 +13,8 @@ export const colorPickerDocEn = {
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Controlled hex value bound to a live preview swatch.',
   demoFormatsTitle: 'Format',
-  demoFormatsDesc: 'Pick between hex and rgb payloads — the trigger label mirrors the chosen format.',
+  demoFormatsDesc:
+    'Pick between hex and rgb payloads — the trigger label mirrors the chosen format.',
   demoPresetsTitle: 'Presets',
   demoPresetsDesc: 'Grouped preset swatches under the panel for brand palettes.',
   demoSizesTitle: 'Sizes',
@@ -23,11 +24,14 @@ export const colorPickerDocEn = {
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: "Trigger stays readable but won't open.",
   demoThemeSwapTitle: 'Live theme swap',
-  demoThemeSwapDesc: 'Drive --sg-color-primary from the picker and watch every component restyle instantly.',
-  demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc: 'Scope global colour / radius tokens on a wrapper to restyle without a theme file.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop every SkyGraph class and bring your own design — behaviour stays.',
+  demoThemeSwapDesc:
+    'Drive --sg-color-primary from the picker and watch every component restyle instantly.',
+  demoTokensOverrideTitle: 'Token override',
+  demoTokensOverrideDesc:
+    'Three scoped recipes — branded green, dark field, glass pick — reskin one ColorPicker.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the trigger — it stays as a caption (a colour is always set) and lifts its tint on focus.',
 
   tableColorPickerApi: 'ColorPicker API',
   tableCssVars: 'CSS Variables',

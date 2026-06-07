@@ -27,7 +27,11 @@ export const inputNumberDocRu: { [K in keyof typeof inputNumberDocEn]: string } 
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: 'Валидаторы required и диапазона на числовых полях.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп глобалов для ребрендинга одного экземпляра.',
+  demoTokensDesc:
+    'Три скоупа на токенах InputNumber: зелёный бренд, тёмное поле и glass pick (поле + степперы).',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись на поле InputNumber: уезжает вверх при фокусе или когда число введено.',
   demoUnstyledTitle: 'Без стилей',
   demoUnstyledDesc: 'Логика stepper-а без классов SkyGraph.',
 

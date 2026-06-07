@@ -18,15 +18,18 @@ import { WithIconTag } from './tag/WithIcon.demo'
 import WithIconSource from './tag/WithIcon.demo?raw'
 import { TokensOverrideTag } from './tag/TokensOverride.demo'
 import TokensOverrideSource from './tag/TokensOverride.demo?raw'
-import { UnstyledTag } from './tag/Unstyled.demo'
-import UnstyledSource from './tag/Unstyled.demo?raw'
 
 export function TagDemo() {
   const t = useTagDocStrings()
 
   const tagProps = useMemo<PropDef[]>(
     () => [
-      { name: 'color', description: t.propColor, type: "'default' | 'success' | 'error' | 'warning' | 'processing' | string", default: "'default'" },
+      {
+        name: 'color',
+        description: t.propColor,
+        type: "'default' | 'success' | 'error' | 'warning' | 'processing' | string",
+        default: "'default'",
+      },
       { name: 'closable', description: t.propClosable, type: 'boolean', default: 'false' },
       { name: 'onClose', description: t.propOnClose, type: '() => void' },
       { name: 'bordered', description: t.propBordered, type: 'boolean', default: 'true' },
@@ -40,7 +43,11 @@ export function TagDemo() {
 
   const tagCssVars = useMemo<CssVarDef[]>(
     () => [
-      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.02)', description: t.cssSgColorBgSecondary },
+      {
+        name: 'sg-color-bg-secondary',
+        default: 'rgba(0, 0, 0, 0.02)',
+        description: t.cssSgColorBgSecondary,
+      },
       { name: 'sg-color-border', default: 'rgba(5, 5, 5, 0.06)', description: t.cssSgColorBorder },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
       { name: 'sg-color-success', default: '#52c41a', description: t.cssSgColorSuccess },
@@ -50,12 +57,20 @@ export function TagDemo() {
       { name: 'sg-color-warning', default: '#faad14', description: t.cssSgColorWarning },
       { name: 'sg-color-warning-bg', default: '#fffbe6', description: t.cssSgColorWarningBg },
       { name: 'sg-color-primary', default: '#1677ff', description: t.cssSgColorPrimary },
-      { name: 'sg-color-primary-bg', default: 'rgba(22, 119, 255, 0.1)', description: t.cssSgColorPrimaryBg },
+      {
+        name: 'sg-color-primary-bg',
+        default: 'rgba(22, 119, 255, 0.1)',
+        description: t.cssSgColorPrimaryBg,
+      },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
       { name: 'sg-padding-sm', default: '8px', description: t.cssSgPaddingSm },
       { name: 'sg-border-radius-sm', default: '4px', description: t.cssSgBorderRadiusSm },
       { name: 'sg-transition-duration', default: '180ms', description: t.cssSgTransitionDuration },
-      { name: 'sg-transition-timing', default: 'cubic-bezier(0.645, 0.045, 0.355, 1)', description: t.cssSgTransitionTiming },
+      {
+        name: 'sg-transition-timing',
+        default: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+        description: t.cssSgTransitionTiming,
+      },
     ],
     [t],
   )
@@ -72,11 +87,7 @@ export function TagDemo() {
         <BasicTag />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoPresetsTitle}
-        description={t.demoPresetsDesc}
-        code={PresetsSource}
-      >
+      <DemoBox title={t.demoPresetsTitle} description={t.demoPresetsDesc} code={PresetsSource}>
         <PresetsTag />
       </DemoBox>
 
@@ -88,48 +99,28 @@ export function TagDemo() {
         <CustomColorTag />
       </DemoBox>
 
-      <DemoBox title={t.demoBorderlessTitle} description={t.demoBorderlessDesc} code={BorderlessSource}>
+      <DemoBox
+        title={t.demoBorderlessTitle}
+        description={t.demoBorderlessDesc}
+        code={BorderlessSource}
+      >
         <BorderlessTag />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoClosableTitle}
-        description={t.demoClosableDesc}
-        code={ClosableSource}
-      >
+      <DemoBox title={t.demoClosableTitle} description={t.demoClosableDesc} code={ClosableSource}>
         <ClosableTag />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoWithIconTitle}
-        description={t.demoWithIconDesc}
-        code={WithIconSource}
-      >
+      <DemoBox title={t.demoWithIconTitle} description={t.demoWithIconDesc} code={WithIconSource}>
         <WithIconTag />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideTag />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoUnstyledTitle}
-        description={t.demoUnstyledDesc}
-        code={UnstyledSource}
-      >
-        <UnstyledTag />
-      </DemoBox>
-
       <PropsTable title={t.tableTagApi} data={tagProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={tagCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={tagCssVars} />
     </ComponentDoc>
   )
 }

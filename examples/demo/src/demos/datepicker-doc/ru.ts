@@ -32,7 +32,10 @@ export const datePickerDocRu: { [K in keyof typeof datePickerDocEn]: string } = 
   demoRangePresetsTitle: 'Пресеты диапазона',
   demoRangePresetsDesc: 'Кортежи пресетов заполняют оба конца.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп токенов для перекраски одного пикера, не трогая остальные.',
+  demoTokensDesc: 'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один пикер.',
+  demoFloatingLabelTitle: 'Плавающий label',
+  demoFloatingLabelDesc:
+    'Плавающая подпись над триггером — уезжает вверх при фокусе или после выбора даты. Чистый CSS + управляемое значение.',
 
   tableDatePickerApi: 'API DatePicker',
   tableRangePickerApi: 'API RangePicker',

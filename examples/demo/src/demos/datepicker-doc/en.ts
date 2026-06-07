@@ -4,7 +4,8 @@
  */
 export const datePickerDocEn = {
   pageTitle: 'DatePicker',
-  pageLead: 'Calendar-backed date/time picker with presets, ranges, and custom disabled predicates.',
+  pageLead:
+    'Calendar-backed date/time picker with presets, ranges, and custom disabled predicates.',
   pageWhen1: 'When the user needs to pick a calendar date, month, year, or week.',
   pageWhen2: 'When you need a date + time combo in one control.',
   pageWhen3: 'For two-end ranges (reports, bookings) use the `RangePicker` variant.',
@@ -30,8 +31,12 @@ export const datePickerDocEn = {
   demoRangeDesc: 'RangePicker — one control for two dates.',
   demoRangePresetsTitle: 'Range presets',
   demoRangePresetsDesc: 'Preset tuples fill both ends.',
-  demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope tokens to re-skin one picker without touching the rest.',
+  demoTokensTitle: 'Token override',
+  demoTokensDesc:
+    'Three scoped recipes — branded green, dark field, glass pick — reskin one picker.',
+  demoFloatingLabelTitle: 'Floating label',
+  demoFloatingLabelDesc:
+    'Floating label over the trigger — it rises on focus or once a date is picked. Pure CSS + the controlled value.',
 
   tableDatePickerApi: 'DatePicker API',
   tableRangePickerApi: 'RangePicker API',

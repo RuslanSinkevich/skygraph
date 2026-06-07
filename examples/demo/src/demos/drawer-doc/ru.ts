@@ -23,8 +23,6 @@ export const drawerDocRu: { [K in keyof typeof drawerDocEn]: string } = {
   demoNoMaskDesc: 'Отключите подложку или оставьте, но требуйте × / ESC.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоуп токенов поверхности на обёртке для тёмной темы Drawer.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Сохранить a11y + ESC / focus trap; раскраска ваша.',
 
   tableDrawerApi: 'API Drawer',
   tableCssVars: 'CSS-переменные',
