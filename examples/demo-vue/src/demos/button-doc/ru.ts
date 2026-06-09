@@ -32,10 +32,6 @@ export const buttonDocRu: { [K in keyof typeof buttonDocEn]: string } = {
     'Три готовых скоупа на токенах `--sg-btn-*`: зелёный бренд, тёмная поверхность и glass pick. Меняется только покраска/форма — доступность сохраняется.',
   demoBrandTitle: 'Бренд в скоупе',
   demoBrandDesc: 'Переопределите `--sg-color-primary*` для поддерева.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc:
-    '`unstyled` сохраняет семантику кнопки (htmlType, disabled, aria-busy), но убирает все классы `sg-button-*`.',
-
   propUnstyled: 'Убирает все классы `sg-button-*`; семантика (disabled, aria-busy) сохраняется.',
 
   tableButtonApi: 'API Button',

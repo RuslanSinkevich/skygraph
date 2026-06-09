@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://skygraph.ruslansinkevich.ru/sitemap.xml

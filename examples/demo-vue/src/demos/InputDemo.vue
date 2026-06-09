@@ -42,8 +42,6 @@ import TextareaStates from './input/TextareaStates.demo.vue'
 import TextareaStatesSource from './input/TextareaStates.demo.vue?raw'
 import InFormInput from './input/InForm.demo.vue'
 import InFormSource from './input/InForm.demo.vue?raw'
-import UnstyledInput from './input/Unstyled.demo.vue'
-import UnstyledSource from './input/Unstyled.demo.vue?raw'
 
 const t = useInputDocStrings()
 
@@ -273,10 +271,6 @@ const inputCssVars = computed<CssVarDef[]>(() => [
 
     <DemoBox :title="t.demoInFormTitle" :description="t.demoInFormDesc" :code="InFormSource">
       <InFormInput />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledInput />
     </DemoBox>
 
     <template #api>

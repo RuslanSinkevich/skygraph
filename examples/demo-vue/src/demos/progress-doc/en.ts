@@ -30,9 +30,6 @@ export const progressDocEn = {
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
     'Three scopes built from Progress tokens: green brand, dark surface and glass pick (every bar / ring).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` keeps `role="progressbar"`, drops every class.',
-
   tableProgressApi: 'Progress API',
   tableCssVars: 'CSS Variables',
   cssHint:

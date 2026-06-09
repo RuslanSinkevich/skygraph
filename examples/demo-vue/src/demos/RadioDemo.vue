@@ -27,8 +27,6 @@ import InFormRadio from './radio/InForm.demo.vue'
 import InFormSource from './radio/InForm.demo.vue?raw'
 import TokensOverrideRadio from './radio/TokensOverride.demo.vue'
 import TokensOverrideSource from './radio/TokensOverride.demo.vue?raw'
-import UnstyledRadio from './radio/Unstyled.demo.vue'
-import UnstyledSource from './radio/Unstyled.demo.vue?raw'
 
 const t = useRadioDocStrings()
 
@@ -128,10 +126,6 @@ const radioCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideRadio />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledRadio />
     </DemoBox>
 
     <template #api>

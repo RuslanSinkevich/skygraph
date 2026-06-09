@@ -26,13 +26,9 @@ export const descriptionsDocEn = {
   demoSizesTitle: 'Sizes',
   demoSizesDesc: 'Two visual presets — `small` and the default.',
   demoRichContentTitle: 'Rich content',
-  demoRichContentDesc:
-    'Vue: `value` is `string`. React supports `ReactNode` — see findings.',
+  demoRichContentDesc: 'Vue: `value` is `string`. React supports `ReactNode` — see findings.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global surface / border tokens to rebrand.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` strips classes and renders a bare `<table>`.',
-
   tableDescriptionsApi: 'Descriptions API',
   tableDescriptionsItemApi: 'DescriptionsItem',
   tableCssVars: 'CSS Variables',

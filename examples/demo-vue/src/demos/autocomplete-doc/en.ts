@@ -32,9 +32,6 @@ export const autoCompleteDocEn = {
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the AutoComplete field: glides up on focus / typing or when the field is filled.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Headless mode — semantics only, no SkyGraph classes.',
-
   tableAutoCompleteApi: 'AutoComplete API',
   tableOptionApi: 'AutoCompleteOption',
   tableCssVars: 'CSS Variables',

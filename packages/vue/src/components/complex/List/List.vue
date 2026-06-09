@@ -103,12 +103,22 @@ function handleItemClick(item: T, index: number, e: MouseEvent) {
 function handleDragStart(e: DragEvent, index: number) {
   if (!props.draggable) return
   dragIndex.value = index
-  if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move'
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move'
+    // Without a payload Firefox never starts the drag; also keeps the cursor sane.
+    try {
+      e.dataTransfer.setData('text/plain', String(index))
+    } catch {
+      // non-fatal in restrictive environments
+    }
+  }
 }
 
 function handleDragOver(e: DragEvent, index: number) {
   if (!props.draggable || dragIndex.value === null) return
   e.preventDefault()
+  // Pin the drop effect to "move" so the browser stops flashing the no-drop (🚫) cursor.
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
   dropIndex.value = index
 }
 

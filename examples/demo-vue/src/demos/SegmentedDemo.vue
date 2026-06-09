@@ -29,8 +29,6 @@ import SizesSegmented from './segmented/Sizes.demo.vue'
 import SizesSource from './segmented/Sizes.demo.vue?raw'
 import TokensOverrideSegmented from './segmented/TokensOverride.demo.vue'
 import TokensOverrideSource from './segmented/TokensOverride.demo.vue?raw'
-import UnstyledSegmented from './segmented/Unstyled.demo.vue'
-import UnstyledSource from './segmented/Unstyled.demo.vue?raw'
 
 const t = useSegmentedDocStrings()
 
@@ -161,15 +159,6 @@ const segmentedCssVars = computed<CssVarDef[]>(() => [
       vertical
     >
       <TokensOverrideSegmented />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-      vertical
-    >
-      <UnstyledSegmented />
     </DemoBox>
 
     <template #api>

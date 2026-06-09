@@ -2,15 +2,15 @@
 import { computed, ref } from 'vue'
 import {
   SgButton,
+  SgConfigProvider,
   SgDescriptions,
   SgDrawer,
   SgProgress,
   SgSegmented,
-  SgTable,
   SgTag,
-  type TableColumn,
+  type ThemeConfig,
 } from '@skygraph/vue'
-import { StatsRow, Toolbar, useShowcaseLocale, type StatItem } from '../_shared'
+import { useShowcaseLocale } from '../_shared'
 
 type Status = 'planned' | 'active' | 'review' | 'blocked' | 'done'
 type Priority = 'low' | 'medium' | 'high'
@@ -90,6 +90,8 @@ const TASKS: ProjectTask[] = [
   },
 ]
 
+const STATUS_ORDER: Status[] = ['planned', 'active', 'review', 'blocked', 'done']
+
 const STATUS_COLOR: Record<Status, string> = {
   planned: 'default',
   active: 'blue',
@@ -104,22 +106,46 @@ const PRIORITY_COLOR: Record<Priority, string> = {
   high: 'red',
 }
 
+const PROJECT_TRACKER_THEME: ThemeConfig = {
+  mode: 'dark',
+  token: {
+    colorPrimary: '#a78bfa',
+    colorSuccess: '#34d399',
+    colorWarning: '#fbbf24',
+    colorError: '#fb7185',
+    colorText: '#e5e7eb',
+    colorBg: '#101827',
+    colorBorder: '#334155',
+    borderRadius: 14,
+    fontSize: 14,
+    fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
+  },
+  cssVars: {
+    '--sg-color-bg': '#101827',
+    '--sg-color-bg-secondary': '#162033',
+    '--sg-color-bg-elevated': '#1d2940',
+    '--sg-color-bg-container': '#162033',
+    '--sg-color-bg-hover': '#24314f',
+    '--sg-color-border': '#334155',
+    '--sg-color-border-secondary': '#26344f',
+    '--sg-color-text-secondary': '#b7c2d8',
+    '--sg-color-text-tertiary': '#7f8ca5',
+    '--sg-color-text-placeholder': '#64748b',
+    '--sg-color-primary-hover': '#c4b5fd',
+    '--sg-color-primary-active': '#8b5cf6',
+    '--sg-color-primary-bg': 'rgba(167, 139, 250, 0.16)',
+    '--sg-shadow': '0 18px 50px rgba(8, 13, 28, 0.38)',
+  },
+}
+
 const COPY = {
   en: {
-    search: 'Search tasks, owners, areas...',
-    add: 'New task',
-    open: 'Open',
-    columns: {
-      task: 'Task',
-      owner: 'Owner',
-      area: 'Area',
-      priority: 'Priority',
-      status: 'Status',
-      progress: 'Progress',
-      due: 'Due',
-      actions: '',
-    },
-    filters: { all: 'All', active: 'Active', blocked: 'Blocked', done: 'Done' },
+    title: 'Project delivery cockpit',
+    subtitle:
+      'Scoped ConfigProvider theme: every control below inherits a dense indigo night palette through token overrides.',
+    tokenLabel: 'Token override',
+    add: 'New sprint',
+    filters: { all: 'All work', active: 'In flight', blocked: 'Blocked', done: 'Shipped' },
     status: {
       planned: 'Planned',
       active: 'Active',
@@ -141,24 +167,17 @@ const COPY = {
       due: 'Due date',
       status: 'Status',
       priority: 'Priority',
+      progress: 'Progress',
       markDone: 'Mark done',
     },
   },
   ru: {
-    search: 'Поиск задач, владельцев, направлений...',
-    add: 'Новая задача',
-    open: 'Открыть',
-    columns: {
-      task: 'Задача',
-      owner: 'Владелец',
-      area: 'Направление',
-      priority: 'Приоритет',
-      status: 'Статус',
-      progress: 'Прогресс',
-      due: 'Срок',
-      actions: '',
-    },
-    filters: { all: 'Все', active: 'В работе', blocked: 'Блокеры', done: 'Готово' },
+    title: 'Тёмный cockpit проекта',
+    subtitle:
+      'Локальный ConfigProvider переопределяет токены: все контролы ниже наследуют плотную индиго-тему без глобальной смены приложения.',
+    tokenLabel: 'Token override',
+    add: 'Новый спринт',
+    filters: { all: 'Вся работа', active: 'В работе', blocked: 'Блокеры', done: 'Доставлено' },
     status: {
       planned: 'План',
       active: 'В работе',
@@ -180,6 +199,7 @@ const COPY = {
       due: 'Срок',
       status: 'Статус',
       priority: 'Приоритет',
+      progress: 'Прогресс',
       markDone: 'Отметить готовой',
     },
   },
@@ -189,67 +209,42 @@ const locale = useShowcaseLocale()
 const l = computed(() => (locale.languageSwitcher === 'Язык' ? COPY.ru : COPY.en))
 const tasks = ref<ProjectTask[]>([...TASKS])
 const filter = ref<Filter>('all')
-const search = ref('')
 const selected = ref<ProjectTask | null>(null)
 
-const filtered = computed(() => {
-  const q = search.value.trim().toLowerCase()
-  return tasks.value.filter((task) => {
-    if (filter.value === 'active' && !['active', 'review'].includes(task.status)) return false
-    if (filter.value === 'blocked' && task.status !== 'blocked') return false
-    if (filter.value === 'done' && task.status !== 'done') return false
-    if (!q) return true
-    return [task.id, task.title, task.owner, task.area].some((value) =>
-      value.toLowerCase().includes(q),
-    )
-  })
-})
+const filterOptions = computed(() =>
+  Object.entries(l.value.filters).map(([value, label]) => ({ value, label })),
+)
 
-const tableData = computed(() =>
-  filtered.value.map((task) => ({ id: task.id, data: task as unknown as Record<string, unknown> })),
+const filtered = computed(() =>
+  tasks.value.filter((task) => {
+    if (filter.value === 'active') return task.status === 'active' || task.status === 'review'
+    if (filter.value === 'blocked') return task.status === 'blocked'
+    if (filter.value === 'done') return task.status === 'done'
+    return true
+  }),
+)
+
+const statusColumns = computed(() =>
+  STATUS_ORDER.map((status) => ({
+    status,
+    tasks: filtered.value.filter((task) => task.status === status),
+  })),
 )
 
 const avg = computed(() =>
   Math.round(tasks.value.reduce((sum, task) => sum + task.progress, 0) / tasks.value.length),
 )
-
-const statItems = computed<StatItem[]>(() => [
-  { key: 'total', label: l.value.stats.total, value: tasks.value.length },
-  {
-    key: 'active',
-    label: l.value.stats.active,
-    value: tasks.value.filter((task) => task.status === 'active' || task.status === 'review')
-      .length,
-  },
-  {
-    key: 'blocked',
-    label: l.value.stats.blocked,
-    value: tasks.value.filter((task) => task.status === 'blocked').length,
-    subTone: 'error',
-  },
-  {
-    key: 'avg',
-    label: l.value.stats.avg,
-    value: `${avg.value}%`,
-    progress: avg.value,
-    progressStatus: avg.value > 75 ? 'success' : 'active',
-  },
-])
-
-const columns = computed<TableColumn[]>(() => [
-  { key: 'title', title: l.value.columns.task, sortable: true },
-  { key: 'owner', title: l.value.columns.owner, width: 160, sortable: true },
-  { key: 'area', title: l.value.columns.area, width: 120, sortable: true },
-  { key: 'priority', title: l.value.columns.priority, width: 110 },
-  { key: 'status', title: l.value.columns.status, width: 120 },
-  { key: 'progress', title: l.value.columns.progress, width: 160 },
-  { key: 'due', title: l.value.columns.due, width: 100, sortable: true },
-  { key: 'actions', title: l.value.columns.actions, width: 96 },
-])
-
-const filterOptions = computed(() =>
-  Object.entries(l.value.filters).map(([value, label]) => ({ value, label })),
+const activeCount = computed(
+  () => tasks.value.filter((task) => task.status === 'active' || task.status === 'review').length,
 )
+const blockedCount = computed(() => tasks.value.filter((task) => task.status === 'blocked').length)
+
+const metrics = computed(() => [
+  { key: 'total', label: l.value.stats.total, value: tasks.value.length, color: 'purple' },
+  { key: 'active', label: l.value.stats.active, value: activeCount.value, color: 'blue' },
+  { key: 'blocked', label: l.value.stats.blocked, value: blockedCount.value, color: 'red' },
+  { key: 'avg', label: l.value.stats.avg, value: `${avg.value}%`, color: 'green' },
+])
 
 const drawerItems = computed(() => {
   if (!selected.value) return []
@@ -270,73 +265,78 @@ function markDone() {
   )
   selected.value = { ...selected.value, status: 'done', progress: 100 }
 }
-
-function openTask(id: string) {
-  selected.value = tasks.value.find((task) => task.id === id) ?? null
-}
 </script>
 
 <template>
-  <div class="sc-content" style="flex: 1">
-    <StatsRow :items="statItems" />
-
-    <Toolbar v-model:searchValue="search" :search-placeholder="l.search" :search-width="280">
-      <template #filters>
-        <SgSegmented
-          :value="filter"
-          :options="filterOptions"
-          @change="(value: string | number) => (filter = String(value) as Filter)"
-        />
-      </template>
-      <template #actions>
+  <SgConfigProvider :theme="PROJECT_TRACKER_THEME">
+    <div class="sc-content pt-theme" style="flex: 1">
+      <section class="pt-hero">
+        <div>
+          <SgTag color="purple">{{ l.tokenLabel }}</SgTag>
+          <h2>{{ l.title }}</h2>
+          <p>{{ l.subtitle }}</p>
+        </div>
         <SgButton type="primary">{{ l.add }}</SgButton>
-      </template>
-    </Toolbar>
+      </section>
 
-    <SgTable :columns="columns" :data="tableData" :page-size="8" size="small" bordered>
-      <template #cell="{ column, row, id, value }">
-        <div v-if="column.key === 'title'">
-          <strong>{{ String(value) }}</strong>
-          <div style="font-size: 11px; color: var(--sg-color-text-secondary)">
-            {{ String(row.id) }}
+      <div class="pt-toolbar">
+        <SgSegmented v-model="filter" :options="filterOptions" />
+      </div>
+
+      <section class="pt-metrics">
+        <div v-for="metric of metrics" :key="metric.key" class="pt-metric">
+          <SgTag :color="metric.color">{{ metric.label }}</SgTag>
+          <strong>{{ metric.value }}</strong>
+          <SgProgress v-if="metric.key === 'avg'" :percent="avg" :show-info="false" />
+        </div>
+      </section>
+
+      <section class="pt-board">
+        <div v-for="column of statusColumns" :key="column.status" class="pt-column">
+          <div class="pt-column-head">
+            <SgTag :color="STATUS_COLOR[column.status]">{{ l.status[column.status] }}</SgTag>
+            <span>{{ column.tasks.length }}</span>
+          </div>
+          <div class="pt-column-body">
+            <SgButton
+              v-for="task of column.tasks"
+              :key="task.id"
+              class="pt-task-card"
+              @click="selected = task"
+            >
+              <span class="pt-task-id">{{ task.id }}</span>
+              <strong>{{ task.title }}</strong>
+              <span>{{ task.owner }}</span>
+              <SgProgress :percent="task.progress" :show-info="false" />
+              <span class="pt-task-meta">
+                <SgTag :color="PRIORITY_COLOR[task.priority]">{{
+                  l.priority[task.priority]
+                }}</SgTag>
+                <span>{{ task.due }}</span>
+              </span>
+            </SgButton>
           </div>
         </div>
-        <SgTag
-          v-else-if="column.key === 'priority'"
-          :color="PRIORITY_COLOR[row.priority as Priority]"
-        >
-          {{ l.priority[row.priority as Priority] }}
-        </SgTag>
-        <SgTag v-else-if="column.key === 'status'" :color="STATUS_COLOR[row.status as Status]">
-          {{ l.status[row.status as Status] }}
-        </SgTag>
-        <SgProgress
-          v-else-if="column.key === 'progress'"
-          :percent="Number(value)"
-          :show-info="false"
-        />
-        <SgButton v-else-if="column.key === 'actions'" size="small" @click="openTask(String(id))">
-          {{ l.open }}
-        </SgButton>
-        <template v-else>{{ value ?? id }}</template>
-      </template>
-    </SgTable>
+      </section>
 
-    <SgDrawer
-      :open="!!selected"
-      :title="selected ? `${selected.id} · ${selected.title}` : l.drawer.title"
-      :width="460"
-      @close="selected = null"
-    >
-      <template v-if="selected">
-        <div style="display: grid; gap: 16px">
+      <SgDrawer
+        :open="!!selected"
+        :title="selected ? `${selected.id} · ${selected.title}` : l.drawer.title"
+        :width="460"
+        class="pt-drawer"
+        @close="selected = null"
+      >
+        <div v-if="selected" class="pt-drawer-body">
           <SgDescriptions :items="drawerItems" :column="1" size="small" />
-          <SgProgress :percent="selected.progress" />
+          <div>
+            <div class="pt-progress-label">{{ l.drawer.progress }}</div>
+            <SgProgress :percent="selected.progress" />
+          </div>
           <SgButton type="primary" :disabled="selected.status === 'done'" @click="markDone">
             {{ l.drawer.markDone }}
           </SgButton>
         </div>
-      </template>
-    </SgDrawer>
-  </div>
+      </SgDrawer>
+    </div>
+  </SgConfigProvider>
 </template>

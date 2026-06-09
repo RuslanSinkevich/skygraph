@@ -33,9 +33,6 @@ export const switchDocRu: { [K in keyof typeof switchDocEn]: string } = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Три скоупа на токенах Switch: зелёный бренд, тёмная поверхность и glass pick (трек в обоих состояниях).',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Только семантика — оформляете сами.',
-
   tableSwitchApi: 'API Switch',
   tableCssVars: 'CSS-переменные',
 

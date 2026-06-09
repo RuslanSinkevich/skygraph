@@ -36,8 +36,6 @@ import CustomColorSpin from './spin/CustomColor.demo.vue'
 import CustomColorSource from './spin/CustomColor.demo.vue?raw'
 import TokensOverrideSpin from './spin/TokensOverride.demo.vue'
 import TokensOverrideSource from './spin/TokensOverride.demo.vue?raw'
-import UnstyledSpin from './spin/Unstyled.demo.vue'
-import UnstyledSource from './spin/Unstyled.demo.vue?raw'
 
 const t = useSpinDocStrings()
 
@@ -127,10 +125,6 @@ const spinCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideSpin />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledSpin />
     </DemoBox>
 
     <template #api>

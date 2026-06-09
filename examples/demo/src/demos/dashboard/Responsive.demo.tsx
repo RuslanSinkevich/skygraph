@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Dashboard, LineChart } from '@skygraph/react'
+import { Dashboard, LineChart, Segmented } from '@skygraph/react'
 import type { DashboardWidget } from '@skygraph/react'
 
 type Mode = 'mobile' | 'tablet' | 'desktop'
@@ -57,28 +57,14 @@ export function ResponsiveDashboard() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ display: 'flex', gap: 8 }}>
-        {(Object.keys(modes) as Mode[]).map((m) => (
-          <button
-            key={m}
-            type="button"
-            onClick={() => setMode(m)}
-            aria-pressed={mode === m}
-            style={{
-              padding: '4px 12px',
-              border: '1px solid var(--sg-color-border)',
-              borderRadius: 'var(--sg-border-radius)',
-              background: mode === m ? 'var(--sg-color-primary)' : 'var(--sg-color-bg-elevated)',
-              color: mode === m ? 'var(--sg-color-white)' : 'var(--sg-color-text)',
-              cursor: 'pointer',
-              fontSize: 13,
-              textTransform: 'capitalize',
-            }}
-          >
-            {m} ({modes[m].cols} cols)
-          </button>
-        ))}
-      </div>
+      <Segmented
+        value={mode}
+        onChange={(v) => setMode(v as Mode)}
+        options={(Object.keys(modes) as Mode[]).map((m) => ({
+          value: m,
+          label: `${m[0].toUpperCase()}${m.slice(1)} (${modes[m].cols} cols)`,
+        }))}
+      />
       <div
         style={{
           maxWidth: cfg.maxWidth,

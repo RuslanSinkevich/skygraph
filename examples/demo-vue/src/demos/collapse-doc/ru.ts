@@ -6,8 +6,7 @@ export const collapseDocRu: CollapseDocStrings = {
   pageBadge: 'Отображение данных',
   crumbDataDisplay: 'Отображение данных',
   crumbCollapse: 'Collapse',
-  pageLead:
-    'Группа вертикально сложенных раскрывающихся панелей — детали без перегрузки страницы.',
+  pageLead: 'Группа вертикально сложенных раскрывающихся панелей — детали без перегрузки страницы.',
   pageWhen1: 'FAQ-стиль с одним вопросом на панель.',
   pageWhen2: 'Группы настроек, фильтров или онбординга с опциональными разделами.',
   pageWhen3: 'Списки, где одновременно может быть открыт только один блок (`accordion`).',
@@ -32,13 +31,9 @@ export const collapseDocRu: CollapseDocStrings = {
   demoNoArrowTitle: 'Без стрелки',
   demoNoArrowDesc: 'Скрываем шеврон через `showArrow: false`.',
   demoSizesTitle: 'Размеры',
-  demoSizesDesc:
-    'Три размера меняют padding, min-height шапки и (для `large`) размер шрифта.',
+  demoSizesDesc: 'Три размера меняют padding, min-height шапки и (для `large`) размер шрифта.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Локально переопределяем глобальные surface / border токены.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` снимает классы — aria + accordion-логика остаются.',
-
   tableCollapseApi: 'API Collapse',
   tableCollapseItemApi: 'CollapseItem',
   tableCssVars: 'CSS-переменные',
@@ -59,8 +54,7 @@ export const collapseDocRu: CollapseDocStrings = {
   itemKey: 'Уникальный ключ панели',
   itemLabel: 'Текст заголовка',
   itemContent: 'Содержимое, показываемое при раскрытии',
-  itemExtra:
-    'Короткий текст справа от заголовка (Vue: только строка — см. findings)',
+  itemExtra: 'Короткий текст справа от заголовка (Vue: только строка — см. findings)',
   itemShowArrow: 'Показывать ли шеврон у этой панели',
   itemDisabled: 'Заблокировать панель — заголовок серый и не фокусится',
 

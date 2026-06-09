@@ -37,9 +37,6 @@ export const switchDocEn = {
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
     'Three scopes built from Switch tokens: green brand, dark surface and glass pick (track in both states).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Semantics only — paint it yourself.',
-
   tableSwitchApi: 'Switch API',
   tableCssVars: 'CSS Variables',
 

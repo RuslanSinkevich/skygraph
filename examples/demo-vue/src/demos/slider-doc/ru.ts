@@ -27,9 +27,6 @@ export const sliderDocRu: { [K in keyof typeof sliderDocEn]: string } = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Три скоупа на токенах Slider: зелёный бренд, тёмная поверхность и glass pick (заливка, ручка, рельс).',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'DOM и ARIA остаются; классы убраны.',
-
   tableSliderApi: 'API Slider',
   tableCssVars: 'CSS-переменные',
 

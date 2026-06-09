@@ -33,8 +33,6 @@ import WithIconTag from './tag/WithIcon.demo.vue'
 import WithIconSource from './tag/WithIcon.demo.vue?raw'
 import TokensOverrideTag from './tag/TokensOverride.demo.vue'
 import TokensOverrideSource from './tag/TokensOverride.demo.vue?raw'
-import UnstyledTag from './tag/Unstyled.demo.vue'
-import UnstyledSource from './tag/Unstyled.demo.vue?raw'
 
 const t = useTagDocStrings()
 
@@ -142,10 +140,6 @@ const tagCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideTag />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledTag />
     </DemoBox>
 
     <template #api>

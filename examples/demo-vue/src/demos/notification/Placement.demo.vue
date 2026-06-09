@@ -2,8 +2,7 @@
 /**
  * Toasts render in the corner that matches `placement`. Each
  * corner needs its own `<SgNotificationContainer>` — the
- * aggregator mounts `topRight`, `topLeft`, `bottomRight`;
- * `bottomLeft` is reserved for the Unstyled example.
+ * aggregator mounts `topRight`, `topLeft`, `bottomRight`.
  */
 import { SgButton, notification } from '@skygraph/vue'
 

@@ -33,8 +33,6 @@ import InCardEmpty from './empty/InCard.demo.vue'
 import InCardSource from './empty/InCard.demo.vue?raw'
 import TokensOverrideEmpty from './empty/TokensOverride.demo.vue'
 import TokensOverrideSource from './empty/TokensOverride.demo.vue?raw'
-import UnstyledEmpty from './empty/Unstyled.demo.vue'
-import UnstyledSource from './empty/Unstyled.demo.vue?raw'
 
 const t = useEmptyDocStrings()
 
@@ -115,10 +113,6 @@ const emptyCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideEmpty />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledEmpty />
     </DemoBox>
 
     <template #api>

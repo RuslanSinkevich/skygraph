@@ -121,6 +121,8 @@ export type TokenScopeCardsProps = {
   minCardWidth?: number
   /** Minimum preview content width inside each card; overflow becomes local. */
   contentMinWidth?: number
+  /** Force a single vertical column — better for wide controls (e.g. Pagination). */
+  stack?: boolean
   /** Returns the demoed component for a given scope. */
   render: (scope: TokenScopeKey) => ReactNode
 }
@@ -129,6 +131,7 @@ export function TokenScopeCards({
   extra,
   minCardWidth = 280,
   contentMinWidth,
+  stack = false,
   render,
 }: TokenScopeCardsProps) {
   const t = useDemoStrings(STRINGS)
@@ -143,7 +146,9 @@ export function TokenScopeCards({
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${minCardWidth}px), 1fr))`,
+        gridTemplateColumns: stack
+          ? '1fr'
+          : `repeat(auto-fit, minmax(min(100%, ${minCardWidth}px), 1fr))`,
         gap: 16,
         width: '100%',
         padding: 'var(--sg-padding-md, 12px) 0',

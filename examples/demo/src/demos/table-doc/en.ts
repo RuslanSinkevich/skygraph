@@ -143,6 +143,7 @@ export const tableDocEn = {
   cssSgTableRowBg: 'Row background (overridden by hover/selected)',
   cssSgTableRowHoverBg: 'Row background on hover',
   cssSgTableHeaderBg: 'Header row background',
+  cssSgTableHeaderColor: 'Header cell text color',
   cssSgTableBorderColor: 'Header + outer borders',
   cssSgTableBorderColorSecondary: 'Between-row separator',
   cssSgTableCellPadding: 'Padding of every cell (tune density)',

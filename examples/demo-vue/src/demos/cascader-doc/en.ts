@@ -49,9 +49,6 @@ export const cascaderDocEn = {
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the Cascader control: glides up on focus or when a path is selected.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Semantics only — paint with your own CSS.',
-
   tableCascaderApi: 'Cascader API',
   tableOption: 'CascaderOption',
   tableCssVars: 'CSS Variables',

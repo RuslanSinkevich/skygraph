@@ -37,9 +37,6 @@ export const colorPickerDocRu: { [K in keyof typeof colorPickerDocEn]: string } 
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись над триггером ColorPicker: цвет всегда задан, поэтому label держится сверху и подсвечивается при фокусе.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Убрать все классы SkyGraph, оставив поведение.',
-
   tableColorPickerApi: 'API ColorPicker',
   tableCssVars: 'CSS-переменные',
 

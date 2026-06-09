@@ -12,8 +12,7 @@
  *   - `footer` is `'default' | 'none'` (custom markup → `#footer`
  *     slot). React uses `ReactNode | null`.
  *   - There is no `className` prop — token / class scoping in the
- *     `TokensOverride` and `Unstyled` demos uses a body-level class
- *     toggled while the modal is open.
+ *     `TokensOverride` demo uses a body-level class while the modal is open.
  */
 import { computed } from 'vue'
 import {
@@ -39,8 +38,6 @@ import NoFooterModal from './modal/NoFooter.demo.vue'
 import NoFooterSource from './modal/NoFooter.demo.vue?raw'
 import TokensOverrideModal from './modal/TokensOverride.demo.vue'
 import TokensOverrideSource from './modal/TokensOverride.demo.vue?raw'
-import UnstyledModal from './modal/Unstyled.demo.vue'
-import UnstyledSource from './modal/Unstyled.demo.vue?raw'
 
 const t = useModalDocStrings()
 
@@ -127,11 +124,7 @@ const modalCssVars = computed<CssVarDef[]>(() => [
       <DefaultFooterModal />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoAsyncTitle"
-      :description="t.demoAsyncDesc"
-      :code="AsyncConfirmSource"
-    >
+    <DemoBox :title="t.demoAsyncTitle" :description="t.demoAsyncDesc" :code="AsyncConfirmSource">
       <AsyncConfirmModal />
     </DemoBox>
 
@@ -139,11 +132,7 @@ const modalCssVars = computed<CssVarDef[]>(() => [
       <WidthsModal />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoNoFooterTitle"
-      :description="t.demoNoFooterDesc"
-      :code="NoFooterSource"
-    >
+    <DemoBox :title="t.demoNoFooterTitle" :description="t.demoNoFooterDesc" :code="NoFooterSource">
       <NoFooterModal />
     </DemoBox>
 
@@ -153,14 +142,6 @@ const modalCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideModal />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
-      <UnstyledModal />
     </DemoBox>
 
     <template #api>

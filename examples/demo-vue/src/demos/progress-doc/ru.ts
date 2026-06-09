@@ -29,9 +29,6 @@ export const progressDocRu: ProgressDocStrings = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Три скоупа на токенах Progress: зелёный бренд, тёмная поверхность и glass pick (все полосы / кольца).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` сохраняет `role="progressbar"`, убирает все классы.',
-
   tableProgressApi: 'API Progress',
   tableCssVars: 'CSS-переменные',
   cssHint:

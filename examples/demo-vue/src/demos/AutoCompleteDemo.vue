@@ -32,8 +32,6 @@ import TokensOverrideAutoCompleteDemo from './autocomplete/TokensOverride.demo.v
 import TokensOverrideSource from './autocomplete/TokensOverride.demo.vue?raw'
 import FloatingLabelAutoCompleteDemo from './autocomplete/FloatingLabel.demo.vue'
 import FloatingLabelSource from './autocomplete/FloatingLabel.demo.vue?raw'
-import UnstyledAutoCompleteDemo from './autocomplete/Unstyled.demo.vue'
-import UnstyledSource from './autocomplete/Unstyled.demo.vue?raw'
 
 const t = useAutoCompleteDocStrings()
 
@@ -151,10 +149,6 @@ const autoCompleteCssVars = computed<CssVarDef[]>(() => [
       :code="FloatingLabelSource"
     >
       <FloatingLabelAutoCompleteDemo />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledAutoCompleteDemo />
     </DemoBox>
 
     <template #api>

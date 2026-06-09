@@ -33,8 +33,6 @@ import DynamicProgress from './progress/Dynamic.demo.vue'
 import DynamicSource from './progress/Dynamic.demo.vue?raw'
 import TokensOverrideProgress from './progress/TokensOverride.demo.vue'
 import TokensOverrideSource from './progress/TokensOverride.demo.vue?raw'
-import UnstyledProgress from './progress/Unstyled.demo.vue'
-import UnstyledSource from './progress/Unstyled.demo.vue?raw'
 
 const t = useProgressDocStrings()
 
@@ -124,10 +122,6 @@ const progressCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideProgress />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledProgress />
     </DemoBox>
 
     <template #api>

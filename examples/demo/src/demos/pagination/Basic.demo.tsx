@@ -8,5 +8,14 @@ import { Pagination } from '@skygraph/react'
  */
 export function BasicPagination() {
   const [page, setPage] = useState(1)
-  return <Pagination current={page} total={50} onChange={setPage} />
+  return (
+    <Pagination
+      current={page}
+      total={50}
+      onChange={(p) => {
+        console.log('[Pagination] page change:', p)
+        setPage(p)
+      }}
+    />
+  )
 }

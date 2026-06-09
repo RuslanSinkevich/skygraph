@@ -39,8 +39,6 @@ import CustomGlassTopNavMenu from './menu/CustomGlassTopNav.demo.vue'
 import CustomGlassTopNavSource from './menu/CustomGlassTopNav.demo.vue?raw'
 import CustomCommandPaletteMenu from './menu/CustomCommandPalette.demo.vue'
 import CustomCommandPaletteSource from './menu/CustomCommandPalette.demo.vue?raw'
-import UnstyledMenu from './menu/Unstyled.demo.vue'
-import UnstyledSource from './menu/Unstyled.demo.vue?raw'
 
 const t = useMenuDocStrings()
 
@@ -228,9 +226,6 @@ const menuCssVars = computed<CssVarDef[]>(() => [
       :code="CustomCommandPaletteSource"
     >
       <CustomCommandPaletteMenu />
-    </DemoBox>
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledMenu />
     </DemoBox>
 
     <template #api>

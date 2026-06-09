@@ -35,8 +35,6 @@ import RichContentDescriptions from './descriptions/RichContent.demo.vue'
 import RichContentSource from './descriptions/RichContent.demo.vue?raw'
 import TokensOverrideDescriptions from './descriptions/TokensOverride.demo.vue'
 import TokensOverrideSource from './descriptions/TokensOverride.demo.vue?raw'
-import UnstyledDescriptions from './descriptions/Unstyled.demo.vue'
-import UnstyledSource from './descriptions/Unstyled.demo.vue?raw'
 
 const t = useDescriptionsDocStrings()
 
@@ -133,10 +131,6 @@ const descriptionsCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideDescriptions />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledDescriptions />
     </DemoBox>
 
     <template #api>

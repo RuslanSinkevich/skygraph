@@ -49,7 +49,10 @@ export function MultiSelectDiagram() {
         draggable
         selectionMode="lasso"
         selection={selection}
-        onSelectionChange={setSelection}
+        onSelectionChange={(ids) => {
+          console.log('[Diagram] selection', ids)
+          setSelection(ids)
+        }}
         renderNode={(node) => <span style={{ fontWeight: 600 }}>{String(node.id)}</span>}
       />
     </div>

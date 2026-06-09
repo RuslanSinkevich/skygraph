@@ -22,8 +22,6 @@ import { ContextMenuDiagram } from './diagram/ContextMenu.demo'
 import ContextMenuSource from './diagram/ContextMenu.demo?raw'
 import { MultiSelectDiagram } from './diagram/MultiSelect.demo'
 import MultiSelectSource from './diagram/MultiSelect.demo?raw'
-import { OBBDiagram } from './diagram/OBB.demo'
-import OBBSource from './diagram/OBB.demo?raw'
 
 export function DiagramDemo() {
   const t = useDiagramDocStrings()
@@ -163,10 +161,6 @@ export function DiagramDemo() {
         code={MultiSelectSource}
       >
         <MultiSelectDiagram />
-      </DemoBox>
-
-      <DemoBox title={t.demoOBBTitle} description={t.demoOBBDesc} code={OBBSource}>
-        <OBBDiagram />
       </DemoBox>
 
       <PropsTable title={t.tableDiagramApi} data={diagramProps} />

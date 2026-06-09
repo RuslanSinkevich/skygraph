@@ -46,6 +46,9 @@ export const notificationDocEn = {
   cfgPlacement: 'Corner stack; must match a mounted `NotificationContainer`.',
   cfgKey: 'Stable id used as React key + for manual removal. Auto-generated if omitted.',
   cfgOnClose: 'Fired after the toast leaves the store (manual or auto).',
+  cfgClassName: 'Extra class on the toast root — useful for scoped theming.',
+  cfgStyle:
+    'Inline style on the toast root; accepts CSS custom properties for per-toast token overrides.',
 
   // NotificationContainer props
   containerPlacement: 'Corner this instance listens to. Mount one per corner you use.',

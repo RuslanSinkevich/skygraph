@@ -46,9 +46,6 @@ export const cascaderDocRu: { [K in keyof typeof cascaderDocEn]: string } = {
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на контроле Cascader: уезжает вверх при фокусе или когда путь выбран.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Только семантика — оформляете своими CSS.',
-
   tableCascaderApi: 'API Cascader',
   tableOption: 'CascaderOption',
   tableCssVars: 'CSS-переменные',

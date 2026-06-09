@@ -28,9 +28,6 @@ export const badgeDocEn = {
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
     'Three scopes built from Badge tokens: green brand, dark surface and glass pick (counts and dots).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop every sg-badge class — you own the painting.',
-
   tableBadgeApi: 'Badge API',
   tableCssVars: 'CSS Variables',
 

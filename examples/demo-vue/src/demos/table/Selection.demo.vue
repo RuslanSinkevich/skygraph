@@ -37,7 +37,10 @@ const columns: TableColumn[] = [
       :page-size="6"
       :row-selection="{
         selectedKeys: selected,
-        onChange: (keys: RowId[]) => (selected = keys),
+        onChange: (keys: RowId[], rows: unknown[]) => {
+          console.log('[Table] selection', keys, rows)
+          selected = keys
+        },
       }"
     />
   </div>

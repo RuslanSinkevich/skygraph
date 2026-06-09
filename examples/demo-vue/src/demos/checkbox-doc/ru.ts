@@ -10,7 +10,8 @@ export const checkboxDocRu: { [K in keyof typeof checkboxDocEn]: string } = {
   crumbCheckbox: 'Checkbox',
   pageLead:
     'Бинарный переключатель с опциональными состояниями indeterminate, disabled и rich-label. Работает отдельно или внутри Form.',
-  pageWhen1: 'Выбор одного или нескольких значений из списка (новости → release notes, beta-флаги).',
+  pageWhen1:
+    'Выбор одного или нескольких значений из списка (новости → release notes, beta-флаги).',
   pageWhen2: 'Как родительский «выбрать всё» для массового выбора.',
   pageWhen3: 'Подтверждения условий / privacy с валидацией.',
 
@@ -26,9 +27,6 @@ export const checkboxDocRu: { [K in keyof typeof checkboxDocEn]: string } = {
   demoInFormDesc: 'Обернуть в `<SgField>`, прокинуть `:checked` / `@change` из слота.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоуп глобальных токенов на обёртке для перекраски.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Нативный input + label, без классов SkyGraph.',
-
   tableCheckboxApi: 'API Checkbox',
   tableCssVars: 'CSS-переменные',
 

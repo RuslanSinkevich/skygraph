@@ -59,8 +59,6 @@ import ProgressCellsTable from './table/ProgressCells.demo.vue'
 import ProgressCellsSource from './table/ProgressCells.demo.vue?raw'
 import FinanceStyleTable from './table/FinanceStyle.demo.vue'
 import FinanceStyleSource from './table/FinanceStyle.demo.vue?raw'
-import UnstyledTable from './table/Unstyled.demo.vue'
-import UnstyledSource from './table/Unstyled.demo.vue?raw'
 import VirtualTable from './table/Virtual.demo.vue'
 import VirtualSource from './table/Virtual.demo.vue?raw'
 import KitchenSinkTable from './table/KitchenSink.demo.vue'
@@ -339,9 +337,6 @@ const tableCssVars = computed<CssVarDef[]>(() => [
       :code="FinanceStyleSource"
     >
       <FinanceStyleTable />
-    </DemoBox>
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledTable />
     </DemoBox>
     <DemoBox
       :title="t.demoVirtualTitle"

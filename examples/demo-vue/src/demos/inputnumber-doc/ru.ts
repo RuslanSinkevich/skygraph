@@ -32,9 +32,6 @@ export const inputNumberDocRu: { [K in keyof typeof inputNumberDocEn]: string } 
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на поле InputNumber: уезжает вверх при фокусе или когда число введено.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Логика stepper-а без классов SkyGraph.',
-
   tableInputNumberApi: 'API InputNumber',
   tableCssVars: 'CSS-переменные',
 

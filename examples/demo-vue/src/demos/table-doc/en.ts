@@ -77,9 +77,6 @@ export const tableDocEn = {
   demoFinanceStyleTitle: 'Finance style',
   demoFinanceStyleDesc:
     'Stock-terminal look built purely from public props — `classNames.root` + `#cell` slot. No deep selectors.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc:
-    'Strip Skygraph CSS so you can apply a fully custom design system. DOM stays identical.',
   demoVirtualTitle: 'Virtual scroll',
   demoVirtualDesc:
     '`virtual` keeps the mounted DOM ≈ viewport + overscan even with thousands of rows. Use a number `rowHeight` for the fast fixed path.',

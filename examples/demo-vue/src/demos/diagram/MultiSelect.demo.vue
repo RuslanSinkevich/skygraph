@@ -43,7 +43,12 @@ onMounted(() => {
       :height="360"
       selection-mode="multi"
       :selected-node-ids="selection"
-      @selection-change="(ids) => (selection = ids)"
+      @selection-change="
+        (ids) => {
+          console.log('[Diagram] selection', ids)
+          selection = ids
+        }
+      "
     >
       <template #node="{ node }">
         <span style="font-weight: 600">{{ node.id }}</span>

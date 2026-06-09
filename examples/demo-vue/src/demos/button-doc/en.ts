@@ -34,10 +34,6 @@ export const buttonDocEn = {
     'Three ready-made scopes built from `--sg-btn-*` tokens: green brand, dark surface and glass pick. Only paint / shape changes — fully accessible.',
   demoBrandTitle: 'Scoped brand',
   demoBrandDesc: 'Override --sg-color-primary* to rebrand a subtree.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc:
-    '`unstyled` keeps button semantics — htmlType, disabled, aria-busy — but drops every `sg-button-*` class.',
-
   propUnstyled: 'Drop all `sg-button-*` classes; keep semantics (disabled, aria-busy).',
 
   tableButtonApi: 'Button API',

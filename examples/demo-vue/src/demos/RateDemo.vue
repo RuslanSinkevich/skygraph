@@ -31,8 +31,6 @@ import InFormRateDemo from './rate/InForm.demo.vue'
 import InFormSource from './rate/InForm.demo.vue?raw'
 import TokensOverrideRateDemo from './rate/TokensOverride.demo.vue'
 import TokensOverrideSource from './rate/TokensOverride.demo.vue?raw'
-import UnstyledRateDemo from './rate/Unstyled.demo.vue'
-import UnstyledSource from './rate/Unstyled.demo.vue?raw'
 
 const t = useRateDocStrings()
 
@@ -126,10 +124,6 @@ const rateCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideRateDemo />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledRateDemo />
     </DemoBox>
 
     <template #api>

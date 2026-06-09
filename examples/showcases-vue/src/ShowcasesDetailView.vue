@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, h } from 'vue'
-import { SgSpin } from '@skygraph/vue'
+import { SgButton, SgSpin } from '@skygraph/vue'
 import type { ShowcasesLocale } from '@skygraph-examples/shared'
 import { SHOWCASE_METAS } from './showcaseMeta'
 import { showcaseLoaders } from './showcaseLoaders'
@@ -44,9 +44,9 @@ const LazyApp = computed(() => {
 <template>
   <div class="showcase-shell">
     <div class="showcase-topbar">
-      <button type="button" class="showcase-back" @click="emit('back')">
+      <SgButton type="link" size="small" class="showcase-back" @click="emit('back')">
         {{ props.strings.back }}
-      </button>
+      </SgButton>
       <span class="showcase-topbar-title">
         <template v-if="meta?.icon">{{ meta.icon }} </template>{{ title }}
       </span>

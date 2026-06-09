@@ -24,9 +24,6 @@ export const breadcrumbDocEn = {
   demoDropdownDesc: 'Embed an `SgDropdown` inside the `item` slot to jump between siblings.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope the text palette + `--sg-color-primary` to rebrand.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop the classes; the <nav> + a11y label stay.',
-
   tableBreadcrumbApi: 'Breadcrumb API',
   tableBreadcrumbItem: 'BreadcrumbItem',
   tableCssVars: 'CSS Variables',

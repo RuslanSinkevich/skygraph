@@ -28,9 +28,6 @@ export const descriptionsDocRu: DescriptionsDocStrings = {
     'Vue: `value` — это `string`. React поддерживает `ReactNode` — см. findings.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Локально переопределяем глобальные surface / border токены.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` снимает классы — остаётся «голый» `<table>`.',
-
   tableDescriptionsApi: 'API Descriptions',
   tableDescriptionsItemApi: 'DescriptionsItem',
   tableCssVars: 'CSS-переменные',

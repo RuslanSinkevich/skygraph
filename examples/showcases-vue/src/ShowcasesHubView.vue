@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { SgButton, SgEmpty, SgSearchInput, SgSegmented, SgTag } from '@skygraph/vue'
 import type { ShowcasesLocale } from '@skygraph-examples/shared'
 import { SHOWCASE_CATEGORY_ITEMS, SHOWCASE_METAS } from './showcaseMeta'
 
@@ -33,6 +34,13 @@ function categoryCount(key: string): number {
   if (key === 'all') return SHOWCASE_METAS.length
   return SHOWCASE_METAS.filter((s) => s.category === key).length
 }
+
+const categoryOptions = computed(() =>
+  SHOWCASE_CATEGORY_ITEMS.map((c) => ({
+    value: c.key,
+    label: `${c.labelFrom(props.strings)} ${categoryCount(c.key)}`,
+  })),
+)
 </script>
 
 <template>
@@ -41,39 +49,28 @@ function categoryCount(key: string): number {
     <p class="hub-sub">{{ props.strings.hubLead }}</p>
 
     <div class="hub-controls">
-      <input v-model="query" class="hub-search" :placeholder="props.strings.searchPlaceholder" />
-      <div class="hub-cats">
-        <button
-          v-for="c of SHOWCASE_CATEGORY_ITEMS"
-          :key="c.key"
-          type="button"
-          :class="['hub-cat', category === c.key ? 'hub-cat--active' : '']"
-          @click="category = c.key"
-        >
-          {{ c.labelFrom(props.strings) }}
-          <span class="hub-cat-count">{{ categoryCount(c.key) }}</span>
-        </button>
-      </div>
+      <SgSearchInput
+        v-model="query"
+        class="hub-search"
+        :placeholder="props.strings.searchPlaceholder"
+      />
+      <SgSegmented v-model="category" class="hub-cats" :options="categoryOptions" />
     </div>
 
-    <div v-if="filtered.length === 0" class="hub-empty">
-      {{ props.strings.noMatches }}
-    </div>
+    <SgEmpty
+      v-if="filtered.length === 0"
+      class="hub-empty"
+      :description="props.strings.noMatches"
+    />
     <div v-else class="hub-grid">
-      <button
-        v-for="s of filtered"
-        :key="s.key"
-        type="button"
-        class="hub-card"
-        @click="emit('open', s.key)"
-      >
+      <SgButton v-for="s of filtered" :key="s.key" class="hub-card" @click="emit('open', s.key)">
         <div class="hub-card-icon">{{ s.icon }}</div>
         <h3>{{ props.strings.cards[s.key]?.title ?? s.key }}</h3>
         <p>{{ props.strings.cards[s.key]?.description ?? '' }}</p>
         <div class="hub-card-tags">
-          <span v-for="t of s.tags" :key="t" class="hub-card-tag">{{ t }}</span>
+          <SgTag v-for="t of s.tags" :key="t" class="hub-card-tag">{{ t }}</SgTag>
         </div>
-      </button>
+      </SgButton>
     </div>
   </div>
 </template>

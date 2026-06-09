@@ -39,9 +39,6 @@ export const timePickerDocRu: { [K in keyof typeof timePickerDocEn]: string } = 
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на контроле TimePicker: уезжает вверх при фокусе или когда время выбрано.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Headless-режим, нативные классы убраны.',
-
   tableTimePickerApi: 'API TimePicker',
   tableTimeRangePickerApi: 'API TimeRangePicker',
   tableCssVars: 'CSS-переменные',

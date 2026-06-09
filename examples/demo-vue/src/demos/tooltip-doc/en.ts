@@ -23,9 +23,6 @@ export const tooltipDocEn = {
   demoTokensTitle: 'Token override',
   demoTokensDesc:
     'Three tooltip skins (frosted glass, gradient, soft card) — each one passes a className to the wrapper and styles `.sg-tooltip-content` / `.sg-tooltip-arrow` underneath.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Keep the behaviour + ARIA, swap all painting via CSS.',
-
   tableTooltipApi: 'Tooltip API',
   tableCssVars: 'CSS Variables',
   cssHint:

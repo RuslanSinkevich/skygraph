@@ -33,8 +33,6 @@ import DisabledPagination from './pagination/Disabled.demo.vue'
 import DisabledSource from './pagination/Disabled.demo.vue?raw'
 import TokensOverridePagination from './pagination/TokensOverride.demo.vue'
 import TokensOverrideSource from './pagination/TokensOverride.demo.vue?raw'
-import UnstyledPagination from './pagination/Unstyled.demo.vue'
-import UnstyledSource from './pagination/Unstyled.demo.vue?raw'
 
 const t = usePaginationDocStrings()
 
@@ -176,15 +174,6 @@ const paginationCssVars = computed<CssVarDef[]>(() => [
       vertical
     >
       <TokensOverridePagination />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-      vertical
-    >
-      <UnstyledPagination />
     </DemoBox>
 
     <template #api>

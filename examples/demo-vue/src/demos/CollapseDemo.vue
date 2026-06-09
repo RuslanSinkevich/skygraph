@@ -42,8 +42,6 @@ import SizesCollapse from './collapse/Sizes.demo.vue'
 import SizesSource from './collapse/Sizes.demo.vue?raw'
 import TokensOverrideCollapse from './collapse/TokensOverride.demo.vue'
 import TokensOverrideSource from './collapse/TokensOverride.demo.vue?raw'
-import UnstyledCollapse from './collapse/Unstyled.demo.vue'
-import UnstyledSource from './collapse/Unstyled.demo.vue?raw'
 
 const t = useCollapseDocStrings()
 
@@ -182,15 +180,6 @@ const collapseCssVars = computed<CssVarDef[]>(() => [
       vertical
     >
       <TokensOverrideCollapse />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-      vertical
-    >
-      <UnstyledCollapse />
     </DemoBox>
 
     <template #api>

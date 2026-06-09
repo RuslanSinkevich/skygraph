@@ -27,18 +27,13 @@ export const emptyDocEn = {
   demoInCardTitle: 'In a card',
   demoInCardDesc: 'Wrap inside a bordered surface so it owns the table region.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc:
-    'Scope `--sg-color-text-disabled` / `--sg-color-text-tertiary` to repaint.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` keeps semantic structure, drops every class.',
-
+  demoTokensDesc: 'Scope `--sg-color-text-disabled` / `--sg-color-text-tertiary` to repaint.',
   tableEmptyApi: 'Empty API',
   tableCssVars: 'CSS Variables',
   cssHint:
     'Empty has no component-private tokens. Override `--sg-color-text-disabled` (illustration colour) and `--sg-color-text-tertiary` (caption colour) to rebrand.',
 
-  propDescription:
-    'Caption text below the image. Pass `null` to hide. Defaults to "No Data".',
+  propDescription: 'Caption text below the image. Pass `null` to hide. Defaults to "No Data".',
   propUnstyled: 'Drop sg-empty-* classes — keep the wrapper, image slot, paragraph and children',
   propImageSlot: '`#image` slot for custom illustrations (default: built-in SVG)',
   propDefaultSlot: 'Default slot — actions rendered below the description',

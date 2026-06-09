@@ -38,8 +38,6 @@ import TokensOverrideCascaderDemo from './cascader/TokensOverride.demo.vue'
 import TokensOverrideSource from './cascader/TokensOverride.demo.vue?raw'
 import FloatingLabelCascaderDemo from './cascader/FloatingLabel.demo.vue'
 import FloatingLabelSource from './cascader/FloatingLabel.demo.vue?raw'
-import UnstyledCascaderDemo from './cascader/Unstyled.demo.vue'
-import UnstyledSource from './cascader/Unstyled.demo.vue?raw'
 
 const t = useCascaderDocStrings()
 
@@ -277,10 +275,6 @@ const cascaderCssVars = computed<CssVarDef[]>(() => [
       :code="FloatingLabelSource"
     >
       <FloatingLabelCascaderDemo />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledCascaderDemo />
     </DemoBox>
 
     <template #api>

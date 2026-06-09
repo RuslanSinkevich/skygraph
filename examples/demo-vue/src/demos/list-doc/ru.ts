@@ -39,9 +39,6 @@ export const listDocRu: ListDocStrings = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Три скоупа на токенах List: зелёный бренд, тёмная поверхность и glass pick (hover / border / header).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Сбросить sg-list-* стили, поведение остаётся.',
-
   tableListApi: 'List API',
   tableCssVars: 'CSS Variables',
 

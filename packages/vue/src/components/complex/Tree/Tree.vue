@@ -229,7 +229,15 @@ function handleLoadData(node: TreeNodeData) {
 
 function handleDragStart(e: DragEvent, key: TreeKey) {
   dragKey.value = key
-  if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move'
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move'
+    // Firefox refuses to start an HTML5 drag unless dataTransfer carries a payload.
+    try {
+      e.dataTransfer.setData('text/plain', String(key))
+    } catch {
+      // some environments forbid setData during programmatic drags — non-fatal
+    }
+  }
   const node = tree.getNode(key)
   if (node) emit('dragStart', { event: e, node })
 }

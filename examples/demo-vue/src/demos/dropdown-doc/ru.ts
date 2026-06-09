@@ -28,9 +28,6 @@ export const dropdownDocRu: { [K in keyof typeof dropdownDocEn]: string } = {
   demoKeyboardDesc: 'Space / Enter — открыть, ↑ / ↓ — переход, Esc — закрыть.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Перекрасьте surface, hover и danger-токены на обёртке.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Поведение и обработка клавиатуры остаются — стили подставьте свои.',
-
   tableDropdownApi: 'API Dropdown',
   tableDropdownItem: 'DropdownItem',
   tableCssVars: 'CSS-переменные',

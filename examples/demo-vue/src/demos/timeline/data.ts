@@ -2,7 +2,7 @@ import type { TimelineItem } from '@skygraph/vue'
 
 /**
  * Shared sample data used by Basic / Reverse / RightMode /
- * TokensOverride / Unstyled demos. Mirrors the React
+ * TokensOverride demos. Mirrors the React
  * `examples/demo/src/demos/timeline/data.ts` (Vue uses
  * `content` instead of React's `children`).
  */

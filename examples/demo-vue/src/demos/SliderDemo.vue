@@ -28,8 +28,6 @@ import InFormSliderDemo from './slider/InForm.demo.vue'
 import InFormSource from './slider/InForm.demo.vue?raw'
 import TokensOverrideSliderDemo from './slider/TokensOverride.demo.vue'
 import TokensOverrideSource from './slider/TokensOverride.demo.vue?raw'
-import UnstyledSliderDemo from './slider/Unstyled.demo.vue'
-import UnstyledSource from './slider/Unstyled.demo.vue?raw'
 
 const t = useSliderDocStrings()
 
@@ -128,10 +126,6 @@ const sliderCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideSliderDemo />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledSliderDemo />
     </DemoBox>
 
     <template #api>

@@ -32,8 +32,6 @@ import WithContentResult from './result/WithContent.demo.vue'
 import WithContentSource from './result/WithContent.demo.vue?raw'
 import TokensOverrideResult from './result/TokensOverride.demo.vue'
 import TokensOverrideSource from './result/TokensOverride.demo.vue?raw'
-import UnstyledResult from './result/Unstyled.demo.vue'
-import UnstyledSource from './result/Unstyled.demo.vue?raw'
 
 const t = useResultDocStrings()
 
@@ -120,10 +118,6 @@ const resultCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideResult />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledResult />
     </DemoBox>
 
     <template #api>

@@ -24,9 +24,6 @@ export const radioDocRu: { [K in keyof typeof radioDocEn]: string } = {
   demoInFormDesc: '`SgRadio` в `SgField` с required-валидацией.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Скоуп глобальных токенов для ребрендинга одной группы.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Нативный radiogroup + inputs, без классов SkyGraph.',
-
   tableRadioGroupApi: 'API SgRadio',
   tableRadioOptionApi: 'RadioOption',
   tableCssVars: 'CSS-переменные',

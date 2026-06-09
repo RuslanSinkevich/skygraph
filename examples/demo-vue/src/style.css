@@ -305,6 +305,13 @@ a {
   overflow-y: visible;
 }
 
+/* Flush previews that host a Table looked glued to the demo-box edges (no
+ * breathing room around bordered/resizable/draggable tables). Give them a
+ * little padding while keeping horizontal scroll for wide tables. */
+.demo-box-preview-flush:has(.sg-table) {
+  padding: 16px 20px;
+}
+
 .demo-box-preview-vertical {
   flex-direction: column;
   align-items: stretch;

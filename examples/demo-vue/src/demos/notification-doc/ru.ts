@@ -24,21 +24,15 @@ export const notificationDocRu: { [K in keyof typeof notificationDocEn]: string 
   demoPlacementDesc:
     'Тосты появляются в углу из `placement`. Для каждого угла нужен свой смонтированный `SgNotificationContainer`.',
   demoOnCloseTitle: 'Колбэк onClose',
-  demoOnCloseDesc:
-    'Узнавать, когда тост действительно удалился — вручную или по таймеру.',
+  demoOnCloseDesc: 'Узнавать, когда тост действительно удалился — вручную или по таймеру.',
   demoRichTitle: 'Rich-контент (Vue-ограничение)',
   demoRichDesc:
     '`message` и `description` — строки в `@skygraph/vue`; rich VNode/HTML из React не переносится 1:1. Используйте plain-text и опирайтесь на локаль.',
   demoDestroyTitle: 'Destroy all',
-  demoDestroyDesc:
-    '`notification.destroy()` чистит весь стор независимо от placement.',
+  demoDestroyDesc: '`notification.destroy()` чистит весь стор независимо от placement.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Визуал карточек — глобальные дизайн-токены; переопределите их на `:root` или обёртке, где также живёт `<SgNotificationContainer/>`.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc:
-    'Снимите все классы `sg-notification-*` через `<SgNotificationContainer unstyled/>`. Стор и контейнер остаются — карточки рисуете сами.',
-
   tableConfig: 'NotificationConfig',
   tableContainer: 'SgNotificationContainer',
   tableUtility: 'утилита notification',
@@ -51,8 +45,7 @@ export const notificationDocRu: { [K in keyof typeof notificationDocEn]: string 
   cfgDescription: 'Вторая строка под message — только string в Vue.',
   cfgDuration: 'Время авто-закрытия в мс; `0` отключает авто-закрытие.',
   cfgPlacement: 'Стек угла; должен совпадать со смонтированным `SgNotificationContainer`.',
-  cfgKey:
-    'Стабильный id для дедупликации и ручного удаления. Авто-генерируется, если не задан.',
+  cfgKey: 'Стабильный id для дедупликации и ручного удаления. Авто-генерируется, если не задан.',
   cfgOnClose: 'Срабатывает после удаления тоста (вручную или по таймеру).',
 
   containerPlacement: 'Угол, который слушает этот контейнер. Один на каждый угол.',

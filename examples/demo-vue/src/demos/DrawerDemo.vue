@@ -9,7 +9,7 @@
  *   - Closing emits `@close`; custom footer goes into the `#footer`
  *     slot (React: `footer` prop).
  *   - There is no `className` / `style` prop — the `TokensOverride`
- *     and `Unstyled` demos toggle a body-level class while open.
+ *     demo toggles a body-level class while open.
  */
 import { computed } from 'vue'
 import {
@@ -35,8 +35,6 @@ import NoMaskDrawer from './drawer/NoMask.demo.vue'
 import NoMaskSource from './drawer/NoMask.demo.vue?raw'
 import TokensOverrideDrawer from './drawer/TokensOverride.demo.vue'
 import TokensOverrideSource from './drawer/TokensOverride.demo.vue?raw'
-import UnstyledDrawer from './drawer/Unstyled.demo.vue'
-import UnstyledSource from './drawer/Unstyled.demo.vue?raw'
 
 const t = useDrawerDocStrings()
 
@@ -140,14 +138,6 @@ const drawerCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideDrawer />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
-      <UnstyledDrawer />
     </DemoBox>
 
     <template #api>

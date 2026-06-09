@@ -5,6 +5,10 @@
  */
 import { SgMenu } from '@skygraph/vue'
 import { sidebarItems } from './data'
+
+function onSelect(info: { key: string }) {
+  console.log('[Menu] select', info.key)
+}
 </script>
 
 <template>
@@ -14,6 +18,7 @@ import { sidebarItems } from './data'
       :items="sidebarItems"
       :default-open-keys="['team']"
       :default-selected-keys="['members']"
+      @select="onSelect"
     />
   </div>
 </template>

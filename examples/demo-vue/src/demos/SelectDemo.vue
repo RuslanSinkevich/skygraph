@@ -30,8 +30,6 @@ import TokensOverrideSelect from './select/TokensOverride.demo.vue'
 import TokensOverrideSource from './select/TokensOverride.demo.vue?raw'
 import FloatingLabelSelect from './select/FloatingLabel.demo.vue'
 import FloatingLabelSource from './select/FloatingLabel.demo.vue?raw'
-import UnstyledSelect from './select/Unstyled.demo.vue'
-import UnstyledSource from './select/Unstyled.demo.vue?raw'
 
 const t = useSelectDocStrings()
 
@@ -208,10 +206,6 @@ const selectCssVars = computed<CssVarDef[]>(() => [
       :code="FloatingLabelSource"
     >
       <FloatingLabelSelect />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledSelect />
     </DemoBox>
 
     <template #api>

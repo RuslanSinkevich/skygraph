@@ -29,9 +29,6 @@ export const checkboxDocEn = {
   demoInFormDesc: 'Wrap with `<SgField>` and pipe `:checked` / `@change` from the slot.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global tokens on a wrapper to re-skin.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Native input + label wrapper, no SkyGraph classes.',
-
   tableCheckboxApi: 'Checkbox API',
   tableCssVars: 'CSS Variables',
 

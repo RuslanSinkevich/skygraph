@@ -27,8 +27,6 @@ import ContextMenuDiagram from './diagram/ContextMenu.demo.vue'
 import ContextMenuSource from './diagram/ContextMenu.demo.vue?raw'
 import MultiSelectDiagram from './diagram/MultiSelect.demo.vue'
 import MultiSelectSource from './diagram/MultiSelect.demo.vue?raw'
-import OBBDiagram from './diagram/OBB.demo.vue'
-import OBBSource from './diagram/OBB.demo.vue?raw'
 
 const t = useDiagramDocStrings()
 
@@ -154,9 +152,6 @@ const exposeProps = computed<PropDef[]>(() => [
       :code="MultiSelectSource"
     >
       <MultiSelectDiagram />
-    </DemoBox>
-    <DemoBox :title="t.demoOBBTitle" :description="t.demoOBBDesc" :code="OBBSource">
-      <OBBDiagram />
     </DemoBox>
 
     <template #api>

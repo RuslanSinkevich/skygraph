@@ -27,9 +27,6 @@ export const resultDocEn = {
   demoWithContentDesc: 'Default slot renders inside a soft panel below `#extra`.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope success / primary / surface tokens to rebrand.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` keeps `role="status"` + aria-live, drops every class.',
-
   tableResultApi: 'Result API',
   tableCssVars: 'CSS Variables',
   cssHint:

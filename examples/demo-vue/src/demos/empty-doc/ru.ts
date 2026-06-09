@@ -14,8 +14,7 @@ export const emptyDocRu: EmptyDocStrings = {
   demoBasicTitle: 'Базовая',
   demoBasicDesc: 'Дефолтная иллюстрация + caption "No Data".',
   demoDescriptionTitle: 'Описание',
-  demoDescriptionDesc:
-    'Меняем caption под ситуацию (Vue: только строка — см. findings).',
+  demoDescriptionDesc: 'Меняем caption под ситуацию (Vue: только строка — см. findings).',
   demoNoDescriptionTitle: 'Без описания',
   demoNoDescriptionDesc: '`:description="null"` скрывает caption — только картинка.',
   demoCustomImageTitle: 'Кастомная иллюстрация',
@@ -27,18 +26,13 @@ export const emptyDocRu: EmptyDocStrings = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Локально переопределяем `--sg-color-text-disabled` / `--sg-color-text-tertiary`.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` сохраняет семантику, убирает все классы.',
-
   tableEmptyApi: 'API Empty',
   tableCssVars: 'CSS-переменные',
   cssHint:
     'У Empty нет собственных токенов. Переопределяй `--sg-color-text-disabled` (цвет иллюстрации) и `--sg-color-text-tertiary` (цвет caption).',
 
-  propDescription:
-    'Подпись под картинкой. `null` — скрыть. По умолчанию "No Data".',
-  propUnstyled:
-    'Снять sg-empty-* классы — wrapper, слот image, параграф и default-слот остаются',
+  propDescription: 'Подпись под картинкой. `null` — скрыть. По умолчанию "No Data".',
+  propUnstyled: 'Снять sg-empty-* классы — wrapper, слот image, параграф и default-слот остаются',
   propImageSlot: 'Слот `#image` для своей иллюстрации (по умолчанию — встроенный SVG)',
   propDefaultSlot: 'Default-слот — действия под описанием',
 

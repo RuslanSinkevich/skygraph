@@ -33,9 +33,6 @@ export const selectDocRu: { [K in keyof typeof selectDocEn]: string } = {
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на триггере Select: уезжает вверх при фокусе или когда значение выбрано (`:focus-within` + класс заполненности).',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Нативный <select> без стилей библиотеки — headless-режим.',
-
   tableSelectApi: 'API Select',
   tableOptionApi: 'SelectOption',
   tableCssVars: 'CSS-переменные',

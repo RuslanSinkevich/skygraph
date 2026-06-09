@@ -28,9 +28,6 @@ export const skeletonDocRu: SkeletonDocStrings = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Три скоупа на токенах Skeleton: зелёный бренд, тёмная поверхность и glass pick (`--sg-skeleton-bg` / `--sg-skeleton-shimmer`).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` сохраняет aria-busy и порядок блоков, убирает все классы.',
-
   tableSkeletonApi: 'API Skeleton',
   tableCssVars: 'CSS-переменные',
   cssHint:

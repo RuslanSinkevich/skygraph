@@ -43,9 +43,6 @@ export const inputDocEn = {
   demoTextareaStatesDesc: 'Two disabled variants (Vue Textarea has no loading prop yet).',
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: 'Input + Textarea wired up via `<SgField>` scoped slot.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Headless mode with your own CSS class.',
-
   tableInputApi: 'Input API',
   tableTextareaApi: 'Textarea API',
   tableCssVars: 'CSS Variables',

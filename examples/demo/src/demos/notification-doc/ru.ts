@@ -45,6 +45,9 @@ export const notificationDocRu: { [K in keyof typeof notificationDocEn]: string 
   cfgPlacement: 'Стек угла; должен совпадать со смонтированным `NotificationContainer`.',
   cfgKey: 'Стабильный id для React-ключа и ручного удаления. Генерируется, если не задан.',
   cfgOnClose: 'Срабатывает, когда тост удалён из стора (вручную или авто).',
+  cfgClassName: 'Дополнительный class на корне тоста — для scoped-темизации.',
+  cfgStyle:
+    'Inline-стиль на корне тоста; принимает CSS custom properties для переопределения токенов на один тост.',
 
   containerPlacement:
     'Угол, который слушает данный экземпляр. Один контейнер на каждый используемый угол.',

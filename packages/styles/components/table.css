@@ -3,6 +3,7 @@
   --sg-table-row-bg: transparent;
   --sg-table-row-hover-bg: var(--sg-color-bg-hover);
   --sg-table-header-bg: var(--sg-color-bg-secondary);
+  --sg-table-header-color: var(--sg-color-text);
   --sg-table-border-color: var(--sg-color-border);
   --sg-table-border-color-secondary: var(--sg-color-border-secondary);
   --sg-table-cell-padding: var(--sg-padding-sm) var(--sg-padding-md);
@@ -120,7 +121,7 @@
   position: relative;
   padding: var(--sg-table-cell-padding);
   font-weight: 600;
-  color: var(--sg-color-text);
+  color: var(--sg-table-header-color);
   background: var(--sg-table-header-bg);
   border-bottom: 1px solid var(--sg-table-border-color);
   user-select: none;

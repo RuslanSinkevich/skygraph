@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
-import { Spin } from '@skygraph/react'
+import { Button, Empty, SearchInput, Segmented, Spin, Tag } from '@skygraph/react'
 import type { ShowcasesLocale } from '@skygraph-examples/shared'
 import { SHOWCASE_CATEGORY_ITEMS, SHOWCASE_METAS } from './showcaseMeta'
 import { showcaseLoaders } from './showcaseLoaders'
@@ -31,56 +31,59 @@ export function ShowcasesHubView({
     })
   }, [category, query, strings.cards])
 
+  const categoryOptions = useMemo(
+    () =>
+      SHOWCASE_CATEGORY_ITEMS.map((c) => {
+        const count =
+          c.key === 'all'
+            ? SHOWCASE_METAS.length
+            : SHOWCASE_METAS.filter((s) => s.category === c.key).length
+        return { value: c.key, label: `${c.labelFrom(strings)} ${count}` }
+      }),
+    [strings],
+  )
+
   return (
     <div className="hub">
       <h1>{strings.hubTitle}</h1>
       <p className="hub-sub">{strings.hubLead}</p>
 
       <div className="hub-controls">
-        <input
+        <SearchInput
           className="hub-search"
           placeholder={strings.searchPlaceholder}
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={setQuery}
         />
-        <div className="hub-cats">
-          {SHOWCASE_CATEGORY_ITEMS.map((c) => (
-            <button
-              key={c.key}
-              type="button"
-              className={`hub-cat${category === c.key ? ' hub-cat--active' : ''}`}
-              onClick={() => setCategory(c.key)}
-            >
-              {c.labelFrom(strings)}
-              <span className="hub-cat-count">
-                {c.key === 'all'
-                  ? SHOWCASE_METAS.length
-                  : SHOWCASE_METAS.filter((s) => s.category === c.key).length}
-              </span>
-            </button>
-          ))}
-        </div>
+        <Segmented
+          className="hub-cats"
+          value={category}
+          options={categoryOptions}
+          onChange={(value) =>
+            setCategory(value as (typeof SHOWCASE_CATEGORY_ITEMS)[number]['key'])
+          }
+        />
       </div>
 
       {filtered.length === 0 ? (
-        <div className="hub-empty">{strings.noMatches}</div>
+        <Empty className="hub-empty" description={strings.noMatches} />
       ) : (
         <div className="hub-grid">
           {filtered.map((s) => {
             const card = strings.cards[s.key]
             return (
-              <button key={s.key} className="hub-card" onClick={() => onOpen(s.key)} type="button">
+              <Button key={s.key} className="hub-card" onClick={() => onOpen(s.key)}>
                 <div className="hub-card-icon">{s.icon}</div>
                 <h3>{card?.title ?? s.key}</h3>
                 <p>{card?.description ?? ''}</p>
                 <div className="hub-card-tags">
                   {s.tags.map((t) => (
-                    <span key={t} className="hub-card-tag">
+                    <Tag key={t} className="hub-card-tag">
                       {t}
-                    </span>
+                    </Tag>
                   ))}
                 </div>
-              </button>
+              </Button>
             )
           })}
         </div>
@@ -107,9 +110,9 @@ export function ShowcasesDetailView({
     return (
       <div className="showcase-shell">
         <div className="showcase-topbar">
-          <button type="button" className="showcase-back" onClick={onBack}>
+          <Button type="link" size="small" className="showcase-back" onClick={onBack}>
             {strings.back}
-          </button>
+          </Button>
         </div>
         <div className="showcase-body" style={{ padding: 24 }}>
           Unknown showcase: {showcaseKey}
@@ -121,9 +124,9 @@ export function ShowcasesDetailView({
   return (
     <div className="showcase-shell">
       <div className="showcase-topbar">
-        <button type="button" className="showcase-back" onClick={onBack}>
+        <Button type="link" size="small" className="showcase-back" onClick={onBack}>
           {strings.back}
-        </button>
+        </Button>
         <span className="showcase-topbar-title">
           {meta?.icon ? `${meta.icon} ` : ''}
           {title}

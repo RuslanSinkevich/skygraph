@@ -44,9 +44,6 @@ export const listDocEn = {
   demoTokensTitle: 'Token override',
   demoTokensDesc:
     'Three scopes built from List tokens: green brand, dark surface and glass pick (hover / border / header).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop sg-list-* styles, keep behaviour.',
-
   tableListApi: 'List API',
   tableCssVars: 'CSS Variables',
 

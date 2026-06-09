@@ -27,8 +27,6 @@ import DropdownBreadcrumb from './breadcrumb/Dropdown.demo.vue'
 import DropdownSource from './breadcrumb/Dropdown.demo.vue?raw'
 import TokensOverrideBreadcrumb from './breadcrumb/TokensOverride.demo.vue'
 import TokensOverrideSource from './breadcrumb/TokensOverride.demo.vue?raw'
-import UnstyledBreadcrumb from './breadcrumb/Unstyled.demo.vue'
-import UnstyledSource from './breadcrumb/Unstyled.demo.vue?raw'
 
 const t = useBreadcrumbDocStrings()
 
@@ -107,9 +105,6 @@ const breadcrumbCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideBreadcrumb />
-    </DemoBox>
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledBreadcrumb />
     </DemoBox>
 
     <template #api>

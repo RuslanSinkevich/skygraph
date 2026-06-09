@@ -33,8 +33,6 @@ import OffsetBadge from './badge/Offset.demo.vue'
 import OffsetSource from './badge/Offset.demo.vue?raw'
 import TokensOverrideBadge from './badge/TokensOverride.demo.vue'
 import TokensOverrideSource from './badge/TokensOverride.demo.vue?raw'
-import UnstyledBadge from './badge/Unstyled.demo.vue'
-import UnstyledSource from './badge/Unstyled.demo.vue?raw'
 
 const t = useBadgeDocStrings()
 
@@ -118,10 +116,6 @@ const badgeCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideBadge />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledBadge />
     </DemoBox>
 
     <template #api>

@@ -33,9 +33,6 @@ export const avatarDocEn = {
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
     'Three scopes built from Avatar tokens: green brand, dark surface and glass pick (shape + fallback bg).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop every sg-avatar class — you own the painting.',
-
   tableAvatarApi: 'Avatar API',
   tableCssVars: 'CSS Variables',
 

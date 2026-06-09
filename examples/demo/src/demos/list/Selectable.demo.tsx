@@ -16,8 +16,15 @@ export function SelectableList() {
         selectable
         multiSelect
         dataSource={users}
-        onSelectionChange={(_, items) => setPicked(items.map((u) => u.name))}
-        renderItem={(u) => <List.Item>{u.name} — {u.role}</List.Item>}
+        onSelectionChange={(keys, items) => {
+          console.log('[List] selection change:', keys, items)
+          setPicked(items.map((u) => u.name))
+        }}
+        renderItem={(u) => (
+          <List.Item>
+            {u.name} — {u.role}
+          </List.Item>
+        )}
       />
       <div style={{ color: 'var(--sg-color-text-secondary)', fontSize: 12 }}>
         Selected: {picked.length === 0 ? 'none' : picked.join(', ')} (hold Ctrl/Cmd for multi-pick)

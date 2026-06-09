@@ -26,9 +26,6 @@ export const segmentedDocEn = {
   demoSizesDesc: 'Small, middle, large.',
   demoTokensOverrideTitle: 'Tokens override',
   demoTokensOverrideDesc: 'Scope the track / thumb tokens to repaint the control.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop the built-in CSS; keep the radio-group semantics.',
-
   tableSegmentedApi: 'Segmented API',
   tableCssVars: 'CSS Variables',
 

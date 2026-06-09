@@ -28,9 +28,6 @@ export const stepsDocEn = {
   demoNavigationDesc: 'Underlined-tab variant without icons.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Finished / process colour follows `--sg-color-primary`.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'No classes — only `data-status` + the items you provide.',
-
   tableStepsApi: 'Steps API',
   tableStepItem: 'StepItem',
   tableCssVars: 'CSS Variables',

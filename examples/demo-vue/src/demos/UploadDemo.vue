@@ -2,9 +2,9 @@
 /**
  * `UploadDemo` — aggregator for the Upload component page.
  *
- * Mirrors `examples/demo/src/demos/UploadDemo.tsx` (9 examples).
- * Vue surface (9 examples): Basic, Multiple, Accept, CustomTrigger,
- * WithProgress, ErrorState, Disabled, TokensOverride, Unstyled.
+ * Mirrors `examples/demo/src/demos/UploadDemo.tsx` (8 examples).
+ * Vue surface (8 examples): Basic, Multiple, Accept, CustomTrigger,
+ * WithProgress, ErrorState, Disabled, TokensOverride.
  *
  * Vue parity gaps:
  * - React's `Disabled` demo also showed `loading` — Vue dropped that
@@ -40,8 +40,6 @@ import DisabledUploadDemo from './upload/Disabled.demo.vue'
 import DisabledSource from './upload/Disabled.demo.vue?raw'
 import TokensOverrideUploadDemo from './upload/TokensOverride.demo.vue'
 import TokensOverrideSource from './upload/TokensOverride.demo.vue?raw'
-import UnstyledUploadDemo from './upload/Unstyled.demo.vue'
-import UnstyledSource from './upload/Unstyled.demo.vue?raw'
 
 const t = useUploadDocStrings()
 
@@ -188,10 +186,6 @@ const uploadCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideUploadDemo />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledUploadDemo />
     </DemoBox>
 
     <template #api>

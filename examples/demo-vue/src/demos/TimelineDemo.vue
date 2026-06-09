@@ -42,8 +42,6 @@ import CustomColorTimeline from './timeline/CustomColor.demo.vue'
 import CustomColorSource from './timeline/CustomColor.demo.vue?raw'
 import TokensOverrideTimeline from './timeline/TokensOverride.demo.vue'
 import TokensOverrideSource from './timeline/TokensOverride.demo.vue?raw'
-import UnstyledTimeline from './timeline/Unstyled.demo.vue'
-import UnstyledSource from './timeline/Unstyled.demo.vue?raw'
 
 const t = useTimelineDocStrings()
 
@@ -163,10 +161,6 @@ const timelineCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideTimeline />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledTimeline />
     </DemoBox>
 
     <template #api>

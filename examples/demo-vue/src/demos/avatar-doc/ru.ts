@@ -30,9 +30,6 @@ export const avatarDocRu: { [K in keyof typeof avatarDocEn]: string } = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Три скоупа на токенах Avatar: зелёный бренд, тёмная поверхность и glass pick (форма + fallback-фон).',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Уберите все классы sg-avatar — рисуете сами.',
-
   tableAvatarApi: 'API Avatar',
   tableCssVars: 'CSS-переменные',
 

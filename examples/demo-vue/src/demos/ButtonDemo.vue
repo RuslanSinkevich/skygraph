@@ -33,8 +33,6 @@ import TokensOverrideButton from './button/TokensOverride.demo.vue'
 import TokensOverrideSource from './button/TokensOverride.demo.vue?raw'
 import ScopedBrandButton from './button/ScopedBrand.demo.vue'
 import ScopedBrandSource from './button/ScopedBrand.demo.vue?raw'
-import UnstyledButton from './button/Unstyled.demo.vue'
-import UnstyledSource from './button/Unstyled.demo.vue?raw'
 
 const t = useButtonDocStrings()
 
@@ -190,10 +188,6 @@ const buttonCssVars = computed<CssVarDef[]>(() => [
 
     <DemoBox :title="t.demoBrandTitle" :description="t.demoBrandDesc" :code="ScopedBrandSource">
       <ScopedBrandButton />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledButton />
     </DemoBox>
 
     <template #api>

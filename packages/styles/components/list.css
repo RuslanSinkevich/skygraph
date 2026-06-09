@@ -55,7 +55,11 @@
 /* ---- Single item ---- */
 .sg-list-item {
   display: flex;
-  align-items: flex-start;
+  /* Center main / actions / extra blocks on a single baseline so rows with a
+   * multi-line Meta block (avatar + title + description) stay visually even.
+   * The Meta block keeps its own `align-items: flex-start` internally so the
+   * avatar still tops out with the title. */
+  align-items: center;
   padding: var(--sg-padding-md) var(--sg-padding-lg);
   transition: background var(--sg-transition-duration);
 }

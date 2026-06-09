@@ -19,6 +19,7 @@ function handleCustomRequest({
   onSuccess: (response?: unknown) => void
   onError: (err: unknown) => void
 }) {
+  console.log('[Upload] picked', file.name)
   setTimeout(() => onSuccess({ name: file.name }), 900)
 }
 </script>

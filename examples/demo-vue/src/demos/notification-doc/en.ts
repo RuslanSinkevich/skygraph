@@ -37,15 +37,10 @@ export const notificationDocEn = {
   demoRichDesc:
     '`message` and `description` are strings in `@skygraph/vue` — rich VNode/HTML content from React is not portable. Inline-format the text and lean on locale instead.',
   demoDestroyTitle: 'Destroy all',
-  demoDestroyDesc:
-    '`notification.destroy()` clears the entire store regardless of placement.',
+  demoDestroyDesc: '`notification.destroy()` clears the entire store regardless of placement.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
     'Card visuals come from global design tokens — swap them on `:root` or a wrapper that also contains `<SgNotificationContainer/>`.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc:
-    'Drop every `sg-notification-*` class via `<SgNotificationContainer unstyled/>`. You keep the store + container logic; paint the cards yourself.',
-
   tableConfig: 'NotificationConfig',
   tableContainer: 'SgNotificationContainer',
   tableUtility: 'notification utility',
@@ -58,8 +53,7 @@ export const notificationDocEn = {
   cfgDescription: 'Secondary detail below the message — string only in Vue.',
   cfgDuration: 'Auto-dismiss delay in ms; `0` disables auto-close.',
   cfgPlacement: 'Corner stack; must match a mounted `SgNotificationContainer`.',
-  cfgKey:
-    'Stable id used for deduplication + manual removal. Auto-generated if omitted.',
+  cfgKey: 'Stable id used for deduplication + manual removal. Auto-generated if omitted.',
   cfgOnClose: 'Fired after the toast leaves the store (manual or auto).',
 
   containerPlacement: 'Corner this instance listens to. Mount one per corner you use.',

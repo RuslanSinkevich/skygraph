@@ -33,8 +33,6 @@ import InTablePopconfirm from './popconfirm/InTable.demo.vue'
 import InTableSource from './popconfirm/InTable.demo.vue?raw'
 import TokensOverridePopconfirm from './popconfirm/TokensOverride.demo.vue'
 import TokensOverrideSource from './popconfirm/TokensOverride.demo.vue?raw'
-import UnstyledPopconfirm from './popconfirm/Unstyled.demo.vue'
-import UnstyledSource from './popconfirm/Unstyled.demo.vue?raw'
 
 const t = usePopconfirmDocStrings()
 
@@ -103,11 +101,7 @@ const popconfirmCssVars = computed<CssVarDef[]>(() => [
       <BasicPopconfirm />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoDescTitle"
-      :description="t.demoDescDesc"
-      :code="WithDescriptionSource"
-    >
+    <DemoBox :title="t.demoDescTitle" :description="t.demoDescDesc" :code="WithDescriptionSource">
       <WithDescriptionPopconfirm />
     </DemoBox>
 
@@ -119,11 +113,7 @@ const popconfirmCssVars = computed<CssVarDef[]>(() => [
       <PlacementPopconfirm />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoDisabledTitle"
-      :description="t.demoDisabledDesc"
-      :code="DisabledSource"
-    >
+    <DemoBox :title="t.demoDisabledTitle" :description="t.demoDisabledDesc" :code="DisabledSource">
       <DisabledPopconfirm />
     </DemoBox>
 
@@ -137,14 +127,6 @@ const popconfirmCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverridePopconfirm />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
-      <UnstyledPopconfirm />
     </DemoBox>
 
     <template #api>

@@ -40,8 +40,6 @@ import LocaleCalendarDemo from './calendar/Locale.demo.vue'
 import LocaleSource from './calendar/Locale.demo.vue?raw'
 import TokensOverrideCalendarDemo from './calendar/TokensOverride.demo.vue'
 import TokensOverrideSource from './calendar/TokensOverride.demo.vue?raw'
-import UnstyledCalendarDemo from './calendar/Unstyled.demo.vue'
-import UnstyledSource from './calendar/Unstyled.demo.vue?raw'
 
 const t = useCalendarDocStrings()
 
@@ -276,10 +274,6 @@ const calendarCssVars = computed<CssVarDef[]>(() => [
       flush
     >
       <TokensOverrideCalendarDemo />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledCalendarDemo />
     </DemoBox>
 
     <template #api>

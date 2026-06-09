@@ -29,9 +29,6 @@ export const sliderDocEn = {
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
     'Three scopes built from Slider tokens: green brand, dark surface and glass pick (fill, handle, rail).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'DOM & ARIA stay; classes drop.',
-
   tableSliderApi: 'Slider API',
   tableCssVars: 'CSS Variables',
 

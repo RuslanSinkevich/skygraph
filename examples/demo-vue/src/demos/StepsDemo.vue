@@ -31,8 +31,6 @@ import NavigationSteps from './steps/Navigation.demo.vue'
 import NavigationSource from './steps/Navigation.demo.vue?raw'
 import TokensOverrideSteps from './steps/TokensOverride.demo.vue'
 import TokensOverrideSource from './steps/TokensOverride.demo.vue?raw'
-import UnstyledSteps from './steps/Unstyled.demo.vue'
-import UnstyledSource from './steps/Unstyled.demo.vue?raw'
 
 const t = useStepsDocStrings()
 
@@ -180,15 +178,6 @@ const stepsCssVars = computed<CssVarDef[]>(() => [
       vertical
     >
       <TokensOverrideSteps />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-      vertical
-    >
-      <UnstyledSteps />
     </DemoBox>
 
     <template #api>

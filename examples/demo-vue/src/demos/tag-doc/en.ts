@@ -28,9 +28,6 @@ export const tagDocEn = {
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
     'Three scopes built from Tag tokens: green brand, dark surface and glass pick (preset palette + radius).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop every sg-tag-* class — you own the painting.',
-
   tableTagApi: 'Tag API',
   tableCssVars: 'CSS Variables',
 

@@ -22,5 +22,13 @@ export function SortableTable() {
     },
   ]
 
-  return <Table columns={columns} data={people} pageSize={6} />
+  return (
+    <Table
+      columns={columns}
+      data={people}
+      pageSize={6}
+      multiSort
+      onSortsChange={(sorts) => console.log('[Table] sort change:', sorts)}
+    />
+  )
 }

@@ -24,9 +24,6 @@ export const carouselDocRu: CarouselDocStrings = {
   demoHiddenDotsDesc: '`:dots="false"` для декоративных каруселей.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Локально переопределяем цвета точек под бренд.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Активный слайд + нумерованные кнопки, без встроенного CSS.',
-
   tableCarouselApi: 'API карусели',
   tableCssVars: 'CSS-переменные',
   cssHint:

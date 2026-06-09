@@ -20,11 +20,11 @@ export function ExpandableTable() {
       data={people}
       pageSize={6}
       expandable={{
+        onExpand: (expanded, id) => console.log('[Table] expand:', id, expanded),
         expandedRowRender: (row) => (
           <div style={{ padding: '4px 0' }}>
-            <strong>{String(row.name)}</strong> works as {String(row.role)} in{' '}
-            {String(row.city)}. Email: {String(row.email ?? 'N/A')}. Salary: $
-            {String(row.salary ?? 'N/A')}.
+            <strong>{String(row.name)}</strong> works as {String(row.role)} in {String(row.city)}.
+            Email: {String(row.email ?? 'N/A')}. Salary: ${String(row.salary ?? 'N/A')}.
           </div>
         ),
       }}

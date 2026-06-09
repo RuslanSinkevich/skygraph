@@ -42,8 +42,6 @@ import SlotsList from './list/Slots.demo.vue'
 import SlotsSource from './list/Slots.demo.vue?raw'
 import TokensOverrideList from './list/TokensOverride.demo.vue'
 import TokensOverrideSource from './list/TokensOverride.demo.vue?raw'
-import UnstyledList from './list/Unstyled.demo.vue'
-import UnstyledSource from './list/Unstyled.demo.vue?raw'
 
 const t = useListDocStrings()
 
@@ -213,14 +211,6 @@ const listCssVars = computed<CssVarDef[]>(() => [
       vertical
     >
       <TokensOverrideList />
-    </DemoBox>
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-      vertical
-    >
-      <UnstyledList />
     </DemoBox>
 
     <template #api>

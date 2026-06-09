@@ -32,9 +32,6 @@ export const selectDocEn = {
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the Select trigger: glides up on focus or when a value is picked (`:focus-within` + a filled class).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Native <select> with no library styling — headless mode.',
-
   tableSelectApi: 'Select API',
   tableOptionApi: 'SelectOption',
   tableCssVars: 'CSS Variables',

@@ -7,5 +7,12 @@ import { orgTree } from './data'
  * `expandedKeys` in production so state survives re-renders.
  */
 export function BasicTree() {
-  return <Tree treeData={orgTree} defaultExpandAll />
+  return (
+    <Tree
+      treeData={orgTree}
+      defaultExpandAll
+      onSelect={(keys, info) => console.log('[Tree] select', keys, info.node.title)}
+      onExpand={(keys) => console.log('[Tree] expand', keys)}
+    />
+  )
 }

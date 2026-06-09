@@ -21,17 +21,12 @@ export const popconfirmDocRu: { [K in keyof typeof popconfirmDocEn]: string } = 
   demoPlacementTitle: 'Размещение',
   demoPlacementDesc: 'Четыре стороны, без auto-flip.',
   demoDisabledTitle: 'Disabled = pass-through',
-  demoDisabledDesc:
-    "При disabled срабатывает собственный @click триггера, без всплытия bubble.",
+  demoDisabledDesc: 'При disabled срабатывает собственный @click триггера, без всплытия bubble.',
   demoTableTitle: 'Удаление строки',
-  demoTableDesc:
-    "Каноничное использование в таблице — placement='left' держит bubble внутри тела.",
+  demoTableDesc: "Каноничное использование в таблице — placement='left' держит bubble внутри тела.",
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Перекрашиваем каждую поверхность через `--sg-color-bg-elevated`, `--sg-color-warning` и `--sg-color-primary`.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Поведение + focus trap + ARIA; рисуем сами.',
-
   tablePopconfirmApi: 'API Popconfirm',
   tableCssVars: 'CSS-переменные',
   cssHint:

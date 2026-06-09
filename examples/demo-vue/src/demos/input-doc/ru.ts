@@ -40,9 +40,6 @@ export const inputDocRu: { [K in keyof typeof inputDocEn]: string } = {
   demoTextareaStatesDesc: 'Два варианта disabled (у Vue Textarea пока нет prop loading).',
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: 'Input + Textarea подключены через scoped slot `<SgField>`.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Headless-режим со своим CSS-классом.',
-
   tableInputApi: 'API Input',
   tableTextareaApi: 'API Textarea',
   tableCssVars: 'CSS-переменные',

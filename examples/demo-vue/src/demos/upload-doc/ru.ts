@@ -15,16 +15,15 @@ export const uploadDocRu: { [K in keyof typeof uploadDocEn]: string } = {
     'Когда нужен выбор файлов в форме; пайплайн загрузки/прогресса прокидываете через `custom-request`.',
   pageWhen2:
     'Когда встроенного списка (uploading / done / error / `percent`) хватает для UX-обратки.',
-  pageWhen3: 'Когда нужен брендированный триггер — `SgUpload` принимает любой элемент через дефолтный slot.',
+  pageWhen3:
+    'Когда нужен брендированный триггер — `SgUpload` принимает любой элемент через дефолтный slot.',
 
   demoBasicTitle: 'Базовый',
-  demoBasicDesc:
-    'Симуляция загрузки `uploading → done` через `custom-request`.',
+  demoBasicDesc: 'Симуляция загрузки `uploading → done` через `custom-request`.',
   demoMultipleTitle: 'Multiple',
   demoMultipleDesc: 'Можно выбрать несколько файлов, лимит через `max-count`.',
   demoAcceptTitle: 'Фильтр accept',
-  demoAcceptDesc:
-    'Ограничиваем нативный picker по MIME-типам или расширениям.',
+  demoAcceptDesc: 'Ограничиваем нативный picker по MIME-типам или расширениям.',
   demoCustomTriggerTitle: 'Свой триггер',
   demoCustomTriggerDesc:
     'Дефолтный slot заменяет кнопку — брендированная карточка, dashed-плитка и т.п.',
@@ -39,9 +38,6 @@ export const uploadDocRu: { [K in keyof typeof uploadDocEn]: string } = {
     'Полностью блокирует триггер. В Vue нет `loading`-prop — React-вариант со спиннером дропнут.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc: 'Скоуп глобальных токенов на обёртке для перекраски списка.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Только семантика — рисуйте своим CSS.',
-
   tableUploadApi: 'API Upload',
   tableUploadFile: 'UploadFile',
   tableCssVars: 'CSS-переменные',
@@ -56,14 +52,11 @@ export const uploadDocRu: { [K in keyof typeof uploadDocEn]: string } = {
   propShowUploadList: 'Показывать встроенный список',
   propMaxCount: 'Лимит общей длины списка после multiple-pick',
   propMaxSize: 'Скипать файлы крупнее N байт',
-  propBeforeUpload:
-    'Pre-upload хук (вернуть `false` / `Promise<false>`, чтобы пропустить файл)',
-  propCustomRequest:
-    'Свой транспорт — `{ file, onProgress, onSuccess, onError }`',
+  propBeforeUpload: 'Pre-upload хук (вернуть `false` / `Promise<false>`, чтобы пропустить файл)',
+  propCustomRequest: 'Свой транспорт — `{ file, onProgress, onSuccess, onError }`',
   propDisabled: 'Полностью блокирует триггер',
   propUnstyled: 'Снять SkyGraph-обёртку — только семантика',
-  emitUpdateModelValue:
-    'Срабатывает при любом изменении списка (v-model)',
+  emitUpdateModelValue: 'Срабатывает при любом изменении списка (v-model)',
   emitChange: 'Зеркало `update:modelValue` — на каждое изменение списка',
   emitRemove: 'Срабатывает при клике × на строке',
 

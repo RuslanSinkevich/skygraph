@@ -15,11 +15,16 @@ export function BasicTable() {
     {
       key: 'status',
       title: 'Status',
-      render: (val) => (
-        <Tag color={val === 'active' ? 'success' : 'default'}>{String(val)}</Tag>
-      ),
+      render: (val) => <Tag color={val === 'active' ? 'success' : 'default'}>{String(val)}</Tag>,
     },
   ]
 
-  return <Table columns={columns} data={people} pageSize={5} />
+  return (
+    <Table
+      columns={columns}
+      data={people}
+      pageSize={5}
+      onRowClick={(id, row) => console.log('[Table] row click:', id, row)}
+    />
+  )
 }

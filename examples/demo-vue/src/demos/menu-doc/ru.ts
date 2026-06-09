@@ -40,9 +40,6 @@ export const menuDocRu: { [K in keyof typeof menuDocEn]: string } = {
   demoCustomPaletteTitle: 'Кастом: командная палитра',
   demoCustomPaletteDesc:
     'Тёмная палитра с поиском: горячие клавиши, fuzzy-фильтр, группы. Всё на публичном API: rich-узлы через VNode из `h()` в `label`.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Только ARIA-семантика — стили подставьте свои.',
-
   tableMenuApi: 'API Menu',
   tableMenuItem: 'MenuItem',
   tableCssVars: 'CSS-переменные',

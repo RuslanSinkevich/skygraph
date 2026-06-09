@@ -20,18 +20,13 @@ export const drawerDocRu: { [K in keyof typeof drawerDocEn]: string } = {
   demoPlacementTitle: 'Размещение',
   demoPlacementDesc: 'Выезжает с любого края; width / height переключаются автоматически.',
   demoSizeTitle: 'Свой размер',
-  demoSizeDesc:
-    'Любая CSS-длина — px, %, vw. Для адаптивных drawer на мобиле используйте %.',
+  demoSizeDesc: 'Любая CSS-длина — px, %, vw. Для адаптивных drawer на мобиле используйте %.',
   demoFooterTitle: 'Sticky-футер',
   demoFooterDesc: 'Тело прокручивается, footer закреплён (через слот `#footer`).',
   demoNoMaskTitle: 'Опции маски',
   demoNoMaskDesc: 'Отключить маску или оставить, но запретить закрытие кликом по ней.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc:
-    'Скоупим surface-токены на body-классе для тёмного drawer (с учётом Teleport).',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Оставляем a11y + ESC / focus trap; рисуем сами через body-класс.',
-
+  demoTokensDesc: 'Скоупим surface-токены на body-классе для тёмного drawer (с учётом Teleport).',
   tableDrawerApi: 'API Drawer',
   tableCssVars: 'CSS-переменные',
   cssHint:

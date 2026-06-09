@@ -30,18 +30,6 @@
 
 .hub-search {
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid var(--sg-color-border-secondary);
-  border-radius: 8px;
-  font-size: 14px;
-  background: var(--sg-color-bg);
-  color: var(--sg-color-text);
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.hub-search:focus {
-  border-color: var(--sg-color-primary);
 }
 
 .hub-cats {
@@ -100,21 +88,27 @@
   gap: 16px;
 }
 
-.hub-card {
-  all: unset;
+.hub-card.sg-button {
+  height: auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
   border: 1px solid var(--sg-color-border);
   border-radius: 10px;
   padding: 20px;
   cursor: pointer;
   background: var(--sg-color-bg);
+  color: var(--sg-color-text);
+  text-align: left;
+  white-space: normal;
   transition:
     border-color 0.12s ease,
     background 0.12s ease;
 }
 
-.hub-card:hover {
+.hub-card.sg-button:hover {
   border-color: var(--sg-color-text-secondary);
   background: var(--sg-color-bg-hover);
 }
@@ -147,10 +141,6 @@
 
 .hub-card-tag {
   font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: var(--sg-color-bg-secondary);
-  color: var(--sg-color-text-secondary);
 }
 
 /* ── Showcase shell ─────────────────────────────────────────────────── */
@@ -173,10 +163,7 @@
 }
 
 .showcase-back {
-  all: unset;
-  cursor: pointer;
   font-size: 13px;
-  color: var(--sg-color-primary);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -521,4 +508,155 @@
   font-size: 11px;
   color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
   margin-top: 4px;
+}
+
+/* ── Project tracker token showcase ────────────────────────────────── */
+
+.pt-theme {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: var(--sg-color-text);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(167, 139, 250, 0.22), transparent 28%),
+    radial-gradient(circle at 100% 18%, rgba(45, 212, 191, 0.14), transparent 30%),
+    var(--sg-color-bg);
+}
+
+.pt-hero,
+.pt-metric,
+.pt-column {
+  border: 1px solid var(--sg-color-border-secondary);
+  background: color-mix(in srgb, var(--sg-color-bg-secondary) 88%, transparent);
+  box-shadow: var(--sg-shadow);
+}
+
+.pt-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px;
+  border-radius: 22px;
+}
+
+.pt-hero h2 {
+  margin: 12px 0 8px;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+
+.pt-hero p {
+  max-width: 720px;
+  color: var(--sg-color-text-secondary);
+  line-height: 1.6;
+}
+
+.pt-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pt-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.pt-metric {
+  display: flex;
+  min-height: 112px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 18px;
+}
+
+.pt-metric strong {
+  font-size: 30px;
+  letter-spacing: -0.03em;
+}
+
+.pt-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.pt-column {
+  min-height: 320px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.pt-column-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  border-bottom: 1px solid var(--sg-color-border-secondary);
+}
+
+.pt-column-head > span {
+  color: var(--sg-color-text-tertiary);
+  font-size: 12px;
+}
+
+.pt-column-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+.pt-task-card.sg-button {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 14px;
+  color: var(--sg-color-text);
+  text-align: left;
+  white-space: normal;
+  background: var(--sg-color-bg-elevated);
+  border-color: var(--sg-color-border-secondary);
+}
+
+.pt-task-card.sg-button:hover {
+  background: var(--sg-color-bg-hover);
+  border-color: var(--sg-color-primary);
+}
+
+.pt-task-card > span:not(.pt-task-meta),
+.pt-task-id,
+.pt-progress-label {
+  color: var(--sg-color-text-secondary);
+  font-size: 12px;
+}
+
+.pt-task-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pt-task-meta > span:last-child {
+  color: var(--sg-color-text-tertiary);
+  font-size: 12px;
+}
+
+.pt-drawer {
+  background: var(--sg-color-bg-secondary);
+}
+
+.pt-drawer-body {
+  display: grid;
+  gap: 18px;
 }

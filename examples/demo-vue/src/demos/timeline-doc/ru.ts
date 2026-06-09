@@ -31,9 +31,6 @@ export const timelineDocRu: TimelineDocStrings = {
     '`pending` добавляет приглушённый хвост; через слот `#dot` с `isPending` можно подменить маркер (аналог React `pendingDot`).',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Локально переопределяем глобальные цветовые токены для всей timeline.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` рендерит «голый» `<ul>` — без оси / коннектора.',
-
   tableTimelineApi: 'API Timeline',
   tableTimelineItemApi: 'TimelineItem',
   tableCssVars: 'CSS-переменные',

@@ -31,14 +31,10 @@ export const popconfirmDocEn = {
   demoDisabledTitle: 'Disabled = pass-through',
   demoDisabledDesc: "With disabled, the trigger's own @click fires without a bubble.",
   demoTableTitle: 'Row-level delete',
-  demoTableDesc:
-    "Canonical table usage — placement='left' keeps the bubble inside the body.",
+  demoTableDesc: "Canonical table usage — placement='left' keeps the bubble inside the body.",
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
     'Retint every surface with `--sg-color-bg-elevated`, `--sg-color-warning`, and `--sg-color-primary`.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Behaviour + focus trap + ARIA; painting is yours.',
-
   tablePopconfirmApi: 'Popconfirm API',
   tableCssVars: 'CSS Variables',
   cssHint:

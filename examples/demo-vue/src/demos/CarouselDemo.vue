@@ -31,8 +31,6 @@ import HiddenDotsCarousel from './carousel/HiddenDots.demo.vue'
 import HiddenDotsSource from './carousel/HiddenDots.demo.vue?raw'
 import TokensOverrideCarousel from './carousel/TokensOverride.demo.vue'
 import TokensOverrideSource from './carousel/TokensOverride.demo.vue?raw'
-import UnstyledCarousel from './carousel/Unstyled.demo.vue'
-import UnstyledSource from './carousel/Unstyled.demo.vue?raw'
 
 const t = useCarouselDocStrings()
 
@@ -131,10 +129,6 @@ const carouselCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideCarousel />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledCarousel />
     </DemoBox>
 
     <template #api>

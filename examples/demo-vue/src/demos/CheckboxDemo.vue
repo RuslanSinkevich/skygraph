@@ -29,8 +29,6 @@ import InFormCheckbox from './checkbox/InForm.demo.vue'
 import InFormSource from './checkbox/InForm.demo.vue?raw'
 import TokensOverrideCheckbox from './checkbox/TokensOverride.demo.vue'
 import TokensOverrideSource from './checkbox/TokensOverride.demo.vue?raw'
-import UnstyledCheckbox from './checkbox/Unstyled.demo.vue'
-import UnstyledSource from './checkbox/Unstyled.demo.vue?raw'
 
 const t = useCheckboxDocStrings()
 
@@ -116,10 +114,6 @@ const checkboxCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideCheckbox />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledCheckbox />
     </DemoBox>
 
     <template #api>

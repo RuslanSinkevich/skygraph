@@ -38,9 +38,6 @@ export const colorPickerDocEn = {
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the ColorPicker trigger: a colour is always set, so the label rests up top and lifts its accent on focus.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop every SkyGraph class and bring your own design — behaviour stays.',
-
   tableColorPickerApi: 'ColorPicker API',
   tableCssVars: 'CSS Variables',
 

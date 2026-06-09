@@ -33,9 +33,6 @@ export const timelineDocEn = {
     '`pending` adds a muted tail; use the `#dot` slot with `isPending` to override the marker (analogue of React `pendingDot`).',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global colour tokens to repaint a whole timeline.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` renders a plain `<ul>` — no axis / connector.',
-
   tableTimelineApi: 'Timeline API',
   tableTimelineItemApi: 'TimelineItem',
   tableCssVars: 'CSS Variables',

@@ -42,9 +42,9 @@ const filPwd = ref('')
   <div
     style="
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 240px));
       gap: 24px;
-      max-width: 640px;
+      max-width: 520px;
     "
   >
     <div style="display: flex; flex-direction: column; gap: 14px">

@@ -32,9 +32,6 @@ export const rateDocEn = {
   demoTokensOverrideTitle: 'Tokens override',
   demoTokensOverrideDesc:
     'Three scopes built from Rate tokens: green brand, dark surface and glass pick (`--sg-color-star` + border).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'ARIA stays; you own the painting.',
-
   tableRateApi: 'Rate API',
   tableCssVars: 'CSS Variables',
 

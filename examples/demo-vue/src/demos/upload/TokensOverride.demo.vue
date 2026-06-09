@@ -1,29 +1,26 @@
 <script setup lang="ts">
 /**
- * Upload has no component-scoped tokens — it is fully driven by global
- * tokens. Override them on a scoped wrapper to re-skin the file list
- * rows and the remove/error accents.
+ * Upload has no component tokens — the file list, remove and error accents are
+ * fully driven by global tokens. Three scoped recipes — branded green, dark
+ * field, glass pick — reskin the rows.
+ *
+ * Mirrors React `examples/demo/src/demos/upload/TokensOverride.demo.tsx`.
  */
 import { ref } from 'vue'
 import { SgUpload } from '@skygraph/vue'
 import type { UploadFile } from '@skygraph/vue'
+import TokenScopeCards from '../_shared/TokenScopeCards.vue'
 
 const files = ref<UploadFile[]>([
   { uid: '1', name: 'brief.docx', size: 48_000, status: 'done' },
-  { uid: '2', name: 'upload-failure.log', size: 2_500, status: 'error' },
+  { uid: '2', name: 'photo.png', size: 120_000, status: 'done' },
 ])
 </script>
 
 <template>
-  <div
-    :style="{
-      '--sg-color-border-secondary': 'var(--sg-cyan-4)',
-      '--sg-color-error': 'var(--sg-magenta-5)',
-      '--sg-border-radius-sm': '999px',
-      '--sg-font-size-sm': '13px',
-      maxWidth: '420px',
-    }"
-  >
-    <SgUpload v-model="files" multiple />
-  </div>
+  <TokenScopeCards>
+    <template #default>
+      <SgUpload v-model="files" multiple />
+    </template>
+  </TokenScopeCards>
 </template>

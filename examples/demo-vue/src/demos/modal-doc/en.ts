@@ -40,9 +40,6 @@ export const modalDocEn = {
     'Set `footer="none"` to drop the divider — read-only dialogs with only the close button.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope `--sg-color-primary` + `--sg-border-radius-lg` to re-skin one modal.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Headless mode — keeps focus trap and ARIA, drops the visuals.',
-
   tableModalApi: 'Modal API',
   tableCssVars: 'CSS Variables',
   cssHint:

@@ -33,8 +33,6 @@ import WithBadgeAvatar from './avatar/WithBadge.demo.vue'
 import WithBadgeSource from './avatar/WithBadge.demo.vue?raw'
 import TokensOverrideAvatar from './avatar/TokensOverride.demo.vue'
 import TokensOverrideSource from './avatar/TokensOverride.demo.vue?raw'
-import UnstyledAvatar from './avatar/Unstyled.demo.vue'
-import UnstyledSource from './avatar/Unstyled.demo.vue?raw'
 
 const t = useAvatarDocStrings()
 
@@ -126,10 +124,6 @@ const avatarCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideAvatar />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledAvatar />
     </DemoBox>
 
     <template #api>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 
 import { useActiveSection } from './intersection'
 import { useDemoTOCContext } from './DemoTOCContext'
@@ -117,6 +117,25 @@ export function DemoTOC() {
 
   useActiveSection(items, activeId, setActiveId ?? noop, isManualScrollRef)
 
+  // Keep the active row visible inside the rail's own scroll area. On long
+  // pages (e.g. Table has 30+ demos) the rail scrolls independently, so the
+  // highlighted item would otherwise drift out of view as the page scrolls,
+  // making the list look out of sync with the content.
+  const navRef = useRef<HTMLElement | null>(null)
+  const activeRef = useRef<HTMLAnchorElement | null>(null)
+  useEffect(() => {
+    const nav = navRef.current
+    const link = activeRef.current
+    if (!nav || !link) return
+    const navRect = nav.getBoundingClientRect()
+    const linkRect = link.getBoundingClientRect()
+    if (linkRect.top < navRect.top) {
+      nav.scrollTop -= navRect.top - linkRect.top + 12
+    } else if (linkRect.bottom > navRect.bottom) {
+      nav.scrollTop += linkRect.bottom - navRect.bottom + 12
+    }
+  }, [activeId])
+
   const scrollToId = useCallback(
     (id: string) => {
       const target = document.getElementById(id)
@@ -173,7 +192,7 @@ export function DemoTOC() {
   if (items.length === 0) return null
 
   return (
-    <nav className="demo-toc" aria-label={strings.ariaLabel}>
+    <nav className="demo-toc" aria-label={strings.ariaLabel} ref={navRef}>
       <a className="demo-toc-back-to-top" href="#" onClick={handleBackToTop}>
         <span aria-hidden>↑</span>
         <span>{strings.backToTop}</span>
@@ -185,6 +204,7 @@ export function DemoTOC() {
           return (
             <li key={item.id} className="demo-toc-row">
               <a
+                ref={isActive ? activeRef : undefined}
                 href={buildSectionHref(item.id)}
                 className={'demo-toc-item' + (isActive ? ' demo-toc-item-active' : '')}
                 onClick={(e) => handleClick(e, item.id)}

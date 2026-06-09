@@ -30,8 +30,14 @@ export function BasicPopconfirm() {
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
       <Popconfirm
         title={t.title}
-        onConfirm={() => setStatus(t.deleted)}
-        onCancel={() => setStatus(t.cancelled)}
+        onConfirm={() => {
+          console.log('[Popconfirm] confirm')
+          setStatus(t.deleted)
+        }}
+        onCancel={() => {
+          console.log('[Popconfirm] cancel')
+          setStatus(t.cancelled)
+        }}
       >
         <Button
           type="primary"
@@ -43,7 +49,9 @@ export function BasicPopconfirm() {
           {t.button}
         </Button>
       </Popconfirm>
-      {status && <span style={{ fontSize: 13, color: 'var(--sg-color-text-secondary)' }}>{status}</span>}
+      {status && (
+        <span style={{ fontSize: 13, color: 'var(--sg-color-text-secondary)' }}>{status}</span>
+      )}
     </div>
   )
 }

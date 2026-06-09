@@ -31,9 +31,6 @@ export const badgeDocRu: { [K in keyof typeof badgeDocEn]: string } = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Три скоупа на токенах Badge: зелёный бренд, тёмная поверхность и glass pick (счётчики и точки).',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Уберите все классы sg-badge — рисуете сами.',
-
   tableBadgeApi: 'API Badge',
   tableCssVars: 'CSS-переменные',
 

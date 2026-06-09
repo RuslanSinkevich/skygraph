@@ -35,9 +35,6 @@ export const collapseDocEn = {
   demoSizesDesc: 'Three sizes affect header padding, min-height, and (on `large`) font size.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global surface / border tokens to repaint Collapse.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` strips classes — keep aria + accordion logic.',
-
   tableCollapseApi: 'Collapse API',
   tableCollapseItemApi: 'CollapseItem',
   tableCssVars: 'CSS Variables',

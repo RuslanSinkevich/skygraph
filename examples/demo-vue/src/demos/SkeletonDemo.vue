@@ -34,8 +34,6 @@ import CardSkeleton from './skeleton/Card.demo.vue'
 import CardSource from './skeleton/Card.demo.vue?raw'
 import TokensOverrideSkeleton from './skeleton/TokensOverride.demo.vue'
 import TokensOverrideSource from './skeleton/TokensOverride.demo.vue?raw'
-import UnstyledSkeleton from './skeleton/Unstyled.demo.vue'
-import UnstyledSource from './skeleton/Unstyled.demo.vue?raw'
 
 const t = useSkeletonDocStrings()
 
@@ -121,10 +119,6 @@ const skeletonCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideSkeleton />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledSkeleton />
     </DemoBox>
 
     <template #api>

@@ -29,9 +29,6 @@ export const stepsDocRu: { [K in keyof typeof stepsDocEn]: string } = {
   demoNavigationDesc: 'Вариант с подчёркиванием как у вкладок, без иконок.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc: 'Цвет finish / process следует за `--sg-color-primary`.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Без классов — только `data-status` + ваши элементы.',
-
   tableStepsApi: 'API Steps',
   tableStepItem: 'StepItem',
   tableCssVars: 'CSS-переменные',

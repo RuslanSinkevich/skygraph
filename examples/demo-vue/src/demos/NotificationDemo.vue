@@ -43,8 +43,6 @@ import DestroyAllNotification from './notification/DestroyAll.demo.vue'
 import DestroyAllSource from './notification/DestroyAll.demo.vue?raw'
 import TokensOverrideNotification from './notification/TokensOverride.demo.vue'
 import TokensOverrideSource from './notification/TokensOverride.demo.vue?raw'
-import UnstyledNotification from './notification/Unstyled.demo.vue'
-import UnstyledSource from './notification/Unstyled.demo.vue?raw'
 
 const t = useNotificationDocStrings()
 
@@ -183,11 +181,7 @@ const notificationCssVars = computed<CssVarDef[]>(() => [
       <TypesNotification />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoDurationTitle"
-      :description="t.demoDurationDesc"
-      :code="DurationSource"
-    >
+    <DemoBox :title="t.demoDurationTitle" :description="t.demoDurationDesc" :code="DurationSource">
       <DurationNotification />
     </DemoBox>
 
@@ -199,11 +193,7 @@ const notificationCssVars = computed<CssVarDef[]>(() => [
       <PlacementNotification />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoOnCloseTitle"
-      :description="t.demoOnCloseDesc"
-      :code="OnCloseSource"
-    >
+    <DemoBox :title="t.demoOnCloseTitle" :description="t.demoOnCloseDesc" :code="OnCloseSource">
       <OnCloseNotification />
     </DemoBox>
 
@@ -211,11 +201,7 @@ const notificationCssVars = computed<CssVarDef[]>(() => [
       <RichContentNotification />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoDestroyTitle"
-      :description="t.demoDestroyDesc"
-      :code="DestroyAllSource"
-    >
+    <DemoBox :title="t.demoDestroyTitle" :description="t.demoDestroyDesc" :code="DestroyAllSource">
       <DestroyAllNotification />
     </DemoBox>
 
@@ -225,14 +211,6 @@ const notificationCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideNotification />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoUnstyledTitle"
-      :description="t.demoUnstyledDesc"
-      :code="UnstyledSource"
-    >
-      <UnstyledNotification />
     </DemoBox>
 
     <SgNotificationContainer placement="topRight" />

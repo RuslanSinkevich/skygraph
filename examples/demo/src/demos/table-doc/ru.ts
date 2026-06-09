@@ -146,6 +146,7 @@ export const tableDocRu: { [K in keyof typeof tableDocEn]: string } = {
   cssSgTableRowBg: 'Фон строки (перекрывается hover/selected)',
   cssSgTableRowHoverBg: 'Фон строки при наведении',
   cssSgTableHeaderBg: 'Фон строки header',
+  cssSgTableHeaderColor: 'Цвет текста в header',
   cssSgTableBorderColor: 'Border header + внешние',
   cssSgTableBorderColorSecondary: 'Разделитель между строками',
   cssSgTableCellPadding: 'Padding каждой ячейки (настройка плотности)',

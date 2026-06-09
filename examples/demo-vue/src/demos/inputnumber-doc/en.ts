@@ -34,9 +34,6 @@ export const inputNumberDocEn = {
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the InputNumber field: glides up on focus or when a number is entered.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Stepper logic without SkyGraph classes.',
-
   tableInputNumberApi: 'InputNumber API',
   tableCssVars: 'CSS Variables',
 

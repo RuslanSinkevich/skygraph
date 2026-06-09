@@ -31,9 +31,6 @@ export const autoCompleteDocRu: { [K in keyof typeof autoCompleteDocEn]: string 
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на поле AutoComplete: уезжает вверх при фокусе/вводе или когда поле заполнено.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Headless-режим — только семантика, без классов SkyGraph.',
-
   tableAutoCompleteApi: 'API AutoComplete',
   tableOptionApi: 'AutoCompleteOption',
   tableCssVars: 'CSS-переменные',

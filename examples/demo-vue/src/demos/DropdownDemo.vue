@@ -31,8 +31,6 @@ import KeyboardDropdown from './dropdown/Keyboard.demo.vue'
 import KeyboardSource from './dropdown/Keyboard.demo.vue?raw'
 import TokensOverrideDropdown from './dropdown/TokensOverride.demo.vue'
 import TokensOverrideSource from './dropdown/TokensOverride.demo.vue?raw'
-import UnstyledDropdown from './dropdown/Unstyled.demo.vue'
-import UnstyledSource from './dropdown/Unstyled.demo.vue?raw'
 
 const t = useDropdownDocStrings()
 
@@ -141,9 +139,6 @@ const dropdownCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideDropdown />
-    </DemoBox>
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledDropdown />
     </DemoBox>
 
     <template #api>

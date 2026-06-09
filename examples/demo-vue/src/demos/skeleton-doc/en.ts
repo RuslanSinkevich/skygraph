@@ -30,9 +30,6 @@ export const skeletonDocEn = {
   demoTokensTitle: 'Token override',
   demoTokensDesc:
     'Three scopes built from Skeleton tokens: green brand, dark surface and glass pick (`--sg-skeleton-bg` / `--sg-skeleton-shimmer`).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: '`unstyled` keeps aria-busy and block order, drops every class.',
-
   tableSkeletonApi: 'Skeleton API',
   tableCssVars: 'CSS Variables',
   cssHint:

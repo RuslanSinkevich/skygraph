@@ -2,7 +2,7 @@ import type { CollapseItem } from '@skygraph/vue'
 
 /**
  * Shared sample data used by Basic / Accordion / Borderless / Ghost /
- * IconPosition / Sizes / TokensOverride / Unstyled demos. Mirrors the
+ * IconPosition / Sizes / TokensOverride demos. Mirrors the
  * React `examples/demo/src/demos/collapse/data.ts` (Vue uses
  * `content` instead of React's `children`).
  */

@@ -2,9 +2,9 @@
 /**
  * `TimePickerDemo` — aggregator for the TimePicker component page.
  *
- * 1:1 with `examples/demo/src/demos/TimePickerDemo.tsx` (9 examples):
+ * 1:1 with `examples/demo/src/demos/TimePickerDemo.tsx` (8 examples):
  *   Basic, Format, Steps, DisabledSlots, Range, Sizes, States,
- *   TokensOverride, Unstyled.
+ *   TokensOverride.
  */
 import { computed } from 'vue'
 import {
@@ -35,8 +35,6 @@ import TokensOverrideTimePickerDemo from './timepicker/TokensOverride.demo.vue'
 import TokensOverrideSource from './timepicker/TokensOverride.demo.vue?raw'
 import FloatingLabelTimePickerDemo from './timepicker/FloatingLabel.demo.vue'
 import FloatingLabelSource from './timepicker/FloatingLabel.demo.vue?raw'
-import UnstyledTimePickerDemo from './timepicker/Unstyled.demo.vue'
-import UnstyledSource from './timepicker/Unstyled.demo.vue?raw'
 
 const t = useTimePickerDocStrings()
 
@@ -274,10 +272,6 @@ const timePickerCssVars = computed<CssVarDef[]>(() => [
       :code="FloatingLabelSource"
     >
       <FloatingLabelTimePickerDemo />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledTimePickerDemo />
     </DemoBox>
 
     <template #api>

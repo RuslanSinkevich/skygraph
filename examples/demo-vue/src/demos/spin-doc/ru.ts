@@ -30,9 +30,6 @@ export const spinDocRu: SpinDocStrings = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Перекрашиваем кольцо + overlay через `--sg-spin-color` / `--sg-spin-overlay-bg`.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Снимаем классы, сохраняем логику — pair с кастомным индикатором.',
-
   tableSpinApi: 'API Spin',
   tableCssVars: 'CSS-переменные',
   cssHint:
@@ -43,11 +40,9 @@ export const spinDocRu: SpinDocStrings = {
   propDelay: 'Ждать `delay` мс до показа кольца — anti-flicker',
   propTip: 'Опциональная подпись под индикатором',
   propFullscreen: 'Покрыть viewport backdrop-ом',
-  propUnstyled:
-    'Снять sg-spin-* классы (сохранить `delay` / `spinning` / overlay-логику)',
+  propUnstyled: 'Снять sg-spin-* классы (сохранить `delay` / `spinning` / overlay-логику)',
   propIndicatorSlot: 'Слот `#indicator` для кастомного кольца',
-  propDefaultSlot:
-    'Default-слот — дети блокируются overlay во время спиннера',
+  propDefaultSlot: 'Default-слот — дети блокируются overlay во время спиннера',
 
   cssSpinColor: 'Цвет кольца индикатора',
   cssSpinOverlayBg: 'Цвет overlay над обёрнутыми детьми',

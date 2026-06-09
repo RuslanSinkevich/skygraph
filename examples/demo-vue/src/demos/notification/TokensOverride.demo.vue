@@ -1,48 +1,43 @@
 <script setup lang="ts">
 /**
- * Toasts read global tokens at mount time. Override them on
- * `:root` or a high-level wrapper that also contains a
- * `<SgNotificationContainer/>`. The buttons below preview the
- * current cascade — there is no per-call token override.
+ * Live toasts render in a portal at the document root, so a scoped wrapper
+ * can't restyle them. The preview below renders the real `.sg-notification`
+ * markup inside each scope so you can see how the tokens cascade. Three recipes
+ * — branded green, dark field, glass pick.
+ *
+ * Mirrors React `examples/demo/src/demos/notification/TokensOverride.demo.tsx`.
  */
-import { SgButton, notification } from '@skygraph/vue'
+import type { CSSProperties } from 'vue'
+import { useDemoStrings } from '../../i18n'
+import TokenScopeCards, { type TokenScopeKey } from '../_shared/TokenScopeCards.vue'
+
+const STRINGS = {
+  en: { title: 'Backup complete', desc: 'Tint follows --sg-color-success.' },
+  ru: { title: 'Бэкап завершён', desc: 'Оттенок следует за --sg-color-success.' },
+} as const
+
+const t = useDemoStrings(STRINGS)
+
+const extra: Partial<Record<TokenScopeKey, CSSProperties>> = {
+  brand: { '--sg-color-success': '#059669' } as CSSProperties,
+  dark: { '--sg-color-success': '#34d399' } as CSSProperties,
+  glass: { '--sg-color-success': '#6366f1' } as CSSProperties,
+}
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px">
-    <p style="margin: 0; font-size: 13px; color: var(--sg-color-text-secondary)">
-      Toasts read global tokens at mount time. Override them on
-      <code>:root</code> or a high-level wrapper that also contains
-      <code>&lt;SgNotificationContainer/&gt;</code>. The Theming page has
-      live toggles — use the buttons below to preview the current cascade.
-    </p>
-    <pre
-      style="
-        margin: 0;
-        padding: 12px;
-        background: var(--sg-color-bg-secondary);
-        border-radius: var(--sg-border-radius);
-        font-size: 12px;
-        overflow: auto;
-      "
-    >{{ `:root {
-  --sg-color-success: #16a34a;
-  --sg-color-success-bg: rgba(22, 163, 74, 0.12);
-  --sg-color-bg-elevated: #ffffff;
-  --sg-shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.12);
-  --sg-z-notification: 1010;
-}` }}</pre>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap">
-      <SgButton
-        @click="notification.success('Cascade check', 'Success tint reflects the current theme.')"
+  <TokenScopeCards :extra="extra">
+    <template #default>
+      <div
+        class="sg-notification sg-notification-success"
+        style="position: static; animation: none; min-width: 200px"
       >
-        Fire success
-      </SgButton>
-      <SgButton
-        @click="notification.error('Cascade check', 'Error tint reflects the current theme.')"
-      >
-        Fire error
-      </SgButton>
-    </div>
-  </div>
+        <span class="sg-notification-icon">✓</span>
+        <div class="sg-notification-content">
+          <div class="sg-notification-message">{{ t.title }}</div>
+          <div class="sg-notification-description">{{ t.desc }}</div>
+        </div>
+      </div>
+    </template>
+  </TokenScopeCards>
 </template>

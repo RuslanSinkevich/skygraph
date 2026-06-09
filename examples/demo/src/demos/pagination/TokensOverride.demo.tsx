@@ -10,6 +10,9 @@ import { TokenScopeCards } from '../_shared/TokenScopeCards'
 export function TokensOverridePagination() {
   const [page, setPage] = useState(3)
   return (
-    <TokenScopeCards render={() => <Pagination current={page} total={120} onChange={setPage} />} />
+    <TokenScopeCards
+      stack
+      render={() => <Pagination current={page} total={120} onChange={setPage} />}
+    />
   )
 }

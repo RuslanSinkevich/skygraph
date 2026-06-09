@@ -8,13 +8,11 @@ export const modalDocRu: { [K in keyof typeof modalDocEn]: string } = {
   pageBadge: 'Обратная связь',
   crumbCategory: 'Обратная связь',
   crumbModal: 'Modal',
-  pageLead:
-    'Диалог с focus trap, закрытием по Escape и точечным переопределением токенов.',
+  pageLead: 'Диалог с focus trap, закрытием по Escape и точечным переопределением токенов.',
   pageWhen1:
     'Когда пользователь должен выполнить короткое действие, не теряя контекст (создать, подтвердить, изменить).',
   pageWhen2: 'Когда нужно показать важные детали без перехода на другую страницу.',
-  pageWhen3:
-    'Для лёгких подтверждений — <SgPopconfirm>. Для пошаговых сценариев — <SgDrawer>.',
+  pageWhen3: 'Для лёгких подтверждений — <SgPopconfirm>. Для пошаговых сценариев — <SgDrawer>.',
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Заголовок, тело, две кнопки в футере (через слот `#footer`).',
@@ -31,9 +29,6 @@ export const modalDocRu: { [K in keyof typeof modalDocEn]: string } = {
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
     'Скоупим `--sg-color-primary` + `--sg-border-radius-lg`, чтобы переоформить один модал.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Headless-режим — focus trap и ARIA остаются, визуала нет.',
-
   tableModalApi: 'API Modal',
   tableCssVars: 'CSS-переменные',
   cssHint:

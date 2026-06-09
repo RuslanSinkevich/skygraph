@@ -25,9 +25,11 @@ const t = useDemoStrings({
 
 const status = ref<string | null>(null)
 function onConfirm() {
+  console.log('[Popconfirm] confirm')
   status.value = t.value.deleted
 }
 function onCancel() {
+  console.log('[Popconfirm] cancel')
   status.value = t.value.cancelled
 }
 </script>

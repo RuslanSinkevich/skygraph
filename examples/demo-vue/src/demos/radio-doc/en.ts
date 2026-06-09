@@ -24,9 +24,6 @@ export const radioDocEn = {
   demoInFormDesc: '`SgRadio` wrapped in `SgField` with required validation.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope global tokens to rebrand a single group.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Native radiogroup + inputs, no SkyGraph classes.',
-
   tableRadioGroupApi: 'SgRadio API',
   tableRadioOptionApi: 'RadioOption',
   tableCssVars: 'CSS Variables',

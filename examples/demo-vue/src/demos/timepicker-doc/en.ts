@@ -41,9 +41,6 @@ export const timePickerDocEn = {
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the TimePicker control: glides up on focus or when a time is selected.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Headless mode, native classes removed.',
-
   tableTimePickerApi: 'TimePicker API',
   tableTimeRangePickerApi: 'TimeRangePicker API',
   tableCssVars: 'CSS Variables',

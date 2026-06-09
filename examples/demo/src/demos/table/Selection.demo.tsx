@@ -44,7 +44,10 @@ export function SelectionTable() {
         pageSize={6}
         rowSelection={{
           selectedKeys: selected,
-          onChange: (keys) => setSelected(keys as string[]),
+          onChange: (keys, rows) => {
+            console.log('[Table] selection', keys, rows)
+            setSelected(keys as string[])
+          },
         }}
       />
     </div>

@@ -27,8 +27,6 @@ import OnIconTooltip from './tooltip/OnIcon.demo.vue'
 import OnIconSource from './tooltip/OnIcon.demo.vue?raw'
 import TokensOverrideTooltip from './tooltip/TokensOverride.demo.vue'
 import TokensOverrideSource from './tooltip/TokensOverride.demo.vue?raw'
-import UnstyledTooltip from './tooltip/Unstyled.demo.vue'
-import UnstyledSource from './tooltip/Unstyled.demo.vue?raw'
 
 const t = useTooltipDocStrings()
 
@@ -101,10 +99,6 @@ const tooltipCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideTooltip />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledTooltip />
     </DemoBox>
 
     <template #api>

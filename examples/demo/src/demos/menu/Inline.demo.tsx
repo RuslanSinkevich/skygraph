@@ -13,6 +13,7 @@ export function InlineMenu() {
         items={sidebarItems}
         defaultOpenKeys={['team']}
         defaultSelectedKeys={['members']}
+        onSelect={(info) => console.log('[Menu] select', info.key)}
       />
     </div>
   )

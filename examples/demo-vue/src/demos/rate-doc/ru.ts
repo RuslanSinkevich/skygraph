@@ -30,9 +30,6 @@ export const rateDocRu: { [K in keyof typeof rateDocEn]: string } = {
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
     'Три скоупа на токенах Rate: зелёный бренд, тёмная поверхность и glass pick (`--sg-color-star` + рамка).',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'ARIA остаётся; оформление за вами.',
-
   tableRateApi: 'API Rate',
   tableCssVars: 'CSS-переменные',
 

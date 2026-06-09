@@ -17,8 +17,7 @@ export const drawerDocEn = {
     'Edge-anchored panel that slides in from any side. Uses a focus trap, ESC-to-close, and an optional mask. Body scrolls while header / footer stay pinned.',
   pageWhen1: 'Edit a record or filter a list without losing page context.',
   pageWhen2: 'Show supplementary navigation / notifications tray.',
-  pageWhen3:
-    "Reveal a side form that's too heavy for a Popover and too light for a Modal.",
+  pageWhen3: "Reveal a side form that's too heavy for a Popover and too light for a Modal.",
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Right-side drawer with focus trap + ESC support.',
@@ -32,9 +31,6 @@ export const drawerDocEn = {
   demoNoMaskDesc: 'Turn off the mask, or keep it but force the × / ESC.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Scope surface tokens to a body class for a dark-mode drawer (Teleport-aware).',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Keep a11y + ESC / trap; do your own painting via a body-level class.',
-
   tableDrawerApi: 'Drawer API',
   tableCssVars: 'CSS Variables',
   cssHint:

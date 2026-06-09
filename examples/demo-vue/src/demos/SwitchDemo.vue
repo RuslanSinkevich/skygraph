@@ -32,8 +32,6 @@ import InFormSwitchDemo from './switch/InForm.demo.vue'
 import InFormSource from './switch/InForm.demo.vue?raw'
 import TokensOverrideSwitchDemo from './switch/TokensOverride.demo.vue'
 import TokensOverrideSource from './switch/TokensOverride.demo.vue?raw'
-import UnstyledSwitchDemo from './switch/Unstyled.demo.vue'
-import UnstyledSource from './switch/Unstyled.demo.vue?raw'
 
 const t = useSwitchDocStrings()
 
@@ -133,10 +131,6 @@ const switchCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideSwitchDemo />
-    </DemoBox>
-
-    <DemoBox :title="t.demoUnstyledTitle" :description="t.demoUnstyledDesc" :code="UnstyledSource">
-      <UnstyledSwitchDemo />
     </DemoBox>
 
     <template #api>

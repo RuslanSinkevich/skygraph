@@ -1219,10 +1219,15 @@ defineExpose({
                   />
                 </div>
 
-                <!-- custom filter via slot -->
+                <!-- custom filter via slot — only on columns that opt into
+                     filtering (have `onFilter`), mirroring React's per-column
+                     `filterDropdown`; otherwise every header showed a stray ▾
+                     opening an empty popover. -->
                 <span
                   v-if="
-                    slots.filterDropdown && !(cell.col.children && cell.col.children.length > 0)
+                    slots.filterDropdown &&
+                    cell.col.onFilter &&
+                    !(cell.col.children && cell.col.children.length > 0)
                   "
                   class="sg-table-filter-trigger"
                   :class="{
@@ -1234,7 +1239,9 @@ defineExpose({
                   >▾</span
                 >
                 <div
-                  v-if="slots.filterDropdown && openFilterDropdown === cell.col.key"
+                  v-if="
+                    slots.filterDropdown && cell.col.onFilter && openFilterDropdown === cell.col.key
+                  "
                   :ref="(el) => setFilterDropdownRef(cell.col.key, el as Element | null)"
                   class="sg-table-filter-dropdown"
                   @click.stop

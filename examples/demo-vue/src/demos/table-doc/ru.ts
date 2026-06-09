@@ -73,8 +73,6 @@ export const tableDocRu: TableDocStrings = {
   demoFinanceStyleTitle: 'Финансовая стилизация',
   demoFinanceStyleDesc:
     '«Стоковый терминал» только на публичных пропсах — `classNames.root` + слот `#cell`. Без глубоких селекторов.',
-  demoUnstyledTitle: 'Без стилей',
-  demoUnstyledDesc: 'Снять Skygraph CSS — приклеить свою дизайн-систему. DOM не меняется.',
   demoVirtualTitle: 'Виртуальный скролл',
   demoVirtualDesc:
     '`virtual` держит DOM ≈ viewport + overscan даже на тысячах строк. Число в `rowHeight` — быстрый fixed-путь.',

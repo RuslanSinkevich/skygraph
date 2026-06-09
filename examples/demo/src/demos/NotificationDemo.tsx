@@ -43,6 +43,8 @@ export function NotificationDemo() {
       },
       { name: 'key', description: t.cfgKey, type: 'string' },
       { name: 'onClose', description: t.cfgOnClose, type: '() => void' },
+      { name: 'className', description: t.cfgClassName, type: 'string' },
+      { name: 'style', description: t.cfgStyle, type: 'CSSProperties' },
     ],
     [t],
   )

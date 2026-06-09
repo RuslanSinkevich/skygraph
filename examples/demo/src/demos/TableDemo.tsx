@@ -171,6 +171,11 @@ export function TableDemo() {
         description: t.cssSgTableHeaderBg,
       },
       {
+        name: 'sg-table-header-color',
+        default: 'var(--sg-color-text)',
+        description: t.cssSgTableHeaderColor,
+      },
+      {
         name: 'sg-table-border-color',
         default: 'var(--sg-color-border)',
         description: t.cssSgTableBorderColor,

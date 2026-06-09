@@ -1,12 +1,15 @@
 <script setup lang="ts">
 /**
- * Floating label over the ColorPicker trigger. The picker always carries
- * a colour, so the label rests in its floated position and lifts its
- * accent on `:focus-within` (open) — no core changes.
+ * Floating label on the ColorPicker trigger. ColorPicker always carries a
+ * colour, so the label stays floated as a caption above the swatch and lifts
+ * its colour on focus.
+ *
+ * Mirrors React `examples/demo/src/demos/colorpicker/FloatingLabel.demo.tsx`.
  */
 import { ref } from 'vue'
 import { SgColorPicker } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'
+import FloatingField from '../_shared/FloatingField.vue'
 
 const STRINGS = {
   en: { brand: 'Brand colour', accent: 'Accent colour' },
@@ -20,48 +23,16 @@ const accent = ref('#f59e0b')
 </script>
 
 <template>
-  <div class="fl-row">
-    <div class="fl-field fl-filled">
-      <SgColorPicker v-model="brand" show-text />
-      <label class="fl-label">{{ t.brand }}</label>
+  <div style="display: flex; gap: 24px; flex-wrap: wrap">
+    <div style="width: 220px; padding-top: 6px">
+      <FloatingField :label="t.brand" filled>
+        <SgColorPicker v-model="brand" show-text />
+      </FloatingField>
     </div>
-    <div class="fl-field fl-filled">
-      <SgColorPicker v-model="accent" show-text />
-      <label class="fl-label">{{ t.accent }}</label>
+    <div style="width: 220px; padding-top: 6px">
+      <FloatingField :label="t.accent" filled>
+        <SgColorPicker v-model="accent" show-text />
+      </FloatingField>
     </div>
   </div>
 </template>
-
-<style scoped>
-.fl-row {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-  max-width: 560px;
-}
-.fl-field {
-  position: relative;
-  flex: 1 1 200px;
-  padding-top: 10px;
-}
-.fl-label {
-  position: absolute;
-  left: 4px;
-  top: 16px;
-  font-size: 14px;
-  color: var(--sg-color-text-secondary, rgba(0, 0, 0, 0.65));
-  pointer-events: none;
-  white-space: nowrap;
-  transition:
-    top 0.18s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.18s ease;
-}
-.fl-field:focus-within .fl-label,
-.fl-field.fl-filled .fl-label {
-  top: 0;
-  transform: scale(0.85);
-  transform-origin: left center;
-  color: var(--sg-color-primary);
-}
-</style>

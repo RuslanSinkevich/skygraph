@@ -1,0 +1,18 @@
+{
+  "name": "SkyGraph",
+  "short_name": "SkyGraph",
+  "description": "UI components for React and Vue on one shared TypeScript core.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#141414",
+  "theme_color": "#141414",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

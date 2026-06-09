@@ -9,7 +9,7 @@ export const spinDocEn = {
   crumbSpin: 'Spin',
   pageLead:
     'Loading indicator — inline ring, container overlay, or full-page gate. Backed by `aria-live="polite"`.',
-  pageWhen1: 'Async fetches that finish in < 1s and don\'t need a skeleton.',
+  pageWhen1: "Async fetches that finish in < 1s and don't need a skeleton.",
   pageWhen2: 'Wrap a card / form to dim its content while updating.',
   pageWhen3: 'Page-level gates (route hydration, app boot) via `fullscreen`.',
 
@@ -31,9 +31,6 @@ export const spinDocEn = {
   demoCustomColorDesc: 'Per-section tints via `--sg-spin-color`.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc: 'Re-tint ring + overlay via `--sg-spin-color` / `--sg-spin-overlay-bg`.',
-  demoUnstyledTitle: 'Unstyled',
-  demoUnstyledDesc: 'Drop classes, keep logic — pair with a custom indicator.',
-
   tableSpinApi: 'Spin API',
   tableCssVars: 'CSS Variables',
   cssHint:

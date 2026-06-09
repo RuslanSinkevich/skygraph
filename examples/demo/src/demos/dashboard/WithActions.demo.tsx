@@ -5,7 +5,10 @@ import type { DashboardWidget, WidgetAction } from '@skygraph/react'
 export function WithActionsDashboard() {
   const [log, setLog] = useState<string[]>([])
 
-  const append = (msg: string) => setLog((l) => [msg, ...l].slice(0, 6))
+  const append = (msg: string) => {
+    console.log('[Dashboard]', msg)
+    setLog((l) => [msg, ...l].slice(0, 6))
+  }
 
   const sharedActions: WidgetAction[] = [
     { id: 'refresh', label: 'Refresh', onClick: (w) => append(`refresh: ${w.id}`) },
