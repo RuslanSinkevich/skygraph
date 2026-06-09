@@ -280,11 +280,36 @@ export interface DemoDict {
   }
 
   landing: {
+    heroEyebrow: string
     heroTitle: string
     heroSub: string
+    heroComponentsCta: string
+    heroGettingStartedCta: string
     ctaPrimary: string
     ctaSecondary: string
     heroImageAlt: string
+
+    previewLabel: string
+    previewInputPlaceholder: string
+    previewThemeLight: string
+    previewThemeDark: string
+    previewCodeLabel: string
+    previewMetricComponents: string
+    previewMetricComponentsValue: string
+    previewMetricTheme: string
+    previewMetricData: string
+    previewMetricDataValue: string
+    previewColumnComponent: string
+    previewColumnStatus: string
+    previewColumnCoverage: string
+    previewStatusStable: string
+    previewStatusBeta: string
+    previewRowTable: string
+    previewRowForm: string
+    previewRowCharts: string
+
+    componentIndexTitle: string
+    componentIndexSub: string
 
     highlightsTitle: string
     highlight1Title: string

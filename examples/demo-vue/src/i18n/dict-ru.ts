@@ -101,12 +101,37 @@ export const ru: DemoDict = {
     colDescription: 'Описание',
   },
   landing: {
+    heroEyebrow: 'Vue 3 UI library',
     heroTitle: 'Готовый набор UI для Vue 3',
     heroSub:
       'SkyGraph — multi-framework UI-библиотека для React и Vue. Множество стилизованных компонентов, готовые приложения, светлая и тёмная темы — всё на едином ядре.',
+    heroComponentsCta: 'Открыть компоненты',
+    heroGettingStartedCta: 'Начать',
     ctaPrimary: 'Посмотреть приложения',
     ctaSecondary: 'Открыть компоненты',
     heroImageAlt: 'Скриншот демо CRM в светлой теме',
+
+    previewLabel: 'Живой UI preview',
+    previewInputPlaceholder: 'Название проекта',
+    previewThemeLight: 'Светлая тема',
+    previewThemeDark: 'Тёмная тема',
+    previewCodeLabel: 'Минимальный вход',
+    previewMetricComponents: 'Компоненты',
+    previewMetricComponentsValue: '50+',
+    previewMetricTheme: 'Тема',
+    previewMetricData: 'Данные',
+    previewMetricDataValue: 'typed',
+    previewColumnComponent: 'Компонент',
+    previewColumnStatus: 'Статус',
+    previewColumnCoverage: 'Готовность',
+    previewStatusStable: 'Стабильно',
+    previewStatusBeta: 'Beta',
+    previewRowTable: 'Table',
+    previewRowForm: 'Form',
+    previewRowCharts: 'Charts',
+
+    componentIndexTitle: 'Компоненты сразу под рукой',
+    componentIndexSub: 'Без промо-картинок: переходите прямо к API, состояниям и рабочим примерам.',
 
     highlightsTitle: 'Что внутри',
     highlight1Title: 'Стилизованные компоненты',
@@ -152,12 +177,12 @@ export const ru: DemoDict = {
 
     installTitle: 'Установка',
     installLead: 'Для разработчиков — два пакета, один импорт стилей.',
-    installLearnMore: 'Подробнее в Getting Started →',
+    installLearnMore: 'Подробнее в быстром старте →',
 
     footerCtaTitle: 'Хотите попробовать?',
     footerCtaBody: 'Откройте живые демо-приложения или сразу переходите в каталог компонентов.',
     footerCtaButton: 'Посмотреть приложения',
-    footerDevHint: 'Для разработчиков: Getting Started · Архитектура · Лицензия (MIT)',
+    footerDevHint: 'Для разработчиков: Быстрый старт · Архитектура · Лицензия (MIT)',
   },
 
   roadmap: {

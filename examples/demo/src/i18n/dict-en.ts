@@ -288,12 +288,37 @@ export const en: DemoDict = {
   },
 
   landing: {
+    heroEyebrow: 'React UI library',
     heroTitle: 'A ready-made UI kit for web apps',
     heroSub:
       'SkyGraph is a multi-framework UI library for React and Vue. Many styled components, reference apps, dark and light themes — built on a single shared engine.',
+    heroComponentsCta: 'Browse components',
+    heroGettingStartedCta: 'Getting Started',
     ctaPrimary: 'See live apps',
     ctaSecondary: 'Browse components',
     heroImageAlt: 'Screenshot of the SkyGraph CRM showcase in light mode',
+
+    previewLabel: 'Live UI preview',
+    previewInputPlaceholder: 'Project name',
+    previewThemeLight: 'Light theme',
+    previewThemeDark: 'Dark theme',
+    previewCodeLabel: 'Minimal entry',
+    previewMetricComponents: 'Components',
+    previewMetricComponentsValue: '50+',
+    previewMetricTheme: 'Theme',
+    previewMetricData: 'Data',
+    previewMetricDataValue: 'typed',
+    previewColumnComponent: 'Component',
+    previewColumnStatus: 'Status',
+    previewColumnCoverage: 'Coverage',
+    previewStatusStable: 'Stable',
+    previewStatusBeta: 'Beta',
+    previewRowTable: 'Table',
+    previewRowForm: 'Form',
+    previewRowCharts: 'Charts',
+
+    componentIndexTitle: 'Components up front',
+    componentIndexSub: 'No promo imagery: jump straight to APIs, states and working examples.',
 
     highlightsTitle: 'What you get',
     highlight1Title: 'Styled components',

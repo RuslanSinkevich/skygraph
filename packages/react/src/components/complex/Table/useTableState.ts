@@ -216,6 +216,14 @@ export function useTableState(props: TableProps) {
   )
 
   const resizeRef = useRef<{ col: string; startX: number; startW: number } | null>(null)
+  const resizeCleanupRef = useRef<(() => void) | null>(null)
+
+  useEffect(
+    () => () => {
+      resizeCleanupRef.current?.()
+    },
+    [],
+  )
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
@@ -457,6 +465,8 @@ export function useTableState(props: TableProps) {
   const handleResizeStart = (e: React.MouseEvent, colKey: string) => {
     e.preventDefault()
     e.stopPropagation()
+    resizeCleanupRef.current?.()
+
     resizeRef.current = {
       col: colKey,
       startX: e.clientX,
@@ -464,23 +474,27 @@ export function useTableState(props: TableProps) {
     }
 
     const onMove = (ev: MouseEvent) => {
-      if (!resizeRef.current) return
-      const diff = ev.clientX - resizeRef.current.startX
-      const min =
-        leafColumns.find((c) => c.key === resizeRef.current!.col)?.minWidth ?? MIN_COL_WIDTH
+      const ref = resizeRef.current
+      if (!ref) return
+      const diff = ev.clientX - ref.startX
+      const min = leafColumns.find((c) => c.key === ref.col)?.minWidth ?? MIN_COL_WIDTH
+      const nextWidth = Math.max(min, ref.startW + diff)
+      const col = ref.col
       setColWidths((prev) => ({
         ...prev,
-        [resizeRef.current!.col]: Math.max(min, resizeRef.current!.startW + diff),
+        [col]: nextWidth,
       }))
-      setUserResizedCols((prev) =>
-        prev.has(resizeRef.current!.col) ? prev : new Set(prev).add(resizeRef.current!.col),
-      )
+      setUserResizedCols((prev) => (prev.has(col) ? prev : new Set(prev).add(col)))
     }
-    const onUp = () => {
-      const ref = resizeRef.current
+    const cleanup = () => {
       resizeRef.current = null
       document.removeEventListener('mousemove', onMove)
       document.removeEventListener('mouseup', onUp)
+      resizeCleanupRef.current = null
+    }
+    const onUp = () => {
+      const ref = resizeRef.current
+      cleanup()
       if (!ref) return
       // Mirror the final user-resized width into the engine so it survives
       // remounts when the host persists `$table.<id>.state.columnWidths`.
@@ -491,6 +505,7 @@ export function useTableState(props: TableProps) {
         return prev
       })
     }
+    resizeCleanupRef.current = cleanup
     document.addEventListener('mousemove', onMove)
     document.addEventListener('mouseup', onUp)
   }

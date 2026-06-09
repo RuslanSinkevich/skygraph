@@ -1,6 +1,8 @@
 import { GITHUB_URL } from '@skygraph-examples/shared'
+import { Button, Input, Progress, Switch, Table, Tag } from '@skygraph/react'
+import type { TableColumn } from '@skygraph/react'
+import { useMemo, useState } from 'react'
 import { useI18n } from '../../i18n'
-import { ImagePlaceholder } from './ImagePlaceholder'
 import './landing.css'
 
 interface LandingProps {
@@ -21,42 +23,43 @@ const SHOWCASES: ReadonlyArray<{
     | 'showcaseDashboardDesc'
     | 'showcaseProjectTrackerDesc'
     | 'showcaseTableDesc'
-  image: string
-  imageDesc: string
 }> = [
   {
     key: 'crm',
     titleKey: 'showcaseCrmTitle',
     descKey: 'showcaseCrmDesc',
-    image: 'crm.png',
-    imageDesc:
-      'CRM showcase: contacts table on the left, deals pipeline board on the right, activity timeline at the bottom. Light theme.',
   },
   {
     key: 'dashboard',
     titleKey: 'showcaseDashboardTitle',
     descKey: 'showcaseDashboardDesc',
-    image: 'dashboard.png',
-    imageDesc:
-      'Operations dashboard: 4 KPI cards on top, mixed line/bar chart in the middle, breakdown table at the bottom. Dark theme.',
   },
   {
     key: 'project-tracker',
     titleKey: 'showcaseProjectTrackerTitle',
     descKey: 'showcaseProjectTrackerDesc',
-    image: 'project-tracker.png',
-    imageDesc:
-      'Project tracker: KPI cards above a filtered task table with progress bars and a detail drawer. Light theme.',
   },
   {
     key: 'table-kitchen-sink',
     titleKey: 'showcaseTableTitle',
     descKey: 'showcaseTableDesc',
-    image: 'table.png',
-    imageDesc:
-      'Kitchen-sink table: filter chips above, virtual-scroll grid with grouped rows, totals row at the bottom. Light theme.',
   },
 ]
+
+const COMPONENT_LINKS = [
+  'Button',
+  'Input',
+  'Select',
+  'Table',
+  'Form',
+  'Charts',
+  'Dashboard',
+  'Gantt',
+  'Calendar',
+  'Tree',
+  'Modal',
+  'Upload',
+] as const
 
 export function Landing({ onNavigate }: LandingProps) {
   const { t } = useI18n()
@@ -64,10 +67,9 @@ export function Landing({ onNavigate }: LandingProps) {
   return (
     <div className="landing">
       <Hero onNavigate={onNavigate} />
+      <ComponentIndex onNavigate={onNavigate} />
       <Highlights />
       <Showcases onNavigate={onNavigate} />
-      <Spots />
-      <Install onNavigate={onNavigate} />
       <FooterCta onNavigate={onNavigate} />
       <noscript>{t.landing.heroSub}</noscript>
     </div>
@@ -78,36 +80,138 @@ export function Landing({ onNavigate }: LandingProps) {
 
 function Hero({ onNavigate }: { onNavigate: (key: string) => void }) {
   const { t } = useI18n()
+  const [previewDark, setPreviewDark] = useState(false)
+  const previewColumns = useMemo<TableColumn[]>(
+    () => [
+      { key: 'name', title: t.landing.previewColumnComponent, sortable: true },
+      {
+        key: 'status',
+        title: t.landing.previewColumnStatus,
+        render: (value) => (
+          <Tag color={value === t.landing.previewStatusStable ? 'success' : 'processing'}>
+            {String(value)}
+          </Tag>
+        ),
+      },
+      {
+        key: 'coverage',
+        title: t.landing.previewColumnCoverage,
+        render: (value) => <Progress percent={Number(value)} size="small" />,
+      },
+    ],
+    [t],
+  )
+
+  const previewRows = useMemo(
+    () => [
+      {
+        id: 'table',
+        data: {
+          name: t.landing.previewRowTable,
+          status: t.landing.previewStatusStable,
+          coverage: 96,
+        },
+      },
+      {
+        id: 'form',
+        data: {
+          name: t.landing.previewRowForm,
+          status: t.landing.previewStatusStable,
+          coverage: 88,
+        },
+      },
+      {
+        id: 'charts',
+        data: {
+          name: t.landing.previewRowCharts,
+          status: t.landing.previewStatusBeta,
+          coverage: 72,
+        },
+      },
+    ],
+    [t],
+  )
+
   return (
     <section className="landing-hero">
       <div className="landing-hero-text">
+        <span className="landing-eyebrow">{t.landing.heroEyebrow}</span>
         <h1>{t.landing.heroTitle}</h1>
         <p className="landing-hero-sub">{t.landing.heroSub}</p>
+        <pre className="landing-hero-install">
+          <code>{INSTALL_COMMAND}</code>
+        </pre>
         <div className="landing-cta">
-          <button
-            type="button"
-            className="landing-cta-primary"
-            onClick={() => onNavigate('showcases')}
-          >
-            {t.landing.ctaPrimary} →
-          </button>
-          <button
-            type="button"
-            className="landing-cta-secondary"
-            onClick={() => onNavigate('components/button')}
-          >
-            {t.landing.ctaSecondary}
-          </button>
+          <Button type="primary" size="large" onClick={() => onNavigate('components/button')}>
+            {t.landing.heroComponentsCta}
+          </Button>
+          <Button size="large" onClick={() => onNavigate('guide/getting-started')}>
+            {t.landing.heroGettingStartedCta}
+          </Button>
         </div>
       </div>
-      {/* PLACEHOLDER
-          File: examples/demo/public/landing/hero.png
-          Size: 1280×960 (4:3), 2x retina recommended
-          Content: hero shot — composite screenshot of the SkyGraph CRM
-                   showcase in light theme: sidebar + contacts table +
-                   filters on the right.
-      */}
-      <ImagePlaceholder variant="hero" name="hero.png" description={t.landing.heroImageAlt} />
+      <div
+        className="landing-preview"
+        aria-label={t.landing.previewLabel}
+        data-sg-theme={previewDark ? 'dark' : 'light'}
+      >
+        <div className="landing-preview-topbar">
+          <span>{t.landing.previewLabel}</span>
+          <Tag color="processing">React</Tag>
+        </div>
+        <div className="landing-preview-metrics">
+          <div>
+            <span>{t.landing.previewMetricComponents}</span>
+            <strong>{t.landing.previewMetricComponentsValue}</strong>
+          </div>
+          <div>
+            <span>{t.landing.previewMetricTheme}</span>
+            <strong>
+              {previewDark ? t.landing.previewThemeDark : t.landing.previewThemeLight}
+            </strong>
+          </div>
+          <div>
+            <span>{t.landing.previewMetricData}</span>
+            <strong>{t.landing.previewMetricDataValue}</strong>
+          </div>
+        </div>
+        <div className="landing-preview-controls">
+          <Input defaultValue="SkyGraph admin" placeholder={t.landing.previewInputPlaceholder} />
+          <label className="landing-preview-theme-toggle">
+            <Switch checked={previewDark} onChange={setPreviewDark} size="small" />
+            <span>{previewDark ? t.landing.previewThemeDark : t.landing.previewThemeLight}</span>
+          </label>
+        </div>
+        <Table columns={previewColumns} data={previewRows} showPagination={false} size="small" />
+        <div className="landing-preview-code">
+          <span>{t.landing.previewCodeLabel}</span>
+          <code>{`import { Button, Table } from 'skygraph-react'`}</code>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ComponentIndex({ onNavigate }: { onNavigate: (key: string) => void }) {
+  const { t } = useI18n()
+  return (
+    <section className="landing-components">
+      <div>
+        <h2 className="landing-section-title">{t.landing.componentIndexTitle}</h2>
+        <p className="landing-section-sub">{t.landing.componentIndexSub}</p>
+      </div>
+      <div className="landing-component-grid">
+        {COMPONENT_LINKS.map((name) => (
+          <button
+            key={name}
+            type="button"
+            className="landing-component-pill"
+            onClick={() => onNavigate(`components/${name.toLowerCase()}`)}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
     </section>
   )
 }
@@ -156,13 +260,6 @@ function Showcases({ onNavigate }: { onNavigate: (key: string) => void }) {
               onNavigate(`showcases/${s.key}`)
             }}
           >
-            {/* PLACEHOLDER
-                File: examples/demo/public/landing/<image>
-                Size: 1280×720 (16:9), 2x retina
-                Content: see imageDesc above. Cropped tightly so the UI
-                         fills the frame; no browser chrome.
-            */}
-            <ImagePlaceholder variant="showcase" name={s.image} description={s.imageDesc} />
             <div className="landing-showcase-body">
               <span className="landing-showcase-title">{t.landing[s.titleKey]}</span>
               <span className="landing-showcase-desc">{t.landing[s.descKey]}</span>
@@ -179,88 +276,6 @@ function Showcases({ onNavigate }: { onNavigate: (key: string) => void }) {
         }}
       >
         {t.landing.showcasesLink}
-      </a>
-    </section>
-  )
-}
-
-// ───────────────────────────────────────────────────────────────────────
-
-function Spots() {
-  const { t } = useI18n()
-  const spots = [
-    {
-      title: t.landing.spotThemingTitle,
-      desc: t.landing.spotThemingDesc,
-      image: 'spot-theming.png',
-      imageDesc:
-        'Side-by-side: same dashboard in light theme on the left and dark theme on the right; theme toggle highlighted between them.',
-      reverse: false,
-    },
-    {
-      title: t.landing.spotChartsTitle,
-      desc: t.landing.spotChartsDesc,
-      image: 'spot-charts.png',
-      imageDesc:
-        'Composite of two visuals: a responsive area chart with crosshair and tooltip + a small flowchart fragment with a hover toolbar.',
-      reverse: true,
-    },
-    {
-      title: t.landing.spotFormsTitle,
-      desc: t.landing.spotFormsDesc,
-      image: 'spot-forms.png',
-      imageDesc:
-        'Profile form: required-field hint shown next to an input, dependent country/city fields, validation error inline.',
-      reverse: false,
-    },
-  ]
-  return (
-    <section>
-      <h2 className="landing-section-title">{t.landing.spotsTitle}</h2>
-      <div className="landing-spots">
-        {spots.map((spot) => (
-          <div
-            key={spot.title}
-            className={`landing-spot${spot.reverse ? ' landing-spot--reverse' : ''}`}
-          >
-            <div className="landing-spot-text">
-              <h3 className="landing-spot-title">{spot.title}</h3>
-              <p className="landing-spot-desc">{spot.desc}</p>
-            </div>
-            {/* PLACEHOLDER
-                File: examples/demo/public/landing/<image>
-                Size: 1280×960 (4:3), 2x retina
-                Content: see imageDesc above. Plain background, no
-                         browser chrome, focus on the relevant UI piece.
-            */}
-            <ImagePlaceholder variant="spot" name={spot.image} description={spot.imageDesc} />
-          </div>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-// ───────────────────────────────────────────────────────────────────────
-
-function Install({ onNavigate }: { onNavigate: (key: string) => void }) {
-  const { t } = useI18n()
-  return (
-    <section className="landing-install">
-      <h2 className="landing-install-title">{t.landing.installTitle}</h2>
-      <p className="landing-install-lead">{t.landing.installLead}</p>
-      <pre className="landing-install-code">
-        <code>{INSTALL_COMMAND}</code>
-      </pre>
-      <a
-        className="landing-install-link"
-        href="#/guide/getting-started"
-        onClick={(ev) => {
-          ev.preventDefault()
-          onNavigate('guide/getting-started')
-        }}
-      >
-        {t.landing.installLearnMore}
       </a>
     </section>
   )

@@ -1,19 +1,25 @@
 <script setup lang="ts">
 /**
- * Landing — visual parity with `examples/demo/src/pages/Landing/Landing.tsx`.
- *
- * Sections, copy, class names, image placeholders all match the React
- * landing 1:1. Tone is impersonal (no "you"); install block lists the
- * Vue-flavoured packages (`@skygraph/vue`, not React).
+ * Landing — Vue-flavoured entry page with live SkyGraph components.
  */
 import { GITHUB_URL } from '@skygraph-examples/shared'
+import {
+  SgButton,
+  SgInput,
+  SgProgress,
+  SgSwitch,
+  SgTable,
+  SgTag,
+  type TableColumn,
+} from '@skygraph/vue'
+import { computed, ref } from 'vue'
 import { useRouter } from '../router'
 import { useI18n } from '../i18n'
-import ImagePlaceholder from '../components/ImagePlaceholder.vue'
 import './landing.css'
 
 const router = useRouter()
 const { t } = useI18n()
+const previewDark = ref(false)
 
 const INSTALL_COMMAND = 'npm install skygraph-vue'
 
@@ -38,8 +44,6 @@ interface ShowcaseSpec {
     | 'showcaseDashboardDesc'
     | 'showcaseProjectTrackerDesc'
     | 'showcaseTableDesc'
-  image: string
-  imageDesc: string
 }
 
 const SHOWCASES: ShowcaseSpec[] = [
@@ -47,70 +51,38 @@ const SHOWCASES: ShowcaseSpec[] = [
     key: 'crm',
     titleKey: 'showcaseCrmTitle',
     descKey: 'showcaseCrmDesc',
-    image: 'crm.png',
-    imageDesc:
-      'CRM showcase: contacts table on the left, deals pipeline board on the right, activity timeline at the bottom. Light theme.',
   },
   {
     key: 'dashboard',
     titleKey: 'showcaseDashboardTitle',
     descKey: 'showcaseDashboardDesc',
-    image: 'dashboard.png',
-    imageDesc:
-      'Operations dashboard: 4 KPI cards on top, mixed line/bar chart in the middle, breakdown table at the bottom. Dark theme.',
   },
   {
     key: 'project-tracker',
     titleKey: 'showcaseProjectTrackerTitle',
     descKey: 'showcaseProjectTrackerDesc',
-    image: 'project-tracker.png',
-    imageDesc:
-      'Project tracker: KPI cards above a filtered task table with progress bars and a detail drawer. Light theme.',
   },
   {
     key: 'table-kitchen-sink',
     titleKey: 'showcaseTableTitle',
     descKey: 'showcaseTableDesc',
-    image: 'table.png',
-    imageDesc:
-      'Kitchen-sink table: filter chips above, virtual-scroll grid with grouped rows, totals row at the bottom. Light theme.',
   },
 ]
 
-interface SpotSpec {
-  titleKey: 'spotThemingTitle' | 'spotChartsTitle' | 'spotFormsTitle'
-  descKey: 'spotThemingDesc' | 'spotChartsDesc' | 'spotFormsDesc'
-  image: string
-  imageDesc: string
-  reverse: boolean
-}
-
-const SPOTS: SpotSpec[] = [
-  {
-    titleKey: 'spotThemingTitle',
-    descKey: 'spotThemingDesc',
-    image: 'spot-theming.png',
-    imageDesc:
-      'Side-by-side: same dashboard in light theme on the left and dark theme on the right; theme toggle highlighted between them.',
-    reverse: false,
-  },
-  {
-    titleKey: 'spotChartsTitle',
-    descKey: 'spotChartsDesc',
-    image: 'spot-charts.png',
-    imageDesc:
-      'Composite of two visuals: a responsive area chart with crosshair and tooltip + a small flowchart fragment with a hover toolbar.',
-    reverse: true,
-  },
-  {
-    titleKey: 'spotFormsTitle',
-    descKey: 'spotFormsDesc',
-    image: 'spot-forms.png',
-    imageDesc:
-      'Profile form: required-field hint shown next to an input, dependent country/city fields, validation error inline.',
-    reverse: false,
-  },
-]
+const COMPONENT_LINKS = [
+  'Button',
+  'Input',
+  'Select',
+  'Table',
+  'Form',
+  'Charts',
+  'Dashboard',
+  'Gantt',
+  'Calendar',
+  'Tree',
+  'Modal',
+  'Upload',
+] as const
 
 const HIGHLIGHTS = [
   ['highlight1Title', 'highlight1Desc'],
@@ -119,12 +91,49 @@ const HIGHLIGHTS = [
   ['highlight4Title', 'highlight4Desc'],
 ] as const
 
+const previewColumns = computed<TableColumn[]>(() => [
+  { key: 'name', title: t.value.landing.previewColumnComponent, sortable: true },
+  { key: 'status', title: t.value.landing.previewColumnStatus },
+  { key: 'coverage', title: t.value.landing.previewColumnCoverage },
+])
+
+const previewRows = computed(() => [
+  {
+    id: 'table',
+    data: {
+      name: t.value.landing.previewRowTable,
+      status: t.value.landing.previewStatusStable,
+      coverage: 96,
+    },
+  },
+  {
+    id: 'form',
+    data: {
+      name: t.value.landing.previewRowForm,
+      status: t.value.landing.previewStatusStable,
+      coverage: 88,
+    },
+  },
+  {
+    id: 'charts',
+    data: {
+      name: t.value.landing.previewRowCharts,
+      status: t.value.landing.previewStatusBeta,
+      coverage: 72,
+    },
+  },
+])
+
 function browseComponents() {
   void router.push('/components/button')
 }
 
 function browseGettingStarted() {
   void router.push('/guide/getting-started')
+}
+
+function browseComponent(name: string) {
+  void router.push(`/components/${name.toLowerCase()}`)
 }
 </script>
 
@@ -133,23 +142,103 @@ function browseGettingStarted() {
     <!-- Hero ──────────────────────────────────────────────────────────── -->
     <section class="landing-hero">
       <div class="landing-hero-text">
+        <span class="landing-eyebrow">{{ t.landing.heroEyebrow }}</span>
         <h1>{{ t.landing.heroTitle }}</h1>
         <p class="landing-hero-sub">{{ t.landing.heroSub }}</p>
+        <pre class="landing-hero-install"><code>{{ INSTALL_COMMAND }}</code></pre>
         <div class="landing-cta">
-          <a class="landing-cta-primary" :href="showcasesHref()"> {{ t.landing.ctaPrimary }} → </a>
-          <button type="button" class="landing-cta-secondary" @click="browseComponents">
-            {{ t.landing.ctaSecondary }}
-          </button>
+          <SgButton type="primary" size="large" @click="browseComponents">
+            {{ t.landing.heroComponentsCta }}
+          </SgButton>
+          <SgButton size="large" @click="browseGettingStarted">
+            {{ t.landing.heroGettingStartedCta }}
+          </SgButton>
         </div>
       </div>
-      <!-- PLACEHOLDER
-           File: examples/demo-vue/public/landing/hero.png
-           Size: 1280×960 (4:3), 2x retina recommended
-           Content: hero shot — composite screenshot of the SkyGraph CRM
-                    showcase in light theme: sidebar + contacts table +
-                    filters on the right.
-      -->
-      <ImagePlaceholder variant="hero" name="hero.png" :description="t.landing.heroImageAlt" />
+
+      <div
+        class="landing-preview"
+        :aria-label="t.landing.previewLabel"
+        :data-sg-theme="previewDark ? 'dark' : 'light'"
+      >
+        <div class="landing-preview-topbar">
+          <span>{{ t.landing.previewLabel }}</span>
+          <SgTag color="processing">Vue</SgTag>
+        </div>
+        <div class="landing-preview-metrics">
+          <div>
+            <span>{{ t.landing.previewMetricComponents }}</span>
+            <strong>{{ t.landing.previewMetricComponentsValue }}</strong>
+          </div>
+          <div>
+            <span>{{ t.landing.previewMetricTheme }}</span>
+            <strong>{{
+              previewDark ? t.landing.previewThemeDark : t.landing.previewThemeLight
+            }}</strong>
+          </div>
+          <div>
+            <span>{{ t.landing.previewMetricData }}</span>
+            <strong>{{ t.landing.previewMetricDataValue }}</strong>
+          </div>
+        </div>
+        <div class="landing-preview-controls">
+          <SgInput model-value="SkyGraph admin" :placeholder="t.landing.previewInputPlaceholder" />
+          <label class="landing-preview-theme-toggle">
+            <SgSwitch
+              :model-value="previewDark"
+              size="small"
+              @update:model-value="previewDark = $event"
+            />
+            <span>{{
+              previewDark ? t.landing.previewThemeDark : t.landing.previewThemeLight
+            }}</span>
+          </label>
+        </div>
+        <SgTable
+          :columns="previewColumns"
+          :data="previewRows"
+          :show-pagination="false"
+          size="small"
+        >
+          <template #cell="{ column, value }">
+            <SgTag
+              v-if="column.key === 'status'"
+              :color="value === t.landing.previewStatusStable ? 'success' : 'processing'"
+            >
+              {{ String(value) }}
+            </SgTag>
+            <SgProgress
+              v-else-if="column.key === 'coverage'"
+              :percent="Number(value)"
+              size="small"
+            />
+            <template v-else>{{ value }}</template>
+          </template>
+        </SgTable>
+        <div class="landing-preview-code">
+          <span>{{ t.landing.previewCodeLabel }}</span>
+          <code>{{ "import { SgButton, SgTable } from 'skygraph-vue'" }}</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Component index ──────────────────────────────────────────────── -->
+    <section class="landing-components">
+      <div>
+        <h2 class="landing-section-title">{{ t.landing.componentIndexTitle }}</h2>
+        <p class="landing-section-sub">{{ t.landing.componentIndexSub }}</p>
+      </div>
+      <div class="landing-component-grid">
+        <button
+          v-for="name of COMPONENT_LINKS"
+          :key="name"
+          type="button"
+          class="landing-component-pill"
+          @click="browseComponent(name)"
+        >
+          {{ name }}
+        </button>
+      </div>
     </section>
 
     <!-- Highlights ───────────────────────────────────────────────────── -->
@@ -178,13 +267,6 @@ function browseGettingStarted() {
           class="landing-showcase"
           :href="showcasesHref(s.key)"
         >
-          <!-- PLACEHOLDER
-               File: examples/demo-vue/public/landing/<image>
-               Size: 1280×720 (16:9), 2x retina
-               Content: see imageDesc above. Cropped tightly so the UI
-                        fills the frame; no browser chrome.
-          -->
-          <ImagePlaceholder variant="showcase" :name="s.image" :description="s.imageDesc" />
           <div class="landing-showcase-body">
             <span class="landing-showcase-title">{{ t.landing[s.titleKey] }}</span>
             <span class="landing-showcase-desc">{{ t.landing[s.descKey] }}</span>
@@ -193,44 +275,6 @@ function browseGettingStarted() {
       </div>
       <a class="landing-link" :href="showcasesHref()">
         {{ t.landing.showcasesLink }}
-      </a>
-    </section>
-
-    <!-- Spots ────────────────────────────────────────────────────────── -->
-    <section>
-      <h2 class="landing-section-title">{{ t.landing.spotsTitle }}</h2>
-      <div class="landing-spots">
-        <div
-          v-for="(spot, idx) of SPOTS"
-          :key="idx"
-          :class="['landing-spot', spot.reverse ? 'landing-spot--reverse' : '']"
-        >
-          <div class="landing-spot-text">
-            <h3 class="landing-spot-title">{{ t.landing[spot.titleKey] }}</h3>
-            <p class="landing-spot-desc">{{ t.landing[spot.descKey] }}</p>
-          </div>
-          <!-- PLACEHOLDER
-               File: examples/demo-vue/public/landing/<image>
-               Size: 1280×960 (4:3), 2x retina
-               Content: see imageDesc above. Plain background, no
-                        browser chrome, focus on the relevant UI piece.
-          -->
-          <ImagePlaceholder variant="spot" :name="spot.image" :description="spot.imageDesc" />
-        </div>
-      </div>
-    </section>
-
-    <!-- Install ──────────────────────────────────────────────────────── -->
-    <section class="landing-install">
-      <h2 class="landing-install-title">{{ t.landing.installTitle }}</h2>
-      <p class="landing-install-lead">{{ t.landing.installLead }}</p>
-      <pre class="landing-install-code"><code>{{ INSTALL_COMMAND }}</code></pre>
-      <a
-        class="landing-install-link"
-        href="#/guide/getting-started"
-        @click.prevent="browseGettingStarted"
-      >
-        {{ t.landing.installLearnMore }}
       </a>
     </section>
 
