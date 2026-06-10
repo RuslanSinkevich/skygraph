@@ -1,0 +1,18 @@
+{
+  "name": "SkyGraph React",
+  "short_name": "SkyGraph",
+  "description": "Headless React UI Library — DataGrid, Tree, Form, Calendar, Charts, Diagram, Dashboard.",
+  "start_url": "/react/",
+  "scope": "/react/",
+  "display": "standalone",
+  "background_color": "#141414",
+  "theme_color": "#141414",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

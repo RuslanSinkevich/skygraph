@@ -139,6 +139,27 @@ function handleDragEnd() {
   dropIndex.value = null
 }
 
+// `dragleave` also fires when the cursor crosses onto a child node of the
+// same row (the drag handle / slot content). Clearing `dropIndex` there made
+// the drop-target highlight strobe on/off ("jitter") as the pointer moved
+// across a row. Only clear when the cursor genuinely leaves the row.
+function handleDragLeave(e: DragEvent) {
+  const row = e.currentTarget as HTMLElement | null
+  const next = e.relatedTarget as Node | null
+  if (row && next && row.contains(next)) return
+  dropIndex.value = null
+}
+
+// Slivers between rows (container padding / borders) aren't covered by a row's
+// own `dragover`, so the browser briefly reverts to the no-drop (🚫) cursor as
+// the pointer crosses them. Pinning the drop effect on the container keeps the
+// move cursor stable across the whole list while a drag is in flight.
+function handleContainerDragOver(e: DragEvent) {
+  if (!props.draggable || dragIndex.value === null) return
+  e.preventDefault()
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
+}
+
 let listScrollRafId: number | null = null
 function handleVirtualScroll() {
   if (listScrollRafId != null) return
@@ -289,7 +310,7 @@ defineExpose({
             @dragover="(e: DragEvent) => handleDragOver(e, virtualSlice!.startIndex + i)"
             @drop="(e: DragEvent) => handleDrop(e, virtualSlice!.startIndex + i)"
             @dragend="handleDragEnd"
-            @dragleave="dropIndex = null"
+            @dragleave="handleDragLeave"
           >
             <span v-if="draggable" class="sg-list-drag-handle">⠿</span>
             <slot :item="item" :index="virtualSlice.startIndex + i" />
@@ -302,6 +323,7 @@ defineExpose({
       v-else
       :class="grid || sCls.items ? itemsContainerClass : undefined"
       :style="grid ? { ...gridStyle, ...sSty.items } : sSty.items"
+      @dragover="handleContainerDragOver"
     >
       <div
         v-for="(item, i) in paginatedData"
@@ -314,7 +336,7 @@ defineExpose({
         @dragover="(e: DragEvent) => handleDragOver(e, i)"
         @drop="(e: DragEvent) => handleDrop(e, i)"
         @dragend="handleDragEnd"
-        @dragleave="dropIndex = null"
+        @dragleave="handleDragLeave"
       >
         <span v-if="draggable" class="sg-list-drag-handle">⠿</span>
         <slot :item="item" :index="i" />

@@ -21,11 +21,15 @@ function rowClass(row: Record<string, unknown>): string {
 </template>
 
 <style>
-.demo-row-archived td {
-  color: var(--sg-color-text-secondary);
-  background: rgba(0, 0, 0, 0.03);
+/* The Vue Table renders a CSS-grid of `.sg-table-td` cells (rows are
+ * `display: contents`), not `<tr><td>`. Target the cell class and use
+ * theme-aware tokens so the tint is visible on both light and dark
+ * surfaces (a raw `rgba(0,0,0,.03)` vanished on the dark theme). */
+.demo-row-archived .sg-table-td {
+  color: var(--sg-color-text-tertiary);
+  background: var(--sg-color-fill-tertiary);
 }
-.demo-row-paused td {
-  background: rgba(217, 119, 6, 0.1);
+.demo-row-paused .sg-table-td {
+  background: var(--sg-color-warning-bg);
 }
 </style>

@@ -5,6 +5,33 @@ All notable user-facing changes to SkyGraph are documented here.
 Each version uses the same cycle: `Core`, `Components`, `Styles`, `Fixes`, and `Breaking / Removed`.
 Demo implementation details, docs routing, tests, generated reports, and dead adapters are intentionally omitted.
 
+## [0.6.3] - 2026-06-09
+
+### Core
+
+- No runtime core changes.
+
+### Components
+
+- Public React and Vue demos now have dedicated production pages for docs and showcases.
+- React `Notification` accepts per-toast `className` and `style` for scoped theming.
+- React `Table` row selection no longer double-toggles when checkbox or radio controls are clicked.
+- Vue `Menu` collapsed items without icons now show a first-letter fallback.
+
+### Styles
+
+- Landing, React, Vue, and showcase pages gained canonical metadata, social previews, favicons, manifest, robots, and sitemap coverage.
+- `Table`, `Tabs`, `Rate`, `Spin`, `List`, `Menu`, and `EventTimeline` received visual polish for tokens, sizing, dark theme, and collapsed states.
+
+### Fixes
+
+- Vue `Table` custom filter dropdowns now appear only on filterable columns.
+- Vue `List` and `Tree` drag-and-drop now start reliably in Firefox and keep the move cursor during drag.
+
+### Breaking / Removed
+
+- Vue demo pages removed unfinished unstyled examples from the public catalog.
+
 ## [0.5.1] - 2026-06-07
 
 ### Core

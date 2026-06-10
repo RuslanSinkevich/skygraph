@@ -89,15 +89,15 @@ const glassScope = {
 
 <template>
   <div class="transfer-token-grid">
-    <div class="transfer-token-card" :style="greenScope">
+    <div class="transfer-token-card" :style="greenScope" data-sg-theme="light">
       <span :style="{ ...labelBase, color: '#047857' }">{{ t.green }}</span>
       <SgTransfer v-model="keys1" :data-source="mockData" show-search />
     </div>
-    <div class="transfer-token-card" :style="darkScope">
+    <div class="transfer-token-card" :style="darkScope" data-sg-theme="dark">
       <span :style="{ ...labelBase, color: '#94a3b8' }">{{ t.dark }}</span>
       <SgTransfer v-model="keys2" :data-source="mockData" show-search />
     </div>
-    <div class="transfer-token-card" :style="glassScope">
+    <div class="transfer-token-card" :style="glassScope" data-sg-theme="light">
       <span :style="{ ...labelBase, color: '#1e1b4b' }">{{ t.glass }}</span>
       <SgTransfer v-model="keys3" :data-source="mockData" show-search />
     </div>

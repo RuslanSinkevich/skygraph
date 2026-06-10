@@ -4,7 +4,7 @@ import { createVirtual, type VirtualEngine } from '@skygraph/core'
 import { useTable } from '../../../composables/useTable'
 import SgInput from '../../ui/Input.vue'
 import SgCheckbox from '../../ui/Checkbox.vue'
-import SgSelect from '../../ui/Select.vue'
+import SgButton from '../../ui/Button.vue'
 import SgPagination from '../../ui/Pagination.vue'
 import SgSpin from '../../ui/Spin.vue'
 import { useConfig } from '../../ui/ConfigProvider.vue'
@@ -535,6 +535,50 @@ function closeFilterDropdown() {
   openFilterDropdown.value = null
 }
 
+/* Preset-filter checklist (mirrors React's checkbox/radio popover with
+ * Reset/Confirm). Selections live in a draft and only apply on confirm so the
+ * table doesn't re-filter on every checkbox toggle. */
+const filterDraft = ref<Map<string, unknown[]>>(new Map())
+
+function openPresetFilter(key: string) {
+  if (openFilterDropdown.value === key) {
+    closeFilterDropdown()
+    return
+  }
+  filterDraft.value.set(key, [...(activeFilters.value.get(key) ?? [])])
+  filterDraft.value = new Map(filterDraft.value)
+  openFilterDropdown.value = key
+}
+
+function toggleFilterValue(col: TableColumn, value: unknown) {
+  const multiple = col.filterMultiple !== false
+  const cur = filterDraft.value.get(col.key) ?? []
+  let next: unknown[]
+  if (multiple) {
+    next = cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value]
+  } else {
+    next = cur.includes(value) ? [] : [value]
+  }
+  filterDraft.value.set(col.key, next)
+  filterDraft.value = new Map(filterDraft.value)
+}
+
+function isFilterValueChecked(col: TableColumn, value: unknown): boolean {
+  return (filterDraft.value.get(col.key) ?? []).includes(value)
+}
+
+function confirmPresetFilter(col: TableColumn) {
+  applyColumnFilter(col, filterDraft.value.get(col.key) ?? [])
+  closeFilterDropdown()
+}
+
+function resetPresetFilter(col: TableColumn) {
+  filterDraft.value.set(col.key, [])
+  filterDraft.value = new Map(filterDraft.value)
+  applyColumnFilter(col, [])
+  closeFilterDropdown()
+}
+
 const filterDropdownRefs = ref<Map<string, HTMLElement>>(new Map())
 function setFilterDropdownRef(key: string, el: Element | null) {
   if (el) filterDropdownRefs.value.set(key, el as HTMLElement)
@@ -559,7 +603,14 @@ const resizing = ref<{ key: string; startX: number; startW: number } | null>(nul
 function onResizeStart(col: TableColumn, ev: MouseEvent) {
   ev.preventDefault()
   ev.stopPropagation()
-  const startW = columnWidths.value[col.key] ?? col.width ?? 150
+  // Measure the *rendered* header width, not the declared `col.width`.
+  // Columns stretch to fill the container, so the on-screen width usually
+  // differs from the stored/default value; seeding `startW` from the latter
+  // made the column snap to that width on the first mouse move (the "jump").
+  const handle = ev.currentTarget as HTMLElement | null
+  const th = handle?.closest('.sg-table-th') as HTMLElement | null
+  const measured = th?.getBoundingClientRect().width
+  const startW = measured ?? columnWidths.value[col.key] ?? col.width ?? 150
   resizing.value = { key: col.key, startX: ev.clientX, startW }
   document.addEventListener('mousemove', onResizeMove)
   document.addEventListener('mouseup', onResizeEnd)
@@ -1167,7 +1218,8 @@ defineExpose({
                   </span>
                 </span>
 
-                <!-- preset filters: icon trigger + popup with SgSelect (single-value) -->
+                <!-- preset filters: icon trigger + checklist popover with
+                     Reset/Confirm, matching React's FilterDropdown -->
                 <span
                   v-if="
                     cell.col.filters &&
@@ -1183,7 +1235,7 @@ defineExpose({
                   }"
                   role="button"
                   :aria-label="`Filter ${cell.col.title}`"
-                  @click.stop="toggleFilterDropdown(cell.col.key)"
+                  @click.stop="openPresetFilter(cell.col.key)"
                   >▾</span
                 >
                 <div
@@ -1198,25 +1250,37 @@ defineExpose({
                   class="sg-table-filter-dropdown"
                   @click.stop
                 >
-                  <SgSelect
-                    size="small"
-                    class="sg-table-filter-select"
-                    :placeholder="localeFull.filterAll"
-                    :options="[
-                      { label: localeFull.filterAll, value: '' },
-                      ...cell.col.filters.map((f) => ({
-                        label: String(f.text),
-                        value: String(f.value),
-                      })),
-                    ]"
-                    :aria-label="`Filter ${cell.col.title}`"
-                    @change="
-                      (v) => {
-                        applyColumnFilter(cell.col, v ? [v] : [])
-                        closeFilterDropdown()
-                      }
-                    "
-                  />
+                  <div class="sg-table-filter-list">
+                    <label
+                      v-for="f in cell.col.filters"
+                      :key="String(f.value)"
+                      class="sg-table-filter-item"
+                    >
+                      <SgCheckbox
+                        v-if="cell.col.filterMultiple !== false"
+                        :checked="isFilterValueChecked(cell.col, f.value)"
+                        @change="() => toggleFilterValue(cell.col, f.value)"
+                      />
+                      <input
+                        v-else
+                        type="radio"
+                        :checked="isFilterValueChecked(cell.col, f.value)"
+                        @change="() => toggleFilterValue(cell.col, f.value)"
+                      />
+                      <span>{{ f.text }}</span>
+                    </label>
+                  </div>
+                  <div class="sg-table-filter-actions">
+                    <SgButton size="small" @click="() => resetPresetFilter(cell.col)">{{
+                      localeFull.filterReset
+                    }}</SgButton>
+                    <SgButton
+                      size="small"
+                      type="primary"
+                      @click="() => confirmPresetFilter(cell.col)"
+                      >{{ localeFull.filterConfirm }}</SgButton
+                    >
+                  </div>
                 </div>
 
                 <!-- custom filter via slot — only on columns that opt into

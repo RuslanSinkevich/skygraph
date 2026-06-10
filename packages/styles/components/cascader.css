@@ -177,7 +177,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 100;
+  z-index: var(--sg-z-dropdown);
   margin-top: 4px;
   background: var(--sg-color-bg-elevated);
   border-radius: var(--sg-border-radius);

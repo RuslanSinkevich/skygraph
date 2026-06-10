@@ -344,9 +344,9 @@ export const en: DemoDict = {
     showcaseDashboardTitle: 'Operations Dashboard',
     showcaseDashboardDesc:
       'Live KPI grid, mixed charts, filters and drill-down, customizable layout.',
-    showcaseProjectTrackerTitle: 'Project Tracker',
+    showcaseProjectTrackerTitle: 'Security Command Center',
     showcaseProjectTrackerDesc:
-      'Task table with progress KPIs, status filters and a detail drawer.',
+      'Incident table with infrastructure tree, response timeline, playbooks and a detail drawer.',
     showcaseTableTitle: 'Table — Kitchen Sink',
     showcaseTableDesc:
       'Sorting, filtering, grouping, virtual scroll, export and print on a million-row dataset.',

@@ -19,7 +19,7 @@ export function TokensOverrideCalendar() {
           ['--sg-color-border-secondary' as never]: 'rgba(79, 70, 229, 0.18)',
         },
       }}
-      render={() => <Calendar fullscreen={false} />}
+      render={() => <Calendar fullscreen={false} style={{ width: '100%' }} />}
     />
   )
 }

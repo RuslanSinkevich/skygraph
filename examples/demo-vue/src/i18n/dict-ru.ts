@@ -157,9 +157,9 @@ export const ru: DemoDict = {
     showcaseDashboardTitle: 'Дашборд операций',
     showcaseDashboardDesc:
       'Живой KPI-grid, разные графики, фильтры и drill-down, настраиваемая раскладка.',
-    showcaseProjectTrackerTitle: 'Трекер проектов',
+    showcaseProjectTrackerTitle: 'Центр реагирования SOC',
     showcaseProjectTrackerDesc:
-      'Таблица задач с KPI прогресса, фильтрами статусов и drawer с деталями.',
+      'Таблица инцидентов с деревом инфраструктуры, timeline реагирования, playbooks и drawer деталей.',
     showcaseTableTitle: 'Таблица — всё включено',
     showcaseTableDesc:
       'Сортировка, фильтры, группировка, virtual scroll, экспорт и печать на миллионе строк.',

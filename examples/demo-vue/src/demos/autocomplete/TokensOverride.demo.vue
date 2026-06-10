@@ -74,15 +74,15 @@ const glassScope = {
 
 <template>
   <div style="display: flex; gap: 16px; flex-wrap: wrap">
-    <div :style="greenScope">
+    <div :style="greenScope" data-sg-theme="light">
       <span :style="{ ...labelBase, color: '#047857' }">{{ t.green }}</span>
       <SgAutoComplete :options="frameworkOptions" :placeholder="t.ph" />
     </div>
-    <div :style="darkScope">
+    <div :style="darkScope" data-sg-theme="dark">
       <span :style="{ ...labelBase, color: '#94a3b8' }">{{ t.dark }}</span>
       <SgAutoComplete :options="frameworkOptions" :placeholder="t.ph" />
     </div>
-    <div :style="glassScope">
+    <div :style="glassScope" data-sg-theme="light">
       <span :style="{ ...labelBase, color: '#1e1b4b' }">{{ t.glass }}</span>
       <SgAutoComplete :options="frameworkOptions" :placeholder="t.ph" />
     </div>

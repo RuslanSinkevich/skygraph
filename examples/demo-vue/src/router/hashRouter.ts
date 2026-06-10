@@ -7,6 +7,7 @@ import {
   onMounted,
   provide,
   ref,
+  shallowRef,
   type App,
   type Component,
   type ComputedRef,
@@ -42,7 +43,14 @@ const ROUTE_KEY: InjectionKey<ComputedRef<Route>> = Symbol('skygraph-demo-vue-ro
 
 function readHashPath(): string {
   if (typeof window === 'undefined') return '/'
-  const raw = window.location.hash.replace(/^#/, '')
+  let raw = window.location.hash.replace(/^#/, '')
+  // The DemoTOC encodes the active section as a `~section` suffix on the
+  // hash (`#/components/button~loading`). That suffix belongs to the
+  // in-page anchor, not the route — strip it before matching so a
+  // deep-link / back-navigation to a `~section` URL resolves to the real
+  // component page instead of falling through to the wildcard redirect.
+  const tilde = raw.indexOf('~')
+  if (tilde >= 0) raw = raw.slice(0, tilde)
   return raw === '' ? '/' : raw
 }
 
@@ -143,7 +151,10 @@ export const RouterView = defineComponent({
   setup() {
     const router = useRouter()
     const route = useRoute()
-    const resolved = ref<Component | null>(null)
+    // `shallowRef` (not `ref`): the value is a Vue component definition.
+    // A deep `ref` would make the component reactive and trigger the
+    // "received a Component that was made a reactive object" warning.
+    const resolved = shallowRef<Component | null>(null)
     const loadingPath = ref<string | null>(null)
 
     async function loadFor(path: string) {

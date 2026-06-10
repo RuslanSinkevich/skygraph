@@ -8,6 +8,11 @@
 .sg-list-bordered {
   border: 1px solid var(--sg-color-border);
   border-radius: var(--sg-border-radius);
+  /* Clip header / footer / first-last item backgrounds (which have square
+   * corners) to the rounded border. Without this the tinted header and the
+   * hover/selected row backgrounds bleed past the radius, so the corners
+   * appear to be a different colour than the rest of the outline. */
+  overflow: hidden;
 }
 
 .sg-list-loading {

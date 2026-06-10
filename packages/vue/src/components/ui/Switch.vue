@@ -18,7 +18,16 @@ export interface SwitchProps {
   unstyled?: boolean
 }
 
+// `modelValue` / `checked` / `defaultChecked` are tri-state: their absence
+// must read as `undefined`, not `false`. Without explicit `undefined`
+// defaults Vue's Boolean-prop casting coerces an absent boolean prop to
+// `false`, which poisons the `modelValue ?? checked ?? internal` chain
+// (`false ?? x === false`) and freezes uncontrolled switches in the off
+// state. The explicit defaults disable that cast.
 const props = withDefaults(defineProps<SwitchProps>(), {
+  modelValue: undefined,
+  checked: undefined,
+  defaultChecked: undefined,
   disabled: false,
   loading: false,
   size: 'middle',

@@ -375,9 +375,12 @@ export function useTableState(props: TableProps) {
 
   const handleToggleExpand = (id: RowId) => {
     const open = expandedKeys.has(id)
-    if (expandable?.onExpand) {
-      expandable.onExpand(!open, id)
-    } else {
+    // `onExpand` is a notification callback, not a controlled-mode signal.
+    // Controlled mode is keyed off `expandable.expandedKeys` being provided;
+    // otherwise we still own the expansion state internally even when the
+    // host listens via `onExpand`.
+    expandable?.onExpand?.(!open, id)
+    if (expandable?.expandedKeys == null) {
       setInternalExpanded((prev) => {
         const next = new Set(prev)
         if (open) {
@@ -529,13 +532,15 @@ export function useTableState(props: TableProps) {
       setDragOver(null)
       return
     }
-    setColOrder((prev) => {
-      const next = prev.filter((k) => k !== dragCol)
-      const idx = next.indexOf(targetKey)
-      next.splice(idx, 0, dragCol)
-      onColumnOrderChange?.(next)
-      return next
-    })
+    // Compute the next order outside the state updater. Calling
+    // `onColumnOrderChange` (a parent setState) from inside the updater runs
+    // it during React's render phase and triggers the "Cannot update a
+    // component while rendering a different component" warning.
+    const next = colOrder.filter((k) => k !== dragCol)
+    const idx = next.indexOf(targetKey)
+    next.splice(idx, 0, dragCol)
+    setColOrder(next)
+    onColumnOrderChange?.(next)
     setDragCol(null)
     setDragOver(null)
   }
@@ -586,33 +591,38 @@ export function useTableState(props: TableProps) {
     table.groupBy(groupBy, aggregates)
   }, [groupBy, leafColumns, table])
 
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => {
-    return defaultGroupExpanded ? new Set(['__all__']) : new Set()
-  })
+  // Expanded groups are tracked as an explicit set of group keys. Earlier a
+  // `'__all__'` sentinel was used for "expand all", but it made individual
+  // collapse/expand a no-op while the sentinel was present (the default
+  // `defaultGroupExpanded` state) — toggling one group could not override the
+  // global flag. The set now always holds the real group keys; "expand all"
+  // seeds every key (see `allGroupKeys` below).
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set())
+  // Holds the current group keys so the stable expand-all callback can seed
+  // the set without depending on derived data computed further down.
+  const allGroupKeysRef = useRef<string[]>([])
+  // Tracks whether the default-expanded seeding has run for the active
+  // `groupBy`; reset whenever the grouping field changes.
+  const groupsSeededRef = useRef(false)
 
   const toggleGroupExpand = useCallback(
     (groupKey: string) => {
+      const willExpand = !expandedGroups.has(groupKey)
       setExpandedGroups((prev) => {
         const next = new Set(prev)
-        const wasExpanded = next.has(groupKey)
-        if (wasExpanded) {
-          next.delete(groupKey)
-        } else {
-          next.add(groupKey)
-        }
-        onGroupExpandChange?.(groupKey, !wasExpanded)
+        if (next.has(groupKey)) next.delete(groupKey)
+        else next.add(groupKey)
         return next
       })
+      // Notify outside the updater so a parent setState never runs during the
+      // render phase.
+      onGroupExpandChange?.(groupKey, willExpand)
     },
-    [onGroupExpandChange],
+    [onGroupExpandChange, expandedGroups],
   )
 
   const expandAllGroups = useCallback(() => {
-    setExpandedGroups((prev) => {
-      const next = new Set(prev)
-      next.add('__all__')
-      return next
-    })
+    setExpandedGroups(new Set(allGroupKeysRef.current))
   }, [])
 
   const collapseAllGroups = useCallback(() => {
@@ -717,14 +727,46 @@ export function useTableState(props: TableProps) {
     return flattenTreeRows(visibleRows, childrenKey, treeExpanded)
   }, [visibleRows, isTreeMode, childrenKey, treeExpanded])
 
+  // Distinct group keys for the active `groupBy`, in first-seen order. Used to
+  // seed "expand all" and the `defaultGroupExpanded` initial state.
+  const allGroupKeys = useMemo(() => {
+    if (!groupBy) return [] as string[]
+    const seen = new Set<string>()
+    const keys: string[] = []
+    for (const r of baseFlatRows) {
+      const k = String(r.data[groupBy] ?? 'Other')
+      if (!seen.has(k)) {
+        seen.add(k)
+        keys.push(k)
+      }
+    }
+    return keys
+  }, [baseFlatRows, groupBy])
+
+  // Keep the ref in sync so the stable expand-all callback can read the
+  // current keys without re-creating on every data change.
+  allGroupKeysRef.current = allGroupKeys
+
+  // Reset the "seeded" guard whenever the grouping field changes so a new
+  // `groupBy` re-applies `defaultGroupExpanded`.
+  useEffect(() => {
+    groupsSeededRef.current = false
+  }, [groupBy])
+
+  // Seed all groups as expanded once per `groupBy` when `defaultGroupExpanded`
+  // is set. Runs after the keys are known (covers async data that arrives
+  // after mount).
+  useEffect(() => {
+    if (!groupBy || !defaultGroupExpanded) return
+    if (groupsSeededRef.current || allGroupKeys.length === 0) return
+    groupsSeededRef.current = true
+    setExpandedGroups(new Set(allGroupKeys))
+  }, [groupBy, defaultGroupExpanded, allGroupKeys])
+
   // Apply group-by if configured
   const groupedRows: FlatRow[] = useMemo(() => {
     if (!groupBy) return baseFlatRows
-    const allExpanded = expandedGroups.has('__all__')
-    const effectiveExpanded = allExpanded
-      ? new Set([...expandedGroups, ...baseFlatRows.map((r) => String(r.data[groupBy] ?? 'Other'))])
-      : expandedGroups
-    return groupByColumn(baseFlatRows, groupBy, columns, effectiveExpanded)
+    return groupByColumn(baseFlatRows, groupBy, columns, expandedGroups)
   }, [baseFlatRows, groupBy, columns, expandedGroups])
 
   // Separate pinned rows

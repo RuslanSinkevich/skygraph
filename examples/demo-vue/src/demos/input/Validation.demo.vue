@@ -28,8 +28,8 @@ const invalid = computed(() => !email.value.includes('@'))
   <div style="display: grid; gap: 8px; max-width: 320px">
     <SgInput
       v-model="email"
-      :aria-invalid="invalid || undefined"
-      aria-required
+      :aria-invalid="invalid ? 'true' : undefined"
+      aria-required="true"
       :placeholder="t.placeholder"
     />
     <span v-if="invalid" style="font-size: 12px; color: var(--sg-color-error)">

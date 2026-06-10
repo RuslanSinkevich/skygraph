@@ -19,13 +19,13 @@ const columns = computed<TableColumn[]>(() => [
 let id: number | undefined
 onMounted(() => {
   id = window.setInterval(() => {
-    data.value = data.value.map((r) => ({
-      ...r,
-      data: {
-        ...r.data,
-        progress: Math.min(100, Number(r.data.progress) + Math.floor(Math.random() * 7)),
-      },
-    }))
+    data.value = data.value.map((r) => {
+      // Wrap around at 100 instead of clamping — a `Math.min(100, …)` ramp
+      // froze every row at 100 after ~a minute and looked like the demo had
+      // stopped updating. Wrapping keeps the values perpetually live.
+      const next = Number(r.data.progress) + Math.floor(Math.random() * 7) + 1
+      return { ...r, data: { ...r.data, progress: next > 100 ? next - 100 : next } }
+    })
   }, 800)
 })
 onUnmounted(() => {

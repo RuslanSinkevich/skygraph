@@ -74,15 +74,15 @@ const glassScope = {
 
 <template>
   <div style="display: flex; gap: 16px; flex-wrap: wrap">
-    <div :style="greenScope">
+    <div :style="greenScope" data-sg-theme="light">
       <span :style="{ ...labelBase, color: '#047857' }">{{ t.green }}</span>
       <SgInputNumber :default-value="7" :min="0" :max="20" />
     </div>
-    <div :style="darkScope">
+    <div :style="darkScope" data-sg-theme="dark">
       <span :style="{ ...labelBase, color: '#94a3b8' }">{{ t.dark }}</span>
       <SgInputNumber :default-value="42" :min="0" :max="100" />
     </div>
-    <div :style="glassScope">
+    <div :style="glassScope" data-sg-theme="light">
       <span :style="{ ...labelBase, color: '#1e1b4b' }">{{ t.glass }}</span>
       <SgInputNumber :default-value="1.25" :step="0.25" :precision="2" />
     </div>

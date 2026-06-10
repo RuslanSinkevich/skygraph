@@ -42,6 +42,11 @@ const SHEET = `
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
+  /* Cap the label to the field so a long caption can't spill past the input
+   * edge (which read as the label being "too wide"). The notch background
+   * then only ever covers the text it wraps. */
+  max-width: calc(100% - 24px);
+  box-sizing: border-box;
   font-size: 14px;
   color: var(--sg-color-text-secondary);
   pointer-events: none;
@@ -51,6 +56,8 @@ const SHEET = `
     font-size 180ms cubic-bezier(0.4, 0, 0.2, 1),
     color 180ms ease;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Outlined: extra room top + bottom for the label to live above the border. */

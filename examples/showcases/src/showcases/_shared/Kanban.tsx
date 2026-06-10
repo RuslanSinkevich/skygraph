@@ -3,7 +3,7 @@ import type { ReactNode, DragEvent } from 'react'
 
 /**
  * Lightweight Kanban board (HTML5 drag-and-drop, no extra deps).
- * Used by CRM Pipeline and Project Tracker.
+ * Used by CRM Pipeline.
  */
 
 export interface KanbanColumn<T> {
@@ -87,12 +87,17 @@ export function Kanban<T extends { id: string | number }>({
       {columns.map((col) => (
         <div
           key={col.key}
-          className={['kanban-col', dragOver === col.key ? 'kanban-col--over' : ''].filter(Boolean).join(' ')}
+          className={['kanban-col', dragOver === col.key ? 'kanban-col--over' : '']
+            .filter(Boolean)
+            .join(' ')}
           onDragOver={(e) => handleDragOver(e, col.key)}
           onDragLeave={handleDragLeave}
           onDrop={(e) => handleDrop(e, col.key)}
         >
-          <div className="kanban-col-header" style={col.color ? { borderTop: `3px solid ${col.color}` } : undefined}>
+          <div
+            className="kanban-col-header"
+            style={col.color ? { borderTop: `3px solid ${col.color}` } : undefined}
+          >
             <div className="kanban-col-title">{col.title}</div>
             <div className="kanban-col-meta">{col.meta ?? `${col.items.length}`}</div>
           </div>
@@ -108,9 +113,7 @@ export function Kanban<T extends { id: string | number }>({
                 {renderCard(item, col.key)}
               </div>
             ))}
-            {col.items.length === 0 && (
-              <div className="kanban-col-empty">Drop items here</div>
-            )}
+            {col.items.length === 0 && <div className="kanban-col-empty">Drop items here</div>}
           </div>
         </div>
       ))}

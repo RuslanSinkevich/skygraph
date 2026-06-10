@@ -510,7 +510,7 @@
   margin-top: 4px;
 }
 
-/* ── Project tracker token showcase ────────────────────────────────── */
+/* ── Security command center token showcase ────────────────────────── */
 
 .pt-theme {
   min-height: 100%;
@@ -526,7 +526,7 @@
 
 .pt-hero,
 .pt-metric,
-.pt-column {
+.pt-panel {
   border: 1px solid var(--sg-color-border-secondary);
   background: color-mix(in srgb, var(--sg-color-bg-secondary) 88%, transparent);
   box-shadow: var(--sg-shadow);
@@ -580,76 +580,57 @@
   letter-spacing: -0.03em;
 }
 
-.pt-board {
+.pt-workbench {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 12px;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 16px;
 }
 
-.pt-column {
-  min-height: 320px;
+.pt-side-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+  gap: 16px;
+}
+
+.pt-panel {
   border-radius: 18px;
   overflow: hidden;
+  padding: 16px;
 }
 
-.pt-column-head {
+.pt-panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px;
-  border-bottom: 1px solid var(--sg-color-border-secondary);
-}
-
-.pt-column-head > span {
-  color: var(--sg-color-text-tertiary);
-  font-size: 12px;
-}
-
-.pt-column-body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 12px;
-}
-
-.pt-task-card.sg-button {
-  width: 100%;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 14px;
+  gap: 12px;
+  margin-bottom: 14px;
   color: var(--sg-color-text);
-  text-align: left;
-  white-space: normal;
-  background: var(--sg-color-bg-elevated);
-  border-color: var(--sg-color-border-secondary);
 }
 
-.pt-task-card.sg-button:hover {
-  background: var(--sg-color-bg-hover);
-  border-color: var(--sg-color-primary);
+.pt-tree-panel {
+  min-height: 420px;
 }
 
-.pt-task-card > span:not(.pt-task-meta),
-.pt-task-id,
+.pt-main-panel {
+  min-width: 0;
+}
+
+.pt-main-panel .sg-table-root {
+  background: transparent;
+}
+
+.pt-main-panel .sg-table-row {
+  cursor: pointer;
+}
+
+.pt-side-grid .pt-panel {
+  min-height: 240px;
+}
+
 .pt-progress-label {
   color: var(--sg-color-text-secondary);
   font-size: 12px;
-}
-
-.pt-task-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.pt-task-meta > span:last-child {
-  color: var(--sg-color-text-tertiary);
-  font-size: 12px;
+  margin-bottom: 8px;
 }
 
 .pt-drawer {
@@ -659,4 +640,19 @@
 .pt-drawer-body {
   display: grid;
   gap: 18px;
+}
+
+@media (max-width: 980px) {
+  .pt-workbench,
+  .pt-side-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Legacy project-board classes kept neutral for cached markup during HMR. */
+.pt-column-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--sg-color-border-secondary);
 }

@@ -487,12 +487,18 @@ export default function App() {
     />
   )
 
-  const Page = renderPage(route)
+  // Resolve the page element once per route. Memoising on `route` keeps the
+  // rendered component *type* stable across unrelated App re-renders (search
+  // typing, theme / locale switches), so the page subtree — including the
+  // `DemoTOCProvider` and its IntersectionObserver — is NOT remounted on every
+  // keystroke. It remounts only when the route actually changes, which is the
+  // intended behaviour (a different page owns a different TOC).
+  const pageNode = useMemo(() => renderPage(route, navigate), [route])
 
   return (
     <>
       <AppShell section={section} header={header} sidebar={sidebarNode} footer={footer}>
-        <Page onNavigate={navigate} route={route} />
+        {pageNode}
       </AppShell>
       <NotificationContainer placement="topRight" />
       <NotificationContainer placement="topLeft" />
@@ -501,42 +507,40 @@ export default function App() {
   )
 }
 
-type PageProps = { onNavigate: (key: string) => void; route: string }
-
-function renderPage(route: string): (props: PageProps) => React.JSX.Element {
-  if (route === 'landing') return (p) => <Landing onNavigate={p.onNavigate} />
-  if (route === 'changelog') return () => <Roadmap />
-  if (route === 'about') return () => <About />
-  if (route === 'benchmarks') return () => <BenchmarksPage />
+function renderPage(route: string, onNavigate: (key: string) => void): React.ReactNode {
+  if (route === 'landing') return <Landing onNavigate={onNavigate} />
+  if (route === 'changelog') return <Roadmap />
+  if (route === 'about') return <About />
+  if (route === 'benchmarks') return <BenchmarksPage />
   if (route === 'benchmarks/table') {
-    return (p) => (
-      <SingleBenchmarkPageTr kind="table" onBack={() => p.onNavigate('benchmarks')}>
+    return (
+      <SingleBenchmarkPageTr kind="table" onBack={() => onNavigate('benchmarks')}>
         <TableBenchmark />
       </SingleBenchmarkPageTr>
     )
   }
   if (route === 'benchmarks/tree') {
-    return (p) => (
-      <SingleBenchmarkPageTr kind="tree" onBack={() => p.onNavigate('benchmarks')}>
+    return (
+      <SingleBenchmarkPageTr kind="tree" onBack={() => onNavigate('benchmarks')}>
         <TreeBenchmark />
       </SingleBenchmarkPageTr>
     )
   }
   if (route === 'benchmarks/chart') {
-    return (p) => (
-      <SingleBenchmarkPageTr kind="chart" onBack={() => p.onNavigate('benchmarks')}>
+    return (
+      <SingleBenchmarkPageTr kind="chart" onBack={() => onNavigate('benchmarks')}>
         <ChartBenchmark />
       </SingleBenchmarkPageTr>
     )
   }
   if (route === 'showcases' || route.startsWith('showcases/')) {
-    return (p) => <ShowcasesPage route={p.route} onNavigate={p.onNavigate} />
+    return <ShowcasesPage route={route} onNavigate={onNavigate} />
   }
-  const componentPage = componentPages[route]
-  if (componentPage) return () => componentPage()
-  const guidePage = guidePages[route]
-  if (guidePage) return () => guidePage()
-  return (p) => <Landing onNavigate={p.onNavigate} />
+  const ComponentPage = componentPages[route]
+  if (ComponentPage) return <ComponentPage />
+  const GuidePage = guidePages[route]
+  if (GuidePage) return <GuidePage />
+  return <Landing onNavigate={onNavigate} />
 }
 
 interface SingleBenchmarkPageTrProps {

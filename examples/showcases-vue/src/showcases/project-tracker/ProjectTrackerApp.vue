@@ -2,273 +2,445 @@
 import { computed, ref } from 'vue'
 import {
   SgButton,
+  SgCollapse,
   SgConfigProvider,
   SgDescriptions,
   SgDrawer,
   SgProgress,
   SgSegmented,
+  SgTable,
   SgTag,
+  SgTimeline,
+  SgTree,
+  type RowId,
+  type TableColumn,
   type ThemeConfig,
+  type TreeNodeData,
 } from '@skygraph/vue'
 import { useShowcaseLocale } from '../_shared'
 
-type Status = 'planned' | 'active' | 'review' | 'blocked' | 'done'
-type Priority = 'low' | 'medium' | 'high'
-type Filter = 'all' | 'active' | 'blocked' | 'done'
+type Status = 'triage' | 'investigating' | 'contained' | 'resolved'
+type Severity = 'low' | 'medium' | 'high' | 'critical'
+type Filter = 'all' | 'open' | 'critical' | 'resolved'
 
-interface ProjectTask {
+interface Incident {
   id: string
   title: string
-  owner: string
-  area: string
+  system: string
+  lane: 'Edge' | 'Identity' | 'Data' | 'Platform'
+  analyst: string
   status: Status
-  priority: Priority
-  progress: number
-  due: string
+  severity: Severity
+  confidence: number
+  sla: string
+  region: string
+  assetKey: string
 }
 
-const TASKS: ProjectTask[] = [
+const INCIDENTS: Incident[] = [
   {
-    id: 'PT-101',
-    title: 'Billing export',
-    owner: 'Nina Petrova',
-    area: 'Finance',
-    status: 'active',
-    priority: 'high',
-    progress: 68,
-    due: 'Jun 12',
+    id: 'SOC-1042',
+    title: 'Impossible travel sign-in',
+    system: 'SSO gateway',
+    lane: 'Identity',
+    analyst: 'Nina Petrova',
+    status: 'investigating',
+    severity: 'critical',
+    confidence: 88,
+    sla: '18 min',
+    region: 'EU',
+    assetKey: 'identity',
   },
   {
-    id: 'PT-102',
-    title: 'Customer import cleanup',
-    owner: 'Sara Vogel',
-    area: 'CRM',
-    status: 'review',
-    priority: 'medium',
-    progress: 92,
-    due: 'Jun 09',
+    id: 'SOC-1043',
+    title: 'Suspicious data export',
+    system: 'Warehouse',
+    lane: 'Data',
+    analyst: 'Sara Vogel',
+    status: 'triage',
+    severity: 'high',
+    confidence: 73,
+    sla: '42 min',
+    region: 'US',
+    assetKey: 'data',
   },
   {
-    id: 'PT-103',
-    title: 'Mobile onboarding copy',
-    owner: 'Mia Rossi',
-    area: 'Growth',
-    status: 'planned',
-    priority: 'low',
-    progress: 18,
-    due: 'Jun 20',
+    id: 'SOC-1044',
+    title: 'WAF anomaly burst',
+    system: 'Public API',
+    lane: 'Edge',
+    analyst: 'Mia Rossi',
+    status: 'contained',
+    severity: 'medium',
+    confidence: 64,
+    sla: '1 h',
+    region: 'APAC',
+    assetKey: 'edge',
   },
   {
-    id: 'PT-104',
-    title: 'Warehouse stock alerts',
-    owner: 'Omar Said',
-    area: 'Ops',
-    status: 'blocked',
-    priority: 'high',
-    progress: 41,
-    due: 'Jun 10',
+    id: 'SOC-1045',
+    title: 'Privileged token reuse',
+    system: 'Kubernetes',
+    lane: 'Platform',
+    analyst: 'Omar Said',
+    status: 'investigating',
+    severity: 'critical',
+    confidence: 91,
+    sla: '9 min',
+    region: 'EU',
+    assetKey: 'platform',
   },
   {
-    id: 'PT-105',
-    title: 'Role audit checklist',
-    owner: 'Alex Kim',
-    area: 'Security',
-    status: 'done',
-    priority: 'medium',
-    progress: 100,
-    due: 'Jun 07',
+    id: 'SOC-1046',
+    title: 'Endpoint beacon pattern',
+    system: 'Fleet agents',
+    lane: 'Platform',
+    analyst: 'Alex Kim',
+    status: 'resolved',
+    severity: 'medium',
+    confidence: 100,
+    sla: 'closed',
+    region: 'US',
+    assetKey: 'platform',
   },
   {
-    id: 'PT-106',
-    title: 'Dashboard drill-down QA',
-    owner: 'Emma Tang',
-    area: 'Analytics',
-    status: 'active',
-    priority: 'medium',
-    progress: 56,
-    due: 'Jun 15',
+    id: 'SOC-1047',
+    title: 'DNS tunneling candidate',
+    system: 'Resolver mesh',
+    lane: 'Edge',
+    analyst: 'Emma Tang',
+    status: 'triage',
+    severity: 'low',
+    confidence: 31,
+    sla: '2 h',
+    region: 'LATAM',
+    assetKey: 'edge',
   },
 ]
 
-const STATUS_ORDER: Status[] = ['planned', 'active', 'review', 'blocked', 'done']
-
 const STATUS_COLOR: Record<Status, string> = {
-  planned: 'default',
-  active: 'blue',
-  review: 'purple',
-  blocked: 'red',
-  done: 'green',
+  triage: 'orange',
+  investigating: 'blue',
+  contained: 'purple',
+  resolved: 'green',
 }
 
-const PRIORITY_COLOR: Record<Priority, string> = {
+const SEVERITY_COLOR: Record<Severity, string> = {
   low: 'default',
   medium: 'orange',
   high: 'red',
+  critical: 'magenta',
 }
 
-const PROJECT_TRACKER_THEME: ThemeConfig = {
+const ASSET_TREE: TreeNodeData[] = [
+  {
+    key: 'all',
+    title: 'Security estate',
+    children: [
+      { key: 'edge', title: 'Edge perimeter' },
+      { key: 'identity', title: 'Identity fabric' },
+      { key: 'data', title: 'Data platforms' },
+      { key: 'platform', title: 'Runtime platform' },
+    ],
+  },
+]
+
+const COMMAND_CENTER_THEME: ThemeConfig = {
   mode: 'dark',
   token: {
-    colorPrimary: '#a78bfa',
-    colorSuccess: '#34d399',
-    colorWarning: '#fbbf24',
-    colorError: '#fb7185',
-    colorText: '#e5e7eb',
-    colorBg: '#101827',
-    colorBorder: '#334155',
+    colorPrimary: '#38bdf8',
+    colorSuccess: '#22c55e',
+    colorWarning: '#f59e0b',
+    colorError: '#f43f5e',
+    colorText: '#e2e8f0',
+    colorBg: '#08111f',
+    colorBorder: '#1e3a5f',
     borderRadius: 14,
     fontSize: 14,
     fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
   },
   cssVars: {
-    '--sg-color-bg': '#101827',
-    '--sg-color-bg-secondary': '#162033',
-    '--sg-color-bg-elevated': '#1d2940',
-    '--sg-color-bg-container': '#162033',
-    '--sg-color-bg-hover': '#24314f',
-    '--sg-color-border': '#334155',
-    '--sg-color-border-secondary': '#26344f',
-    '--sg-color-text-secondary': '#b7c2d8',
-    '--sg-color-text-tertiary': '#7f8ca5',
+    '--sg-color-bg': '#08111f',
+    '--sg-color-bg-secondary': '#0d1b2f',
+    '--sg-color-bg-elevated': '#12233b',
+    '--sg-color-bg-container': '#0d1b2f',
+    '--sg-color-bg-hover': '#17314f',
+    '--sg-color-border': '#1e3a5f',
+    '--sg-color-border-secondary': '#18304d',
+    '--sg-color-text-secondary': '#b6c7dd',
+    '--sg-color-text-tertiary': '#7f95b2',
     '--sg-color-text-placeholder': '#64748b',
-    '--sg-color-primary-hover': '#c4b5fd',
-    '--sg-color-primary-active': '#8b5cf6',
-    '--sg-color-primary-bg': 'rgba(167, 139, 250, 0.16)',
-    '--sg-shadow': '0 18px 50px rgba(8, 13, 28, 0.38)',
+    '--sg-color-primary-hover': '#7dd3fc',
+    '--sg-color-primary-active': '#0284c7',
+    '--sg-color-primary-bg': 'rgba(56, 189, 248, 0.16)',
+    '--sg-shadow': '0 18px 50px rgba(2, 8, 23, 0.42)',
   },
 }
 
 const COPY = {
   en: {
-    title: 'Project delivery cockpit',
+    title: 'Security command center',
     subtitle:
-      'Scoped ConfigProvider theme: every control below inherits a dense indigo night palette through token overrides.',
+      'A scoped SOC workspace that combines incident Table, infrastructure Tree, Timeline, Collapse panels and Drawer details under one local theme.',
     tokenLabel: 'Token override',
-    add: 'New sprint',
-    filters: { all: 'All work', active: 'In flight', blocked: 'Blocked', done: 'Shipped' },
+    action: 'Escalate critical',
+    filters: { all: 'All incidents', open: 'Open', critical: 'Critical', resolved: 'Resolved' },
     status: {
-      planned: 'Planned',
-      active: 'Active',
-      review: 'Review',
-      blocked: 'Blocked',
-      done: 'Done',
+      triage: 'Triage',
+      investigating: 'Investigating',
+      contained: 'Contained',
+      resolved: 'Resolved',
     },
-    priority: { low: 'Low', medium: 'Medium', high: 'High' },
+    severity: { low: 'Low', medium: 'Medium', high: 'High', critical: 'Critical' },
     stats: {
-      total: 'Tasks',
-      active: 'In progress',
-      blocked: 'Blocked',
-      avg: 'Average progress',
+      total: 'Signals',
+      critical: 'Critical',
+      open: 'Open cases',
+      confidence: 'Avg confidence',
+    },
+    columns: {
+      incident: 'Incident',
+      system: 'System',
+      lane: 'Lane',
+      severity: 'Severity',
+      status: 'Status',
+      confidence: 'Confidence',
+      sla: 'SLA',
+      analyst: 'Analyst',
     },
     drawer: {
-      title: 'Task details',
-      owner: 'Owner',
-      area: 'Area',
-      due: 'Due date',
+      title: 'Incident details',
+      system: 'System',
+      lane: 'Lane',
+      analyst: 'Analyst',
+      region: 'Region',
       status: 'Status',
-      priority: 'Priority',
-      progress: 'Progress',
-      markDone: 'Mark done',
+      severity: 'Severity',
+      confidence: 'Detection confidence',
+      markResolved: 'Mark resolved',
     },
+    treeTitle: 'Infrastructure tree',
+    tableTitle: 'Incident queue',
+    timelineTitle: 'Response timeline',
+    playbookTitle: 'Playbooks',
+    playbooks: [
+      {
+        key: 'contain',
+        label: 'Containment',
+        content: 'Quarantine identity sessions, rotate tokens and isolate affected workloads.',
+      },
+      {
+        key: 'notify',
+        label: 'Notification',
+        content: 'Notify owner teams, open compliance note and attach timeline evidence.',
+      },
+      {
+        key: 'recover',
+        label: 'Recovery',
+        content: 'Validate clean state, restore automation and close with post-incident notes.',
+      },
+    ],
+    timeline: [
+      'Correlation rule grouped 17 events into one incident.',
+      'Analyst assigned and scope reduced to two systems.',
+      'Containment playbook is waiting for approval.',
+    ],
   },
   ru: {
-    title: 'Тёмный cockpit проекта',
+    title: 'Центр реагирования SOC',
     subtitle:
-      'Локальный ConfigProvider переопределяет токены: все контролы ниже наследуют плотную индиго-тему без глобальной смены приложения.',
+      'Локальная SOC-витрина объединяет Table инцидентов, Tree инфраструктуры, Timeline, Collapse-панели и Drawer деталей под одной темой.',
     tokenLabel: 'Token override',
-    add: 'Новый спринт',
-    filters: { all: 'Вся работа', active: 'В работе', blocked: 'Блокеры', done: 'Доставлено' },
+    action: 'Эскалировать critical',
+    filters: { all: 'Все инциденты', open: 'Открытые', critical: 'Critical', resolved: 'Закрытые' },
     status: {
-      planned: 'План',
-      active: 'В работе',
-      review: 'Ревью',
-      blocked: 'Блокер',
-      done: 'Готово',
+      triage: 'Триаж',
+      investigating: 'Расследуется',
+      contained: 'Сдержан',
+      resolved: 'Закрыт',
     },
-    priority: { low: 'Низкий', medium: 'Средний', high: 'Высокий' },
+    severity: { low: 'Низкий', medium: 'Средний', high: 'Высокий', critical: 'Critical' },
     stats: {
-      total: 'Задач',
-      active: 'В работе',
-      blocked: 'Блокеры',
-      avg: 'Средний прогресс',
+      total: 'Сигналов',
+      critical: 'Critical',
+      open: 'Открыто',
+      confidence: 'Средняя уверенность',
+    },
+    columns: {
+      incident: 'Инцидент',
+      system: 'Система',
+      lane: 'Зона',
+      severity: 'Риск',
+      status: 'Статус',
+      confidence: 'Уверенность',
+      sla: 'SLA',
+      analyst: 'Аналитик',
     },
     drawer: {
-      title: 'Детали задачи',
-      owner: 'Владелец',
-      area: 'Направление',
-      due: 'Срок',
+      title: 'Детали инцидента',
+      system: 'Система',
+      lane: 'Зона',
+      analyst: 'Аналитик',
+      region: 'Регион',
       status: 'Статус',
-      priority: 'Приоритет',
-      progress: 'Прогресс',
-      markDone: 'Отметить готовой',
+      severity: 'Риск',
+      confidence: 'Уверенность детекта',
+      markResolved: 'Закрыть инцидент',
     },
+    treeTitle: 'Дерево инфраструктуры',
+    tableTitle: 'Очередь инцидентов',
+    timelineTitle: 'Ход реагирования',
+    playbookTitle: 'Playbooks',
+    playbooks: [
+      {
+        key: 'contain',
+        label: 'Сдерживание',
+        content: 'Закрыть identity-сессии, обновить токены и изолировать затронутые workloads.',
+      },
+      {
+        key: 'notify',
+        label: 'Уведомления',
+        content:
+          'Уведомить владельцев, открыть compliance note и приложить timeline доказательств.',
+      },
+      {
+        key: 'recover',
+        label: 'Восстановление',
+        content:
+          'Проверить чистое состояние, вернуть автоматизацию и закрыть post-incident заметками.',
+      },
+    ],
+    timeline: [
+      'Correlation rule собрал 17 событий в один инцидент.',
+      'Аналитик назначен, scope снижен до двух систем.',
+      'Containment playbook ожидает подтверждения.',
+    ],
   },
 } as const
 
 const locale = useShowcaseLocale()
 const l = computed(() => (locale.languageSwitcher === 'Язык' ? COPY.ru : COPY.en))
-const tasks = ref<ProjectTask[]>([...TASKS])
+const incidents = ref<Incident[]>([...INCIDENTS])
 const filter = ref<Filter>('all')
-const selected = ref<ProjectTask | null>(null)
+const selectedAsset = ref('all')
+const selected = ref<Incident | null>(null)
 
 const filterOptions = computed(() =>
   Object.entries(l.value.filters).map(([value, label]) => ({ value, label })),
 )
 
 const filtered = computed(() =>
-  tasks.value.filter((task) => {
-    if (filter.value === 'active') return task.status === 'active' || task.status === 'review'
-    if (filter.value === 'blocked') return task.status === 'blocked'
-    if (filter.value === 'done') return task.status === 'done'
+  incidents.value.filter((incident) => {
+    if (selectedAsset.value !== 'all' && incident.assetKey !== selectedAsset.value) return false
+    if (filter.value === 'open') return incident.status !== 'resolved'
+    if (filter.value === 'critical') return incident.severity === 'critical'
+    if (filter.value === 'resolved') return incident.status === 'resolved'
     return true
   }),
 )
 
-const statusColumns = computed(() =>
-  STATUS_ORDER.map((status) => ({
-    status,
-    tasks: filtered.value.filter((task) => task.status === status),
+const tableRows = computed(() =>
+  filtered.value.map((incident) => ({
+    id: incident.id as RowId,
+    data: { ...incident } as Record<string, unknown>,
   })),
 )
 
 const avg = computed(() =>
-  Math.round(tasks.value.reduce((sum, task) => sum + task.progress, 0) / tasks.value.length),
+  Math.round(
+    incidents.value.reduce((sum, incident) => sum + incident.confidence, 0) /
+      incidents.value.length,
+  ),
 )
-const activeCount = computed(
-  () => tasks.value.filter((task) => task.status === 'active' || task.status === 'review').length,
+const criticalCount = computed(
+  () => incidents.value.filter((incident) => incident.severity === 'critical').length,
 )
-const blockedCount = computed(() => tasks.value.filter((task) => task.status === 'blocked').length)
+const openCount = computed(
+  () => incidents.value.filter((incident) => incident.status !== 'resolved').length,
+)
 
 const metrics = computed(() => [
-  { key: 'total', label: l.value.stats.total, value: tasks.value.length, color: 'purple' },
-  { key: 'active', label: l.value.stats.active, value: activeCount.value, color: 'blue' },
-  { key: 'blocked', label: l.value.stats.blocked, value: blockedCount.value, color: 'red' },
-  { key: 'avg', label: l.value.stats.avg, value: `${avg.value}%`, color: 'green' },
+  { key: 'total', label: l.value.stats.total, value: incidents.value.length, color: 'purple' },
+  { key: 'critical', label: l.value.stats.critical, value: criticalCount.value, color: 'magenta' },
+  { key: 'open', label: l.value.stats.open, value: openCount.value, color: 'blue' },
+  { key: 'confidence', label: l.value.stats.confidence, value: `${avg.value}%`, color: 'green' },
+])
+
+const columns = computed<TableColumn[]>(() => [
+  { key: 'id', title: 'ID', width: 120, sortable: true, fixed: 'left' },
+  { key: 'title', title: l.value.columns.incident, width: 230, sortable: true },
+  { key: 'system', title: l.value.columns.system, width: 150, sortable: true },
+  { key: 'lane', title: l.value.columns.lane, width: 120, sortable: true },
+  { key: 'severity', title: l.value.columns.severity, width: 120, sortable: true },
+  { key: 'status', title: l.value.columns.status, width: 140, sortable: true },
+  { key: 'confidence', title: l.value.columns.confidence, width: 160, sortable: true },
+  { key: 'sla', title: l.value.columns.sla, width: 100, sortable: true },
+  { key: 'analyst', title: l.value.columns.analyst, width: 150, sortable: true },
 ])
 
 const drawerItems = computed(() => {
   if (!selected.value) return []
   return [
-    { label: l.value.drawer.owner, value: selected.value.owner },
-    { label: l.value.drawer.area, value: selected.value.area },
-    { label: l.value.drawer.due, value: selected.value.due },
+    { label: l.value.drawer.system, value: selected.value.system },
+    { label: l.value.drawer.lane, value: selected.value.lane },
+    { label: l.value.drawer.analyst, value: selected.value.analyst },
+    { label: l.value.drawer.region, value: selected.value.region },
     { label: l.value.drawer.status, value: l.value.status[selected.value.status] },
-    { label: l.value.drawer.priority, value: l.value.priority[selected.value.priority] },
+    { label: l.value.drawer.severity, value: l.value.severity[selected.value.severity] },
   ]
 })
 
-function markDone() {
+const playbookItems = computed(() =>
+  l.value.playbooks.map((item) => ({
+    key: item.key,
+    label: item.label,
+    content: item.content,
+  })),
+)
+
+const timelineItems = computed(() =>
+  l.value.timeline.map((content, index) => ({
+    content,
+    color: index === 2 ? 'orange' : 'blue',
+  })),
+)
+
+function selectAsset(keys: (string | number)[]) {
+  if (keys.length) selectedAsset.value = String(keys[0])
+}
+
+function selectIncident(_id: RowId, row: Record<string, unknown>) {
+  selected.value = row as unknown as Incident
+}
+
+function statusLabel(value: unknown) {
+  return l.value.status[value as Status]
+}
+
+function severityLabel(value: unknown) {
+  return l.value.severity[value as Severity]
+}
+
+function statusColor(value: unknown) {
+  return STATUS_COLOR[value as Status]
+}
+
+function severityColor(value: unknown) {
+  return SEVERITY_COLOR[value as Severity]
+}
+
+function markResolved() {
   if (!selected.value) return
   const id = selected.value.id
-  tasks.value = tasks.value.map((task) =>
-    task.id === id ? { ...task, status: 'done', progress: 100 } : task,
+  incidents.value = incidents.value.map((incident) =>
+    incident.id === id ? { ...incident, status: 'resolved', confidence: 100 } : incident,
   )
-  selected.value = { ...selected.value, status: 'done', progress: 100 }
+  selected.value = { ...selected.value, status: 'resolved', confidence: 100 }
 }
 </script>
 
 <template>
-  <SgConfigProvider :theme="PROJECT_TRACKER_THEME">
+  <SgConfigProvider :theme="COMMAND_CENTER_THEME">
     <div class="sc-content pt-theme" style="flex: 1">
       <section class="pt-hero">
         <div>
@@ -276,7 +448,7 @@ function markDone() {
           <h2>{{ l.title }}</h2>
           <p>{{ l.subtitle }}</p>
         </div>
-        <SgButton type="primary">{{ l.add }}</SgButton>
+        <SgButton type="primary">{{ l.action }}</SgButton>
       </section>
 
       <div class="pt-toolbar">
@@ -287,35 +459,69 @@ function markDone() {
         <div v-for="metric of metrics" :key="metric.key" class="pt-metric">
           <SgTag :color="metric.color">{{ metric.label }}</SgTag>
           <strong>{{ metric.value }}</strong>
-          <SgProgress v-if="metric.key === 'avg'" :percent="avg" :show-info="false" />
+          <SgProgress v-if="metric.key === 'confidence'" :percent="avg" :show-info="false" />
         </div>
       </section>
 
-      <section class="pt-board">
-        <div v-for="column of statusColumns" :key="column.status" class="pt-column">
-          <div class="pt-column-head">
-            <SgTag :color="STATUS_COLOR[column.status]">{{ l.status[column.status] }}</SgTag>
-            <span>{{ column.tasks.length }}</span>
+      <section class="pt-workbench">
+        <div class="pt-panel pt-tree-panel">
+          <div class="pt-panel-head">
+            <strong>{{ l.treeTitle }}</strong>
+            <SgTag>{{ filtered.length }}</SgTag>
           </div>
-          <div class="pt-column-body">
-            <SgButton
-              v-for="task of column.tasks"
-              :key="task.id"
-              class="pt-task-card"
-              @click="selected = task"
-            >
-              <span class="pt-task-id">{{ task.id }}</span>
-              <strong>{{ task.title }}</strong>
-              <span>{{ task.owner }}</span>
-              <SgProgress :percent="task.progress" :show-info="false" />
-              <span class="pt-task-meta">
-                <SgTag :color="PRIORITY_COLOR[task.priority]">{{
-                  l.priority[task.priority]
-                }}</SgTag>
-                <span>{{ task.due }}</span>
-              </span>
-            </SgButton>
+          <SgTree
+            :tree-data="ASSET_TREE"
+            :selected-keys="[selectedAsset]"
+            default-expand-all
+            @select="selectAsset"
+          />
+        </div>
+
+        <div class="pt-panel pt-main-panel">
+          <div class="pt-panel-head">
+            <strong>{{ l.tableTitle }}</strong>
+            <SgTag color="blue">{{ filter }}</SgTag>
           </div>
+          <SgTable
+            :columns="columns"
+            :data="tableRows"
+            :page-size="6"
+            searchable
+            striped
+            bordered
+            highlight-on-hover
+            @row-click="selectIncident"
+          >
+            <template #cell="{ column, value }">
+              <SgTag v-if="column.key === 'severity'" :color="severityColor(value)">
+                {{ severityLabel(value) }}
+              </SgTag>
+              <SgTag v-else-if="column.key === 'status'" :color="statusColor(value)">
+                {{ statusLabel(value) }}
+              </SgTag>
+              <SgProgress
+                v-else-if="column.key === 'confidence'"
+                :percent="Number(value)"
+                :show-info="false"
+              />
+              <template v-else>{{ value }}</template>
+            </template>
+          </SgTable>
+        </div>
+      </section>
+
+      <section class="pt-side-grid">
+        <div class="pt-panel">
+          <div class="pt-panel-head">
+            <strong>{{ l.timelineTitle }}</strong>
+          </div>
+          <SgTimeline :items="timelineItems" pending />
+        </div>
+        <div class="pt-panel">
+          <div class="pt-panel-head">
+            <strong>{{ l.playbookTitle }}</strong>
+          </div>
+          <SgCollapse :items="playbookItems" default-active-key="contain" />
         </div>
       </section>
 
@@ -329,11 +535,11 @@ function markDone() {
         <div v-if="selected" class="pt-drawer-body">
           <SgDescriptions :items="drawerItems" :column="1" size="small" />
           <div>
-            <div class="pt-progress-label">{{ l.drawer.progress }}</div>
-            <SgProgress :percent="selected.progress" />
+            <div class="pt-progress-label">{{ l.drawer.confidence }}</div>
+            <SgProgress :percent="selected.confidence" />
           </div>
-          <SgButton type="primary" :disabled="selected.status === 'done'" @click="markDone">
-            {{ l.drawer.markDone }}
+          <SgButton type="primary" :disabled="selected.status === 'resolved'" @click="markResolved">
+            {{ l.drawer.markResolved }}
           </SgButton>
         </div>
       </SgDrawer>

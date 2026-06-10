@@ -1,249 +1,403 @@
 import { useMemo, useState } from 'react'
 import {
   Button,
+  Collapse,
   ConfigProvider,
   Descriptions,
   Drawer,
   Progress,
   Segmented,
+  Table,
   Tag,
+  Timeline,
+  Tree,
 } from '@skygraph/react'
+import type { TableColumn, TreeNodeData } from '@skygraph/react'
 import { useShowcaseLocale } from '../_shared'
 
-type Status = 'planned' | 'active' | 'review' | 'blocked' | 'done'
-type Priority = 'low' | 'medium' | 'high'
-type Filter = 'all' | 'active' | 'blocked' | 'done'
+type Status = 'triage' | 'investigating' | 'contained' | 'resolved'
+type Severity = 'low' | 'medium' | 'high' | 'critical'
+type Filter = 'all' | 'open' | 'critical' | 'resolved'
 
-interface ProjectTask {
+interface Incident {
   id: string
   title: string
-  owner: string
-  area: string
+  system: string
+  lane: 'Edge' | 'Identity' | 'Data' | 'Platform'
+  analyst: string
   status: Status
-  priority: Priority
-  progress: number
-  due: string
+  severity: Severity
+  confidence: number
+  sla: string
+  region: string
+  assetKey: string
 }
 
-const TASKS: ProjectTask[] = [
+const INCIDENTS: Incident[] = [
   {
-    id: 'PT-101',
-    title: 'Billing export',
-    owner: 'Nina Petrova',
-    area: 'Finance',
-    status: 'active',
-    priority: 'high',
-    progress: 68,
-    due: 'Jun 12',
+    id: 'SOC-1042',
+    title: 'Impossible travel sign-in',
+    system: 'SSO gateway',
+    lane: 'Identity',
+    analyst: 'Nina Petrova',
+    status: 'investigating',
+    severity: 'critical',
+    confidence: 88,
+    sla: '18 min',
+    region: 'EU',
+    assetKey: 'identity',
   },
   {
-    id: 'PT-102',
-    title: 'Customer import cleanup',
-    owner: 'Sara Vogel',
-    area: 'CRM',
-    status: 'review',
-    priority: 'medium',
-    progress: 92,
-    due: 'Jun 09',
+    id: 'SOC-1043',
+    title: 'Suspicious data export',
+    system: 'Warehouse',
+    lane: 'Data',
+    analyst: 'Sara Vogel',
+    status: 'triage',
+    severity: 'high',
+    confidence: 73,
+    sla: '42 min',
+    region: 'US',
+    assetKey: 'data',
   },
   {
-    id: 'PT-103',
-    title: 'Mobile onboarding copy',
-    owner: 'Mia Rossi',
-    area: 'Growth',
-    status: 'planned',
-    priority: 'low',
-    progress: 18,
-    due: 'Jun 20',
+    id: 'SOC-1044',
+    title: 'WAF anomaly burst',
+    system: 'Public API',
+    lane: 'Edge',
+    analyst: 'Mia Rossi',
+    status: 'contained',
+    severity: 'medium',
+    confidence: 64,
+    sla: '1 h',
+    region: 'APAC',
+    assetKey: 'edge',
   },
   {
-    id: 'PT-104',
-    title: 'Warehouse stock alerts',
-    owner: 'Omar Said',
-    area: 'Ops',
-    status: 'blocked',
-    priority: 'high',
-    progress: 41,
-    due: 'Jun 10',
+    id: 'SOC-1045',
+    title: 'Privileged token reuse',
+    system: 'Kubernetes',
+    lane: 'Platform',
+    analyst: 'Omar Said',
+    status: 'investigating',
+    severity: 'critical',
+    confidence: 91,
+    sla: '9 min',
+    region: 'EU',
+    assetKey: 'platform',
   },
   {
-    id: 'PT-105',
-    title: 'Role audit checklist',
-    owner: 'Alex Kim',
-    area: 'Security',
-    status: 'done',
-    priority: 'medium',
-    progress: 100,
-    due: 'Jun 07',
+    id: 'SOC-1046',
+    title: 'Endpoint beacon pattern',
+    system: 'Fleet agents',
+    lane: 'Platform',
+    analyst: 'Alex Kim',
+    status: 'resolved',
+    severity: 'medium',
+    confidence: 100,
+    sla: 'closed',
+    region: 'US',
+    assetKey: 'platform',
   },
   {
-    id: 'PT-106',
-    title: 'Dashboard drill-down QA',
-    owner: 'Emma Tang',
-    area: 'Analytics',
-    status: 'active',
-    priority: 'medium',
-    progress: 56,
-    due: 'Jun 15',
+    id: 'SOC-1047',
+    title: 'DNS tunneling candidate',
+    system: 'Resolver mesh',
+    lane: 'Edge',
+    analyst: 'Emma Tang',
+    status: 'triage',
+    severity: 'low',
+    confidence: 31,
+    sla: '2 h',
+    region: 'LATAM',
+    assetKey: 'edge',
   },
 ]
 
-const STATUS_ORDER: Status[] = ['planned', 'active', 'review', 'blocked', 'done']
-
 const STATUS_COLOR: Record<Status, string> = {
-  planned: 'default',
-  active: 'blue',
-  review: 'purple',
-  blocked: 'red',
-  done: 'green',
+  triage: 'orange',
+  investigating: 'blue',
+  contained: 'purple',
+  resolved: 'green',
 }
 
-const PRIORITY_COLOR: Record<Priority, string> = {
+const SEVERITY_COLOR: Record<Severity, string> = {
   low: 'default',
   medium: 'orange',
   high: 'red',
+  critical: 'magenta',
 }
 
-const PROJECT_TRACKER_THEME = {
+const ASSET_TREE: TreeNodeData[] = [
+  {
+    key: 'all',
+    title: 'Security estate',
+    children: [
+      { key: 'edge', title: 'Edge perimeter' },
+      { key: 'identity', title: 'Identity fabric' },
+      { key: 'data', title: 'Data platforms' },
+      { key: 'platform', title: 'Runtime platform' },
+    ],
+  },
+]
+
+const COMMAND_CENTER_THEME = {
   mode: 'dark',
   token: {
-    colorPrimary: '#a78bfa',
-    colorSuccess: '#34d399',
-    colorWarning: '#fbbf24',
-    colorError: '#fb7185',
-    colorText: '#e5e7eb',
-    colorBg: '#101827',
-    colorBorder: '#334155',
+    colorPrimary: '#38bdf8',
+    colorSuccess: '#22c55e',
+    colorWarning: '#f59e0b',
+    colorError: '#f43f5e',
+    colorText: '#e2e8f0',
+    colorBg: '#08111f',
+    colorBorder: '#1e3a5f',
     borderRadius: 14,
     fontSize: 14,
     fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
   },
   cssVars: {
-    '--sg-color-bg': '#101827',
-    '--sg-color-bg-secondary': '#162033',
-    '--sg-color-bg-elevated': '#1d2940',
-    '--sg-color-bg-container': '#162033',
-    '--sg-color-bg-hover': '#24314f',
-    '--sg-color-border': '#334155',
-    '--sg-color-border-secondary': '#26344f',
-    '--sg-color-text-secondary': '#b7c2d8',
-    '--sg-color-text-tertiary': '#7f8ca5',
+    '--sg-color-bg': '#08111f',
+    '--sg-color-bg-secondary': '#0d1b2f',
+    '--sg-color-bg-elevated': '#12233b',
+    '--sg-color-bg-container': '#0d1b2f',
+    '--sg-color-bg-hover': '#17314f',
+    '--sg-color-border': '#1e3a5f',
+    '--sg-color-border-secondary': '#18304d',
+    '--sg-color-text-secondary': '#b6c7dd',
+    '--sg-color-text-tertiary': '#7f95b2',
     '--sg-color-text-placeholder': '#64748b',
-    '--sg-color-primary-hover': '#c4b5fd',
-    '--sg-color-primary-active': '#8b5cf6',
-    '--sg-color-primary-bg': 'rgba(167, 139, 250, 0.16)',
-    '--sg-shadow': '0 18px 50px rgba(8, 13, 28, 0.38)',
+    '--sg-color-primary-hover': '#7dd3fc',
+    '--sg-color-primary-active': '#0284c7',
+    '--sg-color-primary-bg': 'rgba(56, 189, 248, 0.16)',
+    '--sg-shadow': '0 18px 50px rgba(2, 8, 23, 0.42)',
   },
 } as const
 
 const COPY = {
   en: {
-    title: 'Project delivery cockpit',
+    title: 'Security command center',
     subtitle:
-      'Scoped ConfigProvider theme: every control below inherits a dense indigo night palette through token overrides.',
+      'A scoped SOC workspace that combines incident Table, infrastructure Tree, Timeline, Collapse panels and Drawer details under one local theme.',
     tokenLabel: 'Token override',
-    add: 'New sprint',
-    filters: { all: 'All work', active: 'In flight', blocked: 'Blocked', done: 'Shipped' },
+    action: 'Escalate critical',
+    filters: { all: 'All incidents', open: 'Open', critical: 'Critical', resolved: 'Resolved' },
     status: {
-      planned: 'Planned',
-      active: 'Active',
-      review: 'Review',
-      blocked: 'Blocked',
-      done: 'Done',
+      triage: 'Triage',
+      investigating: 'Investigating',
+      contained: 'Contained',
+      resolved: 'Resolved',
     },
-    priority: { low: 'Low', medium: 'Medium', high: 'High' },
+    severity: { low: 'Low', medium: 'Medium', high: 'High', critical: 'Critical' },
     stats: {
-      total: 'Tasks',
-      active: 'In progress',
-      blocked: 'Blocked',
-      avg: 'Average progress',
+      total: 'Signals',
+      critical: 'Critical',
+      open: 'Open cases',
+      confidence: 'Avg confidence',
+    },
+    columns: {
+      incident: 'Incident',
+      system: 'System',
+      lane: 'Lane',
+      severity: 'Severity',
+      status: 'Status',
+      confidence: 'Confidence',
+      sla: 'SLA',
+      analyst: 'Analyst',
     },
     drawer: {
-      title: 'Task details',
-      owner: 'Owner',
-      area: 'Area',
-      due: 'Due date',
+      title: 'Incident details',
+      system: 'System',
+      lane: 'Lane',
+      analyst: 'Analyst',
+      region: 'Region',
       status: 'Status',
-      priority: 'Priority',
-      progress: 'Progress',
-      markDone: 'Mark done',
+      severity: 'Severity',
+      confidence: 'Detection confidence',
+      markResolved: 'Mark resolved',
     },
-    open: 'Open task',
+    treeTitle: 'Infrastructure tree',
+    tableTitle: 'Incident queue',
+    timelineTitle: 'Response timeline',
+    playbookTitle: 'Playbooks',
+    playbooks: [
+      {
+        key: 'contain',
+        label: 'Containment',
+        content: 'Quarantine identity sessions, rotate tokens and isolate affected workloads.',
+      },
+      {
+        key: 'notify',
+        label: 'Notification',
+        content: 'Notify owner teams, open compliance note and attach timeline evidence.',
+      },
+      {
+        key: 'recover',
+        label: 'Recovery',
+        content: 'Validate clean state, restore automation and close with post-incident notes.',
+      },
+    ],
+    timeline: [
+      'Correlation rule grouped 17 events into one incident.',
+      'Analyst assigned and scope reduced to two systems.',
+      'Containment playbook is waiting for approval.',
+    ],
   },
   ru: {
-    title: 'Тёмный cockpit проекта',
+    title: 'Центр реагирования SOC',
     subtitle:
-      'Локальный ConfigProvider переопределяет токены: все контролы ниже наследуют плотную индиго-тему без глобальной смены приложения.',
+      'Локальная SOC-витрина объединяет Table инцидентов, Tree инфраструктуры, Timeline, Collapse-панели и Drawer деталей под одной темой.',
     tokenLabel: 'Token override',
-    add: 'Новый спринт',
-    filters: { all: 'Вся работа', active: 'В работе', blocked: 'Блокеры', done: 'Доставлено' },
+    action: 'Эскалировать critical',
+    filters: { all: 'Все инциденты', open: 'Открытые', critical: 'Critical', resolved: 'Закрытые' },
     status: {
-      planned: 'План',
-      active: 'В работе',
-      review: 'Ревью',
-      blocked: 'Блокер',
-      done: 'Готово',
+      triage: 'Триаж',
+      investigating: 'Расследуется',
+      contained: 'Сдержан',
+      resolved: 'Закрыт',
     },
-    priority: { low: 'Низкий', medium: 'Средний', high: 'Высокий' },
+    severity: { low: 'Низкий', medium: 'Средний', high: 'Высокий', critical: 'Critical' },
     stats: {
-      total: 'Задач',
-      active: 'В работе',
-      blocked: 'Блокеры',
-      avg: 'Средний прогресс',
+      total: 'Сигналов',
+      critical: 'Critical',
+      open: 'Открыто',
+      confidence: 'Средняя уверенность',
+    },
+    columns: {
+      incident: 'Инцидент',
+      system: 'Система',
+      lane: 'Зона',
+      severity: 'Риск',
+      status: 'Статус',
+      confidence: 'Уверенность',
+      sla: 'SLA',
+      analyst: 'Аналитик',
     },
     drawer: {
-      title: 'Детали задачи',
-      owner: 'Владелец',
-      area: 'Направление',
-      due: 'Срок',
+      title: 'Детали инцидента',
+      system: 'Система',
+      lane: 'Зона',
+      analyst: 'Аналитик',
+      region: 'Регион',
       status: 'Статус',
-      priority: 'Приоритет',
-      progress: 'Прогресс',
-      markDone: 'Отметить готовой',
+      severity: 'Риск',
+      confidence: 'Уверенность детекта',
+      markResolved: 'Закрыть инцидент',
     },
-    open: 'Открыть',
+    treeTitle: 'Дерево инфраструктуры',
+    tableTitle: 'Очередь инцидентов',
+    timelineTitle: 'Ход реагирования',
+    playbookTitle: 'Playbooks',
+    playbooks: [
+      {
+        key: 'contain',
+        label: 'Сдерживание',
+        content: 'Закрыть identity-сессии, обновить токены и изолировать затронутые workloads.',
+      },
+      {
+        key: 'notify',
+        label: 'Уведомления',
+        content:
+          'Уведомить владельцев, открыть compliance note и приложить timeline доказательств.',
+      },
+      {
+        key: 'recover',
+        label: 'Восстановление',
+        content:
+          'Проверить чистое состояние, вернуть автоматизацию и закрыть post-incident заметками.',
+      },
+    ],
+    timeline: [
+      'Correlation rule собрал 17 событий в один инцидент.',
+      'Аналитик назначен, scope снижен до двух систем.',
+      'Containment playbook ожидает подтверждения.',
+    ],
   },
 } as const
 
 export function ProjectTrackerApp() {
   const locale = useShowcaseLocale()
   const l = locale.languageSwitcher === 'Язык' ? COPY.ru : COPY.en
-  const [tasks, setTasks] = useState<ProjectTask[]>(TASKS)
+  const [incidents, setIncidents] = useState<Incident[]>(INCIDENTS)
   const [filter, setFilter] = useState<Filter>('all')
-  const [selected, setSelected] = useState<ProjectTask | null>(null)
+  const [selectedAsset, setSelectedAsset] = useState('all')
+  const [selected, setSelected] = useState<Incident | null>(null)
 
   const filtered = useMemo(() => {
-    return tasks.filter((task) => {
-      if (filter === 'active') return task.status === 'active' || task.status === 'review'
-      if (filter === 'blocked') return task.status === 'blocked'
-      if (filter === 'done') return task.status === 'done'
+    return incidents.filter((incident) => {
+      if (selectedAsset !== 'all' && incident.assetKey !== selectedAsset) return false
+      if (filter === 'open') return incident.status !== 'resolved'
+      if (filter === 'critical') return incident.severity === 'critical'
+      if (filter === 'resolved') return incident.status === 'resolved'
       return true
     })
-  }, [filter, tasks])
+  }, [filter, incidents, selectedAsset])
 
-  const statusColumns = STATUS_ORDER.map((status) => ({
-    status,
-    tasks: filtered.filter((task) => task.status === status),
-  }))
+  const tableRows = useMemo(
+    () =>
+      filtered.map((incident) => ({
+        id: incident.id,
+        data: incident as unknown as Record<string, unknown>,
+      })),
+    [filtered],
+  )
 
-  const avg = Math.round(tasks.reduce((sum, task) => sum + task.progress, 0) / tasks.length)
-  const activeCount = tasks.filter(
-    (task) => task.status === 'active' || task.status === 'review',
-  ).length
-  const blockedCount = tasks.filter((task) => task.status === 'blocked').length
+  const avg = Math.round(
+    incidents.reduce((sum, incident) => sum + incident.confidence, 0) / incidents.length,
+  )
+  const criticalCount = incidents.filter((incident) => incident.severity === 'critical').length
+  const openCount = incidents.filter((incident) => incident.status !== 'resolved').length
 
-  const markDone = () => {
+  const columns = useMemo<TableColumn[]>(
+    () => [
+      { key: 'id', title: 'ID', width: 120, sortable: true, fixed: 'left' },
+      { key: 'title', title: l.columns.incident, width: 230, ellipsis: true },
+      { key: 'system', title: l.columns.system, width: 150, sortable: true },
+      { key: 'lane', title: l.columns.lane, width: 120, sortable: true },
+      {
+        key: 'severity',
+        title: l.columns.severity,
+        width: 120,
+        sortable: true,
+        render: (value) => (
+          <Tag color={SEVERITY_COLOR[value as Severity]}>{l.severity[value as Severity]}</Tag>
+        ),
+      },
+      {
+        key: 'status',
+        title: l.columns.status,
+        width: 140,
+        sortable: true,
+        render: (value) => (
+          <Tag color={STATUS_COLOR[value as Status]}>{l.status[value as Status]}</Tag>
+        ),
+      },
+      {
+        key: 'confidence',
+        title: l.columns.confidence,
+        width: 160,
+        sortable: true,
+        render: (value) => <Progress percent={Number(value)} showInfo={false} />,
+      },
+      { key: 'sla', title: l.columns.sla, width: 100, sortable: true },
+      { key: 'analyst', title: l.columns.analyst, width: 150, sortable: true },
+    ],
+    [l],
+  )
+
+  const markResolved = () => {
     if (!selected) return
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === selected.id ? { ...task, status: 'done', progress: 100 } : task,
+    setIncidents((prev) =>
+      prev.map((incident) =>
+        incident.id === selected.id
+          ? { ...incident, status: 'resolved', confidence: 100 }
+          : incident,
       ),
     )
-    setSelected({ ...selected, status: 'done', progress: 100 })
+    setSelected({ ...selected, status: 'resolved', confidence: 100 })
   }
 
   return (
-    <ConfigProvider theme={PROJECT_TRACKER_THEME}>
+    <ConfigProvider theme={COMMAND_CENTER_THEME}>
       <div className="sc-content pt-theme" style={{ flex: 1 }}>
         <section className="pt-hero">
           <div>
@@ -251,7 +405,7 @@ export function ProjectTrackerApp() {
             <h2>{l.title}</h2>
             <p>{l.subtitle}</p>
           </div>
-          <Button type="primary">{l.add}</Button>
+          <Button type="primary">{l.action}</Button>
         </section>
 
         <div className="pt-toolbar">
@@ -264,42 +418,76 @@ export function ProjectTrackerApp() {
 
         <section className="pt-metrics">
           {[
-            { key: 'total', label: l.stats.total, value: tasks.length, color: 'purple' },
-            { key: 'active', label: l.stats.active, value: activeCount, color: 'blue' },
-            { key: 'blocked', label: l.stats.blocked, value: blockedCount, color: 'red' },
-            { key: 'avg', label: l.stats.avg, value: `${avg}%`, color: 'green' },
+            { key: 'total', label: l.stats.total, value: incidents.length, color: 'purple' },
+            { key: 'critical', label: l.stats.critical, value: criticalCount, color: 'magenta' },
+            { key: 'open', label: l.stats.open, value: openCount, color: 'blue' },
+            { key: 'confidence', label: l.stats.confidence, value: `${avg}%`, color: 'green' },
           ].map((metric) => (
             <div className="pt-metric" key={metric.key}>
               <Tag color={metric.color}>{metric.label}</Tag>
               <strong>{metric.value}</strong>
-              {metric.key === 'avg' && <Progress percent={avg} showInfo={false} />}
+              {metric.key === 'confidence' && <Progress percent={avg} showInfo={false} />}
             </div>
           ))}
         </section>
 
-        <section className="pt-board">
-          {statusColumns.map(({ status, tasks: columnTasks }) => (
-            <div className="pt-column" key={status}>
-              <div className="pt-column-head">
-                <Tag color={STATUS_COLOR[status]}>{l.status[status]}</Tag>
-                <span>{columnTasks.length}</span>
-              </div>
-              <div className="pt-column-body">
-                {columnTasks.map((task) => (
-                  <Button key={task.id} className="pt-task-card" onClick={() => setSelected(task)}>
-                    <span className="pt-task-id">{task.id}</span>
-                    <strong>{task.title}</strong>
-                    <span>{task.owner}</span>
-                    <Progress percent={task.progress} showInfo={false} />
-                    <span className="pt-task-meta">
-                      <Tag color={PRIORITY_COLOR[task.priority]}>{l.priority[task.priority]}</Tag>
-                      <span>{task.due}</span>
-                    </span>
-                  </Button>
-                ))}
-              </div>
+        <section className="pt-workbench">
+          <div className="pt-panel pt-tree-panel">
+            <div className="pt-panel-head">
+              <strong>{l.treeTitle}</strong>
+              <Tag>{filtered.length}</Tag>
             </div>
-          ))}
+            <Tree
+              treeData={ASSET_TREE}
+              defaultExpandAll
+              selectedKeys={[selectedAsset]}
+              onSelect={(keys) => {
+                if (keys.length) setSelectedAsset(String(keys[0]))
+              }}
+            />
+          </div>
+
+          <div className="pt-panel pt-main-panel">
+            <div className="pt-panel-head">
+              <strong>{l.tableTitle}</strong>
+              <Tag color="blue">{filter}</Tag>
+            </div>
+            <Table
+              columns={columns}
+              data={tableRows}
+              pageSize={6}
+              showPagination
+              searchable
+              striped
+              bordered
+              highlightOnHover
+              onRowClick={(_, data) => setSelected(data as unknown as Incident)}
+            />
+          </div>
+        </section>
+
+        <section className="pt-side-grid">
+          <div className="pt-panel">
+            <div className="pt-panel-head">
+              <strong>{l.timelineTitle}</strong>
+            </div>
+            <Timeline
+              items={l.timeline.map((item, index) => ({
+                children: item,
+                color: index === 2 ? 'orange' : 'blue',
+              }))}
+              pending
+            />
+          </div>
+          <div className="pt-panel">
+            <div className="pt-panel-head">
+              <strong>{l.playbookTitle}</strong>
+            </div>
+            <Collapse
+              items={l.playbooks.map((item) => ({ ...item, children: item.content }))}
+              defaultActiveKey="contain"
+            />
+          </div>
         </section>
 
         <Drawer
@@ -315,9 +503,10 @@ export function ProjectTrackerApp() {
                 column={1}
                 size="small"
                 items={[
-                  { label: l.drawer.owner, children: selected.owner },
-                  { label: l.drawer.area, children: selected.area },
-                  { label: l.drawer.due, children: selected.due },
+                  { label: l.drawer.system, children: selected.system },
+                  { label: l.drawer.lane, children: selected.lane },
+                  { label: l.drawer.analyst, children: selected.analyst },
+                  { label: l.drawer.region, children: selected.region },
                   {
                     label: l.drawer.status,
                     children: (
@@ -325,21 +514,25 @@ export function ProjectTrackerApp() {
                     ),
                   },
                   {
-                    label: l.drawer.priority,
+                    label: l.drawer.severity,
                     children: (
-                      <Tag color={PRIORITY_COLOR[selected.priority]}>
-                        {l.priority[selected.priority]}
+                      <Tag color={SEVERITY_COLOR[selected.severity]}>
+                        {l.severity[selected.severity]}
                       </Tag>
                     ),
                   },
                 ]}
               />
               <div>
-                <div className="pt-progress-label">{l.drawer.progress}</div>
-                <Progress percent={selected.progress} />
+                <div className="pt-progress-label">{l.drawer.confidence}</div>
+                <Progress percent={selected.confidence} />
               </div>
-              <Button type="primary" onClick={markDone} disabled={selected.status === 'done'}>
-                {l.drawer.markDone}
+              <Button
+                type="primary"
+                onClick={markResolved}
+                disabled={selected.status === 'resolved'}
+              >
+                {l.drawer.markResolved}
               </Button>
             </div>
           )}

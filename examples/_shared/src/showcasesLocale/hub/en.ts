@@ -98,9 +98,9 @@ export const hubLocaleEn: HubLocale = {
         'Users, audit log, role transfer, API keys, sessions and system settings across one admin panel.',
     },
     'project-tracker': {
-      title: 'Project Tracker',
+      title: 'Security Command Center',
       description:
-        'Compact delivery board with task table, progress KPIs, status filters and a detail drawer. No graph canvas.',
+        'Security operations console with incident Table, infrastructure Tree, response Timeline, Collapse playbooks and a detail Drawer.',
     },
     forms: {
       title: 'Forms Playground',

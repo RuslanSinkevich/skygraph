@@ -32,6 +32,12 @@ export const SHOWCASE_METAS: ShowcaseMeta[] = [
     ],
   },
   {
+    key: 'project-tracker',
+    icon: '🛡️',
+    category: 'data',
+    tags: ['Table', 'Tree', 'Timeline', 'Collapse', 'Drawer', 'Segmented', 'Progress'],
+  },
+  {
     key: 'dashboard',
     icon: '📈',
     category: 'data',
@@ -94,12 +100,6 @@ export const SHOWCASE_METAS: ShowcaseMeta[] = [
     icon: '🔐',
     category: 'productivity',
     tags: ['Transfer', 'Table', 'Drawer', 'Collapse', 'Switch', 'Popconfirm', 'Tabs'],
-  },
-  {
-    key: 'project-tracker',
-    icon: '✅',
-    category: 'productivity',
-    tags: ['Table', 'Progress', 'Drawer', 'Segmented', 'Tasks', 'Filters'],
   },
   {
     key: 'forms',

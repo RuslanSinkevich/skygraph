@@ -65,17 +65,17 @@ const glassScope = {
 
 <template>
   <div style="display: flex; gap: 16px; flex-wrap: wrap">
-    <div :style="greenScope">
+    <div :style="greenScope" data-sg-theme="light">
       <span :style="{ ...labelBase, color: '#047857' }">{{ t.green }}</span>
       <SgProgress :percent="35" />
       <SgProgress :percent="100" />
     </div>
-    <div :style="darkScope">
+    <div :style="darkScope" data-sg-theme="dark">
       <span :style="{ ...labelBase, color: '#94a3b8' }">{{ t.dark }}</span>
       <SgProgress :percent="55" status="active" />
       <SgProgress :percent="100" />
     </div>
-    <div :style="glassScope">
+    <div :style="glassScope" data-sg-theme="light">
       <span :style="{ ...labelBase, color: '#1e1b4b' }">{{ t.glass }}</span>
       <SgProgress :percent="75" />
       <SgProgress :percent="100" />
