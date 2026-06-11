@@ -97,16 +97,16 @@ const skeletonCssVars = computed<CssVarDef[]>(() => [
       <WithAvatarSkeleton />
     </DemoBox>
 
+    <DemoBox :title="t.demoRowsTitle" :description="t.demoRowsDesc" :code="RowsSource">
+      <RowsSkeleton />
+    </DemoBox>
+
     <DemoBox :title="t.demoNoTitleTitle" :description="t.demoNoTitleDesc" :code="NoTitleSource">
       <NoTitleSkeleton />
     </DemoBox>
 
     <DemoBox :title="t.demoLoadingTitle" :description="t.demoLoadingDesc" :code="LoadingSource">
       <LoadingSkeleton />
-    </DemoBox>
-
-    <DemoBox :title="t.demoRowsTitle" :description="t.demoRowsDesc" :code="RowsSource">
-      <RowsSkeleton />
     </DemoBox>
 
     <DemoBox :title="t.demoCardTitle" :description="t.demoCardDesc" :code="CardSource">

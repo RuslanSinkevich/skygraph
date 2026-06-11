@@ -88,19 +88,19 @@ const emptyCssVars = computed<CssVarDef[]>(() => [
     </DemoBox>
 
     <DemoBox
-      :title="t.demoCustomImageTitle"
-      :description="t.demoCustomImageDesc"
-      :code="CustomImageSource"
-    >
-      <CustomImageEmpty />
-    </DemoBox>
-
-    <DemoBox
       :title="t.demoWithActionsTitle"
       :description="t.demoWithActionsDesc"
       :code="WithActionsSource"
     >
       <WithActionsEmpty />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoCustomImageTitle"
+      :description="t.demoCustomImageDesc"
+      :code="CustomImageSource"
+    >
+      <CustomImageEmpty />
     </DemoBox>
 
     <DemoBox :title="t.demoInCardTitle" :description="t.demoInCardDesc" :code="InCardSource">

@@ -1,79 +1,71 @@
+import type { CSSProperties } from 'react'
 import { notification, Button } from '@skygraph/react'
 import { useDemoStrings } from '../../i18n'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import { TokenScopeCards, type TokenScopeKey } from '../_shared/TokenScopeCards'
 
 /**
- * Live toasts render in a portal at the document root, so a scoped wrapper
- * can't restyle them. Two complementary views:
- *   1. A static preview that renders the real `.sg-notification` markup inside
- *      each token scope so you can compare the cascade side by side.
- *   2. Buttons that fire genuine toasts, each carrying a per-toast token
- *      override via the new `style` config (CSS custom properties).
+ * Notification cards render in a global container, so the demo passes the
+ * scoped recipe as per-toast CSS variables. Click each card's button to see
+ * the real popup styled with that recipe.
  */
 const STRINGS = {
   en: {
     title: 'Backup complete',
     desc: 'Tint follows --sg-color-success.',
-    fire: 'Fire toast',
+    fire: 'Open styled toast',
   },
   ru: {
     title: 'Бэкап завершён',
     desc: 'Оттенок следует за --sg-color-success.',
-    fire: 'Показать тост',
+    fire: 'Открыть styled toast',
   },
 } as const
 
-const RECIPES = [
-  { key: 'brand', label: 'Brand green', accent: '#059669' },
-  { key: 'dark', label: 'Mint', accent: '#34d399' },
-  { key: 'glass', label: 'Indigo', accent: '#6366f1' },
-] as const
-
-function FauxToast({ title, desc }: { title: string; desc: string }) {
-  return (
-    <div
-      className="sg-notification sg-notification-success"
-      style={{ position: 'static', animation: 'none', minWidth: 200 }}
-    >
-      <span className="sg-notification-icon">✓</span>
-      <div className="sg-notification-content">
-        <div className="sg-notification-message">{title}</div>
-        <div className="sg-notification-description">{desc}</div>
-      </div>
-    </div>
-  )
+const TOAST_SCOPE: Record<TokenScopeKey, CSSProperties> = {
+  brand: {
+    ['--sg-color-success' as never]: '#059669',
+    ['--sg-color-success-bg' as never]: '#d1fae5',
+  },
+  dark: {
+    ['--sg-color-bg-elevated' as never]: '#1f2937',
+    ['--sg-color-border-secondary' as never]: '#475569',
+    ['--sg-color-text' as never]: '#f8fafc',
+    ['--sg-color-text-secondary' as never]: '#cbd5e1',
+    ['--sg-color-text-tertiary' as never]: '#94a3b8',
+    ['--sg-color-success' as never]: '#34d399',
+    ['--sg-color-success-bg' as never]: 'rgba(52, 211, 153, 0.18)',
+    ['--sg-shadow-lg' as never]: '0 18px 38px -16px rgba(0, 0, 0, 0.55)',
+  },
+  glass: {
+    ['--sg-color-bg-elevated' as never]: 'rgba(255, 255, 255, 0.9)',
+    ['--sg-color-border-secondary' as never]: 'rgba(79, 70, 229, 0.18)',
+    ['--sg-color-success' as never]: '#6366f1',
+    ['--sg-color-success-bg' as never]: 'rgba(99, 102, 241, 0.16)',
+    ['--sg-shadow-lg' as never]: '0 18px 38px -16px rgba(15, 23, 42, 0.4)',
+  },
 }
 
 export function TokensOverrideNotification() {
   const t = useDemoStrings(STRINGS)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-        {RECIPES.map((r) => (
-          <Button
-            key={r.key}
-            onClick={() =>
-              notification.open({
-                type: 'success',
-                message: t.title,
-                description: t.desc,
-                style: { ['--sg-color-success' as never]: r.accent },
-              })
-            }
-          >
-            {t.fire}: {r.label}
-          </Button>
-        ))}
-      </div>
-      <TokenScopeCards
-        extra={{
-          brand: { ['--sg-color-success' as never]: '#059669' },
-          dark: { ['--sg-color-success' as never]: '#34d399' },
-          glass: { ['--sg-color-success' as never]: '#6366f1' },
-        }}
-        render={() => <FauxToast title={t.title} desc={t.desc} />}
-      />
-    </div>
+    <TokenScopeCards
+      extra={TOAST_SCOPE}
+      render={(scope) => (
+        <Button
+          type="primary"
+          onClick={() =>
+            notification.open({
+              type: 'success',
+              message: t.title,
+              description: t.desc,
+              style: TOAST_SCOPE[scope],
+            })
+          }
+        >
+          {t.fire}
+        </Button>
+      )}
+    />
   )
 }

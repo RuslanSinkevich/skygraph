@@ -322,6 +322,7 @@ button.sg-dp-panel-title.sg-dp-panel-title-btn:hover {
   height: 28px;
   border-radius: 50%;
   font-size: var(--sg-font-size-sm);
+  color: var(--sg-color-text);
   transition:
     color var(--sg-transition-duration),
     background var(--sg-transition-duration),

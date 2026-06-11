@@ -12,6 +12,7 @@ export function TokensOverrideDescriptions() {
     <TokenScopeCards
       minCardWidth={420}
       contentMinWidth={360}
+      stack
       extra={{
         brand: { ['--sg-color-bg-secondary' as never]: '#ecfdf5' },
         dark: {

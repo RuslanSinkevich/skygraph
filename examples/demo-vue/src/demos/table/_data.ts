@@ -304,7 +304,9 @@ export function makeSales(count: number): DemoRow[] {
     data: {
       region: regions[i % regions.length]!,
       product: products[(i * 3) % products.length]!,
-      salesperson: sellers[(i * 5) % sellers.length]!,
+      // multiplier must be coprime with `sellers.length` (5), otherwise the
+      // index collapses to a single seller (e.g. `(i * 5) % 5` is always 0).
+      salesperson: sellers[(i * 3) % sellers.length]!,
       amount: Math.round(((i * 137) % 2000) + 100 + Math.random() * 100),
       units: ((i * 11) % 50) + 1,
       date: new Date(2025, 11, ((i * 7) % 28) + 1).toISOString().slice(0, 10),

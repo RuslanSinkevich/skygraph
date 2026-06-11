@@ -2,7 +2,7 @@
 /**
  * `ButtonDemo` — aggregator for the Button component page.
  *
- * Mirrors `examples/demo/src/demos/ButtonDemo.tsx` 1:1 (8/8 demos).
+ * Mirrors `examples/demo/src/demos/ButtonDemo.tsx` 1:1 (6/6 demos).
  * `propsData` lists Vue-only props `danger` and `block` and reflects
  * the Vue contract (no `className` / `style` / `onClick` props —
  * Vue uses fallthrough class/style and `@click` emit).
@@ -31,8 +31,6 @@ import WithIconButton from './button/WithIcon.demo.vue'
 import WithIconSource from './button/WithIcon.demo.vue?raw'
 import TokensOverrideButton from './button/TokensOverride.demo.vue'
 import TokensOverrideSource from './button/TokensOverride.demo.vue?raw'
-import ScopedBrandButton from './button/ScopedBrand.demo.vue'
-import ScopedBrandSource from './button/ScopedBrand.demo.vue?raw'
 
 const t = useButtonDocStrings()
 
@@ -184,10 +182,6 @@ const buttonCssVars = computed<CssVarDef[]>(() => [
       :code="TokensOverrideSource"
     >
       <TokensOverrideButton />
-    </DemoBox>
-
-    <DemoBox :title="t.demoBrandTitle" :description="t.demoBrandDesc" :code="ScopedBrandSource">
-      <ScopedBrandButton />
     </DemoBox>
 
     <template #api>

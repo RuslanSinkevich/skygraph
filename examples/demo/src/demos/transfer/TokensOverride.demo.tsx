@@ -24,6 +24,7 @@ export function TokensOverrideTransfer() {
     <TokenScopeCards
       minCardWidth={620}
       contentMinWidth={560}
+      contentAlign="center"
       extra={{
         brand: { ['--sg-color-bg-secondary' as never]: '#ecfdf5' },
         dark: { ['--sg-color-primary-bg' as never]: 'rgba(96, 165, 250, 0.28)' },

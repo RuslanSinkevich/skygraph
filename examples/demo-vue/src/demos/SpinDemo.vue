@@ -79,10 +79,6 @@ const spinCssVars = computed<CssVarDef[]>(() => [
       <SizesSpin />
     </DemoBox>
 
-    <DemoBox :title="t.demoTipTitle" :description="t.demoTipDesc" :code="TipSource">
-      <TipSpin />
-    </DemoBox>
-
     <DemoBox
       :title="t.demoContainerTitle"
       :description="t.demoContainerDesc"
@@ -91,8 +87,20 @@ const spinCssVars = computed<CssVarDef[]>(() => [
       <ContainerSpin />
     </DemoBox>
 
+    <DemoBox :title="t.demoTipTitle" :description="t.demoTipDesc" :code="TipSource">
+      <TipSpin />
+    </DemoBox>
+
     <DemoBox :title="t.demoDelayTitle" :description="t.demoDelayDesc" :code="DelaySource">
       <DelaySpin />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoCustomColorTitle"
+      :description="t.demoCustomColorDesc"
+      :code="CustomColorSource"
+    >
+      <CustomColorSpin />
     </DemoBox>
 
     <DemoBox
@@ -109,14 +117,6 @@ const spinCssVars = computed<CssVarDef[]>(() => [
       :code="FullscreenSource"
     >
       <FullscreenSpin />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoCustomColorTitle"
-      :description="t.demoCustomColorDesc"
-      :code="CustomColorSource"
-    >
-      <CustomColorSpin />
     </DemoBox>
 
     <DemoBox

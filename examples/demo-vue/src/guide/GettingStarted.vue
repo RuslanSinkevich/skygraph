@@ -19,34 +19,42 @@ const IMPORT_STYLES = '// styles are loaded automatically by skygraph-vue'
 // template/parser. See Landing.vue for the same trick.
 const BASIC_FORM =
   '\x3cscript setup lang="ts">\n' +
-  "import { Form, Field, SubmitButton } from 'skygraph-vue'\n" +
+  "import { SgForm, SgField, SgInput, SgSubmitButton } from 'skygraph-vue'\n" +
+  '\n' +
+  'function onFinish(values: Record\x3cstring, unknown>) {\n' +
+  '  console.log(values)\n' +
+  '}\n' +
   '\x3c/script>\n' +
   '\n' +
   '\x3ctemplate>\n' +
-  '  \x3cForm\n' +
+  '  \x3cSgForm\n' +
   '    layout="vertical"\n' +
   "    :default-values=\"{ email: '', password: '' }\"\n" +
-  '    @submit="(values) => console.log(values)"\n' +
+  '    @finish="onFinish"\n' +
   '  >\n' +
-  '    \x3cField\n' +
+  '    \x3cSgField\n' +
   '      name="email"\n' +
   '      label="Email"\n' +
   '      :rules="[{ required: true }, { type: \'email\' }]"\n' +
   '    />\n' +
-  '    \x3cField\n' +
-  '      name="password"\n' +
-  '      label="Password"\n' +
-  '      type="password"\n' +
-  '      :rules="[{ required: true }, { min: 6 }]"\n' +
-  '    />\n' +
-  '    \x3cSubmitButton>Log in\x3c/SubmitButton>\n' +
-  '  \x3c/Form>\n' +
+  '    \x3cSgField name="password" label="Password" :rules="[{ required: true }, { min: 6 }]">\n' +
+  '      \x3ctemplate #default="{ value, onChange, onBlur }">\n' +
+  '        \x3cSgInput\n' +
+  '          type="password"\n' +
+  '          :model-value="(value as string) ?? \'\'"\n' +
+  '          @update:model-value="onChange"\n' +
+  '          @blur="onBlur"\n' +
+  '        />\n' +
+  '      \x3c/template>\n' +
+  '    \x3c/SgField>\n' +
+  '    \x3cSgSubmitButton>Log in\x3c/SgSubmitButton>\n' +
+  '  \x3c/SgForm>\n' +
   '\x3c/template>'
 
 const INDIVIDUAL =
   '\x3cscript setup lang="ts">\n' +
-  "import { Button, Switch, Select } from 'skygraph-vue'\n" +
   "import { ref } from 'vue'\n" +
+  "import { SgButton, SgSwitch, SgSelect } from 'skygraph-vue'\n" +
   '\n' +
   'const checked = ref(false)\n' +
   'const options = [\n' +
@@ -56,9 +64,9 @@ const INDIVIDUAL =
   '\x3c/script>\n' +
   '\n' +
   '\x3ctemplate>\n' +
-  '  \x3cButton type="primary">Click me\x3c/Button>\n' +
-  '  \x3cSwitch v-model:checked="checked" />\n' +
-  '  \x3cSelect :options="options" placeholder="Pick a framework" />\n' +
+  '  \x3cSgButton type="primary">Click me\x3c/SgButton>\n' +
+  '  \x3cSgSwitch v-model="checked" />\n' +
+  '  \x3cSgSelect :options="options" placeholder="Pick a framework" />\n' +
   '\x3c/template>'
 </script>
 
@@ -77,9 +85,11 @@ const INDIVIDUAL =
     <p>{{ t.gettingStarted.importStylesLead }}</p>
     <pre class="doc-code"><code>{{ IMPORT_STYLES }}</code></pre>
     <p>
-      {{ t.gettingStarted.importStylesNote1 }}
-      <a href="#/guide/theming" class="doc-link">{{ t.gettingStarted.importStylesNote2Theming }}</a>
-      ).
+      {{ t.gettingStarted.importStylesNote1
+      }}<a href="#/guide/theming" class="doc-link">{{
+        t.gettingStarted.importStylesNote2Theming
+      }}</a
+      >).
     </p>
 
     <h2 id="basic-form">{{ t.gettingStarted.basicForm }}</h2>

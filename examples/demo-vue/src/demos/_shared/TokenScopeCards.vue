@@ -29,9 +29,15 @@ const props = withDefaults(
     minCardWidth?: number
     /** Minimum preview content width inside each card; overflow becomes local. */
     contentMinWidth?: number
+    /** Horizontal alignment for the rendered component inside each token card. */
+    contentAlign?: 'start' | 'center'
+    /** Force a single vertical column — better for wide controls (e.g. Pagination). */
+    stack?: boolean
   }>(),
   {
     minCardWidth: 280,
+    contentAlign: 'start',
+    stack: false,
   },
 )
 
@@ -145,7 +151,9 @@ const cards = computed<{ key: TokenScopeKey; label: string; hint: string }[]>(()
 
 const gridStyle = computed<CSSProperties>(() => ({
   display: 'grid',
-  gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${props.minCardWidth}px), 1fr))`,
+  gridTemplateColumns: props.stack
+    ? '1fr'
+    : `repeat(auto-fit, minmax(min(100%, ${props.minCardWidth}px), 1fr))`,
   gap: '16px',
   width: '100%',
   padding: 'var(--sg-padding-md, 12px) 0',
@@ -176,6 +184,8 @@ const contentWrapStyle = computed<CSSProperties>(() => ({
 
 const innerStyle = computed<CSSProperties>(() => ({
   minWidth: props.contentMinWidth ? `${props.contentMinWidth}px` : undefined,
+  display: props.contentAlign === 'center' ? 'flex' : undefined,
+  justifyContent: props.contentAlign === 'center' ? 'center' : undefined,
 }))
 </script>
 

@@ -1,105 +1,52 @@
 <script setup lang="ts">
 /**
- * Single "token override" block with three ready-made scopes built from
- * the Radio tokens (`--sg-radio-*`) plus `--sg-color-text` — each scope
- * rebrands the ring, dot and label.
+ * Radio exposes `--sg-radio-*` paint tokens on top of the globals. Three
+ * scoped recipes — branded green, dark field, glass pick — recolour the dot.
+ *
+ * Mirrors React `examples/demo/src/demos/radio/TokensOverride.demo.tsx`.
  */
 import { computed, type CSSProperties } from 'vue'
 import { SgRadio } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'
+import TokenScopeCards, { type TokenScopeKey } from '../_shared/TokenScopeCards.vue'
 
 const STRINGS = {
-  en: {
-    green: 'Green brand',
-    dark: 'Dark surface',
-    glass: 'Glass pick',
-    brandA: 'Brand A',
-    brandB: 'Brand B',
-    brandC: 'Brand C',
-  },
-  ru: {
-    green: 'Зелёный бренд',
-    dark: 'Тёмная поверхность',
-    glass: 'Glass pick',
-    brandA: 'Бренд A',
-    brandB: 'Бренд B',
-    brandC: 'Бренд C',
-  },
+  en: { a: 'Brand A', b: 'Brand B', c: 'Brand C' },
+  ru: { a: 'Бренд A', b: 'Бренд B', c: 'Бренд C' },
 } as const
 
 const t = useDemoStrings(STRINGS)
 
-const cardBase: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '12px',
-  padding: '18px',
-  borderRadius: '16px',
-  flex: '1 1 200px',
-}
-const labelBase: CSSProperties = {
-  fontSize: '11px',
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-}
-
 const options = computed(() => [
-  { label: t.value.brandA, value: 'a' },
-  { label: t.value.brandB, value: 'b' },
-  { label: t.value.brandC, value: 'c' },
+  { label: t.value.a, value: 'a' },
+  { label: t.value.b, value: 'b' },
+  { label: t.value.c, value: 'c' },
 ])
 
-const greenScope = {
-  '--sg-radio-bg-checked': '#059669',
-  '--sg-radio-border-hover': '#059669',
-  '--sg-radio-dot-color': '#fff',
-  '--sg-color-text': '#065f46',
-  ...cardBase,
-  background: '#f0fdf4',
-  border: '1px solid #bbf7d0',
-} as CSSProperties
-
-const darkScope = {
-  '--sg-radio-bg-checked': '#38bdf8',
-  '--sg-radio-border-hover': '#38bdf8',
-  '--sg-radio-dot-color': '#0f172a',
-  '--sg-color-text': '#e2e8f0',
-  '--sg-color-text-secondary': '#cbd5e1',
-  '--sg-color-border': '#64748b',
-  ...cardBase,
-  background: '#0f172a',
-  border: '1px solid #1e293b',
-} as CSSProperties
-
-const glassScope = {
-  '--sg-radio-bg-checked': '#4f46e5',
-  '--sg-radio-border-hover': '#4f46e5',
-  '--sg-radio-dot-color': '#fff',
-  '--sg-color-text': '#111827',
-  '--sg-color-border': 'rgba(30, 41, 59, 0.35)',
-  ...cardBase,
-  background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.3))',
-  border: '1px solid rgba(255, 255, 255, 0.6)',
-  backdropFilter: 'blur(10px)',
-  WebkitBackdropFilter: 'blur(10px)',
-  boxShadow: '0 8px 32px rgba(31, 38, 135, 0.2)',
-} as CSSProperties
+const extra: Partial<Record<TokenScopeKey, CSSProperties>> = {
+  brand: {
+    '--sg-radio-bg-checked': '#059669',
+    '--sg-radio-border-hover': '#059669',
+  } as CSSProperties,
+  dark: {
+    '--sg-radio-border': '#64748b',
+    '--sg-radio-bg': '#111827',
+    '--sg-radio-bg-checked': '#60a5fa',
+    '--sg-radio-border-hover': '#60a5fa',
+  } as CSSProperties,
+  glass: {
+    '--sg-radio-border': 'rgba(30, 41, 59, 0.26)',
+    '--sg-radio-bg': 'rgba(255, 255, 255, 0.58)',
+    '--sg-radio-bg-checked': '#6366f1',
+    '--sg-radio-border-hover': '#6366f1',
+  } as CSSProperties,
+}
 </script>
 
 <template>
-  <div style="display: flex; gap: 16px; flex-wrap: wrap">
-    <div :style="greenScope" data-sg-theme="light">
-      <span :style="{ ...labelBase, color: '#047857' }">{{ t.green }}</span>
+  <TokenScopeCards :extra="extra">
+    <template #default>
       <SgRadio default-value="b" :options="options" />
-    </div>
-    <div :style="darkScope" data-sg-theme="dark">
-      <span :style="{ ...labelBase, color: '#94a3b8' }">{{ t.dark }}</span>
-      <SgRadio default-value="b" :options="options" />
-    </div>
-    <div :style="glassScope" data-sg-theme="light">
-      <span :style="{ ...labelBase, color: '#1e1b4b' }">{{ t.glass }}</span>
-      <SgRadio default-value="b" :options="options" />
-    </div>
-  </div>
+    </template>
+  </TokenScopeCards>
 </template>

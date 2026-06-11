@@ -92,16 +92,12 @@ const progressCssVars = computed<CssVarDef[]>(() => [
       <CircleProgress />
     </DemoBox>
 
-    <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource">
-      <SizesProgress />
-    </DemoBox>
-
-    <DemoBox :title="t.demoNoInfoTitle" :description="t.demoNoInfoDesc" :code="NoInfoSource">
-      <NoInfoProgress />
-    </DemoBox>
-
     <DemoBox :title="t.demoActiveTitle" :description="t.demoActiveDesc" :code="ActiveSource">
       <ActiveProgress />
+    </DemoBox>
+
+    <DemoBox :title="t.demoDynamicTitle" :description="t.demoDynamicDesc" :code="DynamicSource">
+      <DynamicProgress />
     </DemoBox>
 
     <DemoBox
@@ -112,8 +108,12 @@ const progressCssVars = computed<CssVarDef[]>(() => [
       <CustomColorProgress />
     </DemoBox>
 
-    <DemoBox :title="t.demoDynamicTitle" :description="t.demoDynamicDesc" :code="DynamicSource">
-      <DynamicProgress />
+    <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource">
+      <SizesProgress />
+    </DemoBox>
+
+    <DemoBox :title="t.demoNoInfoTitle" :description="t.demoNoInfoDesc" :code="NoInfoSource">
+      <NoInfoProgress />
     </DemoBox>
 
     <DemoBox

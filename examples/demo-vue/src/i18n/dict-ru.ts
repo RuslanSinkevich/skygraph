@@ -228,28 +228,29 @@ export const ru: DemoDict = {
 
   gettingStarted: {
     title: 'Быстрый старт',
-    lead: 'Установите SkyGraph, импортируйте стили один раз — и можно собирать реактивные Vue 3 компоненты. Тот же DOM-контракт, что у React-адаптера, и идиоматичный Composition API.',
+    lead: 'Начните работу со SkyGraph меньше чем за 5 минут.',
     installation: 'Установка',
-    installLeadNpm: 'Установите ядро и Vue-адаптер через npm:',
+    installLeadNpm: 'Установите ядро и Vue-биндинги:',
     installLeadPnpm: 'Или через pnpm:',
-    importStyles: 'Импорт стилей',
+    importStyles: 'Подключение стилей',
     importStylesLead:
-      'Импортируйте готовый стайлшит один раз в точке входа приложения (например, main.ts):',
+      'SkyGraph поставляет тему по умолчанию через CSS. Подключите её один раз в корне приложения:',
     importStylesNote1:
-      'Все компоненты выдают CSS-переменные, которые можно переопределить в любой области (',
-    importStylesNote2Theming: 'см. Темизацию',
+      'Это даст полную дизайн-систему — палитру, отступы, типографику и компонентные токены. Любую переменную можно переопределить (см. ',
+    importStylesNote2Theming: 'Темизация',
     basicForm: 'Простая форма',
-    basicFormLead: 'Соберите типизированную форму со встроенной валидацией и обработчиком submit:',
-    individualComponents: 'Отдельные компоненты',
-    individualComponentsLead: 'Или используйте стилизованные компоненты по отдельности:',
+    basicFormLead:
+      'Реактивное ядро SkyGraph даёт формы из коробки — валидация, зависимости и динамические поля без шаблонного кода:',
+    individualComponents: 'Использование отдельных компонентов',
+    individualComponentsLead:
+      'Каждый компонент работает самостоятельно — без провайдера или контекста:',
     whatsNext: 'Что дальше',
     cardThemingTitle: 'Темизация',
-    cardThemingDesc:
-      'Переопределите CSS-переменные, чтобы перекрасить всё приложение или одну ветку.',
+    cardThemingDesc: 'CSS-переменные, тёмная тема, свои палитры',
     cardCoreApiTitle: 'API ядра',
-    cardCoreApiDesc: 'Управляйте формами, таблицами и деревьями через path-based реактивный store.',
-    cardComponentsTitle: 'Все компоненты',
-    cardComponentsDesc: 'Готовые компоненты: Button, Input, Table, Tree и многое другое.',
+    cardCoreApiDesc: 'createCore, createForm, createTable, createTree, createGraph',
+    cardComponentsTitle: 'Компоненты',
+    cardComponentsDesc: 'Каталог готовых UI-компонентов',
   },
 
   theming: {

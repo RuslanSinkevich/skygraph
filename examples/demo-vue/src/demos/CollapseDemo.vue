@@ -125,28 +125,6 @@ const collapseCssVars = computed<CssVarDef[]>(() => [
       <BorderlessCollapse />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoControlledTitle"
-      :description="t.demoControlledDesc"
-      :code="ControlledSource"
-      vertical
-    >
-      <ControlledCollapse />
-    </DemoBox>
-
-    <DemoBox
-      :title="t.demoDisabledTitle"
-      :description="t.demoDisabledDesc"
-      :code="DisabledSource"
-      vertical
-    >
-      <DisabledCollapse />
-    </DemoBox>
-
-    <DemoBox :title="t.demoExtraTitle" :description="t.demoExtraDesc" :code="ExtraSource" vertical>
-      <ExtraCollapse />
-    </DemoBox>
-
     <DemoBox :title="t.demoGhostTitle" :description="t.demoGhostDesc" :code="GhostSource" vertical>
       <GhostCollapse />
     </DemoBox>
@@ -160,6 +138,19 @@ const collapseCssVars = computed<CssVarDef[]>(() => [
       <IconPositionCollapse />
     </DemoBox>
 
+    <DemoBox :title="t.demoExtraTitle" :description="t.demoExtraDesc" :code="ExtraSource" vertical>
+      <ExtraCollapse />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoDisabledTitle"
+      :description="t.demoDisabledDesc"
+      :code="DisabledSource"
+      vertical
+    >
+      <DisabledCollapse />
+    </DemoBox>
+
     <DemoBox
       :title="t.demoNoArrowTitle"
       :description="t.demoNoArrowDesc"
@@ -171,6 +162,15 @@ const collapseCssVars = computed<CssVarDef[]>(() => [
 
     <DemoBox :title="t.demoSizesTitle" :description="t.demoSizesDesc" :code="SizesSource" vertical>
       <SizesCollapse />
+    </DemoBox>
+
+    <DemoBox
+      :title="t.demoControlledTitle"
+      :description="t.demoControlledDesc"
+      :code="ControlledSource"
+      vertical
+    >
+      <ControlledCollapse />
     </DemoBox>
 
     <DemoBox

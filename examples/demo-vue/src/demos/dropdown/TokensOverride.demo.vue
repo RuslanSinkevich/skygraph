@@ -1,50 +1,42 @@
 <script setup lang="ts">
 /**
- * Dropdown has no component-specific tokens — scope the surface and
- * hover globals to restyle without editing the theme. The `danger`
- * row follows `--sg-color-error` + `--sg-color-error-bg`.
+ * Dropdown has no component-specific tokens — it composes the surface and
+ * hover globals; the danger row follows `--sg-color-error`. Three scoped
+ * recipes — branded green, dark field, glass pick — restyle the menu.
+ *
+ * Mirrors React `examples/demo/src/demos/dropdown/TokensOverride.demo.tsx`.
  */
-import type { CSSProperties } from 'vue'
 import { computed } from 'vue'
-import { SgDropdown, SgButton } from '@skygraph/vue'
+import { SgDropdown, SgButton, type DropdownItem } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'
-import { makeActionItems } from './data'
+import TokenScopeCards from '../_shared/TokenScopeCards.vue'
 
 const STRINGS = {
-  en: {
-    button: 'Warm theme ▾',
-    edit: 'Edit',
-    duplicate: 'Duplicate',
-    archive: 'Archive (soon)',
-    delete: 'Delete…',
-  },
+  en: { button: 'Actions ▾', edit: 'Edit', duplicate: 'Duplicate', delete: 'Delete…' },
   ru: {
-    button: 'Тёплая тема ▾',
+    button: 'Действия ▾',
     edit: 'Редактировать',
     duplicate: 'Дублировать',
-    archive: 'В архив (скоро)',
     delete: 'Удалить…',
   },
 } as const
 
 const t = useDemoStrings(STRINGS)
-const items = computed(() => makeActionItems(t.value))
 
-const scoped = {
-  '--sg-color-bg-elevated': '#fef3c7',
-  '--sg-color-border-secondary': '#fcd34d',
-  '--sg-color-bg-hover': '#fde68a',
-  '--sg-border-radius-lg': '12px',
-  '--sg-shadow-lg': '0 12px 30px rgba(202, 138, 4, 0.25)',
-  '--sg-color-error': '#b91c1c',
-  '--sg-color-error-bg': '#fecaca',
-} as CSSProperties
+const items = computed<DropdownItem[]>(() => [
+  { key: '1', label: t.value.edit },
+  { key: '2', label: t.value.duplicate },
+  { key: 'd1', label: '', divider: true },
+  { key: '3', label: t.value.delete, danger: true },
+])
 </script>
 
 <template>
-  <div :style="scoped">
-    <SgDropdown :items="items" trigger="click">
-      <SgButton>{{ t.button }}</SgButton>
-    </SgDropdown>
-  </div>
+  <TokenScopeCards>
+    <template #default>
+      <SgDropdown :items="items" trigger="click">
+        <SgButton>{{ t.button }}</SgButton>
+      </SgDropdown>
+    </template>
+  </TokenScopeCards>
 </template>

@@ -101,12 +101,12 @@ const descriptionsCssVars = computed<CssVarDef[]>(() => [
       <BorderedDescriptions />
     </DemoBox>
 
-    <DemoBox :title="t.demoColumnsTitle" :description="t.demoColumnsDesc" :code="ColumnsSource">
-      <ColumnsDescriptions />
-    </DemoBox>
-
     <DemoBox :title="t.demoVerticalTitle" :description="t.demoVerticalDesc" :code="VerticalSource">
       <VerticalDescriptions />
+    </DemoBox>
+
+    <DemoBox :title="t.demoColumnsTitle" :description="t.demoColumnsDesc" :code="ColumnsSource">
+      <ColumnsDescriptions />
     </DemoBox>
 
     <DemoBox :title="t.demoNoColonTitle" :description="t.demoNoColonDesc" :code="NoColonSource">

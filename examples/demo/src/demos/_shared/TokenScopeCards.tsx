@@ -121,6 +121,8 @@ export type TokenScopeCardsProps = {
   minCardWidth?: number
   /** Minimum preview content width inside each card; overflow becomes local. */
   contentMinWidth?: number
+  /** Horizontal alignment for the rendered component inside each token card. */
+  contentAlign?: 'start' | 'center'
   /** Force a single vertical column — better for wide controls (e.g. Pagination). */
   stack?: boolean
   /** Returns the demoed component for a given scope. */
@@ -131,6 +133,7 @@ export function TokenScopeCards({
   extra,
   minCardWidth = 280,
   contentMinWidth,
+  contentAlign = 'start',
   stack = false,
   render,
 }: TokenScopeCardsProps) {
@@ -192,7 +195,15 @@ export function TokenScopeCards({
               paddingBottom: contentMinWidth ? 2 : undefined,
             }}
           >
-            <div style={{ minWidth: contentMinWidth }}>{render(card.key)}</div>
+            <div
+              style={{
+                minWidth: contentMinWidth,
+                display: contentAlign === 'center' ? 'flex' : undefined,
+                justifyContent: contentAlign === 'center' ? 'center' : undefined,
+              }}
+            >
+              {render(card.key)}
+            </div>
           </div>
         </div>
       ))}

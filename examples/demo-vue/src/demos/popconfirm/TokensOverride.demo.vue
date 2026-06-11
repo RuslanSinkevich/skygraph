@@ -1,45 +1,30 @@
 <script setup lang="ts">
 /**
- * Popconfirm has no component-specific tokens — tune the surface
- * globals (`--sg-color-bg-elevated`, `--sg-border-radius-lg`,
- * `--sg-shadow-lg`) and the icon uses `--sg-color-warning`.
+ * Popconfirm has no component-specific tokens — it composes the surface
+ * globals plus the primary palette for the confirm button. Three scoped
+ * recipes — branded green, dark field, glass pick — reskin the trigger and
+ * popup.
  *
- * Vue parity: the bubble renders inline (no Teleport), so a
- * wrapping div with scoped CSS variables works directly.
+ * Mirrors React `examples/demo/src/demos/popconfirm/TokensOverride.demo.tsx`.
  */
 import { SgButton, SgPopconfirm } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'
+import TokenScopeCards from '../_shared/TokenScopeCards.vue'
 
-const t = useDemoStrings({
-  en: {
-    title: 'Reset all layout preferences?',
-    description: 'Panels, themes, and font size will go back to defaults.',
-    okText: 'Reset',
-    button: 'Reset preferences',
-  },
-  ru: {
-    title: 'Сбросить все настройки макета?',
-    description: 'Панели, темы и размер шрифта вернутся к значениям по умолчанию.',
-    okText: 'Сбросить',
-    button: 'Сбросить настройки',
-  },
-})
+const STRINGS = {
+  en: { title: 'Reset preferences?', ok: 'Reset', button: 'Reset' },
+  ru: { title: 'Сбросить настройки?', ok: 'Сбросить', button: 'Сбросить' },
+} as const
+
+const t = useDemoStrings(STRINGS)
 </script>
 
 <template>
-  <div
-    :style="{
-      '--sg-border-radius-lg': '14px',
-      '--sg-color-bg-elevated': '#fff7ed',
-      '--sg-color-border-secondary': '#fdba74',
-      '--sg-color-warning': '#ea580c',
-      '--sg-shadow-lg': '0 12px 28px rgba(234, 88, 12, 0.15)',
-      '--sg-color-primary': '#ea580c',
-      '--sg-color-primary-hover': '#c2410c',
-    } as Record<string, string>"
-  >
-    <SgPopconfirm :title="t.title" :description="t.description" :ok-text="t.okText">
-      <SgButton>{{ t.button }}</SgButton>
-    </SgPopconfirm>
-  </div>
+  <TokenScopeCards>
+    <template #default>
+      <SgPopconfirm :title="t.title" :ok-text="t.ok">
+        <SgButton>{{ t.button }}</SgButton>
+      </SgPopconfirm>
+    </template>
+  </TokenScopeCards>
 </template>
