@@ -356,18 +356,6 @@ export const ru: DemoDict = {
       'Большинство приложений напрямую к Core не обращаются — берут компоненты `@skygraph/react`, `@skygraph/vue` или `@skygraph/angular`, которые уже умеют с ним разговаривать. За биндингами — в «Быстрый старт»; за рантайм-конфигурацией (size / locale / direction) — в «ConfigProvider»; за темизацией — в «Дизайн-токены» и «Стилизацию».',
   },
 
-  guideStub: {
-    seeReactDocs: 'Полный текст — в React-эталоне →',
-    stylingShowcaseTitle: 'Стилизация',
-    stylingShowcaseLead:
-      'Галерея стилевых рецептов SkyGraph — палитра, семантические токены, компонентные токены, тёмная тема.',
-    designTokensTitle: 'Дизайн-токены',
-    designTokensLead: 'Поисковый индекс всех публичных --sg-* переменных SkyGraph.',
-    configProviderTitle: 'ConfigProvider',
-    configProviderLead:
-      'Скоупит дефолты size / disabled / locale / bordered на поддерево. Демо компонента доступно в разделе Компоненты → ConfigProvider.',
-  },
-
   designTokens: {
     title: 'Дизайн-токены',
     lead: 'Поисковый индекс всех публичных --sg-* переменных. Токены — это контракт темизации: переопределите одну переменную в :root, на враппере или на отдельном компоненте — и UI перекрасится без правок в коде компонентов.',
@@ -388,79 +376,6 @@ export const ru: DemoDict = {
     colVariable: 'Переменная',
     colDefault: 'По умолчанию',
     colDescription: 'Описание',
-  },
-
-  stylingShowcase: {
-    pageTitle: 'Стилизация',
-    pageLead:
-      'Галерея стилевых рецептов SkyGraph: палитра, семантические токены, scope-овая брендовая тема, тёмный scope, компонентные токены, headless-режим. Все примеры используют только CSS-переменные — никакого runtime CSS-in-JS.',
-    when1: 'Нужно перекрасить весь UI под брендовые цвета — переопределите семантические токены.',
-    when2: 'Нужна тёмная тема на части страницы — поставьте data-sg-theme="dark" на враппер.',
-    when3:
-      'Нужно подкрутить один компонент — используйте компонентные токены (--sg-btn-*, --sg-input-*, …).',
-    swatchSemanticBadge: 'тема',
-    recipePaletteTitle: 'Палитра',
-    recipePaletteDesc:
-      'Стабильные шкалы цветов 1–10 для blue / gray / red / green / orange. На них опираются все семантические токены.',
-    recipeSemanticTitle: 'Семантические токены',
-    recipeSemanticDesc:
-      'Поверхности, текст, бренд, состояния success / error / warning. Переключаются вместе с data-sg-theme="dark|light".',
-    recipeScopedBrandTitle: 'Брендовый scope',
-    recipeScopedBrandDesc:
-      'Переопределите --sg-color-primary и --sg-border-radius на враппере — компоненты внутри перекрасятся без правок.',
-    recipeScopedBrandHeading: 'Розовый бренд + скруглённые углы',
-    scopedBrandPrimary: 'Primary',
-    scopedBrandDefault: 'Default',
-    scopedBrandInputPlaceholder: 'Наследует токены…',
-    recipeDarkTitle: 'Тёмный scope',
-    recipeDarkDesc:
-      'Один атрибут data-sg-theme="dark" — и все вложенные компоненты переключаются на тёмную палитру.',
-    darkPrimary: 'Primary',
-    darkDefault: 'Default',
-    darkInputPlaceholder: 'Тёмный input',
-    recipeBtnTokensTitle: 'Компонентные токены — Button',
-    recipeBtnTokensDesc:
-      'Скрутите --sg-btn-radius / --sg-btn-height / --sg-btn-padding на враппере — получите pill-кнопки. Только для скоупа.',
-    pillPrimary: 'Pill primary',
-    pillDefault: 'Pill default',
-    recipeInputTokensTitle: 'Компонентные токены — Input',
-    recipeInputTokensDesc:
-      '--sg-input-height и --sg-input-radius меняют форму инпутов локально. Select подхватит те же токены.',
-    roundedInputPlaceholder: 'Высокий скруглённый input',
-    recipePerFeatureTitle: 'Бренд для одной фичи',
-    recipePerFeatureDesc:
-      'Соберите композитный scope — цвет + радиус + tinted-поверхности — и оберните им любую фичу или экран.',
-    perFeatureLabelPrimary: 'Бренд:',
-    perFeatureLabelRadius: 'Скругление:',
-    perFeaturePrimary: 'Primary',
-    perFeatureDefault: 'Default',
-    perFeatureInputPlaceholder: 'Email…',
-  },
-
-  configProviderGuide: {
-    title: 'ConfigProvider',
-    lead: '`<SgConfigProvider>` задаёт дефолты size / disabled / locale / bordered на поддерево. Компоненты внутри читают эти дефолты через `useConfig()` — без проп-дриллинга и без глобального стейта.',
-    whenHeading: 'Когда использовать',
-    when1: 'Глобально на корне приложения — настроить локаль (ru_RU / en_US) и базовый размер.',
-    when2:
-      'Локально на форме / диалоге — заставить все вложенные контролы быть, например, small или disabled.',
-    when3:
-      'В админке — переключать size в зависимости от плотности раскладки (compact / comfortable).',
-    when4:
-      'В таблице с фильтрами — выключить bordered, чтобы инпуты сливались с заголовком таблицы.',
-    apiHeading: 'API',
-    apiLead: 'Все пропы опциональны — children обязателен.',
-    apiSizeDesc: "Дефолтный размер контролов: 'small' | 'middle' | 'large'.",
-    apiDisabledDesc: 'Если true — все контролы внутри получают disabled.',
-    apiBorderedDesc: 'Если false — снимает рамку с инпутов и селектов.',
-    apiLocaleDesc: 'Объект локализации — строки таблиц, модалок, пикеров и форм.',
-    nestedHeading: 'Вложенность',
-    nestedLead:
-      'Провайдеры мёржатся. Внешний задаёт locale=ru_RU и size=middle, внутренний переопределяет только size=small — locale остаётся ru_RU.',
-    componentHeading: 'Живая демонстрация',
-    componentLead:
-      'Все сценарии (size / disabled / locale / nested / theme-scope) показаны на странице компонента:',
-    componentCta: 'Открыть демо ConfigProvider →',
   },
 
   frameworkSwitcher: {

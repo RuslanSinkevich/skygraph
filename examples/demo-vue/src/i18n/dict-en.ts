@@ -355,18 +355,6 @@ export const en: DemoDict = {
       'Most apps never touch Core — they use `@skygraph/react`, `@skygraph/vue` or `@skygraph/angular` components which already speak to it. If you want the framework bindings, see Getting Started; if you want runtime configuration (size / locale / direction) see ConfigProvider; for theming see Design Tokens and Styling Showcase.',
   },
 
-  guideStub: {
-    seeReactDocs: 'See the React reference for the full content →',
-    stylingShowcaseTitle: 'Styling Showcase',
-    stylingShowcaseLead:
-      'Gallery of SkyGraph styling recipes — palette, semantic tokens, component tokens, dark scopes.',
-    designTokensTitle: 'Design Tokens',
-    designTokensLead: 'Searchable index of every public --sg-* variable SkyGraph exposes.',
-    configProviderTitle: 'ConfigProvider',
-    configProviderLead:
-      'Scope size / disabled / locale / bordered defaults to a subtree. The component-level demo is available under Components → ConfigProvider.',
-  },
-
   designTokens: {
     title: 'Design Tokens',
     lead: 'Searchable index of every public --sg-* variable. Tokens are the theming contract: override one on :root, on a wrapper or on a single component scope to re-skin the UI without touching components.',
@@ -387,76 +375,6 @@ export const en: DemoDict = {
     colVariable: 'Variable',
     colDefault: 'Default',
     colDescription: 'Description',
-  },
-
-  stylingShowcase: {
-    pageTitle: 'Styling Showcase',
-    pageLead:
-      'A gallery of SkyGraph styling recipes: palette, semantic tokens, scoped brand themes, dark scopes, component tokens and headless mode. Every example uses nothing but CSS variables — no runtime CSS-in-JS.',
-    when1: 'You need to re-skin the whole UI with brand colours — override semantic tokens.',
-    when2: 'You need a dark scope on part of the page — set data-sg-theme="dark" on a wrapper.',
-    when3:
-      'You need to tune a single component — use its component tokens (--sg-btn-*, --sg-input-*, …).',
-    swatchSemanticBadge: 'theme',
-    recipePaletteTitle: 'Palette',
-    recipePaletteDesc:
-      'Stable 1–10 colour ramps for blue / gray / red / green / orange. Every semantic token resolves to one of these.',
-    recipeSemanticTitle: 'Semantic tokens',
-    recipeSemanticDesc:
-      'Surface, text, brand and state colours (success / error / warning). Theme-driven — switch with data-sg-theme="dark|light".',
-    recipeScopedBrandTitle: 'Scoped brand',
-    recipeScopedBrandDesc:
-      'Override --sg-color-primary and --sg-border-radius on a wrapper — every component inside re-skins without touching its source.',
-    recipeScopedBrandHeading: 'Pink brand + rounded corners',
-    scopedBrandPrimary: 'Primary',
-    scopedBrandDefault: 'Default',
-    scopedBrandInputPlaceholder: 'Inherits tokens…',
-    recipeDarkTitle: 'Dark scope',
-    recipeDarkDesc:
-      'A single data-sg-theme="dark" attribute flips every nested component to the dark palette.',
-    darkPrimary: 'Primary',
-    darkDefault: 'Default',
-    darkInputPlaceholder: 'Dark input',
-    recipeBtnTokensTitle: 'Component tokens — Button',
-    recipeBtnTokensDesc:
-      'Tune --sg-btn-radius / --sg-btn-height / --sg-btn-padding on a wrapper for pill buttons. Scoped — not global.',
-    pillPrimary: 'Pill primary',
-    pillDefault: 'Pill default',
-    recipeInputTokensTitle: 'Component tokens — Input',
-    recipeInputTokensDesc:
-      '--sg-input-height and --sg-input-radius reshape inputs locally. Select picks up the same tokens.',
-    roundedInputPlaceholder: 'Rounded soft input',
-    recipePerFeatureTitle: 'Per-feature brand',
-    recipePerFeatureDesc:
-      'Compose colour + radius + tinted surfaces into one scope object and wrap a single feature or screen with it.',
-    perFeatureLabelPrimary: 'Brand:',
-    perFeatureLabelRadius: 'Radius:',
-    perFeaturePrimary: 'Primary',
-    perFeatureDefault: 'Default',
-    perFeatureInputPlaceholder: 'Email…',
-  },
-
-  configProviderGuide: {
-    title: 'ConfigProvider',
-    lead: '`<SgConfigProvider>` scopes size / disabled / locale / bordered defaults to a subtree. Components inside read those defaults via `useConfig()` — no prop drilling, no global store.',
-    whenHeading: 'When to use',
-    when1: 'At the app root — pick a locale (ru_RU / en_US) and a base size.',
-    when2: 'On a form or dialog — force every nested control to small or disabled.',
-    when3: 'In an admin UI — switch size based on layout density (compact / comfortable).',
-    when4: 'In a table toolbar — drop bordered so inputs blend into the header.',
-    apiHeading: 'API',
-    apiLead: 'Every prop is optional — children is required.',
-    apiSizeDesc: "Default control size: 'small' | 'middle' | 'large'.",
-    apiDisabledDesc: 'When true — every nested control becomes disabled.',
-    apiBorderedDesc: 'When false — drops the border on inputs and selects.',
-    apiLocaleDesc: 'Locale object — strings for tables, modals, pickers and forms.',
-    nestedHeading: 'Nesting',
-    nestedLead:
-      'Providers merge. An outer ru_RU + middle and an inner override of size=small keeps the locale as ru_RU.',
-    componentHeading: 'Live demo',
-    componentLead:
-      'Every scenario (size / disabled / locale / nested / theme-scope) is on the component page:',
-    componentCta: 'Open the ConfigProvider demo →',
   },
 
   frameworkSwitcher: {

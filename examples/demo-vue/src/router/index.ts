@@ -65,7 +65,11 @@ const GuideStylingShowcase = () => import('../guide/StylingShowcase.vue')
 const GuideTheming = () => import('../guide/Theming.vue')
 const GuideDesignTokens = () => import('../guide/DesignTokens.vue')
 const GuideCoreApi = () => import('../guide/CoreApi.vue')
-const GuideConfigProvider = () => import('../guide/ConfigProviderGuide.vue')
+// Guide → ConfigProvider deliberately reuses the full component demo
+// (`/components/configprovider`) — same source as React's
+// `guide/config-provider` route, see `examples/demo/src/App.tsx`. Keeps
+// both apps in lockstep without duplicating the prose page.
+const GuideConfigProvider = () => import('../demos/ConfigProviderDemo.vue')
 
 const routes: RouteRecord[] = [
   { path: '/', component: Landing },

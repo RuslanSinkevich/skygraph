@@ -68,24 +68,19 @@ const editorProps = computed<PropDef[]>(() => [
     :description="t.pageLead"
     :when-to-use="[t.pageWhen1, t.pageWhen2, t.pageWhen3]"
   >
-    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource" flush>
+    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource">
       <BasicDb />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoActionsTitle"
-      :description="t.demoActionsDesc"
-      :code="WithActionsSource"
-      flush
-    >
+    <DemoBox :title="t.demoActionsTitle" :description="t.demoActionsDesc" :code="WithActionsSource">
       <WithActionsDb />
     </DemoBox>
 
-    <DemoBox :title="t.demoEditorTitle" :description="t.demoEditorDesc" :code="EditorSource" flush>
+    <DemoBox :title="t.demoEditorTitle" :description="t.demoEditorDesc" :code="EditorSource">
       <EditorDb />
     </DemoBox>
 
-    <DemoBox :title="t.demoMixedTitle" :description="t.demoMixedDesc" :code="MixedSource" flush>
+    <DemoBox :title="t.demoMixedTitle" :description="t.demoMixedDesc" :code="MixedSource">
       <MixedDb />
     </DemoBox>
 
@@ -93,17 +88,11 @@ const editorProps = computed<PropDef[]>(() => [
       :title="t.demoResponsiveTitle"
       :description="t.demoResponsiveDesc"
       :code="ResponsiveSource"
-      flush
     >
       <ResponsiveDb />
     </DemoBox>
 
-    <DemoBox
-      :title="t.demoRealtimeTitle"
-      :description="t.demoRealtimeDesc"
-      :code="RealtimeSource"
-      flush
-    >
+    <DemoBox :title="t.demoRealtimeTitle" :description="t.demoRealtimeDesc" :code="RealtimeSource">
       <RealtimeDb />
     </DemoBox>
 
@@ -111,7 +100,6 @@ const editorProps = computed<PropDef[]>(() => [
       :title="t.demoLargeGridTitle"
       :description="t.demoLargeGridDesc"
       :code="LargeGridSource"
-      flush
     >
       <LargeGridDb />
     </DemoBox>

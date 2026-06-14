@@ -358,14 +358,17 @@ function pathLabel(values: (string | number)[]) {
       @click="handleTriggerClick"
     >
       <div class="sg-cascader-selection-wrap">
-        <span v-if="!multiple && !displayLabel && !searchText" class="sg-cascader-placeholder">
+        <span
+          v-if="!multiple && !displayLabel && !searchText && !(showSearch && isOpen)"
+          class="sg-cascader-placeholder"
+        >
           {{ placeholder }}
         </span>
         <span v-if="!multiple && displayLabel && !searchText" class="sg-cascader-selection-item">
           {{ displayLabel }}
         </span>
         <span
-          v-if="multiple && multiValues.length === 0 && !searchText"
+          v-if="multiple && multiValues.length === 0 && !searchText && !(showSearch && isOpen)"
           class="sg-cascader-placeholder"
         >
           {{ placeholder }}

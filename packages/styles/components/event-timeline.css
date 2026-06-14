@@ -15,6 +15,11 @@
   align-items: flex-start;
   overflow-x: auto;
   padding-bottom: var(--sg-padding-md);
+  /* Drop the flex gap horizontally: it broke the marker rail into disjoint
+   * segments (one per card) which read as a dashed, glitchy line. Items carry
+   * their own horizontal padding for spacing instead, and the rail below is
+   * extended to bridge that padding so it renders as one continuous track. */
+  gap: 0;
 }
 
 .sg-event-timeline-group {
@@ -74,8 +79,10 @@
   content: '';
   position: absolute;
   top: 50%;
-  left: 0;
-  right: 0;
+  /* Extend across the item's own horizontal padding so adjacent items'
+   * rails meet edge-to-edge into one continuous line. */
+  left: calc(-1 * var(--sg-padding-md));
+  right: calc(-1 * var(--sg-padding-md));
   height: 2px;
   background: var(--sg-color-border-secondary);
   transform: translateY(-50%);

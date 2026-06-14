@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import {
@@ -8,8 +8,20 @@ import {
   type RegistrationEntry,
 } from './DemoTOCContext'
 
-/** Window during which IntersectionObserver updates are suppressed. */
-const MANUAL_SCROLL_LOCK_MS = 600
+/**
+ * Idle gap (ms) after the last scroll event before a programmatic
+ * scroll is considered finished. The active-section tracker stays
+ * suppressed for the whole smooth-scroll animation and re-engages only
+ * once scrolling has actually stopped — a fixed timeout was too short
+ * for long jumps (the highlight flickered mid-animation).
+ */
+const MANUAL_SCROLL_IDLE_MS = 120
+/**
+ * Hard ceiling so the lock can never get stuck if a `scroll` event is
+ * somehow missed (e.g. the target was already in view and no scroll
+ * happened at all).
+ */
+const MANUAL_SCROLL_MAX_MS = 1200
 
 /**
  * Walk the entries map, sort by DOM order via
@@ -78,7 +90,9 @@ export function DemoTOCProvider({ children }: { children: ReactNode }) {
   const [activeId, setActiveIdState] = useState<string | null>(null)
 
   const isManualScrollRef = useRef(false)
-  const manualScrollTimerRef = useRef<number | null>(null)
+  const idleTimerRef = useRef<number | null>(null)
+  const maxTimerRef = useRef<number | null>(null)
+  const scrollListenerRef = useRef<(() => void) | null>(null)
 
   const items = useMemo(() => computeOrderedItems(entries), [entries])
 
@@ -94,14 +108,54 @@ export function DemoTOCProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const beginManualScroll = useCallback(() => {
-    isManualScrollRef.current = true
-    if (manualScrollTimerRef.current !== null) {
-      window.clearTimeout(manualScrollTimerRef.current)
+    const clearTimers = () => {
+      if (idleTimerRef.current !== null) {
+        window.clearTimeout(idleTimerRef.current)
+        idleTimerRef.current = null
+      }
+      if (maxTimerRef.current !== null) {
+        window.clearTimeout(maxTimerRef.current)
+        maxTimerRef.current = null
+      }
     }
-    manualScrollTimerRef.current = window.setTimeout(() => {
+
+    const release = () => {
+      clearTimers()
+      if (scrollListenerRef.current) {
+        window.removeEventListener('scroll', scrollListenerRef.current)
+        scrollListenerRef.current = null
+      }
       isManualScrollRef.current = false
-      manualScrollTimerRef.current = null
-    }, MANUAL_SCROLL_LOCK_MS)
+    }
+
+    // Re-entrant: a second TOC click before the first settles just
+    // restarts the idle window on the existing listener.
+    isManualScrollRef.current = true
+    clearTimers()
+
+    if (!scrollListenerRef.current) {
+      const onScroll = () => {
+        if (idleTimerRef.current !== null) window.clearTimeout(idleTimerRef.current)
+        idleTimerRef.current = window.setTimeout(release, MANUAL_SCROLL_IDLE_MS)
+      }
+      scrollListenerRef.current = onScroll
+      window.addEventListener('scroll', onScroll, { passive: true })
+    }
+
+    // Kick off the idle countdown immediately so a click that triggers
+    // no scroll at all (target already on screen) still releases.
+    idleTimerRef.current = window.setTimeout(release, MANUAL_SCROLL_IDLE_MS)
+    maxTimerRef.current = window.setTimeout(release, MANUAL_SCROLL_MAX_MS)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (idleTimerRef.current !== null) window.clearTimeout(idleTimerRef.current)
+      if (maxTimerRef.current !== null) window.clearTimeout(maxTimerRef.current)
+      if (scrollListenerRef.current) {
+        window.removeEventListener('scroll', scrollListenerRef.current)
+      }
+    }
   }, [])
 
   const value = useMemo<DemoTOCContextValue>(

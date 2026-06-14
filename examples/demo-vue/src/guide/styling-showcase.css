@@ -1,0 +1,229 @@
+/*
+ * Helper classes used by the Styling Showcase guide page
+ * (`examples/demo-vue/src/guide/StylingShowcase.vue`).
+ *
+ * Byte-equivalent port of the "Styling showcase helpers" and "Unstyled demo
+ * helpers" blocks from `examples/demo/src/app.css`. Imported once by
+ * `StylingShowcase.vue` — keeping it out of the global `src/style.css` so
+ * it does not collide with the table-only `demo-unstyled-*` ruleset in
+ * `examples/demo-vue/src/demos/table/styles.css` (the React side does not
+ * have that collision because its global app.css owns all helper classes).
+ *
+ * Tweak the React source first, then re-port.
+ */
+
+/* ── Unstyled demo helpers ────────────────────────────────────────────── */
+
+.guide-styling .demo-unstyled-card {
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: var(--sg-color-bg);
+  box-shadow: var(--sg-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 320px;
+}
+
+.guide-styling .demo-unstyled-card-title {
+  font-weight: 700;
+  color: var(--sg-color-text);
+}
+
+.guide-styling .demo-unstyled-card-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.guide-styling .demo-unstyled-btn {
+  border: 1px solid var(--sg-color-border-secondary);
+  background: var(--sg-color-primary-bg);
+  color: var(--sg-color-primary);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.guide-styling .demo-unstyled-btn:hover {
+  background: color-mix(in srgb, var(--sg-color-primary-bg) 70%, var(--sg-color-bg) 30%);
+}
+
+.guide-styling .demo-unstyled-input {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--sg-color-border-secondary);
+  background: var(--sg-color-bg);
+  color: var(--sg-color-text);
+  min-width: 260px;
+}
+
+/* ── Styling showcase helpers ────────────────────────────────────────── */
+
+.guide-styling .demo-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.guide-styling .demo-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--sg-color-bg);
+}
+
+.guide-styling .demo-swatch-box {
+  height: 56px;
+  width: 100%;
+}
+
+.guide-styling .demo-swatch-meta {
+  padding: 6px 10px 8px;
+  font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+  font-size: 11px;
+  color: var(--sg-color-text-secondary);
+  line-height: 1.4;
+}
+
+.guide-styling .demo-swatch-meta strong {
+  color: var(--sg-color-text);
+  display: block;
+  margin-bottom: 2px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.guide-styling .demo-scope-card {
+  padding: 16px;
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius, 6px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 320px;
+  background: var(--sg-color-bg);
+}
+
+.guide-styling .demo-scope-card h4 {
+  margin: 0;
+  font-size: 14px;
+  color: var(--sg-color-text);
+}
+
+.guide-styling .demo-scope-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.guide-styling .demo-dark-scope {
+  padding: 16px;
+  border-radius: 8px;
+  background: #0d1117;
+  color: #c9d1d9;
+}
+
+/* ── Slot-highlight demo ─────────────────────────────────────────────── */
+
+.guide-styling .demo-slot-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.guide-styling .demo-slot-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--sg-color-text-secondary);
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px dashed var(--sg-color-border-secondary);
+}
+
+.guide-styling .demo-slot-legend-item::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.guide-styling .demo-table-root {
+  border: 2px dashed transparent;
+  border-radius: var(--sg-border-radius, 6px);
+}
+
+.guide-styling .demo-table-toolbar {
+  background: var(--sg-color-primary-bg);
+  border-radius: 6px 6px 0 0;
+}
+
+.guide-styling .demo-table-th {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sg-color-primary);
+}
+
+.guide-styling .demo-table-td {
+  font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+}
+
+.guide-styling .demo-table-row-featured {
+  background: color-mix(in srgb, var(--sg-color-primary-bg) 80%, var(--sg-color-bg) 20%);
+}
+
+.guide-styling .demo-table-cell-critical {
+  color: var(--sg-color-error);
+  font-weight: 600;
+}
+
+.guide-styling .demo-table-cell-ok {
+  color: var(--sg-color-success);
+  font-weight: 600;
+}
+
+.guide-styling .demo-list-item {
+  border-radius: 10px;
+}
+
+.guide-styling .demo-list-header {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--sg-color-text-tertiary, var(--sg-color-text-secondary));
+}
+
+.guide-styling .demo-list-item-featured {
+  background: color-mix(in srgb, var(--sg-color-primary-bg) 80%, var(--sg-color-bg) 20%);
+  border-left: 3px solid var(--sg-color-primary);
+}
+
+/* Per-column header helpers used by the headerClassName recipe. */
+.guide-styling .th-strong {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.guide-styling .th-numeric {
+  font-variant-numeric: tabular-nums;
+  color: var(--sg-color-text-secondary);
+}
+
+.guide-styling .th-status {
+  color: var(--sg-color-primary);
+}

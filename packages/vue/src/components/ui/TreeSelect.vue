@@ -402,7 +402,7 @@ function labelFor(key: TreeKey): string {
       <div class="sg-treeselect-selector" @click="handleTriggerClick">
         <div class="sg-treeselect-selection-wrap">
           <span
-            v-if="displayedValues.length === 0 && !searchValue"
+            v-if="displayedValues.length === 0 && !searchValue && !(showSearch && open)"
             class="sg-treeselect-placeholder"
             >{{ placeholder }}</span
           >
@@ -431,6 +431,7 @@ function labelFor(key: TreeKey): string {
             ref="searchRef"
             class="sg-treeselect-search-input"
             :value="searchValue"
+            :placeholder="displayedValues.length === 0 ? placeholder : ''"
             @input="handleSearchInput"
           />
         </div>

@@ -108,11 +108,11 @@ const ganttCssVars = computed<CssVarDef[]>(() => [
     :description="t.pageLead"
     :when-to-use="[t.pageWhen1, t.pageWhen2, t.pageWhen3]"
   >
-    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource" flush>
+    <DemoBox :title="t.demoBasicTitle" :description="t.demoBasicDesc" :code="BasicSource">
       <BasicGantt />
     </DemoBox>
 
-    <DemoBox :title="t.demoScaleTitle" :description="t.demoScaleDesc" :code="ScaleSource" flush>
+    <DemoBox :title="t.demoScaleTitle" :description="t.demoScaleDesc" :code="ScaleSource">
       <ScaleGantt />
     </DemoBox>
 

@@ -335,21 +335,6 @@ export interface DemoDict {
   }
 
   /**
-   * Stub guide pages — Vue-side parity is structural only. Full ports of
-   * `StylingShowcasePage`, `DesignTokensPage` and `ConfigProviderDemo`
-   * (the embedded guide variant) are out of scope for Wave 3.4.
-   */
-  guideStub: {
-    seeReactDocs: string
-    stylingShowcaseTitle: string
-    stylingShowcaseLead: string
-    designTokensTitle: string
-    designTokensLead: string
-    configProviderTitle: string
-    configProviderLead: string
-  }
-
-  /**
    * Guide → Design Tokens (`/guide/design-tokens`). Mirrors React's
    * `designTokens` channel — same dataset, same wording, same UI.
    */
@@ -374,77 +359,11 @@ export interface DemoDict {
   }
 
   /**
-   * Guide → Styling Showcase (`/guide/styling-showcase`). The Vue port
-   * is a simplified subset of the React reference — palette swatches,
-   * semantic swatches, brand override scope, dark scope and per-feature
-   * brand. Recipe titles/descriptions live here.
-   */
-  stylingShowcase: {
-    pageTitle: string
-    pageLead: string
-    when1: string
-    when2: string
-    when3: string
-    swatchSemanticBadge: string
-
-    recipePaletteTitle: string
-    recipePaletteDesc: string
-    recipeSemanticTitle: string
-    recipeSemanticDesc: string
-    recipeScopedBrandTitle: string
-    recipeScopedBrandDesc: string
-    recipeScopedBrandHeading: string
-    scopedBrandPrimary: string
-    scopedBrandDefault: string
-    scopedBrandInputPlaceholder: string
-    recipeDarkTitle: string
-    recipeDarkDesc: string
-    darkPrimary: string
-    darkDefault: string
-    darkInputPlaceholder: string
-    recipeBtnTokensTitle: string
-    recipeBtnTokensDesc: string
-    pillPrimary: string
-    pillDefault: string
-    recipeInputTokensTitle: string
-    recipeInputTokensDesc: string
-    roundedInputPlaceholder: string
-    recipePerFeatureTitle: string
-    recipePerFeatureDesc: string
-    perFeatureLabelPrimary: string
-    perFeatureLabelRadius: string
-    perFeaturePrimary: string
-    perFeatureDefault: string
-    perFeatureInputPlaceholder: string
-  }
-
-  /**
-   * Guide → ConfigProvider (`/guide/config-provider`). Rich prose
-   * guide — when to reach for the wrapper vs. picking sizes per
-   * component, how locale propagation works, how to compose providers.
-   */
-  configProviderGuide: {
-    title: string
-    lead: string
-    whenHeading: string
-    when1: string
-    when2: string
-    when3: string
-    when4: string
-    apiHeading: string
-    apiLead: string
-    apiSizeDesc: string
-    apiDisabledDesc: string
-    apiBorderedDesc: string
-    apiLocaleDesc: string
-    nestedHeading: string
-    nestedLead: string
-    componentHeading: string
-    componentLead: string
-    componentCta: string
-  }
-
-  /**
+   * Styling Showcase and ConfigProvider guide pages own their copy
+   * locally — see `examples/demo-vue/src/guide/styling-showcase-doc/`
+   * and `examples/demo-vue/src/demos/configprovider-doc/` for the
+   * dictionaries (1:1 with the React reference).
+   *
    * `<FrameworkSwitcher>` — used in the topbar `extras` slot. Visual
    * parity with `examples/demo/src/components/FrameworkSwitcher.tsx`.
    */

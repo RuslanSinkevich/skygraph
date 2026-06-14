@@ -191,7 +191,12 @@ const innerStyle = computed<CSSProperties>(() => ({
 
 <template>
   <div :style="gridStyle">
-    <div v-for="card in cards" :key="card.key" :style="cardStyle(card.key)">
+    <div
+      v-for="card in cards"
+      :key="card.key"
+      class="demo-token-scope-card"
+      :style="cardStyle(card.key)"
+    >
       <span :style="{ fontSize: '13px', fontWeight: 600, color: TITLE_COLOR[card.key] }">
         {{ card.label }}
       </span>

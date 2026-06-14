@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 
 /**
  * Shared floating-label wrapper used by every input-bearing component
@@ -39,7 +39,6 @@ const SHEET = `
   padding-left: 14px;
 }
 .demo-ff > .sg-timepicker .sg-timepicker-input {
-  min-width: 0;
   width: 100%;
 }
 .demo-ff > .sg-timepicker .sg-timepicker-placeholder,
@@ -54,6 +53,7 @@ const SHEET = `
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
+  transform-origin: left center;
   font-size: 14px;
   line-height: 1;
   color: var(--sg-color-text-secondary);
@@ -70,7 +70,6 @@ const SHEET = `
 .demo-ff[data-floated='true'] .demo-ff-label {
   top: 0;
   transform: translateY(-50%) scale(0.85);
-  transform-origin: left center;
   color: var(--sg-color-primary);
   background: var(--demo-ff-surface);
 }
@@ -90,12 +89,42 @@ export function FloatingField({
   children: ReactNode
 }) {
   const [focused, setFocused] = useState(false)
+  // Picking an option (Select / AutoComplete) blurs the trigger one tick
+  // before the controlled `filled` prop flips to true. Clearing `focused`
+  // synchronously would defloat the label for that single frame, then
+  // refloat it once `filled` arrives — the visible "jump". Deferring the
+  // blur to the next frame lets `filled` settle first, so the label never
+  // drops. A refocus in between cancels the pending blur.
+  const blurFrameRef = useRef<number | null>(null)
+
+  const cancelPendingBlur = useCallback(() => {
+    if (blurFrameRef.current !== null) {
+      window.cancelAnimationFrame(blurFrameRef.current)
+      blurFrameRef.current = null
+    }
+  }, [])
+
+  useEffect(() => cancelPendingBlur, [cancelPendingBlur])
+
+  const handleFocus = useCallback(() => {
+    cancelPendingBlur()
+    setFocused(true)
+  }, [cancelPendingBlur])
+
+  const handleBlur = useCallback(() => {
+    cancelPendingBlur()
+    blurFrameRef.current = window.requestAnimationFrame(() => {
+      blurFrameRef.current = null
+      setFocused(false)
+    })
+  }, [cancelPendingBlur])
+
   return (
     <div
       className="demo-ff"
       data-floated={focused || filled ? 'true' : undefined}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
     >
       {children}
       <label className="demo-ff-label">{label}</label>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, nextTick, onMounted, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, ref, watch } from 'vue'
 
 import { useActiveSection } from './intersection'
 import { useDemoTOCStrings } from './strings'
@@ -83,6 +83,27 @@ useActiveSection(
   isManualScrollRef,
 )
 
+// Keep the active row visible inside the rail's own scroll area. On long
+// pages (e.g. Table has 30+ demos) the rail scrolls independently, so the
+// highlighted item would otherwise drift out of view as the page scrolls,
+// making the list look out of sync with the content. Mirrors React DemoTOC.
+const navRef = ref<HTMLElement | null>(null)
+watch(activeId, () => {
+  void nextTick(() => {
+    const nav = navRef.value
+    if (!nav) return
+    const link = nav.querySelector<HTMLElement>('.demo-toc-item-active')
+    if (!link) return
+    const navRect = nav.getBoundingClientRect()
+    const linkRect = link.getBoundingClientRect()
+    if (linkRect.top < navRect.top) {
+      nav.scrollTop -= navRect.top - linkRect.top + 12
+    } else if (linkRect.bottom > navRect.bottom) {
+      nav.scrollTop += linkRect.bottom - navRect.bottom + 12
+    }
+  })
+})
+
 function scrollToId(id: string) {
   const target = document.getElementById(id)
   if (!target) return
@@ -137,7 +158,7 @@ function handleBackToTop(event: MouseEvent) {
 </script>
 
 <template>
-  <nav v-if="items.length > 0" class="demo-toc" :aria-label="strings.ariaLabel">
+  <nav v-if="items.length > 0" ref="navRef" class="demo-toc" :aria-label="strings.ariaLabel">
     <a class="demo-toc-back-to-top" href="#" @click="handleBackToTop">
       <span aria-hidden>↑</span>
       <span>{{ strings.backToTop }}</span>

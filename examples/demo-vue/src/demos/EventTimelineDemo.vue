@@ -94,7 +94,6 @@ const eventTimelineCssVars = computed<CssVarDef[]>(() => [
       :title="t.demoHorizontalTitle"
       :description="t.demoHorizontalDesc"
       :code="HorizontalSource"
-      flush
     >
       <HorizontalEt />
     </DemoBox>

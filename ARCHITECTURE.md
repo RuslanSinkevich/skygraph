@@ -465,7 +465,7 @@ SET → STAGE → RESOLVE → PROPAGATE → COMMIT → NOTIFY
 ### Переиспользуется между фреймворками (100%)
 
 - `@skygraph/core` целиком (runtime + engines) — чистый TS, без DOM
-- `@skygraph/styles` целиком (tokens, themes, transitions, print, 60+
+- `@skygraph/styles` целиком (tokens, themes, transitions, print,
   компонент-CSS) — нет JS, framework-agnostic из коробки
 
 ### Пишется под каждый фреймворк
@@ -531,7 +531,7 @@ skygraph/
 │   │   │   │   │                 Diagram, LineChart, BarChart, AreaChart, PieChart,
 │   │   │   │   │                 Dashboard/DashboardEditor,
 │   │   │   │   │                 Gantt, EventTimeline, ResourceCalendar
-│   │   │   │   ├── ui/         — 47 standalone components
+│   │   │   │   ├── ui/         — standalone components
 │   │   │   │   └── ConfigProvider.tsx
 │   │   │   ├── adapters/       — zodAdapter, jsonSchemaAdapter
 │   │   │   ├── types/          — shared types (BaseComponentProps, SgLocale, …)
@@ -546,7 +546,7 @@ skygraph/
 │   │   │   │                     useHistory/useChartSize, useFocusTrap,
 │   │   │   │                     useRovingTabIndex/useListNavigation
 │   │   │   ├── components/
-│   │   │   │   ├── ui/         — 52 SFC primitives (Button, Input, Modal, Drawer,
+│   │   │   │   ├── ui/         — SFC primitives (Button, Input, Modal, Drawer,
 │   │   │   │   │                 Tabs, Menu, Notification, Tooltip, Transition,
 │   │   │   │   │                 ConfigProvider, Pagination, Steps, Carousel, …)
 │   │   │   │   └── complex/    — SgForm/SgField/SgFormList/SgFormProvider,
@@ -566,7 +566,7 @@ skygraph/
 │       ├── tokens.css, reset.css, index.css
 │       ├── transitions.css     — fade, slide, zoom, collapse
 │       ├── print.css           — @media print layer
-│       ├── components/         — 64 component CSS files
+│       ├── components/         — per-component CSS files
 │       ├── themes/             — default.css, dark.css
 │       └── package.json
 │
@@ -579,10 +579,10 @@ skygraph/
 │   ├── demo/                   — Ant-style React demo (live docs + benchmarks page)
 │   │   └── src/
 │   │       ├── components/     — DemoBox, PropsTable, ComponentDoc, FrameworkSwitcher
-│   │       ├── demos/          — 50+ component demo pages
+│   │       ├── demos/          — component demo pages
 │   │       │   └── benchmarks/ — Form/Table/LineChart benchmarks (vs RHF/AntD/Recharts)
 │   │       └── pages/          — Landing, Roadmap, About, Benchmarks, Showcases (embedded)
-│   ├── demo-vue/               — Ant-style Vue demo (23 pages, ant-style shell)
+│   ├── demo-vue/               — Ant-style Vue demo (ant-style shell)
 │   └── showcases/              — 12 mini-apps (CRM, Helpdesk, Inbox, Dashboard, …)
 │
 ├── deploy/                     — Docker/Caddy multi-framework deploy

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, provide, ref, shallowRef } from 'vue'
+import { computed, onBeforeUnmount, provide, ref, shallowRef } from 'vue'
 
 import {
   DEMO_TOC_KEY,
@@ -16,8 +16,20 @@ import {
  * the React provider's `computeOrderedItems`.
  */
 
-/** Window during which IntersectionObserver updates are suppressed. */
-const MANUAL_SCROLL_LOCK_MS = 600
+/**
+ * Idle gap (ms) after the last scroll event before a programmatic
+ * scroll is considered finished. The active-section tracker stays
+ * suppressed for the whole smooth-scroll animation and re-engages only
+ * once scrolling has actually stopped — a fixed timeout was too short
+ * for long jumps (the highlight flickered mid-animation).
+ */
+const MANUAL_SCROLL_IDLE_MS = 120
+/**
+ * Hard ceiling so the lock can never get stuck if a `scroll` event is
+ * somehow missed (e.g. the target was already in view and no scroll
+ * happened at all).
+ */
+const MANUAL_SCROLL_MAX_MS = 1200
 
 function computeOrderedItems(entries: ReadonlyMap<HTMLElement, RegistrationEntry>): DemoTOCItem[] {
   if (entries.size === 0) return []
@@ -50,7 +62,9 @@ function computeOrderedItems(entries: ReadonlyMap<HTMLElement, RegistrationEntry
 const entries = shallowRef<ReadonlyMap<HTMLElement, RegistrationEntry>>(new Map())
 const activeId = ref<string | null>(null)
 const isManualScrollRef = { current: false }
-let manualScrollTimer: number | null = null
+let idleTimer: number | null = null
+let maxTimer: number | null = null
+let scrollListener: (() => void) | null = null
 
 const items = computed<DemoTOCItem[]>(() => computeOrderedItems(entries.value))
 
@@ -70,16 +84,54 @@ function setActiveId(id: string | null) {
   activeId.value = id
 }
 
-function beginManualScroll() {
-  isManualScrollRef.current = true
-  if (manualScrollTimer !== null) {
-    window.clearTimeout(manualScrollTimer)
+function clearManualTimers() {
+  if (idleTimer !== null) {
+    window.clearTimeout(idleTimer)
+    idleTimer = null
   }
-  manualScrollTimer = window.setTimeout(() => {
-    isManualScrollRef.current = false
-    manualScrollTimer = null
-  }, MANUAL_SCROLL_LOCK_MS)
+  if (maxTimer !== null) {
+    window.clearTimeout(maxTimer)
+    maxTimer = null
+  }
 }
+
+function releaseManualScroll() {
+  clearManualTimers()
+  if (scrollListener) {
+    window.removeEventListener('scroll', scrollListener)
+    scrollListener = null
+  }
+  isManualScrollRef.current = false
+}
+
+function beginManualScroll() {
+  // Re-entrant: a second TOC click before the first settles just
+  // restarts the idle window on the existing listener.
+  isManualScrollRef.current = true
+  clearManualTimers()
+
+  if (!scrollListener) {
+    const onScroll = () => {
+      if (idleTimer !== null) window.clearTimeout(idleTimer)
+      idleTimer = window.setTimeout(releaseManualScroll, MANUAL_SCROLL_IDLE_MS)
+    }
+    scrollListener = onScroll
+    window.addEventListener('scroll', onScroll, { passive: true })
+  }
+
+  // Kick off the idle countdown immediately so a click that triggers
+  // no scroll at all (target already on screen) still releases.
+  idleTimer = window.setTimeout(releaseManualScroll, MANUAL_SCROLL_IDLE_MS)
+  maxTimer = window.setTimeout(releaseManualScroll, MANUAL_SCROLL_MAX_MS)
+}
+
+onBeforeUnmount(() => {
+  clearManualTimers()
+  if (scrollListener) {
+    window.removeEventListener('scroll', scrollListener)
+    scrollListener = null
+  }
+})
 
 const value: DemoTOCContextValue = {
   register,

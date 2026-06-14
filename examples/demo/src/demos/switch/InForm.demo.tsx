@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Form, Field, Switch, SubmitButton } from '@skygraph/react'
 import { useDemoStrings } from '../../i18n'
 
@@ -6,11 +7,17 @@ const STRINGS = {
     emailNotifications: 'Email notifications',
     marketing: 'Marketing updates',
     save: 'Save',
+    saved: 'Saved',
+    on: 'on',
+    off: 'off',
   },
   ru: {
     emailNotifications: 'Почтовые уведомления',
     marketing: 'Маркетинговые рассылки',
     save: 'Сохранить',
+    saved: 'Сохранено',
+    on: 'вкл',
+    off: 'выкл',
   },
 } as const
 
@@ -21,11 +28,17 @@ const STRINGS = {
  */
 export function InFormSwitch() {
   const t = useDemoStrings(STRINGS)
+  const [saved, setSaved] = useState<{ notifications: boolean; marketing: boolean } | null>(null)
   return (
     <Form
       layout="vertical"
       defaultValues={{ notifications: true, marketing: false }}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={(values) =>
+        setSaved({
+          notifications: Boolean(values.notifications),
+          marketing: Boolean(values.marketing),
+        })
+      }
       style={{ maxWidth: 380 }}
     >
       <Field name="notifications" label={t.emailNotifications} valuePropName="checked">
@@ -35,6 +48,12 @@ export function InFormSwitch() {
         <Switch />
       </Field>
       <SubmitButton>{t.save}</SubmitButton>
+      {saved && (
+        <p style={{ marginTop: 12, fontSize: 14 }}>
+          {t.saved}: {t.emailNotifications} — {saved.notifications ? t.on : t.off}, {t.marketing} —{' '}
+          {saved.marketing ? t.on : t.off}
+        </p>
+      )}
     </Form>
   )
 }

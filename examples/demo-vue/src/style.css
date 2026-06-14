@@ -272,6 +272,7 @@ a {
 }
 
 .demo-box-preview {
+  position: relative;
   padding: 36px 28px;
   display: flex;
   flex-wrap: wrap;
@@ -297,19 +298,36 @@ a {
   );
 }
 
+/*
+ * A preview hosting an open overlay (Select / DatePicker / Cascader /
+ * TreeSelect / ColorPicker dropdown, Dropdown / Menu popup) must outrank
+ * sibling previews below it so the floating layer isn't covered by the
+ * next demo card. Mirrors React app.css.
+ */
+.demo-box-preview:has(
+  .sg-dp-dropdown,
+  .sg-tp-dropdown,
+  .sg-select-dropdown,
+  .sg-autocomplete-dropdown,
+  .sg-cascader-dropdown,
+  .sg-colorpicker-dropdown,
+  .sg-treeselect-dropdown,
+  .sg-dropdown,
+  .sg-menu-popup
+) {
+  z-index: var(--sg-z-dropdown);
+}
+
+.demo-box-preview:has(.sg-modal-mask, .sg-drawer-root) {
+  z-index: var(--sg-z-modal);
+}
+
 .demo-box-preview-flush {
   padding: 0;
   min-height: 0;
   background: var(--sg-color-bg);
   overflow-x: auto;
   overflow-y: visible;
-}
-
-/* Flush previews that host a Table looked glued to the demo-box edges (no
- * breathing room around bordered/resizable/draggable tables). Give them a
- * little padding while keeping horizontal scroll for wide tables. */
-.demo-box-preview-flush:has(.sg-table) {
-  padding: 16px 20px;
 }
 
 .demo-box-preview-vertical {
@@ -428,11 +446,230 @@ a {
   width: 100%;
 }
 
+.demo-box-preview > .sg-list,
+.demo-box-preview > .sg-descriptions,
+.demo-box-preview > .sg-collapse,
+.demo-box-preview > .sg-steps,
+.demo-box-preview > .sg-event-timeline,
+.demo-box-preview > .sg-dashboard,
+.demo-box-preview > .sg-gantt,
+.demo-box-preview > .sg-resource-calendar {
+  width: 100%;
+}
+
 .demo-box-preview .demo-card-host .sg-result,
 .demo-box-preview .demo-card-host .sg-empty {
   background: transparent;
   border: 0;
   border-radius: 0;
+}
+
+/* ── Token-scope cards ────────────────────────────────────────────────── */
+
+/*
+ * The "Glass pick" card sets `backdrop-filter`, which makes it a stacking
+ * context that paints atomically over earlier sibling cards. That covered any
+ * dropdown / popover overflowing out of a neighbouring card. Lift whichever
+ * card currently hosts an open overlay above its siblings so the popup is
+ * never clipped behind the glass card.
+ */
+.demo-token-scope-card {
+  position: relative;
+}
+
+.demo-token-scope-card:has(
+  .sg-dropdown,
+  .sg-select-dropdown,
+  .sg-dp-dropdown,
+  .sg-tp-dropdown,
+  .sg-cascader-dropdown,
+  .sg-treeselect-dropdown,
+  .sg-colorpicker-dropdown,
+  .sg-autocomplete-dropdown,
+  .sg-menu-popup
+) {
+  z-index: var(--sg-z-dropdown);
+}
+
+/* ── Unstyled demo helpers ────────────────────────────────────────────── */
+
+.demo-unstyled-card {
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: var(--sg-color-bg);
+  box-shadow: var(--sg-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 320px;
+}
+
+.demo-unstyled-card-title {
+  font-weight: 700;
+  color: var(--sg-color-text);
+}
+
+.demo-unstyled-card-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.demo-unstyled-btn {
+  border: 1px solid var(--sg-color-border-secondary);
+  background: var(--sg-color-primary-bg);
+  color: var(--sg-color-primary);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.demo-unstyled-btn:hover {
+  background: color-mix(in srgb, var(--sg-color-primary-bg) 70%, var(--sg-color-bg) 30%);
+}
+
+.demo-unstyled-input {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--sg-color-border-secondary);
+  background: var(--sg-color-bg);
+  color: var(--sg-color-text);
+  min-width: 260px;
+}
+
+/* ── Styling showcase helpers ────────────────────────────────────────── */
+
+.demo-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.demo-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--sg-color-bg);
+}
+
+.demo-swatch-box {
+  height: 56px;
+  width: 100%;
+}
+
+.demo-swatch-meta {
+  padding: 6px 10px 8px;
+  font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+  font-size: 11px;
+  color: var(--sg-color-text-secondary);
+  line-height: 1.4;
+}
+
+.demo-swatch-meta strong {
+  color: var(--sg-color-text);
+  display: block;
+  margin-bottom: 2px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.demo-scope-card {
+  padding: 16px;
+  border: 1px solid var(--sg-color-border-secondary);
+  border-radius: var(--sg-border-radius, 6px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 320px;
+  background: var(--sg-color-bg);
+}
+
+.demo-scope-card h4 {
+  margin: 0;
+  font-size: 14px;
+  color: var(--sg-color-text);
+}
+
+.demo-scope-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.demo-dark-scope {
+  padding: 16px;
+  border-radius: 8px;
+  background: #0d1117;
+  color: #c9d1d9;
+}
+
+/* ── Slot-highlight demo ─────────────────────────────────────────────── */
+
+.demo-slot-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.demo-slot-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--sg-color-text-secondary);
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px dashed var(--sg-color-border-secondary);
+}
+
+.demo-slot-legend-item::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+/* ── Utilities ───────────────────────────────────────────────────────── */
+
+.demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.demo-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.demo-fill {
+  width: 100%;
+}
+
+.demo-kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+  font-size: 11px;
+  border: 1px solid var(--sg-color-border-secondary);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--sg-color-bg-secondary);
+  color: var(--sg-color-text);
 }
 
 /* ── PropsTable ──────────────────────────────────────────────────────── */

@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="T">
 import { computed, ref, useSlots } from 'vue'
 import { useConfig } from '../../ui/ConfigProvider.vue'
+import SgPagination from '../../ui/Pagination.vue'
 import type { ListProps, ListClassNames, ListStyles } from './types'
 
 const props = withDefaults(defineProps<ListProps<T>>(), {
@@ -352,23 +353,13 @@ defineExpose({
       :class="['sg-list-pagination', sCls.pagination].filter(Boolean).join(' ') || undefined"
       :style="sSty.pagination"
     >
-      <button
-        type="button"
-        class="sg-list-pagination-prev"
-        :disabled="currentPage <= 1"
-        @click="changePage(currentPage - 1)"
-      >
-        ‹
-      </button>
-      <span class="sg-list-pagination-info">{{ currentPage }} / {{ pageCount }}</span>
-      <button
-        type="button"
-        class="sg-list-pagination-next"
-        :disabled="currentPage >= pageCount"
-        @click="changePage(currentPage + 1)"
-      >
-        ›
-      </button>
+      <SgPagination
+        :current="currentPage"
+        :total="total"
+        :page-size="pageSize"
+        :unstyled="unstyled"
+        @change="changePage"
+      />
     </div>
 
     <div
