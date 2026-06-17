@@ -1,21 +1,22 @@
 <script setup lang="ts">
-/**
- * The default ring reads `--sg-color-primary`, the connector reads
- * `--sg-color-border-secondary`, the pending content reads
- * `--sg-color-text-tertiary`. Three scoped recipes — branded green, dark
- * field, glass pick — rebrand the whole timeline.
- *
- * Mirrors React `examples/demo/src/demos/timeline/TokensOverride.demo.tsx`.
- */
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgTimeline } from '@skygraph/vue'
 import { releaseItems } from './data'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
+
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text-tertiary': '#94a3b8',
+  '--sg-color-border-secondary': '#475569',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgTimeline :items="releaseItems" pending="Awaiting…" />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgTimeline :items="releaseItems" pending="Awaiting…" />
+  </div>
 </template>

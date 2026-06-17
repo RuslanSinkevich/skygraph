@@ -1,26 +1,21 @@
 <script setup lang="ts">
-/**
- * Segmented composes the global scale — `--sg-color-bg-secondary` for the
- * track, `--sg-color-bg-container` for the selected thumb. Three scoped
- * recipes — branded green, dark field, glass pick — repaint the control.
- *
- * Mirrors React `examples/demo/src/demos/segmented/TokensOverride.demo.tsx`.
- */
-import type { CSSProperties } from 'vue'
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgSegmented } from '@skygraph/vue'
-import TokenScopeCards, { type TokenScopeKey } from '../_shared/TokenScopeCards.vue'
 
-const extra: Partial<Record<TokenScopeKey, CSSProperties>> = {
-  brand: { '--sg-color-bg-secondary': '#d1fae5' } as CSSProperties,
-  dark: { '--sg-color-bg-container': '#334155' } as CSSProperties,
-  glass: { '--sg-color-bg-container': 'rgba(255, 255, 255, 0.85)' } as CSSProperties,
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-bg-secondary': '#1e293b',
+  '--sg-color-bg-container': '#334155',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text-secondary': '#94a3b8',
 }
 </script>
 
 <template>
-  <TokenScopeCards :extra="extra">
-    <template #default>
-      <SgSegmented default-value="B" :options="['A', 'B', 'C', 'D']" />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgSegmented default-value="B" :options="['A', 'B', 'C', 'D']" />
+  </div>
 </template>

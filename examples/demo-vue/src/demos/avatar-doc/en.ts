@@ -32,7 +32,7 @@ export const avatarDocEn = {
   demoWithBadgeDesc: 'Wrap the avatar in a Badge for presence / count.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
-    'Three scopes built from Avatar tokens: green brand, dark surface and glass pick (shape + fallback bg).',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableAvatarApi: 'Avatar API',
   tableCssVars: 'CSS Variables',
 

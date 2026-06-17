@@ -27,7 +27,7 @@ export const carouselDocRu: { [K in keyof typeof carouselDocEn]: string } = {
   demoHiddenDotsTitle: 'Скрытые точки',
   demoHiddenDotsDesc: '`dots={false}` для декоративных каруселей.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоупьте цвета точек для ребрендинга.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableCarouselApi: 'API Carousel',
   tableCssVars: 'CSS-переменные',

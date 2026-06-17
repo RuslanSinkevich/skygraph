@@ -27,7 +27,7 @@ export const descriptionsDocEn = {
   demoRichContentTitle: 'Rich content',
   demoRichContentDesc: 'Labels and values accept any ReactNode — Badge, Tag, links…',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope the label-bg / border tokens to rebrand the frame.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableDescriptionsApi: 'Descriptions API',
   tableDescriptionsItem: 'DescriptionsItem',

@@ -1,25 +1,22 @@
 import { Steps } from '@skygraph/react'
 import { basicSteps } from './data'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Finished / process steps pull `--sg-color-primary` for the fill and tail.
- * Three scoped recipes — branded green, dark field, glass pick — rebrand the
- * whole wizard.
- */
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-border': '#64748b',
+  '--sg-color-border-secondary': '#475569',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-text-secondary': '#cbd5e1',
+} as CSSProperties
+
 export function TokensOverrideSteps() {
   return (
-    <TokenScopeCards
-      minCardWidth={420}
-      extra={{
-        brand: { ['--sg-color-border-secondary' as never]: '#a7f3d0' },
-        dark: {
-          ['--sg-color-border' as never]: '#64748b',
-          ['--sg-color-border-secondary' as never]: '#475569',
-        },
-        glass: { ['--sg-color-border-secondary' as never]: 'rgba(79, 70, 229, 0.24)' },
-      }}
-      render={() => <Steps current={1} items={basicSteps} direction="vertical" />}
-    />
+    <div style={dark}>
+      <Steps current={1} items={basicSteps} direction="vertical" />
+    </div>
   )
 }

@@ -34,7 +34,7 @@ export const popconfirmDocEn = {
   demoTableDesc: "Canonical table usage — placement='left' keeps the bubble inside the body.",
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
-    'Retint every surface with `--sg-color-bg-elevated`, `--sg-color-warning`, and `--sg-color-primary`.',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tablePopconfirmApi: 'Popconfirm API',
   tableCssVars: 'CSS Variables',
   cssHint:

@@ -33,7 +33,8 @@ export const collapseDocRu: CollapseDocStrings = {
   demoSizesTitle: 'Размеры',
   demoSizesDesc: 'Три размера меняют padding, min-height шапки и (для `large`) размер шрифта.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Локально переопределяем глобальные surface / border токены.',
+  demoTokensDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableCollapseApi: 'API Collapse',
   tableCollapseItemApi: 'CollapseItem',
   tableCssVars: 'CSS-переменные',

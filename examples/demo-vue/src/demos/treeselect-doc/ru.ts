@@ -29,7 +29,7 @@ export const treeSelectDocRu: { [K in keyof typeof treeSelectDocEn]: string } = 
   demoSizesDesc: 'Три размера, одна структура.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
-    'Три скоупа на токенах TreeSelect: зелёный бренд, тёмное поле (с деревом dropdown) и glass pick.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на контроле TreeSelect: уезжает вверх при фокусе или когда узел выбран.',

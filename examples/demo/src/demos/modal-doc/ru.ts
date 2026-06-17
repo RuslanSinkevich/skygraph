@@ -27,8 +27,7 @@ export const modalDocRu: { [K in keyof typeof modalDocEn]: string } = {
   demoNoFooterDesc:
     'Передайте `footer={null}`, чтобы убрать разделитель — read-only диалог только с кнопкой закрытия.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc:
-    'Скоуп `--sg-color-primary` + `--sg-border-radius-lg` для переоформления одного modal.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableModalApi: 'API Modal',
   tableCssVars: 'CSS-переменные',

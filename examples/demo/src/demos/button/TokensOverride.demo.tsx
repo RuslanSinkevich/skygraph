@@ -1,36 +1,25 @@
 import { Button } from '@skygraph/react'
-import { useDemoStrings } from '../../i18n'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Button reads the global `--sg-color-primary*` palette plus its own
- * `--sg-btn-*` paint tokens. Three scoped recipes — branded green, dark field
- * and frosted glass — reskin the same Button; hover / focus / disabled
- * behaviour stays intact.
- */
-const STRINGS = {
-  en: { primary: 'Get started', secondary: 'Learn more' },
-  ru: { primary: 'Начать', secondary: 'Подробнее' },
-} as const
+const dark = {
+  display: 'flex',
+  gap: 12,
+  flexWrap: 'wrap',
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-primary-hover': '#93c5fd',
+  '--sg-btn-bg': '#1e293b',
+  '--sg-btn-color': '#e2e8f0',
+  '--sg-btn-border': '#334155',
+} as CSSProperties
 
 export function TokensOverrideButton() {
-  const t = useDemoStrings(STRINGS)
   return (
-    <TokenScopeCards
-      extra={{
-        brand: { ['--sg-btn-border' as never]: '#6ee7b7' },
-        dark: { ['--sg-btn-border' as never]: '#1e293b' },
-        glass: {
-          ['--sg-btn-bg' as never]: 'rgba(255, 255, 255, 0.6)',
-          ['--sg-btn-border' as never]: 'rgba(15, 23, 42, 0.08)',
-        },
-      }}
-      render={() => (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <Button type="primary">{t.primary}</Button>
-          <Button>{t.secondary}</Button>
-        </div>
-      )}
-    />
+    <div style={dark}>
+      <Button type="primary">Get started</Button>
+      <Button>Learn more</Button>
+    </div>
   )
 }

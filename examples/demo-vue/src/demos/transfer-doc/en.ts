@@ -28,7 +28,8 @@ export const transferDocEn = {
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: 'Whole control + per-row `disabled`.',
   demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc: 'Rebrand panels via the global palette.',
+  demoTokensOverrideDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
 
   tableTransferApi: 'Transfer API',
   tableTransferItem: 'TransferItem',

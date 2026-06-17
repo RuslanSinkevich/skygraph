@@ -1,13 +1,21 @@
 import { Timeline } from '@skygraph/react'
 import { releaseItems } from './data'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * The default ring reads `--sg-color-primary`, the connector reads
- * `--sg-color-border-secondary`, the pending content reads
- * `--sg-color-text-tertiary`. Three scoped recipes — branded green, dark
- * field, glass pick — rebrand the whole timeline.
- */
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-border-secondary': '#334155',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-text-tertiary': '#94a3b8',
+} as CSSProperties
+
 export function TokensOverrideTimeline() {
-  return <TokenScopeCards render={() => <Timeline items={releaseItems} pending="Awaiting…" />} />
+  return (
+    <div style={dark}>
+      <Timeline items={releaseItems} pending="Awaiting…" />
+    </div>
+  )
 }

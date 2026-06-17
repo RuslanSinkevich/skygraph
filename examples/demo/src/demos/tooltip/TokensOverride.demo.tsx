@@ -1,26 +1,20 @@
 import { Tooltip, Button } from '@skygraph/react'
-import { useDemoStrings } from '../../i18n'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * The Tooltip and its trigger Button read the global palette. Three scoped
- * recipes — branded green, dark field, glass pick — rebrand the trigger and
- * the themed surface around it. Hover the button to reveal the tip.
- */
-const STRINGS = {
-  en: { hint: 'Press ⌘K to search', btn: 'Hover me' },
-  ru: { hint: 'Нажмите ⌘K для поиска', btn: 'Наведите' },
-} as const
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-primary-hover': '#93c5fd',
+} as CSSProperties
 
 export function TokensOverrideTooltip() {
-  const t = useDemoStrings(STRINGS)
   return (
-    <TokenScopeCards
-      render={() => (
-        <Tooltip title={t.hint} placement="top">
-          <Button type="primary">{t.btn}</Button>
-        </Tooltip>
-      )}
-    />
+    <div style={dark}>
+      <Tooltip title="Press ⌘K to search" placement="top">
+        <Button type="primary">Hover me</Button>
+      </Tooltip>
+    </div>
   )
 }

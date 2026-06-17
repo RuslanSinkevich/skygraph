@@ -1,34 +1,26 @@
 <script setup lang="ts">
-/**
- * Breadcrumb has no component-specific tokens — it reads the text palette and
- * `--sg-color-primary` for link hover. Three scoped recipes — branded green,
- * dark field, glass pick — restyle the trail.
- *
- * Mirrors React `examples/demo/src/demos/breadcrumb/TokensOverride.demo.tsx`.
- */
-import { computed } from 'vue'
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgBreadcrumb, type BreadcrumbItem } from '@skygraph/vue'
-import { useDemoStrings } from '../../i18n'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
 
-const STRINGS = {
-  en: { home: 'Home', docs: 'Docs', current: 'Breadcrumb' },
-  ru: { home: 'Главная', docs: 'Документация', current: 'Хлебные крошки' },
-} as const
+const items: BreadcrumbItem[] = [
+  { title: 'Home', href: '#' },
+  { title: 'Docs', href: '#' },
+  { title: 'Breadcrumb' },
+]
 
-const t = useDemoStrings(STRINGS)
-
-const items = computed<BreadcrumbItem[]>(() => [
-  { title: t.value.home, href: '#' },
-  { title: t.value.docs, href: '#' },
-  { title: t.value.current },
-])
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text-secondary': '#94a3b8',
+  '--sg-color-primary': '#60a5fa',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgBreadcrumb :items="items" />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgBreadcrumb :items="items" />
+  </div>
 </template>

@@ -26,7 +26,7 @@ export const uploadDocEn = {
   demoDisabledTitle: 'Disabled / loading',
   demoDisabledDesc: 'Block the trigger or swap it for a loading state.',
   demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc: 'Scope global tokens on a wrapper to re-skin the list.',
+  demoTokensOverrideDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableUploadApi: 'Upload API',
   tableUploadFile: 'UploadFile',

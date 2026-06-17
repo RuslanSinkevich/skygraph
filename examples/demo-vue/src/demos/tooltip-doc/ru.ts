@@ -25,7 +25,7 @@ export const tooltipDocRu: { [K in keyof typeof tooltipDocEn]: string } = {
     'Классический паттерн «?» — задайте tabindex, чтобы клавиатурный пользователь мог сфокусироваться.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скина тултипа (стекло, градиент, карточка) — каждый прокидывает className на обёртку и стилизует `.sg-tooltip-content` / `.sg-tooltip-arrow`.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableTooltipApi: 'API Tooltip',
   tableCssVars: 'CSS-переменные',
   cssHint:

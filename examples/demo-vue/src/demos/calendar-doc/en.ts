@@ -51,7 +51,8 @@ export const calendarDocEn = {
   demoLocaleDesc:
     'Pass a `locale` with localised month + day names, today button and week column header.',
   demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc: 'Scope global tokens on a wrapper to re-skin.',
+  demoTokensOverrideDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableCalendarApi: 'Calendar API',
   tableCalendarEvent: 'CalendarEvent',
   tableCssVars: 'CSS Variables',

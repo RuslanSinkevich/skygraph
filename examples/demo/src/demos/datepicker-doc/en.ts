@@ -32,8 +32,7 @@ export const datePickerDocEn = {
   demoRangePresetsTitle: 'Range presets',
   demoRangePresetsDesc: 'Preset tuples fill both ends.',
   demoTokensTitle: 'Token override',
-  demoTokensDesc:
-    'Three scoped recipes — branded green, dark field, glass pick — reskin one picker.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the trigger — it rises on focus or once a date is picked. Pure CSS + the controlled value.',

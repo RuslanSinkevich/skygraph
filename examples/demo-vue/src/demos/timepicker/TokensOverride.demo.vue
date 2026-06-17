@@ -1,19 +1,24 @@
 <script setup lang="ts">
-/**
- * TimePicker composes the global form tokens for the trigger and the surface
- * tokens for the dropdown. Three scoped recipes — branded green, dark field,
- * glass pick — reskin one instance.
- *
- * Mirrors React `examples/demo/src/demos/timepicker/TokensOverride.demo.tsx`.
- */
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgTimePicker } from '@skygraph/vue'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
+
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-bg-elevated': '#1f2937',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-border': '#334155',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-input-bg': '#1e293b',
+  '--sg-input-color': '#e2e8f0',
+  '--sg-input-border': '#334155',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgTimePicker default-value="09:30:00" placeholder="Select time" />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgTimePicker default-value="09:30:00" placeholder="Select time" />
+  </div>
 </template>

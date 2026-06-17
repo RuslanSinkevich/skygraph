@@ -8,6 +8,7 @@ import SgButton from '../../ui/Button.vue'
 import SgPagination from '../../ui/Pagination.vue'
 import SgSpin from '../../ui/Spin.vue'
 import { useConfig } from '../../ui/ConfigProvider.vue'
+import { FilterIcon } from './defaultIcons'
 import {
   DEFAULT_TABLE_LOCALE,
   type TableProps,
@@ -39,16 +40,16 @@ const emit = defineEmits<{
 }>()
 
 defineSlots<{
-  toolbar(props: Record<string, never>): unknown
-  empty(props: Record<string, never>): unknown
-  cell(props: {
+  toolbar?(props: Record<string, never>): unknown
+  empty?(props: Record<string, never>): unknown
+  cell?(props: {
     column: TableColumn
     row: Record<string, unknown>
     id: RowId
     value: unknown
   }): unknown
-  expandedRow(props: { row: Record<string, unknown>; id: RowId }): unknown
-  filterDropdown(props: FilterDropdownSlotProps & { column: TableColumn }): unknown
+  expandedRow?(props: { row: Record<string, unknown>; id: RowId }): unknown
+  filterDropdown?(props: FilterDropdownSlotProps & { column: TableColumn }): unknown
 }>()
 
 const slots = useSlots()
@@ -1236,8 +1237,9 @@ defineExpose({
                   role="button"
                   :aria-label="`Filter ${cell.col.title}`"
                   @click.stop="openPresetFilter(cell.col.key)"
-                  >▾</span
                 >
+                  <FilterIcon />
+                </span>
                 <div
                   v-if="
                     cell.col.filters &&
@@ -1300,8 +1302,9 @@ defineExpose({
                       activeFilters.get(cell.col.key)!.length > 0,
                   }"
                   @click.stop="toggleFilterDropdown(cell.col.key)"
-                  >▾</span
                 >
+                  <FilterIcon />
+                </span>
                 <div
                   v-if="
                     slots.filterDropdown && cell.col.onFilter && openFilterDropdown === cell.col.key
@@ -1350,9 +1353,7 @@ defineExpose({
           style="display: contents"
         >
           <div
-            :class="
-              ['sg-table-td', 'sg-table-empty', sCls.empty].filter(Boolean).join(' ') || undefined
-            "
+            :class="['sg-table-empty', sCls.empty].filter(Boolean).join(' ') || undefined"
             :style="{ gridColumn: spacerColumn, ...(sSty.empty ?? {}) }"
             role="cell"
           >

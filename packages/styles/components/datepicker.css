@@ -195,6 +195,20 @@
   min-width: 0;
 }
 
+/* Range + presets: absolute dropdown with `width: auto` shrink-fits to the
+ * trigger (~320px) and clips the second calendar. Size from content instead. */
+.sg-dp-dropdown-range {
+  width: max-content;
+}
+
+.sg-dp-dropdown-range .sg-dp-dropdown-inner,
+.sg-dp-dropdown-range .sg-dp-content,
+.sg-dp-dropdown-range .sg-dp-range-panels,
+.sg-dp-dropdown-range .sg-dp-panel {
+  flex-shrink: 0;
+  min-width: min-content;
+}
+
 /* ── Presets sidebar ── */
 
 .sg-dp-presets {
@@ -586,6 +600,15 @@ button.sg-dp-panel-title.sg-dp-panel-title-btn:hover {
 
 .sg-dp-range-panels {
   display: flex;
+  flex-wrap: nowrap;
+}
+
+.sg-dp-range-panels .sg-dp-panel {
+  flex: 0 0 auto;
+}
+
+.sg-dp-range-panels .sg-dp-table {
+  width: max-content;
 }
 
 .sg-dp-range-panels .sg-dp-panel + .sg-dp-panel {

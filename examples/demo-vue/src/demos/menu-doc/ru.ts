@@ -30,7 +30,8 @@ export const menuDocRu: { [K in keyof typeof menuDocEn]: string } = {
   demoDarkTitle: 'Тёмная тема',
   demoDarkDesc: "theme='dark' для тёмных поверхностей.",
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоупите глобальные токены на обёртке для перекраски одного меню.',
+  demoTokensDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   demoCustomLauncherTitle: 'Кастом: App launcher',
   demoCustomLauncherDesc:
     'Сайдбар в стиле SaaS: градиентный логотип, цветные глифы, мягкая поднятая поверхность — только скоуп токенов.',

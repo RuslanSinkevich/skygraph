@@ -27,7 +27,7 @@ export const menuDocEn = {
   demoDarkTitle: 'Dark theme',
   demoDarkDesc: "theme='dark' for dark surfaces.",
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope globals on a wrapper to re-skin a single menu.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
   demoCustomLauncherTitle: 'Custom: App launcher',
   demoCustomLauncherDesc:
     'SaaS-style sidebar with gradient brand mark, glyph badges and a soft elevated surface — pure token scoping.',

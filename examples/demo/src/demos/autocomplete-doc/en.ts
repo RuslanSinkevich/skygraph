@@ -21,8 +21,7 @@ export const autoCompleteDocEn = {
   demoStatesTitle: 'States',
   demoStatesDesc: 'Disabled and loading.',
   demoTokensTitle: 'Token override',
-  demoTokensDesc:
-    'Three scoped recipes — branded green, dark field, glass pick — reskin one AutoComplete.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the field — it rises on focus or once typed. Pure CSS + the controlled value.',

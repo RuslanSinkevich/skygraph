@@ -1,29 +1,23 @@
 <script setup lang="ts">
-/**
- * The Tooltip and its trigger Button read the global palette. Three scoped
- * recipes — branded green, dark field, glass pick — rebrand the trigger and
- * the themed surface around it. Hover the button to reveal the tip.
- *
- * Mirrors React `examples/demo/src/demos/tooltip/TokensOverride.demo.tsx`.
- */
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. Hover the button to reveal the tip.
 import { SgTooltip, SgButton } from '@skygraph/vue'
-import { useDemoStrings } from '../../i18n'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
 
-const STRINGS = {
-  en: { hint: 'Press ⌘K to search', btn: 'Hover me' },
-  ru: { hint: 'Нажмите ⌘K для поиска', btn: 'Наведите' },
-} as const
-
-const t = useDemoStrings(STRINGS)
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-primary-hover': '#93c5fd',
+  '--sg-color-bg-elevated': '#1e293b',
+  '--sg-color-text': '#e2e8f0',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgTooltip :title="t.hint" placement="top">
-        <SgButton type="primary">{{ t.btn }}</SgButton>
-      </SgTooltip>
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgTooltip title="Press ⌘K to search" placement="top">
+      <SgButton type="primary">Hover me</SgButton>
+    </SgTooltip>
+  </div>
 </template>

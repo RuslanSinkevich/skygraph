@@ -1,37 +1,30 @@
-import { useMemo } from 'react'
 import { Dropdown, Button } from '@skygraph/react'
 import type { DropdownItem } from '@skygraph/react'
-import { useDemoStrings } from '../../i18n'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Dropdown has no component-specific tokens — it composes the surface and
- * hover globals; the danger row follows `--sg-color-error`. Three scoped
- * recipes — branded green, dark field, glass pick — restyle the menu.
- */
-const STRINGS = {
-  en: { button: 'Actions ▾', edit: 'Edit', duplicate: 'Duplicate', delete: 'Delete…' },
-  ru: { button: 'Действия ▾', edit: 'Редактировать', duplicate: 'Дублировать', delete: 'Удалить…' },
-} as const
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-bg-elevated': '#1f2937',
+  '--sg-color-bg-hover': '#273449',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-error': '#f87171',
+} as CSSProperties
 
-function DropdownCard() {
-  const t = useDemoStrings(STRINGS)
-  const items = useMemo<DropdownItem[]>(
-    () => [
-      { key: '1', label: t.edit },
-      { key: '2', label: t.duplicate },
-      { key: 'd1', label: '', divider: true },
-      { key: '3', label: t.delete, danger: true },
-    ],
-    [t],
-  )
-  return (
-    <Dropdown items={items} trigger="click">
-      <Button>{t.button}</Button>
-    </Dropdown>
-  )
-}
+const items: DropdownItem[] = [
+  { key: '1', label: 'Edit' },
+  { key: '2', label: 'Duplicate' },
+  { key: 'd1', label: '', divider: true },
+  { key: '3', label: 'Delete…', danger: true },
+]
 
 export function TokensOverrideDropdown() {
-  return <TokenScopeCards render={() => <DropdownCard />} />
+  return (
+    <div style={dark}>
+      <Dropdown items={items} trigger="click">
+        <Button>Actions ▾</Button>
+      </Dropdown>
+    </div>
+  )
 }

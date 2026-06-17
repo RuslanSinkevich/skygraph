@@ -38,7 +38,8 @@ export const treeDocEn = {
   demoVirtualTitle: 'Virtual scroll',
   demoVirtualDesc: '1 000 nodes, only visible rows rendered.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope --sg-color-primary or data-sg-theme to skin one Tree.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
 
   tableTreeApi: 'Tree API',
   tableTreeNodeData: 'TreeNodeData',

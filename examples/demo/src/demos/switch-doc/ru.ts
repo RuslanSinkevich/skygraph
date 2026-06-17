@@ -25,7 +25,7 @@ export const switchDocRu: { [K in keyof typeof switchDocEn]: string } = {
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: "Используйте valuePropName='checked', чтобы привязать Switch к boolean-полю.",
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп глобальных токенов для ребрендинга группы.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableSwitchApi: 'API Switch',
   tableCssVars: 'CSS-переменные',

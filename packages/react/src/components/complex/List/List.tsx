@@ -2,6 +2,7 @@ import React from 'react'
 import { Spin } from '../../ui/Spin'
 import { Pagination } from '../../ui/Pagination'
 import { Empty } from '../../ui/Empty'
+import { useConfig } from '../../ConfigProvider'
 import type { ListProps, ListItemProps, ListItemMetaProps } from './types'
 
 function cls(...parts: (string | false | undefined | null)[]): string {
@@ -190,7 +191,8 @@ function ListInner<T = any>({
     }
   }, [])
 
-  const emptyText = locale?.emptyText ?? 'No Data'
+  const config = useConfig()
+  const emptyText = locale?.emptyText ?? config.locale?.empty?.description ?? 'No Data'
 
   const gridStyle = React.useMemo((): React.CSSProperties | undefined => {
     if (!grid) return undefined

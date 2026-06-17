@@ -23,7 +23,7 @@ export const resultDocEn = {
   demoContentTitle: 'With content',
   demoContentDesc: '`children` render inside a soft panel for diagnostics.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Rebrand via CSS variables — status tints + content panel.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableResultApi: 'Result API',
   tableCssVars: 'CSS Variables',

@@ -31,7 +31,7 @@ export const timelineDocRu: { [K in keyof typeof timelineDocEn]: string } = {
   demoCustomColorTitle: 'Свой цвет',
   demoCustomColorDesc: 'Подкрасить кольцо по умолчанию через prop `color`.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Перекрасить ось / коннектор через скоупленные CSS-переменные.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableTimelineApi: 'API Timeline',
   tableTimelineItem: 'TimelineItem',

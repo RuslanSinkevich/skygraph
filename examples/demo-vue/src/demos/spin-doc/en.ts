@@ -30,7 +30,8 @@ export const spinDocEn = {
   demoCustomColorTitle: 'Custom color',
   demoCustomColorDesc: 'Per-section tints via `--sg-spin-color`.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Re-tint ring + overlay via `--sg-spin-color` / `--sg-spin-overlay-bg`.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableSpinApi: 'Spin API',
   tableCssVars: 'CSS Variables',
   cssHint:

@@ -30,7 +30,8 @@ export const timelineDocRu: TimelineDocStrings = {
   demoPendingDesc:
     '`pending` добавляет приглушённый хвост; через слот `#dot` с `isPending` можно подменить маркер (аналог React `pendingDot`).',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Локально переопределяем глобальные цветовые токены для всей timeline.',
+  demoTokensDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableTimelineApi: 'API Timeline',
   tableTimelineItemApi: 'TimelineItem',
   tableCssVars: 'CSS-переменные',

@@ -35,7 +35,7 @@ export const calendarDocEn = {
   demoLocaleTitle: 'Locale',
   demoLocaleDesc: 'Russian day/month labels + Monday start + week numbers.',
   demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc: 'Scope global tokens on a wrapper to re-skin.',
+  demoTokensOverrideDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableCalendarApi: 'Calendar API',
   tableCalendarEvent: 'CalendarEvent',

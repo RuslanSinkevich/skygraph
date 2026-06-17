@@ -22,7 +22,7 @@ export const drawerDocRu: { [K in keyof typeof drawerDocEn]: string } = {
   demoNoMaskTitle: 'Опции подложки',
   demoNoMaskDesc: 'Отключите подложку или оставьте, но требуйте × / ESC.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп токенов поверхности на обёртке для тёмной темы Drawer.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableDrawerApi: 'API Drawer',
   tableCssVars: 'CSS-переменные',

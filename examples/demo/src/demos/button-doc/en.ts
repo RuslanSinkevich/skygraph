@@ -24,8 +24,7 @@ export const buttonDocEn = {
   demoIconTitle: 'With icon',
   demoIconDesc: 'Flex gap keeps icon + label aligned at every size.',
   demoTokensOverrideTitle: 'Token override',
-  demoTokensOverrideDesc:
-    'Three scoped recipes — branded green, dark field, glass pick — reskin the same Button via --sg-btn-* and the global primary palette; hover / focus / disabled stay intact.',
+  demoTokensOverrideDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableButtonApi: 'Button API',
   tableCssVars: 'CSS Variables',

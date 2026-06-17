@@ -27,7 +27,7 @@ export const emptyDocRu: { [K in keyof typeof emptyDocEn]: string } = {
   demoInCardTitle: 'Внутри карточки',
   demoInCardDesc: 'Канонический вариант размещения внутри Table / Card / List.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Перекрасьте иллюстрацию и подпись через CSS-переменные.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableEmptyApi: 'API Empty',
   tableCssVars: 'CSS-переменные',

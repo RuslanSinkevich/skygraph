@@ -1,22 +1,21 @@
 <script setup lang="ts">
-/**
- * Progress has no component-private tokens — bars and rings read
- * `--sg-color-primary`, `--sg-color-bg-hover` and `--sg-color-success/error`.
- * Three scoped recipes — branded green, dark field, glass pick — rebrand them.
- *
- * Mirrors React `examples/demo/src/demos/progress/TokensOverride.demo.tsx`.
- */
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgProgress } from '@skygraph/vue'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
+
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-bg-hover': '#1e293b',
+  '--sg-color-text': '#e2e8f0',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <div style="display: flex; flex-direction: column; gap: 10px">
-        <SgProgress :percent="35" />
-        <SgProgress :percent="75" status="active" />
-      </div>
-    </template>
-  </TokenScopeCards>
+  <div :style="dark" style="display: flex; flex-direction: column; gap: 10px">
+    <SgProgress :percent="35" />
+    <SgProgress :percent="75" status="active" />
+  </div>
 </template>

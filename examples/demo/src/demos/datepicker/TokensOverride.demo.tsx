@@ -1,11 +1,23 @@
 import { DatePicker } from '@skygraph/react'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * DatePicker reads `--sg-color-primary` for selected days, the global form
- * tokens for the control shell and the surface tokens for the dropdown. Three
- * scoped recipes — branded green, dark field, glass pick — reskin one picker.
- */
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-input-bg': '#1e293b',
+  '--sg-input-color': '#e2e8f0',
+  '--sg-input-border': '#334155',
+  '--sg-color-bg-elevated': '#1f2937',
+  '--sg-color-bg-hover': '#273449',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-primary': '#60a5fa',
+} as CSSProperties
+
 export function TokensOverrideDatePicker() {
-  return <TokenScopeCards render={() => <DatePicker placeholder="Pick a date" allowClear />} />
+  return (
+    <div style={dark}>
+      <DatePicker placeholder="Pick a date" allowClear />
+    </div>
+  )
 }

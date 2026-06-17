@@ -1,39 +1,30 @@
 import { useState } from 'react'
 import { Transfer } from '@skygraph/react'
 import { mockData } from './data'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Transfer has no component-local tokens — borders, headers, hover and
- * selection read the global palette. Three scoped recipes — branded green,
- * dark field, glass pick — reskin both columns.
- */
-function TransferCard() {
-  const [targetKeys, setTargetKeys] = useState<string[]>(['1', '3'])
-  return (
-    <Transfer
-      dataSource={mockData}
-      targetKeys={targetKeys}
-      onChange={(keys) => setTargetKeys(keys)}
-    />
-  )
-}
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-bg-container': '#111827',
+  '--sg-color-bg-secondary': '#1e293b',
+  '--sg-color-bg-hover': '#273449',
+  '--sg-color-border': '#475569',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-primary-bg': 'rgba(96, 165, 250, 0.28)',
+} as CSSProperties
 
 export function TokensOverrideTransfer() {
+  const [targetKeys, setTargetKeys] = useState<string[]>(['1', '3'])
   return (
-    <TokenScopeCards
-      minCardWidth={620}
-      contentMinWidth={560}
-      contentAlign="center"
-      extra={{
-        brand: { ['--sg-color-bg-secondary' as never]: '#ecfdf5' },
-        dark: { ['--sg-color-primary-bg' as never]: 'rgba(96, 165, 250, 0.28)' },
-        glass: {
-          ['--sg-color-bg-secondary' as never]: 'rgba(255, 255, 255, 0.7)',
-          ['--sg-color-border-secondary' as never]: 'rgba(79, 70, 229, 0.18)',
-        },
-      }}
-      render={() => <TransferCard />}
-    />
+    <div style={dark}>
+      <Transfer
+        dataSource={mockData}
+        targetKeys={targetKeys}
+        onChange={(keys) => setTargetKeys(keys)}
+      />
+    </div>
   )
 }

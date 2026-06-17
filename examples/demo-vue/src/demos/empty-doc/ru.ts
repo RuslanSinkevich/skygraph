@@ -25,7 +25,7 @@ export const emptyDocRu: EmptyDocStrings = {
   demoInCardDesc: 'Оборачиваем в bordered-поверхность — Empty «владеет» местом таблицы.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Локально переопределяем `--sg-color-text-disabled` / `--sg-color-text-tertiary`.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableEmptyApi: 'API Empty',
   tableCssVars: 'CSS-переменные',
   cssHint:

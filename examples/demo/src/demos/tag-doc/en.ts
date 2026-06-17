@@ -26,7 +26,7 @@ export const tagDocEn = {
   demoWithIconTitle: 'With icon',
   demoWithIconDesc: 'Children is a ReactNode — icon + text is just JSX.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Round corners to 999px for pills, restyle preset palettes with colour tokens.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableTagApi: 'Tag API',
   tableCssVars: 'CSS Variables',

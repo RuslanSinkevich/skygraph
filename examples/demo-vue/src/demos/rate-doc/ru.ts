@@ -29,7 +29,7 @@ export const rateDocRu: { [K in keyof typeof rateDocEn]: string } = {
   demoInFormDesc: 'Валидатор «оценка обязательна».',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
-    'Три скоупа на токенах Rate: зелёный бренд, тёмная поверхность и glass pick (`--sg-color-star` + рамка).',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableRateApi: 'API Rate',
   tableCssVars: 'CSS-переменные',
 

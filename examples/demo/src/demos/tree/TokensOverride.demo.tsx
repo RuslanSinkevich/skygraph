@@ -1,12 +1,20 @@
 import { Tree } from '@skygraph/react'
 import { orgTree } from './data'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Tree inherits all of its colours from the global tokens — there are no
- * Tree-specific CSS variables. Three scoped recipes — branded green, dark
- * field, glass pick — skin one tree.
- */
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-bg-hover': '#273449',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-primary': '#60a5fa',
+} as CSSProperties
+
 export function TokensOverrideTree() {
-  return <TokenScopeCards render={() => <Tree treeData={orgTree} defaultExpandAll />} />
+  return (
+    <div style={dark}>
+      <Tree treeData={orgTree} defaultExpandAll />
+    </div>
+  )
 }

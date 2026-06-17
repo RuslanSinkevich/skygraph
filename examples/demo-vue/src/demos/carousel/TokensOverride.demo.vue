@@ -1,24 +1,24 @@
 <script setup lang="ts">
-/**
- * The active dot reads `--sg-color-primary`, idle dots read
- * `--sg-color-text-disabled`. Three scoped recipes — branded green, dark
- * field, glass pick — rebrand the indicators.
- *
- * Mirrors React `examples/demo/src/demos/carousel/TokensOverride.demo.tsx`.
- */
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgCarousel } from '@skygraph/vue'
 import { slideBase, paletteColors } from './data'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
+
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-text-disabled': '#475569',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgCarousel>
-        <div v-for="(bg, i) in paletteColors" :key="i" :style="{ ...slideBase, background: bg }">
-          {{ i + 1 }}
-        </div>
-      </SgCarousel>
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgCarousel>
+      <div v-for="(bg, i) in paletteColors" :key="i" :style="{ ...slideBase, background: bg }">
+        {{ i + 1 }}
+      </div>
+    </SgCarousel>
+  </div>
 </template>

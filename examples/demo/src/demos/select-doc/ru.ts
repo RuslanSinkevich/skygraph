@@ -24,8 +24,7 @@ export const selectDocRu: { [K in keyof typeof selectDocEn]: string } = {
   demoNumericTitle: 'Числовые значения',
   demoNumericDesc: '`value` сохраняет числовые типы (важно для ID).',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc:
-    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один и тот же Select.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись над триггером Select — уезжает вверх при фокусе или после выбора значения. Чистый CSS + управляемое значение, без правок ядра.',

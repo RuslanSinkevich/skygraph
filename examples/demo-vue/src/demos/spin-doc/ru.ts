@@ -29,7 +29,7 @@ export const spinDocRu: SpinDocStrings = {
   demoCustomColorDesc: 'Локальные оттенки через `--sg-spin-color`.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Перекрашиваем кольцо + overlay через `--sg-spin-color` / `--sg-spin-overlay-bg`.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableSpinApi: 'API Spin',
   tableCssVars: 'CSS-переменные',
   cssHint:

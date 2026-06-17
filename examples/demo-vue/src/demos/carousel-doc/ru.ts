@@ -23,7 +23,8 @@ export const carouselDocRu: CarouselDocStrings = {
   demoHiddenDotsTitle: 'Без точек',
   demoHiddenDotsDesc: '`:dots="false"` для декоративных каруселей.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Локально переопределяем цвета точек под бренд.',
+  demoTokensDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableCarouselApi: 'API карусели',
   tableCssVars: 'CSS-переменные',
   cssHint:

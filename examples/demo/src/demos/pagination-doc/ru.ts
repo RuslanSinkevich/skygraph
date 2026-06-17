@@ -24,8 +24,7 @@ export const paginationDocRu: { [K in keyof typeof paginationDocEn]: string } = 
   demoDisabledTitle: 'Отключено',
   demoDisabledDesc: 'Затемнение и pointer-events: none, пока таблица грузится.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc:
-    'Перекрасьте --sg-color-primary для активного чипа, увеличьте --sg-border-radius для pill.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tablePaginationApi: 'API Pagination',
   tableCssVars: 'CSS-переменные',

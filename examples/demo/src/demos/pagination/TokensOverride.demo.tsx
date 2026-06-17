@@ -1,18 +1,23 @@
 import { useState } from 'react'
 import { Pagination } from '@skygraph/react'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Pagination composes the form-chip tokens for idle buttons and the primary
- * palette for the active chip. Three scoped recipes — branded green, dark
- * field, glass pick — restyle the whole pager.
- */
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-bg-container': '#111827',
+  '--sg-color-bg-hover': '#273449',
+  '--sg-color-border': '#475569',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-primary': '#60a5fa',
+} as CSSProperties
+
 export function TokensOverridePagination() {
   const [page, setPage] = useState(3)
   return (
-    <TokenScopeCards
-      stack
-      render={() => <Pagination current={page} total={120} onChange={setPage} />}
-    />
+    <div style={dark}>
+      <Pagination current={page} total={120} onChange={setPage} />
+    </div>
   )
 }

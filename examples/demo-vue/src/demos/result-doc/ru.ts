@@ -24,7 +24,8 @@ export const resultDocRu: ResultDocStrings = {
   demoWithContentTitle: 'С контентом',
   demoWithContentDesc: 'Default-слот рендерится в мягкой панели под `#extra`.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Локально переопределяем success / primary / surface токены.',
+  demoTokensDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableResultApi: 'API Result',
   tableCssVars: 'CSS-переменные',
   cssHint:

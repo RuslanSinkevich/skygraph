@@ -31,7 +31,7 @@ export const collapseDocEn = {
   demoControlledTitle: 'Controlled',
   demoControlledDesc: 'Own the open set yourself to add Expand all / Collapse all toolbars.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Rebrand via scoped CSS variables — dark panel example.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableCollapseApi: 'Collapse API',
   tableCollapseItem: 'CollapseItem',

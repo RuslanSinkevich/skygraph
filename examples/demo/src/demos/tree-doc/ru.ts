@@ -38,7 +38,7 @@ export const treeDocRu: { [K in keyof typeof treeDocEn]: string } = {
   demoVirtualTitle: 'Virtual scroll',
   demoVirtualDesc: '1 000 узлов, рендерятся только видимые строки.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоупните `--sg-color-primary` или `data-sg-theme`, чтобы перекрасить одно Tree.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableTreeApi: 'API Tree',
   tableTreeNodeData: 'TreeNodeData',
@@ -70,6 +70,10 @@ export const treeDocRu: { [K in keyof typeof treeDocEn]: string } = {
   propKeyboard: 'Встроенная клавиатурная навигация',
   propLocale: 'Переопределить встроенные строки',
   propUnstyled: 'Сохранить семантику, убрать стили SkyGraph',
+  propCheckedKeys: 'Контролируемые ключи отмеченных узлов',
+  propOnCheck: 'Вызывается с (checkedKeys, info) при переключении чекбокса',
+  propOnDrop: 'Вызывается после перемещения drag-and-drop с DropInfo',
+  propOnEdit: 'Вызывается после инлайн-редактирования заголовка с EditInfo',
 
   nodeKey: 'Уникальный идентификатор',
   nodeTitle: 'Отображаемый лейбл (ReactNode)',

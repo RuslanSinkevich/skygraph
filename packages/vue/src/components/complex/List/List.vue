@@ -31,9 +31,9 @@ const emit = defineEmits<{
 
 defineSlots<{
   default(props: { item: T; index: number }): unknown
-  header(props: Record<string, never>): unknown
-  footer(props: Record<string, never>): unknown
-  loadMore(props: Record<string, never>): unknown
+  header?(props: Record<string, never>): unknown
+  footer?(props: Record<string, never>): unknown
+  loadMore?(props: Record<string, never>): unknown
 }>()
 
 const slots = useSlots()

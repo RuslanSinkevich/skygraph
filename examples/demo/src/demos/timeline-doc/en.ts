@@ -29,7 +29,7 @@ export const timelineDocEn = {
   demoCustomColorTitle: 'Custom colour',
   demoCustomColorDesc: 'Tint the default ring via the `color` prop.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Rebrand the axis / connector via scoped CSS variables.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableTimelineApi: 'Timeline API',
   tableTimelineItem: 'TimelineItem',

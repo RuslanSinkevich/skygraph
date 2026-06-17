@@ -1,40 +1,24 @@
 import { Tag } from '@skygraph/react'
-import { useDemoStrings } from '../../i18n'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Tag has no component-specific tokens — it composes the globals. The
- * `processing` preset follows `--sg-color-primary`, the radius follows
- * `--sg-border-radius-sm`. Three scoped recipes — branded green, dark field,
- * glass pick — rebrand the pills.
- */
-const STRINGS = {
-  en: { default: 'default', active: 'active' },
-  ru: { default: 'обычный', active: 'активный' },
-} as const
+const dark = {
+  display: 'flex',
+  gap: 8,
+  flexWrap: 'wrap',
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-bg-secondary': '#1e293b',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-primary-bg': 'rgba(96, 165, 250, 0.22)',
+  '--sg-color-text': '#f8fafc',
+} as CSSProperties
 
 export function TokensOverrideTag() {
-  const t = useDemoStrings(STRINGS)
   return (
-    <TokenScopeCards
-      minCardWidth={260}
-      extra={{
-        brand: { ['--sg-color-bg-secondary' as never]: '#ecfdf5' },
-        dark: {
-          ['--sg-color-bg-secondary' as never]: '#1e293b',
-          ['--sg-color-primary-bg' as never]: 'rgba(96, 165, 250, 0.22)',
-        },
-        glass: {
-          ['--sg-color-bg-secondary' as never]: 'rgba(255, 255, 255, 0.58)',
-          ['--sg-color-border' as never]: 'rgba(79, 70, 229, 0.2)',
-        },
-      }}
-      render={() => (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <Tag>{t.default}</Tag>
-          <Tag color="processing">{t.active}</Tag>
-        </div>
-      )}
-    />
+    <div style={dark}>
+      <Tag>default</Tag>
+      <Tag color="processing">active</Tag>
+    </div>
   )
 }

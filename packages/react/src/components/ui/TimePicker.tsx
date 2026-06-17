@@ -227,6 +227,8 @@ export function TimePicker({
   const config = useConfig()
   const size = sizeProp ?? config.size ?? 'middle'
   const disabled = disabledProp ?? config.disabled ?? false
+  const nowLabel = config.locale?.calendar?.now ?? 'Now'
+  const clearLabel = config.locale?.input?.clear ?? 'Clear'
 
   const fmt = formatProp ?? (use12Hours ? 'hh:mm:ss A' : showSecond ? 'HH:mm:ss' : 'HH:mm')
 
@@ -380,7 +382,12 @@ export function TimePicker({
           ) : (
             <>
               {allowClear && currentValue && (
-                <span className={unstyled ? '' : 'sg-timepicker-clear'} onClick={handleClear}>
+                <span
+                  className={unstyled ? '' : 'sg-timepicker-clear'}
+                  role="button"
+                  aria-label={clearLabel}
+                  onClick={handleClear}
+                >
                   &times;
                 </span>
               )}
@@ -456,7 +463,7 @@ export function TimePicker({
           {showNow && (
             <div className={unstyled ? '' : 'sg-tp-footer'}>
               <button className={unstyled ? '' : 'sg-tp-now-btn'} onClick={handleNow}>
-                Now
+                {nowLabel}
               </button>
             </div>
           )}
@@ -505,6 +512,7 @@ export function TimeRangePicker({
   const config = useConfig()
   const size = sizeProp ?? config.size ?? 'middle'
   const disabled = disabledProp ?? config.disabled ?? false
+  const clearLabel = config.locale?.input?.clear ?? 'Clear'
 
   const fmt = formatProp ?? (use12Hours ? 'hh:mm:ss A' : showSecond ? 'HH:mm:ss' : 'HH:mm')
 
@@ -577,7 +585,12 @@ export function TimeRangePicker({
         <span>{currentValue[1] || placeholder[1]}</span>
         <span className={unstyled ? '' : 'sg-timepicker-suffix'}>
           {allowClear && (currentValue[0] || currentValue[1]) && (
-            <span className={unstyled ? '' : 'sg-timepicker-clear'} onClick={handleClear}>
+            <span
+              className={unstyled ? '' : 'sg-timepicker-clear'}
+              role="button"
+              aria-label={clearLabel}
+              onClick={handleClear}
+            >
               &times;
             </span>
           )}

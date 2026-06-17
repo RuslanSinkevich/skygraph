@@ -1,20 +1,18 @@
 import { Rate } from '@skygraph/react'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Rate owns one dedicated token, `--sg-color-star`, for the filled symbol; the
- * empty colour comes from `--sg-color-border`. Three scoped recipes — branded
- * green, dark field, glass pick — recolour the stars.
- */
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-star': '#60a5fa',
+  '--sg-color-border': '#475569',
+} as CSSProperties
+
 export function TokensOverrideRate() {
   return (
-    <TokenScopeCards
-      extra={{
-        brand: { ['--sg-color-star' as never]: '#059669' },
-        dark: { ['--sg-color-star' as never]: '#60a5fa' },
-        glass: { ['--sg-color-star' as never]: '#6366f1' },
-      }}
-      render={() => <Rate defaultValue={3.5} allowHalf />}
-    />
+    <div style={dark}>
+      <Rate defaultValue={3.5} allowHalf />
+    </div>
   )
 }

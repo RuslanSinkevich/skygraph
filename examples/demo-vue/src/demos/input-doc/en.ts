@@ -31,7 +31,7 @@ export const inputDocEn = {
   demoTokensDesc: 'Scope --sg-input-* to reshape only these inputs.',
   demoTokensOverrideTitle: 'Token override',
   demoTokensOverrideDesc:
-    'Three ready-made scopes built from --sg-input-* tokens: green brand, dark field and glass pick. Only paint / shape changes — focus ring and states stay intact.',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Pure-CSS floating label (Material 3-ish). The label sits inside the field and glides to the top-left on focus or when the field has a value. Outlined and filled variants — no core changes, just `:has(input:focus)` + `:has(input:not(:placeholder-shown))`.',

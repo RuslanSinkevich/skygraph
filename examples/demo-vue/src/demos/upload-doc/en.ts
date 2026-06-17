@@ -46,7 +46,8 @@ export const uploadDocEn = {
   demoDisabledDesc:
     'Block the trigger entirely. Vue has no `loading` prop — the React loading-row variant is dropped.',
   demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc: 'Scope global tokens on a wrapper to re-skin the list.',
+  demoTokensOverrideDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableUploadApi: 'Upload API',
   tableUploadFile: 'UploadFile',
   tableCssVars: 'CSS Variables',

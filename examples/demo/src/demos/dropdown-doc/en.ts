@@ -23,7 +23,7 @@ export const dropdownDocEn = {
   demoKeyboardTitle: 'Keyboard',
   demoKeyboardDesc: 'Space / Enter open, ↑ / ↓ move, Esc closes.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Retint surface, hover, and danger tokens on a wrapper.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableDropdownApi: 'Dropdown API',
   tableDropdownItem: 'DropdownItem',

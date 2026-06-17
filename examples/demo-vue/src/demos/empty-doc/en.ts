@@ -27,7 +27,8 @@ export const emptyDocEn = {
   demoInCardTitle: 'In a card',
   demoInCardDesc: 'Wrap inside a bordered surface so it owns the table region.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope `--sg-color-text-disabled` / `--sg-color-text-tertiary` to repaint.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableEmptyApi: 'Empty API',
   tableCssVars: 'CSS Variables',
   cssHint:

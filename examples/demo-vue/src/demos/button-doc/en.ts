@@ -31,7 +31,7 @@ export const buttonDocEn = {
   demoTokensDesc: 'Scope --sg-btn-* for a local reshape (pills, chunky, compact).',
   demoTokensOverrideTitle: 'Token override',
   demoTokensOverrideDesc:
-    'Three ready-made scopes built from `--sg-btn-*` tokens: green brand, dark surface and glass pick. Only paint / shape changes — fully accessible.',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   demoBrandTitle: 'Scoped brand',
   demoBrandDesc: 'Override --sg-color-primary* to rebrand a subtree.',
   propUnstyled: 'Drop all `sg-button-*` classes; keep semantics (disabled, aria-busy).',

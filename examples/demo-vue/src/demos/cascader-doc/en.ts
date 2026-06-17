@@ -45,7 +45,7 @@ export const cascaderDocEn = {
     'Mark a node `isLeaf: false`; on click the cascader calls `load-data(selectedOptions)` and renders a loading spinner until children are populated.',
   demoTokensOverrideTitle: 'Token override',
   demoTokensOverrideDesc:
-    'Three scopes built from Cascader tokens: green brand, dark field (with panels) and glass pick.',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the Cascader control: glides up on focus or when a path is selected.',

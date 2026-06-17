@@ -35,7 +35,7 @@ export const timePickerDocRu: { [K in keyof typeof timePickerDocEn]: string } = 
     'Disabled блокирует dropdown; `loading` гасит триггер и заменяет иконку на спиннер.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах TimePicker: зелёный бренд, тёмное поле (с dropdown) и glass pick.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на контроле TimePicker: уезжает вверх при фокусе или когда время выбрано.',

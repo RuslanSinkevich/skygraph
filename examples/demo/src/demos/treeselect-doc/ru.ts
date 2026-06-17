@@ -24,8 +24,7 @@ export const treeSelectDocRu: { [K in keyof typeof treeSelectDocEn]: string } = 
   demoSizesTitle: 'Размеры',
   demoSizesDesc: 'Три размера, одинаковая структура.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc:
-    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один TreeSelect.',
+  demoTokensOverrideDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись над триггером — уезжает вверх при фокусе или после выбора узла.',

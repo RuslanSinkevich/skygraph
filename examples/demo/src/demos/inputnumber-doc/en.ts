@@ -23,8 +23,7 @@ export const inputNumberDocEn = {
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: 'Required + range validators on number fields.',
   demoTokensTitle: 'Token override',
-  demoTokensDesc:
-    'Three scoped recipes — branded green, dark field, glass pick — reskin one InputNumber.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the field — it rises on focus or once a value is present; the stepper keeps working.',

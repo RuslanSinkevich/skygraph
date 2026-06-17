@@ -27,8 +27,7 @@ export const colorPickerDocRu: { [K in keyof typeof colorPickerDocEn]: string } 
   demoThemeSwapDesc:
     'Берите --sg-color-primary из пикера и смотрите, как все компоненты мгновенно перекрашиваются.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc:
-    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один ColorPicker.',
+  demoTokensOverrideDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись над триггером — остаётся как заголовок (цвет всегда задан) и подсвечивается при фокусе.',

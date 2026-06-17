@@ -24,7 +24,8 @@ export const carouselDocEn = {
   demoHiddenDotsTitle: 'Hidden dots',
   demoHiddenDotsDesc: '`:dots="false"` for decorative carousels.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope the dot colours to rebrand.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableCarouselApi: 'Carousel API',
   tableCssVars: 'CSS Variables',
   cssHint:

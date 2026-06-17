@@ -37,7 +37,8 @@ export const uploadDocRu: { [K in keyof typeof uploadDocEn]: string } = {
   demoDisabledDesc:
     'Полностью блокирует триггер. В Vue нет `loading`-prop — React-вариант со спиннером дропнут.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc: 'Скоуп глобальных токенов на обёртке для перекраски списка.',
+  demoTokensOverrideDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableUploadApi: 'API Upload',
   tableUploadFile: 'UploadFile',
   tableCssVars: 'CSS-переменные',

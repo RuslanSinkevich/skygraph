@@ -28,7 +28,7 @@ export const descriptionsDocRu: { [K in keyof typeof descriptionsDocEn]: string 
   demoRichContentTitle: 'Богатый контент',
   demoRichContentDesc: 'Лейблы и значения принимают любой ReactNode — Badge, Tag, ссылки…',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоупните токены фона лейбла / границы для смены оформления рамки.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableDescriptionsApi: 'API Descriptions',
   tableDescriptionsItem: 'DescriptionsItem',

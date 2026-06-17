@@ -73,6 +73,8 @@ import LargeDatasetTable from './table/LargeDataset.demo.vue'
 import LargeDatasetSource from './table/LargeDataset.demo.vue?raw'
 import RealtimeTable from './table/Realtime.demo.vue'
 import RealtimeSource from './table/Realtime.demo.vue?raw'
+import StickyHeaderTable from './table/StickyHeader.demo.vue'
+import StickyHeaderSource from './table/StickyHeader.demo.vue?raw'
 
 const t = useTableDocStrings()
 
@@ -356,6 +358,13 @@ const tableCssVars = computed<CssVarDef[]>(() => [
     </DemoBox>
     <DemoBox :title="t.demoRealtimeTitle" :description="t.demoRealtimeDesc" :code="RealtimeSource">
       <RealtimeTable />
+    </DemoBox>
+    <DemoBox
+      :title="t.demoStickyHeaderTitle"
+      :description="t.demoStickyHeaderDesc"
+      :code="StickyHeaderSource"
+    >
+      <StickyHeaderTable />
     </DemoBox>
 
     <template #api>

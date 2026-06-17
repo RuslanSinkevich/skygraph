@@ -22,8 +22,7 @@ export const inputDocRu: { [K in keyof typeof inputDocEn]: string } = {
   demoValidationTitle: 'Валидация',
   demoValidationDesc: 'aria-invalid переключает стиль ошибки без !important.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc:
-    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один и тот же Input через --sg-input-* и глобальные токены; focus-кольцо и состояния сохраняются.',
+  demoTokensOverrideDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающий label на чистом CSS (в духе Material 3). Подпись лежит внутри поля и уезжает влево-вверх при фокусе или когда поле заполнено. Контурный и filled-варианты — без правок ядра, только `:has(input:focus)` + `:has(input:not(:placeholder-shown))`.',

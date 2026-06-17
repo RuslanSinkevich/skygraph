@@ -26,7 +26,8 @@ export const drawerDocRu: { [K in keyof typeof drawerDocEn]: string } = {
   demoNoMaskTitle: 'Опции маски',
   demoNoMaskDesc: 'Отключить маску или оставить, но запретить закрытие кликом по ней.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоупим surface-токены на body-классе для тёмного drawer (с учётом Teleport).',
+  demoTokensDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableDrawerApi: 'API Drawer',
   tableCssVars: 'CSS-переменные',
   cssHint:

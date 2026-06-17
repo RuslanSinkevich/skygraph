@@ -22,8 +22,7 @@ export const autoCompleteDocRu: { [K in keyof typeof autoCompleteDocEn]: string 
   demoStatesTitle: 'Состояния',
   demoStatesDesc: 'Disabled и loading.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc:
-    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один AutoComplete.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись над полем — уезжает вверх при фокусе или после ввода. Чистый CSS + управляемое значение.',

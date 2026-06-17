@@ -34,8 +34,7 @@ export const cascaderDocRu: { [K in keyof typeof cascaderDocEn]: string } = {
   demoAsyncLoadTitle: 'Асинхронная загрузка',
   demoAsyncLoadDesc: 'Подгружать дочерние узлы по требованию через loadData.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc:
-    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один Cascader.',
+  demoTokensOverrideDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись над триггером — уезжает вверх при фокусе или после выбора пути.',

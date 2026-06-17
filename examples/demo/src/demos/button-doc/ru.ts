@@ -25,8 +25,7 @@ export const buttonDocRu: { [K in keyof typeof buttonDocEn]: string } = {
   demoIconTitle: 'С иконкой',
   demoIconDesc: 'Flex-gap выравнивает иконку и подпись на любом размере.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc:
-    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают одну и ту же Button через --sg-btn-* и глобальную primary-палитру; hover / focus / disabled сохраняются.',
+  demoTokensOverrideDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableButtonApi: 'API Button',
   tableCssVars: 'CSS-переменные',

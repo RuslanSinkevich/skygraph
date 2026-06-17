@@ -94,6 +94,9 @@ export const tableDocRu: TableDocStrings = {
   demoRealtimeTitle: 'Realtime',
   demoRealtimeDesc:
     'Реактивный `data` — мутируем массив, таблица перерисовывается. progress тикает каждые 800 мс.',
+  demoStickyHeaderTitle: 'Фиксированная шапка',
+  demoStickyHeaderDesc:
+    'Включи `sticky` вместе со `scroll.y` — строка заголовка остаётся на месте, пока тело прокручивается под ней.',
 
   tableTableApi: 'API таблицы',
   tableColumnApi: 'API колонки',

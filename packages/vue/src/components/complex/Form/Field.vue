@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, useSlots, watch } from 'vue'
 import { useField } from '../../../composables/useField'
+import { useConfig } from '../../ui/ConfigProvider.vue'
 import { formContextKey } from './context'
 import type { Rule, ValidationMode } from '@skygraph/core'
 
@@ -75,6 +76,12 @@ if (!injected) {
 const ctx = injected
 
 const field = useField(ctx.core, ctx.form, props.name)
+
+const cfg = useConfig()
+const requiredMarker = computed(() => cfg.value.locale?.form?.required ?? '*')
+const optionalMarker = computed(() => cfg.value.locale?.form?.optional ?? '(optional)')
+const showRequiredMark = computed(() => props.required || ctx.requiredMark === true)
+const showOptionalMark = computed(() => ctx.requiredMark === 'optional' && !props.required)
 
 const disabled = computed(() => props.disabled ?? ctx.disabled)
 
@@ -182,7 +189,8 @@ const labelOffsetStyle = computed(() =>
         <div class="sg-field-label-wrap" :style="{ width: labelPct, textAlign: labelAlign }">
           <label v-if="label || hasLabelSlot" class="sg-field-label" :style="labelOffsetStyle">
             <slot name="label">{{ label }}</slot>
-            <span v-if="required" class="sg-field-required">*</span>
+            <span v-if="showRequiredMark" class="sg-field-required">{{ requiredMarker }}</span>
+            <span v-else-if="showOptionalMark" class="sg-field-optional">{{ optionalMarker }}</span>
             <template v-if="ctx.colon">:</template>
           </label>
         </div>
@@ -225,7 +233,8 @@ const labelOffsetStyle = computed(() =>
       <template v-else>
         <label v-if="label || hasLabelSlot" class="sg-field-label">
           <slot name="label">{{ label }}</slot>
-          <span v-if="required" class="sg-field-required">*</span>
+          <span v-if="showRequiredMark" class="sg-field-required">{{ requiredMarker }}</span>
+          <span v-else-if="showOptionalMark" class="sg-field-optional">{{ optionalMarker }}</span>
           <template v-if="ctx.colon">:</template>
         </label>
         <div class="sg-field-control">

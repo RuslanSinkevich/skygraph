@@ -1,55 +1,34 @@
 <script setup lang="ts">
-/**
- * Scoping tokens on the wrapper reskins the trigger and the dialog it opens —
- * every `type="primary"` button inherits the scoped palette. Three recipes —
- * branded green, dark field, glass pick.
- *
- * Mirrors React `examples/demo/src/demos/modal/TokensOverride.demo.tsx`.
- * `<SgModal>` teleports to `<body>`, but it now copies the scoped `--sg-*`
- * tokens from its mount point onto the mask, so the per-card scope survives.
- */
-import { reactive } from 'vue'
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. The dialog teleports to <body> but copies the
+// scoped tokens from its mount point, so the scope survives.
+import { ref } from 'vue'
 import { SgModal, SgButton } from '@skygraph/vue'
-import { useDemoStrings } from '../../i18n'
-import TokenScopeCards, { type TokenScopeKey } from '../_shared/TokenScopeCards.vue'
 
-const STRINGS = {
-  en: {
-    open: 'Open modal',
-    title: 'Scoped tokens',
-    body: 'Primary palette is scoped here.',
-    cancel: 'Cancel',
-    ok: 'Confirm',
-  },
-  ru: {
-    open: 'Открыть',
-    title: 'Скоуп токенов',
-    body: 'Primary-палитра скоупится здесь.',
-    cancel: 'Отмена',
-    ok: 'Ок',
-  },
-} as const
+const open = ref(false)
 
-const t = useDemoStrings(STRINGS)
-
-const open = reactive<Record<TokenScopeKey, boolean>>({
-  brand: false,
-  dark: false,
-  glass: false,
-})
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-primary-hover': '#93c5fd',
+  '--sg-color-bg-elevated': '#1e293b',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text-secondary': '#cbd5e1',
+  '--sg-color-border-secondary': '#334155',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default="{ scope }">
-      <SgButton type="primary" @click="open[scope] = true">{{ t.open }}</SgButton>
-      <SgModal :open="open[scope]" :title="t.title" @close="open[scope] = false">
-        <p>{{ t.body }}</p>
-        <template #footer>
-          <SgButton @click="open[scope] = false">{{ t.cancel }}</SgButton>
-          <SgButton type="primary" @click="open[scope] = false">{{ t.ok }}</SgButton>
-        </template>
-      </SgModal>
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgButton type="primary" @click="open = true">Open modal</SgButton>
+    <SgModal :open="open" title="Scoped tokens" @close="open = false">
+      <p>Primary palette is scoped here.</p>
+      <template #footer>
+        <SgButton @click="open = false">Cancel</SgButton>
+        <SgButton type="primary" @click="open = false">Confirm</SgButton>
+      </template>
+    </SgModal>
+  </div>
 </template>

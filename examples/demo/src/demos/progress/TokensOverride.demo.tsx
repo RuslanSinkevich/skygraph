@@ -1,20 +1,23 @@
 import { Progress } from '@skygraph/react'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Progress has no component-private tokens — bars and rings read
- * `--sg-color-primary`, `--sg-color-bg-hover` and `--sg-color-success/error`.
- * Three scoped recipes — branded green, dark field, glass pick — rebrand them.
- */
+const dark = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 10,
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-bg-hover': '#273449',
+  '--sg-color-text': '#f8fafc',
+} as CSSProperties
+
 export function TokensOverrideProgress() {
   return (
-    <TokenScopeCards
-      render={() => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <Progress percent={35} />
-          <Progress percent={75} status="active" />
-        </div>
-      )}
-    />
+    <div style={dark}>
+      <Progress percent={35} />
+      <Progress percent={75} status="active" />
+    </div>
   )
 }

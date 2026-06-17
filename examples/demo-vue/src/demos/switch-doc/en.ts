@@ -36,7 +36,7 @@ export const switchDocEn = {
     'Wrap with `<SgField>` and pipe `:model-value` / `@update:model-value` from the slot.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
-    'Three scopes built from Switch tokens: green brand, dark surface and glass pick (track in both states).',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableSwitchApi: 'Switch API',
   tableCssVars: 'CSS Variables',
 

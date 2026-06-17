@@ -21,7 +21,7 @@ export const checkboxDocEn = {
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: "Wrap with Field + valuePropName='checked'.",
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global tokens on a wrapper to re-skin.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableCssVars: 'CSS Variables',
 

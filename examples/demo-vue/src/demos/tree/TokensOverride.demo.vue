@@ -1,21 +1,23 @@
 <script setup lang="ts">
-/**
- * Tree inherits all of its colours from the global tokens — there are no
- * Tree-specific CSS variables. Three scoped recipes — branded green, dark
- * field, glass pick — skin one tree. The dark scope also flips
- * `--sg-color-text-secondary`, which the expand/collapse switcher arrow reads.
- *
- * Mirrors React `examples/demo/src/demos/tree/TokensOverride.demo.tsx`.
- */
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgTree } from '@skygraph/vue'
 import { orgTree } from './data'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
+
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-bg-container': '#1e293b',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text-secondary': '#94a3b8',
+  '--sg-color-bg-hover': '#334155',
+  '--sg-color-primary': '#60a5fa',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgTree :tree-data="orgTree" default-expand-all />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgTree :tree-data="orgTree" default-expand-all />
+  </div>
 </template>

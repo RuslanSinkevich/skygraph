@@ -32,7 +32,8 @@ export const timelineDocEn = {
   demoPendingDesc:
     '`pending` adds a muted tail; use the `#dot` slot with `isPending` to override the marker (analogue of React `pendingDot`).',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global colour tokens to repaint a whole timeline.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableTimelineApi: 'Timeline API',
   tableTimelineItemApi: 'TimelineItem',
   tableCssVars: 'CSS Variables',

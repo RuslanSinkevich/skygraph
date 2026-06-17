@@ -1,12 +1,13 @@
 <script setup lang="ts">
 /**
- * Floating label over the DatePicker control. The picker has no
- * free-text input, so the label floats on `:focus-within` (open) and a
- * JS-driven `fl-filled` class once a date is chosen — no core changes.
+ * Floating label over the DatePicker control. The shared `FloatingField`
+ * tracks focus via bubbling `focusin` / `focusout` and defers the blur one
+ * frame, so choosing a date never makes the label flicker.
  */
 import { ref, computed } from 'vue'
 import { SgDatePicker } from '@skygraph/vue'
 import { useDemoStrings } from '../../i18n'
+import FloatingField from '../_shared/FloatingField.vue'
 
 const STRINGS = {
   en: { start: 'Start date', due: 'Due date' },
@@ -23,51 +24,16 @@ const dueFilled = computed(() => due.value != null)
 </script>
 
 <template>
-  <div class="fl-row">
-    <div class="fl-field" :class="{ 'fl-filled': startFilled }">
-      <SgDatePicker v-model="start" placeholder=" " allow-clear />
-      <label class="fl-label">{{ t.start }}</label>
+  <div style="display: flex; gap: 24px; flex-wrap: wrap; max-width: 560px">
+    <div style="flex: 1 1 240px; min-width: 0; padding-top: 8px">
+      <FloatingField :label="t.start" :filled="startFilled">
+        <SgDatePicker v-model="start" placeholder=" " allow-clear />
+      </FloatingField>
     </div>
-    <div class="fl-field" :class="{ 'fl-filled': dueFilled }">
-      <SgDatePicker v-model="due" placeholder=" " allow-clear />
-      <label class="fl-label">{{ t.due }}</label>
+    <div style="flex: 1 1 240px; min-width: 0; padding-top: 8px">
+      <FloatingField :label="t.due" :filled="dueFilled">
+        <SgDatePicker v-model="due" placeholder=" " allow-clear />
+      </FloatingField>
     </div>
   </div>
 </template>
-
-<style scoped>
-.fl-row {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-  max-width: 560px;
-}
-.fl-field {
-  position: relative;
-  flex: 1 1 240px;
-}
-.fl-label {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-  color: var(--sg-color-text-secondary, rgba(0, 0, 0, 0.65));
-  background: var(--sg-color-bg-container, #fff);
-  padding: 0 4px;
-  pointer-events: none;
-  white-space: nowrap;
-  z-index: 1;
-  transition:
-    top 0.18s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.18s ease;
-}
-.fl-field:focus-within .fl-label,
-.fl-field.fl-filled .fl-label {
-  top: 0;
-  transform: translateY(-50%) scale(0.85);
-  transform-origin: left center;
-  color: var(--sg-color-primary);
-}
-</style>

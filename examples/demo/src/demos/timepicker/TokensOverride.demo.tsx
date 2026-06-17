@@ -1,15 +1,23 @@
 import { TimePicker } from '@skygraph/react'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * TimePicker composes the global form tokens for the trigger and the surface
- * tokens for the dropdown. Three scoped recipes — branded green, dark field,
- * glass pick — reskin one instance.
- */
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-input-bg': '#1e293b',
+  '--sg-input-color': '#e2e8f0',
+  '--sg-input-border': '#334155',
+  '--sg-color-bg-elevated': '#1f2937',
+  '--sg-color-bg-hover': '#273449',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-primary': '#60a5fa',
+} as CSSProperties
+
 export function TokensOverrideTimePicker() {
   return (
-    <TokenScopeCards
-      render={() => <TimePicker defaultValue="09:30:00" placeholder="Select time" />}
-    />
+    <div style={dark}>
+      <TimePicker defaultValue="09:30:00" placeholder="Select time" />
+    </div>
   )
 }

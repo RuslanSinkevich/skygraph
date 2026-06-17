@@ -25,8 +25,7 @@ export const skeletonDocEn = {
   demoCardTitle: 'Card composition',
   demoCardDesc: 'Compose several Skeletons to mirror a card grid.',
   demoTokensTitle: 'Custom skeleton themes',
-  demoTokensDesc:
-    'Three palettes (light card, indigo branded, dark mode) — only `--sg-skeleton-bg` and `--sg-skeleton-shimmer` change; the shimmer keeps reading because the highlight is always brighter than the base.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableSkeletonApi: 'Skeleton API',
   tableCssVars: 'CSS Variables',

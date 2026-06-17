@@ -28,7 +28,8 @@ export const checkboxDocEn = {
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: 'Wrap with `<SgField>` and pipe `:checked` / `@change` from the slot.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global tokens on a wrapper to re-skin.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableCheckboxApi: 'Checkbox API',
   tableCssVars: 'CSS Variables',
 

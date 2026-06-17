@@ -36,7 +36,7 @@ export const treeDocEn = {
   demoVirtualTitle: 'Virtual scroll',
   demoVirtualDesc: '1 000 nodes, only visible rows rendered.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope --sg-color-primary or data-sg-theme to skin one Tree.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableTreeApi: 'Tree API',
   tableTreeNodeData: 'TreeNodeData',
@@ -68,6 +68,10 @@ export const treeDocEn = {
   propKeyboard: 'Built-in keyboard navigation',
   propLocale: 'Override built-in strings',
   propUnstyled: 'Keep semantics, drop SkyGraph styles',
+  propCheckedKeys: 'Controlled checked node keys',
+  propOnCheck: 'Fires with (checkedKeys, info) when a checkbox toggles',
+  propOnDrop: 'Fires after a drag-and-drop move with DropInfo',
+  propOnEdit: 'Fires after an inline title edit commits with EditInfo',
 
   nodeKey: 'Unique identifier',
   nodeTitle: 'Display label (ReactNode)',

@@ -39,7 +39,7 @@ export const listDocEn = {
   demoSlotsTitle: 'Slots (classNames / styles)',
   demoSlotsDesc: 'Target stable DOM slots.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Rebrand the hover / border / header via global tokens.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableListApi: 'List API',
   tableListItem: 'List.Item',

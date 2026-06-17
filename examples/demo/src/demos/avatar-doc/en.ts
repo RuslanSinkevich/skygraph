@@ -26,8 +26,7 @@ export const avatarDocEn = {
   demoWithBadgeTitle: 'With Badge',
   demoWithBadgeDesc: 'Wrap the avatar in a Badge for presence / count.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc:
-    'Bump --sg-border-radius for softer squares, swap --sg-color-text-disabled for a branded fallback.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableAvatarApi: 'Avatar API',
   tableCssVars: 'CSS Variables',

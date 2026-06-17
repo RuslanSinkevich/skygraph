@@ -21,7 +21,7 @@ export const breadcrumbDocEn = {
   demoDropdownTitle: 'With Dropdown',
   demoDropdownDesc: 'Embed a Dropdown inside a segment for sibling navigation.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope the text palette + `--sg-color-primary` to rebrand.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableBreadcrumbApi: 'Breadcrumb API',
   tableBreadcrumbItem: 'BreadcrumbItem',

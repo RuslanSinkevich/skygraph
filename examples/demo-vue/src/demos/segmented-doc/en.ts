@@ -25,7 +25,8 @@ export const segmentedDocEn = {
   demoSizesTitle: 'Sizes',
   demoSizesDesc: 'Small, middle, large.',
   demoTokensOverrideTitle: 'Tokens override',
-  demoTokensOverrideDesc: 'Scope the track / thumb tokens to repaint the control.',
+  demoTokensOverrideDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableSegmentedApi: 'Segmented API',
   tableCssVars: 'CSS Variables',
 

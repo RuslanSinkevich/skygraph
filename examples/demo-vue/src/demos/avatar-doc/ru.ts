@@ -29,7 +29,7 @@ export const avatarDocRu: { [K in keyof typeof avatarDocEn]: string } = {
   demoWithBadgeDesc: 'Оберните аватар в Badge для статуса присутствия или счётчика.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах Avatar: зелёный бренд, тёмная поверхность и glass pick (форма + fallback-фон).',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableAvatarApi: 'API Avatar',
   tableCssVars: 'CSS-переменные',
 

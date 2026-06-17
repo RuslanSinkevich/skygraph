@@ -28,7 +28,7 @@ export const tagDocRu: { [K in keyof typeof tagDocEn]: string } = {
   demoWithIconDesc: 'Default-слот принимает любую разметку — иконка + текст это просто template.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах Tag: зелёный бренд, тёмная поверхность и glass pick (палитра пресетов + радиус).',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableTagApi: 'API Tag',
   tableCssVars: 'CSS-переменные',
 

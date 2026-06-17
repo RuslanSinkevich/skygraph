@@ -33,8 +33,7 @@ export const cascaderDocEn = {
   demoAsyncLoadTitle: 'Async loading',
   demoAsyncLoadDesc: 'Populate children on demand via loadData.',
   demoTokensOverrideTitle: 'Token override',
-  demoTokensOverrideDesc:
-    'Three scoped recipes — branded green, dark field, glass pick — reskin one Cascader.',
+  demoTokensOverrideDesc: 'Wrap the component in an element with CSS variables — it repaints.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the trigger — it rises on focus or once a path is selected.',

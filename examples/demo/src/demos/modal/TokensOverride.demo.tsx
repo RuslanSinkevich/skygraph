@@ -1,57 +1,37 @@
 import { useState } from 'react'
 import { Button, Modal } from '@skygraph/react'
-import { useDemoStrings } from '../../i18n'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Scoping tokens on the wrapper reskins the trigger and the dialog it opens —
- * every `type="primary"` button inherits the scoped palette. Three recipes —
- * branded green, dark field, glass pick.
- */
-const STRINGS = {
-  en: {
-    open: 'Open modal',
-    title: 'Scoped tokens',
-    body: 'Primary palette is scoped here.',
-    cancel: 'Cancel',
-    ok: 'Confirm',
-  },
-  ru: {
-    open: 'Открыть',
-    title: 'Скоуп токенов',
-    body: 'Primary-палитра скоупится здесь.',
-    cancel: 'Отмена',
-    ok: 'Ок',
-  },
-} as const
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-primary-hover': '#93c5fd',
+} as CSSProperties
 
-function ModalCard() {
-  const t = useDemoStrings(STRINGS)
+export function TokensOverrideModal() {
   const [open, setOpen] = useState(false)
   return (
-    <>
+    <div style={dark}>
       <Button type="primary" onClick={() => setOpen(true)}>
-        {t.open}
+        Open modal
       </Button>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title={t.title}
+        title="Scoped tokens"
         footer={
           <>
-            <Button onClick={() => setOpen(false)}>{t.cancel}</Button>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
             <Button type="primary" onClick={() => setOpen(false)}>
-              {t.ok}
+              Confirm
             </Button>
           </>
         }
       >
-        <p>{t.body}</p>
+        <p>Primary palette is scoped here.</p>
       </Modal>
-    </>
+    </div>
   )
-}
-
-export function TokensOverrideModal() {
-  return <TokenScopeCards render={() => <ModalCard />} />
 }

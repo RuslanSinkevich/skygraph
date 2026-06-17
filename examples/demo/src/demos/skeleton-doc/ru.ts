@@ -27,8 +27,7 @@ export const skeletonDocRu: { [K in keyof typeof skeletonDocEn]: string } = {
   demoCardTitle: 'Композиция карточки',
   demoCardDesc: 'Соберите несколько Skeleton, чтобы повторить сетку карточек.',
   demoTokensTitle: 'Кастомные темы скелета',
-  demoTokensDesc:
-    'Три палитры (светлая карточка, индиго-фирменная, тёмный режим) — меняются только `--sg-skeleton-bg` и `--sg-skeleton-shimmer`; шиммер всегда читается, потому что блик ярче базы.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableSkeletonApi: 'API Skeleton',
   tableCssVars: 'CSS-переменные',

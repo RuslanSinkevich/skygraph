@@ -23,8 +23,7 @@ export const tabsDocEn = {
   demoStatesTitle: 'Loading & disabled',
   demoStatesDesc: 'Per-item flags gate activation.',
   demoTokensTitle: 'Custom tab styles',
-  demoTokensDesc:
-    'Three distinct strips (segmented pill, floating cards, animated gradient underline) — each one is just a className on the wrapper plus descendant CSS.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableTabsApi: 'Tabs API',
   tableTabItem: 'TabItem',

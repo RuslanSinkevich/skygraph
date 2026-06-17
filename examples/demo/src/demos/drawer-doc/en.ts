@@ -21,7 +21,7 @@ export const drawerDocEn = {
   demoNoMaskTitle: 'Mask options',
   demoNoMaskDesc: 'Turn off the mask, or keep it but force the × / ESC.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope surface tokens on a wrapper for a dark-mode drawer.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableDrawerApi: 'Drawer API',
   tableCssVars: 'CSS Variables',

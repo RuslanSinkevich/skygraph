@@ -28,7 +28,7 @@ export const inputDocRu: { [K in keyof typeof inputDocEn]: string } = {
   demoTokensDesc: 'Скоуп `--sg-input-*` для перешейпа только этих input-ов.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
-    'Три готовых скоупа на токенах `--sg-input-*`: зелёный бренд, тёмное поле и glass pick. Меняется только покраска/форма — focus-кольцо и состояния сохраняются.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающий label на чистом CSS (в духе Material 3). Подпись лежит внутри поля и уезжает влево-вверх при фокусе или когда поле заполнено. Контурный и filled-варианты — без правок ядра, только `:has(input:focus)` + `:has(input:not(:placeholder-shown))`.',

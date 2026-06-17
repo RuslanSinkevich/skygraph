@@ -27,7 +27,7 @@ export const autoCompleteDocRu: { [K in keyof typeof autoCompleteDocEn]: string 
   demoStatesDesc: '`disabled` блокирует ввод. У Vue пока нет loading-состояния (parity-gap).',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах AutoComplete: зелёный бренд, тёмное поле (с панелью подсказок) и glass pick.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на поле AutoComplete: уезжает вверх при фокусе/вводе или когда поле заполнено.',

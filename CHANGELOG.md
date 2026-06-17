@@ -5,6 +5,35 @@ All notable user-facing changes to SkyGraph are documented here.
 Each version uses the same cycle: `Core`, `Components`, `Styles`, `Fixes`, and `Breaking / Removed`.
 Demo implementation details, docs routing, tests, generated reports, and dead adapters are intentionally omitted.
 
+## [0.6.4] - 2026-06-17
+
+### Core
+
+- No runtime core changes.
+
+### Components
+
+- React `ConfigProvider` `locale` now reaches `DataGrid`, `List`, `Transfer`, `Tree`, `TimePicker`, `PinInput`, and `ColorPicker`.
+- React `Table` now reads `locale.table` from `ConfigProvider` in addition to its own `locale` prop.
+- Vue `ConfigProvider` `disabled` now propagates to every interactive control (`Select`, `Checkbox`, `Switch`, `Radio`, `Input`, `Textarea`, `InputNumber`, `Slider`, `DatePicker`, `Upload`, `Rate`, `ColorPicker`, `AutoComplete`, `Cascader`).
+- Vue `Field` required/optional markers now come from the active `locale` instead of being hardcoded.
+- Locales gained a shared key superset across React and Vue, and four new presets: `ja_JP`, `ko_KR`, `pt_BR`, and `it_IT`.
+
+### Styles
+
+- Vue `Table` filter and search icons now render as SVG, matching React.
+- Range `DatePicker` dropdown no longer clips the second calendar when presets are shown.
+
+### Fixes
+
+- React `Table` multi-sort: a repeated click on an already sorted column cycles its direction again instead of being ignored.
+- React `Table` resizable columns no longer jump left on the first drag (the real rendered width is measured).
+- Vue `Table` empty state is now centered.
+
+### Breaking / Removed
+
+- No user-facing removals.
+
 ## [0.6.3] - 2026-06-09
 
 ### Core

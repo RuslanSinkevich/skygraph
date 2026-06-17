@@ -43,7 +43,7 @@ export const listDocEn = {
   demoSlotsDesc: 'Target stable DOM slots without descendant selectors.',
   demoTokensTitle: 'Token override',
   demoTokensDesc:
-    'Three scopes built from List tokens: green brand, dark surface and glass pick (hover / border / header).',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableListApi: 'List API',
   tableCssVars: 'CSS Variables',
 

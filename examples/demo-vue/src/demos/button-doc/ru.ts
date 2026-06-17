@@ -29,7 +29,7 @@ export const buttonDocRu: { [K in keyof typeof buttonDocEn]: string } = {
   demoTokensDesc: 'Скоуп `--sg-btn-*` для локальной формы (pill, крупнее, компактнее).',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
-    'Три готовых скоупа на токенах `--sg-btn-*`: зелёный бренд, тёмная поверхность и glass pick. Меняется только покраска/форма — доступность сохраняется.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   demoBrandTitle: 'Бренд в скоупе',
   demoBrandDesc: 'Переопределите `--sg-color-primary*` для поддерева.',
   propUnstyled: 'Убирает все классы `sg-button-*`; семантика (disabled, aria-busy) сохраняется.',

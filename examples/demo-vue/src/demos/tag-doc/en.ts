@@ -27,7 +27,7 @@ export const tagDocEn = {
   demoWithIconDesc: 'Default slot accepts any markup — icon + text is just template.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
-    'Three scopes built from Tag tokens: green brand, dark surface and glass pick (preset palette + radius).',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableTagApi: 'Tag API',
   tableCssVars: 'CSS Variables',
 

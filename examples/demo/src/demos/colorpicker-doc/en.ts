@@ -27,8 +27,7 @@ export const colorPickerDocEn = {
   demoThemeSwapDesc:
     'Drive --sg-color-primary from the picker and watch every component restyle instantly.',
   demoTokensOverrideTitle: 'Token override',
-  demoTokensOverrideDesc:
-    'Three scoped recipes — branded green, dark field, glass pick — reskin one ColorPicker.',
+  demoTokensOverrideDesc: 'Wrap the component in an element with CSS variables — it repaints.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the trigger — it stays as a caption (a colour is always set) and lifts its tint on focus.',

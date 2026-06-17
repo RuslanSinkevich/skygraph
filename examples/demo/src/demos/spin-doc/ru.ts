@@ -28,7 +28,7 @@ export const spinDocRu: { [K in keyof typeof spinDocEn]: string } = {
   demoFullscreenTitle: 'Fullscreen',
   demoFullscreenDesc: 'Overlay на весь viewport на слое z-modal.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Настройте цвет кольца и фон overlay через CSS-переменные.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableSpinApi: 'API Spin',
   tableCssVars: 'CSS-переменные',

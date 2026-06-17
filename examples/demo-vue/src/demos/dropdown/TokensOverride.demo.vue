@@ -1,42 +1,31 @@
 <script setup lang="ts">
-/**
- * Dropdown has no component-specific tokens — it composes the surface and
- * hover globals; the danger row follows `--sg-color-error`. Three scoped
- * recipes — branded green, dark field, glass pick — restyle the menu.
- *
- * Mirrors React `examples/demo/src/demos/dropdown/TokensOverride.demo.tsx`.
- */
-import { computed } from 'vue'
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgDropdown, SgButton, type DropdownItem } from '@skygraph/vue'
-import { useDemoStrings } from '../../i18n'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
 
-const STRINGS = {
-  en: { button: 'Actions ▾', edit: 'Edit', duplicate: 'Duplicate', delete: 'Delete…' },
-  ru: {
-    button: 'Действия ▾',
-    edit: 'Редактировать',
-    duplicate: 'Дублировать',
-    delete: 'Удалить…',
-  },
-} as const
-
-const t = useDemoStrings(STRINGS)
-
-const items = computed<DropdownItem[]>(() => [
-  { key: '1', label: t.value.edit },
-  { key: '2', label: t.value.duplicate },
+const items: DropdownItem[] = [
+  { key: '1', label: 'Edit' },
+  { key: '2', label: 'Duplicate' },
   { key: 'd1', label: '', divider: true },
-  { key: '3', label: t.value.delete, danger: true },
-])
+  { key: '3', label: 'Delete…', danger: true },
+]
+
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-bg-elevated': '#1e293b',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-bg-hover': '#273449',
+  '--sg-color-border-secondary': '#334155',
+  '--sg-color-error': '#f87171',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgDropdown :items="items" trigger="click">
-        <SgButton>{{ t.button }}</SgButton>
-      </SgDropdown>
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgDropdown :items="items" trigger="click">
+      <SgButton>Actions ▾</SgButton>
+    </SgDropdown>
+  </div>
 </template>

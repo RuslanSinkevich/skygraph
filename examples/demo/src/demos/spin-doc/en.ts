@@ -27,7 +27,7 @@ export const spinDocEn = {
   demoFullscreenTitle: 'Fullscreen',
   demoFullscreenDesc: 'Viewport-level overlay at z-modal.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Tune ring + overlay background via CSS vars.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableSpinApi: 'Spin API',
   tableCssVars: 'CSS Variables',

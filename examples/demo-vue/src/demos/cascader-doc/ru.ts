@@ -42,7 +42,7 @@ export const cascaderDocRu: { [K in keyof typeof cascaderDocEn]: string } = {
     'Пометь узел `isLeaf: false`; по клику cascader вызывает `load-data(selectedOptions)` и показывает спиннер, пока children не подгрузятся.',
   demoTokensOverrideTitle: 'Переопределение токенов',
   demoTokensOverrideDesc:
-    'Три скоупа на токенах Cascader: зелёный бренд, тёмное поле (с панелями) и glass pick.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на контроле Cascader: уезжает вверх при фокусе или когда путь выбран.',

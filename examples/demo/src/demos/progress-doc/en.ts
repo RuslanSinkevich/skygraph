@@ -26,7 +26,7 @@ export const progressDocEn = {
   demoNoInfoTitle: 'Hide label',
   demoNoInfoDesc: '`showInfo={false}` drops the trailing / inner percentage text.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope the theme primitives to rebrand every bar inside a container.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableProgressApi: 'Progress API',
   tableCssVars: 'CSS Variables',

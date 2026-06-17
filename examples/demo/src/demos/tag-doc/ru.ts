@@ -27,8 +27,7 @@ export const tagDocRu: { [K in keyof typeof tagDocEn]: string } = {
   demoWithIconTitle: 'С иконкой',
   demoWithIconDesc: 'children — это ReactNode, иконка + текст это просто JSX.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc:
-    'Скруглите углы до 999px для pill, перекрасьте палитру пресетов через цветовые токены.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableTagApi: 'API Tag',
   tableCssVars: 'CSS-переменные',

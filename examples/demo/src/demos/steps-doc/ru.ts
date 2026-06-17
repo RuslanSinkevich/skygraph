@@ -28,7 +28,7 @@ export const stepsDocRu: { [K in keyof typeof stepsDocEn]: string } = {
   demoNavigationTitle: 'Navigation',
   demoNavigationDesc: 'Вариант с подчёркиванием как у вкладок, без иконок.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Цвет finish / process следует за `--sg-color-primary`.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableStepsApi: 'API Steps',
   tableStepItem: 'StepItem',

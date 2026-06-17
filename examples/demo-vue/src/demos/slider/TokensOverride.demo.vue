@@ -1,19 +1,19 @@
 <script setup lang="ts">
-/**
- * Slider uses only global tokens — the fill and handle follow
- * `--sg-color-primary`, the rail follows `--sg-color-border`. Three scoped
- * recipes — branded green, dark field, glass pick — rebrand the control.
- *
- * Mirrors React `examples/demo/src/demos/slider/TokensOverride.demo.tsx`.
- */
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgSlider } from '@skygraph/vue'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
+
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-border': '#475569',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgSlider :default-value="60" />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgSlider :default-value="60" />
+  </div>
 </template>

@@ -28,7 +28,7 @@ export const tabsDocEn = {
   demoStatesDesc: 'Per-item flags gate activation.',
   demoTokensTitle: 'Token override',
   demoTokensDesc:
-    'Three scopes built from Tabs tokens: green brand, dark surface and glass pick (ink bar and label).',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
 
   tableTabsApi: 'Tabs API',
   tableTabItem: 'TabItem',

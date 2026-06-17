@@ -24,8 +24,7 @@ export const tabsDocRu: { [K in keyof typeof tabsDocEn]: string } = {
   demoStatesTitle: 'Loading и disabled',
   demoStatesDesc: 'Per-item флаги управляют активацией.',
   demoTokensTitle: 'Кастомные стили табов',
-  demoTokensDesc:
-    'Три непохожих набора (сегментный pill, парящие карточки, анимированное градиент-подчёркивание) — обычный className на обёртке плюс CSS для потомков.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableTabsApi: 'API Tabs',
   tableTabItem: 'TabItem',

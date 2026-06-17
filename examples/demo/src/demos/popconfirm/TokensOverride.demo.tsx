@@ -1,27 +1,22 @@
 import { Popconfirm, Button } from '@skygraph/react'
-import { useDemoStrings } from '../../i18n'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Popconfirm has no component-specific tokens — it composes the surface
- * globals plus the primary palette for the confirm button. Three scoped
- * recipes — branded green, dark field, glass pick — reskin the trigger and
- * popup.
- */
-const STRINGS = {
-  en: { title: 'Reset preferences?', ok: 'Reset', button: 'Reset' },
-  ru: { title: 'Сбросить настройки?', ok: 'Сбросить', button: 'Сбросить' },
-} as const
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-bg-elevated': '#1f2937',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-primary-hover': '#93c5fd',
+} as CSSProperties
 
 export function TokensOverridePopconfirm() {
-  const t = useDemoStrings(STRINGS)
   return (
-    <TokenScopeCards
-      render={() => (
-        <Popconfirm title={t.title} okText={t.ok}>
-          <Button>{t.button}</Button>
-        </Popconfirm>
-      )}
-    />
+    <div style={dark}>
+      <Popconfirm title="Reset preferences?" okText="Reset">
+        <Button>Reset</Button>
+      </Popconfirm>
+    </div>
   )
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useConfigWithDefaults } from './ConfigProvider.vue'
 
 export interface SwitchProps {
   /** v-model binding (Vue idiom). */
@@ -28,7 +29,7 @@ const props = withDefaults(defineProps<SwitchProps>(), {
   modelValue: undefined,
   checked: undefined,
   defaultChecked: undefined,
-  disabled: false,
+  disabled: undefined,
   loading: false,
   size: 'middle',
 })
@@ -37,6 +38,8 @@ const emit = defineEmits<{
   (e: 'update:modelValue', checked: boolean): void
   (e: 'change', checked: boolean): void
 }>()
+
+const { resolvedDisabled } = useConfigWithDefaults(props, {})
 
 defineSlots<{
   checkedChildren(props: Record<string, never>): unknown
@@ -55,7 +58,7 @@ watch(
 const isChecked = computed(() => props.modelValue ?? props.checked ?? internal.value)
 
 function handleClick() {
-  if (props.disabled || props.loading) return
+  if (resolvedDisabled.value || props.loading) return
   const next = !isChecked.value
   internal.value = next
   emit('update:modelValue', next)
@@ -68,7 +71,7 @@ const classes = computed(() =>
     'sg-switch',
     `sg-switch-${switchSizeClass.value}`,
     isChecked.value ? 'sg-switch-checked' : '',
-    props.disabled || props.loading ? 'sg-switch-disabled' : '',
+    resolvedDisabled.value || props.loading ? 'sg-switch-disabled' : '',
     props.loading ? 'sg-switch-loading' : '',
   ]
     .filter(Boolean)
@@ -80,7 +83,7 @@ const classes = computed(() =>
   <button
     role="switch"
     :aria-checked="isChecked"
-    :disabled="disabled || loading"
+    :disabled="resolvedDisabled || loading"
     :class="unstyled ? '' : classes"
     type="button"
     @click="handleClick"

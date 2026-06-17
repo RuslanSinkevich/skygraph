@@ -22,8 +22,7 @@ export const tooltipDocEn = {
   demoIconTitle: 'On an info icon',
   demoIconDesc: "Classic '?' glyph pattern; set tabIndex so keyboard users can focus it.",
   demoTokensTitle: 'Custom tooltip styles',
-  demoTokensDesc:
-    'Three distinct skins (frosted glass, vivid gradient, soft card) — each one passes a className to the wrapper and styles `.sg-tooltip-content` / `.sg-tooltip-arrow` underneath.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableTooltipApi: 'Tooltip API',
   tableCssVars: 'CSS Variables',

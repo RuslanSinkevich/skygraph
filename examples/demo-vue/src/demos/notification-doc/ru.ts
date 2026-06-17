@@ -32,7 +32,7 @@ export const notificationDocRu: { [K in keyof typeof notificationDocEn]: string 
   demoDestroyDesc: '`notification.destroy()` чистит весь стор независимо от placement.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Визуал карточек — глобальные дизайн-токены; переопределите их на `:root` или обёртке, где также живёт `<SgNotificationContainer/>`.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableConfig: 'NotificationConfig',
   tableContainer: 'SgNotificationContainer',
   tableUtility: 'утилита notification',

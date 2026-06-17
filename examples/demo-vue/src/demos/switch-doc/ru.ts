@@ -32,7 +32,7 @@ export const switchDocRu: { [K in keyof typeof switchDocEn]: string } = {
     'Обернуть в `<SgField>` и пробросить `:model-value` / `@update:model-value` из слота.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах Switch: зелёный бренд, тёмная поверхность и glass pick (трек в обоих состояниях).',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableSwitchApi: 'API Switch',
   tableCssVars: 'CSS-переменные',
 

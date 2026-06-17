@@ -26,7 +26,7 @@ export const popconfirmDocRu: { [K in keyof typeof popconfirmDocEn]: string } = 
   demoTableDesc: "Каноничное использование в таблице — placement='left' держит bubble внутри тела.",
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Перекрашиваем каждую поверхность через `--sg-color-bg-elevated`, `--sg-color-warning` и `--sg-color-primary`.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tablePopconfirmApi: 'API Popconfirm',
   tableCssVars: 'CSS-переменные',
   cssHint:

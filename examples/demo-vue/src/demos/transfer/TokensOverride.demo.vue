@@ -1,41 +1,28 @@
 <script setup lang="ts">
-/**
- * Transfer has no component-local tokens — borders, headers, hover and
- * selection read the global palette. Three scoped recipes — branded green,
- * dark field, glass pick — reskin both columns.
- *
- * Mirrors React `examples/demo/src/demos/transfer/TokensOverride.demo.tsx`.
- */
-import { reactive, type CSSProperties } from 'vue'
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
+import { ref } from 'vue'
 import { SgTransfer } from '@skygraph/vue'
 import { mockData } from './data'
-import TokenScopeCards, { type TokenScopeKey } from '../_shared/TokenScopeCards.vue'
 
-const targetKeys = reactive<Record<TokenScopeKey, string[]>>({
-  brand: ['1', '3'],
-  dark: ['1', '3'],
-  glass: ['1', '3'],
-})
+const targetKeys = ref(['1', '3'])
 
-const extra: Partial<Record<TokenScopeKey, CSSProperties>> = {
-  brand: { '--sg-color-bg-secondary': '#ecfdf5' } as CSSProperties,
-  dark: { '--sg-color-primary-bg': 'rgba(96, 165, 250, 0.28)' } as CSSProperties,
-  glass: {
-    '--sg-color-bg-secondary': 'rgba(255, 255, 255, 0.7)',
-    '--sg-color-border-secondary': 'rgba(79, 70, 229, 0.18)',
-  } as CSSProperties,
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-bg-container': '#1e293b',
+  '--sg-color-bg-secondary': '#0f172a',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-border': '#475569',
+  '--sg-color-border-secondary': '#334155',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-primary-bg': 'rgba(96, 165, 250, 0.28)',
 }
 </script>
 
 <template>
-  <TokenScopeCards
-    :extra="extra"
-    :min-card-width="620"
-    :content-min-width="560"
-    content-align="center"
-  >
-    <template #default="{ scope }">
-      <SgTransfer v-model="targetKeys[scope]" :data-source="mockData" />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgTransfer v-model="targetKeys" :data-source="mockData" />
+  </div>
 </template>

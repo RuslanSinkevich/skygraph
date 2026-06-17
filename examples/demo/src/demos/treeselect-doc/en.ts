@@ -23,8 +23,7 @@ export const treeSelectDocEn = {
   demoSizesTitle: 'Sizes',
   demoSizesDesc: 'Three sizes, same structure.',
   demoTokensOverrideTitle: 'Token override',
-  demoTokensOverrideDesc:
-    'Three scoped recipes — branded green, dark field, glass pick — reskin one TreeSelect.',
+  demoTokensOverrideDesc: 'Wrap the component in an element with CSS variables — it repaints.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the trigger — it rises on focus or once a node is chosen.',

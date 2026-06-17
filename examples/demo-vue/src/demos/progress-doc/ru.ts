@@ -28,7 +28,7 @@ export const progressDocRu: ProgressDocStrings = {
   demoDynamicDesc: 'Управляем `percent` из state — clamped в [0, 100].',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах Progress: зелёный бренд, тёмная поверхность и glass pick (все полосы / кольца).',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableProgressApi: 'API Progress',
   tableCssVars: 'CSS-переменные',
   cssHint:

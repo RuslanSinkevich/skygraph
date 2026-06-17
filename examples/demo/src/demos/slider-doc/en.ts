@@ -21,7 +21,7 @@ export const sliderDocEn = {
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: 'Slider plugged into `<Field>`.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global tokens on a wrapper to rebrand.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableSliderApi: 'Slider API',
   tableCssVars: 'CSS Variables',

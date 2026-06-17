@@ -40,7 +40,7 @@ export const datePickerDocRu: { [K in keyof typeof datePickerDocEn]: string } = 
     'Значение пресета может быть кортежем `[Date, Date]` — клик заполняет оба конца сразу.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах DatePicker: зелёный бренд, тёмное поле (с панелью календаря) и glass pick.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на контроле DatePicker: уезжает вверх при фокусе или когда дата выбрана.',

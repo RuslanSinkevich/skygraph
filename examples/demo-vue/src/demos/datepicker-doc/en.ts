@@ -41,7 +41,7 @@ export const datePickerDocEn = {
     'Preset values may be a `[Date, Date]` tuple — clicking fills both ends at once.',
   demoTokensTitle: 'Token override',
   demoTokensDesc:
-    'Three scopes built from DatePicker tokens: green brand, dark field (with calendar panel) and glass pick.',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the DatePicker control: glides up on focus or when a date is selected.',

@@ -27,7 +27,7 @@ export const skeletonDocRu: SkeletonDocStrings = {
   demoCardDesc: 'Composing нескольких Skeleton для итогового layout.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах Skeleton: зелёный бренд, тёмная поверхность и glass pick (`--sg-skeleton-bg` / `--sg-skeleton-shimmer`).',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableSkeletonApi: 'API Skeleton',
   tableCssVars: 'CSS-переменные',
   cssHint:

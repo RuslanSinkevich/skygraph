@@ -1,26 +1,25 @@
 import { Breadcrumb } from '@skygraph/react'
-import { useDemoStrings } from '../../i18n'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Breadcrumb has no component-specific tokens — it reads the text palette and
- * `--sg-color-primary` for link hover. Three scoped recipes — branded green,
- * dark field, glass pick — restyle the trail.
- */
-const STRINGS = {
-  en: { home: 'Home', docs: 'Docs', current: 'Breadcrumb' },
-  ru: { home: 'Главная', docs: 'Документация', current: 'Хлебные крошки' },
-} as const
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-text-secondary': '#cbd5e1',
+  '--sg-color-primary': '#60a5fa',
+} as CSSProperties
 
 export function TokensOverrideBreadcrumb() {
-  const t = useDemoStrings(STRINGS)
   return (
-    <TokenScopeCards
-      render={() => (
-        <Breadcrumb
-          items={[{ title: t.home, href: '#' }, { title: t.docs, href: '#' }, { title: t.current }]}
-        />
-      )}
-    />
+    <div style={dark}>
+      <Breadcrumb
+        items={[
+          { title: 'Home', href: '#' },
+          { title: 'Docs', href: '#' },
+          { title: 'Breadcrumb' },
+        ]}
+      />
+    </div>
   )
 }

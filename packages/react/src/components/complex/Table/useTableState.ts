@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useTable } from '../../../hooks/useTable'
+import { useConfig } from '../../ConfigProvider'
 import {
   flattenLeafColumns,
   buildHeaderRows,
@@ -83,7 +84,16 @@ export function useTableState(props: TableProps) {
     refresh,
   } = useTable(tableOptions)
 
-  const t = useMemo(() => ({ ...DEFAULT_LOCALE, ...locale }), [locale])
+  // Источники locale в порядке возрастания приоритета:
+  //   1. DEFAULT_LOCALE (hardcoded-fallback — работает и без ConfigProvider)
+  //   2. config.locale.table (из ConfigProvider)
+  //   3. props.locale (явный проп Table)
+  const config = useConfig()
+  const configTableLocale = config.locale?.table
+  const t = useMemo(
+    () => ({ ...DEFAULT_LOCALE, ...configTableLocale, ...locale }),
+    [configTableLocale, locale],
+  )
 
   const hasColumnGroups = columnsProp.some((c) => c.children && c.children.length > 0)
   const leafColumns = useMemo(() => flattenLeafColumns(columnsProp), [columnsProp])
@@ -316,9 +326,11 @@ export function useTableState(props: TableProps) {
           next = sorts.filter((s) => s.column !== col.key)
         }
 
-        if (onSortsChange) {
-          onSortsChange(next)
-        } else {
+        // `sorts` проп задан => controlled-режим, internal state не трогаем.
+        // Иначе всегда обновляем internal state, а `onSortsChange` шлём как
+        // уведомление (uncontrolled + callback должны работать вместе).
+        onSortsChange?.(next)
+        if (controlledSorts === undefined) {
           setInternalSorts(next)
         }
 
@@ -328,7 +340,10 @@ export function useTableState(props: TableProps) {
           setSorts(next)
         }
       } else {
-        const current = sorts.length === 1 ? sorts[0] : null
+        // Берём текущую сортировку именно этой колонки (а не `sorts[0]`),
+        // чтобы при мультисорте клик без Shift по уже сортированной колонке
+        // переключал направление asc→desc→none, а не сбрасывал всё.
+        const current = sorts.find((s) => s.column === col.key) ?? null
         let next: SortConfig[]
 
         if (!current || current.column !== col.key) {
@@ -339,9 +354,8 @@ export function useTableState(props: TableProps) {
           next = []
         }
 
-        if (onSortsChange) {
-          onSortsChange(next)
-        } else {
+        onSortsChange?.(next)
+        if (controlledSorts === undefined) {
           setInternalSorts(next)
         }
 
@@ -352,7 +366,7 @@ export function useTableState(props: TableProps) {
         }
       }
     },
-    [multiSort, sorts, onSortsChange, setSort, setSorts, clearSort],
+    [multiSort, sorts, controlledSorts, onSortsChange, setSort, setSorts, clearSort],
   )
 
   const getSortIndex = useCallback(
@@ -470,10 +484,19 @@ export function useTableState(props: TableProps) {
     e.stopPropagation()
     resizeCleanupRef.current?.()
 
+    // Реальная ширина колонки из DOM, а не из declared/persisted. При
+    // flex/minmax-раскладке declared-ширина не совпадает с фактической →
+    // на первом mousemove колонка скакала к declared. Измеряем th.
+    const handle = e.currentTarget as HTMLElement
+    const th = handle.closest('.sg-table-th') as HTMLElement | null
+    const measuredW = th?.getBoundingClientRect().width
+    const startW =
+      measuredW && Number.isFinite(measuredW) ? measuredW : (colWidths[colKey] ?? DEFAULT_COL_WIDTH)
+
     resizeRef.current = {
       col: colKey,
       startX: e.clientX,
-      startW: colWidths[colKey] ?? DEFAULT_COL_WIDTH,
+      startW,
     }
 
     const onMove = (ev: MouseEvent) => {

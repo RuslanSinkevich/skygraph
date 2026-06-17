@@ -30,7 +30,7 @@ export const inputNumberDocEn = {
   demoInFormDesc: 'Required + range validators on number fields.',
   demoTokensTitle: 'Token override',
   demoTokensDesc:
-    'Three scopes built from InputNumber tokens: green brand, dark field and glass pick (field + steppers).',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the InputNumber field: glides up on focus or when a number is entered.',

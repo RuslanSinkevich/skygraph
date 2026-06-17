@@ -26,7 +26,7 @@ export const uploadDocRu: { [K in keyof typeof uploadDocEn]: string } = {
   demoDisabledTitle: 'Отключено / loading',
   demoDisabledDesc: 'Заблокировать триггер или подменить на loading-состояние.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc: 'Скоуп глобальных токенов на обёртке для переоформления списка.',
+  demoTokensOverrideDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableUploadApi: 'API Upload',
   tableUploadFile: 'UploadFile',

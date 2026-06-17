@@ -37,7 +37,7 @@ export const treeDocRu: TreeDocStrings = {
   demoVirtualDesc: '1 000 узлов, рендерятся только видимые строки.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Скоупните `--sg-color-primary` или `data-sg-theme`, чтобы перекрасить одно Tree.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
 
   tableTreeApi: 'API Tree',
   tableTreeNodeData: 'TreeNodeData',

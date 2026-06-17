@@ -23,7 +23,8 @@ export const radioDocEn = {
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: '`SgRadio` wrapped in `SgField` with required validation.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global tokens to rebrand a single group.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableRadioGroupApi: 'SgRadio API',
   tableRadioOptionApi: 'RadioOption',
   tableCssVars: 'CSS Variables',

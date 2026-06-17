@@ -27,7 +27,8 @@ export const segmentedDocRu: { [K in keyof typeof segmentedDocEn]: string } = {
   demoSizesTitle: 'Размеры',
   demoSizesDesc: 'Small, middle, large.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc: 'Скоупим токены track / thumb, чтобы перекрасить контрол.',
+  demoTokensOverrideDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableSegmentedApi: 'API Segmented',
   tableCssVars: 'CSS-переменные',
 

@@ -27,7 +27,7 @@ export const progressDocRu: { [K in keyof typeof progressDocEn]: string } = {
   demoNoInfoTitle: 'Скрыть подпись',
   demoNoInfoDesc: '`showInfo={false}` убирает процент справа / по центру.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоупьте примитивы темы, чтобы перебрендить все полосы внутри контейнера.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableProgressApi: 'API Progress',
   tableCssVars: 'CSS-переменные',

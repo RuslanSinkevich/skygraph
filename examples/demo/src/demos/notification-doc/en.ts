@@ -28,8 +28,7 @@ export const notificationDocEn = {
   demoDestroyTitle: 'Destroy all',
   demoDestroyDesc: '`notification.destroy()` clears the entire store regardless of placement.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc:
-    'Card visuals come from global design tokens — swap them on `:root` or a high-level wrapper that also contains `<NotificationContainer/>`.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableConfig: 'NotificationConfig',
   tableContainer: 'NotificationContainer',

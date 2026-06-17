@@ -28,7 +28,7 @@ export const autoCompleteDocEn = {
   demoStatesDesc: '`disabled` blocks editing. Vue has no loading state yet (parity gap).',
   demoTokensTitle: 'Token override',
   demoTokensDesc:
-    'Three scopes built from AutoComplete tokens: green brand, dark field (with suggestions panel) and glass pick.',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the AutoComplete field: glides up on focus / typing or when the field is filled.',

@@ -26,7 +26,8 @@ export const resultDocEn = {
   demoWithContentTitle: 'With content',
   demoWithContentDesc: 'Default slot renders inside a soft panel below `#extra`.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope success / primary / surface tokens to rebrand.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableResultApi: 'Result API',
   tableCssVars: 'CSS Variables',
   cssHint:

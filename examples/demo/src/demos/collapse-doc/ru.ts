@@ -33,7 +33,7 @@ export const collapseDocRu: { [K in keyof typeof collapseDocEn]: string } = {
   demoControlledDesc:
     'Управляйте набором открытых сами — добавьте кнопки «Развернуть всё» / «Свернуть всё».',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Ребрендинг через скоупленные CSS-переменные — пример с тёмными панелями.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableCollapseApi: 'API Collapse',
   tableCollapseItem: 'CollapseItem',

@@ -24,8 +24,7 @@ export const inputNumberDocRu: { [K in keyof typeof inputNumberDocEn]: string } 
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: 'Валидаторы required и диапазона на числовых полях.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc:
-    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один InputNumber.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись над полем — уезжает вверх при фокусе или когда есть значение; stepper продолжает работать.',

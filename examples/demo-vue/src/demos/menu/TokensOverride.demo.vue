@@ -1,26 +1,28 @@
 <script setup lang="ts">
-/**
- * Menu leans on the global palette — the selected item follows
- * `--sg-color-primary` / `--sg-color-primary-bg`, hover follows
- * `--sg-color-bg-hover`. Three scoped recipes — branded green, dark field,
- * glass pick — reskin one menu.
- *
- * Mirrors React `examples/demo/src/demos/menu/TokensOverride.demo.tsx`.
- */
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgMenu } from '@skygraph/vue'
 import { sidebarItems } from './data'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
+
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-bg-container': '#1e293b',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-bg-hover': '#273449',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-primary-bg': 'rgba(96, 165, 250, 0.22)',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgMenu
-        mode="inline"
-        :items="sidebarItems"
-        :default-open-keys="['team']"
-        :default-selected-keys="['members']"
-      />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgMenu
+      mode="inline"
+      :items="sidebarItems"
+      :default-open-keys="['team']"
+      :default-selected-keys="['members']"
+    />
+  </div>
 </template>

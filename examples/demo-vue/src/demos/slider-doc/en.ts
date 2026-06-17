@@ -28,7 +28,7 @@ export const sliderDocEn = {
   demoInFormDesc: 'Slider plugged into `<SgField>` via the scoped slot.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
-    'Three scopes built from Slider tokens: green brand, dark surface and glass pick (fill, handle, rail).',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableSliderApi: 'Slider API',
   tableCssVars: 'CSS Variables',
 

@@ -1,58 +1,31 @@
 <script setup lang="ts">
-/**
- * Select shares the input tokens (`--sg-input-*`) with `Input` and listens to
- * the global colour / surface families. Three scoped recipes — branded green,
- * dark field and frosted glass — reskin the same component without touching
- * its behaviour.
- *
- * Mirrors React `examples/demo/src/demos/select/TokensOverride.demo.tsx`.
- */
-import type { CSSProperties } from 'vue'
-import { computed } from 'vue'
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgSelect } from '@skygraph/vue'
-import { fruitOptions } from './data'
-import { useDemoStrings } from '../../i18n'
-import TokenScopeCards, { type TokenScopeKey } from '../_shared/TokenScopeCards.vue'
 
-const STRINGS = {
-  en: { apple: 'Apple', pear: 'Pear', mango: 'Mango', kiwi: 'Kiwi', placeholder: 'Pick a fruit' },
-  ru: {
-    apple: 'Яблоко',
-    pear: 'Груша',
-    mango: 'Манго',
-    kiwi: 'Киви',
-    placeholder: 'Выберите фрукт',
-  },
-} as const
+const options = [
+  { label: 'Apple', value: 'apple' },
+  { label: 'Pear', value: 'pear' },
+  { label: 'Mango', value: 'mango' },
+  { label: 'Kiwi', value: 'kiwi' },
+]
 
-const t = useDemoStrings(STRINGS)
-
-const options = computed(() =>
-  fruitOptions.map((o) => ({
-    ...o,
-    label: t.value[o.value as 'apple' | 'pear' | 'mango' | 'kiwi'],
-  })),
-)
-
-const extra: Partial<Record<TokenScopeKey, CSSProperties>> = {
-  brand: { '--sg-input-border': '#6ee7b7' } as CSSProperties,
-  dark: {
-    '--sg-input-bg': '#0f172a',
-    '--sg-input-color': '#e2e8f0',
-    '--sg-input-border': '#1e293b',
-  } as CSSProperties,
-  glass: {
-    '--sg-input-bg': 'rgba(255, 255, 255, 0.55)',
-    '--sg-input-border': 'rgba(15, 23, 42, 0.08)',
-    '--sg-input-radius': '12px',
-  } as CSSProperties,
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-bg-elevated': '#1f2937',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-border': '#334155',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-input-bg': '#1e293b',
+  '--sg-input-color': '#e2e8f0',
+  '--sg-input-border': '#334155',
 }
 </script>
 
 <template>
-  <TokenScopeCards :extra="extra">
-    <template #default>
-      <SgSelect :placeholder="t.placeholder" :options="options" />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgSelect placeholder="Pick a fruit" :options="options" />
+  </div>
 </template>

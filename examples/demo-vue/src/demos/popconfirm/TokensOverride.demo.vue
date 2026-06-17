@@ -1,30 +1,24 @@
 <script setup lang="ts">
-/**
- * Popconfirm has no component-specific tokens — it composes the surface
- * globals plus the primary palette for the confirm button. Three scoped
- * recipes — branded green, dark field, glass pick — reskin the trigger and
- * popup.
- *
- * Mirrors React `examples/demo/src/demos/popconfirm/TokensOverride.demo.tsx`.
- */
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgButton, SgPopconfirm } from '@skygraph/vue'
-import { useDemoStrings } from '../../i18n'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
 
-const STRINGS = {
-  en: { title: 'Reset preferences?', ok: 'Reset', button: 'Reset' },
-  ru: { title: 'Сбросить настройки?', ok: 'Сбросить', button: 'Сбросить' },
-} as const
-
-const t = useDemoStrings(STRINGS)
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-bg-elevated': '#1e293b',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text-secondary': '#cbd5e1',
+  '--sg-color-border-secondary': '#334155',
+  '--sg-color-primary': '#60a5fa',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgPopconfirm :title="t.title" :ok-text="t.ok">
-        <SgButton>{{ t.button }}</SgButton>
-      </SgPopconfirm>
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgPopconfirm title="Reset preferences?" ok-text="Reset">
+      <SgButton>Reset</SgButton>
+    </SgPopconfirm>
+  </div>
 </template>

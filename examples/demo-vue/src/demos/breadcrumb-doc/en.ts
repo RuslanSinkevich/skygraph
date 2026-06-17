@@ -23,7 +23,8 @@ export const breadcrumbDocEn = {
   demoDropdownTitle: 'With dropdown',
   demoDropdownDesc: 'Embed an `SgDropdown` inside the `item` slot to jump between siblings.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope the text palette + `--sg-color-primary` to rebrand.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableBreadcrumbApi: 'Breadcrumb API',
   tableBreadcrumbItem: 'BreadcrumbItem',
   tableCssVars: 'CSS Variables',

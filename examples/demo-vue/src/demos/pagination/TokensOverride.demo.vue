@@ -1,22 +1,24 @@
 <script setup lang="ts">
-/**
- * Pagination composes the form-chip tokens for idle buttons and the primary
- * palette for the active chip. Three scoped recipes — branded green, dark
- * field, glass pick — restyle the whole pager.
- *
- * Mirrors React `examples/demo/src/demos/pagination/TokensOverride.demo.tsx`.
- */
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { ref } from 'vue'
 import { SgPagination } from '@skygraph/vue'
-import TokenScopeCards from '../_shared/TokenScopeCards.vue'
 
 const page = ref(3)
+
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-bg-container': '#1e293b',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-border': '#475569',
+  '--sg-color-primary': '#60a5fa',
+}
 </script>
 
 <template>
-  <TokenScopeCards>
-    <template #default>
-      <SgPagination :current="page" :total="120" @change="(p: number) => (page = p)" />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgPagination :current="page" :total="120" @change="(p: number) => (page = p)" />
+  </div>
 </template>

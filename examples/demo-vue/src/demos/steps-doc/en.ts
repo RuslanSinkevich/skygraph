@@ -27,7 +27,8 @@ export const stepsDocEn = {
   demoNavigationTitle: 'Navigation',
   demoNavigationDesc: 'Underlined-tab variant without icons.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Finished / process colour follows `--sg-color-primary`.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableStepsApi: 'Steps API',
   tableStepItem: 'StepItem',
   tableCssVars: 'CSS Variables',

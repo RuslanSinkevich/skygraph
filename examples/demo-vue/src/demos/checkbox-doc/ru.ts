@@ -26,7 +26,8 @@ export const checkboxDocRu: { [K in keyof typeof checkboxDocEn]: string } = {
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: 'Обернуть в `<SgField>`, прокинуть `:checked` / `@change` из слота.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп глобальных токенов на обёртке для перекраски.',
+  demoTokensDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableCheckboxApi: 'API Checkbox',
   tableCssVars: 'CSS-переменные',
 

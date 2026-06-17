@@ -25,8 +25,7 @@ export const timePickerDocEn = {
   demoStatesTitle: 'States',
   demoStatesDesc: 'Disabled and loading.',
   demoTokensTitle: 'Token override',
-  demoTokensDesc:
-    'Three scoped recipes — branded green, dark field, glass pick — reskin one TimePicker.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the trigger — it rises on focus or once a time is selected. Pure CSS + the controlled value.',

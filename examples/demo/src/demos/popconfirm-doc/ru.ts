@@ -22,8 +22,7 @@ export const popconfirmDocRu: { [K in keyof typeof popconfirmDocEn]: string } = 
   demoTableTitle: 'Удаление в строке',
   demoTableDesc: "Канонический сценарий для таблиц — placement='left' держит bubble внутри тела.",
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc:
-    'Перекрасьте поверхности через --sg-color-bg-elevated, --sg-color-warning и --sg-color-primary.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tablePopconfirmApi: 'API Popconfirm',
   tableCssVars: 'CSS-переменные',

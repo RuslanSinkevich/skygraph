@@ -39,7 +39,7 @@ export const listDocRu: { [K in keyof typeof listDocEn]: string } = {
   demoSlotsTitle: 'Слоты (classNames / styles)',
   demoSlotsDesc: 'Целиться в стабильные DOM-слоты.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Перекрасить hover / border / header через глобальные токены.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableListApi: 'API List',
   tableListItem: 'List.Item',

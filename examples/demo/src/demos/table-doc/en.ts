@@ -14,6 +14,9 @@ export const tableDocEn = {
 
   demoBasicTitle: 'Basic',
   demoBasicDesc: 'Simple table with sorting and custom render.',
+  demoStickyTitle: 'Sticky Header',
+  demoStickyDesc:
+    'Header stays pinned while the body scrolls inside scroll.y. Pagination is off so every row shares one scroll area.',
   demoSortableTitle: 'Sorting',
   demoSortableDesc:
     'Sortable columns. Click a header to toggle asc/desc; shift-click for multi-sort.',
@@ -99,7 +102,8 @@ export const tableDocEn = {
   propSize: 'Table density',
   propLoading: 'Show loading overlay',
   propSearchable: 'Show global search box',
-  propScroll: 'Horizontal scroll width',
+  propScroll: 'Horizontal (x) and/or vertical (y) scroll constraints',
+  propSticky: 'Keep the header fixed while the body scrolls vertically',
   propRowSelection: 'Row selection config',
   propExpandable: 'Expandable row config',
   propTree: 'Tree data config',
@@ -107,6 +111,9 @@ export const tableDocEn = {
   propDraggable: 'Enable column drag & drop reorder',
   propOnColumnOrderChange: 'Callback on column reorder',
   propOnCellEdit: 'Callback on cell edit',
+  propOnRowClick: 'Callback fired with (id, row) when a body row is clicked',
+  propMultiSort: 'Enable shift-click multi-column sorting',
+  propOnSortsChange: 'Callback fired with the active sort model on change',
   propRowClassName: 'Custom class for rows',
   propClassNames: 'Slot classes (root/toolbar/headerCell/bodyCell/row/...)',
   propStyles: 'Slot inline styles (root/toolbar/headerCell/bodyCell/row/...)',

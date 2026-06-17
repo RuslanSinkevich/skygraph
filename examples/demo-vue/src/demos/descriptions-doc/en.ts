@@ -28,7 +28,8 @@ export const descriptionsDocEn = {
   demoRichContentTitle: 'Rich content',
   demoRichContentDesc: 'Vue: `value` is `string`. React supports `ReactNode` — see findings.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global surface / border tokens to rebrand.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableDescriptionsApi: 'Descriptions API',
   tableDescriptionsItemApi: 'DescriptionsItem',
   tableCssVars: 'CSS Variables',

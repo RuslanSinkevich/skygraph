@@ -29,7 +29,7 @@ export const badgeDocRu: { [K in keyof typeof badgeDocEn]: string } = {
   demoOffsetTitle: 'Смещение',
   demoOffsetDesc: 'Сдвиньте прикреплённый счётчик на [right, top] пикселей.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Замените `--sg-color-error`, чтобы перекрасить все счётчики и точки сразу.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableBadgeApi: 'API Badge',
   tableCssVars: 'CSS-переменные',

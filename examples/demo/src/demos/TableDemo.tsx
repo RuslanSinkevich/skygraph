@@ -6,6 +6,8 @@ import { useTableDocStrings } from './table-doc/useTableDocStrings'
 
 import { BasicTable } from './table/BasicTable.demo'
 import BasicTableSource from './table/BasicTable.demo?raw'
+import { StickyHeaderTable } from './table/StickyHeader.demo'
+import StickyHeaderSource from './table/StickyHeader.demo?raw'
 import { SortableTable } from './table/Sortable.demo'
 import SortableSource from './table/Sortable.demo?raw'
 import { SelectionTable } from './table/Selection.demo'
@@ -86,7 +88,12 @@ export function TableDemo() {
       },
       { name: 'loading', description: t.propLoading, type: 'boolean', default: 'false' },
       { name: 'searchable', description: t.propSearchable, type: 'boolean', default: 'false' },
-      { name: 'scroll', description: t.propScroll, type: '{ x?: number }' },
+      {
+        name: 'scroll',
+        description: t.propScroll,
+        type: '{ x?: number | string; y?: number | string }',
+      },
+      { name: 'sticky', description: t.propSticky, type: 'boolean', default: 'false' },
       { name: 'rowSelection', description: t.propRowSelection, type: '{ selectedKeys, onChange }' },
       { name: 'expandable', description: t.propExpandable, type: '{ expandedRowRender }' },
       { name: 'tree', description: t.propTree, type: '{ defaultExpandAllRows?, indentSize? }' },
@@ -98,6 +105,13 @@ export function TableDemo() {
         type: '(keys: string[]) => void',
       },
       { name: 'onCellEdit', description: t.propOnCellEdit, type: '(id, column, value) => void' },
+      { name: 'onRowClick', description: t.propOnRowClick, type: '(id, row) => void' },
+      { name: 'multiSort', description: t.propMultiSort, type: 'boolean', default: 'false' },
+      {
+        name: 'onSortsChange',
+        description: t.propOnSortsChange,
+        type: '(sorts: SortConfig[]) => void',
+      },
       {
         name: 'rowClassName',
         description: t.propRowClassName,
@@ -210,6 +224,12 @@ export function TableDemo() {
       <DemoBox title={t.demoBasicTitle} description={t.demoBasicDesc} code={BasicTableSource}>
         <div style={{ width: '100%' }}>
           <BasicTable />
+        </div>
+      </DemoBox>
+
+      <DemoBox title={t.demoStickyTitle} description={t.demoStickyDesc} code={StickyHeaderSource}>
+        <div style={{ width: '100%' }}>
+          <StickyHeaderTable />
         </div>
       </DemoBox>
 

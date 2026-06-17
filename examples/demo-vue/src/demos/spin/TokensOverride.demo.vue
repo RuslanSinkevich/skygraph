@@ -1,28 +1,19 @@
 <script setup lang="ts">
-/**
- * Spin reads `--sg-spin-color` for the ring (defaulting to the primary
- * palette) and `--sg-spin-overlay-bg` for the backdrop. Three scoped recipes —
- * branded green, dark field, glass pick — recolour the spinner.
- *
- * Mirrors React `examples/demo/src/demos/spin/TokensOverride.demo.tsx`.
- */
-import type { CSSProperties } from 'vue'
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgSpin } from '@skygraph/vue'
-import TokenScopeCards, { type TokenScopeKey } from '../_shared/TokenScopeCards.vue'
 
-const extra: Partial<Record<TokenScopeKey, CSSProperties>> = {
-  brand: { '--sg-spin-color': '#059669' } as CSSProperties,
-  dark: { '--sg-spin-color': '#60a5fa' } as CSSProperties,
-  glass: { '--sg-spin-color': '#6366f1' } as CSSProperties,
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-spin-color': '#60a5fa',
+  '--sg-color-text': '#e2e8f0',
 }
 </script>
 
 <template>
-  <TokenScopeCards :extra="extra">
-    <template #default>
-      <div style="display: flex; justify-content: center; padding: 8px 0">
-        <SgSpin spinning size="large" />
-      </div>
-    </template>
-  </TokenScopeCards>
+  <div :style="dark" style="display: flex; justify-content: center">
+    <SgSpin spinning size="large" />
+  </div>
 </template>

@@ -27,8 +27,7 @@ export const timePickerDocRu: { [K in keyof typeof timePickerDocEn]: string } = 
   demoStatesTitle: 'Состояния',
   demoStatesDesc: 'Disabled и loading.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc:
-    'Три скоупа — зелёный бренд, тёмное поле, glass pick — перекрашивают один TimePicker.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись над триггером — уезжает вверх при фокусе или после выбора времени. Чистый CSS + управляемое значение.',

@@ -29,7 +29,7 @@ export const selectDocRu: { [K in keyof typeof selectDocEn]: string } = {
   demoNumericDesc: '`value` сохраняет числовые типы (важно для ID).',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах Select: зелёный бренд, тёмное поле (с фоном dropdown) и glass pick — тот же компонент, разные шкурки.',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   demoFloatingLabelTitle: 'Плавающий label',
   demoFloatingLabelDesc:
     'Плавающая подпись на триггере Select: уезжает вверх при фокусе или когда значение выбрано (`:focus-within` + класс заполненности).',

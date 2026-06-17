@@ -23,7 +23,8 @@ export const radioDocRu: { [K in keyof typeof radioDocEn]: string } = {
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: '`SgRadio` в `SgField` с required-валидацией.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп глобальных токенов для ребрендинга одной группы.',
+  demoTokensDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableRadioGroupApi: 'API SgRadio',
   tableRadioOptionApi: 'RadioOption',
   tableCssVars: 'CSS-переменные',

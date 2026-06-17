@@ -1,24 +1,25 @@
 import { Carousel } from '@skygraph/react'
 import { slideBase, paletteColors } from './data'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * The active dot reads `--sg-color-primary`, idle dots read
- * `--sg-color-text-disabled`. Three scoped recipes — branded green, dark
- * field, glass pick — rebrand the indicators.
- */
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-text-disabled': '#64748b',
+} as CSSProperties
+
 export function TokensOverrideCarousel() {
   return (
-    <TokenScopeCards
-      render={() => (
-        <Carousel>
-          {paletteColors.map((bg, i) => (
-            <div key={i} style={{ ...slideBase, background: bg }}>
-              {i + 1}
-            </div>
-          ))}
-        </Carousel>
-      )}
-    />
+    <div style={dark}>
+      <Carousel>
+        {paletteColors.map((bg, i) => (
+          <div key={i} style={{ ...slideBase, background: bg }}>
+            {i + 1}
+          </div>
+        ))}
+      </Carousel>
+    </div>
   )
 }

@@ -37,21 +37,60 @@ export function TreeDemo() {
       { name: 'treeData', description: t.propTreeData, type: 'TreeNodeData[]' },
       { name: 'fieldNames', description: t.propFieldNames, type: 'TreeFieldNames' },
       { name: 'checkable', description: t.propCheckable, type: 'boolean', default: 'false' },
-      { name: 'checkStrictly', description: t.propCheckStrictly, type: 'boolean', default: 'false' },
+      {
+        name: 'checkStrictly',
+        description: t.propCheckStrictly,
+        type: 'boolean',
+        default: 'false',
+      },
+      { name: 'checkedKeys', description: t.propCheckedKeys, type: 'TreeKey[]' },
+      { name: 'onCheck', description: t.propOnCheck, type: '(keys, info) => void' },
       { name: 'selectable', description: t.propSelectable, type: 'boolean', default: 'true' },
       { name: 'multiple', description: t.propMultiple, type: 'boolean', default: 'false' },
-      { name: 'defaultExpandAll', description: t.propDefaultExpandAll, type: 'boolean', default: 'false' },
-      { name: 'autoExpandParent', description: t.propAutoExpandParent, type: 'boolean', default: 'false' },
-      { name: 'showLine', description: t.propShowLine, type: 'boolean | { showLeafIcon? }', default: 'false' },
+      {
+        name: 'defaultExpandAll',
+        description: t.propDefaultExpandAll,
+        type: 'boolean',
+        default: 'false',
+      },
+      {
+        name: 'autoExpandParent',
+        description: t.propAutoExpandParent,
+        type: 'boolean',
+        default: 'false',
+      },
+      {
+        name: 'showLine',
+        description: t.propShowLine,
+        type: 'boolean | { showLeafIcon? }',
+        default: 'false',
+      },
       { name: 'showIcon', description: t.propShowIcon, type: 'boolean', default: 'false' },
       { name: 'blockNode', description: t.propBlockNode, type: 'boolean', default: 'false' },
       { name: 'directory', description: t.propDirectory, type: 'boolean', default: 'false' },
-      { name: 'draggable', description: t.propDraggable, type: 'boolean | (node) => boolean', default: 'false' },
+      {
+        name: 'draggable',
+        description: t.propDraggable,
+        type: 'boolean | (node) => boolean',
+        default: 'false',
+      },
+      { name: 'onDrop', description: t.propOnDrop, type: '(info: DropInfo) => void' },
       { name: 'loadData', description: t.propLoadData, type: '(node) => Promise<void>' },
       { name: 'showSearch', description: t.propShowSearch, type: 'boolean', default: 'false' },
-      { name: 'highlightSearch', description: t.propHighlightSearch, type: 'boolean', default: 'true' },
+      {
+        name: 'highlightSearch',
+        description: t.propHighlightSearch,
+        type: 'boolean',
+        default: 'true',
+      },
       { name: 'showToolbar', description: t.propShowToolbar, type: 'boolean', default: 'false' },
-      { name: 'editable', description: t.propEditable, type: 'boolean | (node) => boolean', default: 'false' },
+      {
+        name: 'editable',
+        description: t.propEditable,
+        type: 'boolean | (node) => boolean',
+        default: 'false',
+      },
+      { name: 'onEdit', description: t.propOnEdit, type: '(info: EditInfo) => void' },
       { name: 'actions', description: t.propActions, type: 'TreeNodeAction[]' },
       { name: 'nodeStatus', description: t.propNodeStatus, type: '(node) => TreeNodeStatus' },
       { name: 'indentSize', description: t.propIndentSize, type: 'number', default: '24' },
@@ -81,12 +120,28 @@ export function TreeDemo() {
   const treeCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-primary', default: 'var(--sg-blue-6)', description: t.cssSgColorPrimary },
-      { name: 'sg-color-primary-bg', default: 'var(--sg-blue-1)', description: t.cssSgColorPrimaryBg },
+      {
+        name: 'sg-color-primary-bg',
+        default: 'var(--sg-blue-1)',
+        description: t.cssSgColorPrimaryBg,
+      },
       { name: 'sg-color-bg-hover', default: 'var(--sg-gray-3)', description: t.cssSgColorBgHover },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssSgColorTextSecondary },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssSgColorTextSecondary,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextTertiary,
+      },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
       { name: 'sg-color-border', default: 'var(--sg-gray-5)', description: t.cssSgColorBorder },
       { name: 'sg-color-success', default: 'var(--sg-green-6)', description: t.cssSgColorSuccess },
       { name: 'sg-color-warning', default: 'var(--sg-orange-5)', description: t.cssSgColorWarning },
@@ -109,7 +164,11 @@ export function TreeDemo() {
         <BasicTree />
       </DemoBox>
 
-      <DemoBox title={t.demoCheckableTitle} description={t.demoCheckableDesc} code={CheckableSource}>
+      <DemoBox
+        title={t.demoCheckableTitle}
+        description={t.demoCheckableDesc}
+        code={CheckableSource}
+      >
         <CheckableTree />
       </DemoBox>
 
@@ -117,7 +176,11 @@ export function TreeDemo() {
         <ShowLineTree />
       </DemoBox>
 
-      <DemoBox title={t.demoDirectoryTitle} description={t.demoDirectoryDesc} code={DirectorySource}>
+      <DemoBox
+        title={t.demoDirectoryTitle}
+        description={t.demoDirectoryDesc}
+        code={DirectorySource}
+      >
         <DirectoryTree />
       </DemoBox>
 
@@ -133,11 +196,19 @@ export function TreeDemo() {
         <ActionsTree />
       </DemoBox>
 
-      <DemoBox title={t.demoNodeStatusTitle} description={t.demoNodeStatusDesc} code={NodeStatusSource}>
+      <DemoBox
+        title={t.demoNodeStatusTitle}
+        description={t.demoNodeStatusDesc}
+        code={NodeStatusSource}
+      >
         <NodeStatusTree />
       </DemoBox>
 
-      <DemoBox title={t.demoDraggableTitle} description={t.demoDraggableDesc} code={DraggableSource}>
+      <DemoBox
+        title={t.demoDraggableTitle}
+        description={t.demoDraggableDesc}
+        code={DraggableSource}
+      >
         <DraggableTree />
       </DemoBox>
 
@@ -149,21 +220,13 @@ export function TreeDemo() {
         <VirtualTree />
       </DemoBox>
 
-      <DemoBox
-        title={t.demoTokensTitle}
-        description={t.demoTokensDesc}
-        code={TokensOverrideSource}
-      >
+      <DemoBox title={t.demoTokensTitle} description={t.demoTokensDesc} code={TokensOverrideSource}>
         <TokensOverrideTree />
       </DemoBox>
 
       <PropsTable title={t.tableTreeApi} data={treeProps} />
       <PropsTable title={t.tableTreeNodeData} data={nodeProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={treeCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={treeCssVars} />
     </ComponentDoc>
   )
 }

@@ -27,7 +27,7 @@ export const tabsDocRu: { [K in keyof typeof tabsDocEn]: string } = {
   demoStatesDesc: 'Per-item флаги управляют активацией.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах Tabs: зелёный бренд, тёмная поверхность и glass pick (ink-бар и текст).',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
 
   tableTabsApi: 'API Tabs',
   tableTabItem: 'TabItem',

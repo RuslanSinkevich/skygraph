@@ -22,8 +22,7 @@ export const selectDocEn = {
   demoNumericTitle: 'Numeric values',
   demoNumericDesc: '`value` preserves number types (important for IDs).',
   demoTokensTitle: 'Token override',
-  demoTokensDesc:
-    'Three scoped recipes — branded green, dark field, glass pick — reskin the same Select.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
   demoFloatingLabelTitle: 'Floating label',
   demoFloatingLabelDesc:
     'Floating label over the Select trigger — it glides up on focus or once a value is chosen. Pure CSS + the controlled value, no core changes.',

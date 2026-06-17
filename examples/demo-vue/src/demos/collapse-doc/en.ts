@@ -34,7 +34,8 @@ export const collapseDocEn = {
   demoSizesTitle: 'Sizes',
   demoSizesDesc: 'Three sizes affect header padding, min-height, and (on `large`) font size.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global surface / border tokens to repaint Collapse.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableCollapseApi: 'Collapse API',
   tableCollapseItemApi: 'CollapseItem',
   tableCssVars: 'CSS Variables',

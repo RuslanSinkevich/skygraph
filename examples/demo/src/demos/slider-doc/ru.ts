@@ -23,7 +23,7 @@ export const sliderDocRu: { [K in keyof typeof sliderDocEn]: string } = {
   demoInFormTitle: 'Внутри Form',
   demoInFormDesc: 'Slider подключён через `<Field>`.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоуп глобальных токенов на обёртке для ребрендинга.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableSliderApi: 'API Slider',
   tableCssVars: 'CSS-переменные',

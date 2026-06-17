@@ -16,7 +16,9 @@ const repoRoot = path.resolve(__dirname, '..');
 const stylesDir = path.resolve(repoRoot, 'packages/styles');
 
 const TOKENS_FILE = path.join(stylesDir, 'tokens.css');
-const VAR_RE = /var\(\s*(--sg-[a-zA-Z0-9-]+)/g;
+// Capture the var name plus the next significant char: `,` means a fallback is
+// present (`var(--x, ...)`), `)` means the var is used bare (`var(--x)`).
+const VAR_RE = /var\(\s*(--sg-[a-zA-Z0-9-]+)\s*([,)])/g;
 const DECL_RE = /(^|[^a-zA-Z0-9-])(--sg-[a-zA-Z0-9-]+)\s*:/g;
 
 async function walk(dir) {
@@ -38,11 +40,16 @@ function collectDeclared(source) {
   return set;
 }
 
+// Only variables used at least once WITHOUT a fallback need a declaration —
+// `var(--x, <fallback>)` can never render empty, so leaving such tokens
+// undeclared is a valid pattern (e.g. opt-in per-instance theming hooks).
 function collectUsed(source) {
   const set = new Set();
   let m;
   VAR_RE.lastIndex = 0;
-  while ((m = VAR_RE.exec(source)) !== null) set.add(m[1]);
+  while ((m = VAR_RE.exec(source)) !== null) {
+    if (m[2] === ')') set.add(m[1]);
+  }
   return set;
 }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useConfig } from './ConfigProvider.vue'
+import { useConfig, useConfigWithDefaults } from './ConfigProvider.vue'
 import type { DatePreset, ShowTimeConfig } from './DatePicker.vue'
 
 export type { DatePreset, ShowTimeConfig } from './DatePicker.vue'
@@ -47,7 +47,7 @@ const props = withDefaults(defineProps<RangePickerProps>(), {
   separator: '→',
   placement: 'bottomLeft',
   size: 'middle',
-  disabled: false,
+  disabled: undefined,
   loading: false,
   open: undefined,
 })
@@ -57,6 +57,8 @@ const emit = defineEmits<{
   (e: 'change', value: [Date | null, Date | null], dateStrings: [string, string]): void
   (e: 'openChange', open: boolean): void
 }>()
+
+const { resolvedDisabled } = useConfigWithDefaults({ disabled: props.disabled }, {})
 
 const DEFAULT_MONTH_NAMES = [
   'January',
@@ -196,7 +198,7 @@ function commitRange(dates: [Date | null, Date | null]) {
 }
 
 function openDropdown() {
-  if (props.disabled || props.loading) return
+  if (resolvedDisabled.value || props.loading) return
   setOpen(true)
 }
 
@@ -359,7 +361,7 @@ const wrapperCls = computed(() =>
         'sg-datepicker-range',
         `sg-datepicker-${props.size}`,
         isOpen.value ? 'sg-datepicker-open' : '',
-        props.disabled || props.loading ? 'sg-datepicker-disabled' : '',
+        resolvedDisabled.value || props.loading ? 'sg-datepicker-disabled' : '',
         props.loading ? 'sg-datepicker-loading' : '',
       ]
         .filter(Boolean)
@@ -435,7 +437,7 @@ const monthLabelRight = computed(() => `${monthNames.value[rightMonth.value]} ${
       role="combobox"
       aria-haspopup="dialog"
       :aria-expanded="isOpen"
-      :aria-disabled="disabled"
+      :aria-disabled="resolvedDisabled"
       @click="openDropdown"
     >
       <span

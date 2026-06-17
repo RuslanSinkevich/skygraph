@@ -1,54 +1,24 @@
-import { useMemo } from 'react'
 import { Select } from '@skygraph/react'
 import { fruitOptions } from './data'
-import { useDemoStrings } from '../../i18n'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Select shares the input tokens (`--sg-input-*`) with `Input` and listens to
- * the global colour / surface families. Three scoped recipes — branded green,
- * dark field and frosted glass — reskin the same component without touching
- * its behaviour.
- */
-const STRINGS = {
-  en: { apple: 'Apple', pear: 'Pear', mango: 'Mango', kiwi: 'Kiwi', placeholder: 'Pick a fruit' },
-  ru: {
-    apple: 'Яблоко',
-    pear: 'Груша',
-    mango: 'Манго',
-    kiwi: 'Киви',
-    placeholder: 'Выберите фрукт',
-  },
-} as const
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-input-bg': '#1e293b',
+  '--sg-input-color': '#e2e8f0',
+  '--sg-input-border': '#334155',
+  '--sg-color-bg-elevated': '#1f2937',
+  '--sg-color-bg-hover': '#273449',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-primary': '#60a5fa',
+} as CSSProperties
 
 export function TokensOverrideSelect() {
-  const t = useDemoStrings(STRINGS)
-
-  const options = useMemo(
-    () =>
-      fruitOptions.map((o) => ({
-        ...o,
-        label: t[o.value as 'apple' | 'pear' | 'mango' | 'kiwi'],
-      })),
-    [t],
-  )
-
   return (
-    <TokenScopeCards
-      extra={{
-        brand: { ['--sg-input-border' as never]: '#6ee7b7' },
-        dark: {
-          ['--sg-input-bg' as never]: '#0f172a',
-          ['--sg-input-color' as never]: '#e2e8f0',
-          ['--sg-input-border' as never]: '#1e293b',
-        },
-        glass: {
-          ['--sg-input-bg' as never]: 'rgba(255, 255, 255, 0.55)',
-          ['--sg-input-border' as never]: 'rgba(15, 23, 42, 0.08)',
-          ['--sg-input-radius' as never]: '12px',
-        },
-      }}
-      render={() => <Select placeholder={t.placeholder} options={options} />}
-    />
+    <div style={dark}>
+      <Select placeholder="Pick a fruit" options={fruitOptions} />
+    </div>
   )
 }

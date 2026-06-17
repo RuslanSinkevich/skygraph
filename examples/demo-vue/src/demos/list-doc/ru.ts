@@ -38,7 +38,7 @@ export const listDocRu: ListDocStrings = {
   demoSlotsDesc: 'Целиться в стабильные DOM-слоты без descendant-селекторов.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах List: зелёный бренд, тёмная поверхность и glass pick (hover / border / header).',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableListApi: 'List API',
   tableCssVars: 'CSS Variables',
 

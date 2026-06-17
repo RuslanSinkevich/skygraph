@@ -39,7 +39,8 @@ export const modalDocEn = {
   demoNoFooterDesc:
     'Set `footer="none"` to drop the divider — read-only dialogs with only the close button.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope `--sg-color-primary` + `--sg-border-radius-lg` to re-skin one modal.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableModalApi: 'Modal API',
   tableCssVars: 'CSS Variables',
   cssHint:

@@ -16,6 +16,9 @@ export const tableDocRu: { [K in keyof typeof tableDocEn]: string } = {
 
   demoBasicTitle: 'Базовый',
   demoBasicDesc: 'Простая таблица с сортировкой и кастомным рендером.',
+  demoStickyTitle: 'Фиксированная шапка',
+  demoStickyDesc:
+    'Шапка остаётся на месте при прокрутке тела внутри scroll.y. Пагинация выключена — все строки в одной области прокрутки.',
   demoSortableTitle: 'Сортировка',
   demoSortableDesc:
     'Сортируемые колонки. Клик по заголовку — toggle asc/desc; shift+клик — мультисорт.',
@@ -102,7 +105,8 @@ export const tableDocRu: { [K in keyof typeof tableDocEn]: string } = {
   propSize: 'Плотность таблицы',
   propLoading: 'Показать loading-оверлей',
   propSearchable: 'Показать глобальное поле поиска',
-  propScroll: 'Ширина горизонтальной прокрутки',
+  propScroll: 'Ограничения прокрутки по горизонтали (x) и/или вертикали (y)',
+  propSticky: 'Зафиксировать шапку при вертикальной прокрутке тела',
   propRowSelection: 'Конфиг выбора строк',
   propExpandable: 'Конфиг раскрываемых строк',
   propTree: 'Конфиг tree-данных',
@@ -110,6 +114,9 @@ export const tableDocRu: { [K in keyof typeof tableDocEn]: string } = {
   propDraggable: 'Включить drag & drop реордер колонок',
   propOnColumnOrderChange: 'Колбэк при реордере колонок',
   propOnCellEdit: 'Колбэк при редактировании ячейки',
+  propOnRowClick: 'Колбэк (id, row) при клике по строке тела',
+  propMultiSort: 'Включить мультисортировку по shift-клику',
+  propOnSortsChange: 'Колбэк с активной моделью сортировки при изменении',
   propRowClassName: 'Кастомный класс для строк',
   propClassNames: 'Слот-классы (root/toolbar/headerCell/bodyCell/row/...)',
   propStyles: 'Inline-стили слотов (root/toolbar/headerCell/bodyCell/row/...)',

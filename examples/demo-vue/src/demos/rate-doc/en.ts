@@ -31,7 +31,7 @@ export const rateDocEn = {
   demoInFormDesc: "Validator for 'must rate'.",
   demoTokensOverrideTitle: 'Tokens override',
   demoTokensOverrideDesc:
-    'Three scopes built from Rate tokens: green brand, dark surface and glass pick (`--sg-color-star` + border).',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableRateApi: 'Rate API',
   tableCssVars: 'CSS Variables',
 

@@ -25,7 +25,8 @@ export const breadcrumbDocRu: { [K in keyof typeof breadcrumbDocEn]: string } = 
   demoDropdownDesc:
     'Встройте `SgDropdown` внутрь слота `item`, чтобы переключаться между соседями.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоупите палитру текста и `--sg-color-primary` для ребрендинга.',
+  demoTokensDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableBreadcrumbApi: 'API Breadcrumb',
   tableBreadcrumbItem: 'BreadcrumbItem',
   tableCssVars: 'CSS-переменные',

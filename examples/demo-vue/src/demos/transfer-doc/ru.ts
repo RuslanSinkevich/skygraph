@@ -28,7 +28,8 @@ export const transferDocRu: { [K in keyof typeof transferDocEn]: string } = {
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: 'Контрол целиком + per-row `disabled`.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc: 'Перекрашиваем панели через глобальную палитру.',
+  demoTokensOverrideDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
 
   tableTransferApi: 'API Transfer',
   tableTransferItem: 'TransferItem',

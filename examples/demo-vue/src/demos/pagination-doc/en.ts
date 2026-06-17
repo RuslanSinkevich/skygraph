@@ -29,7 +29,8 @@ export const paginationDocEn = {
   demoDisabledTitle: 'Disabled',
   demoDisabledDesc: 'Fade + pointer-events: none while the table is loading.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Tint --sg-color-primary for the active chip, bump --sg-border-radius for pills.',
+  demoTokensDesc:
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tablePaginationApi: 'Pagination API',
   tableCssVars: 'CSS Variables',
 

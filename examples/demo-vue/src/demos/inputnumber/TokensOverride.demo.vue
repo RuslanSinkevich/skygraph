@@ -1,25 +1,23 @@
 <script setup lang="ts">
-/**
- * InputNumber composes the global form tokens (border, radius, background,
- * text). Three scoped recipes — branded green, dark field, glass pick —
- * reskin the same control; the stepper keeps working.
- *
- * Mirrors React `examples/demo/src/demos/inputnumber/TokensOverride.demo.tsx`.
- */
-import type { CSSProperties } from 'vue'
+// Wrap the component in an element that sets a few `--sg-*` CSS variables —
+// everything inside repaints. No props, no providers.
 import { SgInputNumber } from '@skygraph/vue'
-import TokenScopeCards, { type TokenScopeKey } from '../_shared/TokenScopeCards.vue'
 
-const extra: Partial<Record<TokenScopeKey, CSSProperties>> = {
-  dark: { '--sg-color-bg-secondary': '#1e293b' } as CSSProperties,
-  glass: { '--sg-color-bg-secondary': 'rgba(255, 255, 255, 0.4)' } as CSSProperties,
+const dark = {
+  background: '#0f172a',
+  padding: '24px',
+  borderRadius: '12px',
+  '--sg-color-bg-secondary': '#1e293b',
+  '--sg-color-text': '#e2e8f0',
+  '--sg-color-primary': '#60a5fa',
+  '--sg-input-bg': '#1e293b',
+  '--sg-input-color': '#e2e8f0',
+  '--sg-input-border': '#334155',
 }
 </script>
 
 <template>
-  <TokenScopeCards :extra="extra">
-    <template #default>
-      <SgInputNumber :default-value="7" :min="0" :max="20" />
-    </template>
-  </TokenScopeCards>
+  <div :style="dark">
+    <SgInputNumber :default-value="7" :min="0" :max="20" />
+  </div>
 </template>

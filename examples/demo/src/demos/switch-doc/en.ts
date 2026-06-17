@@ -25,7 +25,7 @@ export const switchDocEn = {
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: "Use valuePropName='checked' to bind Switch to a boolean field.",
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global tokens to rebrand a group.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableSwitchApi: 'Switch API',
   tableCssVars: 'CSS Variables',

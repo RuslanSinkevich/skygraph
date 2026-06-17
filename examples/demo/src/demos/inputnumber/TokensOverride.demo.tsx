@@ -1,19 +1,21 @@
 import { InputNumber } from '@skygraph/react'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * InputNumber composes the global form tokens (border, radius, background,
- * text). Three scoped recipes — branded green, dark field, glass pick —
- * reskin the same control; the stepper keeps working.
- */
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-input-bg': '#1e293b',
+  '--sg-input-color': '#e2e8f0',
+  '--sg-input-border': '#334155',
+  '--sg-color-bg-secondary': '#1e293b',
+  '--sg-color-text': '#f8fafc',
+} as CSSProperties
+
 export function TokensOverrideInputNumber() {
   return (
-    <TokenScopeCards
-      extra={{
-        dark: { ['--sg-color-bg-secondary' as never]: '#1e293b' },
-        glass: { ['--sg-color-bg-secondary' as never]: 'rgba(255, 255, 255, 0.4)' },
-      }}
-      render={() => <InputNumber defaultValue={7} min={0} max={20} />}
-    />
+    <div style={dark}>
+      <InputNumber defaultValue={7} min={0} max={20} />
+    </div>
   )
 }

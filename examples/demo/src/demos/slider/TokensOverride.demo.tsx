@@ -1,11 +1,18 @@
 import { Slider } from '@skygraph/react'
-import { TokenScopeCards } from '../_shared/TokenScopeCards'
+import type { CSSProperties } from 'react'
 
-/**
- * Slider uses only global tokens — the fill and handle follow
- * `--sg-color-primary`, the rail follows `--sg-color-border`. Three scoped
- * recipes — branded green, dark field, glass pick — rebrand the control.
- */
+const dark = {
+  background: '#0f172a',
+  padding: 24,
+  borderRadius: 12,
+  '--sg-color-primary': '#60a5fa',
+  '--sg-color-border': '#475569',
+} as CSSProperties
+
 export function TokensOverrideSlider() {
-  return <TokenScopeCards render={() => <Slider defaultValue={60} />} />
+  return (
+    <div style={dark}>
+      <Slider defaultValue={60} />
+    </div>
+  )
 }

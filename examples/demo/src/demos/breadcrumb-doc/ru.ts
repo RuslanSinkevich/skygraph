@@ -22,7 +22,7 @@ export const breadcrumbDocRu: { [K in keyof typeof breadcrumbDocEn]: string } = 
   demoDropdownTitle: 'С Dropdown',
   demoDropdownDesc: 'Встроенный Dropdown в сегменте для перехода к соседним страницам.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Скоупите палитру текста и `--sg-color-primary` для ребрендинга.',
+  demoTokensDesc: 'Оберни компонент в элемент с CSS-переменными — он перекрасится.',
 
   tableBreadcrumbApi: 'API Breadcrumb',
   tableBreadcrumbItem: 'BreadcrumbItem',

@@ -19,7 +19,7 @@ export const radioDocEn = {
   demoInFormTitle: 'Inside a Form',
   demoInFormDesc: 'RadioGroup wrapped in Field with validation.',
   demoTokensTitle: 'Tokens override',
-  demoTokensDesc: 'Scope global tokens to rebrand a single group.',
+  demoTokensDesc: 'Wrap the component in an element with CSS variables — it repaints.',
 
   tableRadioGroupApi: 'RadioGroup API',
   tableRadioOptionApi: 'RadioOption',

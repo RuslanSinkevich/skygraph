@@ -26,7 +26,7 @@ export const sliderDocRu: { [K in keyof typeof sliderDocEn]: string } = {
   demoInFormDesc: 'Слайдер в `<SgField>` через scoped-слот.',
   demoTokensTitle: 'Переопределение токенов',
   demoTokensDesc:
-    'Три скоупа на токенах Slider: зелёный бренд, тёмная поверхность и glass pick (заливка, ручка, рельс).',
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableSliderApi: 'API Slider',
   tableCssVars: 'CSS-переменные',
 

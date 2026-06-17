@@ -27,7 +27,8 @@ export const descriptionsDocRu: DescriptionsDocStrings = {
   demoRichContentDesc:
     'Vue: `value` — это `string`. React поддерживает `ReactNode` — см. findings.',
   demoTokensTitle: 'Переопределение токенов',
-  demoTokensDesc: 'Локально переопределяем глобальные surface / border токены.',
+  demoTokensDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableDescriptionsApi: 'API Descriptions',
   tableDescriptionsItemApi: 'DescriptionsItem',
   tableCssVars: 'CSS-переменные',

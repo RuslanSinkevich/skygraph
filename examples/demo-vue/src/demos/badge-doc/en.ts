@@ -27,7 +27,7 @@ export const badgeDocEn = {
   demoOffsetDesc: 'Nudge the pinned count by [right, top] pixels.',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
-    'Three scopes built from Badge tokens: green brand, dark surface and glass pick (counts and dots).',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableBadgeApi: 'Badge API',
   tableCssVars: 'CSS Variables',
 

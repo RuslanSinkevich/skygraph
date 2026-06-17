@@ -29,7 +29,7 @@ export const progressDocEn = {
   demoDynamicDesc: 'Drive `percent` from state — clamped into [0, 100].',
   demoTokensTitle: 'Tokens override',
   demoTokensDesc:
-    'Three scopes built from Progress tokens: green brand, dark surface and glass pick (every bar / ring).',
+    'Wrap the component in an element that sets `--sg-*` CSS variables — everything inside repaints. No props, no providers.',
   tableProgressApi: 'Progress API',
   tableCssVars: 'CSS Variables',
   cssHint:

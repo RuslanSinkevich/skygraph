@@ -98,6 +98,9 @@ export const tableDocEn = {
   demoRealtimeTitle: 'Realtime updates',
   demoRealtimeDesc:
     'Reactive `data` — mutate the array and the table refreshes. `progress` ticks every 800 ms.',
+  demoStickyHeaderTitle: 'Sticky header',
+  demoStickyHeaderDesc:
+    'Set `sticky` together with `scroll.y` — the header row stays pinned while the body scrolls under it.',
 
   tableTableApi: 'Table API',
   tableColumnApi: 'Column API',

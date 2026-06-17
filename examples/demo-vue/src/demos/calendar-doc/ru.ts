@@ -48,7 +48,8 @@ export const calendarDocRu: { [K in keyof typeof calendarDocEn]: string } = {
   demoLocaleDesc:
     'Передай `locale` с локализованными именами месяцев/дней, кнопкой today и заголовком колонки недели.',
   demoTokensOverrideTitle: 'Переопределение токенов',
-  demoTokensOverrideDesc: 'Скоуп глобальных токенов на обёртке для перекраски.',
+  demoTokensOverrideDesc:
+    'Оберни компонент в элемент с CSS-переменными `--sg-*` — всё внутри перекрашивается. Без пропсов и провайдеров.',
   tableCalendarApi: 'API Calendar',
   tableCalendarEvent: 'CalendarEvent',
   tableCssVars: 'CSS-переменные',
