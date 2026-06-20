@@ -3,12 +3,14 @@ import type { CSSProperties } from 'react'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-text-tertiary': '#94a3b8',
+  '--sg-color-text-disabled': '#64748b',
   padding: 24,
   borderRadius: 12,
-  '--sg-input-bg': '#1e293b',
-  '--sg-input-color': '#e2e8f0',
-  '--sg-input-border': '#334155',
+  '--sg-color-bg-container': '#1e293b',
   '--sg-color-bg-secondary': '#1e293b',
+  '--sg-color-bg-hover': '#334155',
+  '--sg-color-border': '#475569',
   '--sg-color-text': '#f8fafc',
 } as CSSProperties
 

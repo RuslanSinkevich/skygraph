@@ -4,10 +4,12 @@ import type { CSSProperties } from 'react'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-text-disabled': '#64748b',
+  '--sg-color-text-tertiary': '#94a3b8',
   padding: 24,
   borderRadius: 12,
-  '--sg-color-border': '#64748b',
-  '--sg-color-border-secondary': '#475569',
+  '--sg-color-border': '#475569',
+  '--sg-color-border-secondary': '#334155',
   '--sg-color-primary': '#60a5fa',
   '--sg-color-text': '#f8fafc',
   '--sg-color-text-secondary': '#cbd5e1',

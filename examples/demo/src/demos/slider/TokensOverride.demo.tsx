@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-primary-bg': 'rgba(96, 165, 250, 0.16)',
   padding: 24,
   borderRadius: 12,
   '--sg-color-primary': '#60a5fa',

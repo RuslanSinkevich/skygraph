@@ -6,12 +6,15 @@ import { releaseItems } from './data'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-text-disabled': '#64748b',
+  '--sg-color-text-secondary': '#cbd5e1',
   padding: '24px',
   borderRadius: '12px',
+  '--sg-color-bg': '#0f172a',
   '--sg-color-primary': '#60a5fa',
-  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text': '#f8fafc',
   '--sg-color-text-tertiary': '#94a3b8',
-  '--sg-color-border-secondary': '#475569',
+  '--sg-color-border-secondary': '#334155',
 }
 </script>
 

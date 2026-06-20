@@ -5,11 +5,12 @@ import { SgProgress } from '@skygraph/vue'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-text-secondary': '#cbd5e1',
   padding: '24px',
   borderRadius: '12px',
   '--sg-color-primary': '#60a5fa',
-  '--sg-color-bg-hover': '#1e293b',
-  '--sg-color-text': '#e2e8f0',
+  '--sg-color-bg-hover': '#334155',
+  '--sg-color-text': '#f8fafc',
 }
 </script>
 

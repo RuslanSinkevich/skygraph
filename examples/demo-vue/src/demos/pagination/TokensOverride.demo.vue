@@ -8,10 +8,15 @@ const page = ref(3)
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-primary-bg': 'rgba(96, 165, 250, 0.16)',
+  '--sg-color-text-disabled': '#64748b',
+  '--sg-color-text-secondary': '#cbd5e1',
   padding: '24px',
   borderRadius: '12px',
+  '--sg-color-bg': '#0f172a',
   '--sg-color-bg-container': '#1e293b',
-  '--sg-color-text': '#e2e8f0',
+  '--sg-color-bg-hover': '#334155',
+  '--sg-color-text': '#f8fafc',
   '--sg-color-border': '#475569',
   '--sg-color-primary': '#60a5fa',
 }

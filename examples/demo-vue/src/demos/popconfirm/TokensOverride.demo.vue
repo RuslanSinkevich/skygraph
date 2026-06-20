@@ -8,7 +8,7 @@ const dark = {
   padding: '24px',
   borderRadius: '12px',
   '--sg-color-bg-elevated': '#1e293b',
-  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text': '#f8fafc',
   '--sg-color-text-secondary': '#cbd5e1',
   '--sg-color-border-secondary': '#334155',
   '--sg-color-primary': '#60a5fa',

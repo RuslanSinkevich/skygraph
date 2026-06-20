@@ -5,6 +5,13 @@ import { SgButton } from '@skygraph/vue'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-primary-bg': 'rgba(96, 165, 250, 0.16)',
+  '--sg-color-error-bg': 'rgba(248, 113, 113, 0.16)',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-border': '#475569',
+  '--sg-color-bg-disabled': '#1e293b',
+  '--sg-color-bg-hover': '#334155',
+  '--sg-color-text-disabled': '#64748b',
   padding: '24px',
   borderRadius: '12px',
   '--sg-color-primary': '#60a5fa',

@@ -13,6 +13,9 @@ const box = {
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-bg': '#0f172a',
+  '--sg-color-text-disabled': '#64748b',
+  '--sg-color-text': '#f8fafc',
   padding: '24px',
   borderRadius: '12px',
   '--sg-color-error': '#f87171',

@@ -9,12 +9,14 @@ const open = ref(false)
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-bg-hover': '#334155',
+  '--sg-color-text-tertiary': '#94a3b8',
   padding: '24px',
   borderRadius: '12px',
   '--sg-color-primary': '#60a5fa',
   '--sg-color-primary-hover': '#93c5fd',
   '--sg-color-bg-elevated': '#1e293b',
-  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text': '#f8fafc',
   '--sg-color-text-secondary': '#cbd5e1',
   '--sg-color-border-secondary': '#334155',
 }

@@ -11,12 +11,15 @@ const items: TabItem[] = [
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-text-tertiary': '#94a3b8',
+  '--sg-color-text-disabled': '#64748b',
   padding: '24px',
   borderRadius: '12px',
+  '--sg-color-bg': '#0f172a',
   '--sg-color-bg-secondary': '#1e293b',
-  '--sg-color-text': '#e2e8f0',
-  '--sg-color-text-secondary': '#94a3b8',
-  '--sg-color-border-secondary': '#475569',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-text-secondary': '#cbd5e1',
+  '--sg-color-border-secondary': '#334155',
   '--sg-color-primary': '#60a5fa',
 }
 </script>

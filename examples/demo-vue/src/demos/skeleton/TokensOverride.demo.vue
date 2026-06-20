@@ -7,8 +7,8 @@ const dark = {
   background: '#0f172a',
   padding: '24px',
   borderRadius: '12px',
-  '--sg-skeleton-bg': 'rgba(148, 163, 184, 0.18)',
-  '--sg-skeleton-shimmer': 'rgba(226, 232, 240, 0.45)',
+  '--sg-skeleton-bg': '#334155',
+  '--sg-skeleton-shimmer': '#475569',
 }
 </script>
 

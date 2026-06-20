@@ -7,9 +7,9 @@ const dark = {
   background: '#0f172a',
   padding: '24px',
   borderRadius: '12px',
-  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text': '#f8fafc',
   '--sg-color-text-tertiary': '#94a3b8',
-  '--sg-color-text-disabled': '#475569',
+  '--sg-color-text-disabled': '#64748b',
 }
 </script>
 

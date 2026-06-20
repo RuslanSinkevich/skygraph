@@ -6,12 +6,14 @@ import { sampleItems } from './data'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-bg-hover': '#334155',
+  '--sg-color-text-secondary': '#cbd5e1',
   padding: '24px',
   borderRadius: '12px',
   '--sg-color-bg-container': '#1e293b',
-  '--sg-color-bg-secondary': '#0f172a',
-  '--sg-color-text': '#e2e8f0',
-  '--sg-color-border-secondary': '#475569',
+  '--sg-color-bg-secondary': '#1e293b',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-border-secondary': '#334155',
 }
 </script>
 

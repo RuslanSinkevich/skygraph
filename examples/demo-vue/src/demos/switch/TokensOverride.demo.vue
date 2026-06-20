@@ -5,6 +5,7 @@ import { SgSwitch } from '@skygraph/vue'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-text': '#f8fafc',
   padding: '24px',
   borderRadius: '12px',
   '--sg-switch-bg': '#475569',

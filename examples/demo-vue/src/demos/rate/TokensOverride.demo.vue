@@ -5,6 +5,8 @@ import { SgRate } from '@skygraph/vue'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-text-tertiary': '#94a3b8',
+  '--sg-rate-symbol-empty-color': '#475569',
   padding: '24px',
   borderRadius: '12px',
   '--sg-color-star': '#60a5fa',

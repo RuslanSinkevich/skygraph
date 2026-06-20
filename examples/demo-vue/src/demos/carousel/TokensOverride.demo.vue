@@ -6,10 +6,11 @@ import { slideBase, paletteColors } from './data'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-text-tertiary': '#94a3b8',
   padding: '24px',
   borderRadius: '12px',
   '--sg-color-primary': '#60a5fa',
-  '--sg-color-text-disabled': '#475569',
+  '--sg-color-text-disabled': '#64748b',
 }
 </script>
 

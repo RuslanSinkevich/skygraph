@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-text-tertiary': '#94a3b8',
   padding: 24,
   borderRadius: 12,
   '--sg-color-text': '#f8fafc',

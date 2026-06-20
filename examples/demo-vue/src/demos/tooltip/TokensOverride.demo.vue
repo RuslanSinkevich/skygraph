@@ -10,7 +10,7 @@ const dark = {
   '--sg-color-primary': '#60a5fa',
   '--sg-color-primary-hover': '#93c5fd',
   '--sg-color-bg-elevated': '#1e293b',
-  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text': '#f8fafc',
 }
 </script>
 

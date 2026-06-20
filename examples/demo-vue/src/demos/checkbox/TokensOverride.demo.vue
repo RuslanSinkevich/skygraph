@@ -5,12 +5,16 @@ import { SgCheckbox } from '@skygraph/vue'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-bg-disabled': '#1e293b',
+  '--sg-color-bg-secondary': '#1e293b',
+  '--sg-color-text-tertiary': '#94a3b8',
+  '--sg-color-text-disabled': '#64748b',
   padding: '24px',
   borderRadius: '12px',
-  '--sg-color-text': '#e2e8f0',
-  '--sg-checkbox-border': '#475569',
-  '--sg-checkbox-bg-checked': '#60a5fa',
-  '--sg-checkbox-border-hover': '#60a5fa',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-border': '#475569',
+  '--sg-color-bg': '#0f172a',
+  '--sg-color-primary': '#60a5fa',
 }
 </script>
 

@@ -8,7 +8,7 @@ const dark = {
   background: '#0f172a',
   padding: 24,
   borderRadius: 12,
-  '--sg-color-text-disabled': '#3b82f6',
+  '--sg-color-text-disabled': '#64748b',
 } as CSSProperties
 
 export function TokensOverrideAvatar() {

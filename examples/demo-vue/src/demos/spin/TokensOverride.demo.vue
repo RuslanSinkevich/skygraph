@@ -8,7 +8,7 @@ const dark = {
   padding: '24px',
   borderRadius: '12px',
   '--sg-spin-color': '#60a5fa',
-  '--sg-color-text': '#e2e8f0',
+  '--sg-color-text': '#f8fafc',
 }
 </script>
 

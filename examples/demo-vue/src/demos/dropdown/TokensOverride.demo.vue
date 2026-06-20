@@ -12,11 +12,13 @@ const items: DropdownItem[] = [
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-error-bg': 'rgba(248, 113, 113, 0.16)',
+  '--sg-color-text-disabled': '#64748b',
   padding: '24px',
   borderRadius: '12px',
   '--sg-color-bg-elevated': '#1e293b',
-  '--sg-color-text': '#e2e8f0',
-  '--sg-color-bg-hover': '#273449',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-bg-hover': '#334155',
   '--sg-color-border-secondary': '#334155',
   '--sg-color-error': '#f87171',
 }

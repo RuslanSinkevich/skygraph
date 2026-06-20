@@ -3,10 +3,15 @@ import type { CSSProperties } from 'react'
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-primary-bg': 'rgba(96, 165, 250, 0.16)',
+  '--sg-color-border': '#475569',
+  '--sg-color-bg-disabled': '#1e293b',
+  '--sg-color-text-secondary': '#cbd5e1',
+  '--sg-color-text-disabled': '#64748b',
   padding: 24,
   borderRadius: 12,
-  '--sg-color-bg-container': '#111827',
-  '--sg-color-bg-hover': '#273449',
+  '--sg-color-bg-container': '#1e293b',
+  '--sg-color-bg-hover': '#334155',
   '--sg-color-border-secondary': '#334155',
   '--sg-color-text': '#f8fafc',
   '--sg-color-primary': '#60a5fa',

@@ -12,11 +12,15 @@ const files = ref<UploadFile[]>([
 
 const dark = {
   background: '#0f172a',
+  '--sg-color-primary-bg': 'rgba(96, 165, 250, 0.16)',
+  '--sg-color-border-secondary': '#334155',
+  '--sg-color-bg-disabled': '#1e293b',
+  '--sg-color-text-tertiary': '#94a3b8',
   padding: '24px',
   borderRadius: '12px',
   '--sg-color-bg-container': '#1e293b',
-  '--sg-color-text': '#e2e8f0',
-  '--sg-color-text-secondary': '#94a3b8',
+  '--sg-color-text': '#f8fafc',
+  '--sg-color-text-secondary': '#cbd5e1',
   '--sg-color-border': '#475569',
   '--sg-color-primary': '#60a5fa',
   '--sg-color-error': '#f87171',
