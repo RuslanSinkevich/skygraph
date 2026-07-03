@@ -5,6 +5,28 @@ All notable user-facing changes to SkyGraph are documented here.
 Each version uses the same cycle: `Core`, `Components`, `Styles`, `Fixes`, and `Breaking / Removed`.
 Demo implementation details, docs routing, tests, generated reports, and dead adapters are intentionally omitted.
 
+## [0.6.5] - 2026-07-03
+
+### Core
+
+- No runtime core changes.
+
+### Components
+
+- No component API changes.
+
+### Styles
+
+- `Modal` body now inherits `--sg-color-text`, so scoped dark themes no longer render dark body text on a dark panel.
+
+### Fixes
+
+- Dark-theme token-override examples repaired across React and Vue: `Skeleton` and `Progress` bars no longer collapse to zero width, `Empty` and `Result` no longer show a white card inside the dark frame (they now honor `--sg-color-bg`), and `Modal` gets a dark control border for the default `Cancel` button.
+
+### Breaking / Removed
+
+- No user-facing removals.
+
 ## [0.6.4] - 2026-06-17
 
 ### Core

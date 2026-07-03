@@ -4,6 +4,7 @@
 import { SgSkeleton } from '@skygraph/vue'
 
 const dark = {
+  width: '100%',
   background: '#0f172a',
   padding: '24px',
   borderRadius: '12px',

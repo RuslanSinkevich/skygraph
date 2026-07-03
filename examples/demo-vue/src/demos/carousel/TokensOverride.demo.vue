@@ -5,6 +5,7 @@ import { SgCarousel } from '@skygraph/vue'
 import { slideBase, paletteColors } from './data'
 
 const dark = {
+  width: '100%',
   background: '#0f172a',
   '--sg-color-text-tertiary': '#94a3b8',
   padding: '24px',

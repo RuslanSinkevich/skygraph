@@ -18,6 +18,7 @@ const dark = {
   '--sg-color-bg-elevated': '#1e293b',
   '--sg-color-text': '#f8fafc',
   '--sg-color-text-secondary': '#cbd5e1',
+  '--sg-color-border': '#475569',
   '--sg-color-border-secondary': '#334155',
 }
 </script>

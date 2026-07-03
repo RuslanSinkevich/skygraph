@@ -4,6 +4,7 @@
 import { SgProgress } from '@skygraph/vue'
 
 const dark = {
+  width: '100%',
   background: '#0f172a',
   '--sg-color-text-secondary': '#cbd5e1',
   padding: '24px',

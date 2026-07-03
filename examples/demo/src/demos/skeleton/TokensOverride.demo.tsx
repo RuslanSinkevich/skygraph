@@ -2,6 +2,7 @@ import { Skeleton } from '@skygraph/react'
 import type { CSSProperties } from 'react'
 
 const dark = {
+  width: '100%',
   background: '#0f172a',
   padding: 24,
   borderRadius: 12,
