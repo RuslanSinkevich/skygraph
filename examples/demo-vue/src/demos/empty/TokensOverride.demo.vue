@@ -11,7 +11,7 @@ const dark = {
   '--sg-color-border-secondary': '#334155',
   '--sg-color-text': '#f8fafc',
   '--sg-color-text-tertiary': '#94a3b8',
-  '--sg-color-text-disabled': '#64748b',
+  '--sg-color-text-disabled': '#cbd5e1',
 }
 </script>
 
