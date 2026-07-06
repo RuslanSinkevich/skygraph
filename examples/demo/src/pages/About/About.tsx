@@ -78,7 +78,7 @@ export function About() {
             <div className="about-platform-card-title">
               <span className="about-platform-card-mark" aria-hidden="true" />
               <a
-                href="https://skycode-ai.ru/"
+                href="https://ruslansinkevich.ru/projects/skycode"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="about-platform-card-link"

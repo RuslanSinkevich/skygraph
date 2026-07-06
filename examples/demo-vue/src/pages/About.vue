@@ -80,7 +80,7 @@ const VERSION_LABEL = `v${__SKYGRAPH_VUE_VERSION__}`
           <div class="about-platform-card-title">
             <span class="about-platform-card-mark" aria-hidden="true" />
             <a
-              href="https://skycode-ai.ru/"
+              href="https://ruslansinkevich.ru/projects/skycode"
               target="_blank"
               rel="noopener noreferrer"
               class="about-platform-card-link"
