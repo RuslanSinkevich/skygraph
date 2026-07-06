@@ -586,7 +586,15 @@
   border-right: none;
 }
 
-.sg-table-bordered .sg-table-grid {
+/* The bordered frame + rounded-corner clip lives on the scroll container,
+ * NOT on the inner grid. `overflow: hidden` on the grid would sit between a
+ * sticky header cell and its real scroll ancestor (`.sg-table-scroll`),
+ * turning the grid into the nearest scroll container — which never scrolls,
+ * so `position: sticky` on the header silently stops working. Anchoring the
+ * clip on `.sg-table-scroll` keeps sticky headers pinned while still masking
+ * the corners. The `overflow: hidden` here is overridden inline by
+ * `Table.tsx` (to `auto`) on the axes that opt into scrolling. */
+.sg-table-bordered .sg-table-scroll {
   border: 1px solid var(--sg-color-border);
   border-radius: var(--sg-border-radius);
   overflow: hidden;

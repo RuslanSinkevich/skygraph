@@ -66,6 +66,8 @@ const diagramProps = computed<PropDef[]>(() => [
     default: "'single'",
   },
   { name: 'selection', description: t.value.propSelection, type: 'NodeId[]' },
+  { name: 'defaultSelection', description: t.value.propDefaultSelection, type: 'NodeId[]' },
+  { name: 'dropTypes', description: t.value.propDropTypes, type: "string[] | '*' | null" },
   { name: 'nodeActions', description: t.value.propNodeActions, type: 'DiagramNodeAction[]' },
   { name: 'edgeActions', description: t.value.propEdgeActions, type: 'DiagramEdgeAction[]' },
   { name: 'fileName', description: t.value.propFileName, type: 'string', default: "'diagram'" },
@@ -74,6 +76,16 @@ const diagramProps = computed<PropDef[]>(() => [
     name: '@selection-change',
     description: t.value.propEmitSelectionChange,
     type: '(ids: NodeId[]) => void',
+  },
+  {
+    name: '@node-click',
+    description: t.value.propEmitNodeClick,
+    type: '(p: { id, node, event }) => void',
+  },
+  {
+    name: '@drop-node',
+    description: t.value.propEmitDropNode,
+    type: '(point: DiagramDropPoint) => void',
   },
   {
     name: '@node-context-menu',

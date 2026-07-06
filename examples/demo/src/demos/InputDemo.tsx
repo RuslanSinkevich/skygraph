@@ -44,6 +44,13 @@ export function InputDemo() {
         type: "'text' | 'email' | 'password' | 'number'",
         default: "'text'",
       },
+      { name: 'readOnly', description: t.propReadOnly, type: 'boolean', default: 'false' },
+      { name: 'id', description: t.propId, type: 'string' },
+      { name: 'allowClear', description: t.propAllowClear, type: 'boolean', default: 'false' },
+      { name: 'status', description: t.propStatus, type: "'error' | 'warning'" },
+      { name: 'prefix', description: t.propPrefix, type: 'ReactNode' },
+      { name: 'suffix', description: t.propSuffix, type: 'ReactNode' },
+      { name: 'onClear', description: t.propOnClear, type: '() => void' },
       {
         name: 'size',
         description: t.propSize,

@@ -57,6 +57,8 @@ import ProfileSettingsSource from './form/ProfileSettings.demo.vue?raw'
 const t = useFormDocStrings()
 
 const formProps = computed<PropDef[]>(() => [
+  { name: 'form', description: t.value.propForm, type: 'UseFormReturn' },
+  { name: 'name', description: t.value.propName, type: 'string' },
   {
     name: 'layout',
     description: t.value.propLayout,
@@ -110,7 +112,13 @@ const formProps = computed<PropDef[]>(() => [
     description: t.value.propDefaultValues,
     type: 'Record<string, unknown>',
   },
+  {
+    name: 'initialValues',
+    description: t.value.propInitialValues,
+    type: 'Record<string, unknown>',
+  },
   { name: 'colon', description: t.value.propColon, type: 'boolean', default: 'false' },
+  { name: '@submit', description: t.value.emitSubmit, type: '({ values, valid }) => void' },
   { name: '@finish', description: t.value.emitFinish, type: '(values) => void' },
   { name: '@finishFailed', description: t.value.emitFinishFailed, type: '(errors) => void' },
   { name: '@valuesChange', description: t.value.emitValuesChange, type: '(values) => void' },
@@ -121,9 +129,23 @@ const fieldProps = computed<PropDef[]>(() => [
   { name: 'label', description: t.value.propFieldLabel, type: 'string' },
   { name: 'required', description: t.value.propFieldRequired, type: 'boolean', default: 'false' },
   { name: 'rules', description: t.value.propFieldRules, type: 'Rule[]', default: '[]' },
+  { name: 'warningRules', description: t.value.propFieldWarningRules, type: 'Rule[]' },
+  { name: 'dependencies', description: t.value.propFieldDependencies, type: 'string[]' },
+  {
+    name: 'trigger',
+    description: t.value.propFieldTrigger,
+    type: 'ValidationMode | ValidationMode[]',
+  },
   { name: 'help', description: t.value.propFieldHelp, type: 'string' },
   { name: 'extra', description: t.value.propFieldExtra, type: 'string' },
+  { name: 'preserve', description: t.value.propFieldPreserve, type: 'boolean' },
   { name: 'hidden', description: t.value.propFieldHidden, type: 'boolean', default: 'false' },
+  { name: 'disabled', description: t.value.propFieldDisabled, type: 'boolean' },
+  {
+    name: 'validateStatus',
+    description: t.value.propFieldValidateStatus,
+    type: "'success' | 'warning' | 'error' | 'validating'",
+  },
   { name: 'noStyle', description: t.value.propFieldNoStyle, type: 'boolean', default: 'false' },
   { name: 'normalize', description: t.value.propFieldNormalize, type: '(v, prev) => unknown' },
   {

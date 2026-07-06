@@ -78,6 +78,10 @@ export const chartsDocEn = {
   propXAxis: 'X axis options object — off when omitted',
   propYAxis: 'Y axis options object — off when omitted',
   propPrintable: 'Enable `ref.print()` and tweak popup options',
+  propActions: 'Hover toolbar with actions (`true` for defaults or `ChartAction[]`)',
+  propFileName: 'Base file name (no extension) for SVG / PNG / print exports',
+  propOnSeriesContextMenu: 'Right-click handler on a series element (blocks the native menu)',
+  propOnChartContextMenu: 'Right-click handler on the plot area (blocks the native menu)',
 
   propMarkers: 'Show dot markers at each point',
   propStrokeWidth: 'Line stroke width in pixels',

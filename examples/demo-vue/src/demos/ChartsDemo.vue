@@ -76,14 +76,14 @@ const lineExtras = computed<PropDef[]>(() => [
 ])
 
 const barExtras = computed<PropDef[]>(() => [
-  { name: 'groupGap', description: t.value.propGroupGap, type: 'number' },
-  { name: 'barGap', description: t.value.propBarGap, type: 'number' },
+  { name: 'stacked', description: t.value.propStacked, type: 'boolean', default: 'false' },
+  { name: 'cornerRadius', description: t.value.propCornerRadius, type: 'number', default: '0' },
 ])
 
 const areaExtras = computed<PropDef[]>(() => [
   { name: 'stacked', description: t.value.propStacked, type: 'boolean', default: 'false' },
   { name: 'strokeWidth', description: t.value.propStrokeWidth, type: 'number', default: '2' },
-  { name: 'fillOpacity', description: t.value.propFillOpacity, type: 'number', default: '0.25' },
+  { name: 'fillOpacity', description: t.value.propFillOpacity, type: 'number', default: '0.3' },
   { name: 'brush', description: t.value.propBrush, type: 'boolean | ChartBrushConfig' },
 ])
 

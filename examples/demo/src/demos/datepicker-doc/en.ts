@@ -58,6 +58,7 @@ export const datePickerDocEn = {
   propPlacement: 'Dropdown alignment',
   propOpen: 'Controlled visibility of the dropdown',
   propOnOpenChange: 'Called when the dropdown opens or closes',
+  propOnBlur: 'Called when the panel closes after an outside click (blur)',
   propInputReadOnly: 'Block typing — force calendar selection',
   propSize: 'Control size',
   propDisabled: 'Disable the whole control',

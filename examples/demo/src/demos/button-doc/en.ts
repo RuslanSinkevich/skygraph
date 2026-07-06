@@ -34,6 +34,8 @@ export const buttonDocEn = {
   propDisabled: 'Disable the button (also inherits from ConfigProvider)',
   propLoading: 'Show an inline Spin; sets aria-busy and blocks clicks',
   propHtmlType: 'Native HTML button type attribute',
+  propDanger: 'Flag a destructive action (combines with `type`)',
+  propBlock: 'Stretch the button to fill its container',
   propOnClick: 'Click handler',
   propChildren: 'Button content — text, icon, or both',
   propClassName: 'Extra class on the root button element',

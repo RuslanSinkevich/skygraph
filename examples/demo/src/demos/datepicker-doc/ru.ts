@@ -58,6 +58,7 @@ export const datePickerDocRu: { [K in keyof typeof datePickerDocEn]: string } = 
   propPlacement: 'Выравнивание выпадающего списка',
   propOpen: 'Управляемая видимость выпадающего списка',
   propOnOpenChange: 'Вызывается при открытии/закрытии списка',
+  propOnBlur: 'Вызывается при закрытии панели по клику вне (blur)',
   propInputReadOnly: 'Запретить ввод — только выбор в календаре',
   propSize: 'Размер контрола',
   propDisabled: 'Отключить весь контрол',

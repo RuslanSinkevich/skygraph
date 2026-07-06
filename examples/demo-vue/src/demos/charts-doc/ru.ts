@@ -75,11 +75,10 @@ export const chartsDocRu: ChartsDocStrings = {
   propCrosshair: 'Hover-кросхэйр с гайдом и per-series-тултипом (LineChart)',
   propBrush: 'Brush-выделение по X (`true`, controlled или с конфигом)',
 
-  propGroupGap: 'Зазор между группами (0..1 шага категории) — BarChart',
-  propBarGap: 'Зазор между барами в группе (0..1 слота) — BarChart',
+  propCornerRadius: 'Радиус скругления баров в px — BarChart',
 
-  propStacked: 'Стек серий поверх друг друга (cumulative) — AreaChart',
-  propFillOpacity: 'Прозрачность заливки 0..1 (default 0.25) — AreaChart',
+  propStacked: 'Стек серий поверх друг друга (cumulative) — Bar / Area',
+  propFillOpacity: 'Прозрачность заливки 0..1 (default 0.3) — AreaChart',
 
   propInnerRadius: 'Внутренний радиус donut (0..1 от outer)',
   propLabels: 'Подписи внутри секторов',

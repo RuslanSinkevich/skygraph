@@ -72,6 +72,23 @@ export function ChartsDemo() {
         default: 'false',
       },
       { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
+      {
+        name: 'actions',
+        description: t.propActions,
+        type: 'boolean | ChartAction[]',
+        default: 'false',
+      },
+      { name: 'fileName', description: t.propFileName, type: 'string', default: "'chart'" },
+      {
+        name: 'onSeriesContextMenu',
+        description: t.propOnSeriesContextMenu,
+        type: 'ChartSeriesContextMenuHandler',
+      },
+      {
+        name: 'onChartContextMenu',
+        description: t.propOnChartContextMenu,
+        type: 'ChartContextMenuHandler',
+      },
       { name: 'className', description: t.propClassName, type: 'string' },
       { name: 'style', description: t.propStyle, type: 'CSSProperties' },
     ],

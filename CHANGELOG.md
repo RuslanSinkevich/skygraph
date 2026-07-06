@@ -5,6 +5,28 @@ All notable user-facing changes to SkyGraph are documented here.
 Each version uses the same cycle: `Core`, `Components`, `Styles`, `Fixes`, and `Breaking / Removed`.
 Demo implementation details, docs routing, tests, generated reports, and dead adapters are intentionally omitted.
 
+## [0.6.6] - 2026-07-06
+
+### Core
+
+- No runtime core changes.
+
+### Components
+
+- No component API changes.
+
+### Styles
+
+- `Table`: the bordered frame (border, corner radius, corner clip) moved from the inner `.sg-table-grid` onto the `.sg-table-scroll` container. The previous `overflow: hidden` on the grid sat between a sticky header cell and its real scroll ancestor, which turned the never-scrolling grid into the nearest scroll container and silently disabled `position: sticky`.
+
+### Fixes
+
+- `Table` sticky header now stays pinned while the body scrolls in every bordered table (all `sticky` and `virtual` tables were affected, since they are bordered), instead of scrolling away with the rows.
+
+### Breaking / Removed
+
+- No user-facing removals.
+
 ## [0.6.5] - 2026-07-03
 
 ### Core

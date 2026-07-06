@@ -87,11 +87,10 @@ export const chartsDocEn = {
   propCrosshair: 'Hover crosshair with vertical guide and per-series tooltip (LineChart)',
   propBrush: 'Brush selection over X range (`true`, controlled or with config)',
 
-  propGroupGap: 'Gap between groups (0..1 of category step) — BarChart',
-  propBarGap: 'Gap between bars within a group (0..1 of slot) — BarChart',
+  propCornerRadius: 'Bar corner radius in pixels — BarChart',
 
-  propStacked: 'Stack series on top of each other (cumulative) — AreaChart',
-  propFillOpacity: 'Fill opacity in 0..1 (default 0.25) — AreaChart',
+  propStacked: 'Stack series on top of each other (cumulative) — Bar / Area',
+  propFillOpacity: 'Fill opacity in 0..1 (default 0.3) — AreaChart',
 
   propInnerRadius: 'Donut inner radius (0..1 fraction of outer)',
   propLabels: 'Render slice labels inside the slice',

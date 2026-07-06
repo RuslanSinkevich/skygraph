@@ -42,6 +42,8 @@ export function ButtonDemo() {
         type: "'button' | 'submit' | 'reset'",
         default: "'button'",
       },
+      { name: 'danger', description: t.propDanger, type: 'boolean', default: 'false' },
+      { name: 'block', description: t.propBlock, type: 'boolean', default: 'false' },
       {
         name: 'onClick',
         description: t.propOnClick,

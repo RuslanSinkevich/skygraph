@@ -27,14 +27,66 @@ export function TransferDemo() {
       { name: 'dataSource', description: t.propDataSource, type: 'TransferItem[]' },
       { name: 'targetKeys', description: t.propTargetKeys, type: 'string[]' },
       { name: 'defaultTargetKeys', description: t.propDefaultTargetKeys, type: 'string[]' },
-      { name: 'onChange', description: t.propOnChange, type: '(targetKeys, direction, moveKeys) => void' },
-      { name: 'onSelectChange', description: t.propOnSelectChange, type: '(sourceSelected, targetSelected) => void' },
+      {
+        name: 'onChange',
+        description: t.propOnChange,
+        type: '(targetKeys, direction, moveKeys) => void',
+      },
+      {
+        name: 'onSelectChange',
+        description: t.propOnSelectChange,
+        type: '(sourceSelected, targetSelected) => void',
+      },
       { name: 'showSearch', description: t.propShowSearch, type: 'boolean', default: 'false' },
-      { name: 'titles', description: t.propTitles, type: '[string, string]', default: "['Source', 'Target']" },
+      {
+        name: 'titles',
+        description: t.propTitles,
+        type: '[string, string]',
+        default: "['Source', 'Target']",
+      },
       { name: 'render', description: t.propRender, type: '(item: TransferItem) => ReactNode' },
       { name: 'listStyle', description: t.propListStyle, type: 'CSSProperties' },
       { name: 'oneWay', description: t.propOneWay, type: 'boolean', default: 'false' },
       { name: 'disabled', description: t.propDisabled, type: 'boolean', default: 'false' },
+      { name: 'selectedKeys', description: t.propSelectedKeys, type: 'string[]' },
+      {
+        name: 'filterOption',
+        description: t.propFilterOption,
+        type: '(inputValue: string, item: TransferItem) => boolean',
+      },
+      { name: 'searchPlaceholder', description: t.propSearchPlaceholder, type: 'string' },
+      { name: 'showSelectAll', description: t.propShowSelectAll, type: 'boolean', default: 'true' },
+      {
+        name: 'pagination',
+        description: t.propPagination,
+        type: 'boolean | { pageSize?: number }',
+      },
+      { name: 'locale', description: t.propLocale, type: 'TransferLocale' },
+      {
+        name: 'footer',
+        description: t.propFooter,
+        type: '[ReactNode, ReactNode] | ((props: { direction }) => ReactNode)',
+      },
+      { name: 'operations', description: t.propOperations, type: '[ReactNode, ReactNode]' },
+      { name: 'operationsStyle', description: t.propOperationsStyle, type: 'CSSProperties' },
+      { name: 'sortable', description: t.propSortable, type: 'boolean', default: 'false' },
+      {
+        name: 'onSort',
+        description: t.propOnSort,
+        type: "(direction: 'left' | 'right', keys: string[]) => void",
+      },
+      { name: 'showCount', description: t.propShowCount, type: 'boolean', default: 'true' },
+      {
+        name: 'onSearch',
+        description: t.propOnSearch,
+        type: "(direction: 'left' | 'right', value: string) => void",
+      },
+      { name: 'listHeight', description: t.propListHeight, type: 'number' },
+      {
+        name: 'listClassName',
+        description: t.propListClassName,
+        type: "string | ((direction: 'left' | 'right') => string)",
+      },
       { name: 'className', description: t.propClassName, type: 'string' },
       { name: 'style', description: t.propStyle, type: 'CSSProperties' },
       { name: 'unstyled', description: t.propUnstyled, type: 'boolean', default: 'false' },
@@ -55,15 +107,39 @@ export function TransferDemo() {
   const transferCssVars = useMemo<CssVarDef[]>(
     () => [
       { name: 'sg-color-bg-container', default: '#ffffff', description: t.cssSgColorBgContainer },
-      { name: 'sg-color-bg-secondary', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgSecondary },
-      { name: 'sg-color-bg-hover', default: 'rgba(0, 0, 0, 0.04)', description: t.cssSgColorBgHover },
+      {
+        name: 'sg-color-bg-secondary',
+        default: 'rgba(0, 0, 0, 0.04)',
+        description: t.cssSgColorBgSecondary,
+      },
+      {
+        name: 'sg-color-bg-hover',
+        default: 'rgba(0, 0, 0, 0.04)',
+        description: t.cssSgColorBgHover,
+      },
       { name: 'sg-color-primary-bg', default: '#e6f4ff', description: t.cssSgColorPrimaryBg },
       { name: 'sg-color-border', default: '#d9d9d9', description: t.cssSgColorBorder },
-      { name: 'sg-color-border-secondary', default: '#f0f0f0', description: t.cssSgColorBorderSecondary },
+      {
+        name: 'sg-color-border-secondary',
+        default: '#f0f0f0',
+        description: t.cssSgColorBorderSecondary,
+      },
       { name: 'sg-color-text', default: 'rgba(0, 0, 0, 0.88)', description: t.cssSgColorText },
-      { name: 'sg-color-text-secondary', default: 'rgba(0, 0, 0, 0.65)', description: t.cssSgColorTextSecondary },
-      { name: 'sg-color-text-tertiary', default: 'rgba(0, 0, 0, 0.45)', description: t.cssSgColorTextTertiary },
-      { name: 'sg-color-text-disabled', default: 'rgba(0, 0, 0, 0.25)', description: t.cssSgColorTextDisabled },
+      {
+        name: 'sg-color-text-secondary',
+        default: 'rgba(0, 0, 0, 0.65)',
+        description: t.cssSgColorTextSecondary,
+      },
+      {
+        name: 'sg-color-text-tertiary',
+        default: 'rgba(0, 0, 0, 0.45)',
+        description: t.cssSgColorTextTertiary,
+      },
+      {
+        name: 'sg-color-text-disabled',
+        default: 'rgba(0, 0, 0, 0.25)',
+        description: t.cssSgColorTextDisabled,
+      },
       { name: 'sg-border-radius', default: '6px', description: t.cssSgBorderRadius },
       { name: 'sg-font-size', default: '14px', description: t.cssSgFontSize },
       { name: 'sg-font-size-sm', default: '12px', description: t.cssSgFontSizeSm },
@@ -101,7 +177,11 @@ export function TransferDemo() {
         <TitlesTransfer />
       </DemoBox>
 
-      <DemoBox title={t.demoCustomRenderTitle} description={t.demoCustomRenderDesc} code={CustomRenderSource}>
+      <DemoBox
+        title={t.demoCustomRenderTitle}
+        description={t.demoCustomRenderDesc}
+        code={CustomRenderSource}
+      >
         <CustomRenderTransfer />
       </DemoBox>
 
@@ -109,17 +189,17 @@ export function TransferDemo() {
         <DisabledTransfer />
       </DemoBox>
 
-      <DemoBox title={t.demoTokensOverrideTitle} description={t.demoTokensOverrideDesc} code={TokensOverrideSource}>
+      <DemoBox
+        title={t.demoTokensOverrideTitle}
+        description={t.demoTokensOverrideDesc}
+        code={TokensOverrideSource}
+      >
         <TokensOverrideTransfer />
       </DemoBox>
 
       <PropsTable title={t.tableTransferApi} data={transferProps} />
       <PropsTable title={t.tableTransferItem} data={transferItemProps} />
-      <CssVarsTable
-        title={t.tableCssVars}
-        hint={t.cssHint}
-        data={transferCssVars}
-      />
+      <CssVarsTable title={t.tableCssVars} hint={t.cssHint} data={transferCssVars} />
     </ComponentDoc>
   )
 }

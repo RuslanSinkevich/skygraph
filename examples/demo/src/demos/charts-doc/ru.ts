@@ -79,6 +79,10 @@ export const chartsDocRu: { [K in keyof typeof chartsDocEn]: string } = {
   propXAxis: 'Объект опций оси X — если не передан, ось не рендерится',
   propYAxis: 'Объект опций оси Y — если не передан, ось не рендерится',
   propPrintable: 'Включает `ref.print()` и параметры popup-окна печати',
+  propActions: 'Hover-тулбар с действиями (`true` для дефолтных или `ChartAction[]`)',
+  propFileName: 'Базовое имя файла (без расширения) для экспортов SVG / PNG / печати',
+  propOnSeriesContextMenu: 'Обработчик ПКМ по элементу серии (блокирует нативное меню)',
+  propOnChartContextMenu: 'Обработчик ПКМ по плот-области (блокирует нативное меню)',
 
   propMarkers: 'Показать маркеры-точки в каждой точке',
   propStrokeWidth: 'Толщина линии в пикселях',

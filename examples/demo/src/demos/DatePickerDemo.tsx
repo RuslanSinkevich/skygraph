@@ -73,6 +73,7 @@ export function DatePickerDemo() {
       },
       { name: 'open', description: t.propOpen, type: 'boolean' },
       { name: 'onOpenChange', description: t.propOnOpenChange, type: '(open: boolean) => void' },
+      { name: 'onBlur', description: t.propOnBlur, type: '() => void' },
       {
         name: 'inputReadOnly',
         description: t.propInputReadOnly,

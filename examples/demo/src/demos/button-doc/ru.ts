@@ -35,6 +35,8 @@ export const buttonDocRu: { [K in keyof typeof buttonDocEn]: string } = {
   propDisabled: 'Отключить кнопку (также наследуется от ConfigProvider)',
   propLoading: 'Показать встроенный Spin; aria-busy и блокировка кликов',
   propHtmlType: 'Нативный атрибут type элемента button',
+  propDanger: 'Пометить деструктивное действие (комбинируется с `type`)',
+  propBlock: 'Растянуть кнопку на всю ширину контейнера',
   propOnClick: 'Обработчик клика',
   propChildren: 'Содержимое — текст, иконка или оба',
   propClassName: 'Дополнительный class на корневом button',
