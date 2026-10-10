@@ -1,17 +1,19 @@
 # SkyGraph
 
-**UI components for React and Vue on a shared engine. One install, one CSS, the same look.**
+> English version: [README.en.md](README.en.md)
 
-Ready-made components — forms, tables, trees, charts, calendars,
-diagrams, dashboards. Same DOM, same `.sg-*` classes, same behaviour on
-both adapters. Free, MIT.
+**UI-компоненты для React и Vue на общем движке. Одна установка, один CSS, одинаковый вид.**
 
-[![CI](https://github.com/RuslanSinkevich/skygraph-public/actions/workflows/ci.yml/badge.svg)](https://github.com/RuslanSinkevich/skygraph-public/actions/workflows/ci.yml)
+Готовые компоненты — формы, таблицы, деревья, графики, календари,
+диаграммы, дашборды. Один и тот же DOM, одни и те же классы `.sg-*`,
+одинаковое поведение в обоих адаптерах. Бесплатно, MIT.
+
+[![CI](https://github.com/RuslanSinkevich/skygraph/actions/workflows/ci.yml/badge.svg)](https://github.com/RuslanSinkevich/skygraph/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
-## Quick Start (React)
+## Быстрый старт (React)
 
 ```bash
 npm install skygraph-react
@@ -36,10 +38,10 @@ function App() {
 }
 ```
 
-Styles are pulled in automatically — no extra `import '@skygraph/styles'`,
-no separate `@skygraph/core` install.
+Стили подключаются автоматически — не нужен отдельный `import '@skygraph/styles'`
+и отдельная установка `@skygraph/core`.
 
-## Quick Start (Vue 3)
+## Быстрый старт (Vue 3)
 
 ```bash
 npm install skygraph-vue
@@ -63,33 +65,33 @@ async function onSubmit(values: Record<string, unknown>) {
 </template>
 ```
 
-The same DOM, the same CSS classes — switching framework doesn't change
-the look. See [`docs/multi-framework.md`](./docs/multi-framework.md).
+Тот же DOM и те же CSS-классы — смена фреймворка не меняет внешний вид.
+Подробнее: [`docs/multi-framework.md`](./docs/multi-framework.md).
 
-## Features
+## Возможности
 
-- **Components for React and Vue** — Button, Input, Select,
+- **Компоненты для React и Vue** — Button, Input, Select,
   DatePicker, Table, DataGrid, Tree, Transfer, TreeSelect, Cascader,
   Diagram, Charts (Line / Bar / Area / Pie), Dashboard, Gantt,
-  EventTimeline, ResourceCalendar, SchemaFormEditor and the rest of an
-  AntD-shaped surface.
-- **Same engine for React and Vue** — one runtime (`@skygraph/core`)
-  holds the state, both adapters subscribe to it. Update the engine
-  once, both stay in sync.
-- **Same look out of the box** — React and Vue render the same DOM and
-  the same `.sg-*` classes. Switching framework doesn't change the UI.
-- **Light, predictable CSS** — ~25 KB gzipped, no CSS-in-JS, no runtime
-  injection. Dark and light themes via a single attribute on `<html>`.
-- **TypeScript first** — strict types end-to-end. Form schemas from JSON
-  Schema or Zod. No `any` in the public API.
-- **Accessible by default** — keyboard navigation, ARIA roles and focus
-  management are built in.
-- **Print / PDF** — tables, diagrams and charts have a `printable` prop
-  and a `ref.print()` method that opens a clean native print dialog.
+  EventTimeline, ResourceCalendar, SchemaFormEditor и остальной набор
+  в духе AntD.
+- **Один движок для React и Vue** — общий runtime (`@skygraph/core`)
+  хранит состояние, оба адаптера на него подписываются. Обновил движок
+  один раз — синхронны оба.
+- **Одинаковый вид из коробки** — React и Vue рендерят один и тот же DOM
+  и одни и те же классы `.sg-*`. Смена фреймворка не меняет UI.
+- **Лёгкий и предсказуемый CSS** — ~25 KB gzip, без CSS-in-JS и
+  runtime-инъекций. Тёмная и светлая темы — одним атрибутом на `<html>`.
+- **TypeScript в первую очередь** — строгие типы от начала до конца. Схемы
+  форм из JSON Schema или Zod. Никаких `any` в публичном API.
+- **Доступность по умолчанию** — навигация с клавиатуры, ARIA-роли и
+  управление фокусом встроены.
+- **Печать / PDF** — у таблиц, диаграмм и графиков есть проп `printable`
+  и метод `ref.print()`, открывающий чистый системный диалог печати.
 
-## Theming
+## Темизация
 
-CSS Variables only — zero JS runtime overhead.
+Только CSS Variables — никаких накладных расходов в JS-рантайме.
 
 ```css
 :root {
@@ -98,119 +100,118 @@ CSS Variables only — zero JS runtime overhead.
 }
 ```
 
-Switch to dark mode:
+Тёмная тема:
 
 ```html
 <div data-sg-theme="dark">
-  <!-- all children use dark theme -->
+  <!-- все вложенные элементы используют тёмную тему -->
 </div>
 ```
 
-Four levels of customization:
+Четыре уровня кастомизации:
 
-1. **Global theme** — override `--sg-color-*` tokens
-2. **Component type** — override `--sg-btn-*` variables
-3. **Instance** — `unstyled` prop + render props for custom UI
-4. **Headless** — skip CSS, use only hooks (`useField`, `useForm`, etc.)
+1. **Глобальная тема** — переопределить токены `--sg-color-*`
+2. **Тип компонента** — переопределить переменные `--sg-btn-*`
+3. **Экземпляр** — проп `unstyled` + render props для своего UI
+4. **Headless** — без CSS, только хуки (`useField`, `useForm` и т.д.)
 
-Reference:
+Справочник:
 
-- [`docs/styling-contract.md`](./docs/styling-contract.md) — stable tokens, root classes, slots, `classNames` / `styles` API, versioning policy.
-- [`docs/styling-recipes.md`](./docs/styling-recipes.md) — practical recipes: custom brand, dark mode, per-component overrides, conditional row/cell styling, full `unstyled` mode.
+- [`docs/styling-contract.md`](./docs/styling-contract.md) — стабильные токены, корневые классы, слоты, API `classNames` / `styles`, политика версионирования.
+- [`docs/styling-recipes.md`](./docs/styling-recipes.md) — практические рецепты: свой бренд, тёмная тема, переопределения для отдельных компонентов, условные стили строк и ячеек, полный режим `unstyled`.
 
-## Component List
+## Список компонентов
 
-**Data Entry:** Button, Input, InputNumber, Textarea, Select, Checkbox, Radio, Switch, Slider, DatePicker, TimePicker, AutoComplete, Rate, Upload, ColorPicker, Cascader, TreeSelect, Mentions
+**Ввод данных:** Button, Input, InputNumber, Textarea, Select, Checkbox, Radio, Switch, Slider, DatePicker, TimePicker, AutoComplete, Rate, Upload, ColorPicker, Cascader, TreeSelect, Mentions
 
-**Data Display:** Table, DataGrid, Tree, List, Tabs, Collapse, Descriptions, Badge, Tag, Avatar, Calendar, Carousel, Timeline, Steps, Segmented, Skeleton, Diagram
+**Отображение данных:** Table, DataGrid, Tree, List, Tabs, Collapse, Descriptions, Badge, Tag, Avatar, Calendar, Carousel, Timeline, Steps, Segmented, Skeleton, Diagram
 
-**Visualization:** LineChart, BarChart, AreaChart, PieChart, Dashboard, DashboardEditor, Gantt, EventTimeline, ResourceCalendar
+**Визуализация:** LineChart, BarChart, AreaChart, PieChart, Dashboard, DashboardEditor, Gantt, EventTimeline, ResourceCalendar
 
-**Feedback:** Modal, Drawer, Notification, Popconfirm, Tooltip, Progress, Spin, Result, Empty
+**Обратная связь:** Modal, Drawer, Notification, Popconfirm, Tooltip, Progress, Spin, Result, Empty
 
-**Navigation:** Menu, Breadcrumb, Dropdown, Pagination, Transfer
+**Навигация:** Menu, Breadcrumb, Dropdown, Pagination, Transfer
 
-**Form:** Form, Field, FormList, FormProvider, SchemaForm, SchemaFormEditor, AutoField, SubmitButton
+**Формы:** Form, Field, FormList, FormProvider, SchemaForm, SchemaFormEditor, AutoField, SubmitButton
 
-**Utility:** Transition (CSS-class-based animations)
+**Утилиты:** Transition (анимации на CSS-классах)
 
-The Vue adapter ships the same surface with the `Sg*` prefix — `SgButton`,
+Vue-адаптер содержит тот же набор с префиксом `Sg*` — `SgButton`,
 `SgInput`, `SgForm`, `SgTable`, `SgDiagram`, `SgDashboard`,
-`SgSchemaFormEditor`, etc.
+`SgSchemaFormEditor` и т.д.
 
-## Architecture overview
+## Обзор архитектуры
 
-`skygraph-react` and `skygraph-vue` are meta-packages — they re-export the
-adapter and pull in the runtime + CSS as transitive dependencies. The
-underlying split looks like this:
+`skygraph-react` и `skygraph-vue` — мета-пакеты: они реэкспортируют
+адаптер и подтягивают runtime и CSS транзитивными зависимостями.
+Внутреннее разделение выглядит так:
 
 ```
-@skygraph/core         — pure-TS runtime + engines (forms, tables, ...)
-@skygraph/styles       — framework-agnostic CSS (tokens, themes, per-component sheets)
-@skygraph/react        — React hooks + components (peer: core + react)
-@skygraph/vue          — Vue 3 composables + components (peer: core + vue)
-skygraph-react         — meta-package: react adapter + core + styles
-skygraph-vue           — meta-package: vue adapter + core + styles
+@skygraph/core         — runtime на чистом TS + движки (формы, таблицы, ...)
+@skygraph/styles       — CSS без привязки к фреймворку (токены, темы, стили компонентов)
+@skygraph/react        — React-хуки и компоненты (peer: core + react)
+@skygraph/vue          — Vue 3 composables и компоненты (peer: core + vue)
+skygraph-react         — мета-пакет: react-адаптер + core + styles
+skygraph-vue           — мета-пакет: vue-адаптер + core + styles
 ```
 
-You can still install the underlying packages directly if you want
-fine-grained control (e.g. ship only the CSS into one app and the
-adapter into another). See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for
-the full breakdown.
+Нижележащие пакеты можно ставить и напрямую, если нужен точный контроль
+(например, отдать только CSS в одно приложение, а адаптер — в другое).
+Полный разбор — в [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
-## Development
+## Разработка
 
 ```bash
-pnpm install           # install all workspace deps (packages/* + examples/*)
-pnpm build             # build all packages
-pnpm test              # run tests (1672+ across core + react + vue)
+pnpm install           # установить зависимости воркспейса (packages/* + examples/*)
+pnpm build             # собрать все пакеты
+pnpm test              # тесты (1672+ в core + react + vue)
 pnpm lint              # eslint
-pnpm typecheck         # tsc --noEmit (recursive)
+pnpm typecheck         # tsc --noEmit (рекурсивно)
 pnpm format            # prettier
-pnpm check:styles      # tokens / !important / classes audit (CI gate)
+pnpm check:styles      # аудит токенов / !important / классов (гейт в CI)
 
-# React demo (interactive docs + benchmarks)
+# React-демо (интерактивная документация + бенчмарки)
 cd examples/demo
 pnpm dev               # → http://localhost:5173/skygraph/
 
-# Vue 3 demo (mirror of React docs)
+# Vue 3-демо (зеркало React-документации)
 cd examples/demo-vue
 pnpm dev
 
-# Showcases (12 mini-apps — CRM, Helpdesk, Inbox, Dashboard, …)
+# Showcases (12 мини-приложений — CRM, Helpdesk, Inbox, Dashboard, …)
 cd examples/showcases
 pnpm dev
 ```
 
-### Multi-framework deploy
+### Деплой нескольких фреймворков
 
-The `deploy/` folder ships a subdirectory layout (Caddy + Docker) for
-serving React and Vue interactive docs under one domain (`/react/`,
-`/vue/`, plus a static landing). See [`deploy/README.md`](./deploy/README.md).
+В папке `deploy/` лежит раскладка по подкаталогам (Caddy + Docker), чтобы
+отдавать интерактивную документацию React и Vue на одном домене (`/react/`,
+`/vue/` и статический лендинг). Подробнее: [`deploy/README.md`](./deploy/README.md).
 
 ```bash
-node deploy/build-all.mjs                         # local static build
-docker build -f deploy/Dockerfile -t skygraph .   # containerised
+node deploy/build-all.mjs                         # локальная статическая сборка
+docker build -f deploy/Dockerfile -t skygraph .   # в контейнере
 ```
 
-## Documentation
+## Документация
 
-- [Live demos](https://skygraph.ruslansinkevich.ru/) — landing + React (`/react/`), Vue (`/vue/`) interactive docs and React showcases (`/react/showcases/`)
-- [Architecture](ARCHITECTURE.md) — internal design decisions
-- [Multi-framework strategy](docs/multi-framework.md) — React ↔ Vue adapter contract
-- [Styling contract](docs/styling-contract.md) / [recipes](docs/styling-recipes.md)
+- [Живые демо](https://skygraph.ruslansinkevich.ru/) — лендинг + интерактивная документация React (`/react/`), Vue (`/vue/`) и React-showcases (`/react/showcases/`)
+- [Архитектура](ARCHITECTURE.md) — внутренние проектные решения
+- [Стратегия multi-framework](docs/multi-framework.md) — контракт адаптеров React ↔ Vue
+- [Контракт стилей](docs/styling-contract.md) / [рецепты](docs/styling-recipes.md)
 - [Changelog](CHANGELOG.md)
 
-## Author's projects
+## Другие проекты автора
 
-SkyGraph is one of several pet projects by [Ruslan Sinkevich](https://ruslansinkevich.ru/):
+SkyGraph — один из pet-проектов [Руслана Синкевича](https://ruslansinkevich.ru/):
 
-- [GitBor](https://gitbor.ru/) — cross-platform desktop Git client (Electron, [github.com/RuslanSinkevich/gitbor](https://github.com/RuslanSinkevich/gitbor))
-- [SkyGraph](https://skygraph.ruslansinkevich.ru/) — multi-framework UI library (this repo, [github.com/RuslanSinkevich/skygraph-public](https://github.com/RuslanSinkevich/skygraph-public))
-- [Skycode](https://ruslansinkevich.ru/projects/skycode) — VS Code fork with built-in AI assistant
+- [GitBor](https://gitbor.ru/) — кроссплатформенный десктопный Git-клиент (Electron, [github.com/RuslanSinkevich/gitbor](https://github.com/RuslanSinkevich/gitbor))
+- [SkyGraph](https://skygraph.ruslansinkevich.ru/) — UI-библиотека для нескольких фреймворков (этот репозиторий, [github.com/RuslanSinkevich/skygraph](https://github.com/RuslanSinkevich/skygraph))
+- [Skycode](https://github.com/RuslanSinkevich/skycode) — форк VS Code со встроенным AI-ассистентом
 
-Contacts: [ruslansinkevich.ru](https://ruslansinkevich.ru/), [Telegram](https://t.me/ruslansinkevich), [GitHub](https://github.com/RuslanSinkevich).
+Контакты: [ruslansinkevich.ru](https://ruslansinkevich.ru/), [Telegram](https://t.me/ruslansinkevich), [GitHub](https://github.com/RuslanSinkevich).
 
-## License
+## Лицензия
 
 [MIT](LICENSE)
