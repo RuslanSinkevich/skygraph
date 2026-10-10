@@ -197,7 +197,7 @@ docker build -f deploy/Dockerfile -t skygraph .   # containerised
 
 ## Documentation
 
-- [Live demos](https://skygraph.ruslansinkevich.ru/) — landing + React (`/react/`), Vue (`/vue/`) interactive docs and React showcases (`/react/showcases/`)
+- Demos — run locally, see [Development](#development): React and Vue interactive docs, 12 showcase apps
 - [Architecture](ARCHITECTURE.md) — internal design decisions
 - [Multi-framework strategy](docs/multi-framework.md) — React ↔ Vue adapter contract
 - [Styling contract](docs/styling-contract.md) / [recipes](docs/styling-recipes.md)
@@ -208,7 +208,7 @@ docker build -f deploy/Dockerfile -t skygraph .   # containerised
 SkyGraph is one of several pet projects by [Ruslan Sinkevich](https://ruslansinkevich.ru/):
 
 - [GitBor](https://gitbor.ru/) — cross-platform desktop Git client (Electron, [github.com/RuslanSinkevich/gitbor](https://github.com/RuslanSinkevich/gitbor))
-- [SkyGraph](https://skygraph.ruslansinkevich.ru/) — multi-framework UI library (this repo, [github.com/RuslanSinkevich/skygraph](https://github.com/RuslanSinkevich/skygraph))
+- [SkyGraph](https://github.com/RuslanSinkevich/skygraph) — multi-framework UI library (this repo)
 - [Skycode](https://github.com/RuslanSinkevich/skycode) — VS Code fork with built-in AI assistant
 
 Contacts: [ruslansinkevich.ru](https://ruslansinkevich.ru/), [Telegram](https://t.me/ruslansinkevich), [GitHub](https://github.com/RuslanSinkevich).

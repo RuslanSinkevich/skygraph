@@ -1,6 +1,6 @@
 # @skygraph/core
 
-Pure-TypeScript runtime for [SkyGraph](https://skygraph.ruslansinkevich.ru/) — the engine that drives forms, tables, trees, virtual lists, graphs and calendars in the React and Vue adapters. Zero runtime dependencies.
+Pure-TypeScript runtime for [SkyGraph](https://github.com/RuslanSinkevich/skygraph) — the engine that drives forms, tables, trees, virtual lists, graphs and calendars in the React and Vue adapters. Zero runtime dependencies.
 
 > **Most users don't install this package directly.** Use one of the meta-packages:
 >
@@ -37,11 +37,11 @@ npm install @skygraph/core
         └── CalendarEngine — assignments, conflicts
 ```
 
-See [`ARCHITECTURE.md`](https://github.com/RuslanSinkevich/skygraph-public/blob/master/ARCHITECTURE.md) in the repo for the full breakdown.
+See [`ARCHITECTURE.md`](https://github.com/RuslanSinkevich/skygraph/blob/master/ARCHITECTURE.md) in the repo for the full breakdown.
 
 ## Repository
 
-[github.com/RuslanSinkevich/skygraph-public](https://github.com/RuslanSinkevich/skygraph-public)
+[github.com/RuslanSinkevich/skygraph](https://github.com/RuslanSinkevich/skygraph)
 
 ## License
 

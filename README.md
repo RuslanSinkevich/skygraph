@@ -196,7 +196,7 @@ docker build -f deploy/Dockerfile -t skygraph .   # в контейнере
 
 ## Документация
 
-- [Живые демо](https://skygraph.ruslansinkevich.ru/) — лендинг + интерактивная документация React (`/react/`), Vue (`/vue/`) и React-showcases (`/react/showcases/`)
+- Демо — запускаются локально, см. [Разработка](#разработка): интерактивная документация React и Vue, 12 showcase-приложений
 - [Архитектура](ARCHITECTURE.md) — внутренние проектные решения
 - [Стратегия multi-framework](docs/multi-framework.md) — контракт адаптеров React ↔ Vue
 - [Контракт стилей](docs/styling-contract.md) / [рецепты](docs/styling-recipes.md)
@@ -207,7 +207,7 @@ docker build -f deploy/Dockerfile -t skygraph .   # в контейнере
 SkyGraph — один из pet-проектов [Руслана Синкевича](https://ruslansinkevich.ru/):
 
 - [GitBor](https://gitbor.ru/) — кроссплатформенный десктопный Git-клиент (Electron, [github.com/RuslanSinkevich/gitbor](https://github.com/RuslanSinkevich/gitbor))
-- [SkyGraph](https://skygraph.ruslansinkevich.ru/) — UI-библиотека для нескольких фреймворков (этот репозиторий, [github.com/RuslanSinkevich/skygraph](https://github.com/RuslanSinkevich/skygraph))
+- [SkyGraph](https://github.com/RuslanSinkevich/skygraph) — UI-библиотека для нескольких фреймворков (этот репозиторий)
 - [Skycode](https://github.com/RuslanSinkevich/skycode) — форк VS Code со встроенным AI-ассистентом
 
 Контакты: [ruslansinkevich.ru](https://ruslansinkevich.ru/), [Telegram](https://t.me/ruslansinkevich), [GitHub](https://github.com/RuslanSinkevich).

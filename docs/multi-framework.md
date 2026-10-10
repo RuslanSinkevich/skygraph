@@ -113,7 +113,7 @@ remains framework-free forever.
   Angular under one domain. Production deploy
   (`infra/scripts/deploy-skygraph.ps1`) currently publishes the static
   landing at `/`, React at `/react/` (+ `/react/showcases/`) and Vue at
-  `/vue/` on `skygraph.ruslansinkevich.ru`; Angular ships as a
+  `/vue/` on `skygraph.ruslansinkevich.ru` (no longer hosted; build the demos locally); Angular ships as a
   Coming-Soon stub at `/angular/` until the Angular demo is wired into
   the deploy pipeline. The local `deploy/build-all.mjs` builds React
   only and drops stubs into `vue/` and `angular/` for offline checks.

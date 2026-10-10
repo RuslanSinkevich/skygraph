@@ -1,7 +1,7 @@
 # skygraph-vue
 
 [![npm](https://img.shields.io/npm/v/skygraph-vue.svg)](https://www.npmjs.com/package/skygraph-vue)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/RuslanSinkevich/skygraph-public/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/RuslanSinkevich/skygraph/blob/master/LICENSE)
 
 UI components for Vue 3 — tables, forms, charts, calendars, diagrams and more. One install, styles included. The same DOM and `.sg-*` CSS contract is shared with the React adapter, so the look stays identical across frameworks.
 
@@ -51,8 +51,8 @@ Dark mode via one attribute:
 
 ## Links
 
-- Docs & live demos — [skygraph.ruslansinkevich.ru](https://skygraph.ruslansinkevich.ru/)
-- Source — [github.com/RuslanSinkevich/skygraph-public](https://github.com/RuslanSinkevich/skygraph-public)
+- Docs — [github.com/RuslanSinkevich/skygraph](https://github.com/RuslanSinkevich/skygraph#readme) (demos run locally, see the repo README)
+- Source — [github.com/RuslanSinkevich/skygraph](https://github.com/RuslanSinkevich/skygraph)
 - React version — [skygraph-react](https://www.npmjs.com/package/skygraph-react)
 - Author — [ruslansinkevich.ru](https://ruslansinkevich.ru/)
 

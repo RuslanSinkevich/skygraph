@@ -1,6 +1,6 @@
 # @skygraph/vue
 
-Vue 3 adapter for [SkyGraph](https://skygraph.ruslansinkevich.ru/) — components and composables built on the framework-agnostic [`@skygraph/core`](../core) engine. Shares the `.sg-*` CSS contract with the React adapter via [`@skygraph/styles`](../styles).
+Vue 3 adapter for [SkyGraph](https://github.com/RuslanSinkevich/skygraph) — components and composables built on the framework-agnostic [`@skygraph/core`](../core) engine. Shares the `.sg-*` CSS contract with the React adapter via [`@skygraph/styles`](../styles).
 
 > **Easier path — the meta-package:**
 >

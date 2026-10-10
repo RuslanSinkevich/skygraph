@@ -1,6 +1,6 @@
 # @skygraph/react
 
-React adapter for [SkyGraph](https://skygraph.ruslansinkevich.ru/) — components, hooks and `ConfigProvider` built on the framework-agnostic [`@skygraph/core`](../core) engine. Shares the `.sg-*` CSS contract with the Vue and Angular adapters via [`@skygraph/styles`](../styles).
+React adapter for [SkyGraph](https://github.com/RuslanSinkevich/skygraph) — components, hooks and `ConfigProvider` built on the framework-agnostic [`@skygraph/core`](../core) engine. Shares the `.sg-*` CSS contract with the Vue and Angular adapters via [`@skygraph/styles`](../styles).
 
 > **Easier path — the meta-package:**
 >
@@ -63,7 +63,7 @@ export function App() {
 
 ## Repository
 
-[github.com/RuslanSinkevich/skygraph-public](https://github.com/RuslanSinkevich/skygraph-public)
+[github.com/RuslanSinkevich/skygraph](https://github.com/RuslanSinkevich/skygraph)
 
 ## License
 
